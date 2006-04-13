@@ -1,0 +1,73 @@
+<?php
+class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
+    public function testValidate() {
+
+        $set = array("password" => "this is an example of too long password",
+                     "loginname" => "this is an example of too long loginname",
+                     "name" => "valid name",
+                     "created" => "invalid");
+        $this->old->setArray($set);
+        $email = $this->old->Email;
+        $email->address = "zYne@invalid";
+
+        $this->assertTrue($this->old->isLoaded());
+        $this->assertTrue($this->old->getModified() == $set);
+
+        $validator = new Doctrine_Validator();
+        $validator->validateRecord($this->old);
+        $validator->validateRecord($email);
+
+        $stack = $validator->getErrorStack();
+
+        $this->assertTrue(is_array($stack));
+        $this->assertEqual($stack["User"][0]["loginname"], Doctrine_Validator::ERR_LENGTH);
+        $this->assertEqual($stack["User"][0]["password"], Doctrine_Validator::ERR_LENGTH);
+        $this->assertEqual($stack["User"][0]["created"], Doctrine_Validator::ERR_TYPE);
+
+        $this->assertEqual($stack["Email"][0]["address"], Doctrine_Validator::ERR_VALID);
+        $email->address = "arnold@example.com";
+
+        $validator->validateRecord($email);
+        $stack = $validator->getErrorStack();
+        $this->assertEqual($stack["Email"][1]["address"], Doctrine_Validator::ERR_UNIQUE);
+
+    }
+    public function testIsValidEmail() {
+
+        $validator = new Doctrine_Validator_Email();
+
+        $email = $this->session->create("Email");
+        $this->assertFalse($validator->validate($email,"address","example@example"));
+        $this->assertFalse($validator->validate($email,"address","example@@example"));
+        $this->assertFalse($validator->validate($email,"address","example@example."));
+        $this->assertFalse($validator->validate($email,"address","example@e.."));
+
+        $this->assertFalse($validator->validate($email,"address","example@e.."));
+        $this->assertTrue($validator->validate($email,"address","example@e.e.e.e.e"));
+
+    }
+    public function testSave() {
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
+
+        try {
+            $this->old->name = "this is an example of too long name not very good example but an example nevertheless";
+            $this->old->save();
+        } catch(Doctrine_Validator_Exception $e) {
+            $this->assertEqual($e->getErrorStack(),array("User" => array(array("name" => 0))));
+        }
+
+        try {
+            $user = $this->session->create("User");
+            $user->Email->address = "jackdaniels@drinkmore.info...";
+            $user->name = "this is an example of too long user name not very good example but an example nevertheles";
+            $user->save();
+        } catch(Doctrine_Validator_Exception $e) {
+            $a = $e->getErrorStack();
+        }
+        $this->assertTrue(is_array($a));
+        $this->assertEqual($a["Email"][0]["address"], Doctrine_Validator::ERR_VALID);
+        $this->assertEqual($a["User"][0]["name"], Doctrine_Validator::ERR_LENGTH);
+    }
+
+}
+?>
