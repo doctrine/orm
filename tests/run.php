@@ -32,13 +32,15 @@ $test->addTestCase(new Doctrine_ConfigurableTestCase());
 
 
 $test->addTestCase(new Doctrine_EventListenerTestCase());
-//$test->addTestCase(new Doctrine_BatchIteratorTestCase());
+$test->addTestCase(new Doctrine_DQL_ParserTestCase());
+
+$test->addTestCase(new Doctrine_BatchIteratorTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 
 
 
 
-$test->addTestCase(new Doctrine_DQL_ParserTestCase());
+
 
 
 

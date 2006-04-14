@@ -110,7 +110,6 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)):
 
                 $this->table->setData($row);
-
                 if(is_object($this->data[$e])) {
                     $this->data[$e]->factoryRefresh($this->table);
                 } else {
@@ -159,7 +158,6 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
 
             if( ! isset($this->data[$key]))
                 $this->data[$key] = $this->table->create();
-
         }
 
 

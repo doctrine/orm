@@ -386,28 +386,28 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 
                 if( ! $this->loaded) {
                 
-                // no use trying to load the data from database if the Doctrine_Record is new or clean
-                if($this->state != Doctrine_Record::STATE_TDIRTY &&
-                   $this->state != Doctrine_Record::STATE_TCLEAN &&
-                   $this->state != Doctrine_Record::STATE_CLEAN) {
-
-                    $this->loaded = true;
-
-                    if( ! empty($this->collections)) {
-                        foreach($this->collections as $collection) {
-                            $collection->load($this);
+                    // no use trying to load the data from database if the Doctrine_Record is new or clean
+                    if($this->state != Doctrine_Record::STATE_TDIRTY &&
+                       $this->state != Doctrine_Record::STATE_TCLEAN &&
+                       $this->state != Doctrine_Record::STATE_CLEAN) {
+    
+                        $this->loaded = true;
+    
+                        if( ! empty($this->collections)) {
+                            foreach($this->collections as $collection) {
+                                $collection->load($this);
+                            }
+                        } else {
+    
+                            $this->refresh();
                         }
-                    } else {
-
-                        $this->refresh();
+                        $this->state = Doctrine_Record::STATE_CLEAN;
                     }
-                    $this->state = Doctrine_Record::STATE_CLEAN;
                 }
+                
                 if(is_array($this->data[$name]))
                     return null;
 
-                }
-                return null;
             }
             return $this->data[$name];
         }
