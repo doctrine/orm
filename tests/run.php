@@ -20,7 +20,7 @@ $test = new GroupTest("Doctrine Framework Unit Tests");
 
 
 $test->addTestCase(new Doctrine_RecordTestCase());
-/**
+
 $test->addTestCase(new Doctrine_SessionTestCase());
 $test->addTestCase(new Doctrine_ValidatorTestCase());
 
@@ -32,20 +32,21 @@ $test->addTestCase(new Doctrine_ConfigurableTestCase());
 
 
 $test->addTestCase(new Doctrine_EventListenerTestCase());
-$test->addTestCase(new Doctrine_BatchIteratorTestCase());
-$test->addTestCase(new Doctrine_Cache_FileTestCase());
+//$test->addTestCase(new Doctrine_BatchIteratorTestCase());
+//$test->addTestCase(new Doctrine_Cache_FileTestCase());
 
 
 
 
 $test->addTestCase(new Doctrine_DQL_ParserTestCase());
-*/
+
 
 
 
 $test->run(new HtmlReporter());
+$dbh = Doctrine_Manager::getInstance()->getCurrentSession()->getDBH();
+$a   = $dbh->getQueries();
 
-$a = Doctrine_Manager::getInstance()->getCurrentSession()->getDBH()->getQueries();
 print "Executed queries: ".count($a)."\n";
 
 foreach($a as $query) {

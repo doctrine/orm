@@ -105,8 +105,10 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
             $query .= ($c > 1)?")":"";
 
             $stmt  = $this->table->getSession()->execute($query,$a);
+            
 
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)):
+
                 $this->table->setData($row);
 
                 if(is_object($this->data[$e])) {
@@ -117,6 +119,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
 
                 $e++;
             endwhile;
+
             $this->loaded[$x] = true;
             return true;
         } else {
@@ -125,8 +128,8 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
     }
     /**
      * get
-     * @param mixed $key                the key of the data access object
-     * @return object Doctrine_Record               data access object
+     * @param mixed $key                the key of the record
+     * @return object Doctrine_Record               record
      */
     public function get($key) {
         if(isset($this->data[$key])) {
@@ -138,38 +141,32 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
                         if( ! isset($this->data[$key]["id"]))
                             throw new InvalidKeyException();
                             
-                        $record = $this->table->getCache()->fetch($this->data[$key]["id"]);
+                        $this->data[$key] = $this->table->getCache()->fetch($this->data[$key]["id"]);
 
                     } catch(InvalidKeyException $e) {
 
                         // Doctrine_Record didn't exist in cache
                         $this->table->setData($this->data[$key]);
-                        $proxy = $this->table->getProxy();
-                        $record = $proxy;
+                        $this->data[$key] = $this->table->getProxy();
                     }
 
-                    $record->addCollection($this);
-                break;
-                case "object":
-                    $record = $this->data[$key];
+                    $this->data[$key]->addCollection($this);
                 break;
             endswitch;
         } else {
 
             $this->expand();
 
-            if(isset($this->data[$key])) {
-                $record = $this->data[$key];
-            } else {
-                $record = $this->table->create();
-            }
+            if( ! isset($this->data[$key]))
+                $this->data[$key] = $this->table->create();
+
         }
 
 
         if(isset($this->reference_field))
-            $record->set($this->reference_field,$this->reference);
+            $this->data[$key]->set($this->reference_field,$this->reference);
 
-        $this->data[$key] = $record;
+
         return $this->data[$key];
     }
     /**

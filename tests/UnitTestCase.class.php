@@ -39,7 +39,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $instances[$name] = $this;
 
         $this->manager   = Doctrine_Manager::getInstance();
-        
+        $this->manager->setAttribute(Doctrine::ATTR_CACHE, Doctrine::CACHE_NONE);
 
         if($this->manager->count() > 0) {
             $this->session = $this->manager->getSession(0);

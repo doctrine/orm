@@ -327,6 +327,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         unset($this->data["id"]);
         $this->modified = array();
         $this->cleanData();
+
+        $this->loaded   = true;
         $this->state    = Doctrine_Record::STATE_CLEAN;
 
         $this->getTable()->getCache()->store($this);
@@ -343,12 +345,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if($this->id != $data["id"])
             throw new Doctrine_Refresh_Exception();
 
-        $this->data     = $data;
+        $this->data     = $data;   
+
         $this->cleanData();
+
         unset($this->data["id"]);
         $this->state    = Doctrine_Record::STATE_CLEAN;
         $this->modified = array();
-        
+        $this->loaded   = true;
+
         $this->getTable()->getCache()->store($this);
     }
     /**
@@ -377,8 +382,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if(isset($this->data[$name])) {
 
             // check if the property is not loaded (= it is an empty array)
-            if(is_array($this->data[$name]) && ! $this->loaded) {
-
+            if(is_array($this->data[$name])) {
+                
+                if( ! $this->loaded) {
+                
                 // no use trying to load the data from database if the Doctrine_Record is new or clean
                 if($this->state != Doctrine_Record::STATE_TDIRTY &&
                    $this->state != Doctrine_Record::STATE_TCLEAN &&
@@ -391,15 +398,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             $collection->load($this);
                         }
                     } else {
+
                         $this->refresh();
                     }
                     $this->state = Doctrine_Record::STATE_CLEAN;
                 }
-
                 if(is_array($this->data[$name]))
                     return null;
 
-                return $this->data[$name];
+                }
+                return null;
             }
             return $this->data[$name];
         }
@@ -441,6 +449,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function set($name,$value) {
         if(isset($this->data[$name])) {
             $old = $this->get($name);
+            
 
             if($value instanceof Doctrine_Record) {
                 $id = $value->getID();
@@ -796,7 +805,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $fk      = $this->table->getForeignKey($name);
         $table   = $fk->getTable();
         $name    = $table->getComponentName();
-
+        $local   = $fk->getLocal();
+        $foreign = $fk->getForeign();
+        $graph   = $table->getDQLParser();
 
         switch($this->getState()):
             case Doctrine_Record::STATE_TDIRTY:
@@ -824,9 +835,58 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             case Doctrine_Record::STATE_DIRTY:
             case Doctrine_Record::STATE_CLEAN:
             case Doctrine_Record::STATE_PROXY:
+                 switch($fk->getType()):
+                    case Doctrine_Table::ONE_COMPOSITE:
+                    case Doctrine_Table::ONE_AGGREGATE:
+                        // ONE-TO-ONE
+                        $id      = $this->get($local);
 
-                $local = $fk->getLocal();
-                
+                        if($fk instanceof Doctrine_LocalKey) {
+                            if(empty($id)) {
+                                $this->references[$name] = $table->create();
+                                $this->set($fk->getLocal(),$this->references[$name]);
+                            } else {
+                                try {
+                                    $this->references[$name] = $table->find($id);
+                                } catch(Doctrine_Find_Exception $e) {
+
+                                }
+                            }
+
+                        } elseif ($fk instanceof Doctrine_ForeignKey) {
+
+                        }
+                    break;
+                    default:
+                        // ONE-TO-MANY
+                        if($fk instanceof Doctrine_ForeignKey) {
+                                    $id      = $this->get($local);
+                            $query = "FROM ".$name." WHERE ".$name.".".$fk->getForeign()." = ?";
+                            $coll = $graph->query($query,array($id));
+    
+                            $this->references[$name] = $coll;
+                            $this->references[$name]->setReference($this,$fk);
+    
+                            $this->originals[$name]  = clone $coll;
+
+                        } elseif($fk instanceof Doctrine_Association) {
+
+        
+                            $asf     = $fk->getAssociationFactory();
+                            $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local." = ?";
+        
+                            $graph   = new Doctrine_DQL_Parser($table->getSession());
+                            $query   = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".id IN ($query)";
+
+                            $coll    = $graph->query($query, array($this->getID()));
+        
+                            $this->references[$name] = $coll;
+                            $this->originals[$name]  = clone $coll;                                                                      	
+                                                                      	
+                        }
+                 endswitch;
+
+                /**
                 $coll = false;
 
                 if($fk instanceof Doctrine_ForeignKey || 
@@ -890,25 +950,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
                         }
                     }
-                } elseif($fk instanceof Doctrine_Association) {
-
-                    $foreign = $fk->getForeign();
-
-                    $asf     = $fk->getAssociationFactory();
-                    $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local." = ?";
-
-                    $table = $fk->getTable();
-                    $graph   = new Doctrine_DQL_Parser($table->getSession());
-
-                    $q       = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".id IN ($query)";
-
-
-                    $coll    = $graph->query($q, array($this->getID()));
-
-                    $this->references[$name] = $coll;
-                    $this->originals[$name]  = clone $coll;
-
-                }
+                    */
             break;
         endswitch;
     }

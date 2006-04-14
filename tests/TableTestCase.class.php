@@ -34,7 +34,7 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($this->objTable->getSession() instanceof Doctrine_Session);
     }
     public function testGetCache() {
-        $this->assertTrue($this->objTable->getCache() instanceof Doctrine_Cache_File);
+        $this->assertTrue($this->objTable->getCache() instanceof Doctrine_Cache);
     }
     public function testGetData() {
         $this->assertTrue($this->objTable->getData() == array());

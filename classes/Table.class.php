@@ -438,8 +438,7 @@ class Doctrine_Table extends Doctrine_Configurable {
     /**
      * @param $id                       database row id
      * @throws Doctrine_Find_Exception
-     * @return DAOProxy                 a proxy for given database row, if the id is not set method
-     *                                  uses internal factory data (= data that was fetched by datagraph or collection)
+     * @return Doctrine_Record          a record for given database identifier
      */
     final public function find($id = null) {
         if($id !== null) {
@@ -453,7 +452,7 @@ class Doctrine_Table extends Doctrine_Configurable {
 
             $query  = $this->query." WHERE ".implode(" = ? && ",$this->primaryKeys)." = ?";
             $query  = $this->applyInheritance($query);
-
+            
             $params = array_merge(array($id), array_values($this->inheritanceMap));
 
             $this->data = $this->session->execute($query,$params)->fetch(PDO::FETCH_ASSOC);
@@ -461,7 +460,7 @@ class Doctrine_Table extends Doctrine_Configurable {
             if($this->data === false)
                 throw new Doctrine_Find_Exception();
         }
-        return $this->getRecord();
+        return new $this->name($this);
     }
     /**
      * applyInheritance
@@ -507,8 +506,7 @@ class Doctrine_Table extends Doctrine_Configurable {
     /**
      * @param $id                       database row id
      * @throws Doctrine_Find_Exception
-     * @return DAOProxy                 a proxy for given database row, if the id is not set method
-     *                                  uses internal factory data (= data that was fetched by datagraph or collection)
+     * @return DAOProxy                 a proxy for given identifier
      */
     final public function getProxy($id = null) {
         if($id !== null) {

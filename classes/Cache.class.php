@@ -47,6 +47,12 @@ class Doctrine_Cache implements iDoctrine_Cache {
     }
     /**
      * implemented by child classes
+     */
+    public function deleteMultiple() {
+        return 0;
+    }
+    /**
+     * implemented by child classes
      * @return integer
      */
     public function deleteAll() {

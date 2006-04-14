@@ -1,7 +1,10 @@
 <?php
 require_once("UnitTestCase.class.php");
 class Doctrine_Cache_FileTestCase extends Doctrine_UnitTestCase {
-
+    public function setUp() {
+        parent::setUp();
+        $this->manager->setAttribute(Doctrine::ATTR_CACHE, Doctrine::CACHE_FILE);
+    }
     public function testStore() {
         $this->cache->store($this->old);
         $this->assertTrue($this->cache->exists(4));

@@ -6,7 +6,7 @@ class Doctrine_BatchIteratorTestCase extends Doctrine_UnitTestCase {
         $entities = $graph->query("FROM Entity");
         $i = 0;
         foreach($entities as $entity) {
-            $this->assertTrue(is_string($entity->name));
+            $this->assertEqual(gettype($entity->name),"string");
             $i++;
         }
         $this->assertTrue($i == $entities->count());
