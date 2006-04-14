@@ -1,4 +1,5 @@
 <?php
+
 require_once("ConfigurableTestCase.class.php");
 require_once("ManagerTestCase.class.php");
 require_once("SessionTestCase.class.php");
@@ -10,6 +11,10 @@ require_once("RecordTestCase.class.php");
 require_once("DQLParserTestCase.class.php");
 require_once("AccessTestCase.class.php");
 require_once("ValidatorTestCase.class.php");
+
+require_once("CacheSqliteTestCase.class.php");
+
+
 print "<pre>";
 error_reporting(E_ALL);
 
@@ -30,14 +35,14 @@ $test->addTestCase(new Doctrine_TableTestCase());
 $test->addTestCase(new Doctrine_AccessTestCase());
 $test->addTestCase(new Doctrine_ConfigurableTestCase());
 
-
 $test->addTestCase(new Doctrine_EventListenerTestCase());
 $test->addTestCase(new Doctrine_DQL_ParserTestCase());
 
 $test->addTestCase(new Doctrine_BatchIteratorTestCase());
-//$test->addTestCase(new Doctrine_Cache_FileTestCase());
-
-
+/**
+$test->addTestCase(new Doctrine_Cache_FileTestCase());
+$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
+*/
 
 
 
@@ -46,6 +51,7 @@ $test->addTestCase(new Doctrine_BatchIteratorTestCase());
 
 
 $test->run(new HtmlReporter());
+
 $dbh = Doctrine_Manager::getInstance()->getCurrentSession()->getDBH();
 $a   = $dbh->getQueries();
 
@@ -55,4 +61,5 @@ foreach($a as $query) {
     $e = explode(" ",$query);
     print $query."\n";
 }
+
 ?>

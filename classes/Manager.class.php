@@ -45,7 +45,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_FETCHMODE        => Doctrine::FETCH_LAZY,
                         Doctrine::ATTR_CACHE_TTL        => 100,
                         Doctrine::ATTR_CACHE_SIZE       => 100,
-                        Doctrine::ATTR_CACHE            => Doctrine::CACHE_FILE,
+                        Doctrine::ATTR_CACHE            => Doctrine::CACHE_NONE,
                         Doctrine::ATTR_BATCH_SIZE       => 5,
                         Doctrine::ATTR_LISTENER         => new EmptyEventListener(),
                         Doctrine::ATTR_PK_COLUMNS       => array("id"),

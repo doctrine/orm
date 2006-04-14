@@ -162,8 +162,8 @@ class Doctrine_Table extends Doctrine_Configurable {
                 endswitch;
 
                 if($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
-                    $dict      = new Doctrine_DataDict($this);
-                    $dict->createTable($this->columns);
+                    $dict      = new Doctrine_DataDict($this->getSession()->getDBH());
+                    $dict->createTable($this->tableName, $this->columns);
                 }
 
             }
@@ -192,8 +192,8 @@ class Doctrine_Table extends Doctrine_Configurable {
         $this->repository  = new Doctrine_Repository($this);
 
         switch($this->getAttribute(Doctrine::ATTR_CACHE)):
-            case Doctrine::CACHE_FILE:
-                $this->cache       = new Doctrine_Cache_File($this);
+            case Doctrine::CACHE_SQLITE:
+                $this->cache       = new Doctrine_Cache_Sqlite($this);
             break;
             case Doctrine::CACHE_NONE:
                 $this->cache       = new Doctrine_Cache($this);

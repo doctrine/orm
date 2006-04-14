@@ -61,13 +61,12 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
         foreach($tables as $name) {
             $table = $this->session->getTable($name);
-            $table->getCache()->deleteAll();
         }
 
 
         $this->objTable = $this->session->getTable("User");
         $this->repository = $this->objTable->getRepository();
-        $this->cache = $this->objTable->getCache();
+        //$this->cache = $this->objTable->getCache();
 
         $this->prepareData();
     }

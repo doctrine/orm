@@ -124,9 +124,9 @@ final class Doctrine {
      */
     
     /**
-     * file cache constant
+     * sqlite cache constant
      */
-    const CACHE_FILE            = 0;
+    const CACHE_SQLITE          = 0;
     /**
      * constant for disabling the caching
      */
@@ -217,7 +217,7 @@ final class Doctrine {
                     $a[]  = self::$path.DIRECTORY_SEPARATOR.$entry;
                 break;
                 default:
-                    if(is_file(self::$path.DIRECTORY_SEPARATOR.$entry)) {
+                    if(is_file(self::$path.DIRECTORY_SEPARATOR.$entry) && substr($entry,-4) == ".php") {
                         require_once($entry);
                     }
             endswitch;
@@ -226,7 +226,7 @@ final class Doctrine {
             $dir = dir($dirname);
             $path = $dirname.DIRECTORY_SEPARATOR;
             while (false !== ($entry = $dir->read())) {
-                if(is_file($path.$entry)) {
+                if(is_file($path.$entry) && substr($entry,-4) == ".php") {
                     require_once($path.$entry);
                 }
             }

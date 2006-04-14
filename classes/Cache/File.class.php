@@ -1,5 +1,5 @@
 <?php
-require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Cache.class.php");
+require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."iCache.class.php");
 /**
  * Doctrine_CacheFile
  * @author      Konsta Vesterinen
@@ -8,7 +8,7 @@ require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Cache.class.php");
  * @license     LGPL
  * @version     1.0 alpha
  */
-class Doctrine_Cache_File extends Doctrine_Cache implements Countable {
+class Doctrine_Cache_File implements Countable {
     const STATS_FILE = "stats.cache";
     /**
      * @var string $path            path for the cache files

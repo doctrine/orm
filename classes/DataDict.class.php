@@ -1,36 +1,35 @@
 <?php
 class Doctrine_DataDict {
-    private $table;
-    public function __construct(Doctrine_Table $table) {
-        $this->table = $table;
-        $manager = $this->table->getSession()->getManager();
-
+    private $dbh;
+    public function __construct(PDO $dbh) {
+        $manager = Doctrine_Manager::getInstance();
         require_once($manager->getRoot()."/adodb-hack/adodb.inc.php");
 
-        $dbh  = $this->table->getSession()->getDBH();
-        
+        $this->dbh  = $dbh;
         $this->dict = NewDataDictionary($dbh);
     }
 
-    public function metaColumns() {
-        return $this->dict->metaColumns($this->table->getTableName());
+    public function metaColumns(Doctrine_Table $table) {
+        return $this->dict->metaColumns($table->getTableName());
     }
 
-    public function createTable() {      
-        foreach($this->table->getColumns() as $name => $args) {
 
+    public function createTable($tablename, $columns) {
+        foreach($columns as $name => $args) {
             $r[] = $name." ".$this->getADOType($args[0],$args[1])." ".$args[2];
         }
-        $dbh  = $this->table->getSession()->getDBH();
+
 
         $r = implode(", ",$r);
-        $a = $this->dict->createTableSQL($this->table->getTableName(),$r);
+        $a = $this->dict->createTableSQL($tablename,$r);
 
         $return = true;
         foreach($a as $sql) {
             try {
-                $dbh->query($sql);
+                $this->dbh->query($sql);
             } catch(PDOException $e) {
+                if($this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME) == "sqlite")
+                    throw $e;
                 $return = false;
             }
         }
