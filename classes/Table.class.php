@@ -143,9 +143,11 @@ class Doctrine_Table extends Doctrine_Configurable {
             $record->setTableDefinition();
 
             if(isset($this->columns)) {
-                $method    = new ReflectionMethod($name,"setTableDefinition");
+                $method    = new ReflectionMethod($this->name,"setTableDefinition");
                 $class     = $method->getDeclaringClass();
                 
+                print $class->getName();
+
                 if( ! isset($this->tableName))
                     $this->tableName = strtolower($class->getName());
 
