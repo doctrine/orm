@@ -725,7 +725,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return boolean      true on success, false on failure
      */
-    final public function delete() {
+    public function delete() {
         $this->table->getSession()->delete($this);
     }
     /**

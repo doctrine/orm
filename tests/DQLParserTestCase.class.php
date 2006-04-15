@@ -88,6 +88,7 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
 
 
         // DYNAMIC FETCHMODES
+        $e = false;
         try {
             $users = $graph->query("FROM User-unknown");
         } catch(Exception $e) {

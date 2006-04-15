@@ -600,7 +600,7 @@ class Doctrine_DQL_Parser {
                 foreach($parts as $part) {
                     $ret[] = $this->parseWhere($part);
                 }
-                $r = implode(" || ",$ret);
+                $r = implode(" OR ",$ret);
             } else {
                 return $this->loadWhere($parts[0]);
             }
