@@ -148,7 +148,7 @@ class Doctrine_DQL_Parser {
         $q .= implode(", ",$a);
         $this->applyInheritance();
         if( ! empty($this->where))
-            $q .= " WHERE ".implode(" && ",$this->where);
+            $q .= " WHERE ".implode(" AND ",$this->where);
 
         if( ! empty($this->orderby))
             $q .= " ORDER BY ".implode(", ",$this->orderby);
@@ -177,12 +177,12 @@ class Doctrine_DQL_Parser {
         $q .= implode(", ",$a);
         $this->applyInheritance();
         if( ! empty($this->where))
-            $q .= " WHERE ".implode(" && ",$this->where);
+            $q .= " WHERE ".implode(" AND ",$this->where);
 
         if( ! empty($this->orderby))
             $q .= " ORDER BY ".implode(", ",$this->orderby);
 
-        if( ! empty($this->limit) && ! empty($this->offset))
+        if( ! empty($this->limit) AND ! empty($this->offset))
             $q = $this->session->modifyLimitQuery($q,$this->limit,$this->offset);
 
         return $q;
@@ -215,7 +215,7 @@ class Doctrine_DQL_Parser {
                 foreach($map as $field=>$value) {
                     $b[] = $tname.".$field = $value";
                 }
-                if( ! empty($b)) $a[] = implode(" && ",$b);
+                if( ! empty($b)) $a[] = implode(" AND ",$b);
             }
             if( ! empty($a)) $c[] = implode(" || ",$a);
         }
@@ -439,7 +439,7 @@ class Doctrine_DQL_Parser {
                 case "order":
                     $p = $part;
                     $i = $k+1;
-                    if(isset($e[$i]) && strtolower($e[$i]) == "by") {
+                    if(isset($e[$i]) AND strtolower($e[$i]) == "by") {
                         $parts[$part] = array();
                     }
                 break;
@@ -592,7 +592,7 @@ class Doctrine_DQL_Parser {
             foreach($parts as $part) {
                 $ret[] = $this->parseWhere($part);
             }
-            $r = implode(" && ",$ret);
+            $r = implode(" AND ",$ret);
         } else {
             $parts = self::bracketExplode($str," || ","(",")");
             if(count($parts) > 1) {
@@ -618,7 +618,7 @@ class Doctrine_DQL_Parser {
      * @param string $e2        the second bracket, usually ')'
      */
     public static function bracketTrim($str,$e1,$e2) {
-        if(substr($str,0,1) == $e1 && substr($str,-1) == $e2)
+        if(substr($str,0,1) == $e1 AND substr($str,-1) == $e2)
             return substr($str,1,-1);
         else
             return $str;
@@ -626,10 +626,10 @@ class Doctrine_DQL_Parser {
     /**
      * bracketExplode
      * usage:
-     * $str = (age < 20 && age > 18) && email LIKE 'John@example.com'
-     * now exploding $str with parameters $d = ' && ', $e1 = '(' and $e2 = ')'
+     * $str = (age < 20 AND age > 18) AND email LIKE 'John@example.com'
+     * now exploding $str with parameters $d = ' AND ', $e1 = '(' and $e2 = ')'
      * would return an array:
-     * array("(age < 20 && age > 18)", "email LIKE 'John@example.com'")
+     * array("(age < 20 AND age > 18)", "email LIKE 'John@example.com'")
      *
      * @param string $str
      * @param string $d         the delimeter which explodes the string
@@ -672,7 +672,7 @@ class Doctrine_DQL_Parser {
             $reference = implode(".",$a);
             $objTable   = $this->session->getTable(end($a));
             $where     = $objTable->getTableName().".".$field." ".$operator." ".$value;
-            if(count($a) > 1 && isset($a[1])) {
+            if(count($a) > 1 AND isset($a[1])) {
                 $root = $a[0];
                 $fk = $this->tnames[$root]->getForeignKey($a[1]);
                 if($fk instanceof Doctrine_Association) {

@@ -442,7 +442,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     final public function find($id = null) {
         if($id !== null) {
-            $query  = $this->query." WHERE ".implode(" = ? && ",$this->primaryKeys)." = ?";
+            $query  = $this->query." WHERE ".implode(" = ? AND ",$this->primaryKeys)." = ?";
             $query  = $this->applyInheritance($query);
             
             $params = array_merge(array($id), array_values($this->inheritanceMap));
@@ -465,8 +465,8 @@ class Doctrine_Table extends Doctrine_Configurable {
             foreach($this->inheritanceMap as $field => $value) {
                 $a[] = $field." = ?";
             }
-            $i = implode(" && ",$a);
-            $where .= " && $i";
+            $i = implode(" AND ",$a);
+            $where .= " AND $i";
         }
         return $where;
     }

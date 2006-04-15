@@ -72,7 +72,7 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
 
         $users = $graph->query("FROM User, User.Phonenumber-l WHERE User.Phonenumber.phonenumber LIKE '%123%'");
         $this->assertEqual(trim($graph->getQuery()),
-        "SELECT entity.id AS User__id, phonenumber.id AS Phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber LIKE '%123%') && (entity.type = 0)");
+        "SELECT entity.id AS User__id, phonenumber.id AS Phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber LIKE '%123%') AND (entity.type = 0)");
 
         $count = $this->session->getDBH()->count();
 
@@ -143,7 +143,7 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
 
         $users = $graph->query("FROM User, User.Email");
         $this->assertEqual(trim($graph->getQuery()),
-        "SELECT entity.id AS User__id, email.id AS Email__id FROM entity, email WHERE (entity.email_id = email.id) && (entity.type = 0)");
+        "SELECT entity.id AS User__id, email.id AS Email__id FROM entity, email WHERE (entity.email_id = email.id) AND (entity.type = 0)");
 
         $this->assertEqual($users->count(),8);
 
@@ -153,32 +153,32 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(),8);
 
         $users = $graph->query("FROM User WHERE User.name LIKE '%Jack%'");
-        $this->assertTrue($graph->getQuery() == "SELECT entity.id AS User__id FROM entity WHERE (entity.name LIKE '%Jack%') && (entity.type = 0)");
+        $this->assertTrue($graph->getQuery() == "SELECT entity.id AS User__id FROM entity WHERE (entity.name LIKE '%Jack%') AND (entity.type = 0)");
         $this->assertEqual($users->count(),0);
 
 
         $users = $graph->query("FROM User ORDER BY User.name ASC, User.Email.address");
         $this->assertEqual(trim($graph->getQuery()),
-        "SELECT entity.id AS User__id FROM entity, email WHERE (entity.email_id = email.id) && (entity.type = 0) ORDER BY entity.name ASC, email.address");
+        "SELECT entity.id AS User__id FROM entity, email WHERE (entity.email_id = email.id) AND (entity.type = 0) ORDER BY entity.name ASC, email.address");
         $this->assertEqual($users->count(),8);
         $this->assertTrue($users[0]->name == "Arnold Schwarzenegger");
 
         $users = $graph->query("FROM User WHERE User.Phonenumber.phonenumber REGEXP '[123]'");
         $this->assertEqual(trim($graph->getQuery()),
-        "SELECT entity.id AS User__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber REGEXP '[123]') && (entity.type = 0)");
+        "SELECT entity.id AS User__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber REGEXP '[123]') AND (entity.type = 0)");
         $this->assertEqual($users->count(),8);
 
 
         $users = $graph->query("FROM User WHERE User.Group.name = 'Action Actors'");
         $this->assertEqual(trim($graph->getQuery()),
-        "SELECT entity.id AS User__id FROM entity WHERE (entity.id IN (SELECT user_id FROM groupuser WHERE group_id IN (SELECT entity.id AS Group__id FROM entity WHERE (entity.name = 'Action Actors') && (entity.type = 1)))) && (entity.type = 0)");
+        "SELECT entity.id AS User__id FROM entity WHERE (entity.id IN (SELECT user_id FROM groupuser WHERE group_id IN (SELECT entity.id AS Group__id FROM entity WHERE (entity.name = 'Action Actors') AND (entity.type = 1)))) AND (entity.type = 0)");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
 
 
         $users = $graph->query("FROM User WHERE User.Group.Phonenumber.phonenumber LIKE '123 123'");
         $this->assertEqual(trim($graph->getQuery()),
-        "SELECT entity.id AS User__id FROM entity WHERE (entity.id IN (SELECT user_id FROM groupuser WHERE group_id IN (SELECT entity.id AS Group__id FROM entity, phonenumber WHERE (phonenumber.phonenumber LIKE '123 123') && (entity.type = 1)))) && (entity.type = 0)");
+        "SELECT entity.id AS User__id FROM entity WHERE (entity.id IN (SELECT user_id FROM groupuser WHERE group_id IN (SELECT entity.id AS Group__id FROM entity, phonenumber WHERE (phonenumber.phonenumber LIKE '123 123') AND (entity.type = 1)))) AND (entity.type = 0)");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
 
