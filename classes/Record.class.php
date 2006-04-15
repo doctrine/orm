@@ -732,7 +732,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * returns a copy of this object
      * @return DAO
      */
-    final public function copy() {
+    public function copy() {
         return $this->table->create($this->data);
     }
     /**

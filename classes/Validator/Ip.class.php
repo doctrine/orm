@@ -1,5 +1,5 @@
 <?php
-class Doctrine_Validator_IP {
+class Doctrine_Validator_Ip {
     /**
      * @param Doctrine_Record $record
      * @param string $key

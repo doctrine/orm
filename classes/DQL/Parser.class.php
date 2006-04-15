@@ -129,6 +129,18 @@ class Doctrine_DQL_Parser {
         }
     }
     /**
+     * @return integer
+     */
+    final public function getLimit() {
+        return $this->limit;
+    }
+    /**
+     * @return integer
+     */
+    final public function getOffset() {
+        return $this->offset;
+    }
+    /**
      * @return string               the built sql query
      */
     final public function getQuery() {
@@ -152,6 +164,9 @@ class Doctrine_DQL_Parser {
 
         if( ! empty($this->orderby))
             $q .= " ORDER BY ".implode(", ",$this->orderby);
+
+        if( ! empty($this->limit) || ! empty($this->offset))
+            $q = $this->session->modifyLimitQuery($q,$this->limit,$this->offset);
 
         return $q;
     }
@@ -182,7 +197,7 @@ class Doctrine_DQL_Parser {
         if( ! empty($this->orderby))
             $q .= " ORDER BY ".implode(", ",$this->orderby);
 
-        if( ! empty($this->limit) AND ! empty($this->offset))
+        if( ! empty($this->limit) && ! empty($this->offset))
             $q = $this->session->modifyLimitQuery($q,$this->limit,$this->offset);
 
         return $q;

@@ -1,10 +1,25 @@
 <?php
 require_once("UnitTestCase.class.php");
 class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
+
+    public function testLimit() {
+        $graph = new Doctrine_DQL_Parser($this->session);
+        $coll  = $graph->query("FROM User LIMIT 3");
+        $this->assertEqual($graph->getLimit(), 3);
+        $this->assertEqual($coll->count(), 3);
+    }
+    public function testOffset() {
+        $graph = new Doctrine_DQL_Parser($this->session);
+        $coll  = $graph->query("FROM User LIMIT 3 OFFSET 3");
+        $this->assertEqual($graph->getOffset(), 3);
+        $this->assertEqual($coll->count(), 3);
+    }
+
     public function testPrepared() {
         $coll = $this->session->query("FROM User WHERE User.name = :name", array(":name" => "zYne"));
         $this->assertEqual($coll->count(), 1);
     }
+
     public function testQuery() {
         $graph = new Doctrine_DQL_Parser($this->session);
 
@@ -191,5 +206,6 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(isset($values['users']));
         $this->assertTrue(isset($values['max']));
     }
+
 }
 ?>
