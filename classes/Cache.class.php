@@ -39,6 +39,14 @@ class Doctrine_Cache implements iDoctrine_Cache {
     }
     /**
      * implemented by child classes
+     * @param array $keys
+     * @return boolean
+     */
+    public function fetchMultiple($keys) {
+        return false;                                     	
+    }
+    /**
+     * implemented by child classes
      * @param integer $id
      * @return boolean
      */
@@ -48,7 +56,7 @@ class Doctrine_Cache implements iDoctrine_Cache {
     /**
      * implemented by child classes
      */
-    public function deleteMultiple() {
+    public function deleteMultiple($keys) {
         return 0;
     }
     /**

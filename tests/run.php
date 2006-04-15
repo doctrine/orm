@@ -36,13 +36,14 @@ $test->addTestCase(new Doctrine_AccessTestCase());
 $test->addTestCase(new Doctrine_ConfigurableTestCase());
 
 $test->addTestCase(new Doctrine_EventListenerTestCase());
+
 $test->addTestCase(new Doctrine_DQL_ParserTestCase());
 
 $test->addTestCase(new Doctrine_BatchIteratorTestCase());
-/**
-$test->addTestCase(new Doctrine_Cache_FileTestCase());
-$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
-*/
+
+//$test->addTestCase(new Doctrine_Cache_FileTestCase());
+//$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
+
 
 
 
@@ -51,6 +52,16 @@ $test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
 
 $test->run(new HtmlReporter());
+$cache = Doctrine_Manager::getInstance()->getCurrentSession()->getCacheHandler();
+if(isset($cache)) {
+    $a     = $cache->getQueries();
+    print "Executed cache queries: ".count($a)."\n";
+    /**
+    foreach($a as $query) {
+        print $query."\n";
+    }
+    */
+}
 
 $dbh = Doctrine_Manager::getInstance()->getCurrentSession()->getDBH();
 $a   = $dbh->getQueries();
@@ -58,7 +69,6 @@ $a   = $dbh->getQueries();
 print "Executed queries: ".count($a)."\n";
 
 foreach($a as $query) {
-    $e = explode(" ",$query);
     print $query."\n";
 }
 

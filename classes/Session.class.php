@@ -60,6 +60,10 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     private $transaction_level = 0;
     
     private $validator;
+    /**
+     * @var PDO $cacheHandler
+     */
+    private $cacheHandler;
 
 
 
@@ -75,9 +79,24 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $this->state = Doctrine_Session::STATE_OPEN;
 
         $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-        $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);   
+
+        switch($this->getAttribute(Doctrine::ATTR_CACHE)):
+            case Doctrine::CACHE_SQLITE:
+                $dir = $this->getAttribute(Doctrine::ATTR_CACHE_DIR).DIRECTORY_SEPARATOR;
+                $dsn = "sqlite:".$dir."data.cache";
+
+                $this->cacheHandler = Doctrine_DB::getConn($dsn);
+                $this->cacheHandler->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $this->cacheHandler->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+            break;
+        endswitch;
 
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
+    }
+
+    public function getCacheHandler() {
+        return $this->cacheHandler;
     }
     /**
      * @return integer          the session state
@@ -398,7 +417,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      */
     public function bulkInsert() {
         foreach($this->insert as $name => $inserts) {
-            if( ! isset($inserts[0])) 
+            if( ! isset($inserts[0]))
                 continue;
 
             $record    = $inserts[0];
@@ -435,8 +454,6 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
 
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
-
-                $record->getTable()->getCache()->store($record);
             }
         }
         $this->insert = array(array());
@@ -448,6 +465,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      */
     public function bulkUpdate() {
         foreach($this->update as $name => $updates) {
+            $ids = array();
+
             foreach($updates as $k => $record) {
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
                 // listen the onPreUpdate event
@@ -456,9 +475,13 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 $this->update($record);
                 // listen the onUpdate event
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onUpdate($record);
-                    
+
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
+
+                $ids[] = $record->getID();
             }
+            if(isset($record))
+                $record->getTable()->getCache()->deleteMultiple($ids);
         }
         $this->update = array(array());
     }
@@ -611,7 +634,6 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
 
         $record->setID($record->getID());
 
-        $record->getTable()->getCache()->delete($record->getID());
         return true;
     }
     /**

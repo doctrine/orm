@@ -442,14 +442,6 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     final public function find($id = null) {
         if($id !== null) {
-            try {
-                // try to get from cache
-                $record = $this->cache->fetch($id);
-                return $record;
-            } catch(InvalidKeyException $e) {
-                // do nothing
-            }
-
             $query  = $this->query." WHERE ".implode(" = ? && ",$this->primaryKeys)." = ?";
             $query  = $this->applyInheritance($query);
             
@@ -510,14 +502,6 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     final public function getProxy($id = null) {
         if($id !== null) {
-            $id = (int) $id;
-            try {
-                // try to get from cache
-                $record = $this->cache->fetch($id);
-                return $record;
-            } catch(InvalidKeyException $e) {
-                // do nothing
-            }
             $query = "SELECT ".implode(", ",$this->primaryKeys)." FROM ".$this->getTableName()." WHERE ".implode(" = ? && ",$this->primaryKeys)." = ?";
             $query = $this->applyInheritance($query);
             
@@ -558,11 +542,7 @@ class Doctrine_Table extends Doctrine_Configurable {
 
         foreach($data as $row) {
             $this->data = $row;
-            try {
-                $record = $this->getCache()->fetch($this->data["id"]);
-            } catch(InvalidKeyException $e) {
-                $record = $this->getRecord();
-            }
+            $record = $this->getRecord();
             $coll->add($record);
         }
         return $coll;

@@ -12,7 +12,7 @@ class Doctrine_Cache_SqliteTestCase extends Doctrine_UnitTestCase {
         $this->cache = new Doctrine_Cache_Sqlite($this->objTable);
         $this->cache->deleteAll();
     }
-    /**
+
     public function testStore() {
         // does not store proxy objects
         $this->assertFalse($this->cache->store($this->objTable->getProxy(4)));
@@ -104,8 +104,6 @@ class Doctrine_Cache_SqliteTestCase extends Doctrine_UnitTestCase {
         $this->manager->setAttribute(Doctrine::ATTR_CACHE_SIZE, 3);
         $this->assertEqual($this->cache->clean(), 3);
 
-
     }
-    */
 }
 ?>

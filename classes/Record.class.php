@@ -173,8 +173,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             unset($this->data['id']);
 
             $this->table->setData(array());
-    
-            $this->table->getCache()->store($this);
         }
     }
     /** 
@@ -331,7 +329,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->loaded   = true;
         $this->state    = Doctrine_Record::STATE_CLEAN;
 
-        $this->getTable()->getCache()->store($this);
         return true;
     }
     /**
@@ -345,7 +342,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if($this->id != $data["id"])
             throw new Doctrine_Refresh_Exception();
 
-        $this->data     = $data;   
+        $this->data     = $data;
 
         $this->cleanData();
 
@@ -353,8 +350,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->state    = Doctrine_Record::STATE_CLEAN;
         $this->modified = array();
         $this->loaded   = true;
-
-        $this->getTable()->getCache()->store($this);
     }
     /**
      * return the factory that created this data access object

@@ -61,6 +61,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
         foreach($tables as $name) {
             $table = $this->session->getTable($name);
+            $table->getCache()->deleteAll();
         }
 
 
@@ -127,6 +128,9 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
         $this->users = $users;
         $this->session->flush();
+    }
+    public function getSession() {
+        return $this->session;
     }
     public function clearCache() {
         foreach($this->tables as $name) {

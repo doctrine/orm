@@ -83,18 +83,8 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
                 elseif(is_array($this->data[$i]))
                     $id = $this->data[$i]["id"];
 
-                $load = false;
 
-                // check the cache
-                // no need of fetching the same data twice
-                try {
-                    $record = $this->table->getCache()->fetch($id);
-                } catch(InvalidKeyException $ex) {
-                    $load = true;
-                }
-
-                if($load)
-                    $a[] = $id;
+                $a[$i] = $id;
             endfor;
 
             $c = count($a);
@@ -104,20 +94,21 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
             $query .= substr(str_repeat("?, ",count($a)),0,-2);
             $query .= ($c > 1)?")":"";
 
-            $stmt  = $this->table->getSession()->execute($query,$a);
-            
+            $stmt  = $this->table->getSession()->execute($query,array_values($a));
 
-            while($row = $stmt->fetch(PDO::FETCH_ASSOC)):
+            foreach($a as $k => $id) {
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if($row === false) 
+                    break;
 
                 $this->table->setData($row);
-                if(is_object($this->data[$e])) {
-                    $this->data[$e]->factoryRefresh($this->table);
+                if(is_object($this->data[$k])) {
+                    $this->data[$k]->factoryRefresh($this->table);
                 } else {
-                    $this->data[$e] = $this->table->getRecord();
+                    $this->data[$k] = $this->table->getRecord();
                 }
 
-                $e++;
-            endwhile;
+            }
 
             $this->loaded[$x] = true;
             return true;
@@ -134,20 +125,9 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
         if(isset($this->data[$key])) {
             switch(gettype($this->data[$key])):
                 case "array":
-                    try {
-
-                        // try to fetch the Doctrine_Record from cache
-                        if( ! isset($this->data[$key]["id"]))
-                            throw new InvalidKeyException();
-                            
-                        $this->data[$key] = $this->table->getCache()->fetch($this->data[$key]["id"]);
-
-                    } catch(InvalidKeyException $e) {
-
-                        // Doctrine_Record didn't exist in cache
-                        $this->table->setData($this->data[$key]);
-                        $this->data[$key] = $this->table->getProxy();
-                    }
+                    // Doctrine_Record didn't exist in cache
+                    $this->table->setData($this->data[$key]);
+                    $this->data[$key] = $this->table->getProxy();
 
                     $this->data[$key]->addCollection($this);
                 break;

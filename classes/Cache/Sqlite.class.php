@@ -16,7 +16,7 @@ class Doctrine_Cache_Sqlite {
      * INSERT constant
      * used as a base for SQL INSERT queries
      */
-    const INSERT     = "INSERT INTO %s (id, object) VALUES (?, ?)";
+    const INSERT     = "REPLACE INTO %s (id, object) VALUES (?, ?)";
     /**
      * DELETE constant
      * used as a base for SQL DELETE queries
@@ -43,14 +43,11 @@ class Doctrine_Cache_Sqlite {
         if( ! is_dir($dir))
             mkdir($dir, 0777);
 
-        $this->path = $dir.DIRECTORY_SEPARATOR;
-
-        $this->dbh  = new PDO("sqlite:".$this->path."data.cache");
-        $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $this->path = $dir.DIRECTORY_SEPARATOR; 
+        $this->dbh  = $this->table->getSession()->getCacheHandler();
         
         try {
-            $this->dbh->query("CREATE TABLE ".$this->table->getTableName()." (id INTEGER, object TEXT)");
+            $this->dbh->query("CREATE TABLE ".$this->table->getTableName()." (id INTEGER UNIQUE, object TEXT)");
         } catch(PDOException $e) {
 
         }
@@ -76,11 +73,12 @@ class Doctrine_Cache_Sqlite {
         $stmt  = $this->dbh->query(sprintf(self::INSERT,$this->table->getTableName()));
         $stmt->execute(array($id, serialize($clone)));
         
+
         return true;
     }
     /**
      * fetches a Doctrine_Record from the cache
-     * @param integer $id
+     * @param mixed $id
      * @return mixed        false on failure, Doctrine_Record on success
      */
     public function fetch($id) {
@@ -88,7 +86,7 @@ class Doctrine_Cache_Sqlite {
         $stmt->execute(array($id));
         $data = $stmt->fetch(PDO::FETCH_NUM);
 
-        if($data === false) 
+        if($data === false)
             throw new InvalidKeyException();
             
         $this->fetched[] = $id;
@@ -109,8 +107,10 @@ class Doctrine_Cache_Sqlite {
      */
     public function fetchMultiple(array $keys) {
         $count = (count($keys)-1);
+        $keys  = array_values($keys);
         $sql   = sprintf(self::SELECT,$this->table->getTableName(),"IN (".str_repeat("?, ",$count)."?)");
         $stmt  = $this->dbh->query($sql);
+
         $stmt->execute($keys);
 
         while($data = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -133,6 +133,7 @@ class Doctrine_Cache_Sqlite {
         return $stmt->rowCount();
     }
     /**
+     * @param mixed $id
      * @return void
      */
     public function delete($id) {
@@ -163,6 +164,7 @@ class Doctrine_Cache_Sqlite {
         if(empty($keys))
             return 0;
 
+        $keys  = array_values($keys);
         $count = (count($keys)-1);
         $sql   = sprintf(self::DELETE,$this->table->getTableName(),"IN (".str_repeat("?, ",$count)."?)");
         $stmt  = $this->dbh->query($sql);
@@ -245,7 +247,12 @@ class Doctrine_Cache_Sqlite {
         }
         return false;
     }
-
+    /**
+     * @param mixed $id
+     */
+    public function addDelete($id) {
+        $this->delete[] = $id;
+    }
     /**
      * destructor
      * the purpose of this destructor is to save all the fetched

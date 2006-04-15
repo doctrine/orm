@@ -161,26 +161,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($p->getObject() instanceof Doctrine_Session);
         $this->assertTrue($p->getCode() == Doctrine_Debugger::EVENT_COMMIT);
 
-        if($this->manager->getAttribute(Doctrine::ATTR_CACHE) !== Doctrine::CACHE_NONE) {
-            $p = array_pop($debug);
-    
-            $this->assertTrue($p->getObject() instanceof Doctrine_Record);
-            $this->assertTrue($p->getCode() == Doctrine_Debugger::EVENT_SLEEP);
-        }
-
-        $p = array_pop($debug);
-        $this->assertTrue($p->getObject() instanceof Doctrine_Record);
-        $this->assertTrue($p->getCode() == Doctrine_Debugger::EVENT_SAVE);
-
-        $p = array_pop($debug);
-        $this->assertTrue($p->getObject() instanceof Doctrine_Record);
-        $this->assertTrue($p->getCode() == Doctrine_Debugger::EVENT_INSERT);
-
-
-        $p = array_pop($debug);
-        $this->assertTrue($p->getObject() instanceof Doctrine_Record);
-        $this->assertTrue($p->getCode() == Doctrine_Debugger::EVENT_PREINSERT);
-
         $this->new->delete();
         $this->assertTrue($this->new->getState() == Doctrine_Record::STATE_TCLEAN);
     }
