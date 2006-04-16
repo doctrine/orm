@@ -10,6 +10,12 @@ class Doctrine_BatchIteratorTestCase extends Doctrine_UnitTestCase {
             $i++;
         }
         $this->assertTrue($i == $entities->count());
+        
+        $user = $graph->query("FROM User");
+        foreach($user[1]->Group as $group) {
+            print $group->name;
+        }                                   	
     }
+
 }
 ?>

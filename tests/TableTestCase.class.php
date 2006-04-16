@@ -59,12 +59,12 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
     public function testFindAll() {
         $users = $this->objTable->findAll();
         $this->assertEqual($users->count(), 8);
-        $this->assertTrue($users instanceof Doctrine_Collection_Batch);
+        $this->assertTrue($users instanceof Doctrine_Collection);
     }
     public function testFindBySql() {
         $users = $this->objTable->findBySql("name LIKE '%Arnold%'");
         $this->assertEqual($users->count(), 1);
-        $this->assertTrue($users instanceof Doctrine_Collection_Batch);
+        $this->assertTrue($users instanceof Doctrine_Collection);
     }
     public function testGetProxy() {
         $user = $this->objTable->getProxy(4);

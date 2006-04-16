@@ -158,6 +158,12 @@ class Sensei extends Doctrine_Access {
     public function close() {
         return true;
     }
+    /**
+     * always returns an empty string
+     *
+     * @param string $id        php session identifier
+     * @return string
+     */
     private function read($id) {
         $coll = $this->session->query("FROM Sensei_Session, Sensei_Session.Sensei_Variable WHERE Sensei_Session.session_id = ?",array($id));
         $this->record = $coll[0];
@@ -169,22 +175,39 @@ class Sensei extends Doctrine_Access {
         if($this->record->getState() == Doctrine_Record::STATE_TDIRTY) {
             $this->record->created = time();
             $this->record->save();
-        } 
+        }
         return "";
     }
+    /**
+     * @return boolean
+     */
     public function write($id,$sess_data) {
         return true;
     }
+    /**
+     * @param string $id            php session identifier
+     * @return Doctrine_Record
+     */
     private function destroy($id) {
         $this->record->delete();
-        return $r;
+        return $this->record;
     }
+    /**
+     * @param integer $maxlifetime
+     */
     private function gc($maxlifetime) {
         return true;
     }
+    /**
+     * flush
+     * makes all changes persistent
+     */
     public function flush() {
         $this->record->save();
     }
+    /**
+     * destructor
+     */
     public function __destruct() {
         $this->flush();
     }

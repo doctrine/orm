@@ -483,7 +483,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case Doctrine_Table::MANY_AGGREGATE:
                         // one-to-many relation found
                         if( ! ($value instanceof Doctrine_Collection))
-                            throw new InvalidTypeException("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
+                            throw new Doctrine_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
 
                         $value->setReference($this,$fk);
                     break;
@@ -491,7 +491,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case Doctrine_Table::ONE_AGGREGATE:
                         // one-to-one relation found
                         if( ! ($value instanceof Doctrine_Record))
-                            throw new InvalidTypeException("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record when setting one-to-one references.");
+                            throw new Doctrine_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record when setting one-to-one references.");
 
                         if($fk->getLocal() == "id") {
                             $this->references[$name]->set($fk->getForeign(),$this);
@@ -504,7 +504,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             } elseif($fk instanceof Doctrine_Association) {
                 // many-to-many relation found
                 if( ! ($value instanceof Doctrine_Collection))
-                    throw new InvalidTypeException("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
+                    throw new Doctrine_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
             }
 
             $this->references[$name] = $value;

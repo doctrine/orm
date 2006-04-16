@@ -382,13 +382,26 @@ class Doctrine_Table extends Doctrine_Configurable {
                 default:
                     if(in_array($e[0], $this->parents)) {
                         // ONE-TO-ONE
+
                         if($type <= Doctrine_Table::ONE_COMPOSITE)
                             $foreignKey = new Doctrine_LocalKey($objTable,$e[1],$this->bound[$name][2],$type);
                         else
                             throw new Doctrine_Mapping_Exception();
                     } else {
                         // POSSIBLY MANY-TO-MANY
-                        $bound = $objTable->getBound($this->name);
+
+                        $classes = array_merge($this->parents, array($this->name));
+
+                        foreach($classes as $class) {
+                            try {
+                                $bound = $objTable->getBound($class);
+                                break;
+                            } catch(InvalidKeyException $exc) {
+
+                            }
+                        }
+
+
                         $e2    = explode(".",$bound[0]);
 
                         if($e2[0] != $e[0])
