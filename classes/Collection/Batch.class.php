@@ -102,11 +102,13 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
             $query .= ($c > 1)?"id IN (":"id = ";
             $query .= substr(str_repeat("?, ",count($a)),0,-2);
             $query .= ($c > 1)?")":"";
+            $query .= " ORDER BY id ASC";
 
             $stmt  = $this->table->getSession()->execute($query,array_values($a));
 
-            foreach($a as $k => $id) {
+             foreach($a as $k => $id) {
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
                 if($row === false) 
                     break;
 

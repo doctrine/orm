@@ -3,8 +3,6 @@ class Entity extends Doctrine_Record {
     public function setUp() {
         $this->ownsOne("Email","Entity.email_id");
         $this->ownsMany("Phonenumber","Phonenumber.entity_id");
-        $this->hasMany("Address","Entityaddress.address_id");
-
         $this->setAttribute(Doctrine::ATTR_FETCHMODE,Doctrine::FETCH_BATCH);
     }               
     public function setTableDefinition() {
@@ -25,7 +23,7 @@ class EntityAddress extends Doctrine_Record {
 }
 class Address extends Doctrine_Record {
     public function setUp() {
-        $this->hasMany("Entity","Entityaddress.entity_id");                        	
+        $this->hasMany("User","Entityaddress.entity_id");
     }
     public function setTableDefinition() {
         $this->hasColumn("address","string",200);
@@ -63,6 +61,7 @@ class UserTable extends Doctrine_Table { }
 class User extends Entity {
     public function setUp() {
         parent::setUp();
+        $this->hasMany("Address","Entityaddress.address_id");
         $this->ownsMany("Album","Album.user_id");
         $this->hasMany("Group","Groupuser.group_id");
         $this->setInheritanceMap(array("type"=>0));
