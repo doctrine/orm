@@ -1,5 +1,5 @@
 <?php
-
+ob_start();
 require_once("ConfigurableTestCase.class.php");
 require_once("ManagerTestCase.class.php");
 require_once("SessionTestCase.class.php");
@@ -13,6 +13,7 @@ require_once("AccessTestCase.class.php");
 require_once("ValidatorTestCase.class.php");
 
 require_once("CacheSqliteTestCase.class.php");
+require_once("SenseiTestCase.class.php");
 
 
 print "<pre>";
@@ -23,7 +24,7 @@ $test = new GroupTest("Doctrine Framework Unit Tests");
 
 
 
-
+/**
 $test->addTestCase(new Doctrine_RecordTestCase());
 
 $test->addTestCase(new Doctrine_SessionTestCase());
@@ -40,6 +41,8 @@ $test->addTestCase(new Doctrine_EventListenerTestCase());
 $test->addTestCase(new Doctrine_DQL_ParserTestCase());
 
 $test->addTestCase(new Doctrine_BatchIteratorTestCase());
+*/
+$test->addTestCase(new Sensei_UnitTestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
@@ -71,5 +74,5 @@ print "Executed queries: ".count($a)."\n";
 foreach($a as $query) {
     print $query."\n";
 }
-
+ob_end_flush();
 ?>

@@ -50,6 +50,8 @@ class Doctrine_DataDict {
                     return "C($length)";
                 elseif($length < 4000) 
                     return "X";
+                else
+                    return "X2";
             break;
             case "mbstring":
                 if($length < 255) 

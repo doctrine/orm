@@ -1,5 +1,5 @@
 <?php
-class Doctrine_Validator_Blank {
+class Doctrine_Validator_Notblank {
     /**
      * @param Doctrine_Record $record
      * @param string $key

@@ -214,6 +214,7 @@ final class Doctrine {
                 case "Exception":
                 case "Session":
                 case "DQL":
+                case "Sensei":
                     $a[]  = self::$path.DIRECTORY_SEPARATOR.$entry;
                 break;
                 default:

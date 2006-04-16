@@ -169,13 +169,15 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
 
         if(isset($this->tables[$name]))
             return $this->tables[$name];
-            
+
         $class = $name."Table";
 
-        if(class_exists($class, false) && in_array("Doctrine_Table", class_parents($class)))
+        if(class_exists($class, false) && in_array("Doctrine_Table", class_parents($class))) {
             return new $class($name);
-        else
+        } else {
+
             return new Doctrine_Table($name);
+        }
     }
     /**
      * @return array -- an array of all initialized tables

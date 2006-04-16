@@ -385,19 +385,17 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     if($this->state != Doctrine_Record::STATE_TDIRTY &&
                        $this->state != Doctrine_Record::STATE_TCLEAN &&
                        $this->state != Doctrine_Record::STATE_CLEAN) {
-    
-                        $this->loaded = true;
-    
+
                         if( ! empty($this->collections)) {
                             foreach($this->collections as $collection) {
                                 $collection->load($this);
                             }
                         } else {
-    
                             $this->refresh();
                         }
                         $this->state = Doctrine_Record::STATE_CLEAN;
                     }
+                    $this->loaded = true;
                 }
                 
                 if(is_array($this->data[$name]))
@@ -457,6 +455,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->data[$name] = $value;
 
                 $this->modified[]  = $name;
+
 
                 switch($this->state):
                     case Doctrine_Record::STATE_CLEAN:

@@ -30,13 +30,10 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     protected $users;
     protected $tables;
 
-    private static $instances;
     private $init = false;
 
     public function init() {
         $name = get_class($this);
-        if( ! isset($instances[$name]))
-            $instances[$name] = $this;
 
         $this->manager   = Doctrine_Manager::getInstance();
         $this->manager->setAttribute(Doctrine::ATTR_CACHE, Doctrine::CACHE_NONE);
@@ -61,6 +58,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
         foreach($tables as $name) {
             $table = $this->session->getTable($name);
+
             $table->getCache()->deleteAll();
         }
 
