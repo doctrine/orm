@@ -26,7 +26,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     protected $reference_field;
     /**
-     * @var Doctrine_Relation
+     * @var Doctrine_Relation               the record this collection is related to, if any
      */
     protected $relation;
     /**

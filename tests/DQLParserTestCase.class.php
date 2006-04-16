@@ -3,6 +3,8 @@ require_once("UnitTestCase.class.php");
 class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
 
     public function testLimit() {
+
+
         $graph = new Doctrine_DQL_Parser($this->session);
         $coll  = $graph->query("FROM User LIMIT 3");
         $this->assertEqual($graph->getLimit(), 3);
@@ -141,7 +143,7 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
 
         //$this->clearCache();
 
-        $users = $graph->query("FROM User-b, User.Phonenumber");
+        $users = $graph->query("FROM User-b, User.Phonenumber-b");
         $this->assertEqual(trim($graph->getQuery()),
         "SELECT entity.id AS User__id, phonenumber.id AS Phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0)");
 
@@ -157,13 +159,13 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
 
 
 
-        $users = $graph->query("FROM User-b, User.Email");
+        $users = $graph->query("FROM User-b, User.Email-b");
         $this->assertEqual(trim($graph->getQuery()),
         "SELECT entity.id AS User__id, email.id AS Email__id FROM entity, email WHERE (entity.email_id = email.id) AND (entity.type = 0)");
 
         $this->assertEqual($users->count(),8);
 
-        $users = $graph->query("FROM Email WHERE Email.address LIKE '%@example%'");
+        $users = $graph->query("FROM Email-b WHERE Email.address LIKE '%@example%'");
         $this->assertEqual($graph->getQuery(),
         "SELECT email.id AS Email__id FROM email WHERE (email.address LIKE '%@example%')");
         $this->assertEqual($users->count(),8);
@@ -183,7 +185,6 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(trim($graph->getQuery()),
         "SELECT entity.id AS User__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber REGEXP '[123]') AND (entity.type = 0)");
         $this->assertEqual($users->count(),8);
-
 
         $users = $graph->query("FROM User-b WHERE User.Group.name = 'Action Actors'");
         $this->assertEqual(trim($graph->getQuery()),

@@ -47,6 +47,7 @@ $test->addTestCase(new Doctrine_DQL_ParserTestCase());
 
 $test->addTestCase(new Doctrine_CollectionTestCase());
 $test->addTestCase(new Doctrine_ConfigurableTestCase());
+
 $test->addTestCase(new Sensei_UnitTestCase());
 
 

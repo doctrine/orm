@@ -714,7 +714,7 @@ class Doctrine_DQL_Parser {
                             $b = array_shift($a);
                             $b = array_shift($a);
                             $graph = new Doctrine_DQL_Parser($this->session);
-                            $graph->parseQuery("FROM $b WHERE $where");
+                            $graph->parseQuery("FROM $b-l WHERE $where");
                             $where = $this->tnames[$root]->getTableName().".id IN (SELECT ".$fk->getLocal()." FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." IN (".$graph->getQuery()."))";
                         break;
                     endswitch;

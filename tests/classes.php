@@ -3,7 +3,7 @@ class Entity extends Doctrine_Record {
     public function setUp() {
         $this->ownsOne("Email","Entity.email_id");
         $this->ownsMany("Phonenumber","Phonenumber.entity_id");
-        $this->setAttribute(Doctrine::ATTR_FETCHMODE,Doctrine::FETCH_BATCH);
+
     }               
     public function setTableDefinition() {
         $this->hasColumn("name","string",50);
