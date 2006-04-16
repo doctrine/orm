@@ -54,6 +54,29 @@ class Doctrine_ConfigurableTestCase extends Doctrine_UnitTestCase {
             $this->assertTrue($e instanceof Exception);
             $this->session->commit();
         }
+
+        $e = false;
+        try {
+            $this->manager->setAttribute(Doctrine::ATTR_COLL_KEY, "name");
+        } catch(Exception $e) {
+        }
+        $this->assertTrue($e instanceof Exception);
+
+        $e = false;
+        try {
+            $this->objTable->setAttribute(Doctrine::ATTR_COLL_KEY, "unknown");
+        } catch(Exception $e) {
+        }
+        $this->assertTrue($e instanceof Exception);
+
+        $e = true;
+        try {
+            $this->objTable->setAttribute(Doctrine::ATTR_COLL_KEY, "name");
+        } catch(Exception $e) {
+        }
+        $this->assertTrue($e);
+
+        $e = false;
         try {
             $this->session->beginTransaction();
             $this->session->setAttribute(Doctrine::ATTR_LOCKMODE, Doctrine::LOCK_PESSIMISTIC);

@@ -87,15 +87,24 @@ abstract class Doctrine_Configurable {
             case Doctrine::ATTR_CREATE_TABLES:
                 $value = (bool) $value;
             break;
+            case Doctrine::ATTR_COLL_KEY:
+                if( ! ($this instanceof Doctrine_Table)) 
+                    throw new Doctrine_Exception("This attribute can only be set at table level.");
+
+                if( ! $this->hasColumn($value)) 
+                    throw new Doctrine_Exception("Couldn't set collection key attribute. No such column '$value'");
+                    
+
+            break;
             case Doctrine::ATTR_VLD:
             
             break;
             case Doctrine::ATTR_CACHE:
                 if($value != Doctrine::CACHE_SQLITE && $value != Doctrine::CACHE_NONE)
-                    throw new  Doctrine_Exception("Unknown cache container. See Doctrine::CACHE_* constants for availible containers.");
+                    throw new Doctrine_Exception("Unknown cache container. See Doctrine::CACHE_* constants for availible containers.");
             break;
             default:
-                throw new Exception("Unknown attribute.");
+                throw new Doctrine_Exception("Unknown attribute.");
         endswitch;
 
         $this->attributes[$attribute] = $value;
@@ -115,7 +124,7 @@ abstract class Doctrine_Configurable {
     final public function getAttribute($attribute) {
         $attribute = (int) $attribute;
 
-        if($attribute < 1 || $attribute > 14)
+        if($attribute < 1 || $attribute > 15)
             throw new InvalidKeyException();
 
         if( ! isset($this->attributes[$attribute])) {

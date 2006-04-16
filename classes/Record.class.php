@@ -957,7 +957,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function hasColumn($name, $type, $length = 20, $options = "") {
-        $this->table->hasColumn($name, $type, $length, $options);
+        $this->table->setColumn($name, $type, $length, $options);
     }
     /**
      * returns a string representation of this object

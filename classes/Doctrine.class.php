@@ -116,6 +116,10 @@ final class Doctrine {
      * create tables attribute
      */
     const ATTR_CREATE_TABLES    = 14;
+    /**
+     * collection key attribute
+     */
+    const ATTR_COLL_KEY         = 15;
 
 
 
@@ -189,7 +193,7 @@ final class Doctrine {
     public static function getPath() {
         if(! self::$path)
             self::$path = dirname(__FILE__);
-            
+
         return self::$path;
     }
     /**

@@ -12,15 +12,15 @@ class Sensei_Entity extends Doctrine_Record {
     }
 }
 class Sensei_Variable extends Doctrine_Record {
+    public function setUp() {
+        //$this->setAttribute(Doctrine::ATTR_COLL_KEY, "name");
+    }
     public function setTableDefinition() {
-        $this->hasColumn("name","string",50);
+        $this->hasColumn("name","string",50,"unique");
         $this->hasColumn("value","string",10000);
         $this->hasColumn("session_id","integer");
     }
 }
-
-class Sensei_Entity_Var extends Sensei_Variable { }
-class Sensei_Session_Var extends Doctrine_Record { }
 class Sensei_Session extends Doctrine_Record {
     public function setUp() {
         $this->ownsMany("Sensei_variable","Sensei_variable.session_id");
@@ -159,17 +159,17 @@ class Sensei extends Doctrine_Access {
         return true;
     }
     private function read($id) {
-        $coll = $this->session->query("FROM Sensei_Session WHERE Sensei_Session.session_id = ?",array($id));
+        $coll = $this->session->query("FROM Sensei_Session, Sensei_Session.Sensei_Variable WHERE Sensei_Session.session_id = ?",array($id));
         $this->record = $coll[0];
         $this->record->user_agent = $_SERVER['HTTP_USER_AGENT'];
         $this->record->updated    = time();
         $this->record->session_id = $id;
+        $this->vars = $this->record->Sensei_variable;
 
         if($this->record->getState() == Doctrine_Record::STATE_TDIRTY) {
             $this->record->created = time();
             $this->record->save();
         } 
-        $this->vars = $this->record->Sensei_variable;
         return "";
     }
     public function write($id,$sess_data) {

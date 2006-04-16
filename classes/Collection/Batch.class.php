@@ -23,10 +23,19 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
     
     public function __construct(Doctrine_DQL_Parser $graph,$key) {
         parent::__construct($graph->getTable($key));
+
         $this->data      = $graph->getData($key);
         if( ! is_array($this->data)) 
             $this->data = array();
 
+        if(isset($this->generator)) {
+            foreach($this->data as $k => $v) {
+                $record = $this->get($k);
+                $i = $this->generator->getIndex($record);
+                $this->data[$i] = $record;
+                unset($this->data[$k]);
+            }
+        }
         $this->batchSize = $this->getTable()->getAttribute(Doctrine::ATTR_BATCH_SIZE);
     }
 
@@ -138,6 +147,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
 
             if( ! isset($this->data[$key]))
                 $this->data[$key] = $this->table->create();
+
         }
 
 

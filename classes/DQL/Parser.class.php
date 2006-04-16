@@ -129,6 +129,18 @@ class Doctrine_DQL_Parser {
         }
     }
     /**
+     * @param integer $limit
+     */
+    final public function setLimit($limit) {
+        $this->limit = $limit;
+    }
+    /**
+     * @param integer $offset
+     */
+    final public function setOffset($offset) {
+        $this->offset = $offset;
+    }
+    /**
      * @return integer
      */
     final public function getLimit() {
@@ -422,7 +434,7 @@ class Doctrine_DQL_Parser {
         if($this->aggregate) {
             $keys  = array_keys($this->tnames);
             $query = $this->getQuery();
-            $stmt  = $this->tnames[$keys[0]]->getSession()->select($query);
+            $stmt  = $this->tnames[$keys[0]]->getSession()->select($query,$this->limit,$this->offset);
             $data  = $stmt->fetch(PDO::FETCH_ASSOC);
             if(count($data) == 1) {
                 return current($data);
@@ -454,7 +466,7 @@ class Doctrine_DQL_Parser {
                 case "order":
                     $p = $part;
                     $i = $k+1;
-                    if(isset($e[$i]) AND strtolower($e[$i]) == "by") {
+                    if(isset($e[$i]) && strtolower($e[$i]) == "by") {
                         $parts[$part] = array();
                     }
                 break;
@@ -633,7 +645,7 @@ class Doctrine_DQL_Parser {
      * @param string $e2        the second bracket, usually ')'
      */
     public static function bracketTrim($str,$e1,$e2) {
-        if(substr($str,0,1) == $e1 AND substr($str,-1) == $e2)
+        if(substr($str,0,1) == $e1 && substr($str,-1) == $e2)
             return substr($str,1,-1);
         else
             return $str;
@@ -781,10 +793,8 @@ class Doctrine_DQL_Parser {
                     $this->tnames[$name] = $objTable;
                 }
 
-            } catch(Doctrine_Exception $e) {
-                throw new DQLException();
-            } catch(InvalidKeyException $e) {
-                throw new DQLException();
+            } catch(Exception $e) {
+                throw new DQLException($e->getMessage(),$e->getCode());
             }
         }
         return $objTable;

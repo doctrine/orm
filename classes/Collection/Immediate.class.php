@@ -13,16 +13,18 @@ class Doctrine_Collection_Immediate extends Doctrine_Collection {
      * @param integer $key              
      */
     public function __construct(Doctrine_DQL_Parser $graph,$key) {
-        parent::__construct($graph->getTable($key));
-                                               
-        $name = $this->table->getComponentName();
+        $table = $graph->getTable($key);
+        parent::__construct($table);  
+
+        $name = $table->getComponentName();
         $data = $graph->getData($name);
         if(is_array($data)) {
             foreach($data as $k=>$v):
-                $this->table->setData($v);
+                $table->setData($v);
                 $this->add($this->table->getRecord());
             endforeach;
         }
+
     }
 }
 ?>

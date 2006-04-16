@@ -7,7 +7,7 @@ class Entity extends Doctrine_Record {
     }               
     public function setTableDefinition() {
         $this->hasColumn("name","string",50);
-        $this->hasColumn("loginname","string",20);
+        $this->hasColumn("loginname","string",20,"unique");
         $this->hasColumn("password","string",16);
         $this->hasColumn("type","integer",1);
         $this->hasColumn("created","integer",11);

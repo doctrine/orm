@@ -33,18 +33,46 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @var boolean $expanded               whether or not this collection has been expanded
      */
     protected $expanded = false;
+    /**
+     * @var mixed $generator
+     */
+    protected $generator;
 
     /**
      * constructor
      */
     public function __construct(Doctrine_Table $table) {
         $this->table = $table;
+        
+        $name = $table->getAttribute(Doctrine::ATTR_COLL_KEY);
+        if($name !== null) {
+            $this->generator = new Doctrine_IndexGenerator($name);
+        }
     }
     /**
      * @return object Doctrine_Table
      */
     public function getTable() {
         return $this->table;
+    }
+    /**
+     * @param Doctrine_IndexGenerator $generator
+     * @return void
+     */
+    public function setGenerator($generator) {
+        $this->generator = $generator;
+    }
+    /**
+     * @return Doctrine_IndexGenerator
+     */
+    public function getGenerator() {
+        return $this->generator;
+    }
+    /** 
+     * @return array
+     */
+    public function getData() {
+        return $this->data;
     }
     /**
      * @param array $data
@@ -214,7 +242,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * count
      * this class implements interface countable
-     * @return integer              number of data access objects in this collection
+     * @return integer                              number of records in this collection
      */
     public function count() {
         return count($this->data);
@@ -231,11 +259,11 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         $this->data[$key] = $record;
     }
+
     /**
-     * add
-     * adds a dao instance to this collection
-     * @param Doctrine_Record $record              data access object to be added
-     * @param string $key           optional key for the DAO
+     * adds a record to collection
+     * @param Doctrine_Record $record              record to be added
+     * @param string $key                          optional key for the record
      * @return boolean
      */
     public function add(Doctrine_Record $record,$key = null) {
@@ -243,27 +271,29 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $record->rawSet($this->reference_field,$this->reference);
 
         if(isset($key)) {
-
             if(isset($this->data[$key]))
                 return false;
 
             $this->data[$key] = $record;
         }
 
-        $this->data[] = $record;
+        if(isset($this->generator)) {
+            $key = $this->generator->getIndex($record);
+            $this->data[$key] = $record;
+        } else
+            $this->data[] = $record;
         return true;
-
     }
     /**
      * save
-     * saves all data access objects
+     * saves all records
      */
     public function save() {
         $this->table->getSession()->saveCollection($this);
     }
     /**
      * single shot delete
-     * deletes all dao instances from this collection
+     * deletes all records from this collection
      * uses only one database query to perform this operation
      * @return boolean
      */

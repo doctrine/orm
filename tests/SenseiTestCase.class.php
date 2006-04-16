@@ -52,8 +52,7 @@ class Sensei_UnitTestCase extends UnitTestCase {
             $this->init();
     }
 
-    public function testConstructor() {
-
+    public function testConstructor() {   
         $this->assertTrue($this->record instanceof Sensei_Session);
 
         if(isset($_COOKIE["PHPSESSID"])) {

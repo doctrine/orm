@@ -201,20 +201,27 @@ class Doctrine_Table extends Doctrine_Configurable {
         endswitch;
     }
     /**
-     * hasColumn
+     * setColumn
      * @param string $name
      * @param string $type
      * @param integer $length
      * @param mixed $options
      * @return void
      */
-    final public function hasColumn($name, $type, $length, $options = "") {
+    final public function setColumn($name, $type, $length, $options = "") {
         $this->columns[$name] = array($type,$length,$options);
         
         $e = explode("|",$options);
         if(in_array("primary",$e)) {
             $this->primaryKeys[] = $name;
         }
+    }
+    /**
+     * hasColumn
+     * @return boolean
+     */
+    final public function hasColumn($name) {
+        return isset($this->columns[$name]);
     }
     /**
      * returns all primary keys
