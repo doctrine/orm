@@ -232,6 +232,7 @@ final class Doctrine {
                 case "Session":
                 case "DQL":
                 case "Sensei":
+                case "Iterator":
                     $a[]  = self::$path.DIRECTORY_SEPARATOR.$entry;
                 break;
                 default:

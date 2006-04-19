@@ -66,36 +66,6 @@ abstract class Doctrine_Iterator implements Iterator {
             $this->key   = $this->keys[$i];
     }
 }
-class Doctrine_Iterator_Normal extends Doctrine_Iterator {
-    /**
-     * @return boolean                          whether or not the iteration will continue
-     */
-    public function valid() {
-        return ($this->index < $this->count);
-    }
-}
-class Doctrine_Iterator_Offset extends Doctrine_Iterator {
-    public function valid() { }
-}
-class Doctrine_Iterator_Expandable extends Doctrine_Iterator {
-    public function valid() {
-        if($this->index < $this->count)
-            return true;
-        elseif($this->index == $this->count) {
 
-            $coll  = $this->collection->expand($this->index);
 
-            if($coll instanceof Doctrine_Collection) {
-                $count = count($coll);
-                if($count > 0) {
-                    $this->keys   = array_merge($this->keys, $coll->getKeys());
-                    $this->count += $count;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-    }
-}
 ?>
