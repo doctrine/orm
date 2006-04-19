@@ -25,7 +25,11 @@ class Doctrine_DQL_Parser {
     /**
      * @var array $tablenames       an array containing all the tables used in the query
      */
-    private $tablenames   = array();
+    private $tablenames  = array();
+    /**
+     * @var array $collections      an array containing all collections this parser has created/will create
+     */
+    private $collections = array();
     /**
      * @var array $from             query FROM parts
      */
@@ -91,6 +95,9 @@ class Doctrine_DQL_Parser {
         $this->aggregate    = false;
         $this->data         = array();
         $this->connectors   = array();
+        $this->collections  = array();
+        $this->paths        = array();
+        $this->joined       = array();
     }
     /**
      * loadFields       -- this method loads fields for a given factory and
@@ -104,16 +111,22 @@ class Doctrine_DQL_Parser {
      * @return void
      */
     private function loadFields(Doctrine_Table $table,$fetchmode) {
+        $name = $table->getComponentName();
+
         switch($fetchmode):
+            case Doctrine::FETCH_OFFSET:
+                $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
             case Doctrine::FETCH_IMMEDIATE:
                 $names  = $table->getColumnNames();
             break;
+            case Doctrine::FETCH_LAZY_OFFSET:
+                $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
             case Doctrine::FETCH_LAZY:
             case Doctrine::FETCH_BATCH:
                 $names = $table->getPrimaryKeys();
             break;
             default:
-                throw new InvalidFetchModeException();
+                throw new Doctrine_Exception("Unknown fetchmode.");
         endswitch;
         $cname          = $table->getComponentName();
         $this->fetchModes[$cname] = $fetchmode;
@@ -276,7 +289,7 @@ class Doctrine_DQL_Parser {
      * @return array                    the data row for the specified factory
      */
     final public function getData($key) {
-        if(isset($this->data[$key]))
+        if(isset($this->data[$key]) && is_array($this->data[$key]))
             return $this->data[$key];
         
         return array();
@@ -406,20 +419,26 @@ class Doctrine_DQL_Parser {
      * @param integer $index
      */
     private function getCollection($name) {
+        $table = $this->session->getTable($name);
         switch($this->fetchModes[$name]):
-            case 0:
-                $coll = new Doctrine_Collection_Immediate($this,$name);
+            case Doctrine::FETCH_BATCH:
+                $coll = new Doctrine_Collection_Batch($table);
             break;
-            case 1:
-                $coll = new Doctrine_Collection_Batch($this,$name);
+            case Doctrine::FETCH_LAZY:
+                $coll = new Doctrine_Collection_Lazy($table);
             break;
-            case 2:
-                $coll = new Doctrine_Collection_Lazy($this,$name);
+            case Doctrine::FETCH_OFFSET:
+                $coll = new Doctrine_Collection_Offset($table);
             break;
-            default:
-                throw new Exception("Unknown fetchmode");
+            case Doctrine::FETCH_IMMEDIATE:
+                $coll = new Doctrine_Collection_Immediate($table);
+            break;
+            case Doctrine::FETCH_LAZY_OFFSET:
+                $coll = new Doctrine_Collection_LazyOffset($table);
+            break;
         endswitch;
 
+        $coll->populate($this);
         return $coll;
     }
     /**
@@ -555,6 +574,13 @@ class Doctrine_DQL_Parser {
                     case "lazy":
                         $fetchmode = Doctrine::FETCH_LAZY;
                     break;
+                    case "o":
+                    case "offset":
+                        $fetchmode = Doctrine::FETCH_OFFSET;
+                    break;
+                    case "lo":
+                    case "lazyoffset":
+                        $fetchmode = Doctrine::FETCH_LAZYOFFSET;
                     default:
                         throw new DQLException("Unknown fetchmode '$e[1]'. The availible fetchmodes are 'i', 'b' and 'l'.");
                 endswitch;

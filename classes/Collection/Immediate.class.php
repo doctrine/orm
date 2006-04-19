@@ -12,19 +12,8 @@ class Doctrine_Collection_Immediate extends Doctrine_Collection {
      * @param Doctrine_DQL_Parser $graph
      * @param integer $key              
      */
-    public function __construct(Doctrine_DQL_Parser $graph,$key) {
-        $table = $graph->getTable($key);
-        parent::__construct($table);  
-
-        $name = $table->getComponentName();
-        $data = $graph->getData($name);
-        if(is_array($data)) {
-            foreach($data as $k=>$v):
-                $table->setData($v);
-                $this->add($this->table->getRecord());
-            endforeach;
-        }
-
+    public function __construct(Doctrine_Table $table) {
+        parent::__construct($table);
     }
 }
 ?>

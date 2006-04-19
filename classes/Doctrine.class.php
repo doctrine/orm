@@ -120,6 +120,10 @@ final class Doctrine {
      * collection key attribute
      */
     const ATTR_COLL_KEY         = 15;
+    /** 
+     * collection limit attribute
+     */
+    const ATTR_COLL_LIMIT       = 16;
 
 
 
@@ -146,18 +150,27 @@ final class Doctrine {
      * IMMEDIATE FETCHING
      * mode for immediate fetching
      */
-    const FETCH_IMMEDIATE  = 0;
+    const FETCH_IMMEDIATE       = 0;
     /**
      * BATCH FETCHING
      * mode for batch fetching
      */
-    const FETCH_BATCH      = 1;
+    const FETCH_BATCH           = 1;
     /**
      * LAZY FETCHING
      * mode for lazy fetching
      */
-    const FETCH_LAZY       = 2;
-
+    const FETCH_LAZY            = 2;
+    /**
+     * LAZY FETCHING
+     * mode for offset fetching
+     */
+    const FETCH_OFFSET          = 3;
+    /**
+     * LAZY OFFSET FETCHING
+     * mode for lazy offset fetching
+     */
+    const FETCH_LAZY_OFFSET     = 4;
     /**
      * LOCKMODE CONSTANTS
      */
@@ -165,11 +178,11 @@ final class Doctrine {
     /**
      * mode for optimistic locking
      */
-    const LOCK_OPTIMISTIC  = 0;
+    const LOCK_OPTIMISTIC       = 0;
     /**
      * mode for pessimistic locking
      */
-    const LOCK_PESSIMISTIC = 1;
+    const LOCK_PESSIMISTIC      = 1;
     
     /**
      * PRIMARY KEY TYPE CONSTANTS
@@ -178,11 +191,11 @@ final class Doctrine {
     /**
      * auto-incremented/(sequence updated) primary key
      */
-    const INCREMENT_KEY     = 0;
+    const INCREMENT_KEY         = 0;
     /**
      * unique key
      */
-    const UNIQUE_KEY        = 1;
+    const UNIQUE_KEY            = 1;
     
 
     /**

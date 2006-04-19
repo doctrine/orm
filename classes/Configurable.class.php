@@ -56,7 +56,7 @@ abstract class Doctrine_Configurable {
             break;
             case Doctrine::ATTR_FETCHMODE:
                  if($value < 0)
-                    throw new Doctrine_Exception("Unknown fetchmode. Fetchmode should be an integer between 0 and 2. See Doctrine::FETCH_* constants.");
+                    throw new Doctrine_Exception("Unknown fetchmode. See Doctrine::FETCH_* constants.");
             break;
             case Doctrine::ATTR_LISTENER:
                 $this->setEventListener($value);
@@ -86,6 +86,11 @@ abstract class Doctrine_Configurable {
             break;
             case Doctrine::ATTR_CREATE_TABLES:
                 $value = (bool) $value;
+            break;
+            case Doctrine::ATTR_COLL_LIMIT:
+                if($value < 1) {
+                    throw new Doctrine_Exception("Collection limit should be a value greater than or equal to 1.");
+                }
             break;
             case Doctrine::ATTR_COLL_KEY:
                 if( ! ($this instanceof Doctrine_Table)) 
@@ -124,7 +129,7 @@ abstract class Doctrine_Configurable {
     final public function getAttribute($attribute) {
         $attribute = (int) $attribute;
 
-        if($attribute < 1 || $attribute > 15)
+        if($attribute < 1 || $attribute > 16)
             throw new InvalidKeyException();
 
         if( ! isset($this->attributes[$attribute])) {

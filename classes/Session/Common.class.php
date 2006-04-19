@@ -4,13 +4,13 @@
  */
 class Doctrine_Session_Common extends Doctrine_Session {
     public function modifyLimitQuery($query,$limit = null,$offset = null) {
-        if(isset($limit))
+        if(isset($limit) && isset($offset)) {
+            $query .= " LIMIT ".$limit." OFFSET ".$offset;
+        } elseif(isset($limit) && ! isset($offset)) {
             $query .= " LIMIT ".$limit;
-        else 
-            $query .= " LIMIT 99999999999999";
-
-        if(isset($offset))
-            $query .= " OFFSET ".$offset;
+        } elseif( ! isset($limit) && isset($offset)) {
+            $query .= " LIMIT 999999999999 OFFSET ".$offset;
+        }
 
         return $query;
     }

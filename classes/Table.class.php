@@ -448,7 +448,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @param $array                    an array where keys are field names and values representing field values
      * @return Doctrine_Record                      A new Data Access Object. Uses an sql insert statement when saved
      */
-    final public function create(array $array = array()) {
+    public function create(array $array = array()) {
         $this->data         = $array;
         $this->isNewEntry   = true;
         $record = $this->getRecord();
@@ -460,7 +460,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @throws Doctrine_Find_Exception
      * @return Doctrine_Record          a record for given database identifier
      */
-    final public function find($id = null) {
+    public function find($id = null) {
         if($id !== null) {
             $query  = $this->query." WHERE ".implode(" = ? AND ",$this->primaryKeys)." = ?";
             $query  = $this->applyInheritance($query);
@@ -494,7 +494,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      * findAll
      * @return Doctrine_Collection            a collection of all data access objects
      */
-    final public function findAll() {
+    public function findAll() {
         $graph = new Doctrine_DQL_Parser($this->session);
         $users = $graph->query("FROM ".$this->name);
         return $users;
@@ -503,7 +503,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      * findBySql
      * @return Doctrine_Collection            a collection of data access objects
      */
-    final public function findBySql($sql) {
+    public function findBySql($sql) {
         $graph = new Doctrine_DQL_Parser($this->session);
         $users = $graph->query("FROM ".$this->name." WHERE ".$sql);
         return $users;
@@ -553,10 +553,15 @@ class Doctrine_Table extends Doctrine_Configurable {
     /**
      * execute
      */
-    public function execute($query, array $array = array()) {
-        $coll = new Doctrine_Collection($this);
-        $stmt = $this->session->getDBH()->prepare($query);
-        $stmt->execute($array);
+    public function execute($query, array $array = array(), $limit = null, $offset = null) {
+        $coll  = new Doctrine_Collection($this);
+        $query = $this->session->modifyLimitQuery($query,$limit,$offset);
+        if( ! empty($array)) {
+            $stmt = $this->session->getDBH()->prepare($query);
+            $stmt->execute($array);
+        } else {
+            $stmt = $this->session->getDBH()->query($query);
+        }
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
 

@@ -777,10 +777,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * addReference
      */
-    public function addReference(Doctrine_Record $record) {
+    public function addReference(Doctrine_Record $record, $key = null) {
         $name = $record->getTable()->getComponentName();
-        $this->references[$name]->add($record);
-        $this->originals[$name]->add($record);
+        $this->references[$name]->add($record, $key);
+        $this->originals[$name]->add($record, $key);
     }
     /**
      * getReferences
@@ -823,7 +823,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                         // ONE-TO-MANY
                         $this->references[$name]->setReference($this,$fk);
                     }
-                    $this->originals[$name]      = new Doctrine_Collection($table);
+                    $this->originals[$name]  = new Doctrine_Collection($table);
                 }
             break;
             case Doctrine_Record::STATE_DIRTY:
@@ -875,7 +875,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             $coll    = $graph->query($query, array($this->getID()));
         
                             $this->references[$name] = $coll;
-                            $this->originals[$name]  = clone $coll;                                                                      	
+                            $this->originals[$name]  = clone $coll;
                                                                       	
                         }
                  endswitch;

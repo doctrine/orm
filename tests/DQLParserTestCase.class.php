@@ -3,8 +3,6 @@ require_once("UnitTestCase.class.php");
 class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
 
     public function testLimit() {
-
-
         $graph = new Doctrine_DQL_Parser($this->session);
         $coll  = $graph->query("FROM User LIMIT 3");
         $this->assertEqual($graph->getLimit(), 3);
@@ -26,7 +24,7 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
         $graph = new Doctrine_DQL_Parser($this->session);
 
         $this->graph = $graph;
-        
+
         $user = $this->objTable->find(5);
 
 
@@ -83,7 +81,6 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
         //$this->assertEqual($users[0]->Group[1]->name, "Tough guys inc.");
         //$this->assertEqual($users[0]->Group[2]->name, "Terminators");
         //$this->assertEqual(count($users[0]->Group), 3);
-
 
         $this->clearCache();
 

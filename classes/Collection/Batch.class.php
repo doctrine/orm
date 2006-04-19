@@ -1,8 +1,8 @@
 <?php
 require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Collection.class.php");
 /**
- * Doctrine_Collection_Batch       a collection of data access objects,
- *                          with batch load strategy
+ * Doctrine_Collection_Batch       a collection of records,
+ *                                 with batch load strategy
  *
  *
  * @author      Konsta Vesterinen
@@ -21,21 +21,8 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
      */
     private $loaded = array();
     
-    public function __construct(Doctrine_DQL_Parser $graph,$key) {
-        parent::__construct($graph->getTable($key));
-
-        $this->data      = $graph->getData($key);
-        if( ! is_array($this->data)) 
-            $this->data = array();
-
-        if(isset($this->generator)) {
-            foreach($this->data as $k => $v) {
-                $record = $this->get($k);
-                $i = $this->generator->getIndex($record);
-                $this->data[$i] = $record;
-                unset($this->data[$k]);
-            }
-        }
+    public function __construct(Doctrine_Table $table) {
+        parent::__construct($table);
         $this->batchSize = $this->getTable()->getAttribute(Doctrine::ATTR_BATCH_SIZE);
     }
 
@@ -146,7 +133,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
             endswitch;
         } else {
 
-            $this->expand();
+            $this->expand($key);
 
             if( ! isset($this->data[$key]))
                 $this->data[$key] = $this->table->create();
@@ -161,10 +148,10 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
         return $this->data[$key];
     }
     /**
-     * @return Doctrine_BatchIterator
+     * @return Doctrine_Iterator
      */
     public function getIterator() {
-        return new Doctrine_BatchIterator($this);
+        return new Doctrine_Iterator_Expandable($this);
     }
 }
 ?>

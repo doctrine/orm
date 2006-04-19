@@ -14,6 +14,7 @@ require_once("ValidatorTestCase.class.php");
 require_once("CollectionTestCase.class.php");
 
 require_once("CacheSqliteTestCase.class.php");
+require_once("CollectionOffsetTestCase.class.php");
 require_once("SenseiTestCase.class.php");
 
 
@@ -25,7 +26,7 @@ $test = new GroupTest("Doctrine Framework Unit Tests");
 
 
 
-
+/**
 $test->addTestCase(new Doctrine_RecordTestCase());
 
 $test->addTestCase(new Doctrine_SessionTestCase());
@@ -45,10 +46,17 @@ $test->addTestCase(new Doctrine_BatchIteratorTestCase());
 
 $test->addTestCase(new Doctrine_DQL_ParserTestCase());
 
-$test->addTestCase(new Doctrine_CollectionTestCase());
 $test->addTestCase(new Doctrine_ConfigurableTestCase());
 
-$test->addTestCase(new Sensei_UnitTestCase());
+$test->addTestCase(new Doctrine_CollectionTestCase());
+
+
+
+
+
+ */
+$test->addTestCase(new Doctrine_Collection_OffsetTestCase());
+//$test->addTestCase(new Sensei_UnitTestCase());
 
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());

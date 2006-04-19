@@ -10,9 +10,9 @@ class Doctrine_Collection_Lazy extends Doctrine_Collection_Batch {
      * @param Doctrine_DQL_Parser $graph      
      * @param string $key
      */
-    public function __construct(Doctrine_DQL_Parser $graph,$key) {
+    public function __construct(Doctrine_Table $table) {
+        parent::__construct($table);
         parent::setBatchSize(1);
-        parent::__construct($graph,$key);
     }
 }
 ?>
