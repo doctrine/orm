@@ -1,6 +1,4 @@
 <?php
-require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Cache.class.php");
-
 class Doctrine_Cache_Sqlite {
     /**
      * STATS_FILE constant

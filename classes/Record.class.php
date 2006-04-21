@@ -802,12 +802,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $local   = $fk->getLocal();
         $foreign = $fk->getForeign();
         $graph   = $table->getDQLParser();
+        $type    = $fk->getType();
 
         switch($this->getState()):
             case Doctrine_Record::STATE_TDIRTY:
             case Doctrine_Record::STATE_TCLEAN:
 
-                if($fk->getType() == Doctrine_Table::ONE_COMPOSITE || $fk->getType() == Doctrine_Table::ONE_AGGREGATE) {
+                if($type == Doctrine_Table::ONE_COMPOSITE || 
+                   $type == Doctrine_Table::ONE_AGGREGATE) {
+
                     // ONE-TO-ONE
                     $this->references[$name] = $table->create();
 
@@ -848,7 +851,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             }
 
                         } elseif ($fk instanceof Doctrine_ForeignKey) {
-
+                            if(empty($id)) {
+                                $this->references[$name] = $table->create();
+                                $this->references[$name]->set($fk->getForeign(), $this);
+                            } else {
+                                $coll = $graph->query("FROM ".$name." WHERE ".$name.".".$fk->getForeign()." = ?", array($id));
+                                $this->references[$name] = $coll[0];
+                                $this->references[$name]->set($fk->getForeign(), $this);
+                            }
                         }
                     break;
                     default:

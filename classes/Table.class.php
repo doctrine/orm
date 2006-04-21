@@ -503,9 +503,9 @@ class Doctrine_Table extends Doctrine_Configurable {
      * findBySql
      * @return Doctrine_Collection            a collection of data access objects
      */
-    public function findBySql($sql) {
+    public function findBySql($sql, array $params = array()) {
         $graph = new Doctrine_DQL_Parser($this->session);
-        $users = $graph->query("FROM ".$this->name." WHERE ".$sql);
+        $users = $graph->query("FROM ".$this->name." WHERE ".$sql, $params);
         return $users;
     }
     /**

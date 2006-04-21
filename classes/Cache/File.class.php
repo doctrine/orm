@@ -1,5 +1,4 @@
 <?php
-require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."iCache.class.php");
 /**
  * Doctrine_CacheFile
  * @author      Konsta Vesterinen

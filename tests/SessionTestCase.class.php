@@ -1,10 +1,12 @@
 <?php
 require_once("UnitTestCase.class.php");
 class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
-    public function testGetFactory() {
-        $objTable = $this->session->getTable("User");
-        $this->assertTrue($objTable instanceOf Doctrine_Table);
+    public function testBuildFlushTree() {
+        $tree = $this->session->buildFlushTree();
+
+        //print_r($tree);
     }
+
     public function testFlush() {
 
         $this->assertTrue(is_numeric($this->old->Phonenumber[0]->entity_id));

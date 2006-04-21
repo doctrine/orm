@@ -3,8 +3,8 @@ class Entity extends Doctrine_Record {
     public function setUp() {
         $this->ownsOne("Email","Entity.email_id");
         $this->ownsMany("Phonenumber","Phonenumber.entity_id");
-
-    }               
+        $this->ownsOne("Account","Account.entity_id");
+    }
     public function setTableDefinition() {
         $this->hasColumn("name","string",50);
         $this->hasColumn("loginname","string",20,"unique");
@@ -15,12 +15,21 @@ class Entity extends Doctrine_Record {
         $this->hasColumn("email_id","integer");
     }
 }
+
+class Account extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("entity_id","integer");
+        $this->hasColumn("amount","integer");
+    }
+}
+
 class EntityAddress extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("entity_id","integer");
         $this->hasColumn("address_id","integer");
     }
 }
+
 class Address extends Doctrine_Record {
     public function setUp() {
         $this->hasMany("User","Entityaddress.entity_id");
@@ -29,6 +38,7 @@ class Address extends Doctrine_Record {
         $this->hasColumn("address","string",200);
     }
 }
+
 // grouptable doesn't extend Doctrine_Table -> Doctrine_Session
 // won't initialize grouptable when Doctrine_Session->getTable("Group") is called
 

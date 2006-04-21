@@ -58,7 +58,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @var integer $transaction_level      the nesting level of transactions, used by transaction methods
      */
     private $transaction_level = 0;
-    
+    /**
+     * @var Doctrine_Validator $validator   transaction validator
+     */
     private $validator;
     /**
      * @var PDO $cacheHandler
@@ -223,60 +225,49 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @return array
      */
     public function buildFlushTree() {
+        $tables = $this->tables;
         $tree = array();
-        foreach($this->tables as $k => $table) {
-            $tmp = array();
-            $tmp[] = $table->getComponentName();
-            $pos = 0;
-            foreach($table->getForeignKeys() as $fk) {
-                if($fk instanceof Doctrine_ForeignKey ||
-                   $fk instanceof Doctrine_LocalKey) {
-                                                     	
-                    $name  = $fk->getTable()->getComponentName();
-                    $index = array_search($name,$tree);
+        foreach($tables as $table) {
+            $name  = $table->getComponentName();
+            $index = array_search($name,$tree);
+            if($index === false) 
+                $tree[] = $name;
 
-                    if(isset($locked[$name])) {
-                        $pos = $index;
-                        continue;
-                    }
 
+            foreach($table->getForeignKeys() as $rel) {
+                $name  = $rel->getTable()->getComponentName();
+                $index = array_search($name,$tree);
+
+                if($rel instanceof Doctrine_ForeignKey) {
                     if($index !== false)
                         unset($tree[$index]);
 
-                    switch($fk->getType()):
-                        case Doctrine_Table::ONE_COMPOSITE:
-                        case Doctrine_Table::ONE_AGGREGATE:
-                            array_unshift($tmp,$name);
-                        break;
-                        case Doctrine_Table::MANY_COMPOSITE:
-                        case Doctrine_Table::MANY_AGGREGATE:
-                            $tmp[] = $name;
-                        break;
-                    endswitch;
-                    $locked[$name] = true;
-                }
-            }
-            $index = array_search($k,$tree);
+                    $tree[] = $name;
+                } elseif($rel instanceof Doctrine_LocalKey) {
+                    if($index !== false)
+                        unset($tree[$index]);
 
-            if($index === false) {
-                if($pos != 0) {
-                    $first = array_splice($tree,0,$pos);
-                    $tree  = array_merge($first, $tmp, $tree);
-                } else {
-                    $tree = array_merge($tree,$tmp);
+                    array_unshift($tree, $name);
+                } elseif($rel instanceof Doctrine_Association) {
+                    $t = $rel->getAssociationFactory();
+                    $n = $t->getComponentName();
+                    $index = array_search($n,$tree);
+                    
+                    if($index !== false) 
+                        unset($tree[$index]);
+                        
+                    $tree[] = $n;
                 }
-            } else {
-                $first = array_splice($tree,0,$index);
-                array_splice($tree, 0, ($index + 1));
-                $tree  = array_merge($first, $tmp, $tree);
             }
         }
         return $tree;
     }
 
     /**
-     * flush                        saves all the records from all tables
-     *                              this operation is isolated using a transaction
+     * flush                        
+     * saves all the records from all tables
+     * this operation is isolated using a transaction
+     *
      * @return void
      */
     public function flush() {
@@ -285,7 +276,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $this->commit();
     }
     /**
-     * saveAll                      save all the records from all tables
+     * saveAll                      
+     * saves all the records from all tables
      */
     private function saveAll() {
         $tree = $this->buildFlushTree();

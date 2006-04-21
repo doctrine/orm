@@ -3,6 +3,60 @@ require_once("UnitTestCase.class.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
+    public function testOne2OneForeign() {
+
+        $user = new User();
+        $user->name = "Richard Linklater";
+        $account = $user->Account;
+        $account->amount = 1000;
+        $this->assertTrue($account instanceof Account);
+        $this->assertEqual($account->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($account->entity_id, $user);
+        $this->assertEqual($account->amount, 1000);
+        $this->assertEqual($user->name, "Richard Linklater");
+
+        $user->save();
+
+        $user->refresh();
+        $account = $user->Account;
+        $this->assertTrue($account instanceof Account);
+        $this->assertEqual($account->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($account->entity_id, $user->getID());
+        $this->assertEqual($account->amount, 1000);
+        $this->assertEqual($user->name, "Richard Linklater");
+
+
+        $user = new User();
+        $user->name = "John Rambo";
+        $account = $user->Account;
+        $account->amount = 2000;
+        $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
+
+        $this->session->flush();
+        $this->assertEqual($user->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertTrue($account instanceof Account);
+
+        $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
+        $this->assertEqual($account->entity_id, $user->getID());
+        $this->assertEqual($account->amount, 2000);
+
+
+        $user = $user->getTable()->find($user->getID());
+        $this->assertEqual($user->getState(), Doctrine_Record::STATE_CLEAN);
+
+
+        $account = $user->Account;
+        $this->assertTrue($account instanceof Account);
+
+        $this->assertEqual($account->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
+
+        $this->assertEqual($account->entity_id, $user->getID());
+        $this->assertEqual($account->amount, 2000);
+        $this->assertEqual($user->name, "John Rambo");
+
+    }
+
     public function testGet() {
         $user = new User();
         $user->name = "Jack Daniels";
@@ -28,7 +82,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($user->getState() == Doctrine_Record::STATE_CLEAN);
         $this->assertTrue($user->name,"John Locke");
     }
-
     public function testTreeStructure() {
         $e = new Element();
         $e->name = "parent";
@@ -203,7 +256,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $pf   = $this->session->getTable("Phonenumber");
 
         $this->assertTrue($user->Phonenumber instanceof Doctrine_Collection);
-        $this->assertTrue($user->Phonenumber->count() == 3);
+        $this->assertEqual($user->Phonenumber->count(), 3);
 
         $coll = new Doctrine_Collection($pf);
 
@@ -443,5 +496,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
     public function testGetIterator() {
         $this->assertTrue($this->old->getIterator() instanceof ArrayIterator);
     }
+
 }
 ?>

@@ -50,7 +50,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
 
-        $this->tables = array("entity","email","phonenumber","groupuser","album","song","element","error","description","address");
+        $this->tables = array("entity","email","phonenumber","groupuser","album","song","element","error","description","address","account");
         $tables = $this->tables;
         foreach($tables as $name) {
             $this->dbh->query("DROP TABLE IF EXISTS $name");
