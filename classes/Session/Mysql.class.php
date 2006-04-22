@@ -75,8 +75,6 @@ class Doctrine_Session_Mysql extends Doctrine_Session_Common {
         if(empty($this->insert))
             return false;
 
-        $values = $this->getMaximumValues(array_keys($this->insert));
-
         foreach($this->insert as $name => $inserts) {
             if( ! isset($inserts[0]))
                 continue;
@@ -156,6 +154,7 @@ class Doctrine_Session_Mysql extends Doctrine_Session_Common {
                 }
             }
         }
+
         $this->insert = array();
         return true;
     }

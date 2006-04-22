@@ -414,6 +414,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     public function bulkInsert() {
         if(empty($this->insert))
             return false;
+        
+        
 
         foreach($this->insert as $name => $inserts) {
             if( ! isset($inserts[0]))
