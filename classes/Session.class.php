@@ -30,42 +30,44 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      */
     private $dbh;
     /**
-     * @var array $tables                   an array containing all the initialized Doctrine_Table objects
-     *                                      keys representing Doctrine_Table component names and values as Doctrine_Table objects
-     */
-    private $tables   = array();
-    /**
      * @see Doctrine_Session::STATE_* constants
      * @var boolean $state                  the current state of the session
      */
-    private $state       = 0;
+    private $state          = 0;
     /**
-     * @var array $update                   two dimensional pending update list, the records in
-     *                                      this list will be updated when transaction is committed
-     */
-    private $update     = array(array());
-    /**
-     * @var array $insert                   two dimensional pending insert list, the records in
-     *                                      this list will be inserted when transaction is committed
-     */
-    private $insert     = array(array());
-    /**
-     * @var array $delete                   two dimensional pending delete list, the records in
-     *                                      this list will be deleted when transaction is committed
-     */
-    private $delete     = array(array());
-    /** 
      * @var integer $transaction_level      the nesting level of transactions, used by transaction methods
      */
     private $transaction_level = 0;
-    /**
-     * @var Doctrine_Validator $validator   transaction validator
-     */
-    private $validator;
+
     /**
      * @var PDO $cacheHandler
      */
     private $cacheHandler;
+    /**
+     * @var array $tables                   an array containing all the initialized Doctrine_Table objects
+     *                                      keys representing Doctrine_Table component names and values as Doctrine_Table objects
+     */
+    protected $tables         = array();
+    /**
+     * @var Doctrine_Validator $validator   transaction validator
+     */
+    protected $validator;
+    /**
+     * @var array $update                   two dimensional pending update list, the records in
+     *                                      this list will be updated when transaction is committed
+     */
+    protected $update       = array();
+    /**
+     * @var array $insert                   two dimensional pending insert list, the records in
+     *                                      this list will be inserted when transaction is committed
+     */
+    protected $insert       = array();
+    /**
+     * @var array $delete                   two dimensional pending delete list, the records in
+     *                                      this list will be deleted when transaction is committed
+     */
+    protected $delete       = array();
+
 
 
 
@@ -410,6 +412,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @return void
      */
     public function bulkInsert() {
+        if(empty($this->insert))
+            return false;
+
         foreach($this->insert as $name => $inserts) {
             if( ! isset($inserts[0]))
                 continue;
@@ -431,7 +436,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 $stmt->closeCursor();
                 $increment = true;
             }
-            
+
 
             foreach($inserts as $k => $record) {
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
@@ -443,6 +448,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                     $id++;
                 }
 
+
                 $this->insert($record,$id);
                 // listen the onInsert event
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
@@ -450,7 +456,34 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
             }
         }
-        $this->insert = array(array());
+        $this->insert = array();
+        return true;
+    }
+    /**
+     * returns maximum identifier values
+     *
+     * @param array $names          an array of component names
+     * @return array
+     */   
+    public function getMaximumValues(array $names) {
+        $values = array();
+        foreach($names as $name) {
+            $table     = $this->tables[$name];
+            $keys      = $table->getPrimaryKeys();
+            $tablename = $table->getTableName();
+
+            if(count($keys) == 1 && $keys[0] == "id") {
+                // record uses auto_increment column
+
+                $sql    = "SELECT MAX(id) FROM ".$tablename;
+                $stmt   = $this->dbh->query($sql);
+                $data   = $stmt->fetch(PDO::FETCH_NUM);
+                $values[$tablename] = $data[0];
+
+                $stmt->closeCursor();
+            }
+        }
+        return $values;
     }
     /**
      * bulkUpdate
@@ -477,7 +510,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             if(isset($record))
                 $record->getTable()->getCache()->deleteMultiple($ids);
         }
-        $this->update = array(array());
+        $this->update = array();
     }
     /**
      * bulkDelete
@@ -499,7 +532,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 $record->getTable()->getCache()->deleteMultiple($ids);
             }
         }
-        $this->delete = array(array());
+        $this->delete = array();
     }
 
 
@@ -532,9 +565,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @param Doctrine_Record $record
      * @return void
      */
-
     public function save(Doctrine_Record $record) {
-
         switch($record->getState()):
             case Doctrine_Record::STATE_TDIRTY:
                 $this->addInsert($record);
@@ -741,6 +772,25 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $name = $record->getTable()->getComponentName();
         $this->delete[$name][] = $record;
     }
+    /**
+     * @return array
+     */
+    public function getInserts() {
+        return $this->insert;
+    }
+    /**
+     * @return array
+     */
+    public function getUpdates() {
+        return $this->update;
+    }
+    /**
+     * @return array
+     */
+    public function getDeletes() {
+        return $this->delete;
+    }
+
     /**
      * returns a string representation of this object
      * @return string

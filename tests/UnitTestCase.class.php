@@ -58,7 +58,6 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
         foreach($tables as $name) {
             $table = $this->session->getTable($name);
-
             $table->getCache()->deleteAll();
         }
 
@@ -73,14 +72,13 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $groups = new Doctrine_Collection($this->session->getTable("Group"));
 
         $groups[0]->name = "Drama Actors";
-        $groups[0]->save();
 
         $groups[1]->name = "Quality Actors";
-        $groups[1]->save();
+
 
         $groups[2]->name = "Action Actors";
         $groups[2]["Phonenumber"][0]->phonenumber = "123 123";
-        $groups[2]->save();
+        $groups->save();
 
         $users = new Doctrine_Collection($this->session->getTable("User"));
 

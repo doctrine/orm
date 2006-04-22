@@ -725,7 +725,7 @@ class Doctrine_DQL_Parser {
             $reference = implode(".",$a);
             $objTable   = $this->session->getTable(end($a));
             $where     = $objTable->getTableName().".".$field." ".$operator." ".$value;
-            if(count($a) > 1 AND isset($a[1])) {
+            if(count($a) > 1 && isset($a[1])) {
                 $root = $a[0];
                 $fk = $this->tnames[$root]->getForeignKey($a[1]);
                 if($fk instanceof Doctrine_Association) {

@@ -23,8 +23,9 @@ error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
-
 $test->addTestCase(new Doctrine_SessionTestCase());
+
+
 $test->addTestCase(new Doctrine_RecordTestCase());
 
 
@@ -41,7 +42,6 @@ $test->addTestCase(new Doctrine_AccessTestCase());
 $test->addTestCase(new Doctrine_EventListenerTestCase());
 
 $test->addTestCase(new Doctrine_BatchIteratorTestCase());
-
 
 $test->addTestCase(new Doctrine_DQL_ParserTestCase());
 
