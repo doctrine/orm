@@ -1,13 +1,6 @@
 <?php
 require_once("../classes/Doctrine.class.php");
 
-/**
-function __autoload($class) {
-    Doctrine::autoload($class);
-}
-*/
-
-
 Doctrine::loadAll();
 
 require_once("classes.php");
@@ -38,11 +31,18 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->manager   = Doctrine_Manager::getInstance();
         $this->manager->setAttribute(Doctrine::ATTR_CACHE, Doctrine::CACHE_NONE);
         $this->manager->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_IMMEDIATE);
+        
+        $this->tables = array("entity","email","phonenumber","groupuser","album","song","element","error","description","address","account");
+        $tables = $this->tables;
+
+
+
         if($this->manager->count() > 0) {
             $this->session = $this->manager->getSession(0);
             $this->session->clear();
             $this->dbh     = $this->session->getDBH();
             $this->listener = $this->manager->getAttribute(Doctrine::ATTR_LISTENER);
+
         } else {
             $this->dbh     = Doctrine_DB::getConnection();
             $this->session = $this->manager->openSession($this->dbh);
@@ -50,8 +50,6 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
 
-        $this->tables = array("entity","email","phonenumber","groupuser","album","song","element","error","description","address","account");
-        $tables = $this->tables;
         foreach($tables as $name) {
             $this->dbh->query("DROP TABLE IF EXISTS $name");
         }
@@ -60,6 +58,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $table = $this->session->getTable($name);
             $table->getCache()->deleteAll();
         }
+
 
 
         $this->objTable = $this->session->getTable("User");

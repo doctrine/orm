@@ -168,7 +168,7 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(),8);
 
         $users = $graph->query("FROM User-b WHERE User.name LIKE '%Jack%'");
-        $this->assertTrue($graph->getQuery() == "SELECT entity.id AS User__id FROM entity WHERE (entity.name LIKE '%Jack%') AND (entity.type = 0)");
+        $this->assertEqual($graph->getQuery(), "SELECT entity.id AS User__id FROM entity WHERE (entity.name LIKE '%Jack%') AND (entity.type = 0)");
         $this->assertEqual($users->count(),0);
 
 

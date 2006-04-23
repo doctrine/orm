@@ -11,6 +11,28 @@
  */
 class Doctrine_Relation {
     /**
+     * RELATION CONSTANTS
+     */
+
+    /**
+     * constant for ONE_TO_ONE and MANY_TO_ONE aggregate relationships
+     */
+    const ONE_AGGREGATE         = 0;
+    /**
+     * constant for ONE_TO_ONE and MANY_TO_ONE composite relationships
+     */
+    const ONE_COMPOSITE         = 1;
+    /**
+     * constant for MANY_TO_MANY and ONE_TO_MANY aggregate relationships
+     */
+    const MANY_AGGREGATE        = 2;
+    /**
+     * constant for MANY_TO_MANY and ONE_TO_MANY composite relationships
+     */
+    const MANY_COMPOSITE        = 3;
+    
+    
+    /**
      * @var Doctrine_Table $table     foreign factory
      */
     private $table;
@@ -39,7 +61,6 @@ class Doctrine_Relation {
         $this->type     = $type;
     }
     /**
-     * @see Doctrine_Table::BIND_ONE, Doctrine_Table::BIND_MANY
      * @return integer              bind type 1 or 0
      */
     public function getType() {

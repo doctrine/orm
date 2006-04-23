@@ -1,8 +1,27 @@
 <?php
+/**
+ * Doctrine_Validator
+ */
 class Doctrine_Validator {
+    /**
+     * ERROR CONSTANTS
+     */
+
+    /**
+     * constant for length error
+     */
     const ERR_LENGTH = 0;
+    /**
+     * constant for type error
+     */
     const ERR_TYPE   = 1;
+    /**
+     * constant for general validation error
+     */
     const ERR_VALID  = 2;
+    /**
+     * constant for unique validator error
+     */
     const ERR_UNIQUE = 3;
     
     /**
@@ -81,6 +100,7 @@ class Doctrine_Validator {
         return true;
     }
     /**
+     * whether or not this validator has errors
      * @return boolean
      */
     public function hasErrors() {
@@ -93,6 +113,7 @@ class Doctrine_Validator {
         return $this->stack;
     }
     /**
+     * returns the type of loosely typed variable
      * @param mixed $var
      */
     public static function gettype($var) {

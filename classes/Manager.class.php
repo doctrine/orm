@@ -6,7 +6,9 @@ require_once("EventListener.class.php");
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
  * @license     LGPL
- * @version     1.0 alpha
+ * 
+ * Doctrine_Manager is the base component of all doctrine based projects. 
+ * It opens and keeps track of all sessions (database connections).
  */
 class Doctrine_Manager extends Doctrine_Configurable implements Countable, IteratorAggregate {
     /**
@@ -25,7 +27,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @var string $root
      */
     private $root;
-
 
     /**
      * constructor
@@ -63,13 +64,16 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
     }
     /**
-     * @return string       the root directory of Doctrine
+     * returns the root directory of Doctrine
+     * @return string
      */
     final public function getRoot() {
         return $this->root;
     }
     /**
-     * getInstance                  this class uses the singleton pattern
+     * getInstance                  
+     * this class uses the singleton pattern
+     * @return Doctrine_Manager
      */
     final public static function getInstance() {
         static $instance;
@@ -80,10 +84,12 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
 
     /**
-     * openSession                  open a new session and save it to Doctrine_Manager->sessions
-     * @param PDO $pdo              PDO database driver
-     * @param string $name          name of the session, if empty numeric key is used
-     * @return Doctrine_Session           the opened session object
+     * openSession                          
+     * opens a new session and saves it to Doctrine_Manager->sessions
+     *
+     * @param PDO $pdo                      PDO database driver
+     * @param string $name                  name of the session, if empty numeric key is used
+     * @return Doctrine_Session
      */
     final public function openSession(PDO $pdo, $name = null) {
         // initialize the default attributes
@@ -158,7 +164,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * setCurrentSession
-     * @param mixed $key                the session key
+     * @param mixed $key                        the session key
      * @throws InvalidKeyException
      * @return void
      */
@@ -171,13 +177,14 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * count
-     * @return integer                  the number of open sessions
+     * @return integer                          the number of open sessions
      */
     public function count() {
         return count($this->sessions);
     }
     /**
      * getIterator
+     * returns an ArrayIterator that iterates through open sessions
      * @return ArrayIterator
      */
     public function getIterator() {
@@ -185,7 +192,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * getCurrentSession
-     * @return object Doctrine_Session
+     * returns the current session
+     * @throws Doctrine_Session_Exception       if there are no open sessions
+     * @return Doctrine_Session
      */
     final public function getCurrentSession() {
         $i = $this->currIndex;
@@ -196,6 +205,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * __toString
+     * returns a string representation of this object
+     * @return string
      */
     public function __toString() {
         $r[] = "<pre>";

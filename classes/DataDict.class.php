@@ -16,7 +16,7 @@ class Doctrine_DataDict {
 
     public function createTable($tablename, $columns) {
         foreach($columns as $name => $args) {
-            $r[] = $name." ".$this->getADOType($args[0],$args[1])." ".$args[2];
+            $r[] = $name." ".$this->getADOType($args[0],$args[1])." ".str_replace("|"," ",$args[2]);
         }
 
 

@@ -13,23 +13,6 @@ require_once("Configurable.class.php");
  */
 class Doctrine_Table extends Doctrine_Configurable {
     /**
-     * constant for ONE_TO_ONE and MANY_TO_ONE aggregate relationships
-     */
-    const ONE_AGGREGATE         = 0;
-    /**
-     * constant for ONE_TO_ONE and MANY_TO_ONE composite relationships
-     */
-    const ONE_COMPOSITE         = 1;
-    /**
-     * constant for MANY_TO_MANY and ONE_TO_MANY aggregate relationships
-     */
-    const MANY_AGGREGATE        = 2;
-    /**
-     * constant for MANY_TO_MANY and ONE_TO_MANY composite relationships
-     */
-    const MANY_COMPOSITE        = 3;
-
-    /**
      * @var boolean $isNewEntry                         whether ot not this table created a new record or not, used only internally
      */
     private $isNewEntry       = false;
@@ -46,9 +29,13 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     private $primaryKeys      = array();
     /**
-     * @var integer $primaryType
+     * @var mixed $identifier
      */
-    private $primaryType;
+    private $identifier;
+    /**
+     * @var integer $identifierType
+     */
+    private $identifierType;
     /**
      * @var string $query                               cached simple query
      */
@@ -117,7 +104,7 @@ class Doctrine_Table extends Doctrine_Configurable {
             throw new Doctrine_Exception("Couldn't find class $name");
 
         $record = new $name($this);
-        $record->setUp();
+
 
         $names = array();
 
@@ -151,14 +138,44 @@ class Doctrine_Table extends Doctrine_Configurable {
 
                 switch(count($this->primaryKeys)):
                     case 0:
-                        $this->columns = array_merge(array("id" => array("integer",11,"AUTOINCREMENT PRIMARY")), $this->columns);
+                        $this->columns = array_merge(array("id" => array("integer",11,"autoincrement|primary")), $this->columns);
                         $this->primaryKeys[] = "id";
-                    break;
-                    case 1:
-
+                        $this->identifier = "id";
+                        $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
                     break;
                     default:
+                        foreach($this->primaryKeys as $pk) {
+                            $o = $this->columns[$pk][2];
+                            $e = explode("|",$o);
+                            $found = false;
 
+
+                            foreach($e as $option) {
+                                if($found)
+                                    break;
+
+                                $e2 = explode(":",$option);
+
+                                switch(strtolower($e2[0])):
+                                    case "unique":
+                                        $this->identifierType = Doctrine_Identifier::UNIQUE;
+                                        $found = true;
+                                    break;
+                                    case "autoincrement":
+                                        $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
+                                        $found = true;
+                                    break;
+                                    case "seq":
+                                        $this->identifierType = Doctrine_Identifier::SEQUENCE;
+                                        $found = true;
+                                    break;
+                                endswitch;
+                            }
+                            if( ! isset($this->identifierType))
+                                $this->identifierType = Doctrine_Identifier::NORMAL;
+                                 
+                            $this->identifier = $pk;
+                        }
                 endswitch;
 
                 if($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
@@ -170,6 +187,8 @@ class Doctrine_Table extends Doctrine_Configurable {
         } else {
             throw new Doctrine_Exception("Class '$name' has no table definition.");
         }
+        
+        $record->setUp();
 
         // save parents
         array_pop($names);
@@ -215,6 +234,18 @@ class Doctrine_Table extends Doctrine_Configurable {
         if(in_array("primary",$e)) {
             $this->primaryKeys[] = $name;
         }
+    }
+    /**
+     * @return mixed
+     */
+    final public function getIdentifier() {
+        return $this->identifier;
+    }
+    /**
+     * @return integer
+     */
+    final public function getIdentifierType() {
+        return $this->identifierType;
     }
     /**
      * hasColumn
@@ -274,8 +305,8 @@ class Doctrine_Table extends Doctrine_Configurable {
             try {
             $fk = $this->getForeignKey($k);
             switch($fk->getType()):
-                case Doctrine_Table::ONE_COMPOSITE:
-                case Doctrine_Table::MANY_COMPOSITE:
+                case Doctrine_Relation::ONE_COMPOSITE:
+                case Doctrine_Relation::MANY_COMPOSITE:
                     $n = $fk->getTable()->getComponentName();
                     $array[] = $name.".".$n;
                     $e = $fk->getTable()->getCompositePaths();
@@ -323,7 +354,9 @@ class Doctrine_Table extends Doctrine_Configurable {
         
         // is reference table used?
         if($e[0] != $name && $e[0] == $this->name)
-            $this->bound[$name] = array($field,Doctrine_Table::MANY_COMPOSITE);
+            $this->bound[$name] = array($field,Doctrine_Relation::MANY_COMPOSITE);
+
+
 
         $this->bound[$name] = array($field,$type,$localKey);
     }
@@ -361,31 +394,42 @@ class Doctrine_Table extends Doctrine_Configurable {
             return $this->foreignKeys[$name];
 
         if(isset($this->bound[$name])) {
-            $type    = $this->bound[$name][1];
+
             $field   = $this->bound[$name][0];
+            $type    = $this->bound[$name][1];
+            $local   = $this->bound[$name][2];
             $e       = explode(".",$field);
             $objTable = $this->session->getTable($name);
 
             switch($e[0]):
                 case $name:
+                    if( ! isset($local))
+                        $local = $this->identifier;
+
                     // ONE-TO-MANY or ONE-TO-ONE
-                    $foreignKey = new Doctrine_ForeignKey($objTable,$this->bound[$name][2],$e[1],$type);
+                    $foreignKey = new Doctrine_ForeignKey($objTable,$local,$e[1],$type);
                 break;
                 case $this->name:
                     // ONE-TO-ONE
 
-                    if($type <= Doctrine_Table::ONE_COMPOSITE)
-                        $foreignKey = new Doctrine_LocalKey($objTable,$e[1],$this->bound[$name][2],$type);
-                    else
+                    if($type <= Doctrine_Relation::ONE_COMPOSITE) {
+                        if( ! isset($local))
+                            $local = $objTable->getIdentifier();
+
+                        $foreignKey = new Doctrine_LocalKey($objTable,$e[1],$local,$type);
+                    } else
                         throw new Doctrine_Mapping_Exception();
                 break;
                 default:
                     if(in_array($e[0], $this->parents)) {
                         // ONE-TO-ONE
 
-                        if($type <= Doctrine_Table::ONE_COMPOSITE)
-                            $foreignKey = new Doctrine_LocalKey($objTable,$e[1],$this->bound[$name][2],$type);
-                        else
+                        if($type <= Doctrine_Relation::ONE_COMPOSITE) {
+                            if( ! isset($local))
+                                $local = $objTable->getIdentifier();
+
+                            $foreignKey = new Doctrine_LocalKey($objTable,$e[1],$local,$type);
+                        } else
                             throw new Doctrine_Mapping_Exception();
                     } else {
                         // POSSIBLY MANY-TO-MANY
@@ -400,7 +444,8 @@ class Doctrine_Table extends Doctrine_Configurable {
 
                             }
                         }
-
+                        if( ! isset($local))
+                            $local = $this->identifier;
 
                         $e2    = explode(".",$bound[0]);
 
@@ -409,7 +454,7 @@ class Doctrine_Table extends Doctrine_Configurable {
 
                         $associationTable = $this->session->getTable($e2[0]);
 
-                        $this->foreignKeys[$e2[0]] = new Doctrine_ForeignKey($associationTable,$this->bound[$name][2],$e2[1],Doctrine_Table::MANY_COMPOSITE);
+                        $this->foreignKeys[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$e2[1],Doctrine_Relation::MANY_COMPOSITE);
 
                         $foreignKey         = new Doctrine_Association($objTable,$associationTable,$e2[1],$e[1],$type);
                     }

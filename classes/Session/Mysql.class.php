@@ -48,10 +48,10 @@ class Doctrine_Session_Mysql extends Doctrine_Session_Common {
             $keys      = $table->getPrimaryKeys();
             $tablename = $table->getTableName();
 
-            if(count($keys) == 1 && $keys[0] == "id") {
+            if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
                 // record uses auto_increment column
 
-                $sql[]    = "SELECT MAX(".$tablename.".id) as $tablename FROM ".$tablename;
+                $sql[]    = "SELECT MAX(".$tablename.".".$table->getIdentifier().") as $tablename FROM ".$tablename;
                 $values[$tablename] = 0;
                 $array[] = $tablename;
             }
@@ -85,11 +85,11 @@ class Doctrine_Session_Mysql extends Doctrine_Session_Common {
             $increment = false;
             $id        = null;
             $keys      = $table->getPrimaryKeys();
-            if(count($keys) == 1 && $keys[0] == "id") {
+            if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
 
                 // record uses auto_increment column
 
-                $sql  = "SELECT MAX(id) FROM ".$record->getTable()->getTableName();
+                $sql  = "SELECT MAX(".$table->getIdentifier().") FROM ".$record->getTable()->getTableName();
                 $stmt = $this->getDBH()->query($sql);
                 $data = $stmt->fetch(PDO::FETCH_NUM);
                 $id   = $data[0];
@@ -111,20 +111,8 @@ class Doctrine_Session_Mysql extends Doctrine_Session_Common {
                     $id++;
                 }
 
+                $array = $record->getPrepared();
 
-                $array = $record->getModified();
-
-                foreach($record->getTable()->getInheritanceMap() as $k=>$v):
-                    $array[$k] = $v;
-                endforeach;
-
-                foreach($array as $k => $value) {
-                    if($value instanceof Doctrine_Record) {
-                        $array[$k] = $value->getID();
-                        $record->set($k,$value->getID());
-                    }
-                }
-                
                 if(isset($this->validator)) {
                     if( ! $this->validator->validateRecord($record)) {
                         continue;

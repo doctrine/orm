@@ -129,7 +129,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $e->code     = 1;
 
         // ADDING NEW RECORD
-
         $this->assertEqual($e->code,1);
         $this->assertEqual($e->file_md5, md5(0));
         $this->assertEqual($e->message, "user error");
@@ -163,10 +162,10 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($e2->Description[1]->file_md5, $e2->file_md5);
 
         $e->save();
-
+        
         $coll = $this->session->query("FROM Error-I");
         $e = $coll[0];
-        
+
 
         $this->assertEqual($e->code,1);
         $this->assertEqual($e->file_md5, md5(0));

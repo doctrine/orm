@@ -53,13 +53,14 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
             return false;
 
         $id  = $record->getID();
+        $identifier = $this->table->getIdentifier();
         foreach($this->data as $key => $v) {
             if(is_object($v)) {
                 if($v->getID() == $id)
                     break;
 
-            } elseif(is_array($v["id"])) {
-                if($v["id"] == $id)
+            } elseif(is_array($v[$identifier])) {
+                if($v[$identifier] == $id)
                     break;
             }
         }
@@ -77,7 +78,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
                 if(is_object($this->data[$i]))
                     $id = $this->data[$i]->getID();
                 elseif(is_array($this->data[$i]))
-                    $id = $this->data[$i]["id"];
+                    $id = $this->data[$i][$identifier];
 
 
                 $a[$i] = $id;
@@ -87,10 +88,9 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
 
             $pk     = $this->table->getPrimaryKeys();
             $query  = $this->table->getQuery()." WHERE ";
-            $query .= ($c > 1)?$pk[0]." IN (":$pk[0]." = ";
+            $query .= ($c > 1)?$identifier." IN (":$pk[0]." = ";
             $query .= substr(str_repeat("?, ",count($a)),0,-2);
             $query .= ($c > 1)?") ORDER BY ".$pk[0]." ASC":"";
-
 
             $stmt  = $this->table->getSession()->execute($query,array_values($a));
 

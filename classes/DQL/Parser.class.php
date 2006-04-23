@@ -348,7 +348,7 @@ class Doctrine_DQL_Parser {
                      * remove duplicated data rows and map data into objects
                      */
                     foreach($data as $key => $row):
-                        if(empty($row) || empty($row['id']))
+                        if(empty($row))
                             continue;
 
                         $key  = ucwords($key);
@@ -725,23 +725,24 @@ class Doctrine_DQL_Parser {
             $reference = implode(".",$a);
             $objTable   = $this->session->getTable(end($a));
             $where     = $objTable->getTableName().".".$field." ".$operator." ".$value;
+
             if(count($a) > 1 && isset($a[1])) {
                 $root = $a[0];
                 $fk = $this->tnames[$root]->getForeignKey($a[1]);
                 if($fk instanceof Doctrine_Association) {
                 $asf = $fk->getAssociationFactory();
                     switch($fk->getType()):
-                        case Doctrine_Table::ONE_AGGREGATE:
-                        case Doctrine_Table::ONE_COMPOSITE:
+                        case Doctrine_Relation::ONE_AGGREGATE:
+                        case Doctrine_Relation::ONE_COMPOSITE:
 
                         break;
-                        case Doctrine_Table::MANY_AGGREGATE:
-                        case Doctrine_Table::MANY_COMPOSITE:
+                        case Doctrine_Relation::MANY_AGGREGATE:
+                        case Doctrine_Relation::MANY_COMPOSITE:
                             $b = array_shift($a);
                             $b = array_shift($a);
                             $graph = new Doctrine_DQL_Parser($this->session);
                             $graph->parseQuery("FROM $b-l WHERE $where");
-                            $where = $this->tnames[$root]->getTableName().".id IN (SELECT ".$fk->getLocal()." FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." IN (".$graph->getQuery()."))";
+                            $where = $this->tnames[$root]->getTableName().".".$this->tnames[$root]->getIdentifier()." IN (SELECT ".$fk->getLocal()." FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." IN (".$graph->getQuery()."))";
                         break;
                     endswitch;
                 } else
@@ -782,15 +783,15 @@ class Doctrine_DQL_Parser {
                     if($fk instanceof Doctrine_ForeignKey ||
                        $fk instanceof Doctrine_LocalKey) {
                         switch($fk->getType()):
-                            case Doctrine_Table::ONE_AGGREGATE:
-                            case Doctrine_Table::ONE_COMPOSITE:
+                            case Doctrine_Relation::ONE_AGGREGATE:
+                            case Doctrine_Relation::ONE_COMPOSITE:
 
                                 $this->where[] = "(".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign().")";
                                 $this->from[$tname]  = true;
                                 $this->from[$tname2] = true;
                             break;
-                            case Doctrine_Table::MANY_AGGREGATE:
-                            case Doctrine_Table::MANY_COMPOSITE:
+                            case Doctrine_Relation::MANY_AGGREGATE:
+                            case Doctrine_Relation::MANY_COMPOSITE:
                                 $this->join[$tname]  = "LEFT JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
                                 $this->joined[]      = $tname2;
                                 $this->from[$tname]  = true;
@@ -800,12 +801,12 @@ class Doctrine_DQL_Parser {
                         $asf = $fk->getAssociationFactory();
 
                         switch($fk->getType()):
-                            case Doctrine_Table::ONE_AGGREGATE:
-                            case Doctrine_Table::ONE_COMPOSITE:
+                            case Doctrine_Relation::ONE_AGGREGATE:
+                            case Doctrine_Relation::ONE_COMPOSITE:
 
                             break;
-                            case Doctrine_Table::MANY_AGGREGATE:
-                            case Doctrine_Table::MANY_COMPOSITE:
+                            case Doctrine_Relation::MANY_AGGREGATE:
+                            case Doctrine_Relation::MANY_COMPOSITE:
 
                                 //$this->addWhere("SELECT ".$fk->getLocal()." FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." IN (SELECT ".$fk->getTable()->getComponentName().")");
                                 $this->from[$tname]  = true;

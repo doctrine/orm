@@ -59,9 +59,17 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function getTable() {
         return $this->table;
     }
+    /**
+     * whether or not an offset batch has been expanded
+     * @return boolean
+     */
     public function isExpanded($offset) {
         return isset($this->expanded[$offset]);
     }
+    /**
+     * whether or not this collection is expandable
+     * @return boolean
+     */
     public function isExpandable() {
         return $this->expandable;
     }
@@ -175,7 +183,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     $ids = $this->getPrimaryKeys();
     
                     if( ! empty($ids)) {
-                        $where[] = "id NOT IN (".substr(str_repeat("?, ",count($ids)),0,-2).")";
+                        $where[] = $this->table->getIdentifier()." NOT IN (".substr(str_repeat("?, ",count($ids)),0,-2).")";
                         $params  = array_merge($params,$ids);
                     }
 
@@ -191,7 +199,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 $table = $fk->getTable();
                 $graph   = new Doctrine_DQL_Parser($table->getSession());
     
-                $q       = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".id IN ($query)";
+                $q       = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($query)";
     
             }
         }
@@ -291,9 +299,11 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function getPrimaryKeys() {
         $list = array();
+        $name = $this->table->getIdentifier();
+
         foreach($this->data as $record):
-            if(is_array($record) && isset($record['id'])) {
-                $list[] = $record['id'];
+            if(is_array($record) && isset($record[$name])) {
+                $list[] = $record[$name];
             } else {
                 $list[] = $record->getID();
             }

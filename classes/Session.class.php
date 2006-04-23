@@ -47,7 +47,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @var array $tables                   an array containing all the initialized Doctrine_Table objects
      *                                      keys representing Doctrine_Table component names and values as Doctrine_Table objects
      */
-    protected $tables         = array();
+    protected $tables       = array();
     /**
      * @var Doctrine_Validator $validator   transaction validator
      */
@@ -299,7 +299,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         }
     }
     /**
-     * clear -- clears the whole registry
+     * clear        
+     * clears the whole registry
      * @return void
      */
     public function clear() {
@@ -415,7 +416,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         if(empty($this->insert))
             return false;
         
-        
+
 
         foreach($this->insert as $name => $inserts) {
             if( ! isset($inserts[0]))
@@ -427,11 +428,11 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             $increment = false;
             $id        = null;
             $keys      = $table->getPrimaryKeys();
-            if(count($keys) == 1 && $keys[0] == "id") {
+            if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
 
                 // record uses auto_increment column
 
-                $sql  = "SELECT MAX(id) FROM ".$record->getTable()->getTableName();
+                $sql  = "SELECT MAX(".$table->getIdentifier().") FROM ".$record->getTable()->getTableName();
                 $stmt = $this->dbh->query($sql);
                 $data = $stmt->fetch(PDO::FETCH_NUM);
                 $id   = $data[0];
@@ -474,10 +475,10 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             $keys      = $table->getPrimaryKeys();
             $tablename = $table->getTableName();
 
-            if(count($keys) == 1 && $keys[0] == "id") {
+            if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
                 // record uses auto_increment column
 
-                $sql    = "SELECT MAX(id) FROM ".$tablename;
+                $sql    = "SELECT MAX(".$table->getIdentifier().") FROM ".$tablename;
                 $stmt   = $this->dbh->query($sql);
                 $data   = $stmt->fetch(PDO::FETCH_NUM);
                 $values[$tablename] = $data[0];
@@ -521,14 +522,16 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     public function bulkDelete() {
         foreach($this->delete as $name => $deletes) {
             $record = false;
-            $ids = array();
+            $ids    = array();
             foreach($deletes as $k => $record) {
                 $ids[] = $record->getID();
                 $record->setID(null);
             }
             if($record instanceof Doctrine_Record) {
+                $table  = $record->getTable();
+
                 $params  = substr(str_repeat("?, ",count($ids)),0,-2);
-                $query   = "DELETE FROM ".$record->getTable()->getTableName()." WHERE id IN(".$params.")";
+                $query   = "DELETE FROM ".$record->getTable()->getTableName()." WHERE ".$table->getIdentifier()." IN(".$params.")";
                 $this->execute($query,$ids);
 
                 $record->getTable()->getCache()->deleteMultiple($ids);
@@ -592,8 +595,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             if($fk instanceof Doctrine_ForeignKey ||
                $fk instanceof Doctrine_LocalKey) {
                 switch($fk->getType()):
-                    case Doctrine_Table::ONE_COMPOSITE:
-                    case Doctrine_Table::MANY_COMPOSITE:
+                    case Doctrine_Relation::ONE_COMPOSITE:
+                    case Doctrine_Relation::MANY_COMPOSITE:
                         $local = $fk->getLocal();
                         $foreign = $fk->getForeign();
 
@@ -630,10 +633,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      */
     private function update(Doctrine_Record $record) {
         $array = $record->getModified();
+
         if(empty($array))
             return false;
-
-
 
         $set   = array();
         foreach($array as $name => $value):
@@ -668,26 +670,16 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @return boolean
      */
     private function insert(Doctrine_Record $record,$id = null) {
-        $array = $record->getModified();
+        $array = $record->getPrepared();
+
         if(empty($array))
             return false;
 
-
-        foreach($record->getTable()->getInheritanceMap() as $k=>$v):
-            $array[$k] = $v;
-        endforeach;
-
         $seq = $record->getTable()->getSequenceName();
         if( ! empty($seq)) {
-            $id = $this->getNextID($seq);
-            $array["id"] = $id;
-        }
-
-        foreach($array as $k => $value) {
-            if($value instanceof Doctrine_Record) {
-                $array[$k] = $value->getID();
-                $record->set($k,$value->getID());
-            }
+            $id             = $this->getNextID($seq);
+            $name           = $record->getTable()->getIdentifier();
+            $array[$name]   = $id;
         }
 
         if(isset($this->validator)) {
@@ -717,8 +709,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     final public function deleteComposites(Doctrine_Record $record) {
         foreach($record->getTable()->getForeignKeys() as $fk) {
             switch($fk->getType()):
-                case Doctrine_Table::ONE_COMPOSITE:
-                case Doctrine_Table::MANY_COMPOSITE:
+                case Doctrine_Relation::ONE_COMPOSITE:
+                case Doctrine_Relation::MANY_COMPOSITE:
                     $obj = $record->get($fk->getTable()->getComponentName());
                     $obj->delete();
                 break;

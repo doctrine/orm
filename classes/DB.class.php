@@ -66,9 +66,9 @@ class Doctrine_DB extends PDO implements Countable, IteratorAggregate {
         try {
             $this->queries[] = $query;
             $time = microtime();
-    
+
             $stmt = parent::query($query);
-    
+
             $this->exectimes[] = (microtime() - $time);
             return $stmt;
         } catch(PDOException $e) {

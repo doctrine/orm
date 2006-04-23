@@ -1,27 +1,30 @@
 <?php
 require_once("UnitTestCase.class.php");
 class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
+    public function testGetIdentifier() {
+        $table = $this->session->getTable("User");
+    }
     public function testGetForeignKey() {
         $fk = $this->objTable->getForeignKey("Group");
         $this->assertTrue($fk instanceof Doctrine_Association);
         $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
-        $this->assertTrue($fk->getType() == Doctrine_Table::MANY_AGGREGATE);
+        $this->assertTrue($fk->getType() == Doctrine_Relation::MANY_AGGREGATE);
         $this->assertTrue($fk->getLocal() == "user_id");
         $this->assertTrue($fk->getForeign() == "group_id");
 
         $fk = $this->objTable->getForeignKey("Email");
         $this->assertTrue($fk instanceof Doctrine_LocalKey);
         $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
-        $this->assertTrue($fk->getType() == Doctrine_Table::ONE_COMPOSITE);
+        $this->assertTrue($fk->getType() == Doctrine_Relation::ONE_COMPOSITE);
         $this->assertTrue($fk->getLocal() == "email_id");
-        $this->assertTrue($fk->getForeign() == "id");
+        $this->assertTrue($fk->getForeign() == $fk->getTable()->getIdentifier());
 
 
         $fk = $this->objTable->getForeignKey("Phonenumber");
         $this->assertTrue($fk instanceof Doctrine_ForeignKey);
         $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
-        $this->assertTrue($fk->getType() == Doctrine_Table::MANY_COMPOSITE);
-        $this->assertTrue($fk->getLocal() == "id");
+        $this->assertTrue($fk->getType() == Doctrine_Relation::MANY_COMPOSITE);
+        $this->assertTrue($fk->getLocal() == $this->objTable->getIdentifier());
         $this->assertTrue($fk->getForeign() == "entity_id");
     }
     public function testGetComponentName() {

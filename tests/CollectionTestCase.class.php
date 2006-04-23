@@ -37,7 +37,8 @@ class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
 
         $this->assertTrue($coll[2]->getState() == Doctrine_Record::STATE_PROXY);
 
-        $generator = new Doctrine_IndexGenerator("id");
+
+        $generator = new Doctrine_IndexGenerator($this->objTable->getIdentifier());
         $coll->setGenerator($generator);
         $generator = $coll->getGenerator();
         $this->assertEqual($generator->getIndex($this->old), 4);

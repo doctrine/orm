@@ -6,6 +6,7 @@ class Entity extends Doctrine_Record {
         $this->ownsOne("Account","Account.entity_id");
     }
     public function setTableDefinition() {
+        $this->hasColumn("id","integer",20,"autoincrement|primary");
         $this->hasColumn("name","string",50);
         $this->hasColumn("loginname","string",20,"unique");
         $this->hasColumn("password","string",16);
@@ -84,7 +85,6 @@ class Groupuser extends Doctrine_Record {
         $this->hasColumn("user_id","integer");
     }
 }
-
 class Phonenumber extends Doctrine_Record { 
     public function setTableDefinition() {
         $this->hasColumn("phonenumber","string",20);
