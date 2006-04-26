@@ -8,11 +8,11 @@ class Doctrine_Validator {
      */
 
     /**
-     * constant for length error
+     * constant for length validation error
      */
     const ERR_LENGTH = 0;
     /**
-     * constant for type error
+     * constant for type validation error
      */
     const ERR_TYPE   = 1;
     /**
@@ -20,7 +20,7 @@ class Doctrine_Validator {
      */
     const ERR_VALID  = 2;
     /**
-     * constant for unique validator error
+     * constant for unique validation error
      */
     const ERR_UNIQUE = 3;
     
@@ -120,7 +120,7 @@ class Doctrine_Validator {
         $type = gettype($var);
         switch($type):
             case "string":
-                if(preg_match("/^[0-9]*$/",$var)) return "integer";
+                if(preg_match("/^[0-9]+$/",$var)) return "integer";
                 elseif(is_numeric($var)) return "float";
                 else return $type;
             break;
