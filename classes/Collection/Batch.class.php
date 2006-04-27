@@ -142,7 +142,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
 
 
         if(isset($this->reference_field))
-            $this->data[$key]->set($this->reference_field,$this->reference);
+            $this->data[$key]->rawSet($this->reference_field,$this->reference);
 
 
         return $this->data[$key];

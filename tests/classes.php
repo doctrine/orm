@@ -124,4 +124,31 @@ class Song extends Doctrine_Record {
         $this->hasColumn("title","string",30);
     }
 }
+
+class Task extends Doctrine_Record {
+   public function setUp() {
+      $this->hasMany("Resource","Assignment.resource_id"); 
+      $this->hasMany("Task","Task.parent_id"); 
+   } 
+   public function setTableDefinition() {
+      $this->hasColumn("name","string",100); 
+      $this->hasColumn("parent_id","integer"); 
+   } 
+} 
+
+class Resource extends Doctrine_Record {
+   public function setUp() {
+      $this->hasMany("Task","Assignment.task_id");
+   } 
+   public function setTableDefinition() {
+      $this->hasColumn("name","string",100); 
+   } 
+} 
+
+class Assignment extends Doctrine_Record {
+    public function setTableDefinition() {
+       $this->hasColumn("task_id","integer"); 
+       $this->hasColumn("resource_id","integer"); 
+    } 
+}
 ?>

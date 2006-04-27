@@ -10,7 +10,6 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $email = $this->old->Email;
         $email->address = "zYne@invalid";
 
-        $this->assertTrue($this->old->isLoaded());
         $this->assertTrue($this->old->getModified() == $set);
 
         $validator = new Doctrine_Validator();

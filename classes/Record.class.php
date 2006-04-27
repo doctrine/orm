@@ -87,10 +87,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @var integer $oid                    object identifier
      */
     private $oid;
-    /**
-     * @var boolean $loaded                 whether or not this object has its data loaded from database
-     */
-    private $loaded      = false;
 
     /**
      * constructor
@@ -149,8 +145,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
                 if($cols <= 1)
                     $this->state  = Doctrine_Record::STATE_PROXY;
-                else
-                    $this->loaded = true;
 
                 $this->prepareIdentifiers();
 
@@ -176,14 +170,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function getOID() {
         return $this->oid;
-    }
-    /**
-     * isLoaded
-     * whether or not this object has been fully loaded
-     * @return boolean
-     */
-    public function isLoaded() {
-        return $this->loaded;                          	
     }
     /**
      * cleanData
@@ -245,7 +231,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         unset($this->references);    
         unset($this->originals);
         unset($this->oid);
-        unset($this->loaded);
 
         foreach($this->data as $k=>$v) {
             if($v instanceof Doctrine_Record)
@@ -272,8 +257,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->table = $sess->getTable($name);
 
         $this->table->getRepository()->add($this);
-
-        $this->loaded = true;
 
         $this->cleanData();
 
@@ -335,7 +318,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->prepareIdentifiers();
 
-        $this->loaded   = true;
         $this->state    = Doctrine_Record::STATE_CLEAN;
 
         return true;
@@ -360,7 +342,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->state    = Doctrine_Record::STATE_CLEAN;
         $this->modified = array();
-        $this->loaded   = true;
     }
     /**
      * return the factory that created this data access object
@@ -389,29 +370,25 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
             // check if the property is not loaded (= it is an empty array)
             if(is_array($this->data[$name])) {
-                
-                if( ! $this->loaded) {
-                
-                    // no use trying to load the data from database if the Doctrine_Record is new or clean
-                    if($this->state != Doctrine_Record::STATE_TDIRTY &&
-                       $this->state != Doctrine_Record::STATE_TCLEAN &&
-                       $this->state != Doctrine_Record::STATE_CLEAN) {
 
-                        if( ! empty($this->collections)) {
-                            foreach($this->collections as $collection) {
-                                $collection->load($this);
-                            }
-                        } else {
-                            $this->refresh();
+                // no use trying to load the data from database if the Doctrine_Record is not a proxy
+                if($this->state != Doctrine_Record::STATE_TDIRTY &&
+                   $this->state != Doctrine_Record::STATE_TCLEAN &&
+                   $this->state != Doctrine_Record::STATE_CLEAN &&
+                   $this->state != Doctrine_Record::STATE_DIRTY) {
+
+                    if( ! empty($this->collections)) {
+                        foreach($this->collections as $collection) {
+                            $collection->load($this);
                         }
-                        $this->state = Doctrine_Record::STATE_CLEAN;
+                    } else {
+                        $this->refresh();
                     }
-                    $this->loaded = true;
+                    $this->state = Doctrine_Record::STATE_CLEAN;
                 }
-                
+
                 if(is_array($this->data[$name]))
                     return null;
-
             }
             return $this->data[$name];
         }
@@ -437,8 +414,22 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         if( ! empty($id))
             $value = $id;
-
-        $this->data[$name] = $value;
+            
+        if(isset($this->data[$name])) {
+            if( ! is_array($this->data[$name])) {
+                if($this->data[$name] !== $value) {
+                    switch($this->state):
+                        case Doctrine_Record::STATE_CLEAN:
+                            $this->state = Doctrine_Record::STATE_DIRTY;
+                        break;
+                        case Doctrine_Record::STATE_TCLEAN:
+                            $this->state = Doctrine_Record::STATE_TDIRTY;
+                    endswitch;
+                }
+            }
+            $this->data[$name] = $value;
+            $this->modified[]  = $name;
+        }
     }
     /**
      * set
@@ -452,8 +443,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function set($name,$value) {
         if(isset($this->data[$name])) {
-            $old = $this->get($name);
-            
 
             if($value instanceof Doctrine_Record) {
                 $id = $value->getID();
@@ -461,13 +450,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 if( ! empty($id)) 
                     $value = $value->getID();
             }
+            
+            $old = $this->get($name);
 
             if($old !== $value) {
                 $this->data[$name] = $value;
-
                 $this->modified[]  = $name;
-
-
                 switch($this->state):
                     case Doctrine_Record::STATE_CLEAN:
                     case Doctrine_Record::STATE_PROXY:

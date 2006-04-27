@@ -119,9 +119,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
             foreach($this->getNormalIterator() as $record) {
                 if($value !== null) {
-                    $record->set($this->reference_field, $value);
+                    $record->rawSet($this->reference_field, $value);
                 } else {
-                    $record->set($this->reference_field, $this->reference);
+                    $record->rawSet($this->reference_field, $this->reference);
                 }
             }
         }
@@ -284,9 +284,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 $value = $this->reference->get($this->relation->getLocal());
 
                 if($value !== null) {
-                    $this->data[$key]->set($this->reference_field, $value);
+                    $this->data[$key]->rawSet($this->reference_field, $value);
                 } else {
-                    $this->data[$key]->set($this->reference_field, $this->reference);
+                    $this->data[$key]->rawSet($this->reference_field, $this->reference);
                 }
             }
         }

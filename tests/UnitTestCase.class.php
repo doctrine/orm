@@ -32,7 +32,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->manager->setAttribute(Doctrine::ATTR_CACHE, Doctrine::CACHE_NONE);
         $this->manager->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_IMMEDIATE);
         
-        $this->tables = array("entity","email","phonenumber","groupuser","album","song","element","error","description","address","account");
+        $this->tables = array("entity","email","phonenumber","groupuser","album","song","element","error","description","address","account","task","resource","assignment");
         $tables = $this->tables;
 
 

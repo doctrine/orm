@@ -829,3 +829,5 @@ class Doctrine_DQL_Parser {
 }
 
 ?>
+
+

@@ -2,6 +2,43 @@
 require_once("UnitTestCase.class.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
+    public function testManyToManyTreeStructure() {
+        $task = $this->session->create("Task");
+
+        $task->name = "Task 1";
+        $task->Resource[0]->name = "Resource 1";
+
+        $this->session->flush();
+        $this->assertEqual($this->dbh->query("SELECT COUNT(*) FROM assignment")->fetch(PDO::FETCH_NUM),array(1));
+
+        $task = new Task();
+        $this->assertTrue($task instanceof Task);
+        $this->assertEqual($task->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertTrue($task->Task[0] instanceof Task);
+
+        $this->assertEqual($task->Task[0]->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertTrue($task->Resource[0] instanceof Resource);
+        $this->assertEqual($task->Resource[0]->getState(), Doctrine_Record::STATE_TCLEAN);
+
+        $task->name = "Task 1";
+        $task->Resource[0]->name = "Resource 1";
+        $task->Task[0]->name = "Subtask 1";
+
+        $this->assertEqual($task->name, "Task 1");
+        $this->assertEqual($task->Resource[0]->name, "Resource 1");
+        $this->assertEqual($task->Resource->count(), 1);
+        $this->assertEqual($task->Task[0]->name, "Subtask 1");
+
+        $this->session->flush();
+        
+        $task = $task->getTable()->find($task->getID());
+
+        $this->assertEqual($task->name, "Task 1");
+        $this->assertEqual($task->Resource[0]->name, "Resource 1");
+        $this->assertEqual($task->Resource->count(), 1);
+        $this->assertEqual($task->Task[0]->name, "Subtask 1");  
+
+    } 
 
     public function testOne2OneForeign() {
 

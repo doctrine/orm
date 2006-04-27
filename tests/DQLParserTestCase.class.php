@@ -207,3 +207,5 @@ class Doctrine_DQL_ParserTestCase extends Doctrine_UnitTestCase {
 
 }
 ?>
+
+
