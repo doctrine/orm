@@ -365,16 +365,16 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return true;
     }
     /**
-     * @param Doctrine_DQL_Parser $graph
+     * @param Doctrine_Query $query
      * @param integer $key              
      */
-    public function populate(Doctrine_DQL_Parser $graph) {
+    public function populate(Doctrine_Query $query) {
         $name = $this->table->getComponentName();
 
         if($this instanceof Doctrine_Collection_Immediate ||
            $this instanceof Doctrine_Collection_Offset) {
 
-            $data = $graph->getData($name);
+            $data = $query->getData($name);
             if(is_array($data)) {
                 foreach($data as $k=>$v):
                     $this->table->setData($v);
@@ -382,7 +382,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 endforeach;
             }
         } elseif($this instanceof Doctrine_Collection_Batch) {
-            $this->data = $graph->getData($name);
+            $this->data = $query->getData($name);
 
             if(isset($this->generator)) {
                 foreach($this->data as $k => $v) {

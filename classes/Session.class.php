@@ -2,7 +2,8 @@
 require_once("Configurable.class.php");
 require_once("Record.class.php");
 /**
- * @author      Konsta Vesterinen
+ * Doctrine_Session
+ *
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
  * @license     LGPL
@@ -33,11 +34,11 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @see Doctrine_Session::STATE_* constants
      * @var boolean $state                  the current state of the session
      */
-    private $state          = 0;
+    private $state              = 0;
     /**
      * @var integer $transaction_level      the nesting level of transactions, used by transaction methods
      */
-    private $transaction_level = 0;
+    private $transaction_level  = 0;
 
     /**
      * @var PDO $cacheHandler
@@ -47,7 +48,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @var array $tables                   an array containing all the initialized Doctrine_Table objects
      *                                      keys representing Doctrine_Table component names and values as Doctrine_Table objects
      */
-    protected $tables       = array();
+    protected $tables           = array();
     /**
      * @var Doctrine_Validator $validator   transaction validator
      */
@@ -56,17 +57,17 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @var array $update                   two dimensional pending update list, the records in
      *                                      this list will be updated when transaction is committed
      */
-    protected $update       = array();
+    protected $update           = array();
     /**
      * @var array $insert                   two dimensional pending insert list, the records in
      *                                      this list will be inserted when transaction is committed
      */
-    protected $insert       = array();
+    protected $insert           = array();
     /**
      * @var array $delete                   two dimensional pending delete list, the records in
      *                                      this list will be deleted when transaction is committed
      */
-    protected $delete       = array();
+    protected $delete           = array();
 
 
 
@@ -103,19 +104,26 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         return $this->cacheHandler;
     }
     /**
+     * returns the state of this session
+     *
+     * @see Doctrine_Session::STATE_* constants
      * @return integer          the session state
      */
     public function getState() {
         return $this->state;
     }
     /**
+     * returns the manager that created this session
+     *
      * @return Doctrine_Manager
      */
     public function getManager() {
         return $this->getParent();
     }
     /**
-     * @return object PDO       the database handle
+     * returns the database handler of which this session uses
+     *
+     * @return object PDO       the database handler
      */
     public function getDBH() {
         return $this->dbh;
@@ -125,7 +133,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * queries the database with Doctrine Query Language
      */
     final public function query($query,array $params = array()) {
-        $parser = new Doctrine_DQL_Parser($this);
+        $parser = new Doctrine_Query($this);
 
         return $parser->query($query, $params);
     }
@@ -145,7 +153,10 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         return $this->dbh->query($query);
     }
     /**
-     * @return object PDOStatement      -- the PDOStatement object
+     * @param string $query     sql query
+     * @param array $params     query parameters
+     *
+     * @return PDOStatement
      */
     public function execute($query, array $params = array()) {
         if( ! empty($params)) {
@@ -157,7 +168,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         }
     }
     /**
-     * @param $mixed -- Doctrine_Table name
+     * whether or not this session has table $name initialized
+     *
+     * @param $mixed $name
      * @return boolean
      */
     public function hasTable($name) {

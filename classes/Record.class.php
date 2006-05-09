@@ -372,11 +372,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if(is_array($this->data[$name])) {
 
                 // no use trying to load the data from database if the Doctrine_Record is not a proxy
-                if($this->state != Doctrine_Record::STATE_TDIRTY &&
-                   $this->state != Doctrine_Record::STATE_TCLEAN &&
-                   $this->state != Doctrine_Record::STATE_CLEAN &&
-                   $this->state != Doctrine_Record::STATE_DIRTY) {
-
+                if($this->state == Doctrine_Record::STATE_PROXY) {   
                     if( ! empty($this->collections)) {
                         foreach($this->collections as $collection) {
                             $collection->load($this);
@@ -501,7 +497,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 endswitch;
 
             } elseif($fk instanceof Doctrine_Association) {
-                // many-to-many relation found
+                // join table relation found
                 if( ! ($value instanceof Doctrine_Collection))
                     throw new Doctrine_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
             }
@@ -822,7 +818,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $name    = $table->getComponentName();
         $local   = $fk->getLocal();
         $foreign = $fk->getForeign();
-        $graph   = $table->getDQLParser();
+        $graph   = $table->getQueryObject();
         $type    = $fk->getType();
 
         switch($this->getState()):
@@ -895,20 +891,18 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     
                             $this->originals[$name]  = clone $coll;
 
-                        } elseif($fk instanceof Doctrine_Association) {
-
-        
+                        } elseif($fk instanceof Doctrine_Association) {            
                             $asf     = $fk->getAssociationFactory();
                             $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local." = ?";
         
-                            $graph   = new Doctrine_DQL_Parser($table->getSession());
+                            $graph   = new Doctrine_Query($table->getSession());
                             $query   = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($query)";
 
                             $coll    = $graph->query($query, array($this->getID()));
         
                             $this->references[$name] = $coll;
                             $this->originals[$name]  = clone $coll;
-                                                                      	
+
                         }
                  endswitch;
             break;

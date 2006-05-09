@@ -68,7 +68,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     private $cache;
     /**
-     * @var Doctrine_Table_Description $description     columns object for this table
+     * @var array $columns                              an array of column definitions
      */
     private $columns;
     /**
@@ -95,8 +95,6 @@ class Doctrine_Table extends Doctrine_Configurable {
         $this->session = Doctrine_Manager::getInstance()->getCurrentSession();
 
         $this->setParent($this->session);
-
-        $name  = ucwords(strtolower($name));
 
         $this->name = $name;
 
@@ -340,12 +338,12 @@ class Doctrine_Table extends Doctrine_Configurable {
     }
     /**
      * @param string $objTableName
-     * @param string $fkField
+     * @param string $field
      * @return void
      */
-    final public function bind($objTableName,$fkField,$type,$localKey) {
+    final public function bind($objTableName,$field,$type,$localKey) {
         $name  = (string) $objTableName;
-        $field = (string) $fkField;
+        $field = (string) $field;
 
         if(isset($this->foreignKeys[$name]))
             throw new InvalidKeyException();
@@ -387,7 +385,7 @@ class Doctrine_Table extends Doctrine_Configurable {
     }
     /**
      * @param string $name              component name of which a foreign key object is bound
-     * @return Doctrine_ForeignKey
+     * @return Doctrine_Relation
      */
     final public function getForeignKey($name) {
         if(isset($this->foreignKeys[$name]))
@@ -540,7 +538,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @return Doctrine_Collection            a collection of all data access objects
      */
     public function findAll() {
-        $graph = new Doctrine_DQL_Parser($this->session);
+        $graph = new Doctrine_Query($this->session);
         $users = $graph->query("FROM ".$this->name);
         return $users;
     }
@@ -549,7 +547,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @return Doctrine_Collection            a collection of data access objects
      */
     public function findBySql($sql, array $params = array()) {
-        $graph = new Doctrine_DQL_Parser($this->session);
+        $graph = new Doctrine_Query($this->session);
         $users = $graph->query("FROM ".$this->name." WHERE ".$sql, $params);
         return $users;
     }
@@ -587,16 +585,19 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $this->columns;
     }
     /**
-     * @param integer $fetchMode
-     * @return Doctrine_DQL_Parser             a Doctrine_DQL_Parser object
+     * @return Doctrine_Query                           a Doctrine_Query object
      */
-    public function getDQLParser() {
-        $graph = new Doctrine_DQL_Parser($this->getSession());
+    public function getQueryObject() {
+        $graph = new Doctrine_Query($this->getSession());
         $graph->load($this->getComponentName());
         return $graph;
     }
     /**
      * execute
+     * @param string $query
+     * @param array $array
+     * @param integer $limit
+     * @param integer $offset
      */
     public function execute($query, array $array = array(), $limit = null, $offset = null) {
         $coll  = new Doctrine_Collection($this);

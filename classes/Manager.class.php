@@ -12,19 +12,19 @@ require_once("EventListener.class.php");
  */
 class Doctrine_Manager extends Doctrine_Configurable implements Countable, IteratorAggregate {
     /**
-     * @var array $session      an array containing all the opened sessions
+     * @var array $session          an array containing all the opened sessions
      */
     private $sessions   = array();
     /**
-     * @var integer $index
+     * @var integer $index          the incremented index
      */
     private $index      = 0;
     /**
-     * @var integer $currIndex
+     * @var integer $currIndex      the current session index
      */
     private $currIndex  = 0;
     /**
-     * @var string $root
+     * @var string $root            root directory
      */
     private $root;
 
@@ -36,6 +36,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * setDefaultAttributes
+     * sets default attributes
+     *
+     * @return boolean
      */
     final public function setDefaultAttributes() {
         static $init = false;
@@ -61,7 +64,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 if($old === null)
                     $this->setAttribute($attribute,$value);
             }
+            return true;
         }
+        return false;
     }
     /**
      * returns the root directory of Doctrine
@@ -78,7 +83,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     final public static function getInstance() {
         static $instance;
         if( ! isset($instance))
-            $instance = new Doctrine_Manager();
+            $instance = new self();
 
         return $instance;
     }
@@ -157,6 +162,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * getSessions
+     * returns all opened sessions
+     *
      * @return array
      */
     final public function getSessions() {
@@ -177,14 +184,17 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * count
-     * @return integer                          the number of open sessions
+     * returns the number of opened sessions
+     *
+     * @return integer
      */
     public function count() {
         return count($this->sessions);
     }
     /**
      * getIterator
-     * returns an ArrayIterator that iterates through open sessions
+     * returns an ArrayIterator that iterates through all sessions
+     *
      * @return ArrayIterator
      */
     public function getIterator() {
@@ -193,6 +203,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     /**
      * getCurrentSession
      * returns the current session
+     *
      * @throws Doctrine_Session_Exception       if there are no open sessions
      * @return Doctrine_Session
      */

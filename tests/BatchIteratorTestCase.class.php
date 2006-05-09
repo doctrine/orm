@@ -2,7 +2,7 @@
 require_once("UnitTestCase.class.php");
 class Doctrine_BatchIteratorTestCase extends Doctrine_UnitTestCase {
     public function testIterator() {
-        $graph = new Doctrine_DQL_Parser($this->session);
+        $graph = new Doctrine_Query($this->session);
         $entities = $graph->query("FROM Entity");
         $i = 0;
         foreach($entities as $entity) {
