@@ -428,8 +428,6 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     public function bulkInsert() {
         if(empty($this->insert))
             return false;
-        
-
 
         foreach($this->insert as $name => $inserts) {
             if( ! isset($inserts[0]))
@@ -438,18 +436,12 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             $record    = $inserts[0];
             $table     = $record->getTable();
             $seq       = $table->getSequenceName();
+
             $increment = false;
-            $id        = null;
             $keys      = $table->getPrimaryKeys();
+            $id        = null;
+
             if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
-
-                // record uses auto_increment column
-
-                $sql  = "SELECT MAX(".$table->getIdentifier().") FROM ".$record->getTable()->getTableName();
-                $stmt = $this->dbh->query($sql);
-                $data = $stmt->fetch(PDO::FETCH_NUM);
-                $id   = $data[0];
-                $stmt->closeCursor();
                 $increment = true;
             }
 
@@ -459,13 +451,18 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 // listen the onPreInsert event
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
 
-                if($increment) {
+
+                $this->insert($record);
+
+                if($increment && $k == 0) {
                     // record uses auto_increment column
-                    $id++;
+    
+                    $id = $table->getMaxIdentifier();
                 }
+                
+                $record->setID($id);
+                $id++;
 
-
-                $this->insert($record,$id);
                 // listen the onInsert event
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
 
@@ -682,7 +679,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @param Doctrine_Record $record
      * @return boolean
      */
-    private function insert(Doctrine_Record $record,$id = null) {
+    private function insert(Doctrine_Record $record) {
         $array = $record->getPrepared();
 
         if(empty($array))
@@ -710,7 +707,6 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
 
         $stmt->execute(array_values($array));
 
-        $record->setID($id);
         return true;
     }
     /**

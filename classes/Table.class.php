@@ -639,6 +639,17 @@ class Doctrine_Table extends Doctrine_Configurable {
         $this->data = $data;
     }
     /**
+     * returns the maximum primary key value
+     *
+     * @return integer
+     */
+    final public function getMaxIdentifier() {
+        $sql  = "SELECT MAX(".$this->getIdentifier().") FROM ".$this->getTableName();
+        $stmt = $this->session->getDBH()->query($sql);
+        $data = $stmt->fetch(PDO::FETCH_NUM);
+        return isset($data[0])?$data[0]:1;
+    }
+    /**
      * @return boolean                  whether or not a newly created object is new or not
      */
     final public function isNewEntry() {

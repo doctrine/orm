@@ -6,6 +6,15 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
 
         //print_r($tree);
     }
+    public function testBulkInsert() {
+        $u1 = new User();
+        $u1->name = "Jean Reno";
+        $u1->save();
+
+        $id = $u1->getID();
+        $u1->delete();
+
+    }
 
     public function testFlush() {
 
@@ -35,16 +44,13 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
 
         $this->session->flush();
 
-        $this->assertTrue(gettype($user->getID()) == "integer");
-
-        $this->assertTrue(gettype($user->email_id) == "integer");
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
 
         $this->assertEqual(count($user->Group), 2);
 
-        $user = $this->objTable->find(12);
+        $user = $this->objTable->find($user->getID());
 
-        $this->assertEqual($user->getID(), 12);
+        $this->assertEqual($user->getID(), $user->getID());
 
         $this->assertTrue(is_numeric($user->getID()));
         $this->assertTrue(is_numeric($user->email_id));

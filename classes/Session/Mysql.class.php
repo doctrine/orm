@@ -68,9 +68,12 @@ class Doctrine_Session_Mysql extends Doctrine_Session_Common {
     /**
      * bulkInsert
      * inserts all the objects in the pending insert list into database
+     * TODO: THIS IS NOT WORKING YET AS THERE ARE BUGS IN COMPONENTS USING SELF-REFERENCENCING
      *
      * @return boolean
      */
+     
+     /**
     public function bulkInsert() {
         if(empty($this->insert))
             return false;
@@ -82,21 +85,7 @@ class Doctrine_Session_Mysql extends Doctrine_Session_Common {
             $record    = $inserts[0];
             $table     = $record->getTable();
             $seq       = $table->getSequenceName();
-            $increment = false;
-            $id        = null;
             $keys      = $table->getPrimaryKeys();
-            if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
-
-                // record uses auto_increment column
-
-                $sql  = "SELECT MAX(".$table->getIdentifier().") FROM ".$record->getTable()->getTableName();
-                $stmt = $this->getDBH()->query($sql);
-                $data = $stmt->fetch(PDO::FETCH_NUM);
-                $id   = $data[0];
-                $stmt->closeCursor();
-                $increment = true;
-            }
-
 
             $marks = array();
             $params = array();
@@ -104,12 +93,6 @@ class Doctrine_Session_Mysql extends Doctrine_Session_Common {
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
                 // listen the onPreInsert event
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
-
-
-                if($increment) {
-                    // record uses auto_increment column
-                    $id++;
-                }
 
                 $array = $record->getPrepared();
 
@@ -126,7 +109,6 @@ class Doctrine_Session_Mysql extends Doctrine_Session_Common {
                 $marks[$key][] = "(".substr(str_repeat("?, ",count($array)),0,-2).")";
                 $params[$key] = array_merge($params[$key], array_values($array));
 
-                $record->setID($id);
 
                 // listen the onInsert event
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
@@ -141,11 +123,28 @@ class Doctrine_Session_Mysql extends Doctrine_Session_Common {
                     $stmt->execute($params[$key]);
                 }
             }
+            if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
+
+                // record uses auto_increment column
+
+                $sql  = "SELECT MAX(".$table->getIdentifier().") FROM ".$record->getTable()->getTableName();
+                $stmt = $this->getDBH()->query($sql);
+                $data = $stmt->fetch(PDO::FETCH_NUM);
+                $id   = $data[0];
+                $stmt->closeCursor();
+                
+                foreach(array_reverse($inserts) as $record) {
+
+                    $record->setID((int) $id);
+                    $id--;
+                }
+            }
         }
 
         $this->insert = array();
         return true;
     }
+    */
 
 }
 ?>
