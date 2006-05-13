@@ -26,6 +26,8 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($fk->getType() == Doctrine_Relation::MANY_COMPOSITE);
         $this->assertTrue($fk->getLocal() == $this->objTable->getIdentifier());
         $this->assertTrue($fk->getForeign() == "entity_id");
+        
+        
     }
     public function testGetComponentName() {
         $this->assertTrue($this->objTable->getComponentName() == "User");

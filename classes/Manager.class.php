@@ -70,6 +70,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * returns the root directory of Doctrine
+     *
      * @return string
      */
     final public function getRoot() {
@@ -77,7 +78,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * getInstance                  
-     * this class uses the singleton pattern
+     * returns an instance of this class
+     * (this class uses the singleton pattern)
+     *
      * @return Doctrine_Manager
      */
     final public static function getInstance() {
@@ -171,6 +174,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * setCurrentSession
+     * sets the current session to $key
+     *
      * @param mixed $key                        the session key
      * @throws InvalidKeyException
      * @return void
@@ -217,6 +222,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     /**
      * __toString
      * returns a string representation of this object
+     *
      * @return string
      */
     public function __toString() {

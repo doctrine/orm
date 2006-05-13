@@ -97,7 +97,8 @@ class Element extends Doctrine_Record {
         $this->hasColumn("parent_id", "integer");
     }
     public function setUp() {
-        $this->hasMany("Element","Element.parent_id");
+        $this->hasMany("Element as Child","Child.parent_id");
+        $this->hasOne("Element as Parent","Element.parent_id");
     }
 }
 class Email extends Doctrine_Record {
@@ -127,8 +128,8 @@ class Song extends Doctrine_Record {
 
 class Task extends Doctrine_Record {
    public function setUp() {
-      $this->hasMany("Resource","Assignment.resource_id"); 
-      $this->hasMany("Task","Task.parent_id"); 
+      $this->hasMany("Resource","Assignment.resource_id");
+      $this->hasMany("Task as Subtask","Subtask.parent_id");
    } 
    public function setTableDefinition() {
       $this->hasColumn("name","string",100); 

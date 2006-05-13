@@ -55,6 +55,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         }
 
         foreach($tables as $name) {
+            $name = ucwords($name);
             $table = $this->session->getTable($name);
             $table->getCache()->deleteAll();
         }

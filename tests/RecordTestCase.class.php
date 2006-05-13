@@ -2,6 +2,7 @@
 require_once("UnitTestCase.class.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
+
     public function testManyToManyTreeStructure() {
         $task = $this->session->create("Task");
 
@@ -14,20 +15,20 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $task = new Task();
         $this->assertTrue($task instanceof Task);
         $this->assertEqual($task->getState(), Doctrine_Record::STATE_TCLEAN);
-        $this->assertTrue($task->Task[0] instanceof Task);
+        $this->assertTrue($task->Subtask[0] instanceof Task);
 
-        $this->assertEqual($task->Task[0]->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($task->Subtask[0]->getState(), Doctrine_Record::STATE_TCLEAN);
         $this->assertTrue($task->Resource[0] instanceof Resource);
         $this->assertEqual($task->Resource[0]->getState(), Doctrine_Record::STATE_TCLEAN);
 
         $task->name = "Task 1";
         $task->Resource[0]->name = "Resource 1";
-        $task->Task[0]->name = "Subtask 1";
+        $task->Subtask[0]->name = "Subtask 1";
 
         $this->assertEqual($task->name, "Task 1");
         $this->assertEqual($task->Resource[0]->name, "Resource 1");
         $this->assertEqual($task->Resource->count(), 1);
-        $this->assertEqual($task->Task[0]->name, "Subtask 1");
+        $this->assertEqual($task->Subtask[0]->name, "Subtask 1");
 
         $this->session->flush();
         
@@ -36,7 +37,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($task->name, "Task 1");
         $this->assertEqual($task->Resource[0]->name, "Resource 1");
         $this->assertEqual($task->Resource->count(), 1);
-        $this->assertEqual($task->Task[0]->name, "Subtask 1");  
+        $this->assertEqual($task->Subtask[0]->name, "Subtask 1");  
 
     } 
 
@@ -119,43 +120,53 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($user->getState() == Doctrine_Record::STATE_CLEAN);
         $this->assertTrue($user->name,"John Locke");
     }
+
     public function testTreeStructure() {
         $e = new Element();
-        $e->name = "parent";
-        $e->Element[0]->name = "child 1";
-        $e->Element[1]->name = "child 2";
 
-        $e->Element[1]->Element[0]->name = "child 1's child 1";
-        $e->Element[1]->Element[1]->name = "child 1's child 1";
+        $fk = $e->getTable()->getForeignKey("Child");
+        $this->assertTrue($fk instanceof Doctrine_ForeignKey);
+        $this->assertEqual($fk->getType(), Doctrine_Relation::MANY_AGGREGATE);
+        $this->assertEqual($fk->getForeign(), "parent_id");
+        $this->assertEqual($fk->getLocal(), "id");
+        
+
+
+        $e->name = "parent";
+        $e->Child[0]->name = "child 1";
+        $e->Child[1]->name = "child 2";
+
+        $e->Child[1]->Child[0]->name = "child 1's child 1";
+        $e->Child[1]->Child[1]->name = "child 1's child 1";
 
         $this->assertEqual($e->name,"parent");
-        $this->assertEqual($e->Element[0]->name,"child 1");
-        $this->assertEqual($e->Element[1]->name,"child 2");
-        $this->assertEqual($e->Element[1]->Element[0]->name,"child 1's child 1");
-        $this->assertEqual($e->Element[1]->Element[1]->name,"child 1's child 1");
+
+        $this->assertEqual($e->Child[0]->name,"child 1");
+        $this->assertEqual($e->Child[1]->name,"child 2");
+        $this->assertEqual($e->Child[1]->Child[0]->name,"child 1's child 1");
+        $this->assertEqual($e->Child[1]->Child[1]->name,"child 1's child 1");
+
 
 
         $this->session->flush();
 
-
-
-
         $e = $e->getTable()->find(1);
         $this->assertEqual($e->name,"parent");
 
-        $this->assertEqual($e->Element[0]->name,"child 1");
+        $this->assertEqual($e->Child[0]->name,"child 1");
 
         $c = $e->getTable()->find(2);
         $this->assertEqual($c->name, "child 1");
 
-
+        $this->assertEqual($e->Child[0]->parent_id, 1);
+        $this->assertEqual($e->Child[0]->Parent->getID(), $e->getID());
         
-        $this->assertEqual($e->Element[0]->parent_id, 1);
-        $this->assertEqual($e->Element[1]->parent_id, 1);
-        $this->assertEqual($e->Element[1]->Element[0]->name,"child 1's child 1");
-        $this->assertEqual($e->Element[1]->Element[1]->name,"child 1's child 1");
-        $this->assertEqual($e->Element[1]->Element[0]->parent_id, 3);
-        $this->assertEqual($e->Element[1]->Element[1]->parent_id, 3);
+
+        $this->assertEqual($e->Child[1]->parent_id, 1);
+        $this->assertEqual($e->Child[1]->Child[0]->name,"child 1's child 1");
+        $this->assertEqual($e->Child[1]->Child[1]->name,"child 1's child 1");
+        $this->assertEqual($e->Child[1]->Child[0]->parent_id, 3);
+        $this->assertEqual($e->Child[1]->Child[1]->parent_id, 3);
 
     }
 

@@ -1,8 +1,9 @@
 <?php
 /**
  * class Doctrine_Access
- * Doctrine_Record and Doctrine_Collection classes extend this base class
- * the purpose of DAOStrategy is to provice array access and property overload interface for these classes
+ *
+ * the purpose of Doctrine_Access is to provice array access 
+ * and property overload interface for subclasses
  */
 abstract class Doctrine_Access implements ArrayAccess {
     /**
@@ -33,6 +34,7 @@ abstract class Doctrine_Access implements ArrayAccess {
         return $this->get($name);
     }
     /**
+     * @param mixed $offset
      * @return boolean -- whether or not the data has a field $offset
      */
     public function offsetExists($offset) {

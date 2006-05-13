@@ -131,6 +131,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     /**
      * query
      * queries the database with Doctrine Query Language
+     *
+     * @param string $query         DQL query
+     * @param array $params         query parameters
      */
     final public function query($query,array $params = array()) {
         $parser = new Doctrine_Query($this);
@@ -149,7 +152,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     public function select($query,$limit = 0,$offset = 0) {
         if($limit > 0 || $offset > 0)
             $query = $this->modifyLimitQuery($query,$limit,$offset);
-        
+
         return $this->dbh->query($query);
     }
     /**
@@ -177,12 +180,13 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         return isset($this->tables[$name]);
     }
     /**
+     * returns a table object for given component name
+     *
      * @param string $name              component name
-     * @throws Doctrine_Table_Exception
      * @return object Doctrine_Table
      */
     public function getTable($name) {
-        $name = ucwords(strtolower($name));
+        // $name = ucwords(strtolower($name));
 
         if(isset($this->tables[$name]))
             return $this->tables[$name];
@@ -197,25 +201,32 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         }
     }
     /**
-     * @return array -- an array of all initialized tables
+     * returns an array of all initialized tables
+     *
+     * @return array
      */
     public function getTables() {
         return $this->tables;
     }
     /**
+     * returns an iterator that iterators through all 
+     * initialized table objects
+     *
      * @return ArrayIterator
      */
     public function getIterator() {
         return new ArrayIterator($this->tables);
     }
     /**
+     * returns the count of initialized table objects
+     *
      * @return integer
      */
     public function count() {
         return count($this->tables);
     }
     /**
-     * @param $objTable -- a Doctrine_Table object to be added into factory registry
+     * @param $objTable             a Doctrine_Table object to be added into registry
      * @return boolean
      */
     public function addTable(Doctrine_Table $objTable) {
@@ -228,6 +239,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         return true;
     }
     /**
+     * creates a record
+     *
      * create                       creates a record
      * @param string $name          component name
      * @return Doctrine_Record      Doctrine_Record object
@@ -237,6 +250,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     }
     /**
      * buildFlushTree
+     * builds a flush tree that is used in transactions
+     *
      * @return array
      */
     public function buildFlushTree() {
@@ -293,6 +308,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     /**
      * saveAll                      
      * saves all the records from all tables
+     *
+     * @return void
      */
     private function saveAll() {
         $tree = $this->buildFlushTree();
@@ -312,8 +329,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         }
     }
     /**
-     * clear        
+     * clear
      * clears the whole registry
+     *
      * @return void
      */
     public function clear() {
@@ -408,7 +426,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     }
     /**
      * rollback
-     * rolls back all the transactions
+     * rolls back all transactions
      * @return void
      */
     public function rollback() {
@@ -501,6 +519,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     /**
      * bulkUpdate
      * updates all objects in the pending update list
+     *
      * @return void
      */
     public function bulkUpdate() {
@@ -527,6 +546,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     }
     /**
      * bulkDelete
+     * deletes all records from the pending delete list
+     *
      * @return void
      */
     public function bulkDelete() {
@@ -549,10 +570,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         }
         $this->delete = array();
     }
-
-
-    
     /**
+     * saves a collection
+     *
      * @param Doctrine_Collection $coll
      * @return void
      */
@@ -566,6 +586,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $this->commit();
     }
     /**
+     * deletes all records from collection
+     *
      * @param Doctrine_Collection $coll
      * @return void
      */
@@ -577,6 +599,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $this->commit();
     }
     /**
+     * saves the given record
+     *
      * @param Doctrine_Record $record
      * @return void
      */
@@ -596,6 +620,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         endswitch;
     }
     /**
+     * saves all related records to $record
+     *
      * @param Doctrine_Record $record
      */
     final public function saveRelated(Doctrine_Record $record) {
@@ -638,6 +664,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         return $saveLater;
     }
     /**
+     * updates the given record
+     *
      * @param Doctrine_Record $record
      * @return boolean
      */
@@ -676,6 +704,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         return true;
     }
     /**
+     * inserts a record into database
+     *
      * @param Doctrine_Record $record
      * @return boolean
      */
@@ -711,7 +741,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     }
     /**
      * deletes all related composites
-     * this method is always called internally when this data access object is deleted
+     * this method is always called internally when a record is deleted
      *
      * @return void
      */
@@ -752,7 +782,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         endswitch;    
     }
     /**
-     * adds data access object into pending insert list
+     * adds record into pending insert list
      * @param Doctrine_Record $record
      */
     public function addInsert(Doctrine_Record $record) {
@@ -760,7 +790,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $this->insert[$name][] = $record;
     }
     /**
-     * adds data access object into penging update list
+     * adds record into penging update list
      * @param Doctrine_Record $record
      */
     public function addUpdate(Doctrine_Record $record) {
@@ -768,7 +798,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $this->update[$name][] = $record;
     }
     /**
-     * adds data access object into pending delete list
+     * adds record into pending delete list
      * @param Doctrine_Record $record
      */
     public function addDelete(Doctrine_Record $record) {
@@ -776,18 +806,24 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $this->delete[$name][] = $record;
     }
     /**
+     * returns the pending insert list
+     *
      * @return array
      */
     public function getInserts() {
         return $this->insert;
     }
     /**
+     * returns the pending update list
+     *
      * @return array
      */
     public function getUpdates() {
         return $this->update;
     }
     /**
+     * returns the pending delete list
+     *
      * @return array
      */
     public function getDeletes() {

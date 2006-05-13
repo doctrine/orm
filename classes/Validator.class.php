@@ -29,11 +29,14 @@ class Doctrine_Validator {
      */
     private $stack      = array();
     /**
-     * @var array $validators
+     * @var array $validators   an array of validator objects
      */
     private static $validators = array();
     /**
+     * returns a validator object
+     *
      * @param string $name
+     * @return Doctrine_Validator_Interface
      */
     public static function getValidator($name) {
         if( ! isset(self::$validators[$name])) {
@@ -48,6 +51,9 @@ class Doctrine_Validator {
         return self::$validators[$name];
     }
     /**
+     * validates a given record and saves possible errors
+     * in Doctrine_Validator::$stack
+     *
      * @param Doctrine_Record $record
      * @return void
      */
@@ -101,12 +107,15 @@ class Doctrine_Validator {
     }
     /**
      * whether or not this validator has errors
+     *
      * @return boolean
      */
     public function hasErrors() {
         return (count($this->stack) > 0);
     }
     /**
+     * returns the error stack
+     *
      * @return array
      */
     public function getErrorStack() {
@@ -114,7 +123,9 @@ class Doctrine_Validator {
     }
     /**
      * returns the type of loosely typed variable
+     *
      * @param mixed $var
+     * @return string
      */
     public static function gettype($var) {
         $type = gettype($var);

@@ -815,7 +815,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     final public function loadReference($name) {
         $fk      = $this->table->getForeignKey($name);
         $table   = $fk->getTable();
-        $name    = $table->getComponentName();
+
         $local   = $fk->getLocal();
         $foreign = $fk->getForeign();
         $graph   = $table->getQueryObject();
@@ -825,7 +825,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             case Doctrine_Record::STATE_TDIRTY:
             case Doctrine_Record::STATE_TCLEAN:
 
-                if($type == Doctrine_Relation::ONE_COMPOSITE || 
+                if($type == Doctrine_Relation::ONE_COMPOSITE ||
                    $type == Doctrine_Relation::ONE_AGGREGATE) {
 
                     // ONE-TO-ONE
@@ -837,7 +837,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                         $this->set($fk->getLocal(),$this->references[$name]);
                     }
                 } else {
-
                     $this->references[$name] = new Doctrine_Collection($table);
                     if($fk instanceof Doctrine_ForeignKey) {
                         // ONE-TO-MANY
@@ -849,13 +848,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             case Doctrine_Record::STATE_DIRTY:
             case Doctrine_Record::STATE_CLEAN:
             case Doctrine_Record::STATE_PROXY:
+
                  switch($fk->getType()):
                     case Doctrine_Relation::ONE_COMPOSITE:
                     case Doctrine_Relation::ONE_AGGREGATE:
+
                         // ONE-TO-ONE
                         $id      = $this->get($local);
 
                         if($fk instanceof Doctrine_LocalKey) {
+
                             if(empty($id)) {
                                 $this->references[$name] = $table->create();
                                 $this->set($fk->getLocal(),$this->references[$name]);
@@ -868,11 +870,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             }
 
                         } elseif ($fk instanceof Doctrine_ForeignKey) {
+
                             if(empty($id)) {
                                 $this->references[$name] = $table->create();
                                 $this->references[$name]->set($fk->getForeign(), $this);
                             } else {
-                                $dql  = "FROM ".$name." WHERE ".$name.".".$fk->getForeign()." = ?";
+                                $dql  = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$fk->getForeign()." = ?";
                                 $coll = $graph->query($dql, array($id));
                                 $this->references[$name] = $coll[0];
                                 $this->references[$name]->set($fk->getForeign(), $this);
@@ -883,7 +886,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                         // ONE-TO-MANY
                         if($fk instanceof Doctrine_ForeignKey) {
                             $id      = $this->get($local);
-                            $query = "FROM ".$name." WHERE ".$name.".".$fk->getForeign()." = ?";
+                            $query = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$fk->getForeign()." = ?";
                             $coll = $graph->query($query,array($id));
     
                             $this->references[$name] = $coll;

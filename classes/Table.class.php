@@ -21,9 +21,9 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     private $data             = array();
     /**
-     * @var array $foreignKeys                          an array containing all the Doctrine_ForeignKey objects for this table
+     * @var array $relations                            an array containing all the Doctrine_Relation objects for this table
      */
-    private $foreignKeys      = array();
+    private $relations       = array();
     /**
      * @var array $primaryKeys                          an array containing all primary key column names
      */
@@ -337,24 +337,13 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $this->bound[$name];
     }
     /**
-     * @param string $objTableName
+     * @param string $name
      * @param string $field
      * @return void
      */
-    final public function bind($objTableName,$field,$type,$localKey) {
-        $name  = (string) $objTableName;
-        $field = (string) $field;
-
-        if(isset($this->foreignKeys[$name]))
+    final public function bind($name,$field,$type,$localKey) {
+        if(isset($this->relations[$name]))
             throw new InvalidKeyException();
-
-        $e = explode(".", $field);
-        
-        // is reference table used?
-        if($e[0] != $name && $e[0] == $this->name)
-            $this->bound[$name] = array($field,Doctrine_Relation::MANY_COMPOSITE);
-
-
 
         $this->bound[$name] = array($field,$type,$localKey);
     }
@@ -388,77 +377,80 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @return Doctrine_Relation
      */
     final public function getForeignKey($name) {
-        if(isset($this->foreignKeys[$name]))
-            return $this->foreignKeys[$name];
+        if(isset($this->relations[$name]))
+            return $this->relations[$name];
 
         if(isset($this->bound[$name])) {
 
-            $field   = $this->bound[$name][0];
-            $type    = $this->bound[$name][1];
-            $local   = $this->bound[$name][2];
-            $e       = explode(".",$field);
-            $objTable = $this->session->getTable($name);
+            $type       = $this->bound[$name][1];
+            $local      = $this->bound[$name][2];
+            $e          = explode(".",$this->bound[$name][0]);
+            $component  = $e[0];
+            $foreign    = $e[1];
 
-            switch($e[0]):
-                case $name:
+            $e          = explode(" as ",$name);
+            $name       = $e[0];
+
+            if(isset($e[1]))
+                $alias = $e[1];
+            else
+                $alias = $name;
+
+            $table      = $this->session->getTable($name);
+
+            if($component == $this->name || in_array($component, $this->parents)) {
+
+                // ONE-TO-ONE
+                if($type == Doctrine_Relation::ONE_COMPOSITE ||
+                   $type == Doctrine_Relation::ONE_AGGREGATE) {
                     if( ! isset($local))
-                        $local = $this->identifier;
+                        $local = $table->getIdentifier();
 
-                    // ONE-TO-MANY or ONE-TO-ONE
-                    $foreignKey = new Doctrine_ForeignKey($objTable,$local,$e[1],$type);
-                break;
-                case $this->name:
-                    // ONE-TO-ONE
+                    $relation = new Doctrine_LocalKey($table,$foreign,$local,$type);
+                } else
+                    throw new Doctrine_Mapping_Exception();
 
-                    if($type <= Doctrine_Relation::ONE_COMPOSITE) {
-                        if( ! isset($local))
-                            $local = $objTable->getIdentifier();
+            } elseif($component == $name || ($component == $alias && $name == $this->name)) {
+                if( ! isset($local))
+                    $local = $this->identifier;
 
-                        $foreignKey = new Doctrine_LocalKey($objTable,$e[1],$local,$type);
-                    } else
-                        throw new Doctrine_Mapping_Exception();
-                break;
-                default:
-                    if(in_array($e[0], $this->parents)) {
-                        // ONE-TO-ONE
+                // ONE-TO-MANY or ONE-TO-ONE
+                $relation = new Doctrine_ForeignKey($table,$local,$foreign,$type);
 
-                        if($type <= Doctrine_Relation::ONE_COMPOSITE) {
-                            if( ! isset($local))
-                                $local = $objTable->getIdentifier();
+            } else {
+                // MANY-TO-MANY
+                // only aggregate relations allowed
 
-                            $foreignKey = new Doctrine_LocalKey($objTable,$e[1],$local,$type);
-                        } else
-                            throw new Doctrine_Mapping_Exception();
-                    } else {
-                        // POSSIBLY MANY-TO-MANY
+                if($type != Doctrine_Relation::MANY_AGGREGATE) 
+                    throw new Doctrine_Mapping_Exception();
 
-                        $classes = array_merge($this->parents, array($this->name));
+                $classes = array_merge($this->parents, array($this->name));
 
-                        foreach($classes as $class) {
-                            try {
-                                $bound = $objTable->getBound($class);
-                                break;
-                            } catch(InvalidKeyException $exc) {
+                foreach($classes as $class) {
+                    try {
+                        $bound = $table->getBound($class);
+                        break;
+                    } catch(InvalidKeyException $exc) {
 
-                            }
-                        }
-                        if( ! isset($local))
-                            $local = $this->identifier;
-
-                        $e2    = explode(".",$bound[0]);
-
-                        if($e2[0] != $e[0])
-                            throw new Doctrine_Mapping_Exception();
-
-                        $associationTable = $this->session->getTable($e2[0]);
-
-                        $this->foreignKeys[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$e2[1],Doctrine_Relation::MANY_COMPOSITE);
-
-                        $foreignKey         = new Doctrine_Association($objTable,$associationTable,$e2[1],$e[1],$type);
                     }
-            endswitch;
-            $this->foreignKeys[$name] = $foreignKey;
-            return $this->foreignKeys[$name];
+                }
+                if( ! isset($local))
+                    $local = $this->identifier;
+
+                $e2    = explode(".",$bound[0]);
+
+                if($e2[0] != $component)
+                    throw new Doctrine_Mapping_Exception();
+
+                $associationTable = $this->session->getTable($e2[0]);
+
+                $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$e2[1],Doctrine_Relation::MANY_COMPOSITE);
+
+                $relation = new Doctrine_Association($table,$associationTable,$e2[1],$foreign,$type);
+
+            }
+            $this->relations[$alias] = $relation;
+            return $this->relations[$alias];
         } else {
             throw new InvalidKeyException();
         }
