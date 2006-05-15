@@ -6,15 +6,33 @@ class Sensei_User extends Doctrine_Record { }
 //class Sensei_Customer extends Sensei_User { }
 
 class Sensei_Entity extends Doctrine_Record {
+    /**
+     * setTableDefinition
+     * initializes column definitions
+     *
+     * @return void
+     */
     public function setTableDefinition() {
         $this->hasColumn("loginname","string",32,"unique");
         $this->hasColumn("password","string",32);
     }
 }
 class Sensei_Variable extends Doctrine_Record {
+    /**
+     * setUp
+     * initializes relations and options
+     *
+     * @return void
+     */
     public function setUp() {
         //$this->setAttribute(Doctrine::ATTR_COLL_KEY, "name");
     }
+    /**
+     * setTableDefinition
+     * initializes column definitions
+     *
+     * @return void
+     */
     public function setTableDefinition() {
         $this->hasColumn("name","string",50,"unique");
         $this->hasColumn("value","string",10000);
@@ -22,10 +40,22 @@ class Sensei_Variable extends Doctrine_Record {
     }
 }
 class Sensei_Session extends Doctrine_Record {
+    /**
+     * setUp
+     * initializes relations and options
+     *
+     * @return void
+     */
     public function setUp() {
         $this->ownsMany("Sensei_variable","Sensei_variable.session_id");
         $this->hasOne("Sensei_entity","Sensei_session.entity_id");
     }
+    /**
+     * setTableDefinition
+     * initializes column definitions
+     *
+     * @return void
+     */
     public function setTableDefinition() {
         $this->hasColumn("session_id","string",32);
         $this->hasColumn("logged_in","integer",1);
@@ -141,6 +171,10 @@ class Sensei extends Doctrine_Access {
         }
         return false;
     }
+    /**
+     * @param integer $attr
+     * @param mixed $value
+     */
     public function setAttribute($attr, $value) {
         switch($attr):
             case Sensei::ATTR_LIFESPAN:
@@ -152,9 +186,15 @@ class Sensei extends Doctrine_Access {
         
         $this->attributes[$attr] = $value;
     }
+    /**
+     * @return boolean
+     */
     private function open($save_path,$session_name) {
         return true;
     }
+    /**
+     * @return boolean
+     */
     public function close() {
         return true;
     }

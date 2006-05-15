@@ -351,7 +351,15 @@ class Doctrine_Table extends Doctrine_Configurable {
         if(isset($this->relations[$name]))
             throw new InvalidKeyException();
 
-        $this->bound[$name] = array($field,$type,$localKey);
+        $e          = explode(" as ",$name);
+        $name       = $e[0];
+
+        if(isset($e[1]))
+            $alias = $e[1];
+        else
+            $alias = $name;
+
+        $this->bound[$alias] = array($field,$type,$localKey,$name);
     }
     /**
      * getComponentName
@@ -387,14 +395,8 @@ class Doctrine_Table extends Doctrine_Configurable {
             $e          = explode(".",$this->bound[$name][0]);
             $component  = $e[0];
             $foreign    = $e[1];
-
-            $e          = explode(" as ",$name);
-            $name       = $e[0];
-
-            if(isset($e[1]))
-                $alias = $e[1];
-            else
-                $alias = $name;
+            $alias      = $name;
+            $name       = $this->bound[$alias][3];
 
             $table      = $this->session->getTable($name);
 
