@@ -1,39 +1,56 @@
 <?php
 class Doctrine_AccessTestCase extends Doctrine_UnitTestCase {
+    public function prepareData() { }
     public function testOffsetMethods() {
-        $this->assertEqual($this->new["name"],null);
+        $user = new User();
+        $this->assertEqual($user["name"],null);
 
-        $this->new["name"] = "Jack";
-        $this->assertEqual($this->new["name"],"Jack");
-        
-        $this->assertEqual($this->old["name"],"zYne");
+        $user["name"] = "Jack";
+        $this->assertEqual($user["name"],"Jack");
 
-        $this->old["name"] = "Jack";
-        $this->assertEqual($this->old["name"],"Jack");
+        $user->save();
+
+        $user = $this->session->getTable("User")->find($user->getID());
+        $this->assertEqual($user->name,"Jack");
+
+        $user["name"] = "Jack";
+        $this->assertEqual($user["name"],"Jack");
+        $user["name"] = "zYne";
+        $this->assertEqual($user["name"],"zYne");
     }
     public function testOverload() {
-        $this->assertEqual($this->new->name,null);
+        $user = new User();
+        $this->assertEqual($user->name,null);
 
-        $this->new->name = "Jack";
-        $this->assertEqual($this->new->name,"Jack");
+        $user->name = "Jack";
 
-        $this->assertEqual($this->old->name,"zYne");
+        $this->assertEqual($user->name,"Jack");
+        
+        $user->save();
 
-        $this->old->name = "Jack";
-        $this->assertEqual($this->old->name,"Jack");
+        $user = $this->session->getTable("User")->find($user->getID());
+        $this->assertEqual($user->name,"Jack");
+
+        $user->name = "Jack";
+        $this->assertEqual($user->name,"Jack");
+        $user->name = "zYne";
+        $this->assertEqual($user->name,"zYne");
     }
     public function testSet() {
-        $this->assertEqual($this->new->get("name"),null);
+        $user = new User();
+        $this->assertEqual($user->get("name"),null);
 
-        $this->new->set("name","Jack");
-        $this->assertEqual($this->new->get("name"),"Jack");
+        $user->set("name","Jack");
+        $this->assertEqual($user->get("name"),"Jack");
 
-        $this->assertEqual($this->old->get("name"),"zYne");
+        $user->save();
 
-        $this->old->set("name","Jack");
-        $this->assertEqual($this->old->get("name"),"Jack");
-        
-        $this->assertEqual($this->old->getID(),4);
+        $user = $this->session->getTable("User")->find($user->getID());
+
+        $this->assertEqual($user->get("name"),"Jack");
+
+        $user->set("name","Jack");
+        $this->assertEqual($user->get("name"),"Jack");
     }
 }
 ?>

@@ -59,8 +59,10 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     private $sequenceName;
     /**
-     * @var Doctrine_Repository $repository             first level cache
+     * @var array $identityMap                          first level cache
      */
+    private $identityMap        = array();
+    
     private $repository;
     
     /**
@@ -115,7 +117,7 @@ class Doctrine_Table extends Doctrine_Configurable {
         do {
             if($class == "Doctrine_Record") break;
 
-           	$name  = ucwords(strtolower($class));
+           	$name  = $class;
             $names[] = $name;
         } while($class = get_parent_class($class));
 
@@ -206,8 +208,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @return void
      */
     final public function initComponents() {
-        $this->repository  = new Doctrine_Repository($this);
-
+        $this->repository = new Doctrine_Repository($this);
         switch($this->getAttribute(Doctrine::ATTR_CACHE)):
             case Doctrine::CACHE_SQLITE:
                 $this->cache       = new Doctrine_Cache_Sqlite($this);
@@ -216,6 +217,9 @@ class Doctrine_Table extends Doctrine_Configurable {
                 $this->cache       = new Doctrine_Cache($this);
             break;
         endswitch;
+    }
+    public function getRepository() {
+        return $this->repository;
     }
     /**
      * setColumn
@@ -322,7 +326,9 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $array;
     }
     /**
-     * @var array           bound relations
+     * returns all bound relations
+     *
+     * @return array
      */
     final public function getBounds() {
         return $this->bound;
@@ -365,12 +371,6 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     final public function getCache() {
         return $this->cache;
-    }
-    /**
-     * @return Doctrine_Repository
-     */
-    final public function getRepository() {
-        return $this->repository;
     }
     /**
      * @param string $name              component name of which a foreign key object is bound
@@ -456,7 +456,9 @@ class Doctrine_Table extends Doctrine_Configurable {
         }
     }
     /**
-     * @return array                    an array containing all foreign key objects
+     * returns an array containing all foreign key objects
+     *
+     * @return array
      */
     final public function getForeignKeys() {
         $a = array();
@@ -466,6 +468,9 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $a;
     }
     /**
+     * sets the database table name
+     *
+     * @param string $name              database table name
      * @return void
      */
     final public function setTableName($name) {
@@ -473,29 +478,36 @@ class Doctrine_Table extends Doctrine_Configurable {
     }
 
     /**
-     * @return string                   database table name this class represents
+     * returns the database table name
+     *
+     * @return string
      */
     final public function getTableName() {
         return $this->tableName;
     }
     /**
-     * createDAO
+     * create
+     * creates a new record
+     *
      * @param $array                    an array where keys are field names and values representing field values
-     * @return Doctrine_Record                      A new Data Access Object. Uses an sql insert statement when saved
+     * @return Doctrine_Record
      */
     public function create(array $array = array()) {
-        $this->data         = $array;
+        $this->data         = $array;   
         $this->isNewEntry   = true;
-        $record = $this->getRecord();
+        $record = new $this->name($this);
         $this->isNewEntry   = false;
+        $this->data         = array();
         return $record;
     }
     /**
+     * finds a record by its identifier
+     *
      * @param $id                       database row id
      * @throws Doctrine_Find_Exception
      * @return Doctrine_Record          a record for given database identifier
      */
-    public function find($id = null) {
+    public function find($id) {
         if($id !== null) {
             $query  = $this->query." WHERE ".implode(" = ? AND ",$this->primaryKeys)." = ?";
             $query  = $this->applyInheritance($query);
@@ -507,12 +519,12 @@ class Doctrine_Table extends Doctrine_Configurable {
             if($this->data === false)
                 throw new Doctrine_Find_Exception();
         }
-        return new $this->name($this);
+        return $this->getRecord();
     }
     /**
      * applyInheritance
      * @param $where                    query where part to be modified
-     * @return                          query where part with column aggregation inheritance added
+     * @return string                   query where part with column aggregation inheritance added
      */
     final public function applyInheritance($where) {
         if( ! empty($this->inheritanceMap)) {
@@ -527,7 +539,9 @@ class Doctrine_Table extends Doctrine_Configurable {
     }
     /**
      * findAll
-     * @return Doctrine_Collection            a collection of all data access objects
+     * returns a collection of records
+     *
+     * @return Doctrine_Collection
      */
     public function findAll() {
         $graph = new Doctrine_Query($this->session);
@@ -536,19 +550,49 @@ class Doctrine_Table extends Doctrine_Configurable {
     }
     /**
      * findBySql
-     * @return Doctrine_Collection            a collection of data access objects
+     * finds records with given sql where clause
+     * returns a collection of records
+     *
+     * @param string $sql               SQL after WHERE clause
+     * @param array $params             query parameters
+     * @return Doctrine_Collection
      */
     public function findBySql($sql, array $params = array()) {
-        $graph = new Doctrine_Query($this->session);
-        $users = $graph->query("FROM ".$this->name." WHERE ".$sql, $params);
+        $q = new Doctrine_Query($this->session);
+        $users = $q->query("FROM ".$this->name." WHERE ".$sql, $params);
         return $users;
     }
     /**
+     * clear
+     * clears the first level cache (identityMap)
+     *
+     * @return void
+     */
+    public function clear() {
+        $this->identityMap = array();
+    }
+    /**
      * getRecord
+     * first checks if record exists in identityMap, if not
+     * returns a new record
+     *
      * @return Doctrine_Record
      */
     public function getRecord() {
-        return new $this->name($this);
+        $key = $this->getIdentifier();
+        if(isset($this->data[$key])) {
+            $id = $this->data[$key];
+            if(isset($this->identityMap[$id]))
+                $record = $this->identityMap[$id];
+            else {
+                $record = new $this->name($this);
+                $this->identityMap[$id] = $record;
+            }
+            $this->data = array();
+
+            return $record;
+        }
+        throw new Doctrine_Exception("No primary key found");
     }
     /**
      * @param $id                       database row id
@@ -571,7 +615,7 @@ class Doctrine_Table extends Doctrine_Configurable {
     }
     /**
      * getTableDescription
-     * @return Doctrine_Table_Description               the columns object for this factory
+     * @return Doctrine_Table_Description               
      */
     final public function getTableDescription() {
         return $this->columns;
@@ -611,20 +655,27 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $coll;
     }
     /**
+     * returns all columns and their definitions
+     *
      * @return array
      */
     final public function getColumns() {
         return $this->columns;
     }
     /**
-     * @return array                    an array containing all the column names
+     * returns an array containing all the column names
+     *
+     * @return array
      */
     public function getColumnNames() {
         return array_keys($this->columns);
     }
     /**
      * setData
-     * @param array $data               internal data, users are strongly discouraged to use this function
+     * doctrine uses this function internally
+     * users are strongly discouraged to use this function
+     *
+     * @param array $data               internal data
      * @return void
      */
     public function setData(array $data) {
@@ -642,25 +693,34 @@ class Doctrine_Table extends Doctrine_Configurable {
         return isset($data[0])?$data[0]:1;
     }
     /**
-     * @return boolean                  whether or not a newly created object is new or not
+     * return whether or not a newly created object is new or not
+     *
+     * @return boolean
      */
     final public function isNewEntry() {
         return $this->isNewEntry;
     }
     /**
-     * @return string                   simple cached query
+     * returns simple cached query
+     *
+     * @return string
      */
     final public function getQuery() {
         return $this->query;
     }
     /**
-     * @return array                    internal data, used by Doctrine_Record instances when retrieving data from database
+     * returns internal data, used by Doctrine_Record instances 
+     * when retrieving data from database
+     *
+     * @return array
      */
     final public function getData() {
         return $this->data;
     }
     /**
-     * @return string                   string representation of this object
+     * returns a string representation of this object
+     *
+     * @return string
      */
     public function __toString() {
         return Doctrine_Lib::getTableAsString($this);

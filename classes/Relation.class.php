@@ -1,13 +1,10 @@
 <?php
 /**
- * @class Doctrine_Relation
+ * Doctrine_Relation
  *
- * @author      Konsta Vesterinen
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
  * @license     LGPL
- * @version     1.0 alpha
- *
  */
 class Doctrine_Relation {
     /**
@@ -31,7 +28,7 @@ class Doctrine_Relation {
      */
     const MANY_COMPOSITE        = 3;
     
-    
+
     /**
      * @var Doctrine_Table $table     foreign factory
      */

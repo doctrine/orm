@@ -67,6 +67,8 @@ class Doctrine_Query extends Doctrine_Access {
         "offset"    => false,
         );
     /**
+     * constructor
+     *
      * @param Doctrine_Session $session
      */
     public function __construct(Doctrine_Session $session) {
@@ -75,6 +77,8 @@ class Doctrine_Query extends Doctrine_Access {
     /**
      * clear
      * resets all the variables
+     * 
+     * @return void
      */
     private function clear() {
         $this->fetchModes   = array();
@@ -99,13 +103,14 @@ class Doctrine_Query extends Doctrine_Access {
         $this->joined       = array();
     }
     /**
-     * loadFields       -- this method loads fields for a given factory and
-     *                     constructs a little bit of sql for every field
-     *                      
-     *                     fields of the factories become: [tablename].[fieldname] as [tablename]__[fieldname]
+     * loadFields      
+     * loads fields for a given table and
+     * constructs a little bit of sql for every field
+     *
+     * fields of the tables become: [tablename].[fieldname] as [tablename]__[fieldname]
      *
      * @access private
-     * @param object Doctrine_Table $table    a Doctrine_Table object
+     * @param object Doctrine_Table $table       a Doctrine_Table object
      * @param integer $fetchmode                 fetchmode the table is using eg. Doctrine::FETCH_LAZY
      * @return void
      */
@@ -141,8 +146,11 @@ class Doctrine_Query extends Doctrine_Access {
         }
     }
     /** 
+     * sets a query part
+     *
      * @param string $name
      * @param array $args
+     * @return void
      */
     public function __call($name, $args) {
         $name = strtolower($name);
@@ -168,7 +176,9 @@ class Doctrine_Query extends Doctrine_Access {
         return $this;
     }
     /**
-     * @param $name     query part name
+     * returns a query part
+     *
+     * @param $name         query part name
      * @return mixed
      */
     public function get($name) {
@@ -178,8 +188,10 @@ class Doctrine_Query extends Doctrine_Access {
         return $this->parts[$name];
     }
     /**
-     * @param $name     query part name
-     * @param $value    query part value
+     * sets a query part
+     *
+     * @param $name         query part name
+     * @param $value        query part value
      * @return boolean
      */
     public function set($name, $value) {
@@ -207,7 +219,9 @@ class Doctrine_Query extends Doctrine_Access {
         return false;
     }
     /**
-     * @return string               the built sql query
+     * returns the built sql query
+     *
+     * @return string
      */
     final public function getQuery() {
         if(empty($this->parts["columns"]) || empty($this->parts["from"]))
@@ -271,6 +285,7 @@ class Doctrine_Query extends Doctrine_Access {
     /**
      * applyInheritance
      * applies column aggregation inheritance to DQL query
+     *
      * @return boolean
      */
     final public function applyInheritance() {
@@ -324,8 +339,8 @@ class Doctrine_Query extends Doctrine_Access {
     }
     /**
      * getData
-     * @param $key                      the factory name
-     * @return array                    the data row for the specified factory
+     * @param $key                      the component name
+     * @return array                    the data row for the specified component
      */
     final public function getData($key) {
         if(isset($this->data[$key]) && is_array($this->data[$key]))
@@ -335,7 +350,8 @@ class Doctrine_Query extends Doctrine_Access {
     }
     /**
      * execute
-     * executes the datagraph and populates Doctrine_Collections
+     * executes the dql query and populates all collections
+     *
      * @param string $params
      * @return Doctrine_Collection            the root collection
      */
@@ -423,6 +439,8 @@ class Doctrine_Query extends Doctrine_Access {
     }
     /**
      * parseData
+     * parses a PDOStatement
+     *
      * @return array
      */
     public function parseData(PDOStatement $stmt) {
@@ -447,6 +465,9 @@ class Doctrine_Query extends Doctrine_Access {
         return $array;
     }
     /**
+     * returns a Doctrine_Table for given name
+     *
+     * @param string $name              component name
      * @return Doctrine_Table
      */
     public function getTable($name) {
@@ -454,6 +475,8 @@ class Doctrine_Query extends Doctrine_Access {
     }
     /**
      * getCollection
+     *
+     * @parma string $name              component name
      * @param integer $index
      */
     private function getCollection($name) {
@@ -504,6 +527,9 @@ class Doctrine_Query extends Doctrine_Access {
     }
     /**
      * DQL PARSER
+     *
+     * @param string $query         DQL query
+     * @return void
      */
     final public function parseQuery($query) {
         $this->clear();
@@ -588,6 +614,7 @@ class Doctrine_Query extends Doctrine_Access {
     /**
      * DQL SELECT PARSER
      * parses the select part of the query string
+     *
      * @param string $str
      * @return void
      */

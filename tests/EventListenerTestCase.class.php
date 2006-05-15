@@ -9,5 +9,7 @@ class Doctrine_EventListenerTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($last->getObject() instanceof Doctrine_Session);
         $this->assertTrue($last->getCode() == Doctrine_Debugger::EVENT_OPEN);
     }
+    public function prepareData() { }      
+    public function prepareTables() { }
 }
 ?>

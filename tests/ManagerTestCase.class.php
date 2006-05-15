@@ -19,5 +19,7 @@ class Doctrine_ManagerTestCase extends Doctrine_UnitTestCase {
     public function testGetSessions() {
         $this->assertEqual(count($this->manager->getSessions()),1);
     }
+    public function prepareData() { }
+    public function prepareTables() { }
 }
 ?>

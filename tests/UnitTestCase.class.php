@@ -14,7 +14,6 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     protected $manager;
     protected $session;
     protected $objTable;
-    protected $repository;
     protected $new;
     protected $old;
     protected $dbh;
@@ -33,7 +32,6 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->manager->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_IMMEDIATE);
         
         $this->tables = array("entity","email","phonenumber","groupuser","album","song","element","error","description","address","account","task","resource","assignment");
-        $tables = $this->tables;
 
 
 
@@ -50,23 +48,22 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
 
-        foreach($tables as $name) {
+        $this->prepareTables();
+        $this->prepareData();
+    }
+    public function prepareTables() {
+        foreach($this->tables as $name) {
             $this->dbh->query("DROP TABLE IF EXISTS $name");
         }
 
-        foreach($tables as $name) {
+        foreach($this->tables as $name) {
             $name = ucwords($name);
             $table = $this->session->getTable($name);
             $table->getCache()->deleteAll();
+            $table->clear();
         }
 
-
-
         $this->objTable = $this->session->getTable("User");
-        $this->repository = $this->objTable->getRepository();
-        //$this->cache = $this->objTable->getCache();
-
-        $this->prepareData();
     }
     public function prepareData() {
         $groups = new Doctrine_Collection($this->session->getTable("Group"));
@@ -137,9 +134,10 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     public function setUp() {
         if( ! $this->init) $this->init(); 
         
+        if(isset($this->objTable))
+            $this->objTable->clear();
+        
         $this->init    = true;
-        $this->new     = $this->objTable->create();
-        $this->old     = $this->objTable->find(4);
     }
 }
 ?>

@@ -41,7 +41,9 @@ class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
         $generator = new Doctrine_IndexGenerator($this->objTable->getIdentifier());
         $coll->setGenerator($generator);
         $generator = $coll->getGenerator();
-        $this->assertEqual($generator->getIndex($this->old), 4);
+        
+        $user = $this->session->getTable("User")->find(4);
+        $this->assertEqual($generator->getIndex($user), 4);
 
     }
     public function testGenerator() {

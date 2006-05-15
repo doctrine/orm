@@ -2,8 +2,13 @@
 require_once("Relation.class.php");
 /**
  * Doctrine_Association    this class takes care of association mapping
- *                   (= many-to-many relationships, where the relationship is handled through an additional relational table
- *                   which holds 2 foreign keys)
+ *                         (= many-to-many relationships, where the relationship is handled with an additional relational table
+ *                         which holds 2 foreign keys)
+ *
+ *
+ * @package     Doctrine ORM
+ * @url         www.phpdoctrine.com
+ * @license     LGPL
  */
 class Doctrine_Association extends Doctrine_Relation {
     /**

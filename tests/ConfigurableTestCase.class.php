@@ -2,7 +2,11 @@
 require_once("UnitTestCase.class.php");
 
 class Doctrine_ConfigurableTestCase extends Doctrine_UnitTestCase {
+    public function prepareTables() { }
+    public function prepareData() { }
     public function testSetAttribute() {
+        $table = $this->session->getTable("User");
+
         $this->manager->setAttribute(Doctrine::ATTR_CACHE_TTL,100);
         $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_CACHE_TTL),100);
     
@@ -64,14 +68,14 @@ class Doctrine_ConfigurableTestCase extends Doctrine_UnitTestCase {
 
         $e = false;
         try {
-            $this->objTable->setAttribute(Doctrine::ATTR_COLL_KEY, "unknown");
+            $table->setAttribute(Doctrine::ATTR_COLL_KEY, "unknown");
         } catch(Exception $e) {
         }
         $this->assertTrue($e instanceof Exception);
 
         $e = true;
         try {
-            $this->objTable->setAttribute(Doctrine::ATTR_COLL_KEY, "name");
+            $table->setAttribute(Doctrine::ATTR_COLL_KEY, "name");
         } catch(Exception $e) {
         }
         $this->assertTrue($e);

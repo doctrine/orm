@@ -54,7 +54,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     protected $id;
     /**
-     * @var array $data                     the dao data
+     * @var array $data                     the record data
      */
     protected $data       = array();
 
@@ -63,12 +63,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private $modified   = array();
     /**
-     * @var integer $state                  the state of this data access object
+     * @var integer $state                  the state of this record
      * @see STATE_* constants
      */
     private $state;
     /**
-     * @var array $collections              the collections this dao is in
+     * @var array $collections              the collections this record is in
      */
     private $collections = array();
     /**
@@ -151,12 +151,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 // listen the onLoad event
                 $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
             }
-            // add data access object to registry
             $this->table->getRepository()->add($this);
-
-
-
-            $this->table->setData(array());
         }
     }
     /** 
@@ -166,6 +161,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function setUp() { }
     /**
      * return the object identifier
+     *
      * @return integer
      */
     public function getOID() {
@@ -200,6 +196,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $cols;
     }
     /**
+     * prepares identifiers
+     *
      * @return void
      */
     public function prepareIdentifiers() {
@@ -217,6 +215,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * this method is automatically called when this Doctrine_Record is serialized
+     *
+     * @return array
      */
     public function __sleep() {
         $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onSleep($this);
@@ -241,6 +241,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * __wakeup
      * this method is automatically called everytime a Doctrine_Record object is unserialized
+     *
+     * @return void
      */
     public function __wakeup() {
         $this->modified = array();
@@ -388,6 +390,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
             return $this->data[$name];
         }
+
         if($name == $this->table->getIdentifier())
             return $this->id;
 
@@ -755,11 +758,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param integer $id
      * @return void
      */
-    final public function setID($id = null) {
-        if($id === null) {
-            $this->id       = null;
+    final public function setID($id = false) {
+        if($id === false) {
+            $this->id       = false;
             $this->cleanData();
-            $this->state = Doctrine_Record::STATE_TCLEAN;
+            $this->state    = Doctrine_Record::STATE_TCLEAN;
             $this->modified = array();
         } else {
             $this->id       = $id;

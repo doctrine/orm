@@ -37,7 +37,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($task->name, "Task 1");
         $this->assertEqual($task->Resource[0]->name, "Resource 1");
         $this->assertEqual($task->Resource->count(), 1);
-        $this->assertEqual($task->Subtask[0]->name, "Subtask 1");  
+        $this->assertEqual($task->Subtask[0]->name, "Subtask 1");
 
     } 
 
@@ -107,11 +107,16 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->name, "Jack Daniels");
         $this->assertEqual($user->created, null);
         $this->assertEqual($user->updated, null);
+        $this->assertEqual($user->getTable()->getData(), array());
 
     }
+
     public function testNewOperator() {
+        $table = $this->session->getTable("User");
+
+        $this->assertEqual($this->session->getTable("User")->getData(), array());
         $user = new User();
-        $this->assertTrue($user->getState() == Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual(Doctrine_Lib::getRecordStateAsString($user->getState()), Doctrine_Lib::getRecordStateAsString(Doctrine_Record::STATE_TCLEAN));
         $user->name = "John Locke";
 
         $this->assertTrue($user->name,"John Locke");
@@ -243,37 +248,36 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($e->code,2);
         $this->assertEqual($e->message,"changed message");
         $this->assertEqual($e->Description[0]->description, "1st changed description");
-        $this->assertEqual($e->Description[1]->description, "2nd changed description");
-
-
-
+        $this->assertEqual($e->Description[1]->description, "2nd changed description");   
     }
 
     public function testInsert() {
-        $this->new->name = "John Locke";
-        $this->new->save();
+        $user = new User();
+        $user->name = "John Locke";
+        $user->save();
         
-        $this->assertTrue($this->new->getModified() == array());
-        $this->assertTrue($this->new->getState() == Doctrine_Record::STATE_CLEAN);
+        $this->assertTrue($user->getModified() == array());
+        $this->assertTrue($user->getState() == Doctrine_Record::STATE_CLEAN);
 
         $debug = $this->listener->getMessages();
         $p = array_pop($debug);
         $this->assertTrue($p->getObject() instanceof Doctrine_Session);
         $this->assertTrue($p->getCode() == Doctrine_Debugger::EVENT_COMMIT);
 
-        $this->new->delete();
-        $this->assertTrue($this->new->getState() == Doctrine_Record::STATE_TCLEAN);
+        $user->delete();
+        $this->assertTrue($user->getState() == Doctrine_Record::STATE_TCLEAN);
     }
 
     public function testUpdate() {
-        $this->old->set("name","Jack Daniels",true);
+        $user = $this->session->getTable("User")->find(4);
+        $user->set("name","Jack Daniels",true);
 
 
-        $this->old->save(true);
+        $user->save();
         //print $this->old->name;
 
-        $this->assertEqual($this->old->getModified(), array());
-        $this->assertEqual($this->old->name, "Jack Daniels");
+        $this->assertEqual($user->getModified(), array());
+        $this->assertEqual($user->name, "Jack Daniels");
         
         $debug = $this->listener->getMessages();
         $p = array_pop($debug);
@@ -291,7 +295,8 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
     }
     public function testCopy() {
-        $new = $this->old->copy();
+        $user = $this->session->getTable("User")->find(4);
+        $new = $user->copy();
         $this->assertTrue($new instanceof Doctrine_Record);
         $this->assertTrue($new->getState() == Doctrine_Record::STATE_TDIRTY);
     }
@@ -522,27 +527,31 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testCount() {
-        $this->assertTrue(is_integer($this->old->count()));
+        $user = $this->session->getTable("User")->find(4);
+
+        $this->assertTrue(is_integer($user->count()));
     }
 
     public function testGetReference() {
-        $this->assertTrue($this->old->Email instanceof Doctrine_Record);
-        $this->assertTrue($this->old->Phonenumber instanceof Doctrine_Collection);
-        $this->assertTrue($this->old->Group instanceof Doctrine_Collection);
+        $user = $this->session->getTable("User")->find(4);
 
-        $this->assertTrue($this->old->Phonenumber->count() == 1);
+        $this->assertTrue($user->Email instanceof Doctrine_Record);
+        $this->assertTrue($user->Phonenumber instanceof Doctrine_Collection);
+        $this->assertTrue($user->Group instanceof Doctrine_Collection);
+
+        $this->assertTrue($user->Phonenumber->count() == 1);
     }
 
     public function testSerialize() {
-        $old = $this->old;
-        $old = serialize($old);
+        $user = $this->session->getTable("User")->find(4);
+        $str = serialize($user);
 
-        $this->assertEqual(unserialize($old)->getID(),$this->old->getID());
+        $this->assertEqual(unserialize($str)->getID(),$user->getID());
     }
 
     public function testGetIterator() {
-        $this->assertTrue($this->old->getIterator() instanceof ArrayIterator);
+        $user = $this->session->getTable("User")->find(4);
+        $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
-
 }
 ?>

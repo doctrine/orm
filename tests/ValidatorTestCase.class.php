@@ -1,19 +1,21 @@
 <?php
 class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
+
     public function testValidate() {
+        $user = $this->session->getTable("User")->find(4); 
 
         $set = array("password" => "this is an example of too long password",
                      "loginname" => "this is an example of too long loginname",
                      "name" => "valid name",
                      "created" => "invalid");
-        $this->old->setArray($set);
-        $email = $this->old->Email;
+        $user->setArray($set);
+        $email = $user->Email;
         $email->address = "zYne@invalid";
 
-        $this->assertTrue($this->old->getModified() == $set);
+        $this->assertTrue($user->getModified() == $set);
 
         $validator = new Doctrine_Validator();
-        $validator->validateRecord($this->old);
+        $validator->validateRecord($user);
         $validator->validateRecord($email);
 
         $stack = $validator->getErrorStack();
@@ -31,6 +33,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($stack["Email"][1]["address"], Doctrine_Validator::ERR_UNIQUE);
 
     }
+
     public function testIsValidEmail() {
 
         $validator = new Doctrine_Validator_Email();
@@ -47,10 +50,10 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
     }
     public function testSave() {
         $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
-
+        $user = $this->session->getTable("User")->find(4); 
         try {
-            $this->old->name = "this is an example of too long name not very good example but an example nevertheless";
-            $this->old->save();
+            $user->name = "this is an example of too long name not very good example but an example nevertheless";
+            $user->save();
         } catch(Doctrine_Validator_Exception $e) {
             $this->assertEqual($e->getErrorStack(),array("User" => array(array("name" => 0))));
         }
@@ -66,6 +69,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_array($a));
         $this->assertEqual($a["Email"][0]["address"], Doctrine_Validator::ERR_VALID);
         $this->assertEqual($a["User"][0]["name"], Doctrine_Validator::ERR_LENGTH);
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
     }
 
 }

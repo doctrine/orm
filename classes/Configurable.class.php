@@ -4,12 +4,9 @@
  * the base for Doctrine_Table, Doctrine_Manager and Doctrine_Session
  *
  *
- * @author      Konsta Vesterinen
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
  * @license     LGPL
- * @version     1.0 beta2
- *
  */
 abstract class Doctrine_Configurable {
 
@@ -22,7 +19,9 @@ abstract class Doctrine_Configurable {
      */
     private $parent;
     /**
-     * @throws Exception                    if the value is invalid
+     * sets a given attribute
+     *
+     * @throws Doctrine_Exception           if the value is invalid
      * @param integer $attribute
      * @param mixed $value
      * @return void
@@ -124,7 +123,10 @@ abstract class Doctrine_Configurable {
         $this->attributes[$i] = $listener;
     }
     /**
-     * @return mixed                        the value of the attribute
+     * returns the value of an attribute
+     *
+     * @param integer $attribute
+     * @return mixed
      */
     final public function getAttribute($attribute) {
         $attribute = (int) $attribute;
@@ -142,12 +144,17 @@ abstract class Doctrine_Configurable {
     }
     /**
      * getAttributes
+     * returns all attributes as an array
+     *
      * @return array
      */
     final public function getAttributes() {
         return $this->attributes;
     }
     /**
+     * sets a parent for this configurable component
+     * the parent must be configurable component itself
+     *
      * @param Doctrine_Configurable $component
      * @return void
      */
@@ -156,6 +163,9 @@ abstract class Doctrine_Configurable {
     }
     /**
      * getParent
+     * returns the parent of this component
+     *
+     * @return Doctrine_Configurable
      */
     final public function getParent() {
         return $this->parent;

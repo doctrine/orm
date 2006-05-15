@@ -3,6 +3,10 @@ require_once("Exception.class.php");
 /**
  * Doctrine
  * the base class of Doctrine framework
+ *
+ * @package     Doctrine ORM
+ * @url         www.phpdoctrine.com
+ * @license     LGPL
  */
 final class Doctrine {
     /**
@@ -202,7 +206,11 @@ final class Doctrine {
      * @var string $path            doctrine root directory
      */
     private static $path;
-    
+    /**
+     * returns the doctrine root
+     *
+     * @return string
+     */
     public static function getPath() {
         if(! self::$path)
             self::$path = dirname(__FILE__);
@@ -211,6 +219,8 @@ final class Doctrine {
     }
     /**
      * loads all runtime classes
+     *
+     * @return void
      */
     public static function loadAll() {
         if(! self::$path)
@@ -253,6 +263,10 @@ final class Doctrine {
     }
     /**
      * simple autoload function
+     * returns true if the class was loaded, otherwise false
+     *
+     * @param string $classname
+     * @return boolean
      */
     public static function autoload($classname) {
         if(! self::$path)

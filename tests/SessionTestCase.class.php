@@ -17,8 +17,8 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testFlush() {
-
-        $this->assertTrue(is_numeric($this->old->Phonenumber[0]->entity_id));
+        $user = $this->session->getTable("User")->find(4);
+        $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
 
         $user    = $this->session->create("Email");
         $user    = $this->session->create("User");

@@ -193,7 +193,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
 
         $class = $name."Table";
 
-        if(class_exists($class, false) && in_array("Doctrine_Table", class_parents($class))) {
+        if(class_exists($class) && in_array("Doctrine_Table", class_parents($class))) {
             return new $class($name);
         } else {
 
@@ -386,41 +386,43 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @return void
      */
     public function commit() {
+
         $this->transaction_level--;
-
+    
         if($this->transaction_level == 0) {
-
-
+    
+    
             if($this->getAttribute(Doctrine::ATTR_LOCKMODE) == Doctrine::LOCK_OPTIMISTIC) {
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this);
-
+    
                 $this->dbh->beginTransaction();
-
+    
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this);
             }
-
-            if($this->getAttribute(Doctrine::ATTR_VLD)) {
+    
+            if($this->getAttribute(Doctrine::ATTR_VLD))
                 $this->validator = new Doctrine_Validator();
-            }
+
 
             $this->bulkInsert();
             $this->bulkUpdate();
             $this->bulkDelete();
 
-
-            if(isset($this->validator) && $this->validator->hasErrors()) {
-                $this->rollback();
-                throw new Doctrine_Validator_Exception($this->validator);
+            if($this->getAttribute(Doctrine::ATTR_VLD)) {
+                if($this->validator->hasErrors()) {
+                    $this->rollback();
+                    throw new Doctrine_Validator_Exception($this->validator);
+                }
             }
-
+    
             $this->dbh->commit();
             $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this);
 
-            $this->delete = array(array());
+            $this->delete = array();
             $this->state  = Doctrine_Session::STATE_OPEN;
-
+    
             $this->validator = null;
-
+    
         } elseif($this->transaction_level == 1)
             $this->state = Doctrine_Session::STATE_ACTIVE;
     }
@@ -477,8 +479,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     
                     $id = $table->getMaxIdentifier();
                 }
-                
+
                 $record->setID($id);
+
                 $id++;
 
                 // listen the onInsert event
@@ -556,7 +559,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             $ids    = array();
             foreach($deletes as $k => $record) {
                 $ids[] = $record->getID();
-                $record->setID(null);
+                $record->setID(false);
             }
             if($record instanceof Doctrine_Record) {
                 $table  = $record->getTable();
@@ -716,6 +719,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             return false;
 
         $seq = $record->getTable()->getSequenceName();
+
         if( ! empty($seq)) {
             $id             = $this->getNextID($seq);
             $name           = $record->getTable()->getIdentifier();

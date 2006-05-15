@@ -2,10 +2,14 @@
 /**
  * Doctrine_Iterator
  * iterates through Doctrine_Collection
+ *
+ * @package     Doctrine ORM
+ * @url         www.phpdoctrine.com
+ * @license     LGPL
  */
 abstract class Doctrine_Iterator implements Iterator {
     /**
-     * @var Doctrine_Collection $collection
+     * @var Doctrine_Collection $collection         
      */
     protected $collection;
     /**
@@ -35,6 +39,8 @@ abstract class Doctrine_Iterator implements Iterator {
         $this->count      = $this->collection->count();
     }
     /**
+     * rewinds the iterator
+     *
      * @return void
      */
     public function rewind() {
@@ -45,18 +51,24 @@ abstract class Doctrine_Iterator implements Iterator {
     }
 
     /**
-     * @return integer                          the current key
+     * returns the current key
+     *
+     * @return integer
      */
     public function key() {
         return $this->key;
     }
     /**
-     * @return Doctrine_Record                  the current record
+     * returns the current record
+     *
+     * @return Doctrine_Record
      */
     public function current() {
         return $this->collection->get($this->key);
     }
     /**
+     * advances the internal pointer
+     *
      * @return void
      */
     public function next() {

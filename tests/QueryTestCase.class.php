@@ -174,7 +174,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $this->assertTrue($users instanceof Doctrine_Collection_Immediate);
         $count2 = $this->session->getDBH()->count();
-        $this->assertEqual($count,$count2);
 
 
         $users = $query->query("FROM User-b");

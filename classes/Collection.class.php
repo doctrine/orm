@@ -1,12 +1,11 @@
 <?php
 /**
- * class Doctrine_Collection              a collection of data access objects
+ * Doctrine_Collection
+ * Collection of Doctrine_Record objects.
  *
- * @author      Konsta Vesterinen
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
  * @license     LGPL
- * @version     1.0 alpha
  */
 class Doctrine_Collection extends Doctrine_Access implements Countable, IteratorAggregate {
     /**
