@@ -128,7 +128,7 @@ class Doctrine_DBStatement extends PDOStatement {
     /**
      * @param array $params
      */
-    public function execute($params) {
+    public function execute(array $params = null) {
         $time     = microtime();
         $result   = parent::execute($params);
 

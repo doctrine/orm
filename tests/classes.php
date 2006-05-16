@@ -16,7 +16,13 @@ class Entity extends Doctrine_Record {
         $this->hasColumn("email_id","integer");
     }
 }
-
+class EntityReference extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("entity1","integer");
+        $this->hasColumn("entity2","integer");
+        $this->setPrimaryKey(array("entity1","entity2"));
+    }
+}
 class Account extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("entity_id","integer");
@@ -128,7 +134,7 @@ class Song extends Doctrine_Record {
 
 class Task extends Doctrine_Record {
    public function setUp() {
-      $this->hasMany("Resource","Assignment.resource_id");
+      $this->hasMany("Resource as ResourceAlias","Assignment.resource_id");
       $this->hasMany("Task as Subtask","Subtask.parent_id");
    } 
    public function setTableDefinition() {
@@ -139,11 +145,11 @@ class Task extends Doctrine_Record {
 
 class Resource extends Doctrine_Record {
    public function setUp() {
-      $this->hasMany("Task","Assignment.task_id");
+      $this->hasMany("Task as TaskAlias","Assignment.task_id");
    } 
    public function setTableDefinition() {
       $this->hasColumn("name","string",100); 
-   } 
+   }
 } 
 
 class Assignment extends Doctrine_Record {

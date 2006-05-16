@@ -155,6 +155,12 @@ class Sensei extends Doctrine_Access {
             return false;
         }
     }
+    /**
+     * returns a session variable
+     *
+     * @param mixed $name
+     * @return mixed
+     */
     public function get($name) {
         foreach($this->vars as $var) {
             if($var->name == $name) {
@@ -162,6 +168,14 @@ class Sensei extends Doctrine_Access {
             }
         }
     }
+    /**
+     * sets a session variable
+     * returns true on success, false on failure
+     *
+     * @param mixed $name
+     * @param mixed $value
+     * @return boolean
+     */
     public function set($name,$value) {
         foreach($this->vars as $var) {
             if($var->name == $name) {

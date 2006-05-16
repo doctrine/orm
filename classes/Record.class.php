@@ -127,26 +127,25 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     
             // clean data array
             $cols = $this->cleanData();
-    
+
+            $this->prepareIdentifiers($exists);
+
             if( ! $exists) {
-                           	
     
                 if($cols > 0)
                     $this->state = Doctrine_Record::STATE_TDIRTY;
                 else
                     $this->state = Doctrine_Record::STATE_TCLEAN;
-                    
-    
-    
+
                 // listen the onCreate event
                 $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onCreate($this);
+
             } else {
-                $this->state    = Doctrine_Record::STATE_CLEAN;
+                $this->state      = Doctrine_Record::STATE_CLEAN;
 
                 if($cols <= 1)
                     $this->state  = Doctrine_Record::STATE_PROXY;
 
-                $this->prepareIdentifiers();
 
                 // listen the onLoad event
                 $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
@@ -200,16 +199,26 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return void
      */
-    public function prepareIdentifiers() {
+    private function prepareIdentifiers($exists = true) {
         switch($this->table->getIdentifierType()):
             case Doctrine_Identifier::AUTO_INCREMENT:
             case Doctrine_Identifier::SEQUENCE:
-                $name = $this->table->getIdentifier();
+                if($exists) {
+                    $name = $this->table->getIdentifier();
+    
+                    if(isset($this->data[$name]))
+                        $this->id = $this->data[$name];
+    
+                    unset($this->data[$name]);
+                }
+            break;
+            case Doctrine_Identifier::COMPOSITE:
+                $names      = $this->table->getIdentifier();
+                $this->id   = array();
 
-                if(isset($this->data[$name]))
-                    $this->id = $this->data[$name];
-
-                unset($this->data[$name]);
+                foreach($names as $name) {
+                    $this->id[$name] = isset($this->data[$name])?$this->data[$name]:null;
+                }
             break;
         endswitch;
     }
@@ -603,10 +612,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     final public function saveAssociations() {
         foreach($this->table->getForeignKeys() as $fk):
-            $table = $fk->getTable();
+            $table   = $fk->getTable();
             $name    = $table->getComponentName();
-
-
+            $alias   = $this->table->getAlias($name);
+            
             if($fk instanceof Doctrine_Association) {
                 switch($fk->getType()):
                     case Doctrine_Relation::MANY_COMPOSITE:
@@ -614,15 +623,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     break;
                     case Doctrine_Relation::MANY_AGGREGATE:
                         $asf     = $fk->getAssociationFactory();
-                        if(isset($this->references[$name])) {
 
-                            $new = $this->references[$name];
+                        if(isset($this->references[$alias])) {
 
-                            if( ! isset($this->originals[$name])) {
-                                $this->loadReference($name);
+                            $new = $this->references[$alias];
+
+                            if( ! isset($this->originals[$alias])) {
+                                $this->loadReference($alias);
                             }
 
-                            $r = $this->getRelationOperations($name,$new);
+                            $r = $this->getRelationOperations($alias,$new);
 
                             foreach($r["delete"] as $record) {
                                 $query = "DELETE FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." = ?"
@@ -635,7 +645,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                                 $reldao->set($fk->getLocal(),$this);
                                 $reldao->save();
                             }  
-                            $this->originals[$name] = clone $this->references[$name];
+                            $this->originals[$alias] = clone $this->references[$alias];
                         }
                     break;
                 endswitch;
@@ -644,24 +654,24 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 
                 switch($fk->getType()):
                     case Doctrine_Relation::ONE_COMPOSITE:
-                        if(isset($this->originals[$name]) && $this->originals[$name]->getID() != $this->references[$name]->getID())
-                            $this->originals[$name]->delete();
+                        if(isset($this->originals[$alias]) && $this->originals[$alias]->getID() != $this->references[$alias]->getID())
+                            $this->originals[$alias]->delete();
                     
                     break;
                     case Doctrine_Relation::MANY_COMPOSITE:
-                        if(isset($this->references[$name])) {
-                            $new = $this->references[$name];
+                        if(isset($this->references[$alias])) {
+                            $new = $this->references[$alias];
 
-                            if( ! isset($this->originals[$name]))
-                                $this->loadReference($name);
+                            if( ! isset($this->originals[$alias]))
+                                $this->loadReference($alias);
 
-                            $r = $this->getRelationOperations($name,$new);
+                            $r = $this->getRelationOperations($alias,$new);
 
                             foreach($r["delete"] as $record) {
                                 $record->delete();
                             }
                             
-                            $this->originals[$name] = clone $this->references[$name];
+                            $this->originals[$alias] = clone $this->references[$alias];
                         }
                     break;
                 endswitch;
@@ -675,7 +685,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * The algorithm here is very simple and definitely not
      * the fastest one, since we have to iterate through the collections twice.
-     * the complexity of this algorithm is O(2*n^2)
+     * the complexity of this algorithm is O(n^2)
      *
      * First we iterate through the new collection and get the
      * records that do not exist in the old collection (Doctrine_Records that need to be added).
@@ -764,6 +774,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $this->cleanData();
             $this->state    = Doctrine_Record::STATE_TCLEAN;
             $this->modified = array();
+        } elseif($id === true) {
+            $this->prepareIdentifiers(false);
+            $this->state    = Doctrine_Record::STATE_CLEAN;
+            $this->modified = array();
         } else {
             $this->id       = $id;
             $this->state    = Doctrine_Record::STATE_CLEAN;
@@ -771,8 +785,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
     }
     /**
-     * return the primary key this object is pointing at
-     * @return int id
+     * return the primary key(s) this object is pointing at
+     * @return mixed id
      */
     final public function getID() {
         return $this->id;
@@ -916,6 +930,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
 
     /**
+     * binds One-to-One composite relation
+     *
      * @param string $objTableName
      * @param string $fkField
      * @return void
@@ -924,6 +940,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->table->bind($componentName,$foreignKey,Doctrine_Relation::ONE_COMPOSITE, $localKey);
     }
     /**
+     * binds One-to-Many composite relation
+     *
      * @param string $objTableName
      * @param string $fkField
      * @return void
@@ -932,6 +950,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->table->bind($componentName,$foreignKey,Doctrine_Relation::MANY_COMPOSITE, $localKey);
     }
     /**
+     * binds One-to-One aggregate relation
+     *
      * @param string $objTableName
      * @param string $fkField
      * @return void
@@ -940,6 +960,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->table->bind($componentName,$foreignKey,Doctrine_Relation::ONE_AGGREGATE, $localKey);
     }
     /**
+     * binds One-to-Many aggregate relation
+     *
      * @param string $objTableName
      * @param string $fkField
      * @return void
@@ -957,7 +979,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * setPrimaryKey
-     * @param string $key
+     * @param mixed $key
      */
     final public function setPrimaryKey($key) {
         $this->table->setPrimaryKey($key);
@@ -982,6 +1004,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * hasColumn
+     * sets a column definition
+     *
      * @param string $name
      * @param string $type
      * @param integer $length

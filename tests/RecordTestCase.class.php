@@ -3,13 +3,65 @@ require_once("UnitTestCase.class.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
+    public function testCompositePK() {
+        $record = new EntityReference();
+        $this->assertEqual($record->getTable()->getIdentifier(), array("entity1","entity2"));
+        $this->assertEqual($record->getTable()->getIdentifierType(), Doctrine_Identifier::COMPOSITE);
+        $this->assertEqual($record->getID(), array("entity1" => null, "entity2" => null));
+        $this->assertEqual($record->getState(), Doctrine_Record::STATE_TCLEAN);
+
+        $record->entity1 = 3;
+        $record->entity2 = 4;
+        $this->assertEqual($record->entity2, 4);
+        $this->assertEqual($record->entity1, 3);
+        $this->assertEqual($record->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($record->getID(), array("entity1" => null, "entity2" => null));
+
+        $record->save();
+        $this->assertEqual($record->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($record->entity2, 4);
+        $this->assertEqual($record->entity1, 3);
+        $this->assertEqual($record->getID(), array("entity1" => 3, "entity2" => 4));
+
+        $record = $record->getTable()->find($record->getID());
+        $this->assertEqual($record->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($record->entity2, 4);
+        $this->assertEqual($record->entity1, 3);
+
+        $this->assertEqual($record->getID(), array("entity1" => 3, "entity2" => 4));
+        
+        $record->entity2 = 5;
+        $record->entity1 = 2;
+        $this->assertEqual($record->getState(), Doctrine_Record::STATE_DIRTY);
+        $this->assertEqual($record->entity2, 5);
+        $this->assertEqual($record->entity1, 2);
+        $this->assertEqual($record->getID(), array("entity1" => 3, "entity2" => 4));
+
+        $record->save();
+        $this->assertEqual($record->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($record->entity2, 5);
+        $this->assertEqual($record->entity1, 2);
+        $this->assertEqual($record->getID(), array("entity1" => 2, "entity2" => 5));
+        $record = $record->getTable()->find($record->getID());
+
+        $this->assertEqual($record->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($record->entity2, 5);
+        $this->assertEqual($record->entity1, 2);
+        $this->assertEqual($record->getID(), array("entity1" => 2, "entity2" => 5));
+    }
+
+
     public function testManyToManyTreeStructure() {
         $task = $this->session->create("Task");
+        $this->assertEqual($task->getTable()->getAlias("Resource"), "ResourceAlias");
 
         $task->name = "Task 1";
-        $task->Resource[0]->name = "Resource 1";
+        $task->ResourceAlias[0]->name = "Resource 1";
 
         $this->session->flush();
+
+        $this->assertTrue($task->ResourceAlias[0] instanceof Resource);
+        $this->assertEqual($task->ResourceAlias[0]->name, "Resource 1");
         $this->assertEqual($this->dbh->query("SELECT COUNT(*) FROM assignment")->fetch(PDO::FETCH_NUM),array(1));
 
         $task = new Task();
@@ -18,28 +70,28 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($task->Subtask[0] instanceof Task);
 
         $this->assertEqual($task->Subtask[0]->getState(), Doctrine_Record::STATE_TCLEAN);
-        $this->assertTrue($task->Resource[0] instanceof Resource);
-        $this->assertEqual($task->Resource[0]->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertTrue($task->ResourceAlias[0] instanceof Resource);
+        $this->assertEqual($task->ResourceAlias[0]->getState(), Doctrine_Record::STATE_TCLEAN);
 
         $task->name = "Task 1";
-        $task->Resource[0]->name = "Resource 1";
+        $task->ResourceAlias[0]->name = "Resource 1";
         $task->Subtask[0]->name = "Subtask 1";
 
         $this->assertEqual($task->name, "Task 1");
-        $this->assertEqual($task->Resource[0]->name, "Resource 1");
-        $this->assertEqual($task->Resource->count(), 1);
+        $this->assertEqual($task->ResourceAlias[0]->name, "Resource 1");
+        $this->assertEqual($task->ResourceAlias->count(), 1);
         $this->assertEqual($task->Subtask[0]->name, "Subtask 1");
 
         $this->session->flush();
-        
+
         $task = $task->getTable()->find($task->getID());
 
         $this->assertEqual($task->name, "Task 1");
-        $this->assertEqual($task->Resource[0]->name, "Resource 1");
-        $this->assertEqual($task->Resource->count(), 1);
+        $this->assertEqual($task->ResourceAlias[0]->name, "Resource 1");
+        $this->assertEqual($task->ResourceAlias->count(), 1);
         $this->assertEqual($task->Subtask[0]->name, "Subtask 1");
 
-    } 
+    }
 
     public function testOne2OneForeign() {
 
@@ -248,7 +300,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($e->code,2);
         $this->assertEqual($e->message,"changed message");
         $this->assertEqual($e->Description[0]->description, "1st changed description");
-        $this->assertEqual($e->Description[1]->description, "2nd changed description");   
+        $this->assertEqual($e->Description[1]->description, "2nd changed description");
     }
 
     public function testInsert() {
@@ -553,5 +605,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user = $this->session->getTable("User")->find(4);
         $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
+
 }
 ?>

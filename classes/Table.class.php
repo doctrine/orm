@@ -78,6 +78,12 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     private $bound              = array();
     /**
+     * @var array $boundAliases                         bound relation aliases
+     */
+    private $boundAliases       = array();
+
+
+    /**
      * @var array $inheritanceMap                       inheritanceMap is used for inheritance mapping, keys representing columns and values
      *                                                  the column values that should correspond to child classes
      */
@@ -144,37 +150,43 @@ class Doctrine_Table extends Doctrine_Configurable {
                         $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
                     break;
                     default:
-                        foreach($this->primaryKeys as $pk) {
-                            $o = $this->columns[$pk][2];
-                            $e = explode("|",$o);
-                            $found = false;
+                        if(count($this->primaryKeys) > 1) {
+                            $this->identifier = $this->primaryKeys;
+                            $this->identifierType = Doctrine_Identifier::COMPOSITE;
+                                                         	
+                        } else {
+                            foreach($this->primaryKeys as $pk) {
+                                $o = $this->columns[$pk][2];
+                                $e = explode("|",$o);
+                                $found = false;
+    
 
-
-                            foreach($e as $option) {
-                                if($found)
-                                    break;
-
-                                $e2 = explode(":",$option);
-
-                                switch(strtolower($e2[0])):
-                                    case "unique":
-                                        $this->identifierType = Doctrine_Identifier::UNIQUE;
-                                        $found = true;
-                                    break;
-                                    case "autoincrement":
-                                        $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
-                                        $found = true;
-                                    break;
-                                    case "seq":
-                                        $this->identifierType = Doctrine_Identifier::SEQUENCE;
-                                        $found = true;
-                                    break;
-                                endswitch;
+                                foreach($e as $option) {
+                                    if($found)
+                                        break;
+    
+                                    $e2 = explode(":",$option);
+    
+                                    switch(strtolower($e2[0])):
+                                        case "unique":
+                                            $this->identifierType = Doctrine_Identifier::UNIQUE;
+                                            $found = true;
+                                        break;
+                                        case "autoincrement":
+                                            $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
+                                            $found = true;
+                                        break;
+                                        case "seq":
+                                            $this->identifierType = Doctrine_Identifier::SEQUENCE;
+                                            $found = true;
+                                        break;
+                                    endswitch;
+                                }
+                                if( ! isset($this->identifierType))
+                                    $this->identifierType = Doctrine_Identifier::NORMAL;
+                                     
+                                $this->identifier = $pk;
                             }
-                            if( ! isset($this->identifierType))
-                                $this->identifierType = Doctrine_Identifier::NORMAL;
-                                 
-                            $this->identifier = $pk;
                         }
                 endswitch;
 
@@ -258,6 +270,20 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     final public function hasColumn($name) {
         return isset($this->columns[$name]);
+    }
+    /**
+     * @param mixed $key
+     * @return void
+     */
+    final public function setPrimaryKey($key) {
+        switch(gettype($key)):
+            case "array":
+                $this->primaryKeys = array_values($key);
+            break;
+            case "string":
+                $this->primaryKeys[] = $key;
+            break;
+        endswitch;
     }
     /**
      * returns all primary keys
@@ -349,6 +375,32 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $this->bound[$name];
     }
     /**
+     * returns a bound relation array
+     *
+     * @param string $name
+     * @return array
+     */
+    final public function getBoundForName($name) {
+        foreach($this->bound as $k => $bound) {
+            if($bound[3] == $name) {
+                return $this->bound[$k];
+            }
+        }
+        throw new InvalidKeyException();
+    }
+    /**
+     * returns the alias for given component name
+     *
+     * @param string $name
+     * @return string
+     */
+    final public function getAlias($name) {
+        if(isset($this->boundAliases[$name]))
+            return $this->boundAliases[$name];
+            
+        return $name;
+    }
+    /**
      * @param string $name
      * @param string $field
      * @return void
@@ -360,10 +412,12 @@ class Doctrine_Table extends Doctrine_Configurable {
         $e          = explode(" as ",$name);
         $name       = $e[0];
 
-        if(isset($e[1]))
+        if(isset($e[1])) {
             $alias = $e[1];
-        else
+            $this->boundAliases[$name] = $alias;
+        } else
             $alias = $name;
+
 
         $this->bound[$alias] = array($field,$type,$localKey,$name);
     }
@@ -395,7 +449,6 @@ class Doctrine_Table extends Doctrine_Configurable {
             return $this->relations[$name];
 
         if(isset($this->bound[$name])) {
-
             $type       = $this->bound[$name][1];
             $local      = $this->bound[$name][2];
             $e          = explode(".",$this->bound[$name][0]);
@@ -436,7 +489,7 @@ class Doctrine_Table extends Doctrine_Configurable {
 
                 foreach($classes as $class) {
                     try {
-                        $bound = $table->getBound($class);
+                        $bound = $table->getBoundForName($class);
                         break;
                     } catch(InvalidKeyException $exc) {
 
@@ -517,10 +570,15 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     public function find($id) {
         if($id !== null) {
+            if( ! is_array($id))
+                $id = array($id);
+            else 
+                $id = array_values($id);
+
             $query  = $this->query." WHERE ".implode(" = ? AND ",$this->primaryKeys)." = ?";
             $query  = $this->applyInheritance($query);
             
-            $params = array_merge(array($id), array_values($this->inheritanceMap));
+            $params = array_merge($id, array_values($this->inheritanceMap));
 
             $this->data = $this->session->execute($query,$params)->fetch(PDO::FETCH_ASSOC);
 
@@ -588,19 +646,28 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     public function getRecord() {
         $key = $this->getIdentifier();
-        if(isset($this->data[$key])) {
-            $id = $this->data[$key];
-            if(isset($this->identityMap[$id]))
-                $record = $this->identityMap[$id];
-            else {
-                $record = new $this->name($this);
-                $this->identityMap[$id] = $record;
-            }
-            $this->data = array();
 
-            return $record;
+        if( ! is_array($key))
+            $key = array($key);
+
+
+        foreach($key as $k) {
+            if( ! isset($this->data[$k]))
+                throw new Doctrine_Exception("No primary key found");
+            
+            $id[] = $this->data[$k];
         }
-        throw new Doctrine_Exception("No primary key found");
+        $id = implode(' ', $id);
+
+        if(isset($this->identityMap[$id]))
+            $record = $this->identityMap[$id];
+        else {
+            $record = new $this->name($this);
+            $this->identityMap[$id] = $record;
+        }
+        $this->data = array();
+
+        return $record;
     }
     /**
      * @param $id                       database row id

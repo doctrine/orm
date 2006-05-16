@@ -1,6 +1,11 @@
 <?php
 /**
  * Doctrine_Validator
+ * Doctrine_Session uses this class for transaction validation
+ *
+ * @package     Doctrine ORM
+ * @url         www.phpdoctrine.com
+ * @license     LGPL
  */
 class Doctrine_Validator {
     /**
@@ -25,11 +30,11 @@ class Doctrine_Validator {
     const ERR_UNIQUE = 3;
     
     /**
-     * @var array $stack        error stack
+     * @var array $stack            error stack
      */
     private $stack      = array();
     /**
-     * @var array $validators   an array of validator objects
+     * @var array $validators       an array of validator objects
      */
     private static $validators = array();
     /**

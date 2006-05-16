@@ -41,7 +41,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     private $transaction_level  = 0;
 
     /**
-     * @var PDO $cacheHandler
+     * @var PDO $cacheHandler               cache handler
      */
     private $cacheHandler;
     /**
@@ -328,7 +328,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     }
     /**
      * clear
-     * clears the whole registry
+     * clears all repositories
      *
      * @return void
      */
@@ -341,6 +341,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     /**
      * close
      * closes the session
+     *
      * @return void
      */
     public function close() {
@@ -353,7 +354,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     }
     /**
      * get the current transaction nesting level
-     * @return integer          transaction nesting level
+     *
+     * @return integer
      */
     public function getTransactionLevel() {
         return $this->transaction_level;
@@ -471,16 +473,17 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
 
 
                 $this->insert($record);
-
-                if($increment && $k == 0) {
-                    // record uses auto_increment column
+                if($increment) {
+                    if($k == 0) {
+                        // record uses auto_increment column
     
-                    $id = $table->getMaxIdentifier();
-                }
-
-                $record->setID($id);
-
-                $id++;
+                        $id = $table->getMaxIdentifier();
+                    }
+    
+                    $record->setID($id);
+                    $id++;
+                } else
+                    $record->setID(true);
 
                 // listen the onInsert event
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
@@ -693,14 +696,22 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         }
 
         $params   = array_values($array);
-        $params[] = $record->getID();
+        $id       = $record->getID();
+
+
+        if( ! is_array($id))
+            $id = array($id);
+
+        $id     = array_values($id);
+        $params = array_merge($params, $id);
 
 
         $sql  = "UPDATE ".$record->getTable()->getTableName()." SET ".implode(", ",$set)." WHERE ".implode(" = ? && ",$record->getTable()->getPrimaryKeys())." = ?";
+
         $stmt = $this->dbh->prepare($sql);
         $stmt->execute($params);
 
-        $record->setID($record->getID());
+        $record->setID(true);
 
         return true;
     }

@@ -16,5 +16,9 @@ class Doctrine_Identifier {
      * constant for normal identifier
      */
     const NORMAL         = 3;
+    /**
+     * constant for composite identifier
+     */
+    const COMPOSITE      = 4;
 }
 ?>

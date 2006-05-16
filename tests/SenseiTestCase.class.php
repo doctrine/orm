@@ -92,11 +92,16 @@ class Sensei_UnitTestCase extends UnitTestCase {
 
         $this->assertEqual($this->record->entity_id, 1);
     }
+
     public function testLogout() {
         $this->assertTrue($this->sensei->logout());
         $this->assertEqual($this->record->logged_in, 0);
 
         $this->assertEqual($this->record->entity_id, 0);
+        $this->assertEqual($this->record->getState(), Doctrine_Record::STATE_DIRTY);
+        $this->assertEqual($this->record->getTable()->getIdentifierType(), Doctrine_Identifier::AUTO_INCREMENT);
+
+        $this->assertEqual($this->record->getID(), 1);
 
         $this->sensei->flush();
 
@@ -104,5 +109,6 @@ class Sensei_UnitTestCase extends UnitTestCase {
 
         $this->assertEqual($this->record->entity_id, 0);
     }
+
 }
 ?>
