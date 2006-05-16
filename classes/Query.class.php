@@ -439,7 +439,7 @@ class Doctrine_Query extends Doctrine_Access {
     }
     /**
      * parseData
-     * parses a PDOStatement
+     * parses the data returned by PDOStatement
      *
      * @return array
      */
@@ -826,8 +826,6 @@ class Doctrine_Query extends Doctrine_Access {
     final public function load($path, $fetchmode = Doctrine::FETCH_LAZY) {
         $e = explode(".",$path);
         foreach($e as $key => $name) {
-            $low  = strtolower($name);
-            $name = ucwords($low);
 
             try {
                 if($key == 0) {
@@ -886,6 +884,7 @@ class Doctrine_Query extends Doctrine_Access {
                 }
 
             } catch(Exception $e) {
+
                 throw new DQLException($e->getMessage(),$e->getCode());
             }
         }

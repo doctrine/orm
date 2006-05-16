@@ -186,8 +186,6 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @return object Doctrine_Table
      */
     public function getTable($name) {
-        // $name = ucwords(strtolower($name));
-
         if(isset($this->tables[$name]))
             return $this->tables[$name];
 

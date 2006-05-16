@@ -1,9 +1,13 @@
 <?php
 /**
- * class Doctrine_Access
+ * Doctrine_Access
  *
- * the purpose of Doctrine_Access is to provice array access 
+ * the purpose of Doctrine_Access is to provice array access
  * and property overload interface for subclasses
+ *
+ * @package     Doctrine ORM
+ * @url         www.phpdoctrine.com
+ * @license     LGPL
  */
 abstract class Doctrine_Access implements ArrayAccess {
     /**

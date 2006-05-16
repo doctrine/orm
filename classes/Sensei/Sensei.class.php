@@ -47,8 +47,8 @@ class Sensei_Session extends Doctrine_Record {
      * @return void
      */
     public function setUp() {
-        $this->ownsMany("Sensei_variable","Sensei_variable.session_id");
-        $this->hasOne("Sensei_entity","Sensei_session.entity_id");
+        $this->ownsMany("Sensei_Variable","Sensei_Variable.session_id");
+        $this->hasOne("Sensei_Entity","Sensei_Session.entity_id");
     }
     /**
      * setTableDefinition
@@ -210,7 +210,7 @@ class Sensei extends Doctrine_Access {
         $this->record->user_agent = $_SERVER['HTTP_USER_AGENT'];
         $this->record->updated    = time();
         $this->record->session_id = $id;
-        $this->vars = $this->record->Sensei_variable;
+        $this->vars = $this->record->Sensei_Variable;
 
         if($this->record->getState() == Doctrine_Record::STATE_TDIRTY) {
             $this->record->created = time();

@@ -218,6 +218,9 @@ class Doctrine_Table extends Doctrine_Configurable {
             break;
         endswitch;
     }
+    /**
+     * @return Doctrine_Repository
+     */
     public function getRepository() {
         return $this->repository;
     }
@@ -334,7 +337,10 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $this->bound;
     }
     /**
+     * returns a bound relation array
+     *
      * @param string $name
+     * @return array
      */
     final public function getBound($name) {
         if( ! isset($this->bound[$name])) 

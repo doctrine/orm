@@ -2,7 +2,6 @@
 require_once("Configurable.class.php");
 require_once("EventListener.class.php");
 /**
- * @author      Konsta Vesterinen
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
  * @license     LGPL
