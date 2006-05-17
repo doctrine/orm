@@ -333,8 +333,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @return void
      */
     public function clear() {
-        foreach($this->tables as $k => $objTable) {
-            $objTable->getRepository()->evictAll();
+        foreach($this->tables as $k => $table) {
+            $table->getRepository()->evictAll();
+            $table->clear();
         }
         $this->tables = array();
     }

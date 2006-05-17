@@ -319,10 +319,17 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return boolean
      */
     final public function refresh() {
-        if($this->getID() == null) return false;
+        $id = $this->getID();
+        if( ! is_array($id))
+            $id = array($id);
+
+        if(empty($id))
+            return false;
+
+        $id = array_values($id);
 
         $query          = $this->table->getQuery()." WHERE ".implode(" = ? && ",$this->table->getPrimaryKeys())." = ?";
-        $this->data     = $this->table->getSession()->execute($query,array($this->getID()))->fetch(PDO::FETCH_ASSOC);
+        $this->data     = $this->table->getSession()->execute($query,$id)->fetch(PDO::FETCH_ASSOC);
 
         $this->modified = array();
         $this->cleanData();

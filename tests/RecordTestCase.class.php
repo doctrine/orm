@@ -2,6 +2,52 @@
 require_once("UnitTestCase.class.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
+    public function testJoinTableSelfReferencing() {
+        $e = new Entity();
+        $e->name = "Entity test";
+        $this->assertTrue($e->Entity[0] instanceof Entity);
+        $this->assertTrue($e->Entity[1] instanceof Entity);
+
+        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_TCLEAN);
+        
+        $e->Entity[0]->name = "Subentity 1";
+        $e->Entity[1]->name = "Subentity 2";
+        
+        $this->assertEqual($e->Entity[0]->name, "Subentity 1");
+        $this->assertEqual($e->Entity[1]->name, "Subentity 2");   
+
+        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_TDIRTY);
+
+        $e->save();
+
+        $this->assertTrue($e->Entity[0] instanceof Entity);
+        $this->assertTrue($e->Entity[1] instanceof Entity);
+        
+        $this->assertEqual($e->Entity[0]->name, "Subentity 1");
+        $this->assertEqual($e->Entity[1]->name, "Subentity 2");
+
+        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
+
+        $e = $e->getTable()->find($e->getID());
+        
+        $this->assertTrue($e->Entity[0] instanceof Entity);
+        $this->assertTrue($e->Entity[1] instanceof Entity);
+
+        $this->assertEqual($e->Entity[0]->name, "Subentity 1");
+        $this->assertEqual($e->Entity[1]->name, "Subentity 2");
+
+        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
+        
+        $coll = $this->session->query("FROM Entity WHERE Entity.name = 'Subentity 1'");
+        $this->assertEqual($coll->count(), 1);
+        $this->assertEqual($coll[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        
+        $this->assertEqual($coll[0]->name, "Subentity 1");
+    }
 
     public function testCompositePK() {
         $record = new EntityReference();
@@ -48,6 +94,26 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($record->entity2, 5);
         $this->assertEqual($record->entity1, 2);
         $this->assertEqual($record->getID(), array("entity1" => 2, "entity2" => 5));
+        
+        $record->refresh();
+        $this->assertEqual($record->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($record->entity2, 5);
+        $this->assertEqual($record->entity1, 2);
+        $this->assertEqual($record->getID(), array("entity1" => 2, "entity2" => 5));
+
+        $record = new EntityReference();
+        $record->entity2 = 6;
+        $record->entity1 = 2;
+        $record->save();
+        
+        $coll = $this->session->query("FROM EntityReference-b");
+        $this->assertTrue($coll[0] instanceof EntityReference);
+        $this->assertEqual($coll[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertTrue($coll[1] instanceof EntityReference);
+        $this->assertEqual($coll[1]->getState(), Doctrine_Record::STATE_CLEAN);
+
+        $coll = $this->session->query("FROM EntityReference-b WHERE EntityReference.entity2 = 5");
+        $this->assertEqual($coll->count(), 1);
     }
 
 
@@ -605,6 +671,5 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user = $this->session->getTable("User")->find(4);
         $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
-
 }
 ?>

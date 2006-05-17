@@ -451,9 +451,7 @@ class Doctrine_Table extends Doctrine_Configurable {
         if(isset($this->bound[$name])) {
             $type       = $this->bound[$name][1];
             $local      = $this->bound[$name][2];
-            $e          = explode(".",$this->bound[$name][0]);
-            $component  = $e[0];
-            $foreign    = $e[1];
+            list($component, $foreign) = explode(".",$this->bound[$name][0]);
             $alias      = $name;
             $name       = $this->bound[$alias][3];
 
@@ -469,7 +467,7 @@ class Doctrine_Table extends Doctrine_Configurable {
 
                     $relation = new Doctrine_LocalKey($table,$foreign,$local,$type);
                 } else
-                    throw new Doctrine_Mapping_Exception();
+                    throw new Doctrine_Mapping_Exception("Only one-to-one relations are possible when local reference key is used.");
 
             } elseif($component == $name || ($component == $alias && $name == $this->name)) {
                 if( ! isset($local))
@@ -483,31 +481,39 @@ class Doctrine_Table extends Doctrine_Configurable {
                 // only aggregate relations allowed
 
                 if($type != Doctrine_Relation::MANY_AGGREGATE) 
-                    throw new Doctrine_Mapping_Exception();
+                    throw new Doctrine_Mapping_Exception("Only aggregate relations are allowed for many-to-many relations");
 
                 $classes = array_merge($this->parents, array($this->name));
 
-                foreach($classes as $class) {
+                foreach(array_reverse($classes) as $class) {
                     try {
                         $bound = $table->getBoundForName($class);
                         break;
-                    } catch(InvalidKeyException $exc) {
+                    } catch(InvalidKeyException $exc) { }
 
-                    }
                 }
                 if( ! isset($local))
                     $local = $this->identifier;
 
                 $e2    = explode(".",$bound[0]);
+                $fields = explode("-",$e2[1]);
 
                 if($e2[0] != $component)
-                    throw new Doctrine_Mapping_Exception();
+                    throw new Doctrine_Mapping_Exception($e2[0]." doesn't match ".$component);
 
                 $associationTable = $this->session->getTable($e2[0]);
 
-                $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$e2[1],Doctrine_Relation::MANY_COMPOSITE);
+                if(count($fields) > 1) {
+                    // SELF-REFERENCING THROUGH JOIN TABLE
+                    $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$fields[0],Doctrine_Relation::MANY_COMPOSITE);
+                    
+                    $relation = new Doctrine_Association($table,$associationTable,$fields[0],$fields[1],$type);
+                } else {
+                    // NORMAL MANY-TO-MANY RELATIONSHIP
+                    $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$e2[1],Doctrine_Relation::MANY_COMPOSITE);
 
-                $relation = new Doctrine_Association($table,$associationTable,$e2[1],$foreign,$type);
+                    $relation = new Doctrine_Association($table,$associationTable,$e2[1],$foreign,$type);
+                }
 
             }
             $this->relations[$alias] = $relation;

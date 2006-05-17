@@ -4,6 +4,7 @@ class Entity extends Doctrine_Record {
         $this->ownsOne("Email","Entity.email_id");
         $this->ownsMany("Phonenumber","Phonenumber.entity_id");
         $this->ownsOne("Account","Account.entity_id");
+        $this->hasMany("Entity","EntityReference.entity1-entity2");
     }
     public function setTableDefinition() {
         $this->hasColumn("id","integer",20,"autoincrement|primary");
