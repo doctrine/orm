@@ -1,6 +1,7 @@
 <?php
 require_once("UnitTestCase.class.php");
 class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
+
     public function testGetIdentifier() {
         $table = $this->session->getTable("User");
     }
@@ -27,7 +28,7 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($fk->getLocal() == $this->objTable->getIdentifier());
         $this->assertTrue($fk->getForeign() == "entity_id");
         
-        
+
     }
     public function testGetComponentName() {
         $this->assertTrue($this->objTable->getComponentName() == "User");

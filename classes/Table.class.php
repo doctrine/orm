@@ -23,7 +23,7 @@ class Doctrine_Table extends Doctrine_Configurable {
     /**
      * @var array $relations                            an array containing all the Doctrine_Relation objects for this table
      */
-    private $relations       = array();
+    private $relations        = array();
     /**
      * @var array $primaryKeys                          an array containing all primary key column names
      */

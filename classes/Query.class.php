@@ -601,6 +601,7 @@ class Doctrine_Query extends Doctrine_Access {
                 $field     = array_pop($a);
                 $reference = implode(".",$a);
                 $name      = end($a);
+
                 $this->load($reference);
                 $tname     = $this->tables[$name]->getTableName();
 
@@ -788,14 +789,20 @@ class Doctrine_Query extends Doctrine_Access {
             $operator  = array_shift($e);
             $value     = implode(" ",$e);
             $reference = implode(".",$a);
-            $objTable   = $this->session->getTable(end($a));
+
+            if(count($a) > 1)
+                $objTable = $this->tables[$a[0]]->getForeignKey(end($a))->getTable();
+            else
+                $objTable = $this->session->getTable(end($a));
+
             $where     = $objTable->getTableName().".".$field." ".$operator." ".$value;
 
             if(count($a) > 1 && isset($a[1])) {
                 $root = $a[0];
                 $fk = $this->tables[$root]->getForeignKey($a[1]);
                 if($fk instanceof Doctrine_Association) {
-                $asf = $fk->getAssociationFactory();
+                    $asf = $fk->getAssociationFactory();
+
                     switch($fk->getType()):
                         case Doctrine_Relation::ONE_AGGREGATE:
                         case Doctrine_Relation::ONE_COMPOSITE:
@@ -803,15 +810,15 @@ class Doctrine_Query extends Doctrine_Access {
                         break;
                         case Doctrine_Relation::MANY_AGGREGATE:
                         case Doctrine_Relation::MANY_COMPOSITE:
-                            $b = array_shift($a);
-                            $b = array_shift($a);
+                            $b = $fk->getTable()->getComponentName();
+
                             $graph = new Doctrine_Query($this->session);
                             $graph->parseQuery("FROM $b-l WHERE $where");
                             $where = $this->tables[$root]->getTableName().".".$this->tables[$root]->getIdentifier()." IN (SELECT ".$fk->getLocal()." FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." IN (".$graph->getQuery()."))";
                         break;
                     endswitch;
                 } else
-                $this->load($reference);
+                    $this->load($reference);
 
             } else
                 $this->load($reference);

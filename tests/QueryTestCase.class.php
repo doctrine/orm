@@ -1,5 +1,20 @@
 <?php
 class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
+
+    public function testQueryWithAliases() {
+        $task = new Task();
+        $task->name = "Task 1";
+        $task->ResourceAlias[0]->name = "Resource 1";
+        $task->ResourceAlias[1]->name = "Resource 2";
+
+        $task->save();
+        $query = new Doctrine_Query($this->session);
+        $coll = $query->query("FROM Task WHERE Task.ResourceAlias.name = 'Resource 1'");
+
+        $this->assertEqual($coll->count(), 1);
+        $this->assertTrue($coll[0] instanceof Task);
+    }
+
     public function testQueryArgs() {
         $query = new Doctrine_Query($this->session);
         $query = $query->from("User-l");
@@ -75,7 +90,9 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(),8);
         $this->assertTrue($users[0]->name == "Arnold Schwarzenegger");
     }
+
     public function testQuery() {
+
         $query = new Doctrine_Query($this->session);
 
         $this->graph = $query;
@@ -243,8 +260,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         "SELECT entity.id AS User__id FROM entity WHERE (entity.id IN (SELECT user_id FROM groupuser WHERE group_id IN (SELECT entity.id AS Group__id FROM entity, phonenumber WHERE (phonenumber.phonenumber LIKE '123 123') AND (entity.type = 1)))) AND (entity.type = 0)");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
-
-
 
         $values = $query->query("SELECT COUNT(User.name) AS users, MAX(User.name) AS max FROM User");
         $this->assertEqual(trim($query->getQuery()),"SELECT COUNT(entity.name) AS users, MAX(entity.name) AS max FROM entity WHERE (entity.type = 0)");
