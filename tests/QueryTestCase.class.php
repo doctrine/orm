@@ -1,5 +1,44 @@
 <?php
 class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
+    public function prepareTables() {
+        $this->tables[] = "Forum_Category";
+        $this->tables[] = "Forum_Entry";
+        $this->tables[] = "Forum_Board";
+        $this->tables[] = "Forum_Thread";
+        parent::prepareTables();
+    }
+
+    public function testQueryWithComplexAliases() {
+        $board = new Forum_Board();
+        $table = $board->getTable();
+        $this->assertTrue($table->getForeignKey("Threads") instanceof Doctrine_ForeignKey);
+        $entry = new Forum_Entry();
+        $this->assertTrue($entry->getTable()->getForeignKey("Thread") instanceof Doctrine_LocalKey);
+
+        $board->name = "Doctrine Forum";
+
+        $board->Threads[0];
+        $board->Category->name = "General discussion";
+        $this->assertEqual($board->name, "Doctrine Forum");
+        $this->assertEqual($board->Category->name, "General discussion");
+        $this->assertEqual($board->Category->getState(), Doctrine_Record::STATE_TDIRTY);
+        //$this->assertEqual($board->Threads[0]->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertTrue($board->Threads[0] instanceof Forum_Thread);
+        
+        //print_r($this->session->buildFlushTree());
+
+        $this->session->flush();
+        /**
+        $board->getTable()->clear();
+        $board = $board->getTable()->find($board->getID());
+        $this->assertEqual($board->Threads->count(), 1);
+        $this->assertEqual($board->name, "Doctrine Forum");
+        $this->assertEqual($board->Category->name, "General discussion");
+        $this->assertEqual($board->Category->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($board->Threads[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertTrue($board->Threads[0] instanceof Forum_Thread);
+        */
+    }
 
     public function testQueryWithAliases() {
         $task = new Task();

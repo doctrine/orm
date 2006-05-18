@@ -401,6 +401,39 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $name;
     }
     /**
+     * unbinds all relations
+     * 
+     * @return void
+     */
+    final public function unbindAll() {
+        $this->bound        = array();
+        $this->relations    = array();
+        $this->boundAliases = array();
+    }
+    /**
+     * unbinds a relation
+     * returns true on success, false on failure
+     *
+     * @param $name
+     * @return boolean
+     */
+    final public function unbind() {
+        if( ! isset($this->bound[$name]))
+            return false;
+        
+        unset($this->bound[$name]);
+
+        if(isset($this->relations[$name]))
+            unset($this->relations[$name]);
+
+        if(isset($this->boundAliases[$name]))
+            unset($this->boundAliases[$name]);
+
+        return true;
+    }
+    /**
+     * binds a relation
+     *
      * @param string $name
      * @param string $field
      * @return void
@@ -518,9 +551,8 @@ class Doctrine_Table extends Doctrine_Configurable {
             }
             $this->relations[$alias] = $relation;
             return $this->relations[$alias];
-        } else {
-            throw new InvalidKeyException();
         }
+        throw new InvalidKeyException();
     }
     /**
      * returns an array containing all foreign key objects
@@ -530,9 +562,10 @@ class Doctrine_Table extends Doctrine_Configurable {
     final public function getForeignKeys() {
         $a = array();
         foreach($this->bound as $k=>$v) {
-            $a[$k] = $this->getForeignKey($k);
+            $this->getForeignKey($k);
         }
-        return $a;
+
+        return $this->relations;
     }
     /**
      * sets the database table name

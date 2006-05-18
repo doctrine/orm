@@ -1,6 +1,9 @@
 <?php
 require_once("UnitTestCase.class.php");
 class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
+    public function testBind() {
+        $table = $this->session->getTable("User");
+    }
 
     public function testGetIdentifier() {
         $table = $this->session->getTable("User");

@@ -246,19 +246,15 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     public function create($name) {
         return $this->getTable($name)->create();
     }
-    /**
-     * buildFlushTree
-     * builds a flush tree that is used in transactions
-     *
-     * @return array
-     */
-    public function buildFlushTree() {
-        $tables = $this->tables;
+    public function buildFlushTree2(array $tables) {
         $tree = array();
         foreach($tables as $table) {
+            if( ! ($table instanceof Doctrine_Table))
+                $table = $this->getTable($table);
+
             $name  = $table->getComponentName();
             $index = array_search($name,$tree);
-            if($index === false) 
+            if($index === false)
                 $tree[] = $name;
 
 
@@ -280,15 +276,126 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                     $t = $rel->getAssociationFactory();
                     $n = $t->getComponentName();
                     $index = array_search($n,$tree);
-                    
-                    if($index !== false) 
+
+                    if($index !== false)
                         unset($tree[$index]);
-                        
+
                     $tree[] = $n;
                 }
             }
         }
-        return $tree;
+        return array_values($tree);
+    }
+
+    /**
+     * buildFlushTree
+     * builds a flush tree that is used in transactions
+     *
+     * @return array
+     */
+    public function buildFlushTree(array $tables) {
+        $tree = array();
+        foreach($tables as $k => $table) {
+            $k = $k.$table;
+            if( ! ($table instanceof Doctrine_Table))
+                $table = $this->getTable($table);
+
+            $nm     = $table->getComponentName();
+
+            $index  = array_search($nm,$tree);
+            if($index === false) {
+                $tree[] = $nm;
+                $index  = max(array_keys($tree));
+
+                //print "$k -- adding <b>$nm</b>...<br \>";
+            }
+
+            $rels = $table->getForeignKeys();
+            
+            // group relations
+            
+            foreach($rels as $key => $rel) {
+                if($rel instanceof Doctrine_ForeignKey) {
+                    unset($rels[$key]);
+                    array_unshift($rels, $rel);
+                }
+            }
+
+            foreach($rels as $rel) {
+                $name   = $rel->getTable()->getComponentName();
+                $index2 = array_search($name,$tree);
+                $type   = $rel->getType();
+
+                // skip self-referenced relations
+                if($name === $nm)
+                    continue;
+
+                if($rel instanceof Doctrine_ForeignKey) {
+                    if($index2 !== false) {
+                        if($index2 >= $index)
+                            continue;
+
+                        unset($tree[$index]);
+                        array_splice($tree,$index2,0,$nm);
+                        $index = $index2;
+                        
+                        //print "$k -- pushing $nm into $index2...<br \>";
+
+                    } else {
+                        $tree[] = $name;
+                        //print "$k -- adding $nm :$name...<br>";
+                    }
+
+                } elseif($rel instanceof Doctrine_LocalKey) {
+                    if($index2 !== false) {
+                        if($index2 <= $index)
+                            continue;
+
+                        unset($tree[$index2]);
+                        array_splice($tree,$index,0,$name);
+
+                        //print "$k -- pushing $name into <b>$index</b>...<br \>";
+
+                    } else {
+                        //array_splice($tree, $index, 0, $name);
+                        array_unshift($tree,$name);
+                        $index++;
+
+                        //print "$k -- pushing <b>$name</b> into 0...<br \>";
+                    }
+                } elseif($rel instanceof Doctrine_Association) {
+                    $t = $rel->getAssociationFactory();
+                    $n = $t->getComponentName();
+                    
+                    if($index2 !== false)
+                        unset($tree[$index2]);
+                    
+                    array_splice($tree,$index, 0,$name);
+                    $index++;
+
+                    $index3 = array_search($n,$tree);
+
+                    if($index3 !== false) {
+                        if($index3 >= $index)
+                            continue;
+
+                        unset($tree[$index]);
+                        array_splice($tree,$index3,0,$n);
+                        $index = $index2;
+
+                        //print "$k -- pushing $nm into $index3...<br \>";
+
+                    } else {
+                        $tree[] = $n;
+                        //print "$k -- adding $nm :$name...<br>";
+                    }
+                }
+                //print_r($tree);
+            }
+            //print_r($tree);
+
+        }
+        return array_values($tree);
     }
 
     /**
@@ -310,7 +417,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @return void
      */
     private function saveAll() {
-        $tree = $this->buildFlushTree();
+        $tree = $this->buildFlushTree($this->tables);
 
         foreach($tree as $name) {
             $table = $this->tables[$name];
@@ -685,8 +792,14 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 $set[] = $name." = ?";
 
                 if($value instanceof Doctrine_Record) {
-                    $array[$name] = $value->getID();
-                    $record->set($name, $value->getID());
+                    switch($value->getState()):
+                        case Doctrine_Record::STATE_TCLEAN:
+                        case Doctrine_Record::STATE_TDIRTY:
+                            $record->save();
+                        default:
+                            $array[$name] = $value->getID();
+                            $record->set($name, $value->getID());
+                    endswitch;
                 }
         endforeach;
 

@@ -221,7 +221,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if( ! isset($offset)) {
             foreach($coll as $record) {
                 if(isset($this->reference_field))
-                    $record->rawSet($this->reference_field,$this->reference);
+                    $record->set($this->reference_field,$this->reference);
 
                 $this->reference->addReference($record);
             }
@@ -332,7 +332,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function set($key,Doctrine_Record $record) {
         if(isset($this->reference_field))
-            $record->set($this->reference_field,$this->reference);
+            $record->rawSet($this->reference_field,$this->reference);
 
         $this->data[$key] = $record;
     }

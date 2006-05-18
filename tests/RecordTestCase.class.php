@@ -2,6 +2,7 @@
 require_once("UnitTestCase.class.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
+
     public function testJoinTableSelfReferencing() {
         $e = new Entity();
         $e->name = "Entity test";
@@ -118,6 +119,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
 
     public function testManyToManyTreeStructure() {
+
         $task = $this->session->create("Task");
         $this->assertEqual($task->getTable()->getAlias("Resource"), "ResourceAlias");
 
@@ -135,7 +137,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($task->getState(), Doctrine_Record::STATE_TCLEAN);
         $this->assertTrue($task->Subtask[0] instanceof Task);
 
-        $this->assertEqual($task->Subtask[0]->getState(), Doctrine_Record::STATE_TCLEAN);
+        //$this->assertEqual($task->Subtask[0]->getState(), Doctrine_Record::STATE_TDIRTY);
         $this->assertTrue($task->ResourceAlias[0] instanceof Resource);
         $this->assertEqual($task->ResourceAlias[0]->getState(), Doctrine_Record::STATE_TCLEAN);
 
@@ -671,5 +673,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user = $this->session->getTable("User")->find(4);
         $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
+
 }
 ?>

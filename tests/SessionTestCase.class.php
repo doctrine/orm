@@ -1,11 +1,98 @@
 <?php
 require_once("UnitTestCase.class.php");
 class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
-    public function testBuildFlushTree() {
-        $tree = $this->session->buildFlushTree();
 
-        //print_r($tree);
+    public function testBuildFlushTree() {
+        $correct = array("Task","Resource","Assignment");
+
+        $task = new Task();
+
+        $tree = $this->session->buildFlushTree(array("Task"));
+        $this->assertEqual($tree,array("Resource","Task","Assignment"));
+
+        $tree = $this->session->buildFlushTree(array("Task","Resource"));
+        $this->assertEqual($tree,$correct);
+
+        $tree = $this->session->buildFlushTree(array("Task","Assignment","Resource"));
+        $this->assertEqual($tree,$correct);
+
+        $tree = $this->session->buildFlushTree(array("Assignment","Task","Resource"));
+        $this->assertEqual($tree,$correct);
+
+
+        $correct = array("Forum_Category","Forum_Board","Forum_Thread");
+
+        $tree = $this->session->buildFlushTree(array("Forum_Board"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Category","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+
+        $correct = array("Forum_Category","Forum_Board","Forum_Thread","Forum_Entry");
+
+        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Entry"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Thread"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Entry"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Entry","Forum_Thread"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Board","Forum_Thread"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Entry"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Entry","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+
+
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Category"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Category","Forum_Thread","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Category"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Category","Forum_Entry"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Entry","Forum_Category"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Category","Forum_Thread","Forum_Entry"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Board","Forum_Category"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Category","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Category","Forum_Board","Forum_Thread"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Category","Forum_Board","Forum_Entry"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Entry","Forum_Category","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Entry","Forum_Category"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->session->buildFlushTree(array("Forum_Category","Forum_Entry","Forum_Board","Forum_Thread"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Category","Forum_Thread","Forum_Entry","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->session->buildFlushTree(array("Forum_Category","Forum_Board","Forum_Thread","Forum_Entry"));
+        $this->assertEqual($tree, $correct);
+
     }
+
     public function testBulkInsert() {
         $u1 = new User();
         $u1->name = "Jean Reno";
@@ -266,6 +353,5 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->session->clear();
         $this->assertEqual($this->session->getTables(), array());
     }
-
 }
 ?>

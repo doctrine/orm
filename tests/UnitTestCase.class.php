@@ -20,7 +20,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     protected $listener;
     protected $cache;
     protected $users;
-    protected $tables;
+    protected $tables = array();
 
     private $init = false;
 
@@ -31,7 +31,8 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->manager->setAttribute(Doctrine::ATTR_CACHE, Doctrine::CACHE_NONE);
         $this->manager->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_IMMEDIATE);
         
-        $this->tables = array("entity","entityReference","email","phonenumber","groupuser","album","song","element","error","description","address","account","task","resource","assignment");
+
+        $this->tables = array_merge($this->tables, array("entity","entityReference","email","phonenumber","groupuser","album","song","element","error","description","address","account","task","resource","assignment"));
 
 
 
@@ -52,8 +53,10 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->prepareData();
     }
     public function prepareTables() {
+
         foreach($this->tables as $name) {
-            $this->dbh->query("DROP TABLE IF EXISTS $name");
+
+            $this->dbh->query("DROP TABLE IF EXISTS ".strtolower($name));
         }
 
         foreach($this->tables as $name) {

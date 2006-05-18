@@ -486,9 +486,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
             $fk = $this->table->getForeignKey($name);
 
-            if($value->getTable()->getComponentName() != $name)
-                throw new InvalidKeyException();
-
             // one-to-many or one-to-one relation
             if($fk instanceof Doctrine_ForeignKey || 
                $fk instanceof Doctrine_LocalKey) {
@@ -539,20 +536,20 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         // listen the onPreSave event
         $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($this);
 
-
-
         $saveLater = $this->table->getSession()->saveRelated($this);
 
         $this->table->getSession()->save($this);
 
         foreach($saveLater as $fk) {
+
             $table = $fk->getTable();
             $foreign = $fk->getForeign();
             $local   = $fk->getLocal();
 
-            $name    = $table->getComponentName();
-            if(isset($this->references[$name])) {
-                $obj = $this->references[$name];
+            $alias   = $this->table->getAlias($table->getComponentName());
+
+            if(isset($this->references[$alias])) {
+                $obj = $this->references[$alias];
                 $obj->save();
             }
         }
@@ -622,7 +619,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $table   = $fk->getTable();
             $name    = $table->getComponentName();
             $alias   = $this->table->getAlias($name);
-            
+
             if($fk instanceof Doctrine_Association) {
                 switch($fk->getType()):
                     case Doctrine_Relation::MANY_COMPOSITE:
