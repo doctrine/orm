@@ -207,7 +207,7 @@ class Forum_Thread extends Doctrine_Record {
     }
     public function setUp() {
         $this->hasOne("Forum_Board as Board", "Forum_Thread.board_id");
-        $this->ownsMany("Forum_Entry as Entry", "Forum_Entry.thread_id");
+        $this->ownsMany("Forum_Entry as Entries", "Forum_Entry.thread_id");
     }
 }
 

@@ -109,9 +109,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function setReference(Doctrine_Record $record,Doctrine_Relation $relation) {
         $this->reference       = $record;
         $this->relation        = $relation;
-        
+
         if($relation instanceof Doctrine_ForeignKey ||
            $relation instanceof Doctrine_LocalKey) {
+           
             $this->reference_field = $relation->getForeign();
 
             $value = $record->get($relation->getLocal());
@@ -221,7 +222,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if( ! isset($offset)) {
             foreach($coll as $record) {
                 if(isset($this->reference_field))
-                    $record->set($this->reference_field,$this->reference);
+                    $record->rawSet($this->reference_field,$this->reference);
 
                 $this->reference->addReference($record);
             }

@@ -7,11 +7,16 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "Forum_Thread";
         parent::prepareTables();
     }
-
     public function testQueryWithComplexAliases() {
+
         $board = new Forum_Board();
         $table = $board->getTable();
-        $this->assertTrue($table->getForeignKey("Threads") instanceof Doctrine_ForeignKey);
+        $fk    = $table->getForeignKey("Threads");
+
+        $this->assertEqual($table->getComponentName(), "Forum_Board");
+        $this->assertTrue($fk instanceof Doctrine_ForeignKey);
+        $this->assertEqual($fk->getTable()->getComponentName(), "Forum_Thread");
+
         $entry = new Forum_Entry();
         $this->assertTrue($entry->getTable()->getForeignKey("Thread") instanceof Doctrine_LocalKey);
 
@@ -22,22 +27,35 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($board->name, "Doctrine Forum");
         $this->assertEqual($board->Category->name, "General discussion");
         $this->assertEqual($board->Category->getState(), Doctrine_Record::STATE_TDIRTY);
-        //$this->assertEqual($board->Threads[0]->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($board->Threads[0]->getState(), Doctrine_Record::STATE_TDIRTY);
         $this->assertTrue($board->Threads[0] instanceof Forum_Thread);
-        
-        //print_r($this->session->buildFlushTree());
+
+        $thread = $board->Threads[0];
+        $thread->Entries[0]->topic = "My first topic";
+        $this->assertEqual($thread->Entries[0]->topic, "My first topic");
+        $this->assertEqual($thread->Entries[0]->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertTrue($thread->Entries[0] instanceof Forum_Entry);
 
         $this->session->flush();
-        /**
+
         $board->getTable()->clear();
         $board = $board->getTable()->find($board->getID());
         $this->assertEqual($board->Threads->count(), 1);
         $this->assertEqual($board->name, "Doctrine Forum");
         $this->assertEqual($board->Category->name, "General discussion");
-        $this->assertEqual($board->Category->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($board->Category->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($board->Threads[0]->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertTrue($board->Threads[0] instanceof Forum_Thread);
-        */
+
+
+        $q = new Doctrine_Query($this->session);
+        $q->from("Forum_Board");
+        $coll = $q->execute();
+        $this->assertEqual($coll->count(), 1);
+
+        $q->from("Forum_Board, Forum_Board.Threads");
+        $coll = $q->execute();
+        $this->assertEqual($coll->count(), 1);
     }
 
     public function testQueryWithAliases() {
@@ -306,5 +324,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(isset($values['users']));
         $this->assertTrue(isset($values['max']));
     }
+
 }
 ?>

@@ -401,6 +401,18 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $name;
     }
     /**
+     * returns component name for given alias
+     * 
+     * @param string $alias
+     * @return string
+     */
+    final public function getAliasName($alias) {
+        if($name = array_search($this->boundAliases,$alias))
+            return $name;
+            
+        throw new InvalidKeyException();
+    }
+    /**
      * unbinds all relations
      * 
      * @return void

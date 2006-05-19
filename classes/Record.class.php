@@ -442,6 +442,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     endswitch;
                 }
             }
+
+            if($this->state == Doctrine_Record::STATE_TCLEAN)
+                $this->state = Doctrine_Record::STATE_TDIRTY;
+
             $this->data[$name] = $value;
             $this->modified[]  = $name;
         }
@@ -798,6 +802,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * hasRefence
      * @param string $name
+     * @return boolean
      */
     public function hasReference($name) {
         return isset($this->references[$name]);
@@ -807,16 +812,20 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $connectorField
      */
     public function initReference(Doctrine_Collection $coll, Doctrine_Relation $connector) {
-        $name = $coll->getTable()->getComponentName();
+        $name = $this->table->getAlias($coll->getTable()->getComponentName());
         $coll->setReference($this, $connector);
         $this->references[$name] = $coll;
         $this->originals[$name]  = clone $coll;
     }
     /**
      * addReference
+     * @param Doctrine_Record $record
+     * @param mixed $key
+     * @return void
      */
     public function addReference(Doctrine_Record $record, $key = null) {
-        $name = $record->getTable()->getComponentName();
+        $name = $this->table->getAlias($record->getTable()->getComponentName());
+
         $this->references[$name]->add($record, $key);
         $this->originals[$name]->add($record, $key);
     }
@@ -909,9 +918,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             $id      = $this->get($local);
                             $query = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$fk->getForeign()." = ?";
                             $coll = $graph->query($query,array($id));
-    
+
                             $this->references[$name] = $coll;
-                            $this->references[$name]->setReference($this,$fk);
+                            $this->references[$name]->setReference($this, $fk);
     
                             $this->originals[$name]  = clone $coll;
 

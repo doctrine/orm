@@ -356,6 +356,9 @@ class Doctrine_Query extends Doctrine_Access {
      * @return Doctrine_Collection            the root collection
      */
     public function execute($params = array()) {
+        $this->data = array();
+        $this->collections = array();
+
         switch(count($this->tables)):
             case 0:
                 throw new DQLException();
@@ -364,7 +367,7 @@ class Doctrine_Query extends Doctrine_Access {
                 $query = $this->getQuery();
 
                 $keys  = array_keys($this->tables);
-    
+
                 $name  = $this->tables[$keys[0]]->getComponentName();
                 $stmt  = $this->session->execute($query,$params);
 
@@ -396,6 +399,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                 $array = $this->parseData($stmt);
 
+
                 foreach($array as $data):
 
                     /**
@@ -405,7 +409,6 @@ class Doctrine_Query extends Doctrine_Access {
                         if(empty($row))
                             continue;
 
-                        $key  = ucwords($key);
                         $name = $this->tables[$key]->getComponentName();
 
                         if( ! isset($previd[$name]))
@@ -417,15 +420,13 @@ class Doctrine_Query extends Doctrine_Access {
                             $record = $this->tables[$name]->getRecord();
 
                             if($name == $root) {
-                                $this->tables[$name]->setData($row);
-                                $record = $this->tables[$name]->getRecord();
                                 $coll->add($record);
                             } else {
                                 $last = $coll->getLast();
 
-                                if( ! $last->hasReference($name)) {
+                                if( ! $last->hasReference($name))
                                     $last->initReference($this->getCollection($name),$this->connectors[$name]);
-                                }
+
                                 $last->addReference($record);
                             }
                         }
@@ -445,6 +446,11 @@ class Doctrine_Query extends Doctrine_Access {
      */
     public function parseData(PDOStatement $stmt) {
         $array = array();
+        $keys  = array();
+        foreach(array_keys($this->tables) as $key) {
+            $k = strtolower($key);
+            $keys[$k] = $key;
+        }
         while($data = $stmt->fetch(PDO::FETCH_ASSOC)):
             /**
              * parse the data into two-dimensional array
@@ -453,7 +459,7 @@ class Doctrine_Query extends Doctrine_Access {
                 $e = explode("__",$key);
 
                 if(count($e) > 1) {
-                    $data[$e[0]][$e[1]] = $value;
+                    $data[$keys[$e[0]]][$e[1]] = $value;
                 } else {
                     $data[0][$e[0]] = $value;
                 }
@@ -810,6 +816,9 @@ class Doctrine_Query extends Doctrine_Access {
                         break;
                         case Doctrine_Relation::MANY_AGGREGATE:
                         case Doctrine_Relation::MANY_COMPOSITE:
+                            
+                            // subquery needed
+
                             $b = $fk->getTable()->getComponentName();
 
                             $graph = new Doctrine_Query($this->session);
@@ -844,6 +853,8 @@ class Doctrine_Query extends Doctrine_Access {
                     }
                 } else {
                     $fk     = $objTable->getForeignKey($name);
+                    $name   = $fk->getTable()->getComponentName();
+
                     $tname  = $objTable->getTableName();
                     $next   = $fk->getTable();
                     $tname2 = $next->getTableName();
@@ -886,6 +897,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                     $objTable = $next;
                 }
+
                 if( ! isset($this->tables[$name])) {
                     $this->tables[$name] = $objTable;
                 }

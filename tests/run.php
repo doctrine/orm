@@ -23,7 +23,6 @@ error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
-
 $test->addTestCase(new Doctrine_SessionTestCase());
 
 $test->addTestCase(new Doctrine_TableTestCase());
@@ -42,11 +41,11 @@ $test->addTestCase(new Doctrine_BatchIteratorTestCase());
 
 $test->addTestCase(new Doctrine_ConfigurableTestCase());
 
-$test->addTestCase(new Doctrine_CollectionTestCase());
-
 $test->addTestCase(new Doctrine_Collection_OffsetTestCase());
 
 $test->addTestCase(new Sensei_UnitTestCase());
+
+$test->addTestCase(new Doctrine_CollectionTestCase());
 
 $test->addTestCase(new Doctrine_QueryTestCase());
 
