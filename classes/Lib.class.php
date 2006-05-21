@@ -68,7 +68,7 @@ class Doctrine_Lib {
     public function getSessionAsString(Doctrine_Session $session) {
         $r[] = "<pre>";
         $r[] = "Doctrine_Session object";
-        $r[] = "State               : ".Doctrine_Session::getStateAsString($session->getState());
+        $r[] = "State               : ".Doctrine_Lib::getSessionStateAsString($session->getState());
         $r[] = "Open Transactions   : ".$session->getTransactionLevel();
         $r[] = "Open Factories      : ".$session->count();
         $sum = 0;
