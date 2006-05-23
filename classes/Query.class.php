@@ -22,6 +22,8 @@ class Doctrine_Query extends Doctrine_Access {
     private $collections = array();
 
     private $joined      = array();
+    
+    private $joins       = array();
     /**
      * @var array $data             fetched data
      */
@@ -101,6 +103,7 @@ class Doctrine_Query extends Doctrine_Access {
         $this->connectors   = array();
         $this->collections  = array();
         $this->joined       = array();
+        $this->joins        = array();
     }
     /**
      * loadFields      
@@ -167,6 +170,9 @@ class Doctrine_Query extends Doctrine_Access {
 
                     $this->parts[$name] = $args[0];
                 break;
+                case "from":
+                    $this->parts['columns'] = array();
+                    $this->joins            = array();
                 default:
                     $this->parts[$name] = array();
                     $this->$method($args[0]);
@@ -209,6 +215,9 @@ class Doctrine_Query extends Doctrine_Access {
 
                     $this->parts[$name] = $value;
                 break;
+                case "from":
+                    $this->parts['columns'] = array();
+                    $this->joins            = array();
                 default:
                     $this->parts[$name] = array();
                     $this->$method($value);
@@ -230,14 +239,15 @@ class Doctrine_Query extends Doctrine_Access {
         // build the basic query
         $q = "SELECT ".implode(", ",$this->parts["columns"]).
              " FROM ";
+        
         foreach($this->parts["from"] as $tname => $bool) {
-            $str = $tname;
-            if(isset($this->parts["join"][$tname]))
-                $str .= " ".$this->parts["join"][$tname];
-
-            $a[] = $str;
+            $a[] = $tname;
         }
         $q .= implode(", ",$a);
+        
+        if( ! empty($this->parts['join']))
+            $q .= " ".implode(' ', $this->parts["join"]);
+
         $this->applyInheritance();
         if( ! empty($this->parts["where"]))
             $q .= " WHERE ".implode(" ",$this->parts["where"]);
@@ -345,7 +355,7 @@ class Doctrine_Query extends Doctrine_Access {
     final public function getData($key) {
         if(isset($this->data[$key]) && is_array($this->data[$key]))
             return $this->data[$key];
-        
+
         return array();
     }
     /**
@@ -395,17 +405,18 @@ class Doctrine_Query extends Doctrine_Access {
                 
                 $previd = array();
 
-                $coll = $this->getCollection($root);
+                $coll        = $this->getCollection($root);
+                $prev[$root] = $coll;
 
                 $array = $this->parseData($stmt);
 
+                $colls = array();
 
-                foreach($array as $data):
-
+                foreach($array as $data) {
                     /**
                      * remove duplicated data rows and map data into objects
                      */
-                    foreach($data as $key => $row):
+                    foreach($data as $key => $row) {
                         if(empty($row))
                             continue;
 
@@ -416,24 +427,31 @@ class Doctrine_Query extends Doctrine_Access {
 
 
                         if($previd[$name] !== $row) {
+                            // set internal data
                             $this->tables[$name]->setData($row);
+
+                            // initialize a new record
                             $record = $this->tables[$name]->getRecord();
 
                             if($name == $root) {
+                                // add record into root collection
                                 $coll->add($record);
                             } else {
-                                $last = $coll->getLast();
+                                $pointer = $this->joins[$name];
+                                
+                                $last = $prev[$pointer]->getLast();
 
-                                if( ! $last->hasReference($name))
-                                    $last->initReference($this->getCollection($name),$this->connectors[$name]);
-
+                                if( ! $last->hasReference($name)) {
+                                    $prev[$name] = $this->getCollection($name);
+                                    $last->initReference($prev[$name],$this->connectors[$name]);
+                                }
                                 $last->addReference($record);
                             }
                         }
 
                         $previd[$name] = $row;
-                    endforeach;
-                endforeach;
+                    }
+                }
 
                 return $coll;
         endswitch;
@@ -866,18 +884,20 @@ class Doctrine_Query extends Doctrine_Access {
                         switch($fk->getType()):
                             case Doctrine_Relation::ONE_AGGREGATE:
                             case Doctrine_Relation::ONE_COMPOSITE:
-
-                                $this->parts["where"][] = "(".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign().")";
-                                $this->parts["from"][$tname]  = true;
-                                $this->parts["from"][$tname2] = true;
+                                //$this->parts["where"][] = "(".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign().")";
+                                //$this->parts["from"][$tname]  = true;
+                                //$this->parts["from"][$tname2] = true;
+                                $this->parts["join"][$tname]  = "INNER JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
                             break;
                             case Doctrine_Relation::MANY_AGGREGATE:
                             case Doctrine_Relation::MANY_COMPOSITE:
                                 $this->parts["join"][$tname]  = "LEFT JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
+
                                 $this->joined[]      = $tname2;
-                                $this->parts["from"][$tname]  = true;
                             break;
                         endswitch;
+                        $c = $objTable->getComponentName();
+                        $this->joins[$name] = $c;
                     } elseif($fk instanceof Doctrine_Association) {
                         $asf = $fk->getAssociationFactory();
 

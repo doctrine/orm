@@ -52,10 +52,8 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->prepareTables();
         $this->prepareData();
     }
-    public function prepareTables() {
-
+    public function prepareTables() {       
         foreach($this->tables as $name) {
-
             $this->dbh->query("DROP TABLE IF EXISTS ".strtolower($name));
         }
 

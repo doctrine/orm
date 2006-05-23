@@ -205,7 +205,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             case Doctrine_Identifier::SEQUENCE:
                 if($exists) {
                     $name = $this->table->getIdentifier();
-    
+
                     if(isset($this->data[$name]))
                         $this->id = $this->data[$name];
     
@@ -246,14 +246,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->data[$k] = array();
         }
         return array_keys(get_object_vars($this));
+
     }
     /**
-     * __wakeup
+     * unseralize
      * this method is automatically called everytime a Doctrine_Record object is unserialized
      *
      * @return void
      */
     public function __wakeup() {
+
         $this->modified = array();
         $this->state    = Doctrine_Record::STATE_CLEAN;
 
@@ -301,21 +303,27 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * hasCollections
-     * @return boolean      whether or not this dao is part of a collection
+     * whether or not this record is part of a collection
+     *
+     * @return boolean
      */
     final public function hasCollections() {
         return (! empty($this->collections));
     }
     /**
      * getState
+     * returns the current state of the object
+     *
      * @see Doctrine_Record::STATE_* constants
-     * @return integer                  the current state
+     * @return integer
      */
     final public function getState() {
         return $this->state;
     }
     /**
-     * refresh                          refresh internal data from the database
+     * refresh   
+     * refresh internal data from the database
+     *
      * @return boolean
      */
     final public function refresh() {
@@ -377,7 +385,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * get
-     * returns a value of a property or related component 
+     * returns a value of a property or a related component 
      *
      * @param $name                     name of the property or related component
      * @throws InvalidKeyException
