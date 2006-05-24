@@ -18,7 +18,6 @@ require_once("CollectionOffsetTestCase.class.php");
 require_once("SenseiTestCase.class.php");
 require_once("QueryTestCase.class.php");
 
-
 error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
@@ -51,9 +50,6 @@ $test->addTestCase(new Doctrine_QueryTestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
-
-
-
 
 
 

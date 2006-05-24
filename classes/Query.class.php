@@ -858,45 +858,48 @@ class Doctrine_Query extends Doctrine_Access {
      * @throws DQLException
      */
     final public function load($path, $fetchmode = Doctrine::FETCH_LAZY) {
-        $e = explode(".",$path);
+        $e = preg_split("/[.:]/",$path);
+        $index = 0;
         foreach($e as $key => $name) {
+
 
             try {
                 if($key == 0) {
 
-                    $objTable = $this->session->getTable($name);
+                    $table = $this->session->getTable($name);
                     if(count($e) == 1) {
-                        $tname = $objTable->getTableName();
+                        $tname = $table->getTableName();
                         $this->parts["from"][$tname] = true;
                     }
                 } else {
-                    $fk     = $objTable->getForeignKey($name);
+
+                    $index += strlen($e[($key - 1)]) + 1;
+                    // the mark here is either '.' or ':'
+                    $mark  = substr($path,($index - 1),1);
+                       	
+
+                    $fk     = $table->getForeignKey($name);
                     $name   = $fk->getTable()->getComponentName();
 
-                    $tname  = $objTable->getTableName();
-                    $next   = $fk->getTable();
-                    $tname2 = $next->getTableName();
+                    $tname  = $table->getTableName();
+
+                    $tname2 = $fk->getTable()->getTableName();
 
                     $this->connectors[$name] = $fk;
 
                     if($fk instanceof Doctrine_ForeignKey ||
                        $fk instanceof Doctrine_LocalKey) {
-                        switch($fk->getType()):
-                            case Doctrine_Relation::ONE_AGGREGATE:
-                            case Doctrine_Relation::ONE_COMPOSITE:
-                                //$this->parts["where"][] = "(".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign().")";
-                                //$this->parts["from"][$tname]  = true;
-                                //$this->parts["from"][$tname2] = true;
+
+                        switch($mark):
+                            case ":":
                                 $this->parts["join"][$tname]  = "INNER JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
                             break;
-                            case Doctrine_Relation::MANY_AGGREGATE:
-                            case Doctrine_Relation::MANY_COMPOSITE:
+                            case ".":
                                 $this->parts["join"][$tname]  = "LEFT JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
-
-                                $this->joined[]      = $tname2;
                             break;
                         endswitch;
-                        $c = $objTable->getComponentName();
+
+                        $c = $table->getComponentName();
                         $this->joins[$name] = $c;
                     } elseif($fk instanceof Doctrine_Association) {
                         $asf = $fk->getAssociationFactory();
@@ -915,11 +918,11 @@ class Doctrine_Query extends Doctrine_Access {
                         endswitch;
                     }
 
-                    $objTable = $next;
+                    $table = $fk->getTable();
                 }
 
                 if( ! isset($this->tables[$name])) {
-                    $this->tables[$name] = $objTable;
+                    $this->tables[$name] = $table;
                 }
 
             } catch(Exception $e) {
@@ -927,7 +930,7 @@ class Doctrine_Query extends Doctrine_Access {
                 throw new DQLException($e->getMessage(),$e->getCode());
             }
         }
-        return $objTable;
+        return $table;
     }
 }
 

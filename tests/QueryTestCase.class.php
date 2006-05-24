@@ -160,7 +160,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $query->from("User-b")->orderby("User.name ASC, User.Email.address");
         $users = $query->execute();
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS User__id FROM entity INNER JOIN email ON entity.email_id = email.id WHERE (entity.type = 0) ORDER BY entity.name ASC, email.address");
+        "SELECT entity.id AS User__id FROM entity LEFT JOIN email ON entity.email_id = email.id WHERE (entity.type = 0) ORDER BY entity.name ASC, email.address");
         $this->assertEqual($users->count(),8);
         $this->assertTrue($users[0]->name == "Arnold Schwarzenegger");
     }
@@ -301,7 +301,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
 
 
-        $users = $query->query("FROM User-b, User.Email-b");
+        $users = $query->query("FROM User-b, User:Email-b");
         $this->assertEqual(trim($query->getQuery()),
         "SELECT entity.id AS User__id, email.id AS Email__id FROM entity INNER JOIN email ON entity.email_id = email.id WHERE (entity.type = 0)");
 

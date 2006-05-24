@@ -3,11 +3,19 @@
  * mysql driver
  */
 class Doctrine_Session_Mysql extends Doctrine_Session_Common {
+
+    /**
+     * the constructor
+     * @param PDO $pdo  -- database handle
+     */
+    public function __construct(Doctrine_Manager $manager,PDO $pdo) {
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+        parent::__construct($manager,$pdo);
+    }
     /**
      * deletes all data access object from the collection
      * @param Doctrine_Collection $coll
      */
-
      /**
     public function deleteCollection(Doctrine_Collection $coll) {
 
