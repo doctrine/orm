@@ -534,6 +534,31 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
     }
     /**
+     * __isset
+     *
+     * @param string $name
+     * @return boolean
+     */
+    public function __isset($name) {
+        if(isset($this->data[$name]))
+            return true;
+
+        if(isset($this->references[$name]))
+            return true;
+
+        return false;
+    }
+    /**
+     * @param string $name
+     * @return void
+     */
+    public function __unset($name) {
+        if(isset($this->data[$name]))
+            $this->data[$name] = array();
+
+        // todo: what to do with references ?
+    }
+    /**
      * applies the changes made to this object into database
      * this method is smart enough to know if any changes are made
      * and whether to use INSERT or UPDATE statement

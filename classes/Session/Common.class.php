@@ -1,4 +1,5 @@
 <?php
+require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Session.class.php");
 /**
  * standard session, the parent of pgsql, mysql and sqlite
  */

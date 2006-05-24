@@ -1,4 +1,5 @@
 <?php
+require_once("Access.class.php");
 /**
  * Doctrine_Collection
  * Collection of Doctrine_Record objects.

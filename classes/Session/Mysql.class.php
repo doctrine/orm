@@ -1,4 +1,5 @@
 <?php
+require_once("Common.class.php");
 /**
  * mysql driver
  */

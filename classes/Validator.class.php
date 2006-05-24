@@ -15,19 +15,42 @@ class Doctrine_Validator {
     /**
      * constant for length validation error
      */
-    const ERR_LENGTH = 0;
+    const ERR_LENGTH    = 0;
     /**
      * constant for type validation error
      */
-    const ERR_TYPE   = 1;
+    const ERR_TYPE      = 1;
     /**
      * constant for general validation error
      */
-    const ERR_VALID  = 2;
+    const ERR_VALID     = 2;
     /**
      * constant for unique validation error
      */
-    const ERR_UNIQUE = 3;
+    const ERR_UNIQUE    = 3;
+    /**
+     * constant for blank validation error
+     */
+    const ERR_BLANK     = 4;
+    /**
+     * constant for date validation error
+     */
+    const ERR_DATE      = 5;
+    /**
+     * constant for null validation error
+     */
+    const ERR_NULL      = 6;
+    /**
+     * constant for enum validation error
+     */
+    const ERR_ENUM      = 7;
+    /**
+     * constant for range validation error
+     */
+    const ERR_RANGE     = 8;
+
+
+
     
     /**
      * @var array $stack            error stack
@@ -74,7 +97,7 @@ class Doctrine_Validator {
             if(strlen($value) > $column[1]) {
                 $err[$key] = Doctrine_Validator::ERR_LENGTH;
                 continue;
-            } 
+            }
 
             if(self::gettype($value) !== $column[0]) {
                 $err[$key] = Doctrine_Validator::ERR_TYPE;
@@ -84,20 +107,35 @@ class Doctrine_Validator {
             $e = explode("|",$column[2]);
 
             foreach($e as $k => $arg) {
-                if(empty($arg) || $arg == "primary")
+                if(empty($arg) || $arg == "primary" || $arg == "protected" || $arg == "autoincrement")
                     continue;
 
-                $validator = self::getValidator($arg);
-                if( ! $validator->validate($record,$key,$value)) {
-                    switch(strtolower($arg)):
+                $args = explode(":",$arg);
+                if( ! isset($args[1])) 
+                    $args[1] = '';
+
+                $validator = self::getValidator($args[0]);
+                if( ! $validator->validate($record, $key, $value, $args[1])) {
+                    switch(strtolower($args[0])):
                         case "unique":
                             $err[$key] = Doctrine_Validator::ERR_UNIQUE;
+                        break;
+                        case "notnull":
+                            $err[$key] = Doctrine_Validator::ERR_NULL;
+                        break;
+                        case "notblank":
+                            $err[$key] = Doctrine_Validator::ERR_BLANK;
+                        break;
+                        case "enum":
+                            $err[$key] = Doctrine_Validator::ERR_VALID;
                         break;
                         default:
                             $err[$key] = Doctrine_Validator::ERR_VALID;
                         break;
                     endswitch;
                 }
+                
+                // errors found quit validation looping for this column
                 if(isset($err[$key]))
                     break;
             }

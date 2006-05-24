@@ -1,4 +1,5 @@
 <?php
+require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Exception.class.php");
 /**
  * thrown when user tries to get a foreign key object but the mapping is not done right
  */

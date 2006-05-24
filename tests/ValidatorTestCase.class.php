@@ -39,13 +39,13 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $validator = new Doctrine_Validator_Email();
 
         $email = $this->session->create("Email");
-        $this->assertFalse($validator->validate($email,"address","example@example"));
-        $this->assertFalse($validator->validate($email,"address","example@@example"));
-        $this->assertFalse($validator->validate($email,"address","example@example."));
-        $this->assertFalse($validator->validate($email,"address","example@e.."));
+        $this->assertFalse($validator->validate($email,"address","example@example",null));
+        $this->assertFalse($validator->validate($email,"address","example@@example",null));
+        $this->assertFalse($validator->validate($email,"address","example@example.",null));
+        $this->assertFalse($validator->validate($email,"address","example@e..",null));
 
-        $this->assertFalse($validator->validate($email,"address","example@e.."));
-        $this->assertTrue($validator->validate($email,"address","example@e.e.e.e.e"));
+        $this->assertFalse($validator->validate($email,"address","example@e..",null));
+        $this->assertTrue($validator->validate($email,"address","example@e.e.e.e.e",null));
 
     }
     public function testSave() {

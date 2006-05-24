@@ -4,9 +4,10 @@ class Doctrine_Validator_Email {
      * @param Doctrine_Record $record
      * @param string $key
      * @param mixed $value
+     * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value) {
+    public function validate(Doctrine_Record $record, $key, $value, $args) {
         $parts = explode("@", $value);
 
         if(count($parts) != 2) 

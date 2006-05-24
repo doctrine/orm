@@ -1,4 +1,5 @@
 <?php
+require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Exception.class.php");
 /**
  * thrown when user tries to get the current 
  * session and there are no open sessions

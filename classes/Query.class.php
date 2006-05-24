@@ -1,4 +1,5 @@
 <?php
+require_once("Access.class.php");
 /**
  * Doctrine_Query
  *

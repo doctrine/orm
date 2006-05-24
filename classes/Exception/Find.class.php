@@ -1,4 +1,5 @@
 <?php
+require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Exception.class.php");
 /**
  * thrown when user tries to find a Doctrine_Record for given primary key and that object is not found
  */

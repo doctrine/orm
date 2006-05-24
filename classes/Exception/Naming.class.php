@@ -1,4 +1,5 @@
 <?php
+require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Exception.class.php");
 /**
  * thrown when user defined Doctrine_Table is badly named
  */

@@ -1,4 +1,5 @@
 <?php
+require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Exception.class.php");
 /**
  * thrown when Doctrine_Record is refreshed and the refreshed primary key doens't match the old one
  */

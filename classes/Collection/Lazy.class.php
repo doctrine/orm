@@ -1,5 +1,5 @@
 <?php
-require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Collection.class.php");
+require_once("Batch.class.php");
 /**
  * a collection of Doctrine_Record objects with lazy load strategy 
  * (batch load strategy with batch size 1)
