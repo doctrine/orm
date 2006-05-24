@@ -1,5 +1,6 @@
 <?php
 ob_start();
+
 require_once("ConfigurableTestCase.class.php");
 require_once("ManagerTestCase.class.php");
 require_once("SessionTestCase.class.php");
@@ -18,10 +19,11 @@ require_once("SenseiTestCase.class.php");
 require_once("QueryTestCase.class.php");
 
 
-print "<pre>";
 error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
+
+//$test->addTestCase(new Sensei_UnitTestCase());
 
 $test->addTestCase(new Doctrine_SessionTestCase());
 
@@ -43,12 +45,9 @@ $test->addTestCase(new Doctrine_ConfigurableTestCase());
 
 $test->addTestCase(new Doctrine_Collection_OffsetTestCase());
 
-$test->addTestCase(new Sensei_UnitTestCase());
-
 $test->addTestCase(new Doctrine_CollectionTestCase());
 
 $test->addTestCase(new Doctrine_QueryTestCase());
-
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
@@ -59,7 +58,7 @@ $test->addTestCase(new Doctrine_QueryTestCase());
 
 
 
-
+print "<pre>";
 $test->run(new HtmlReporter());
 $cache = Doctrine_Manager::getInstance()->getCurrentSession()->getCacheHandler();
 if(isset($cache)) {

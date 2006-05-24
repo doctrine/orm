@@ -3,7 +3,7 @@ class Doctrine_DB extends PDO implements Countable, IteratorAggregate {
     /**
      * default DSN
      */
-    const DSN = "mysql://zYne:dc34@localhost/test";
+    const DSN = "mysql://root:dc34@localhost/test";
     /**
      * executed queries
      */

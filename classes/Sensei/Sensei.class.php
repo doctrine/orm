@@ -94,9 +94,8 @@ class Sensei extends Doctrine_Access {
 
 
     public function __construct() {
-        if(headers_sent())
+        if(headers_sent()) 
             throw new Sensei_Exception("Headers already sent. Couldn't initialize session.");
-
 
         $this->session = Doctrine_Manager::getInstance()->getCurrentSession();
         $this->table   = $this->session->getTable("Sensei_session");
@@ -107,6 +106,7 @@ class Sensei extends Doctrine_Access {
 
         if( ! isset($_SESSION))
             session_start();
+            
     }
     /**
      * getRecord

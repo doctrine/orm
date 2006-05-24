@@ -1,4 +1,5 @@
 <?php
+require_once("Relation.class.php");
 /**
  * Foreign Key
  */
