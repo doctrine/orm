@@ -7,7 +7,9 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "Forum_Thread";
         parent::prepareTables();
     }
+
     public function testQueryWithComplexAliases() {
+        $q = new Doctrine_Query($this->session);
 
         $board = new Forum_Board();
         $table = $board->getTable();
@@ -38,7 +40,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($thread->Entries[0] instanceof Forum_Entry);
 
         $this->session->flush();
-        $q = new Doctrine_Query($this->session);
+
         $board->getTable()->clear();
 
         $board = $board->getTable()->find($board->getID());
@@ -55,15 +57,20 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $coll = $q->execute();
         $this->assertEqual($coll->count(), 1);
 
-        $q->from("Forum_Board, Forum_Board.Threads");
+        $table = $this->session->getTable("Forum_Board")->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_LAZY);
+        $table = $this->session->getTable("Forum_Thread")->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_LAZY);
+        $q->from("Forum_Board.Threads");
+
+        $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS Forum_Board__id, forum_thread.id AS Forum_Thread__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id");
         $coll = $q->execute();
         $this->assertEqual($coll->count(), 1);
 
 
-        $q->from("Forum_Board-l, Forum_Board.Threads-l");
+
+        $q->from("Forum_Board-l.Threads-l");
         $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS Forum_Board__id, forum_thread.id AS Forum_Thread__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id");
 
-        $q->from("Forum_Board-l, Forum_Board.Threads-l, Forum_Board.Threads.Entries-l");
+        $q->from("Forum_Board.Threads.Entries-l");
         $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS Forum_Board__id, forum_thread.id AS Forum_Thread__id, forum_entry.id AS Forum_Entry__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id LEFT JOIN forum_entry ON forum_thread.id = forum_entry.thread_id");
         $boards = $q->execute();
         $this->assertEqual($boards->count(), 1);
@@ -71,17 +78,19 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($boards[0]->Threads->count(), 1);
         $this->assertEqual(count($this->dbh), $count);
         $this->assertEqual($boards[0]->Threads[0]->Entries->count(), 1);
-        $this->assertEqual(count($this->dbh), $count);
     }
 
     public function testQueryWithAliases() {
+        $query = new Doctrine_Query($this->session);
+
         $task = new Task();
         $task->name = "Task 1";
         $task->ResourceAlias[0]->name = "Resource 1";
         $task->ResourceAlias[1]->name = "Resource 2";
 
         $task->save();
-        $query = new Doctrine_Query($this->session);
+
+
         $coll = $query->query("FROM Task WHERE Task.ResourceAlias.name = 'Resource 1'");
 
         $this->assertEqual($coll->count(), 1);
@@ -159,6 +168,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $query = new Doctrine_Query($this->session);
         $query->from("User-b")->orderby("User.name ASC, User.Email.address");
         $users = $query->execute();
+
         $this->assertEqual(trim($query->getQuery()),
         "SELECT entity.id AS User__id FROM entity LEFT JOIN email ON entity.email_id = email.id WHERE (entity.type = 0) ORDER BY entity.name ASC, email.address");
         $this->assertEqual($users->count(),8);
@@ -230,7 +240,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $this->clearCache();
 
-        $users = $query->query("FROM User-b, User.Phonenumber-l WHERE User.Phonenumber.phonenumber LIKE '%123%'");
+        $users = $query->query("FROM User-b.Phonenumber-l WHERE User.Phonenumber.phonenumber LIKE '%123%'");
         $this->assertEqual(trim($query->getQuery()),
         "SELECT entity.id AS User__id, phonenumber.id AS Phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber LIKE '%123%') AND (entity.type = 0)");
 
@@ -285,7 +295,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         //$this->clearCache();
 
-        $users = $query->query("FROM User-b, User.Phonenumber-b");
+        $users = $query->query("FROM User-b.Phonenumber-b");
         $this->assertEqual(trim($query->getQuery()),
         "SELECT entity.id AS User__id, phonenumber.id AS Phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0)");
 
@@ -301,7 +311,8 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
 
 
-        $users = $query->query("FROM User-b, User:Email-b");
+        $users = $query->query("FROM User-l:Email-b");
+
         $this->assertEqual(trim($query->getQuery()),
         "SELECT entity.id AS User__id, email.id AS Email__id FROM entity INNER JOIN email ON entity.email_id = email.id WHERE (entity.type = 0)");
 
@@ -335,13 +346,13 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         "SELECT entity.id AS User__id FROM entity WHERE (entity.id IN (SELECT user_id FROM groupuser WHERE group_id IN (SELECT entity.id AS Group__id FROM entity, phonenumber WHERE (phonenumber.phonenumber LIKE '123 123') AND (entity.type = 1)))) AND (entity.type = 0)");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
-
+        /**
         $values = $query->query("SELECT COUNT(User.name) AS users, MAX(User.name) AS max FROM User");
         $this->assertEqual(trim($query->getQuery()),"SELECT COUNT(entity.name) AS users, MAX(entity.name) AS max FROM entity WHERE (entity.type = 0)");
         $this->assertTrue(is_array($values));
         $this->assertTrue(isset($values['users']));
         $this->assertTrue(isset($values['max']));
-    }           
-
+        */
+    }
 }
 ?>

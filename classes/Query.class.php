@@ -174,6 +174,8 @@ class Doctrine_Query extends Doctrine_Access {
                 case "from":
                     $this->parts['columns'] = array();
                     $this->joins            = array();
+                    $this->tables           = array();
+                    $this->fetchModes       = array();
                 default:
                     $this->parts[$name] = array();
                     $this->$method($args[0]);
@@ -219,6 +221,8 @@ class Doctrine_Query extends Doctrine_Access {
                 case "from":
                     $this->parts['columns'] = array();
                     $this->joins            = array();
+                    $this->tables           = array();
+                    $this->fetchModes       = array();
                 default:
                     $this->parts[$name] = array();
                     $this->$method($value);
@@ -413,6 +417,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                 $colls = array();
 
+
                 foreach($array as $data) {
                     /**
                      * remove duplicated data rows and map data into objects
@@ -436,7 +441,7 @@ class Doctrine_Query extends Doctrine_Access {
                         } else {
                             if($row[$ids] === null)
                                 continue;
-                        }            
+                        }
 
                         $name = $this->tables[$key]->getComponentName();
 
@@ -644,7 +649,7 @@ class Doctrine_Query extends Doctrine_Access {
                 $reference = implode(".",$a);
                 $name      = end($a);
 
-                $this->load($reference);
+                $this->load($reference, false);
                 $tname     = $this->tables[$name]->getTableName();
 
                 $r = $tname.".".$field;
@@ -691,41 +696,35 @@ class Doctrine_Query extends Doctrine_Access {
     private function parseFrom($str) {
         foreach(explode(",",trim($str)) as $reference) {
             $reference = trim($reference);
-            $e = explode("-",$reference);
-            $reference = $e[0];
             $table = $this->load($reference);
-
-            if(isset($e[1])) {
-                switch(strtolower($e[1])):
-                    case "i":
-                    case "immediate":
-                        $fetchmode = Doctrine::FETCH_IMMEDIATE;
-                    break;
-                    case "b":
-                    case "batch":
-                        $fetchmode = Doctrine::FETCH_BATCH;
-                    break;
-                    case "l":
-                    case "lazy":
-                        $fetchmode = Doctrine::FETCH_LAZY;
-                    break;
-                    case "o":
-                    case "offset":
-                        $fetchmode = Doctrine::FETCH_OFFSET;
-                    break;
-                    case "lo":
-                    case "lazyoffset":
-                        $fetchmode = Doctrine::FETCH_LAZYOFFSET;
-                    default:
-                        throw new DQLException("Unknown fetchmode '$e[1]'. The availible fetchmodes are 'i', 'b' and 'l'.");
-                endswitch;
-            } else
-                $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
-
-            if( ! $this->aggregate) {
-                $this->loadFields($table,$fetchmode);
-            }
         }
+    }
+    
+    private function parseFetchMode($mode) {
+        switch(strtolower($mode)):
+            case "i":
+            case "immediate":
+                $fetchmode = Doctrine::FETCH_IMMEDIATE;
+            break;
+            case "b":
+            case "batch":
+                $fetchmode = Doctrine::FETCH_BATCH;
+            break;
+            case "l":
+            case "lazy":
+                $fetchmode = Doctrine::FETCH_LAZY;
+            break;
+            case "o":
+            case "offset":
+                $fetchmode = Doctrine::FETCH_OFFSET;
+            break;
+            case "lo":
+            case "lazyoffset":
+                $fetchmode = Doctrine::FETCH_LAZYOFFSET;
+            default:
+                throw new DQLException("Unknown fetchmode '$mode'. The availible fetchmodes are 'i', 'b' and 'l'.");
+        endswitch;
+        return $fetchmode;
     }
     /**
      * DQL WHERE PARSER
@@ -826,6 +825,7 @@ class Doctrine_Query extends Doctrine_Access {
         $r = array_shift($e);
         $a = explode(".",$r);
 
+
         if(count($a) > 1) {
             $field     = array_pop($a);
             $operator  = array_shift($e);
@@ -852,9 +852,9 @@ class Doctrine_Query extends Doctrine_Access {
                         break;
                         case Doctrine_Relation::MANY_AGGREGATE:
                         case Doctrine_Relation::MANY_COMPOSITE:
-                            
-                            // subquery needed
 
+                            // subquery needed
+                            $where     = $objTable->getComponentName().".".$field." ".$operator." ".$value;
                             $b = $fk->getTable()->getComponentName();
 
                             $graph = new Doctrine_Query($this->session);
@@ -863,10 +863,10 @@ class Doctrine_Query extends Doctrine_Access {
                         break;
                     endswitch;
                 } else
-                    $this->load($reference);
+                    $this->load($reference, false);
 
             } else
-                $this->load($reference);
+                $this->load($reference, false);
         }
         return $where;
     }
@@ -875,20 +875,22 @@ class Doctrine_Query extends Doctrine_Access {
      * @param integer $fetchmode        optional fetchmode, if not set the components default fetchmode will be used
      * @throws DQLException
      */
-    final public function load($path, $fetchmode = Doctrine::FETCH_LAZY) {
+    final public function load($path, $loadFields = true) {
         $e = preg_split("/[.:]/",$path);
         $index = 0;
+
         foreach($e as $key => $name) {
-
-
             try {
+                $e2 = explode("-",$name);
+                $name = $e2[0];
+
                 if($key == 0) {
 
                     $table = $this->session->getTable($name);
-                    if(count($e) == 1) {
-                        $tname = $table->getTableName();
-                        $this->parts["from"][$tname] = true;
-                    }
+
+                    $tname = $table->getTableName();
+                    $this->parts["from"][$tname] = true;
+
                 } else {
 
                     $index += strlen($e[($key - 1)]) + 1;
@@ -937,18 +939,26 @@ class Doctrine_Query extends Doctrine_Access {
                     }
 
                     $table = $fk->getTable();
+
                 }
 
                 if( ! isset($this->tables[$name])) {
-                    $this->tables[$name] = $table;
+
+                    $this->tables[$name] = $table; 
+                    if($loadFields && ! $this->aggregate) {
+                        if(isset($e2[1])) {
+                            $fetchmode = $this->parseFetchMode($e2[1]);
+                        } else
+                            $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
+    
+                        $this->loadFields($table, $fetchmode);
+                    }
                 }
 
             } catch(Exception $e) {
-
                 throw new DQLException($e->getMessage(),$e->getCode());
             }
         }
-        return $table;
     }
 }
 
