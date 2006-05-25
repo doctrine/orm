@@ -78,6 +78,13 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($boards[0]->Threads->count(), 1);
         $this->assertEqual(count($this->dbh), $count);
         $this->assertEqual($boards[0]->Threads[0]->Entries->count(), 1);
+        
+        $q->from("Forum_Board-l.Threads-l.Entries-i");
+        $this->assertEqual($boards->count(), 1);
+        $count = count($this->dbh);
+        $this->assertEqual($boards[0]->Threads->count(), 1);
+        $this->assertEqual(count($this->dbh), $count);
+        $this->assertEqual($boards[0]->Threads[0]->Entries->count(), 1);
     }
 
     public function testQueryWithAliases() {
