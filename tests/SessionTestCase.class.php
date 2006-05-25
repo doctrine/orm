@@ -134,10 +134,11 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
 
         $this->assertEqual(count($user->Group), 2);
+        $user2 = $user;
 
         $user = $this->objTable->find($user->getID());
 
-        $this->assertEqual($user->getID(), $user->getID());
+        $this->assertEqual($user->getID(), $user2->getID());
 
         $this->assertTrue(is_numeric($user->getID()));
         $this->assertTrue(is_numeric($user->email_id));
@@ -145,6 +146,8 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
         $this->assertTrue($user->Phonenumber->count(), 4);
         $this->assertEqual($user->Group->count(), 2);
+        
+        $this->assertTrue($this->dbh instanceof Doctrine_DB);
 
         $user = $this->objTable->find(5);
 
@@ -353,5 +356,6 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->session->clear();
         $this->assertEqual($this->session->getTables(), array());
     }
+
 }
 ?>

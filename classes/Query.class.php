@@ -421,6 +421,23 @@ class Doctrine_Query extends Doctrine_Access {
                         if(empty($row))
                             continue;
 
+                        $ids  = $this->tables[$key]->getIdentifier();
+
+                        if(is_array($ids)) {
+                        $emptyID = false;
+                            foreach($ids as $id) {
+                                if($row[$id] == null) {
+                                    $emptyID = true;
+                                    break;
+                                }
+                            }
+                        if($emptyID)
+                            continue;
+                        } else {
+                            if($row[$ids] === null)
+                                continue;
+                        }            
+
                         $name = $this->tables[$key]->getComponentName();
 
                         if( ! isset($previd[$name]))
