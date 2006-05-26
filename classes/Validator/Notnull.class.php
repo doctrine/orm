@@ -7,7 +7,10 @@ class Doctrine_Validator_Notnull {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value) {
-        return ($value === null);
+        if ($value === null)
+            return false;
+        
+        return true;
     }
 }
 ?>

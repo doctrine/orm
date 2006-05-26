@@ -124,9 +124,6 @@ class Album extends Doctrine_Record {
     }
 }
 class Song extends Doctrine_Record {
-    public function setUp() {
-        $this->hasColumn("genre","string","30");
-    }
     public function setTableDefinition() {
         $this->hasColumn("album_id","integer");
         $this->hasColumn("genre","string",20);
@@ -210,6 +207,4 @@ class Forum_Thread extends Doctrine_Record {
         $this->ownsMany("Forum_Entry as Entries", "Forum_Entry.thread_id");
     }
 }
-
-
 ?>

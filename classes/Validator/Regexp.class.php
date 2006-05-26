@@ -8,7 +8,10 @@ class Doctrine_Validator_Regexp {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value, $args) {
-        return $value;
+        if(preg_match("/$args/", $value))
+            return true;
+            
+        return false;
     }
 }
 ?>

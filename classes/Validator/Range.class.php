@@ -1,18 +1,6 @@
 <?php
 class Doctrine_Validator_Range {
     /**
-     * @param integer $max
-     */
-    public function setMin($min) {
-        $this->min = $min;
-    }
-    /**
-     * @param integer $max
-     */
-    public function setMax($max) {
-        $this->max = $max;
-    }
-    /**
      * @param Doctrine_Record $record
      * @param string $key
      * @param mixed $value
@@ -20,10 +8,11 @@ class Doctrine_Validator_Range {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value, $args) {
-        if($var < $this->min)
+        $e = explode("-",$args);
+        if($value < $e[0])
             return false;
-
-        if($var > $this->max)
+            
+        if(isset($e[1]) && $value > $e[1])
             return false;
 
         return true;
