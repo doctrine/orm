@@ -781,6 +781,12 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $coll;
     }
     /**
+     * @return integer
+     */
+    final public function getColumnCount() {
+        return count($this->columns);                                       	
+    }
+    /**
      * returns all columns and their definitions
      *
      * @return array

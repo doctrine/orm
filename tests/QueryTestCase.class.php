@@ -7,6 +7,48 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "Forum_Thread";
         parent::prepareTables();
     }
+    public function testNotValidLazyPropertyFetching() {
+        $q = new Doctrine_Query($this->session);
+        
+        $f = false;
+        try {
+            $q->from("User(name)");
+        } catch(Doctrine_Exception $e) {
+            $f = true;
+        }
+        $this->assertTrue($f);
+    }
+    public function testValidLazyPropertyFetching() {
+        $q = new Doctrine_Query($this->session);
+        $q->from("User-l(name)");
+        $users = $q->execute();
+        $this->assertEqual($users->count(), 8);
+        $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
+        $count = count($this->dbh);
+        $this->assertTrue(is_string($users[0]->name));
+        $this->assertEqual($count, count($this->dbh));
+        $count = count($this->dbh);
+        $this->assertTrue(is_numeric($users[0]->email_id));
+        $this->assertEqual($count + 1, count($this->dbh));
+        
+        $users[0]->getTable()->clear();
+
+        $q->from("User-b(name)");
+        $users = $q->execute();
+        $this->assertEqual($users->count(), 8);
+        $this->assertTrue($users instanceof Doctrine_Collection_Batch);
+        $count = count($this->dbh);
+        $this->assertTrue(is_string($users[0]->name));
+        $this->assertEqual($count, count($this->dbh));
+        $count = count($this->dbh);
+        $this->assertTrue(is_numeric($users[0]->email_id));
+        $this->assertEqual($count + 1, count($this->dbh));
+        $this->assertTrue(is_numeric($users[1]->email_id));
+        $this->assertEqual($count + 1, count($this->dbh));
+        $this->assertTrue(is_numeric($users[2]->email_id));
+        $this->assertEqual($count + 1, count($this->dbh));
+    }
+
 
     public function testQueryWithComplexAliases() {
         $q = new Doctrine_Query($this->session);
@@ -353,13 +395,13 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         "SELECT entity.id AS User__id FROM entity WHERE (entity.id IN (SELECT user_id FROM groupuser WHERE group_id IN (SELECT entity.id AS Group__id FROM entity, phonenumber WHERE (phonenumber.phonenumber LIKE '123 123') AND (entity.type = 1)))) AND (entity.type = 0)");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
-        /**
-        $values = $query->query("SELECT COUNT(User.name) AS users, MAX(User.name) AS max FROM User");
-        $this->assertEqual(trim($query->getQuery()),"SELECT COUNT(entity.name) AS users, MAX(entity.name) AS max FROM entity WHERE (entity.type = 0)");
-        $this->assertTrue(is_array($values));
-        $this->assertTrue(isset($values['users']));
-        $this->assertTrue(isset($values['max']));
-        */
+
+        //$values = $query->query("SELECT COUNT(User.name) AS users, MAX(User.name) AS max FROM User");
+        //$this->assertEqual(trim($query->getQuery()),"SELECT COUNT(entity.name) AS users, MAX(entity.name) AS max FROM entity WHERE (entity.type = 0)");
+        //$this->assertTrue(is_array($values));
+        //$this->assertTrue(isset($values['users']));
+        //$this->assertTrue(isset($values['max']));
+
     }
 }
 ?>

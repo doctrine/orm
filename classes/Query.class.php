@@ -116,22 +116,26 @@ class Doctrine_Query extends Doctrine_Access {
      * @access private
      * @param object Doctrine_Table $table       a Doctrine_Table object
      * @param integer $fetchmode                 fetchmode the table is using eg. Doctrine::FETCH_LAZY
+     * @param array $names                      fields to be loaded (only used in lazy property loading)
      * @return void
      */
-    private function loadFields(Doctrine_Table $table,$fetchmode) {
+    private function loadFields(Doctrine_Table $table, $fetchmode, array $names) {
         $name = $table->getComponentName();
 
         switch($fetchmode):
             case Doctrine::FETCH_OFFSET:
                 $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
             case Doctrine::FETCH_IMMEDIATE:
+                if( ! empty($names))
+                    throw new Doctrine_Exception("Lazy property loading can only be used with fetching strategies lazy, batch and lazyoffset.");
+
                 $names  = $table->getColumnNames();
             break;
             case Doctrine::FETCH_LAZY_OFFSET:
                 $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
             case Doctrine::FETCH_LAZY:
             case Doctrine::FETCH_BATCH:
-                $names = $table->getPrimaryKeys();
+                $names = array_merge($table->getPrimaryKeys(), $names);
             break;
             default:
                 throw new Doctrine_Exception("Unknown fetchmode.");
@@ -879,9 +883,9 @@ class Doctrine_Query extends Doctrine_Access {
         $e = preg_split("/[.:]/",$path);
         $index = 0;
 
-        foreach($e as $key => $name) {
+        foreach($e as $key => $fullname) {
             try {
-                $e2 = explode("-",$name);
+                $e2 = preg_split("/[-(]/",$fullname);
                 $name = $e2[0];
 
                 if($key == 0) {
@@ -943,15 +947,28 @@ class Doctrine_Query extends Doctrine_Access {
                 }
 
                 if( ! isset($this->tables[$name])) {
+                    $this->tables[$name] = $table;    
 
-                    $this->tables[$name] = $table; 
                     if($loadFields && ! $this->aggregate) {
-                        if(isset($e2[1])) {
-                            $fetchmode = $this->parseFetchMode($e2[1]);
-                        } else
+                        $fields = array();
+
+                        if(strpos($fullname, "-") === false) {
                             $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
-    
-                        $this->loadFields($table, $fetchmode);
+                            
+                            if(isset($e2[1]))
+                                $fields = explode(",",substr($e2[1],0,-1));
+
+                        } else {
+                            if(isset($e2[1])) {
+                                $fetchmode = $this->parseFetchMode($e2[1]);
+                            } else
+                                $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
+                                
+                            if(isset($e2[2]))
+                                $fields = explode(",",substr($e2[2],0,-1));
+                        }
+
+                        $this->loadFields($table, $fetchmode, $fields);
                     }
                 }
 
