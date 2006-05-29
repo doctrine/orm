@@ -25,13 +25,27 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     /**
      * @var string $root            root directory
      */
-    private $root;
+    private $root; 
+    /**
+     * @var Doctrine_Null $null     Doctrine_Null object, used for extremely fast null value checking
+     */
+    private $null;
 
     /**
      * constructor
      */
     private function __construct() {
         $this->root = dirname(__FILE__);
+        $this->null = new Doctrine_Null;
+
+        Doctrine_Record::initNullObject($this->null);
+        Doctrine_Collection::initNullObject($this->null);
+    }
+    /**
+     * @return Doctrine_Null
+     */
+    final public function getNullObject() {
+        return $this->null;
     }
     /**
      * setDefaultAttributes

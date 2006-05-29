@@ -84,9 +84,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private static $index = 1;
     /**
-     * @var Doctrine_Null $nullObject       a Doctrine_Null object used for SQL null value testing
+     * @var Doctrine_Null $nullObject       a Doctrine_Null object used for extremely fast 
+     *                                      SQL null value testing
      */
-    private static $nullObject;
+    private static $null;
     /**
      * @var integer $oid                    object identifier
      */
@@ -164,8 +165,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * initNullObject
      */
-    public static function initNullObject() {
-        self::$nullObject = new Doctrine_Null;
+    public static function initNullObject(Doctrine_Null $null) {
+        self::$null = $null;
     }
     /** 
      * setUp
@@ -198,7 +199,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         foreach($this->table->getColumnNames() as $name) {
             if( ! isset($tmp[$name])) {
-                $this->data[$name] = array();
+                $this->data[$name] = self::$null;
 
             } else {
                 $cols++;
@@ -231,7 +232,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->id   = array();
 
                 foreach($names as $name) {
-                    $this->id[$name] = isset($this->data[$name])?$this->data[$name]:null;
+                    if($this->data[$name] === self::$null)
+                        $this->id[$name] = null;
+                    else 
+                        $this->id[$name] = $this->data[$name];
                 }
             break;
         endswitch;
@@ -408,8 +412,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function get($name) {
         if(isset($this->data[$name])) {
 
-            // check if the property is not loaded (= it is an empty array)
-            if(is_array($this->data[$name])) {
+            // check if the property is null (= it is the Doctrine_Null object located in self::$null)
+            if($this->data[$name] === self::$null) {
 
                 // no use trying to load the data from database if the Doctrine_Record is not a proxy
                 if($this->state == Doctrine_Record::STATE_PROXY) {
@@ -423,7 +427,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     $this->state = Doctrine_Record::STATE_CLEAN;
                 }
 
-                if(is_array($this->data[$name]))
+                if($this->data[$name] === self::$null)
                     return null;
             }
             return $this->data[$name];
@@ -453,7 +457,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $value = $id;
             
         if(isset($this->data[$name])) {
-            if( ! is_array($this->data[$name])) {
+            if($this->data[$name] === self::$null) {
                 if($this->data[$name] !== $value) {
                     switch($this->state):
                         case Doctrine_Record::STATE_CLEAN:

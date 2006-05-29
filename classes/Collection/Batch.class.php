@@ -80,7 +80,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
             $proxies = array();
 
             for($i = $e; $i < $e2 && $i < $this->count(); $i++):
-                if(is_object($this->data[$i]))
+                if($this->data[$i] instanceof Doctrine_Record)
                     $id = $this->data[$i]->getID();
                 elseif(is_array($this->data[$i]))
                     $id = $this->data[$i][$identifier];
@@ -120,6 +120,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
             return false;
         }
     }
+
     /**
      * get
      * @param mixed $key                the key of the record

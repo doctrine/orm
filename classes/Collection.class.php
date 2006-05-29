@@ -41,6 +41,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @var mixed $generator
      */
     protected $generator;
+    /**
+     * @var Doctrine_Null $null             used for extremely fast SQL null value testing
+     */
+    protected static $null;
 
     /**
      * constructor
@@ -52,6 +56,12 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if($name !== null) {
             $this->generator = new Doctrine_IndexGenerator($name);
         }
+    }
+    /**
+     * initNullObject
+     */
+    public static function initNullObject(Doctrine_Null $null) {
+        self::$null = $null;
     }
     /**
      * @return object Doctrine_Table

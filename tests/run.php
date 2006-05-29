@@ -24,11 +24,11 @@ $test = new GroupTest("Doctrine Framework Unit Tests");
 
 //$test->addTestCase(new Sensei_UnitTestCase());
 
+$test->addTestCase(new Doctrine_RecordTestCase());
+
 $test->addTestCase(new Doctrine_SessionTestCase());
 
 $test->addTestCase(new Doctrine_TableTestCase());
-
-$test->addTestCase(new Doctrine_RecordTestCase());
 
 $test->addTestCase(new Doctrine_ValidatorTestCase());
 
