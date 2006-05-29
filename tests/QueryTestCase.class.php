@@ -7,6 +7,46 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "Forum_Thread";
         parent::prepareTables();
     }
+
+    public function testOneToOneRelationFetching() {
+
+        $count = $this->dbh->count();
+        $users = $this->query->from("User-l:Email-i")->execute();
+        $this->assertEqual(($count + 1), $this->dbh->count());
+        $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
+        $count = $this->dbh->count();
+
+        foreach($users as $user) {
+            // iterate through users and test that no additional queries are needed
+            $user->Email->address;
+            $this->assertEqual($count, $this->dbh->count());
+        }
+        $users[0]->Account->amount = 3000;
+        $this->assertEqual($users[0]->Account->amount, 3000);
+        $this->assertTrue($users[0]->Account instanceof Account);
+        $this->assertEqual($users[0]->id, $users[0]->Account->entity_id);
+
+        $users[0]->Account->save();
+
+        $users[0]->refresh();
+        $this->assertEqual($users[0]->Account->amount, 3000);
+        $this->assertTrue($users[0]->Account instanceof Account);
+
+        $this->assertEqual($users[0]->id, $users[0]->Account->entity_id);
+
+        $this->assertEqual($users[0]->Account->getState(), Doctrine_Record::STATE_CLEAN);
+        $users[0]->getTable()->clear();
+        $users[0]->Account->getTable()->clear();
+
+        $count = $this->dbh->count();
+        $users = $this->query->from("User-l:Account-i")->execute();
+        $this->assertEqual(($count + 1), $this->dbh->count());
+        $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
+        $this->assertEqual($users->count(), 1);
+
+        $this->assertEqual($users[0]->Account->amount,3000);
+    }
+
     public function testNotValidLazyPropertyFetching() {
         $q = new Doctrine_Query($this->session);
         
@@ -48,7 +88,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($users[2]->email_id));
         $this->assertEqual($count + 1, count($this->dbh));
     }
-
 
     public function testQueryWithComplexAliases() {
         $q = new Doctrine_Query($this->session);
@@ -209,7 +248,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($query->offset, 3);
         $this->assertEqual($coll->count(), 3);
     }
-    public function testPrepared() {
+    public function testPreparedQuery() {
         $coll = $this->session->query("FROM User WHERE User.name = :name", array(":name" => "zYne"));
         $this->assertEqual($coll->count(), 1);
     }
@@ -222,6 +261,25 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         "SELECT entity.id AS User__id FROM entity LEFT JOIN email ON entity.email_id = email.id WHERE (entity.type = 0) ORDER BY entity.name ASC, email.address");
         $this->assertEqual($users->count(),8);
         $this->assertTrue($users[0]->name == "Arnold Schwarzenegger");
+    }
+    public function testBatchFetching() {
+        $query = new Doctrine_Query($this->session);
+        $users = $query->query("FROM User-b");
+        $this->assertEqual(trim($query->getQuery()),
+        "SELECT entity.id AS User__id FROM entity WHERE (entity.type = 0)");
+
+        $this->assertEqual($users[0]->name, "zYne");
+        $this->assertTrue($users instanceof Doctrine_Collection_Batch);
+    }
+    public function testLazyFetching() {
+        $query = new Doctrine_Query($this->session);
+        $users = $query->query("FROM User-l");
+        $this->assertEqual(trim($query->getQuery()),
+        "SELECT entity.id AS User__id FROM entity WHERE (entity.type = 0)");
+
+        $this->assertEqual($users[0]->name, "zYne");
+        $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
+
     }
 
     public function testQuery() {
@@ -326,20 +384,8 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $count2 = $this->session->getDBH()->count();
 
 
-        $users = $query->query("FROM User-b");
-        $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS User__id FROM entity WHERE (entity.type = 0)");
-
-        $this->assertEqual($users[0]->name, "zYne");
-        $this->assertTrue($users instanceof Doctrine_Collection_Batch);
 
 
-        $users = $query->query("FROM User-l");
-        $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS User__id FROM entity WHERE (entity.type = 0)");
-
-        $this->assertEqual($users[0]->name, "zYne");
-        $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
 
 
         //$this->clearCache();
@@ -403,5 +449,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
+
 }
 ?>

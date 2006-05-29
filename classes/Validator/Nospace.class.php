@@ -8,7 +8,7 @@ class Doctrine_Validator_NoSpace {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value, $args) {
-        if(preg_match("/[\s\r\t\n]/", $value))
+        if(trim($value) === '')
             return false;
 
         return true;

@@ -84,6 +84,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private static $index = 1;
     /**
+     * @var Doctrine_Null $nullObject       a Doctrine_Null object used for SQL null value testing
+     */
+    private static $nullObject;
+    /**
      * @var integer $oid                    object identifier
      */
     private $oid;
@@ -156,6 +160,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
             $this->table->getRepository()->add($this);
         }
+    }
+    /**
+     * initNullObject
+     */
+    public static function initNullObject() {
+        self::$nullObject = new Doctrine_Null;
     }
     /** 
      * setUp
@@ -402,7 +412,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if(is_array($this->data[$name])) {
 
                 // no use trying to load the data from database if the Doctrine_Record is not a proxy
-                if($this->state == Doctrine_Record::STATE_PROXY) {   
+                if($this->state == Doctrine_Record::STATE_PROXY) {
                     if( ! empty($this->collections)) {
                         foreach($this->collections as $collection) {
                             $collection->load($this);
@@ -582,11 +592,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->table->getSession()->save($this);
 
         foreach($saveLater as $fk) {
-
-            $table = $fk->getTable();
-            $foreign = $fk->getForeign();
-            $local   = $fk->getLocal();
-
+            $table   = $fk->getTable();
             $alias   = $this->table->getAlias($table->getComponentName());
 
             if(isset($this->references[$alias])) {
@@ -837,6 +843,17 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $this->id;
     }
     /**
+     * getLast
+     * this method is used internally be Doctrine_Query
+     * it is needed to provide compatibility between
+     * records and collections
+     *
+     * @return Doctrine_Record
+     */
+    public function getLast() {
+        return $this;
+    }
+    /**
      * hasRefence
      * @param string $name
      * @return boolean
@@ -845,8 +862,22 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return isset($this->references[$name]);
     }
     /**
+     * initalizes a one-to-one relation
+     *
+     * @param Doctrine_Record $record
+     * @param Doctrine_Relation $connector
+     * @return void
+     */
+    public function initSingleReference(Doctrine_Record $record) {
+        $name = $this->table->getAlias($record->getTable()->getComponentName());
+        $this->references[$name] = $record;
+    }
+    /**
+     * initalizes a one-to-many / many-to-many relation
+     *
      * @param Doctrine_Collection $coll
-     * @param string $connectorField
+     * @param Doctrine_Relation $connector
+     * @return void
      */
     public function initReference(Doctrine_Collection $coll, Doctrine_Relation $connector) {
         $name = $this->table->getAlias($coll->getTable()->getComponentName());

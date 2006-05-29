@@ -81,6 +81,10 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @var array $boundAliases                         bound relation aliases
      */
     private $boundAliases       = array();
+    /**
+     * @var integer $columnCount                        cached column count
+     */
+    private $columnCount;
 
 
     /**
@@ -134,6 +138,8 @@ class Doctrine_Table extends Doctrine_Configurable {
         // create database table
         if(method_exists($record,"setTableDefinition")) {
             $record->setTableDefinition();
+
+            $this->columnCount = count($this->columns);
 
             if(isset($this->columns)) {
                 $method    = new ReflectionMethod($this->name,"setTableDefinition");
@@ -784,7 +790,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @return integer
      */
     final public function getColumnCount() {
-        return count($this->columns);                                       	
+        return $this->columnCount;                                       	
     }
     /**
      * returns all columns and their definitions

@@ -52,8 +52,6 @@ $test->addTestCase(new Doctrine_QueryTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
 
-
-
 print "<pre>";
 $test->run(new HtmlReporter());
 $cache = Doctrine_Manager::getInstance()->getCurrentSession()->getCacheHandler();

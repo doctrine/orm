@@ -246,46 +246,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     public function create($name) {
         return $this->getTable($name)->create();
     }
-    public function buildFlushTree2(array $tables) {
-        $tree = array();
-        foreach($tables as $table) {
-            if( ! ($table instanceof Doctrine_Table))
-                $table = $this->getTable($table);
 
-            $name  = $table->getComponentName();
-            $index = array_search($name,$tree);
-            if($index === false)
-                $tree[] = $name;
-
-
-            foreach($table->getForeignKeys() as $rel) {
-                $name  = $rel->getTable()->getComponentName();
-                $index = array_search($name,$tree);
-
-                if($rel instanceof Doctrine_ForeignKey) {
-                    if($index !== false)
-                        unset($tree[$index]);
-
-                    $tree[] = $name;
-                } elseif($rel instanceof Doctrine_LocalKey) {
-                    if($index !== false)
-                        unset($tree[$index]);
-
-                    array_unshift($tree, $name);
-                } elseif($rel instanceof Doctrine_Association) {
-                    $t = $rel->getAssociationFactory();
-                    $n = $t->getComponentName();
-                    $index = array_search($n,$tree);
-
-                    if($index !== false)
-                        unset($tree[$index]);
-
-                    $tree[] = $n;
-                }
-            }
-        }
-        return array_values($tree);
-    }
 
     /**
      * buildFlushTree
@@ -572,7 +533,6 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
                 $increment = true;
             }
-
 
             foreach($inserts as $k => $record) {
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);

@@ -207,4 +207,53 @@ class Forum_Thread extends Doctrine_Record {
         $this->ownsMany("Forum_Entry as Entries", "Forum_Entry.thread_id");
     }
 }
+class App extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 32);
+        $this->hasColumn("user_id", "integer", 11);
+        $this->hasColumn("app_category_id", "integer", 11);
+    }
+    public function setUp() {
+        $this->hasOne("User","User.id");
+        $this->hasMany("App_Category as Category","App_Category.id");
+    }        
+}
+
+class App_User extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("first_name", "string", 32);
+        $this->hasColumn("last_name", "string", 32);
+        $this->hasColumn("email", "string", 128, "email");
+        $this->hasColumn("username", "string", 16, "unique, nospace");
+        $this->hasColumn("password", "string", 128, "notblank");
+        $this->hasColumn("country", "string", 2, "country");
+        $this->hasColumn("zipcode", "string", 9, "nospace");
+    }
+    public function setUp() {
+        $this->hasMany("App","App.user_id");
+    }    
+}
+ 
+class App_Category extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 32);
+        $this->hasColumn("parent_id","integer");
+    }
+    public function setUp() {
+        $this->hasMany("App","App.app_category_id");
+        $this->hasMany("App_Category as Parent","App_Category.parent_id");
+    }
+}
+ 
+/**
+$apps = $con->query("FROM App.Category");
+
+if (!empty($apps))
+{
+        foreach ($apps as $app)
+        {
+                print '<p>' . $app->Category[0]->name . ' => ' . $app->name . '</p>';
+        }
+}
+*/
 ?>

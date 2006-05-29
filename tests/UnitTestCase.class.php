@@ -49,6 +49,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
 
+        $this->query = new Doctrine_Query($this->session);
         $this->prepareTables();
         $this->prepareData();
     }

@@ -22,4 +22,4 @@ class Doctrine_IndexGenerator {
         return $value;
     }
 }
-?> 
+?>

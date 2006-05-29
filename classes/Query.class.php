@@ -419,8 +419,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                 $array = $this->parseData($stmt);
 
-                $colls = array();
-
+                $colls = array();    
 
                 foreach($array as $data) {
                     /**
@@ -465,14 +464,30 @@ class Doctrine_Query extends Doctrine_Access {
                                 $coll->add($record);
                             } else {
                                 $pointer = $this->joins[$name];
-                                
-                                $last = $prev[$pointer]->getLast();
 
-                                if( ! $last->hasReference($name)) {
-                                    $prev[$name] = $this->getCollection($name);
-                                    $last->initReference($prev[$name],$this->connectors[$name]);
-                                }
-                                $last->addReference($record);
+                                $fk = $this->tables[$pointer]->getForeignKey($this->tables[$pointer]->getAlias($name));
+
+                                switch($fk->getType()):
+                                    case Doctrine_Relation::ONE_COMPOSITE:
+                                    case Doctrine_Relation::ONE_AGGREGATE:
+                                        $last = $prev[$pointer]->getLast();
+
+                                        $last->rawSet($this->connectors[$name]->getLocal(), $record->getID());
+
+                                        $last->initSingleReference($record);
+                                        
+                                        $prev[$name] = $record;
+                                    break;
+                                    default:
+                                        // one-to-many relation or many-to-many relation
+                                        $last = $prev[$pointer]->getLast();
+    
+                                        if( ! $last->hasReference($name)) {
+                                            $prev[$name] = $this->getCollection($name);
+                                            $last->initReference($prev[$name],$this->connectors[$name]);
+                                        }
+                                        $last->addReference($record);
+                                endswitch;
                             }
                         }
 

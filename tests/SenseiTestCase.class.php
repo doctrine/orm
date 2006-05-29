@@ -1,5 +1,6 @@
 <?php
 require_once("../classes/Doctrine.class.php");
+
 Doctrine::loadAll();
 
 class Sensei_UnitTestCase extends UnitTestCase { 
@@ -13,6 +14,9 @@ class Sensei_UnitTestCase extends UnitTestCase {
     private $init = false;
 
     public function init() {
+        if(headers_sent())
+            throw new Exception("'".ob_end_flush()."'");
+
         $this->manager   = Doctrine_Manager::getInstance();
         $this->manager->setAttribute(Doctrine::ATTR_CACHE, Doctrine::CACHE_NONE);
 
@@ -40,7 +44,7 @@ class Sensei_UnitTestCase extends UnitTestCase {
         
         $entity->loginname = "Chuck Norris";
         $entity->password = "toughguy";
-        
+
         $entity->save();
 
         $this->init   = true;
@@ -109,6 +113,5 @@ class Sensei_UnitTestCase extends UnitTestCase {
 
         $this->assertEqual($this->record->entity_id, 0);
     }
-
 }
 ?>

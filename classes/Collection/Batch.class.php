@@ -28,6 +28,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
 
     /**
      * @param integer $batchSize    batch size
+     * @return boolean
      */
     public function setBatchSize($batchSize) {
         $batchSize = (int) $batchSize;
@@ -38,15 +39,19 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
         return true;
     }
     /**
+     * returns the batch size of this collection
+     *
      * @return integer
      */
     public function getBatchSize() {
         return $this->batchSize;
     }
     /**
-     * load                         load a specified element, by loading the batch the element is part of
-     * @param Doctrine_Record $record              data access object
-     * @return boolean              whether or not the load operation was successful
+     * load                                        
+     * loads a specified element, by loading the batch the element is part of
+     *
+     * @param Doctrine_Record $record              record to be loaded
+     * @return boolean                             whether or not the load operation was successful
      */
     public function load(Doctrine_Record $record) {
         if(empty($this->data))

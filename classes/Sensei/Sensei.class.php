@@ -1,10 +1,8 @@
 <?php
 class Sensei_Group extends Doctrine_Record { }
-//class Sensei_Company extends Sensei_Group { }
-
+class Sensei_Company extends Sensei_Group { }
 class Sensei_User extends Doctrine_Record { }
-//class Sensei_Customer extends Sensei_User { }
-
+class Sensei_Customer extends Sensei_User { }
 class Sensei_Entity extends Doctrine_Record {
     /**
      * setTableDefinition
@@ -65,10 +63,7 @@ class Sensei_Session extends Doctrine_Record {
         $this->hasColumn("created","integer");
     }
 }
-
 class Sensei_Exception extends Exception { }
-
-
 class Sensei extends Doctrine_Access {
     const ATTR_LIFESPAN = 0;
     /**
