@@ -472,18 +472,24 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             if($this->getAttribute(Doctrine::ATTR_VLD))
                 $this->validator = new Doctrine_Validator();
 
+            try {
+                
+                $this->bulkInsert();
+                $this->bulkUpdate();
+                $this->bulkDelete();
 
-            $this->bulkInsert();
-            $this->bulkUpdate();
-            $this->bulkDelete();
-
-            if($this->getAttribute(Doctrine::ATTR_VLD)) {
-                if($this->validator->hasErrors()) {
-                    $this->rollback();
-                    throw new Doctrine_Validator_Exception($this->validator);
+                if($this->getAttribute(Doctrine::ATTR_VLD)) {
+                    if($this->validator->hasErrors()) {
+                        $this->rollback();
+                        throw new Doctrine_Validator_Exception($this->validator);
+                    }
                 }
+
+            } catch(PDOException $e) {
+                $this->rollback();
+
+                throw new Doctrine_Exception($e->getMessage());
             }
-    
             $this->dbh->commit();
             $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this);
 
