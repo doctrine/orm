@@ -254,8 +254,11 @@ class Doctrine_Query extends Doctrine_Access {
         }
         $q .= implode(", ",$a);
         
-        if( ! empty($this->parts['join']))
-            $q .= " ".implode(' ', $this->parts["join"]);
+        if( ! empty($this->parts['join'])) {
+            foreach($this->parts['join'] as $part) {
+                $q .= " ".implode(' ', $part);
+            }
+        }
 
         $this->applyInheritance();
         if( ! empty($this->parts["where"]))
@@ -931,10 +934,10 @@ class Doctrine_Query extends Doctrine_Access {
 
                         switch($mark):
                             case ":":
-                                $this->parts["join"][$tname]  = "INNER JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
+                                $this->parts["join"][$tname][]  = "INNER JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
                             break;
                             case ".":
-                                $this->parts["join"][$tname]  = "LEFT JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
+                                $this->parts["join"][$tname][]  = "LEFT JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
                             break;
                         endswitch;
 
