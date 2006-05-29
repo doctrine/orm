@@ -934,10 +934,10 @@ class Doctrine_Query extends Doctrine_Access {
 
                         switch($mark):
                             case ":":
-                                $this->parts["join"][$tname][]  = "INNER JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
+                                $this->parts["join"][$tname][$tname2]  = "INNER JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
                             break;
                             case ".":
-                                $this->parts["join"][$tname][]  = "LEFT JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
+                                $this->parts["join"][$tname][$tname2]  = "LEFT JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
                             break;
                         endswitch;
 

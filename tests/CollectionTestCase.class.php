@@ -16,7 +16,7 @@ class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testExpand() {
-        $users = $this->session->query("FROM User-b, User.Phonenumber-l WHERE User.Phonenumber.phonenumber LIKE '%123%'");
+        $users = $this->session->query("FROM User-b.Phonenumber-l WHERE User.Phonenumber.phonenumber LIKE '%123%'");
 
         $this->assertTrue($users instanceof Doctrine_Collection_Batch);
         $this->assertTrue($users[1] instanceof User);
