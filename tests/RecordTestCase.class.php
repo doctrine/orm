@@ -2,7 +2,12 @@
 require_once("UnitTestCase.class.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
-
+    public function testCallback() {
+        $user = new User();
+        $user->name = " zYne ";
+        $user->trim('name');
+        $this->assertEqual($user->name, 'zYne');
+    }
     public function testJoinTableSelfReferencing() {
         $e = new Entity();
         $e->name = "Entity test";

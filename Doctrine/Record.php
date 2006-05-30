@@ -1105,6 +1105,21 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->table->setColumn($name, $type, $length, $options);
     }
     /**
+     * __call
+     * @param string $m
+     * @param array $a
+     */
+    public function __call($m,$a) {
+        if( ! function_exists($m))
+            throw new Doctrine_Record_Exception("unknown callback");
+            
+        if(isset($a[0])) {
+            $column = $a[0];
+            $this->data[$column] = $m($this->get($column));
+        }
+        return $this;
+    }
+    /**
      * returns a string representation of this object
      */
     public function __toString() {
