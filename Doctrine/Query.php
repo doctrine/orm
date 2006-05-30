@@ -716,7 +716,7 @@ class Doctrine_Query extends Doctrine_Access {
      * @return void
      */
     private function parseFrom($str) {
-        foreach(explode(",",trim($str)) as $reference) {
+        foreach(self::bracketExplode(trim($str),",","(",")") as $reference) {
             $reference = trim($reference);
             $table = $this->load($reference);
         }

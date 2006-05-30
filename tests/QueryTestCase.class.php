@@ -7,7 +7,54 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "Forum_Thread";
         parent::prepareTables();
     }
+    public function testLazyPropertyFetchingWithMultipleColumns() {
 
+        $q = new Doctrine_Query($this->session);
+        $q->from("User-l(name, email_id)");
+        $users = $q->execute();
+        $this->assertEqual($users->count(), 8);
+        $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
+        $count = count($this->dbh);
+        $this->assertTrue(is_string($users[0]->name));
+        $this->assertEqual($count, count($this->dbh));
+        $count = count($this->dbh);
+        $this->assertTrue(is_numeric($users[0]->email_id));
+        $this->assertEqual($count, count($this->dbh));
+        
+        $users[0]->getTable()->clear();
+
+        $q->from("User-b(name, email_id)");
+        $users = $q->execute();
+        $this->assertEqual($users->count(), 8);
+        $this->assertTrue($users instanceof Doctrine_Collection_Batch);
+        $count = count($this->dbh);
+        $this->assertTrue(is_string($users[0]->name));
+        $this->assertEqual($count, count($this->dbh));
+        $count = count($this->dbh);
+        $this->assertTrue(is_numeric($users[0]->email_id));
+        $this->assertEqual($count, count($this->dbh));
+        $this->assertTrue(is_numeric($users[1]->email_id));
+        $this->assertEqual($count, count($this->dbh));
+        $this->assertTrue(is_numeric($users[2]->email_id));
+        $this->assertEqual($count, count($this->dbh));
+        
+        $q->from("User-b(name, email_id):Email, User-b(name, email_id).Phonenumber");
+        $users = $q->execute();
+        $this->assertEqual($users->count(), 8);
+        $this->assertTrue($users instanceof Doctrine_Collection_Batch);
+        $count = count($this->dbh);
+        $this->assertTrue(is_string($users[0]->name));
+        $this->assertEqual($count, count($this->dbh));
+        $count = count($this->dbh);
+        $this->assertTrue(is_numeric($users[0]->email_id));
+        $this->assertEqual($count, count($this->dbh));
+        $this->assertTrue(is_numeric($users[1]->email_id));
+        $this->assertEqual($count, count($this->dbh));
+        $this->assertTrue(is_numeric($users[2]->email_id));
+        $this->assertEqual($count, count($this->dbh));
+
+    }
+/**
     public function testMultipleFetching() {
         $count = $this->dbh->count();
         $this->session->getTable('User')->clear();
@@ -125,6 +172,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         }
         $this->assertTrue($f);
     }
+
     public function testValidLazyPropertyFetching() {
         $q = new Doctrine_Query($this->session);
         $q->from("User-l(name)");
@@ -517,5 +565,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
+    */
 }
 ?>

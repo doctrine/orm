@@ -364,6 +364,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->state    = Doctrine_Record::STATE_CLEAN;
 
+        $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
+
         return true;
     }
     /**
@@ -386,6 +388,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->state    = Doctrine_Record::STATE_CLEAN;
         $this->modified = array();
+
+        $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
     }
     /**
      * return the factory that created this data access object
