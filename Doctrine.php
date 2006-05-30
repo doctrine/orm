@@ -225,8 +225,9 @@ final class Doctrine {
     public static function loadAll() {
         if(! self::$path)
             self::$path = dirname(__FILE__);
-            
-        $dir = dir(self::$path);
+
+        $path = self::$path.DIRECTORY_SEPARATOR."Doctrine";
+        $dir = dir($path);
         $a   = array();
         while (false !== ($entry = $dir->read())) {
             switch($entry):
@@ -243,11 +244,11 @@ final class Doctrine {
                 case "DQL":
                 case "Sensei":
                 case "Iterator":
-                    $a[]  = self::$path.DIRECTORY_SEPARATOR.$entry;
+                    $a[]  = $path.DIRECTORY_SEPARATOR.$entry;
                 break;
                 default:
-                    if(is_file(self::$path.DIRECTORY_SEPARATOR.$entry) && substr($entry,-4) == ".php") {
-                        require_once($entry);
+                    if(is_file($path.DIRECTORY_SEPARATOR.$entry) && substr($entry,-4) == ".php") {
+                        require_once($path.DIRECTORY_SEPARATOR.$entry);
                     }
             endswitch;
         }

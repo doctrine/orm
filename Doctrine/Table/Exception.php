@@ -1,5 +1,5 @@
 <?php
-require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Exception.php");
+Doctrine::autoload('Doctrine_Exception');
 /**
  * thrown when user tries to initialize a new instance of Doctrine_Table, 
  * while there already exists an instance of that table
