@@ -54,7 +54,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($count, count($this->dbh));
 
     }
-/**
+
     public function testMultipleFetching() {
         $count = $this->dbh->count();
         $this->session->getTable('User')->clear();
@@ -565,6 +565,5 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
-    */
 }
 ?>

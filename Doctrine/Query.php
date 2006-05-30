@@ -936,7 +936,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                     if($fk instanceof Doctrine_ForeignKey ||
                        $fk instanceof Doctrine_LocalKey) {
-
+                        
                         switch($mark):
                             case ":":
                                 $this->parts["join"][$tname][$tname2]  = "INNER JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
