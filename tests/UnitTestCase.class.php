@@ -1,8 +1,10 @@
 <?php
-require_once("../classes/Doctrine.class.php");
+require_once("../Doctrine.php");
 
-Doctrine::loadAll();
-
+//Doctrine::loadAll();
+function __autoload($class) {
+    Doctrine::autoload($class);
+}
 require_once("classes.php");
 
 ini_set('include_path',ucwords($_SERVER["DOCUMENT_ROOT"]));

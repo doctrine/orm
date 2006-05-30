@@ -1,9 +1,5 @@
 <?php
-require_once("../classes/Doctrine.class.php");
-
-Doctrine::loadAll();
-
-class Sensei_UnitTestCase extends UnitTestCase { 
+class Sensei_UnitTestCase extends UnitTestCase {
     protected $manager;
     protected $session;
     protected $dbh;
