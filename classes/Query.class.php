@@ -721,7 +721,12 @@ class Doctrine_Query extends Doctrine_Access {
             $table = $this->load($reference);
         }
     }
-    
+    /**
+     * returns Doctrine::FETCH_* constant
+     *
+     * @param string $mode
+     * @return integer
+     */
     private function parseFetchMode($mode) {
         switch(strtolower($mode)):
             case "i":
