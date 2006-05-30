@@ -1,5 +1,5 @@
 <?php
-require_once(Doctrine::getPath().DIRECTORY_SEPARATOR."Exception.php");
+Doctrine::autoload('Doctrine_Exception');
 
 class Doctrine_Validator_Exception extends Doctrine_Exception {
     private $validator;
