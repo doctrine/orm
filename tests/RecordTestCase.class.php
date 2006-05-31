@@ -7,6 +7,8 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user->name = " zYne ";
         $user->trim('name');
         $this->assertEqual($user->name, 'zYne');
+        $user->substr('name',0,1);
+        $this->assertEqual($user->name, 'z');
     }
     public function testJoinTableSelfReferencing() {
         $e = new Entity();

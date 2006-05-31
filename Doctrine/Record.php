@@ -1111,11 +1111,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function __call($m,$a) {
         if( ! function_exists($m))
-            throw new Doctrine_Record_Exception("unknown callback");
+            throw new Doctrine_Record_Exception("unknown callback '$m'");
             
         if(isset($a[0])) {
             $column = $a[0];
-            $this->data[$column] = $m($this->get($column));
+            $a[0] = $this->get($column);
+            $this->data[$column] = call_user_func_array($m, $a);
         }
         return $this;
     }

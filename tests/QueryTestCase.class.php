@@ -7,6 +7,23 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "Forum_Thread";
         parent::prepareTables();
     }
+    public function testImmediateFetching() {
+        $count = $this->dbh->count();
+        $this->session->getTable('User')->clear();
+        $this->session->getTable('Email')->clear();
+        $this->session->getTable('Phonenumber')->clear();
+
+        $users = $this->query->from("User-i.Email-i")->execute();
+        $this->assertEqual(($count + 1),$this->dbh->count());
+        $this->assertEqual(count($users), 8);
+        
+        $this->assertEqual(get_class($users[0]->Email), 'Email');
+        $this->assertEqual(($count + 1),$this->dbh->count());
+
+        $this->assertEqual($users[0]->Email->address, 'zYne@example.com');
+        $this->assertEqual(($count + 1),$this->dbh->count());
+    }
+
     public function testLazyPropertyFetchingWithMultipleColumns() {
 
         $q = new Doctrine_Query($this->session);
@@ -52,7 +69,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($count, count($this->dbh));
         $this->assertTrue(is_numeric($users[2]->email_id));
         $this->assertEqual($count, count($this->dbh));
-
     }
 
     public function testMultipleFetching() {
