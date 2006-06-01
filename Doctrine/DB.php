@@ -80,6 +80,7 @@ class Doctrine_DB extends PDO implements Countable, IteratorAggregate {
      */
     public function prepare($query) {
         $this->queries[] = $query;
+
         return parent::prepare($query);
     }
     /**

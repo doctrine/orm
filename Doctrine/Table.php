@@ -65,7 +65,9 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @var array $identityMap                          first level cache
      */
     private $identityMap        = array();
-    
+    /**
+     * @var Doctrine_Repository $repository             record repository
+     */
     private $repository;
     
     /**
@@ -714,14 +716,20 @@ class Doctrine_Table extends Doctrine_Configurable {
         foreach($key as $k) {
             if( ! isset($this->data[$k]))
                 throw new Doctrine_Exception("No primary key found");
-            
+
             $id[] = $this->data[$k];
         }
+
         $id = implode(' ', $id);
 
         if(isset($this->identityMap[$id]))
             $record = $this->identityMap[$id];
         else {
+        /**
+            if($this->createsChildren) {
+
+            }
+         */
             $record = new $this->name($this);
             $this->identityMap[$id] = $record;
         }

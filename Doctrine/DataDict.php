@@ -44,6 +44,10 @@ class Doctrine_DataDict {
      */
     public function getADOType($type,$length) {
         switch($type):
+            case "array":
+            case "a":
+            case "object":
+            case "o":
             case "string":
             case "s":
                 if($length < 255)

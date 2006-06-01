@@ -22,6 +22,12 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users[0]->Email->address, 'zYne@example.com');
         $this->assertEqual(($count + 1),$this->dbh->count());
+        
+        $this->assertEqual(get_class($users[1]->Email), 'Email');
+        $this->assertEqual(($count + 1),$this->dbh->count());
+
+        $this->assertEqual($users[1]->Email->address, 'arnold@example.com');
+        $this->assertEqual(($count + 1),$this->dbh->count());
     }
 
     public function testLazyPropertyFetchingWithMultipleColumns() {

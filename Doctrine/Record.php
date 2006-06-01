@@ -57,16 +57,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @var array $data                     the record data
      */
     protected $data       = array();
-
-    /**
-     * @var array $modified                 an array containing properties that have been modified
-     */
-    private $modified   = array();
     /**
      * @var integer $state                  the state of this record
      * @see STATE_* constants
      */
-    private $state;
+    protected $state;
+    /**
+     * @var array $modified                 an array containing properties that have been modified
+     */
+    protected $modified   = array();
     /**
      * @var array $collections              the collections this record is in
      */
@@ -134,13 +133,13 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $count = count($this->data);
 
             // clean data array
-            $cols = $this->cleanData();
+            $this->cleanData();
 
             $this->prepareIdentifiers($exists);
 
             if( ! $exists) {
     
-                if($cols > 0)
+                if($count > 0)
                     $this->state = Doctrine_Record::STATE_TDIRTY;
                 else
                     $this->state = Doctrine_Record::STATE_TCLEAN;
@@ -164,9 +163,17 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * initNullObject
+     *
+     * @param Doctrine_Null $null
      */
     public static function initNullObject(Doctrine_Null $null) {
         self::$null = $null;
+    }
+    /**
+     * @return Doctrine_Null
+     */
+    public static function getNullObject() {
+        return self::$null;
     }
     /** 
      * setUp
@@ -192,22 +199,17 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * $data = array("name"=>"John","lastname" => array(),"id"=>1);
      */
     private function cleanData() {
-        $cols = 0;
         $tmp  = $this->data;
-        
+
         $this->data = array();
 
         foreach($this->table->getColumnNames() as $name) {
             if( ! isset($tmp[$name])) {
                 $this->data[$name] = self::$null;
-
             } else {
-                $cols++;
                 $this->data[$name] = $tmp[$name];
             }
         }
-
-        return $cols;
     }
     /**
      * prepares identifiers
@@ -251,9 +253,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->table = $this->table->getComponentName();
         // unset all vars that won't need to be serialized
 
-        unset($this->modified);
         unset($this->associations);
-        unset($this->state);
         unset($this->collections);
         unset($this->references);    
         unset($this->originals);
@@ -262,6 +262,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach($this->data as $k=>$v) {
             if($v instanceof Doctrine_Record)
                 $this->data[$k] = array();
+            elseif($v === self::$null)
+                unset($this->data[$k]);
         }
         return array_keys(get_object_vars($this));
 
@@ -273,10 +275,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     public function __wakeup() {
-
-        $this->modified = array();
-        $this->state    = Doctrine_Record::STATE_CLEAN;
-
         $name       = $this->table;
 
         $manager    = Doctrine_Manager::getInstance();
@@ -406,6 +404,23 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $this->data;
     }
     /**
+     * rawGet
+     * returns the value of a property, if the property is not yet loaded
+     * this method does NOT load it
+     *
+     * @param $name                     name of the property
+     * @return mixed
+     */
+    public function rawGet($name) {
+        if( ! isset($this->data[$name]))
+            throw new InvalidKeyException();
+            
+        if($this->data[$name] == self::$null)
+            return null;
+
+        return $this->data[$name];
+    }
+    /**
      * get
      * returns a value of a property or a related component 
      *
@@ -459,7 +474,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         if( ! empty($id))
             $value = $id;
-            
+
         if(isset($this->data[$name])) {
             if($this->data[$name] === self::$null) {
                 if($this->data[$name] !== $value) {
@@ -477,7 +492,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->state = Doctrine_Record::STATE_TDIRTY;
 
             $this->data[$name] = $value;
-            $this->modified[]  = $name;
+            $this->modified[]  = $name;  
         }
     }
     /**
@@ -658,10 +673,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * getIterator
-     * @return ArrayIterator                an ArrayIterator that iterates through the data
+     * @return Doctrine_Record_Iterator     a Doctrine_Record_Iterator that iterates through the data
      */
     public function getIterator() {
-        return new ArrayIterator($this->data);
+        return new Doctrine_Record_Iterator($this);
     }
     /**
      * saveAssociations
@@ -1112,7 +1127,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function __call($m,$a) {
         if( ! function_exists($m))
             throw new Doctrine_Record_Exception("unknown callback '$m'");
-            
+
         if(isset($a[0])) {
             $column = $a[0];
             $a[0] = $this->get($column);
