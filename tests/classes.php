@@ -244,16 +244,47 @@ class App_Category extends Doctrine_Record {
         $this->hasMany("App_Category as Parent","App_Category.parent_id");
     }
 }
- 
-/**
-$apps = $con->query("FROM App.Category");
 
-if (!empty($apps))
-{
-        foreach ($apps as $app)
-        {
-                print '<p>' . $app->Category[0]->name . ' => ' . $app->name . '</p>';
-        }
+class ORM_TestEntry extends Doctrine_Record {
+   public function setTableDefinition() {
+        $this->setTableName('test_entries');
+        $this->hasColumn("id", "integer", 11, "autoincrement|primary");
+        $this->hasColumn("name", "string", 255); 
+        $this->hasColumn("stamp", "timestamp");
+        $this->hasColumn("amount", "float"); 
+        $this->hasColumn("itemID", "integer"); 
+   } 
+    
+   public function setUp() {  
+        $this->hasOne("ORM_TestItem", "ORM_TestEntry.itemID"); 
+   }
 }
-*/
+
+class ORM_TestItem extends Doctrine_Record {
+   public function setTableDefinition() {
+        $this->setTableName('test_items');
+        $this->hasColumn("id", "integer", 11, "autoincrement|primary");
+        $this->hasColumn("name", "string", 255); 
+   } 
+
+   public function setUp() {
+
+        $this->hasOne("ORM_TestEntry", "ORM_TestEntry.itemID"); 
+   } 
+}
+class Log_Entry extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("stamp", "timestamp");
+        $this->hasColumn("status_id", "integer");
+    }
+    public function setUp() {
+        $this->hasOne("Log_Status", "Log_Entry.status_id");
+    }
+}
+
+class Log_Status extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 255);
+    }
+}
 ?>

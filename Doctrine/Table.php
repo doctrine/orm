@@ -639,10 +639,13 @@ class Doctrine_Table extends Doctrine_Configurable {
 
             $query  = $this->query." WHERE ".implode(" = ? AND ",$this->primaryKeys)." = ?";
             $query  = $this->applyInheritance($query);
-            
+
+
             $params = array_merge($id, array_values($this->inheritanceMap));
 
-            $this->data = $this->session->execute($query,$params)->fetch(PDO::FETCH_ASSOC);
+            $stmt  = $this->session->execute($query,$params);
+
+            $this->data = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if($this->data === false)
                 throw new Doctrine_Find_Exception();
@@ -818,6 +821,13 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     public function getColumnNames() {
         return array_keys($this->columns);
+    }
+    /**
+     * getTypeOf
+     */
+    public function getTypeOf($column) {
+        if(isset($this->columns[$column]))
+            return $this->columns[$column][0];                                   	
     }
     /**
      * setData

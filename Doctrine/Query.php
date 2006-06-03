@@ -435,15 +435,15 @@ class Doctrine_Query extends Doctrine_Access {
                         $ids  = $this->tables[$key]->getIdentifier();
 
                         if(is_array($ids)) {
-                        $emptyID = false;
-                            foreach($ids as $id) {
-                                if($row[$id] == null) {
-                                    $emptyID = true;
-                                    break;
+                            $emptyID = false;
+                                foreach($ids as $id) {
+                                    if($row[$id] == null) {
+                                        $emptyID = true;
+                                        break;
+                                    }
                                 }
-                            }
-                        if($emptyID)
-                            continue;
+                            if($emptyID)
+                                continue;
                         } else {
                             if($row[$ids] === null)
                                 continue;

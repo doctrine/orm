@@ -240,6 +240,7 @@ final class Doctrine {
                 case "Table":
                 case "Validator":
                 case "Exception":
+                case "EventListener":
                 case "Session":
                 case "DQL":
                 case "Sensei":
@@ -272,6 +273,7 @@ final class Doctrine {
     public static function autoload($classname) {
         if(! self::$path)
             self::$path = dirname(__FILE__);
+
 
         $class = self::$path.DIRECTORY_SEPARATOR.str_replace("_",DIRECTORY_SEPARATOR,$classname).".php";
 

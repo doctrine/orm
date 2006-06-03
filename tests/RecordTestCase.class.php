@@ -2,6 +2,13 @@
 require_once("UnitTestCase.class.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
+    public function testSerialize() {
+        //$user = $this->session->getTable("User")->find(4);
+        //$str = serialize($user);
+        //$user2 = unserialize($str);
+        //$this->assertEqual($user2->getID(),$user->getID());
+    }
+
     public function testCallback() {
         $user = new User();
         $user->name = " zYne ";
@@ -10,6 +17,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user->substr('name',0,1);
         $this->assertEqual($user->name, 'z');
     }
+
     public function testJoinTableSelfReferencing() {
         $e = new Entity();
         $e->name = "Entity test";
@@ -281,6 +289,8 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
 
         $this->session->flush();
+        $elements = $this->session->query("FROM Element-l");
+        $this->assertEqual($elements->count(), 5);
 
         $e = $e->getTable()->find(1);
         $this->assertEqual($e->name,"parent");
@@ -292,7 +302,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($e->Child[0]->parent_id, 1);
         $this->assertEqual($e->Child[0]->Parent->getID(), $e->getID());
-        
+
 
         $this->assertEqual($e->Child[1]->parent_id, 1);
         $this->assertEqual($e->Child[1]->Child[0]->name,"child 1's child 1");
@@ -389,7 +399,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $debug = $this->listener->getMessages();
         $p = array_pop($debug);
         $this->assertTrue($p->getObject() instanceof Doctrine_Session);
-        $this->assertTrue($p->getCode() == Doctrine_Debugger::EVENT_COMMIT);
+        $this->assertTrue($p->getCode() == Doctrine_EventListener_Debugger::EVENT_COMMIT);
 
         $user->delete();
         $this->assertTrue($user->getState() == Doctrine_Record::STATE_TCLEAN);
@@ -409,15 +419,15 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $debug = $this->listener->getMessages();
         $p = array_pop($debug);
         $this->assertTrue($p->getObject() instanceof Doctrine_Session);
-        $this->assertTrue($p->getCode() == Doctrine_Debugger::EVENT_COMMIT);
+        $this->assertTrue($p->getCode() == Doctrine_EventListener_Debugger::EVENT_COMMIT);
         
         $p = array_pop($debug);
         $this->assertTrue($p->getObject() instanceof Doctrine_Record);
-        $this->assertTrue($p->getCode() == Doctrine_Debugger::EVENT_SAVE);
+        $this->assertTrue($p->getCode() == Doctrine_EventListener_Debugger::EVENT_SAVE);
 
         $p = array_pop($debug);
         $this->assertTrue($p->getObject() instanceof Doctrine_Record);
-        $this->assertTrue($p->getCode() == Doctrine_Debugger::EVENT_UPDATE);
+        $this->assertTrue($p->getCode() == Doctrine_EventListener_Debugger::EVENT_UPDATE);
 
 
     }
@@ -668,18 +678,9 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertTrue($user->Phonenumber->count() == 1);
     }
-
-    public function testSerialize() {
-        $user = $this->session->getTable("User")->find(4);
-        $str = serialize($user);
-
-        $this->assertEqual(unserialize($str)->getID(),$user->getID());
-    }
-
     public function testGetIterator() {
         $user = $this->session->getTable("User")->find(4);
         $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
-
 }
 ?>

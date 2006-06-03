@@ -42,8 +42,23 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     const STATE_DELETED     = 6;
 
     /**
-     * FETCHMODE CONSTANTS
+     * CALLBACK CONSTANTS
      */
+
+    /**
+     * RAW CALLBACK
+     *
+     * when using a raw callback and the property if a record is changed using this callback the
+     * record state remains untouched
+     */
+    const CALLBACK_RAW       = 1;
+    /**
+     * STATE-WISE CALLBACK
+     *
+     * state-wise callback means that when callback is used and the property is changed the
+     * record state is also updated
+     */
+    const CALLBACK_STATEWISE = 2;
 
     /**
      * @var object Doctrine_Table $table    the factory that created this data access object
@@ -207,7 +222,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if( ! isset($tmp[$name])) {
                 $this->data[$name] = self::$null;
             } else {
-                $this->data[$name] = $tmp[$name];
+                switch($this->table->getTypeOf($name)):
+                    case "array":
+                    case "object":
+                        if($tmp[$name] !== self::$null)
+                            $this->data[$name] = unserialize($tmp[$name]);
+                    break;
+                    default:
+                        $this->data[$name] = $tmp[$name];
+                endswitch;
             }
         }
     }
@@ -220,14 +243,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         switch($this->table->getIdentifierType()):
             case Doctrine_Identifier::AUTO_INCREMENT:
             case Doctrine_Identifier::SEQUENCE:
-                if($exists) {
-                    $name = $this->table->getIdentifier();
 
+                $name = $this->table->getIdentifier();
+
+                if($exists) {
                     if(isset($this->data[$name]))
                         $this->id = $this->data[$name];
-    
-                    unset($this->data[$name]);
                 }
+                
+                unset($this->data[$name]);
+
             break;
             case Doctrine_Identifier::COMPOSITE:
                 $names      = $this->table->getIdentifier();
@@ -250,7 +275,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function __sleep() {
         $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onSleep($this);
 
-        $this->table = $this->table->getComponentName();
+
         // unset all vars that won't need to be serialized
 
         unset($this->associations);
@@ -259,12 +284,23 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         unset($this->originals);
         unset($this->oid);
 
-        foreach($this->data as $k=>$v) {
+        foreach($this->data as $k => $v) {
             if($v instanceof Doctrine_Record)
                 $this->data[$k] = array();
-            elseif($v === self::$null)
+            elseif($v === self::$null) {
                 unset($this->data[$k]);
+            } else {
+                switch($this->table->getTypeOf($k)):
+                    case "array":
+                    case "object":
+                        $this->data[$k] = serialize($this->data[$k]);
+                    break;
+                endswitch;
+            }
         }
+        
+        $this->table = $this->table->getComponentName();
+
         return array_keys(get_object_vars($this));
 
     }
@@ -281,6 +317,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $sess       = $manager->getCurrentSession();
 
         $this->oid  = self::$index;
+
         self::$index++;
 
         $this->table = $sess->getTable($name);
@@ -289,10 +326,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->cleanData();
 
-        //unset($this->data['id']);
-        
-        $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onWakeUp($this);
+        $exists = true;
 
+        if($this->state == Doctrine_Record::STATE_TDIRTY ||
+           $this->state == Doctrine_Record::STATE_TCLEAN)
+            $exists = false;
+
+        $this->prepareIdentifiers($exists);
+
+        $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onWakeUp($this);
     }
     /**
      * addCollection
@@ -452,8 +494,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             return $this->data[$name];
         }
 
-        if($name == $this->table->getIdentifier())
+        if($name == $this->table->getIdentifier()) {
             return $this->id;
+        }
 
         if( ! isset($this->references[$name]))
                 $this->loadReference($name);
@@ -492,7 +535,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->state = Doctrine_Record::STATE_TDIRTY;
 
             $this->data[$name] = $value;
-            $this->modified[]  = $name;  
+            $this->modified[]  = $name;
         }
     }
     /**
@@ -656,9 +699,18 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
 
         foreach($this->modified as $k => $v) {
-            if($this->data[$v] instanceof Doctrine_Record) {
-                $this->data[$v] = $this->data[$v]->getID();
+            $type = $this->table->getTypeOf($v);
+            
+            if($type == 'array' ||
+               $type == 'object') {
+
+                $a[$v] = serialize($this->data[$v]);
+                continue;
             }
+
+            if($this->data[$v] instanceof Doctrine_Record)
+                $this->data[$v] = $this->data[$v]->getID();
+
             $a[$v] = $this->data[$v];
         }
 
@@ -829,7 +881,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return boolean      true on success, false on failure
      */
     public function delete() {
-        $this->table->getSession()->delete($this);
+        return $this->table->getSession()->delete($this);
     }
     /**
      * returns a copy of this object
@@ -986,7 +1038,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                                 try {
                                     $this->references[$name] = $table->find($id);
                                 } catch(Doctrine_Find_Exception $e) {
-
+                                    $this->references[$name] = $table->create();
+                                    //$this->set($fk->getLocal(),$this->references[$name]);
                                 }
                             }
 
@@ -1131,7 +1184,18 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if(isset($a[0])) {
             $column = $a[0];
             $a[0] = $this->get($column);
-            $this->data[$column] = call_user_func_array($m, $a);
+
+            $newvalue = call_user_func_array($m, $a);
+
+            /**
+            if( ! isset($a[1]) || $a[1] == Doctrine_Record::CALLBACK_RAW) {
+            */
+                $this->data[$column] = $newvalue;
+            /**
+            } elseif($a[1] == Doctrine_Record::CALLBACK_STATEWISE) {
+                $this->set($column, call_user_func_array($m, $a));
+            }
+            */
         }
         return $this;
     }

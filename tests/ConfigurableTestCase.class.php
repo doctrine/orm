@@ -22,8 +22,8 @@ class Doctrine_ConfigurableTestCase extends Doctrine_UnitTestCase {
         $this->manager->setAttribute(Doctrine::ATTR_BATCH_SIZE, 5);
         $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_BATCH_SIZE),5);
 
-        $this->manager->setAttribute(Doctrine::ATTR_LISTENER, new Doctrine_Debugger());
-        $this->assertTrue($this->manager->getAttribute(Doctrine::ATTR_LISTENER) instanceof Doctrine_Debugger);
+        $this->manager->setAttribute(Doctrine::ATTR_LISTENER, new Doctrine_EventListener_Debugger());
+        $this->assertTrue($this->manager->getAttribute(Doctrine::ATTR_LISTENER) instanceof Doctrine_EventListener_Debugger);
 
         $this->manager->setAttribute(Doctrine::ATTR_PK_COLUMNS, array("id"));
         $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_PK_COLUMNS), array("id"));

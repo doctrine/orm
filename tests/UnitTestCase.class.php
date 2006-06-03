@@ -47,7 +47,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         } else {
             $this->dbh     = Doctrine_DB::getConnection();
             $this->session = $this->manager->openSession($this->dbh);
-            $this->listener = new Doctrine_Debugger();
+            $this->listener = new Doctrine_EventListener_Debugger();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
 
@@ -55,7 +55,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->prepareTables();
         $this->prepareData();
     }
-    public function prepareTables() {       
+    public function prepareTables() {
         foreach($this->tables as $name) {
             $this->dbh->query("DROP TABLE IF EXISTS ".strtolower($name));
         }
@@ -64,7 +64,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $name = ucwords($name);
             $table = $this->session->getTable($name);
             $table->getCache()->deleteAll();
-            $table->clear();
+            $table->clear(); 
         }
 
         $this->objTable = $this->session->getTable("User");

@@ -5,8 +5,108 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "Forum_Entry";
         $this->tables[] = "Forum_Board";
         $this->tables[] = "Forum_Thread";
+        $this->tables[] = "ORM_TestEntry";
+        $this->tables[] = "ORM_TestItem";
+        $this->tables[] = "Log_Status";
+        $this->tables[] = "Log_Entry";
+
+        $this->dbh->query("DROP TABLE IF EXISTS test_items");
+        $this->dbh->query("DROP TABLE IF EXISTS test_entries");
         parent::prepareTables();
     }
+    public function testOneToOneRelationFetching2() {
+        $status = new Log_Status();
+        $status->name = 'success';
+
+
+        $entries[0] = new Log_Entry();
+        $entries[0]->stamp = '2006-06-06';
+        $entries[0]->Log_Status = $status;
+        $this->assertTrue($entries[0]->Log_Status instanceof Log_Status);
+
+        $entries[1] = new Log_Entry();
+        $entries[1]->stamp = '2006-06-06';
+        $entries[1]->Log_Status = $status;
+
+
+
+        $this->session->flush();
+        
+        // clear the identity maps
+
+        $entries[0]->Log_Status->getTable()->clear();
+        $entries[0]->getTable()->clear();
+
+        $entries = $this->session->query("FROM Log_Entry-I.Log_Status-i");
+
+        $this->assertEqual($entries->count(), 2);
+
+        $this->assertTrue($entries[0]->Log_Status instanceof Log_Status);
+        $this->assertEqual($entries[0]->Log_Status->name, 'success');
+
+        // the second Log_Status is fetched from identityMap
+        
+        $this->assertTrue($entries[1]->Log_Status instanceof Log_Status);
+        $this->assertEqual($entries[1]->Log_Status->name, 'success');
+
+        // the following line is possible since doctrine uses identityMap
+
+        $this->assertEqual($entries[0]->Log_Status, $entries[1]->Log_Status);
+
+        $entries[0]->Log_Status->delete();
+        $this->assertEqual($entries[0]->Log_Status, $entries[1]->Log_Status);
+        $this->assertEqual($entries[0]->Log_Status->getState(), Doctrine_Record::STATE_TCLEAN);
+        
+        // clear the identity maps
+
+        $entries[0]->Log_Status->getTable()->clear();
+        $entries[0]->getTable()->clear();
+        
+        $entries = $this->session->query("FROM Log_Entry-I.Log_Status-i");
+        $this->assertEqual($entries->count(), 2);
+        $this->assertEqual($entries[0]->Log_Status->name, null);
+        $this->assertEqual($entries[1]->Log_Status->name, null);
+    }
+    public function testOneToOneRelationFetchingWithCustomTableNames() {
+        $entry = new ORM_TestEntry();
+        $entry->name = 'entry 1';
+        $entry->amount = '123.123';
+        $entry->ORM_TestItem->name = 'item 1';
+
+        $entry = new ORM_TestEntry();
+        $entry->name = 'entry 2';
+        $entry->amount = '123.123';
+        $entry->ORM_TestItem->name = 'item 2';
+        
+        $this->session->flush();
+        
+        $count = $this->dbh->count();
+
+        $entries = $this->session->query("FROM ORM_TestEntry-i.ORM_TestItem-i");
+
+        $this->assertEqual($entries->count(), 2);
+
+        $this->assertTrue($entries[0] instanceof ORM_TestEntry);
+        $this->assertTrue($entries[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($entries[0]->name, 'entry 1');
+        $this->assertTrue($entries[1] instanceof ORM_TestEntry);
+        $this->assertTrue($entries[1]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($entries[1]->name, 'entry 2');
+
+
+        $this->assertEqual(($count + 1), $this->dbh->count());
+
+        $this->assertTrue($entries[0]->ORM_TestItem instanceof ORM_TestItem);
+        $this->assertEqual($entries[0]->ORM_TestItem->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($entries[0]->ORM_TestItem->name, 'item 1');
+        $this->assertTrue($entries[1]->ORM_TestItem instanceof ORM_TestItem);
+        $this->assertEqual($entries[1]->ORM_TestItem->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($entries[1]->ORM_TestItem->name, 'item 2');
+
+        $this->assertEqual(($count + 1), $this->dbh->count());
+    }
+
+
     public function testImmediateFetching() {
         $count = $this->dbh->count();
         $this->session->getTable('User')->clear();
