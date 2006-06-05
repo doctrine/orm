@@ -8,7 +8,7 @@ require_once("Access.php");
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_Collection extends Doctrine_Access implements Countable, IteratorAggregate {
+class Doctrine_Collection extends Doctrine_Access implements Countable, IteratorAggregate, Serializable {
     /**
      * @var array $data                     an array containing the data access objects of this collection
      */
@@ -68,6 +68,51 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function getTable() {
         return $this->table;
+    }
+    /**
+     * this method is automatically called when this Doctrine_Collection is serialized
+     *
+     * @return array
+     */
+    public function serialize() {
+        $vars = get_object_vars($this);
+
+        unset($vars['reference']);
+        unset($vars['reference_field']);
+        unset($vars['relation']);
+        unset($vars['expandable']);
+        unset($vars['expanded']);
+        unset($vars['generator']);
+
+        $vars['table'] = $vars['table']->getComponentName();
+        
+        return serialize($vars);
+    }
+    /**
+     * unseralize
+     * this method is automatically called everytime a Doctrine_Collection object is unserialized
+     *
+     * @return void
+     */
+    public function unserialize($serialized) {
+        $manager    = Doctrine_Manager::getInstance();
+        $session    = $manager->getCurrentSession();
+        
+        $array = unserialize($serialized);
+
+        foreach($array as $name => $values) {
+            $this->$name = $values;
+        }
+        
+        $this->table        = $session->getTable($this->table->getComponenName());
+
+        $this->expanded     = array();
+        $this->expandable   = true;
+
+        $name = $table->getAttribute(Doctrine::ATTR_COLL_KEY);
+        if($name !== null) {
+            $this->generator = new Doctrine_IndexGenerator($name);
+        }
     }
     /**
      * whether or not an offset batch has been expanded

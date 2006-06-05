@@ -14,7 +14,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->dbh->query("DROP TABLE IF EXISTS test_entries");
         parent::prepareTables();
     }
-    public function testOneToOneRelationFetching2() {
+    public function testOneToOneSharedRelations() {
         $status = new Log_Status();
         $status->name = 'success';
 
@@ -45,7 +45,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($entries[0]->Log_Status->name, 'success');
 
         // the second Log_Status is fetched from identityMap
-        
+
         $this->assertTrue($entries[1]->Log_Status instanceof Log_Status);
         $this->assertEqual($entries[1]->Log_Status->name, 'success');
 

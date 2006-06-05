@@ -77,11 +77,10 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @param PDO $pdo  -- database handle
      */
     public function __construct(Doctrine_Manager $manager,PDO $pdo) {
-        $this->dbh      = $pdo;
-
-        $this->setParent($manager);
-
+        $this->dbh   = $pdo;
         $this->state = Doctrine_Session::STATE_OPEN;
+
+        $this->setParent($manager); 
 
         $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);   

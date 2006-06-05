@@ -3,10 +3,12 @@ require_once("UnitTestCase.class.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
     public function testSerialize() {
-        //$user = $this->session->getTable("User")->find(4);
-        //$str = serialize($user);
-        //$user2 = unserialize($str);
-        //$this->assertEqual($user2->getID(),$user->getID());
+        $user = $this->session->getTable("User")->find(4);
+        $str = serialize($user);
+        $user2 = unserialize($str);
+
+        $this->assertTrue($user2 instanceof User);
+        $this->assertEqual($user2->getID(),$user->getID());
     }
 
     public function testCallback() {
