@@ -80,9 +80,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $this->dbh   = $pdo;
         $this->state = Doctrine_Session::STATE_OPEN;
 
-        $this->setParent($manager); 
+        $this->setParent($manager);
 
-        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);   
 
         switch($this->getAttribute(Doctrine::ATTR_CACHE)):

@@ -143,7 +143,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
             // get the data array
             $this->data = $this->table->getData();
-    
+
             // get the column count
             $count = count($this->data);
 

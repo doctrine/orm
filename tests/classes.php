@@ -272,6 +272,32 @@ class ORM_TestItem extends Doctrine_Record {
         $this->hasOne("ORM_TestEntry", "ORM_TestEntry.itemID"); 
    } 
 }
+class ORM_AccessControl extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 255);
+    }
+    public function setUp() {
+        $this->hasMany("ORM_AccessGroup as accessGroups", "ORM_AccessControlsGroups.accessGroupID");
+    }
+}
+
+class ORM_AccessGroup extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 255);
+    }
+    public function setUp() {
+        $this->hasMany("ORM_AccessControl as accessControls", "ORM_AccessControlsGroups.accessControlID");
+    }
+}
+
+class ORM_AccessControlsGroups extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("accessControlID", "integer", 11); 
+        $this->hasColumn("accessGroupID", "integer", 11); 
+       
+        $this->setPrimaryKey(array("accessControlID", "accessGroupID")); 
+    }
+}
 class Log_Entry extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("stamp", "timestamp");

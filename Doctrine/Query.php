@@ -422,7 +422,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                 $array = $this->parseData($stmt);
 
-                $colls = array();    
+                $colls = array();
 
                 foreach($array as $data) {
                     /**
@@ -509,11 +509,7 @@ class Doctrine_Query extends Doctrine_Access {
      */
     public function parseData(PDOStatement $stmt) {
         $array = array();
-        $keys  = array();
-        foreach(array_keys($this->tables) as $key) {
-            $k = strtolower($key);
-            $keys[$k] = $key;
-        }
+        
         while($data = $stmt->fetch(PDO::FETCH_ASSOC)):
             /**
              * parse the data into two-dimensional array
@@ -522,7 +518,7 @@ class Doctrine_Query extends Doctrine_Access {
                 $e = explode("__",$key);
 
                 if(count($e) > 1) {
-                    $data[$keys[$e[0]]][$e[1]] = $value;
+                    $data[$e[0]][$e[1]] = $value;
                 } else {
                     $data[0][$e[0]] = $value;
                 }
