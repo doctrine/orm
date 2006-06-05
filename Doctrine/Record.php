@@ -289,14 +289,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         foreach($this->data as $k => $v) {
             if($v instanceof Doctrine_Record)
-                unset($this->data[$k]);
+                unset($vars['data'][$k]);
             elseif($v === self::$null) {
-                unset($this->data[$k]);
+                unset($vars['data'][$k]);
             } else {
                 switch($this->table->getTypeOf($k)):
                     case "array":
                     case "object":
-                        $this->data[$k] = serialize($this->data[$k]);
+                        $vars['data'][$k] = serialize($vars['data'][$k]);
                     break;
                 endswitch;
             }
