@@ -33,7 +33,7 @@ class Doctrine_Record_Iterator extends ArrayIterator {
     public function current() {
         $value = parent::current();
 
-        if($value == self::$null)   
+        if($value === self::$null)   
             return null;
         else
             return $value;

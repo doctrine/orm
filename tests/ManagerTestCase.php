@@ -1,5 +1,5 @@
 <?php
-require_once("UnitTestCase.class.php");
+require_once("UnitTestCase.php");
 class Doctrine_ManagerTestCase extends Doctrine_UnitTestCase {
     public function testGetInstance() {
         $this->assertTrue(Doctrine_Manager::getInstance() instanceOf Doctrine_Manager);

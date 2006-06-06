@@ -1,5 +1,6 @@
 <?php
-require_once("UnitTestCase.class.php");
+require_once("UnitTestCase.php");
+
 class Doctrine_BatchIteratorTestCase extends Doctrine_UnitTestCase {
     public function testIterator() {
         $graph = new Doctrine_Query($this->session);

@@ -21,15 +21,15 @@ class Doctrine_Cache_Sqlite {
      */
     const DELETE     = "DELETE FROM %s WHERE id %s";
     /**
-     * @var Doctrine_Table $table
+     * @var Doctrine_Table $table       the table object this cache container belongs to
      */
     private $table;
     /**
-     * @var PDO $dbh
+     * @var PDO $dbh                    database handler
      */
     private $dbh;
     /**
-     * @var array $fetched          an array of fetched primary keys
+     * @var array $fetched              an array of fetched primary keys
      */
     private $fetched = array();
 

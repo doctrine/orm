@@ -1042,12 +1042,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                                 $this->references[$name] = $table->create();
                                 $this->set($fk->getLocal(),$this->references[$name]);
                             } else {
-                                try {
-                                    $this->references[$name] = $table->find($id);
-                                } catch(Doctrine_Find_Exception $e) {
+
+                                $record = $table->find($id);
+
+                                if($record !== false) 
+                                    $this->references[$name] = $record;
+                                else
                                     $this->references[$name] = $table->create();
+                                    
                                     //$this->set($fk->getLocal(),$this->references[$name]);
-                                }
+
                             }
 
                         } elseif ($fk instanceof Doctrine_ForeignKey) {

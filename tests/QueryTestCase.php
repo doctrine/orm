@@ -56,17 +56,22 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $entries[0]->Log_Status->delete();
         $this->assertEqual($entries[0]->Log_Status, $entries[1]->Log_Status);
         $this->assertEqual($entries[0]->Log_Status->getState(), Doctrine_Record::STATE_TCLEAN);
-        
+
         // clear the identity maps
 
         $entries[0]->Log_Status->getTable()->clear();
         $entries[0]->getTable()->clear();
-        
+
         $entries = $this->session->query("FROM Log_Entry-I.Log_Status-i");
         $this->assertEqual($entries->count(), 2);
+
+        $this->assertTrue($entries[0]->Log_Status instanceof Log_Status);
+
         $this->assertEqual($entries[0]->Log_Status->name, null);
         $this->assertEqual($entries[1]->Log_Status->name, null);
+
     }
+
     public function testOneToOneRelationFetchingWithCustomTableNames() {
         $entry = new ORM_TestEntry();
         $entry->name = 'entry 1';
@@ -687,5 +692,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
+
 }
 ?>

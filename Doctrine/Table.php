@@ -648,7 +648,7 @@ class Doctrine_Table extends Doctrine_Configurable {
             $this->data = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if($this->data === false)
-                throw new Doctrine_Find_Exception();
+                return false;
         }
         return $this->getRecord();
     }
@@ -827,7 +827,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     public function getTypeOf($column) {
         if(isset($this->columns[$column]))
-            return $this->columns[$column][0];                                   	
+            return $this->columns[$column][0];
     }
     /**
      * setData

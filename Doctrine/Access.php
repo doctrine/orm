@@ -13,11 +13,14 @@ abstract class Doctrine_Access implements ArrayAccess {
     /**
      * setArray
      * @param array $array          an array of key => value pairs
+     * @return Doctrine_Access
      */
     public function setArray(array $array) {
         foreach($array as $k=>$v):
             $this->set($k,$v);
         endforeach;
+
+        return $this;
     }
     /**
      * __set -- an alias of set()
@@ -72,11 +75,7 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @param mixed $offset
      */
     public function offsetUnset($offset) {
-        if($this instanceof Doctrine_Collection) {
-            return $this->remove($offset);
-        } else {
-            $this->set($offset,null);
-        }
+        return $this->remove($offset);
     }
 }
 ?>

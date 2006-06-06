@@ -1,5 +1,5 @@
 <?php
-require_once("UnitTestCase.class.php");
+require_once("UnitTestCase.php");
 class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
 
     public function testBuildFlushTree() {

@@ -1,29 +1,26 @@
 <?php
 ob_start();
 
-require_once("ConfigurableTestCase.class.php");
-require_once("ManagerTestCase.class.php");
-require_once("SessionTestCase.class.php");
-require_once("TableTestCase.class.php");
-require_once("EventListenerTestCase.class.php");
-require_once("BatchIteratorTestCase.class.php");
-require_once("CacheFileTestCase.class.php");
-require_once("RecordTestCase.class.php");
-require_once("AccessTestCase.class.php");
-require_once("ValidatorTestCase.class.php");
-require_once("CollectionTestCase.class.php");
+require_once("ConfigurableTestCase.php");
+require_once("ManagerTestCase.php");
+require_once("SessionTestCase.php");
+require_once("TableTestCase.php");
+require_once("EventListenerTestCase.php");
+require_once("BatchIteratorTestCase.php");
+require_once("CacheFileTestCase.php");
+require_once("RecordTestCase.php");
+require_once("AccessTestCase.php");
+require_once("ValidatorTestCase.php");
+require_once("CollectionTestCase.php");
 
-require_once("CacheSqliteTestCase.class.php");
-require_once("CollectionOffsetTestCase.class.php");
-require_once("SenseiTestCase.class.php");
-require_once("QueryTestCase.class.php");
+require_once("CacheSqliteTestCase.php");
+require_once("CollectionOffsetTestCase.php");
+require_once("SenseiTestCase.php");
+require_once("QueryTestCase.php");
 
 error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
-
-//$test->addTestCase(new Sensei_UnitTestCase());
-
 
 $test->addTestCase(new Doctrine_RecordTestCase());
 
