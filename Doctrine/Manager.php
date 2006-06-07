@@ -41,6 +41,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         Doctrine_Record::initNullObject($this->null);
         Doctrine_Collection::initNullObject($this->null);
         Doctrine_Record_Iterator::initNullObject($this->null);
+        Doctrine_Validator::initNullObject($this->null);
     }
     /**
      * @return Doctrine_Null

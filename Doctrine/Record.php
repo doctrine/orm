@@ -98,8 +98,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private static $index = 1;
     /**
-     * @var Doctrine_Null $nullObject       a Doctrine_Null object used for extremely fast 
-     *                                      SQL null value testing
+     * @var Doctrine_Null $null             a Doctrine_Null object used for extremely fast 
+     *                                      null value testing
      */
     private static $null;
     /**
@@ -208,10 +208,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * modifies data array
      * example:
      *
-     * $data = array("name"=>"John","lastname"=> null,"id"=>1,"unknown"=>"unknown");
-     * $names = array("name","lastname","id");
+     * $data = array("name"=>"John","lastname"=> null, "id" => 1,"unknown" => "unknown");
+     * $names = array("name", "lastname", "id");
      * $data after operation:
-     * $data = array("name"=>"John","lastname" => array(),"id"=>1);
+     * $data = array("name"=>"John","lastname" => Object(Doctrine_Null));
+     *
+     * here column 'id' is removed since its auto-incremented primary key (protected) 
      */
     private function cleanData() {
         $tmp  = $this->data;
@@ -219,14 +221,21 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->data = array();
 
         foreach($this->table->getColumnNames() as $name) {
+            $type = $this->table->getTypeOf($name);
+
             if( ! isset($tmp[$name])) {
-                $this->data[$name] = self::$null;
+                if($type == 'array') {
+                    $this->data[$name] = array();
+                    $this->modified[]  = $name;
+                } else
+                    $this->data[$name] = self::$null;
             } else {
-                switch($this->table->getTypeOf($name)):
+                switch($type):
                     case "array":
                     case "object":
                         if($tmp[$name] !== self::$null)
                             $this->data[$name] = unserialize($tmp[$name]);
+
                     break;
                     default:
                         $this->data[$name] = $tmp[$name];
@@ -235,8 +244,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
     }
     /**
-     * prepares identifiers
+     * prepares identifiers for later use
      *
+     * @param boolean $exists               whether or not this record exists in persistent data store
      * @return void
      */
     private function prepareIdentifiers($exists = true) {
@@ -706,9 +716,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         foreach($this->modified as $k => $v) {
             $type = $this->table->getTypeOf($v);
-            
+
             if($type == 'array' ||
-               $type == 'object') {    
+               $type == 'object') {
 
                 $a[$v] = serialize($this->data[$v]);
                 continue;

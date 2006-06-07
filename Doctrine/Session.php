@@ -747,7 +747,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @return boolean
      */
     private function update(Doctrine_Record $record) {
-        $array = $record->getModified();
+        $array = $record->getPrepared();
 
         if(empty($array))
             return false;

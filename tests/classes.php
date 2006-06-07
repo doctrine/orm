@@ -313,4 +313,13 @@ class Log_Status extends Doctrine_Record {
         $this->hasColumn("name", "string", 255);
     }
 }
+class Validator_Test extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("mymixed","string", 100);
+        $this->hasColumn("mystring","string", 100, "notnull|unique");
+        $this->hasColumn("myarray", "array", 1000);
+        $this->hasColumn("myobject", "object", 1000);
+        $this->hasColumn("myinteger", "integer", 11);
+    }
+}
 ?>

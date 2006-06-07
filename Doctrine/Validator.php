@@ -31,7 +31,7 @@ class Doctrine_Validator {
     /**
      * constant for blank validation error
      */
-    const ERR_BLANK     = 4;
+    const ERR_NOTBLANK  = 4;
     /**
      * constant for date validation error
      */
@@ -39,7 +39,7 @@ class Doctrine_Validator {
     /**
      * constant for null validation error
      */
-    const ERR_NULL      = 6;
+    const ERR_NOTNULL   = 6;
     /**
      * constant for enum validation error
      */
@@ -53,13 +53,27 @@ class Doctrine_Validator {
 
     
     /**
-     * @var array $stack            error stack
+     * @var array $stack                error stack
      */
     private $stack      = array();
     /**
-     * @var array $validators       an array of validator objects
+     * @var array $validators           an array of validator objects
      */
     private static $validators = array();
+    /**
+     * @var Doctrine_Null $null         a Doctrine_Null object used for extremely fast
+     *                                  null value testing
+     */
+    private static $null;
+    /**
+     * initNullObject
+     *
+     * @param Doctrine_Null $null
+     * @return void
+     */
+    public static function initNullObject(Doctrine_Null $null) {
+        self::$null = $null;
+    }
     /**
      * returns a validator object
      *
@@ -86,21 +100,32 @@ class Doctrine_Validator {
      * @return void
      */
     public function validateRecord(Doctrine_Record $record) {
-        $modified = $record->getModified();
         $columns  = $record->getTable()->getColumns();
         $name     = $record->getTable()->getComponentName();
 
+        switch($record->getState()):
+            case Doctrine_Record::STATE_TDIRTY:
+            case Doctrine_Record::STATE_TCLEAN:
+                $data = $record->getData();
+            break;
+            default:
+                $data = $record->getModified();
+        endswitch;
+
         $err      = array();
-        foreach($modified as $key => $value) {
+
+        foreach($data as $key => $value) {
+            if($value === self::$null)
+                $value = null;
+
             $column = $columns[$key];
+
+            if($column[0] == 'array' || $column[0] == 'object') {
+                $value = serialize($value);
+            }
 
             if(strlen($value) > $column[1]) {
                 $err[$key] = Doctrine_Validator::ERR_LENGTH;
-                continue;
-            }
-
-            if(self::gettype($value) !== $column[0]) {
-                $err[$key] = Doctrine_Validator::ERR_TYPE;
                 continue;
             }
 
@@ -116,28 +141,22 @@ class Doctrine_Validator {
 
                 $validator = self::getValidator($args[0]);
                 if( ! $validator->validate($record, $key, $value, $args[1])) {
-                    switch(strtolower($args[0])):
-                        case "unique":
-                            $err[$key] = Doctrine_Validator::ERR_UNIQUE;
-                        break;
-                        case "notnull":
-                            $err[$key] = Doctrine_Validator::ERR_NULL;
-                        break;
-                        case "notblank":
-                            $err[$key] = Doctrine_Validator::ERR_BLANK;
-                        break;
-                        case "enum":
-                            $err[$key] = Doctrine_Validator::ERR_VALID;
-                        break;
-                        default:
-                            $err[$key] = Doctrine_Validator::ERR_VALID;
-                        break;
-                    endswitch;
-                }
-                
-                // errors found quit validation looping for this column
-                if(isset($err[$key]))
+
+                    $constant = 'Doctrine_Validator::ERR_'.strtoupper($args[0]);
+
+                    if(defined($constant))
+                        $err[$key] = constant($constant);
+                    else
+                        $err[$key] = Doctrine_Validator::ERR_VALID;
+
+                    // errors found quit validation looping for this column
                     break;
+                }
+            }
+
+            if(self::gettype($value) !== $column[0] && self::gettype($value) != 'NULL') {
+                $err[$key] = Doctrine_Validator::ERR_TYPE;
+                continue;
             }
         }
 

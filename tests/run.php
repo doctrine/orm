@@ -15,7 +15,6 @@ require_once("CollectionTestCase.php");
 
 require_once("CacheSqliteTestCase.php");
 require_once("CollectionOffsetTestCase.php");
-require_once("SenseiTestCase.php");
 require_once("QueryTestCase.php");
 
 error_reporting(E_ALL);

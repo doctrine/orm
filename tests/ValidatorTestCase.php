@@ -1,5 +1,27 @@
 <?php
 class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
+    public function prepareTables() {
+        $this->tables[] = "Validator_Test";
+        parent::prepareTables();
+    }
+    public function testValidate2() {
+        $test = new Validator_Test();
+        $test->mymixed = "message";
+
+        $validator = new Doctrine_Validator();
+        $validator->validateRecord($test);
+
+        $stack = $validator->getErrorStack();
+
+        $this->assertTrue(is_array($stack));
+
+        $stack = $stack['Validator_Test'][0];
+        $this->assertEqual($stack['mystring'], Doctrine_Validator::ERR_NOTNULL);
+
+        $test->mystring = 'str';
+
+        $test->save();
+    }
 
     public function testValidate() {
         $user = $this->session->getTable("User")->find(4); 
@@ -71,6 +93,5 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($a["User"][0]["name"], Doctrine_Validator::ERR_LENGTH);
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
     }
-
 }
 ?>
