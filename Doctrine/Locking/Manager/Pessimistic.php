@@ -20,7 +20,7 @@ class Doctrine_Locking_Manager_Pessimistic
     /**
      * The database table name for the lock tracking
      */
-    private $lockTable = 'doctrine_lock_tracking';
+    private $_lockTable = 'doctrine_lock_tracking';
 
     /**
      * Constructs a new locking manager object
@@ -43,7 +43,7 @@ class Doctrine_Locking_Manager_Pessimistic
             $columns['timestamp_obtained'] = array('integer', 10, 'notnull');
             
             $dataDict = new Doctrine_DataDict($this->_dataSource->getDBH());
-            $dataDict->createTable($this->lockTable, $columns);
+            $dataDict->createTable($this->_lockTable, $columns);
         }
                
     }
@@ -75,7 +75,7 @@ class Doctrine_Locking_Manager_Pessimistic
             $dbh = $this->_dataSource->getDBH();
             $dbh->beginTransaction();
             
-            $stmt = $dbh->prepare("INSERT INTO $this->lockTable
+            $stmt = $dbh->prepare("INSERT INTO $this->_lockTable
                                           (object_type, object_key, user_ident, timestamp_obtained)
                                    VALUES (:object_type, :object_key, :user_ident, :ts_obtained)");
             $stmt->bindParam(':object_type', $objectType);
@@ -97,7 +97,7 @@ class Doctrine_Locking_Manager_Pessimistic
                 {
                     $gotLock = true; // The requesting user already has a lock
                     // Update timestamp
-                    $stmt = $dbh->prepare("UPDATE $this->lockTable SET timestamp_obtained = :ts
+                    $stmt = $dbh->prepare("UPDATE $this->_lockTable SET timestamp_obtained = :ts
                                            WHERE object_type = :object_type AND
                                                  object_key  = :object_key  AND
                                                  user_ident  = :user_ident");
@@ -143,7 +143,7 @@ class Doctrine_Locking_Manager_Pessimistic
         try
         {
             $dbh = $this->_dataSource->getDBH();
-            $stmt = $dbh->prepare("DELETE FROM $this->lockTable WHERE
+            $stmt = $dbh->prepare("DELETE FROM $this->_lockTable WHERE
                                         object_type = :object_type AND
                                         object_key  = :object_key  AND
                                         user_ident  = :user_ident");
@@ -183,7 +183,7 @@ class Doctrine_Locking_Manager_Pessimistic
         {
             $dbh = $this->_dataSource->getDBH();
             $stmt = $dbh->prepare("SELECT user_ident
-                                   FROM $this->lockTable
+                                   FROM $this->_lockTable
                                    WHERE object_type = :object_type AND object_key = :object_key");
             $stmt->bindParam(':object_type', $objectType);
             $stmt->bindParam(':object_key', $key);
@@ -220,7 +220,7 @@ class Doctrine_Locking_Manager_Pessimistic
         try
         {
             $dbh = $this->_dataSource->getDBH();
-            $stmt = $dbh->prepare("DELETE FROM $this->lockTable WHERE timestamp_obtained < :age");
+            $stmt = $dbh->prepare("DELETE FROM $this->_lockTable WHERE timestamp_obtained < :age");
             $stmt->bindParam(':age', $age);
             $stmt->execute();
             
