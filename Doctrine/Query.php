@@ -42,6 +42,14 @@ class Doctrine_Query extends Doctrine_Access {
      */
     private $connectors  = array();
     /**
+     * @var array $tableAliases
+     */
+    private $tableAliases = array();
+    /**
+     * @var array $tableIndexes
+     */
+    private $tableIndexes = array();
+    /**
      * @var array $dql              DQL query string parts
      */
     protected $dql = array(
@@ -140,16 +148,18 @@ class Doctrine_Query extends Doctrine_Access {
             default:
                 throw new Doctrine_Exception("Unknown fetchmode.");
         endswitch;
-        $cname          = $table->getComponentName();
-        $this->fetchModes[$cname] = $fetchmode;
-        $tablename      = $table->getTableName();
+        
+        $component          = $table->getComponentName(); 
 
+        $this->fetchModes[$component] = $fetchmode;
+        $tablename      = $this->tableAliases[$component];           
         $count = count($this->tables);
+        
         foreach($names as $name) {
             if($count == 0) {
                 $this->parts["columns"][] = $tablename.".".$name;
             } else {
-                $this->parts["columns"][] = $tablename.".".$name." AS ".$cname."__".$name;
+                $this->parts["columns"][] = $tablename.".".$name." AS ".$component."__".$name;
             }
         }
     }
@@ -317,9 +327,10 @@ class Doctrine_Query extends Doctrine_Access {
         // get the inheritance maps
         $array = array();
 
-        foreach($this->tables as $objTable):
-            $tname = $objTable->getTableName();
-            $array[$tname][] = $objTable->getInheritanceMap();
+        foreach($this->tables as $table):
+            $component = $table->getComponentName();
+            $tableName = $this->tableAliases[$component];
+            $array[$tableName][] = $table->getInheritanceMap();
         endforeach;
 
         // apply inheritance maps
@@ -330,7 +341,7 @@ class Doctrine_Query extends Doctrine_Access {
             $a = array();
             foreach($maps as $map) {
                 $b = array();
-                foreach($map as $field=>$value) {
+                foreach($map as $field => $value) {
                     $b[] = $tname.".$field = $value";
                 }
                 if( ! empty($b)) $a[] = implode(" AND ",$b);
@@ -389,6 +400,7 @@ class Doctrine_Query extends Doctrine_Access {
                 $query = $this->getQuery();
 
                 $keys  = array_keys($this->tables);
+
 
                 $name  = $this->tables[$keys[0]]->getComponentName();
                 $stmt  = $this->session->execute($query,$params);
@@ -922,6 +934,7 @@ class Doctrine_Query extends Doctrine_Access {
                     $tname = $table->getTableName();
                     $this->parts["from"][$tname] = true;
 
+                    $this->tableAliases[$name] = $tname;
                 } else {
 
                     $index += strlen($e[($key - 1)]) + 1;
@@ -952,7 +965,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                     if($fk instanceof Doctrine_ForeignKey ||
                        $fk instanceof Doctrine_LocalKey) {
-                        
+
                         $this->parts["join"][$tname][$tname2]  = $join.$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
 
                     } elseif($fk instanceof Doctrine_Association) {
@@ -961,14 +974,23 @@ class Doctrine_Query extends Doctrine_Access {
                         $assocTableName = $asf->getTableName();
 
                         $this->parts["join"][$tname][$assocTableName]   = $join.$assocTableName." ON ".$tname.".id = ".$assocTableName.".".$fk->getLocal();
-                        $this->parts["join"][$tname][$tname2]           = $join.$tname2." ON ".$tname2.".id = ".$assocTableName.".".$fk->getForeign();
+                        
+                        if($tname == $tname2) {
+                            $tname2 = $tname."2";
+                            $alias  = $tname." AS ".$tname2;
+                        } else 
+                            $alias = $tname2;
+
+                        $this->parts["join"][$tname][$tname2]           = $join.$alias." ON ".$tname2.".id = ".$assocTableName.".".$fk->getForeign();
                     }
 
                     $c = $table->getComponentName();
                     $this->joins[$name] = $c;
 
+
                     $table = $fk->getTable();
 
+                    $this->tableAliases[$name] = $tname2;
                 }
 
                 if( ! isset($this->tables[$name])) {

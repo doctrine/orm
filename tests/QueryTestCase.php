@@ -14,7 +14,22 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->dbh->query("DROP TABLE IF EXISTS test_entries");
         parent::prepareTables();
     }
-    //public function prepareData() { }
+
+    public function testManyToManyFetchingWithColumnAggregationInheritance() {
+        $query = new Doctrine_Query($this->session);
+        $query->from('User-l:Group-l');
+
+        $users = $query->execute();
+        $this->assertEqual($users->count(), 1);
+        $this->assertEqual($users[0]->Group->count(), 1);
+
+        $query->from('User-l.Group-l');
+        $users = $query->execute();
+        $this->assertEqual($users->count(), 8);
+        $this->assertEqual($users[0]->Group->count(), 0);
+        $this->assertEqual($users[1]->Group->count(), 1);
+        $this->assertEqual($users[2]->Group->count(), 0);
+    }
 
     public function testManyToManyFetchingWithColonOperator() {
         $query = new Doctrine_Query($this->session);
@@ -77,7 +92,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($tasks[1]->ResourceAlias[1]->getState(), Doctrine_Record::STATE_PROXY);
         $this->assertEqual($tasks[1]->ResourceAlias[2]->getState(), Doctrine_Record::STATE_PROXY);
         $this->assertEqual($tasks[1]->ResourceAlias[3]->getState(), Doctrine_Record::STATE_PROXY);
-        
+
         $count = count($this->dbh);
         
         $this->assertEqual($tasks[1]->ResourceAlias[0]->name, "R3");
@@ -90,6 +105,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($tasks[2]->ResourceAlias->count(), 1);
         $this->assertTrue($tasks[2]->ResourceAlias instanceof Doctrine_Collection_Lazy);
     }
+
     public function testManyToManyFetchingWithDotOperator() {
         $query = new Doctrine_Query($this->session);
 
@@ -847,7 +863,5 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
-
-
 }
 ?>

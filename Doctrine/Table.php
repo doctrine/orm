@@ -87,7 +87,8 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     private $boundAliases       = array();
     /**
-     * @var integer $columnCount                        cached column count
+     * @var integer $columnCount                        cached column count, Doctrine_Record uses this column count in when
+     *                                                  determining its state
      */
     private $columnCount;
 
@@ -322,6 +323,18 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     final public function getSequenceName() {
         return $this->sequenceName;
+    }
+    /**
+     * getParents
+     */
+    final public function getParents() {
+        return $this->parents;                                   	
+    }
+    /**
+     * @return boolean
+     */
+    final public function hasInheritanceMap() {
+        return (empty($this->inheritanceMap));
     }
     /**
      * setInheritanceMap
