@@ -104,12 +104,12 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $this->$name = $values;
         }
         
-        $this->table        = $session->getTable($this->table->getComponenName());
+        $this->table        = $session->getTable($this->table);
 
         $this->expanded     = array();
         $this->expandable   = true;
 
-        $name = $table->getAttribute(Doctrine::ATTR_COLL_KEY);
+        $name = $this->table->getAttribute(Doctrine::ATTR_COLL_KEY);
         if($name !== null) {
             $this->generator = new Doctrine_IndexGenerator($name);
         }
