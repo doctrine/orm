@@ -154,7 +154,7 @@ class Doctrine_Query extends Doctrine_Access {
         $this->fetchModes[$component] = $fetchmode;
         $tablename      = $this->tableAliases[$component];           
         $count = count($this->tables);
-        
+
         foreach($names as $name) {
             if($count == 0) {
                 $this->parts["columns"][] = $tablename.".".$name;
@@ -436,6 +436,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                 $colls = array();
 
+
                 foreach($array as $data) {
                     /**
                      * remove duplicated data rows and map data into objects
@@ -443,25 +444,50 @@ class Doctrine_Query extends Doctrine_Access {
                     foreach($data as $key => $row) {
                         if(empty($row))
                             continue;
+                        
 
                         $ids  = $this->tables[$key]->getIdentifier();
-
+                        
+                        $emptyID = false;
                         if(is_array($ids)) {
-                            $emptyID = false;
-                                foreach($ids as $id) {
-                                    if($row[$id] == null) {
-                                        $emptyID = true;
-                                        break;
-                                    }
+                            foreach($ids as $id) {
+                                if($row[$id] == null) {
+                                    $emptyID = true;
+                                    break;
                                 }
-                            if($emptyID)
-                                continue;
+                            }
                         } else {
                             if($row[$ids] === null)
-                                continue;
+                                $emptyID = true;
                         }
 
-                        $name = $this->tables[$key]->getComponentName();
+
+                        $name    = $this->tables[$key]->getComponentName();
+
+                        if($emptyID) {
+
+                            $pointer = $this->joins[$name];
+                            $alias   = $this->tables[$pointer]->getAlias($name);
+                            $fk      = $this->tables[$pointer]->getForeignKey($alias);
+                            $last    = $prev[$pointer]->getLast();
+
+                            switch($fk->getType()):
+                                case Doctrine_Relation::ONE_COMPOSITE:
+                                case Doctrine_Relation::ONE_AGGREGATE:
+                                
+                                break;
+                                default:
+                                    if($last instanceof Doctrine_Record) {
+                                        if( ! $last->hasReference($alias)) {
+                                            $prev[$name] = $this->getCollection($name);
+                                            $last->initReference($prev[$name],$this->connectors[$name]);
+                                        }
+                                    }
+                            endswitch;
+
+                            continue;
+                        }
+
 
                         if( ! isset($previd[$name]))
                             $previd[$name] = array();
@@ -478,19 +504,16 @@ class Doctrine_Query extends Doctrine_Access {
                                 // add record into root collection
                                 $coll->add($record);
                             } else {
+
                                 $pointer = $this->joins[$name];
                                 $alias   = $this->tables[$pointer]->getAlias($name);
-                                
-                                //print "fetching data : ".$pointer." ".$alias."<br \>";
-
-                                $fk = $this->tables[$pointer]->getForeignKey($alias);
-
-                                $last = $prev[$pointer]->getLast();
+                                $fk      = $this->tables[$pointer]->getForeignKey($alias);
+                                $last    = $prev[$pointer]->getLast();
 
                                 switch($fk->getType()):
                                     case Doctrine_Relation::ONE_COMPOSITE:
                                     case Doctrine_Relation::ONE_AGGREGATE:
-                                        $last->rawSet($this->connectors[$name]->getLocal(), $record->getID());
+                                        $last->internalSet($this->connectors[$name]->getLocal(), $record->getID());
 
                                         $last->initSingleReference($record);
 
@@ -500,14 +523,12 @@ class Doctrine_Query extends Doctrine_Access {
                                         // one-to-many relation or many-to-many relation
 
                                         if( ! $last->hasReference($alias)) {
-                                            //print "initializing reference : ".$name." ".$alias;
                                             $prev[$name] = $this->getCollection($name);
                                             $last->initReference($prev[$name],$this->connectors[$name]);
                                         } else {
                                             // previous entry found from identityMap
                                             $prev[$name] = $last->get($alias);
                                         }
-                                        //print "adding reference : ".$pointer." -> ".$name." as ".$alias."<br \>";
 
                                         $last->addReference($record);
                                 endswitch;

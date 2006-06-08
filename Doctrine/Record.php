@@ -524,6 +524,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $this->references[$name];
     }
     /**
+     * internalSet
+     */
+    final public function internalSet($name, $value) {
+        $this->data[$name] = $value;
+    }
+    /**
      * rawSet
      * doctrine uses this function internally, not recommended for developers
      *
@@ -713,10 +719,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     final public function getPrepared() {
         $a = array();
 
-        foreach($this->table->getInheritanceMap() as $k => $v) {
-            $this->set($k,$v);                                                       	
-        }
-
         foreach($this->modified as $k => $v) {
             $type = $this->table->getTypeOf($v);
 
@@ -731,6 +733,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->data[$v] = $this->data[$v]->getID();
 
             $a[$v] = $this->data[$v];
+        }
+
+        foreach($this->table->getInheritanceMap() as $k => $v) {
+            $old = $this->get($k);
+
+            if((string) $old !== (string) $v || $old === null) {
+                $a[$k] = $v;
+                $this->data[$k] = $v;
+            }
         }
 
         return $a;

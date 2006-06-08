@@ -29,21 +29,41 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[0]->Group->count(), 0);
         $this->assertEqual($users[1]->Group->count(), 1);
         $this->assertEqual($users[2]->Group->count(), 0);
+
+        $this->assertEqual($users[0]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($users[1]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($users[2]->getState(), Doctrine_Record::STATE_PROXY);
+
+        $this->assertEqual($users[0]->getModified(), array());
+        $this->assertEqual($users[1]->getModified(), array());
+        $this->assertEqual($users[2]->getModified(), array());
+        $this->assertEqual($users[6]->getModified(), array());
+
+        $this->assertEqual($users[0]->type, 0);
+        $this->assertEqual($users[1]->type, 0);
+        $this->assertEqual($users[2]->type, 0);
+
+        $this->session->flush();
     }
 
-    public function testManyToManyFetchingWithColonOperator() {
-        $query = new Doctrine_Query($this->session);
 
+    public function testNestedManyToManyRelations() {
         $task = new Task();
         $task->name = "T1";
         $task->ResourceAlias[0]->name = "R1";
         $task->ResourceAlias[1]->name = "R2";
-        
+        $task->ResourceAlias[0]->Type[0]->type = 'TY1';
+        //$task->ResourceAlias[1]->Type[0]->type = 'TY2';
+
         $task = new Task();
         $task->name = "T2";
         $task->ResourceAlias[0]->name = "R3";
+        $task->ResourceAlias[0]->Type[0]->type = 'TY2';
+        $task->ResourceAlias[0]->Type[0]->type = 'TY3';
         $task->ResourceAlias[1]->name = "R4";
         $task->ResourceAlias[2]->name = "R5";
+        $task->ResourceAlias[2]->Type[0]->type = 'TY4';
+        $task->ResourceAlias[2]->Type[1]->type = 'TY5';
         $task->ResourceAlias[3]->name = "R6";
 
         $this->assertEqual($task->ResourceAlias[0]->name, "R3");
@@ -54,14 +74,39 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $task = new Task();
         $task->name = "T3";
         $task->ResourceAlias[0]->name = "R7";
-        
+
         $task = new Task();
         $task->name = "T4";
 
         $this->session->flush();
-        
+
+        $this->session->clear();
+
+        $query = new Doctrine_Query($this->session);
+        $query->from("Task.ResourceAlias.Type");
+        $tasks = $query->execute();
+
+        $this->assertEqual($tasks->count(), 4);
+
+        $this->assertEqual($tasks[0]->ResourceAlias->count(), 2);
+        $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
+        $this->assertEqual($tasks[2]->ResourceAlias->count(), 1);
+        $this->assertEqual($tasks[3]->ResourceAlias->count(), 0);
+
+        $this->assertEqual($tasks[0]->ResourceAlias[0]->Type->count(), 1);
+        $this->assertEqual($tasks[0]->ResourceAlias[1]->Type->count(), 0);
+
+        $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
+    }
+
+
+    public function testManyToManyFetchingWithColonOperator() {
+        $query = new Doctrine_Query($this->session);
+
+        $task = new Task();
+
         // clear identity maps
-        $task->getTable()->clear();
+        $this->session->getTable('Task')->clear();
         $this->session->getTable('Assignment')->clear();
         $this->session->getTable('Resource')->clear();
 
@@ -146,6 +191,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($tasks[3]->ResourceAlias->count(), 0);
         $this->assertTrue($tasks[3]->ResourceAlias instanceof Doctrine_Collection);
     }
+
     public function testManyToManyFetchingWithDotOperatorAndLoadedIdentityMaps() {
         $query = new Doctrine_Query($this->session);
 
@@ -182,6 +228,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($tasks[3]->ResourceAlias->count(), 0);
         $this->assertTrue($tasks[3]->ResourceAlias instanceof Doctrine_Collection);
     }
+
     public function testOneToOneSharedRelations() {
         $status = new Log_Status();
         $status->name = 'success';
@@ -278,7 +325,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual(($count + 1), $this->dbh->count());
     }
-
 
     public function testImmediateFetching() {
         $count = $this->dbh->count();

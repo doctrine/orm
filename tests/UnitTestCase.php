@@ -34,13 +34,31 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->manager->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_IMMEDIATE);
         
 
-        $this->tables = array_merge($this->tables, array("entity","entityReference","email","phonenumber","groupuser","album","song","element","error","description","address","account","task","resource","assignment"));
+        $this->tables = array_merge($this->tables, 
+                        array("entity",
+                              "entityReference",
+                              "email",
+                              "phonenumber",
+                              "groupuser",
+                              "album",
+                              "song",
+                              "element",
+                              "error",
+                              "description",
+                              "address",
+                              "account",
+                              "task",
+                              "resource",
+                              "assignment",
+                              "resourceType",
+                              "resourceReference")
+                              );
 
 
 
         if($this->manager->count() > 0) {
             $this->session = $this->manager->getSession(0);
-            $this->session->clear();
+            $this->session->evictTables();
             $this->dbh     = $this->session->getDBH();
             $this->listener = $this->manager->getAttribute(Doctrine::ATTR_LISTENER);
 

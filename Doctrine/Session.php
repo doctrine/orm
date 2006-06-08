@@ -404,6 +404,11 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             $table->getRepository()->evictAll();
             $table->clear();
         }
+    }
+    /**
+     * @return void
+     */
+    public function evictTables() {
         $this->tables = array();
     }
     /**
@@ -503,6 +508,10 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     /**
      * rollback
      * rolls back all transactions
+     *
+     * this method also listens to onPreTransactionRollback and onTransactionRollback
+     * eventlisteners
+     *
      * @return void
      */
     public function rollback() {
@@ -748,6 +757,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      */
     private function update(Doctrine_Record $record) {
         $array = $record->getPrepared();
+        
 
         if(empty($array))
             return false;

@@ -139,18 +139,32 @@ class Task extends Doctrine_Record {
    public function setTableDefinition() {
       $this->hasColumn("name","string",100); 
       $this->hasColumn("parent_id","integer"); 
-   } 
+   }
 } 
 
 class Resource extends Doctrine_Record {
    public function setUp() {
       $this->hasMany("Task as TaskAlias","Assignment.task_id");
-   } 
-   public function setTableDefinition() {
-      $this->hasColumn("name","string",100); 
+      $this->hasMany("ResourceType as Type", "ResourceReference.type_id");
    }
-} 
-
+   public function setTableDefinition() {
+      $this->hasColumn("name","string",100);
+   }
+}
+class ResourceReference extends Doctrine_Record {
+    public function setTableDefinition() {
+       $this->hasColumn("type_id","integer");
+       $this->hasColumn("resource_id","integer");
+    }
+}
+class ResourceType extends Doctrine_Record {
+    public function setUp() {
+        $this->hasMany("Resource as ResourceAlias", "ResourceReference.resource_id");
+    }
+    public function setTableDefinition() {
+        $this->hasColumn("type","string",100);
+    }
+}
 class Assignment extends Doctrine_Record {
     public function setTableDefinition() {
        $this->hasColumn("task_id","integer"); 

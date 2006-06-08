@@ -61,7 +61,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $init = true;
             $attributes = array(
                         Doctrine::ATTR_CACHE_DIR        => "%ROOT%".DIRECTORY_SEPARATOR."cachedir",
-                        Doctrine::ATTR_FETCHMODE        => Doctrine::FETCH_LAZY,
+                        Doctrine::ATTR_FETCHMODE        => Doctrine::FETCH_IMMEDIATE,
                         Doctrine::ATTR_CACHE_TTL        => 100,
                         Doctrine::ATTR_CACHE_SIZE       => 100,
                         Doctrine::ATTR_CACHE            => Doctrine::CACHE_NONE,

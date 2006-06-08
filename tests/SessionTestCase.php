@@ -3,7 +3,7 @@ require_once("UnitTestCase.php");
 class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
 
     public function testBuildFlushTree() {
-        $correct = array("Task","Resource","Assignment");
+        $correct = array("Task","ResourceType","Resource","Assignment","ResourceReference");
 
         $task = new Task();
 
@@ -352,10 +352,5 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->session->getState(),Doctrine_Session::STATE_OPEN);
         $this->assertEqual($this->session->getTransactionLevel(),0);
     }
-    public function testClear() {
-        $this->session->clear();
-        $this->assertEqual($this->session->getTables(), array());
-    }
-
 }
 ?>
