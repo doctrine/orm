@@ -120,11 +120,12 @@ class Doctrine_Validator {
 
             $column = $columns[$key];
 
-            if($column[0] == 'array' || $column[0] == 'object') {
-                $value = serialize($value);
-            }
+            if($column[0] == 'array' || $column[0] == 'object')
+                $length = strlen(serialize($value));
+            else
+                $length = strlen($value);
 
-            if(strlen($value) > $column[1]) {
+            if($length > $column[1]) {
                 $err[$key] = Doctrine_Validator::ERR_LENGTH;
                 continue;
             }

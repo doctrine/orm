@@ -98,7 +98,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private static $index = 1;
     /**
-     * @var Doctrine_Null $null             a Doctrine_Null object used for extremely fast 
+     * @var Doctrine_Null $null             a Doctrine_Null object used for extremely fast
      *                                      null value testing
      */
     private static $null;
@@ -153,7 +153,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $this->prepareIdentifiers($exists);
 
             if( ! $exists) {
-    
+
                 if($count > 0)
                     $this->state = Doctrine_Record::STATE_TDIRTY;
                 else
@@ -168,7 +168,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 if($count < $this->table->getColumnCount()) {
                     $this->state  = Doctrine_Record::STATE_PROXY;
                 }
-
 
                 // listen the onLoad event
                 $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
@@ -219,6 +218,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $tmp  = $this->data;
 
         $this->data = array();
+        
+        $count = 0;
 
         foreach($this->table->getColumnNames() as $name) {
             $type = $this->table->getTypeOf($name);
@@ -239,9 +240,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     break;
                     default:
                         $this->data[$name] = $tmp[$name];
+                        $count++;
                 endswitch;
             }
         }
+        return $count;
     }
     /**
      * prepares identifiers for later use
@@ -973,7 +976,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function initReference(Doctrine_Collection $coll, Doctrine_Relation $connector) {
         $name = $this->table->getAlias($coll->getTable()->getComponentName());
-        $coll->setReference($this, $connector);
+        
+        if( ! ($connector instanceof Doctrine_Association))
+            $coll->setReference($this, $connector);
+
         $this->references[$name] = $coll;
         $this->originals[$name]  = clone $coll;
     }

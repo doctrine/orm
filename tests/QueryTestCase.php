@@ -14,6 +14,158 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->dbh->query("DROP TABLE IF EXISTS test_entries");
         parent::prepareTables();
     }
+    //public function prepareData() { }
+
+    public function testManyToManyFetchingWithColonOperator() {
+        $query = new Doctrine_Query($this->session);
+
+        $task = new Task();
+        $task->name = "T1";
+        $task->ResourceAlias[0]->name = "R1";
+        $task->ResourceAlias[1]->name = "R2";
+        
+        $task = new Task();
+        $task->name = "T2";
+        $task->ResourceAlias[0]->name = "R3";
+        $task->ResourceAlias[1]->name = "R4";
+        $task->ResourceAlias[2]->name = "R5";
+        $task->ResourceAlias[3]->name = "R6";
+
+        $this->assertEqual($task->ResourceAlias[0]->name, "R3");
+        $this->assertEqual($task->ResourceAlias[1]->name, "R4");
+        $this->assertEqual($task->ResourceAlias[2]->name, "R5");
+        $this->assertEqual($task->ResourceAlias[3]->name, "R6");
+
+        $task = new Task();
+        $task->name = "T3";
+        $task->ResourceAlias[0]->name = "R7";
+        
+        $task = new Task();
+        $task->name = "T4";
+
+        $this->session->flush();
+        
+        // clear identity maps
+        $task->getTable()->clear();
+        $this->session->getTable('Assignment')->clear();
+        $this->session->getTable('Resource')->clear();
+
+        $tasks[1] = $task->getTable()->find(2);
+        $this->assertEqual($tasks[1]->ResourceAlias[0]->name, "R3");
+        $this->assertEqual($tasks[1]->ResourceAlias[1]->name, "R4");
+        $this->assertEqual($tasks[1]->ResourceAlias[2]->name, "R5");
+        $this->assertEqual($tasks[1]->ResourceAlias[3]->name, "R6");
+
+        // clear identity maps
+        $task->getTable()->clear();
+        $this->session->getTable('Assignment')->clear();
+        $this->session->getTable('Resource')->clear();
+
+        $query->from("Task-l:ResourceAlias-l");
+        $tasks = $query->execute();
+        $this->assertEqual($tasks->count(), 3);
+        $this->assertTrue($tasks instanceof Doctrine_Collection_Lazy);
+
+        $this->assertEqual($tasks[0]->ResourceAlias->count(), 2);
+        $this->assertTrue($tasks[0]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+
+
+        $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
+        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        // sanity checking
+        $this->assertEqual($tasks[1]->ResourceAlias[0]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($tasks[1]->ResourceAlias[1]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($tasks[1]->ResourceAlias[2]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($tasks[1]->ResourceAlias[3]->getState(), Doctrine_Record::STATE_PROXY);
+        
+        $count = count($this->dbh);
+        
+        $this->assertEqual($tasks[1]->ResourceAlias[0]->name, "R3");
+        $this->assertEqual($tasks[1]->ResourceAlias[1]->name, "R4");
+        $this->assertEqual($tasks[1]->ResourceAlias[2]->name, "R5");
+        $this->assertEqual($tasks[1]->ResourceAlias[3]->name, "R6");
+
+        $this->assertEqual(count($this->dbh), ($count + 4));
+
+        $this->assertEqual($tasks[2]->ResourceAlias->count(), 1);
+        $this->assertTrue($tasks[2]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+    }
+    public function testManyToManyFetchingWithDotOperator() {
+        $query = new Doctrine_Query($this->session);
+
+        $this->session->getTable('Task')->clear();
+        $this->session->getTable('Assignment')->clear();
+        $this->session->getTable('Resource')->clear();
+
+        $tasks = $query->query("FROM Task-l.ResourceAlias-l");
+        $this->assertEqual($tasks->count(), 4);
+        $this->assertTrue($tasks instanceof Doctrine_Collection_Lazy);
+
+        $this->assertEqual($tasks[0]->ResourceAlias->count(), 2);
+        $this->assertTrue($tasks[0]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+
+        $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
+        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        
+        $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
+        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        // sanity checking
+        $this->assertEqual($tasks[1]->ResourceAlias[0]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($tasks[1]->ResourceAlias[1]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($tasks[1]->ResourceAlias[2]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($tasks[1]->ResourceAlias[3]->getState(), Doctrine_Record::STATE_PROXY);
+        
+        $count = count($this->dbh);
+        
+        $this->assertEqual($tasks[1]->ResourceAlias[0]->name, "R3");
+        $this->assertEqual($tasks[1]->ResourceAlias[1]->name, "R4");
+        $this->assertEqual($tasks[1]->ResourceAlias[2]->name, "R5");
+        $this->assertEqual($tasks[1]->ResourceAlias[3]->name, "R6");
+
+        $this->assertEqual(count($this->dbh), ($count + 4));
+
+        $this->assertEqual($tasks[2]->ResourceAlias->count(), 1);
+        $this->assertTrue($tasks[2]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+
+        $this->assertEqual($tasks[3]->ResourceAlias->count(), 0);
+        $this->assertTrue($tasks[3]->ResourceAlias instanceof Doctrine_Collection);
+    }
+    public function testManyToManyFetchingWithDotOperatorAndLoadedIdentityMaps() {
+        $query = new Doctrine_Query($this->session);
+
+        $tasks = $query->query("FROM Task-l.ResourceAlias-l");
+        $this->assertEqual($tasks->count(), 4);
+        $this->assertTrue($tasks instanceof Doctrine_Collection_Lazy);
+
+        $this->assertEqual($tasks[0]->ResourceAlias->count(), 2);
+        $this->assertTrue($tasks[0]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+
+        $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
+        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        
+        $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
+        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        // sanity checking
+        $this->assertEqual($tasks[1]->ResourceAlias[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($tasks[1]->ResourceAlias[1]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($tasks[1]->ResourceAlias[2]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($tasks[1]->ResourceAlias[3]->getState(), Doctrine_Record::STATE_CLEAN);
+        
+        $count = count($this->dbh);
+        
+        $this->assertEqual($tasks[1]->ResourceAlias[0]->name, "R3");
+        $this->assertEqual($tasks[1]->ResourceAlias[1]->name, "R4");
+        $this->assertEqual($tasks[1]->ResourceAlias[2]->name, "R5");
+        $this->assertEqual($tasks[1]->ResourceAlias[3]->name, "R6");
+
+        $this->assertEqual(count($this->dbh), $count);
+
+        $this->assertEqual($tasks[2]->ResourceAlias->count(), 1);
+        $this->assertTrue($tasks[2]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+
+        $this->assertEqual($tasks[3]->ResourceAlias->count(), 0);
+        $this->assertTrue($tasks[3]->ResourceAlias instanceof Doctrine_Collection);
+    }
     public function testOneToOneSharedRelations() {
         $status = new Log_Status();
         $status->name = 'success';
@@ -330,7 +482,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($users[2]->email_id));
         $this->assertEqual($count + 1, count($this->dbh));
     }
-
     public function testQueryWithComplexAliases() {
         $q = new Doctrine_Query($this->session);
 
@@ -373,7 +524,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($board->Category->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($board->Threads[0]->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertTrue($board->Threads[0] instanceof Forum_Thread);
-
+        $this->assertEqual($board->Threads[0]->Entries->count(), 2);
 
 
         $q->from("Forum_Board");
@@ -393,21 +544,25 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $q->from("Forum_Board-l.Threads-l");
         $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS Forum_Board__id, forum_thread.id AS Forum_Thread__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id");
 
-        $q->from("Forum_Board.Threads.Entries-l");
+        //$this->session->clear();
+
+        $q->from("Forum_Board-l.Threads-l.Entries-l");
         $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS Forum_Board__id, forum_thread.id AS Forum_Thread__id, forum_entry.id AS Forum_Entry__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id LEFT JOIN forum_entry ON forum_thread.id = forum_entry.thread_id");
         $boards = $q->execute();
         $this->assertEqual($boards->count(), 1);
         $count = count($this->dbh);
         $this->assertEqual($boards[0]->Threads->count(), 1);
         $this->assertEqual(count($this->dbh), $count);
-        $this->assertEqual($boards[0]->Threads[0]->Entries->count(), 1);
-        
+        $this->assertEqual($boards[0]->Threads[0]->Entries->count(), 2);
+
+
         $q->from("Forum_Board-l.Threads-l.Entries-i");
         $this->assertEqual($boards->count(), 1);
         $count = count($this->dbh);
         $this->assertEqual($boards[0]->Threads->count(), 1);
         $this->assertEqual(count($this->dbh), $count);
-        $this->assertEqual($boards[0]->Threads[0]->Entries->count(), 1);
+        $this->assertEqual($boards[0]->Threads[0]->Entries->count(), 2);
+
     }
 
     public function testQueryWithAliases() {
@@ -692,6 +847,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
+
 
 }
 ?>

@@ -159,6 +159,7 @@ class Doctrine_Table extends Doctrine_Configurable {
                         $this->primaryKeys[] = "id";
                         $this->identifier = "id";
                         $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
+                        $this->columnCount++;
                     break;
                     default:
                         if(count($this->primaryKeys) > 1) {
@@ -804,7 +805,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @return integer
      */
     final public function getColumnCount() {
-        return $this->columnCount;                                       	
+        return $this->columnCount;
     }
     /**
      * returns all columns and their definitions

@@ -467,28 +467,36 @@ class Doctrine_Query extends Doctrine_Access {
                                 $coll->add($record);
                             } else {
                                 $pointer = $this->joins[$name];
+                                $alias   = $this->tables[$pointer]->getAlias($name);
+                                
+                                //print "fetching data : ".$pointer." ".$alias."<br \>";
 
-                                $fk = $this->tables[$pointer]->getForeignKey($this->tables[$pointer]->getAlias($name));
+                                $fk = $this->tables[$pointer]->getForeignKey($alias);
+
+                                $last = $prev[$pointer]->getLast();
 
                                 switch($fk->getType()):
                                     case Doctrine_Relation::ONE_COMPOSITE:
                                     case Doctrine_Relation::ONE_AGGREGATE:
-                                        $last = $prev[$pointer]->getLast();
-
                                         $last->rawSet($this->connectors[$name]->getLocal(), $record->getID());
 
                                         $last->initSingleReference($record);
-                                        
+
                                         $prev[$name] = $record;
                                     break;
                                     default:
                                         // one-to-many relation or many-to-many relation
-                                        $last = $prev[$pointer]->getLast();
-    
-                                        if( ! $last->hasReference($name)) {
+
+                                        if( ! $last->hasReference($alias)) {
+                                            //print "initializing reference : ".$name." ".$alias;
                                             $prev[$name] = $this->getCollection($name);
                                             $last->initReference($prev[$name],$this->connectors[$name]);
+                                        } else {
+                                            // previous entry found from identityMap
+                                            $prev[$name] = $last->get($alias);
                                         }
+                                        //print "adding reference : ".$pointer." -> ".$name." as ".$alias."<br \>";
+
                                         $last->addReference($record);
                                 endswitch;
                             }
@@ -930,36 +938,34 @@ class Doctrine_Query extends Doctrine_Access {
 
                     $this->connectors[$name] = $fk;
 
+                    switch($mark):
+                        case ":":
+                            $join = 'INNER JOIN ';
+                        break;
+                        case ".":
+                            $join = 'LEFT JOIN ';
+                        break;
+                        default:
+                            throw new Doctrine_Exception("Unknown operator '$mark'");
+                    endswitch;
+
+
                     if($fk instanceof Doctrine_ForeignKey ||
                        $fk instanceof Doctrine_LocalKey) {
                         
-                        switch($mark):
-                            case ":":
-                                $this->parts["join"][$tname][$tname2]  = "INNER JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
-                            break;
-                            case ".":
-                                $this->parts["join"][$tname][$tname2]  = "LEFT JOIN ".$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
-                            break;
-                        endswitch;
+                        $this->parts["join"][$tname][$tname2]  = $join.$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
 
-                        $c = $table->getComponentName();
-                        $this->joins[$name] = $c;
                     } elseif($fk instanceof Doctrine_Association) {
                         $asf = $fk->getAssociationFactory();
 
-                        switch($fk->getType()):
-                            case Doctrine_Relation::ONE_AGGREGATE:
-                            case Doctrine_Relation::ONE_COMPOSITE:
+                        $assocTableName = $asf->getTableName();
 
-                            break;
-                            case Doctrine_Relation::MANY_AGGREGATE:
-                            case Doctrine_Relation::MANY_COMPOSITE:
-
-                                //$this->addWhere("SELECT ".$fk->getLocal()." FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." IN (SELECT ".$fk->getTable()->getComponentName().")");
-                                $this->parts["from"][$tname]  = true;
-                            break;
-                        endswitch;
+                        $this->parts["join"][$tname][$assocTableName]   = $join.$assocTableName." ON ".$tname.".id = ".$assocTableName.".".$fk->getLocal();
+                        $this->parts["join"][$tname][$tname2]           = $join.$tname2." ON ".$tname2.".id = ".$assocTableName.".".$fk->getForeign();
                     }
+
+                    $c = $table->getComponentName();
+                    $this->joins[$name] = $c;
 
                     $table = $fk->getTable();
 
@@ -992,7 +998,7 @@ class Doctrine_Query extends Doctrine_Access {
                 }
 
             } catch(Exception $e) {
-                throw new DQLException($e->getMessage(),$e->getCode());
+                throw new DQLException($e->__toString());
             }
         }
     }

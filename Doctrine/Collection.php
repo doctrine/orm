@@ -180,6 +180,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     $record->rawSet($this->reference_field, $this->reference);
                 }
             }
+        } elseif($relation instanceof Doctrine_Association) {
+
         }
     }
     /**
@@ -249,7 +251,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
             } elseif($this->relation instanceof Doctrine_Association) {
     
-                $asf     = $fk->getAssociationFactory();
+                $asf     = $this->relation->getAssociationFactory();
                 $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local."=".$this->getID();
     
                 $table = $fk->getTable();
@@ -411,6 +413,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $this->data[$key] = $record;
             return true;
         }
+        
+        if(in_array($record,$this->data)) {
+            return false;
+        } else
 
         if(isset($this->generator)) {
             $key = $this->generator->getIndex($record);
