@@ -46,7 +46,7 @@ $test->addTestCase(new Doctrine_CollectionTestCase());
 
 $test->addTestCase(new Doctrine_QueryTestCase());
 
-//$test->addTestCase(new Doctrine_PessimisticLockingTestCase());
+$test->addTestCase(new Doctrine_PessimisticLockingTestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
