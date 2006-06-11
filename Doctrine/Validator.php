@@ -154,8 +154,13 @@ class Doctrine_Validator {
                     break;
                 }
             }
-
+            /**
             if(self::gettype($value) !== $column[0] && self::gettype($value) != 'NULL') {
+                $err[$key] = Doctrine_Validator::ERR_TYPE;
+                continue;
+            }
+            */
+            if( ! self::isValidType($value, $column[0])) {
                 $err[$key] = Doctrine_Validator::ERR_TYPE;
                 continue;
             }
@@ -185,6 +190,32 @@ class Doctrine_Validator {
         return $this->stack;
     }
     /**
+     * returns whether or not the given variable is
+     * valid type
+     *
+     * @param mixed $var
+     * @param string $type
+     * @return boolean
+     */
+    public static function isValidType($var, $type) {
+        $looseType = self::gettype($var);
+        switch($looseType):
+            case 'float':
+            case 'double':
+            case 'integer':
+                if($type == 'string' || $type == 'float')
+                    return true;
+            case 'string':
+            case 'array':
+            case 'object':
+                return ($type === $looseType);
+            break;
+            case 'NULL':
+                return true;
+            break;
+        endswitch;
+    }
+    /**
      * returns the type of loosely typed variable
      *
      * @param mixed $var
@@ -193,13 +224,16 @@ class Doctrine_Validator {
     public static function gettype($var) {
         $type = gettype($var);
         switch($type):
-            case "string":
-                if(preg_match("/^[0-9]+$/",$var)) return "integer";
-                elseif(is_numeric($var)) return "float";
-                else return $type;
+            case 'string':
+                if(preg_match("/^[0-9]+$/",$var)) 
+                    return 'integer';
+                elseif(is_numeric($var)) 
+                    return 'float';
+                else 
+                    return $type;
             break;
             default:
-            return $type;
+                return $type;
         endswitch;
     }
 }

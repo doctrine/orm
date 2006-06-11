@@ -4,6 +4,71 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "Validator_Test";
         parent::prepareTables();
     }
+    public function testIsValidType() {
+        $var = "123";
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"string"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"integer"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"float"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"array"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"object"));
+
+        $var = 123;
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"string"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"integer"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"float"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"array"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"object"));
+
+        $var = 123.12;
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"string"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"integer"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"float"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"array"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"object"));
+
+        $var = '123.12';
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"string"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"integer"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"float"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"array"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"object"));
+
+        $var = '';
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"string"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"integer"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"float"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"array"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"object"));
+
+        $var = null;
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"string"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"integer"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"float"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"array"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"object"));
+
+        $var = 'str';
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"string"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"integer"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"float"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"array"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"object"));
+
+        $var = array();
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"string"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"integer"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"float"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"array"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"object"));
+        
+        $var = new Exception();
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"string"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"integer"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"float"));
+        $this->assertFalse(Doctrine_Validator::isValidType($var,"array"));
+        $this->assertTrue(Doctrine_Validator::isValidType($var,"object"));
+    }
+
     public function testValidate2() {
         $test = new Validator_Test();
         $test->mymixed = "message";
