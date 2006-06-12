@@ -187,6 +187,7 @@ class Doctrine_Query extends Doctrine_Access {
                 break;
                 case "from":
                     $this->parts['columns'] = array();
+                    $this->parts['join']    = array();
                     $this->joins            = array();
                     $this->tables           = array();
                     $this->fetchModes       = array();
@@ -234,6 +235,7 @@ class Doctrine_Query extends Doctrine_Access {
                 break;
                 case "from":
                     $this->parts['columns'] = array();
+                    $this->parts['join']    = array();
                     $this->joins            = array();
                     $this->tables           = array();
                     $this->fetchModes       = array();
@@ -513,6 +515,8 @@ class Doctrine_Query extends Doctrine_Access {
                                 switch($fk->getType()):
                                     case Doctrine_Relation::ONE_COMPOSITE:
                                     case Doctrine_Relation::ONE_AGGREGATE:
+                                        // one-to-one relation
+
                                         $last->internalSet($this->connectors[$name]->getLocal(), $record->getID());
 
                                         $last->initSingleReference($record);
@@ -895,42 +899,12 @@ class Doctrine_Query extends Doctrine_Access {
             $operator  = array_shift($e);
             $value     = implode(" ",$e);
             $reference = implode(".",$a);
+            $count     = count($a);
 
-            if(count($a) > 1)
-                $objTable = $this->tables[$a[0]]->getForeignKey(end($a))->getTable();
-            else
-                $objTable = $this->session->getTable(end($a));
+            $table = $this->load($reference, false);
 
-            $where     = $objTable->getTableName().".".$field." ".$operator." ".$value;
-
-            if(count($a) > 1 && isset($a[1])) {
-                $root = $a[0];
-                $fk = $this->tables[$root]->getForeignKey($a[1]);
-                if($fk instanceof Doctrine_Association) {
-                    $asf = $fk->getAssociationFactory();
-
-                    switch($fk->getType()):
-                        case Doctrine_Relation::ONE_AGGREGATE:
-                        case Doctrine_Relation::ONE_COMPOSITE:
-
-                        break;
-                        case Doctrine_Relation::MANY_AGGREGATE:
-                        case Doctrine_Relation::MANY_COMPOSITE:
-
-                            // subquery needed
-                            $where     = $objTable->getComponentName().".".$field." ".$operator." ".$value;
-                            $b = $fk->getTable()->getComponentName();
-
-                            $graph = new Doctrine_Query($this->session);
-                            $graph->parseQuery("FROM $b-l WHERE $where");
-                            $where = $this->tables[$root]->getTableName().".".$this->tables[$root]->getIdentifier()." IN (SELECT ".$fk->getLocal()." FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." IN (".$graph->getQuery()."))";
-                        break;
-                    endswitch;
-                } else
-                    $this->load($reference, false);
-
-            } else
-                $this->load($reference, false);
+            $component = $table->getComponentName();
+            $where     = $this->tableAliases[$component].".".$field." ".$operator." ".$value;
         }
         return $where;
     }
@@ -961,13 +935,18 @@ class Doctrine_Query extends Doctrine_Access {
                     $index += strlen($e[($key - 1)]) + 1;
                     // the mark here is either '.' or ':'
                     $mark  = substr($path,($index - 1),1);
-                       	
+
+                    
+                    $parent = $table->getComponentName();
+
+                    if(isset($this->tableAliases[$parent])) {
+                        $tname = $this->tableAliases[$parent];
+                    } else
+                        $tname = $table->getTableName();
+
 
                     $fk     = $table->getForeignKey($name);
-                    $name   = $fk->getTable()->getComponentName();
-
-                    $tname  = $table->getTableName();
-
+                    $name   = $fk->getTable()->getComponentName();  
                     $tname2 = $fk->getTable()->getTableName();
 
                     $this->connectors[$name] = $fk;
@@ -1044,6 +1023,7 @@ class Doctrine_Query extends Doctrine_Access {
                 throw new DQLException($e->__toString());
             }
         }
+        return $table;
     }
 }
 

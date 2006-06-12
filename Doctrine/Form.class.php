@@ -45,8 +45,10 @@ class Doctrine_Form implements Iterator {
             } else {
                 if($length <= 255) {
                     $elements[$column] = "<input name='data[$column]' type='text' value='".$this->record->get($column)."' maxlength=$length \>\n";
-                } else {
+                } elseif($length <= 4000) {
                     $elements[$column] = "<textarea name='data[$column]' cols=40 rows=10>".$this->record->get($column)."</textarea>\n";
+                } else {
+                    $elements[$column] = "<textarea name='data[$column]' cols=60 rows=25>".$this->record->get($column)."</textarea>\n";
                 }
             }
             return $elements[$column];

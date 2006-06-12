@@ -17,6 +17,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
     public function testManyToManyFetchingWithColumnAggregationInheritance() {
         $query = new Doctrine_Query($this->session);
+
         $query->from('User-l:Group-l');
 
         $users = $query->execute();
@@ -24,6 +25,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[0]->Group->count(), 1);
 
         $query->from('User-l.Group-l');
+
         $users = $query->execute();
         $this->assertEqual($users->count(), 8);
         $this->assertEqual($users[0]->Group->count(), 0);
@@ -44,6 +46,32 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[2]->type, 0);
 
         $this->session->flush();
+
+        $users = $query->query("FROM User-b WHERE User.Group.name = 'Action Actors'");
+        $this->assertEqual(trim($query->getQuery()),
+        "SELECT entity.id AS User__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id WHERE (entity2.name = 'Action Actors') AND (entity.type = 0 || entity2.type = 1)");
+        $this->assertTrue($users instanceof Doctrine_Collection);
+        $this->assertEqual($users->count(),1);
+
+        $this->assertEqual(count($this->dbh->query($query->getQuery())->fetchAll()),1);
+
+        $users = $query->query("FROM User-b WHERE User.Group.Phonenumber.phonenumber LIKE '123 123'");
+
+        $this->assertEqual(trim($query->getQuery()),
+        "SELECT entity.id AS User__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id LEFT JOIN phonenumber ON entity2.id = phonenumber.entity_id WHERE (phonenumber.phonenumber LIKE '123 123') AND (entity.type = 0 || entity2.type = 1)");
+        $this->assertTrue($users instanceof Doctrine_Collection);
+        $this->assertEqual($users->count(),1);
+
+        $users = $query->query("FROM User.Group WHERE User.Group.name = 'Action Actors'");
+        $this->assertEqual($users->count(), 1);
+        $count = $this->dbh->count();
+
+        $this->assertTrue($users instanceof Doctrine_Collection);
+        $this->assertEqual(get_class($users[0]), 'User');
+        $this->assertEqual($users[0]->Group->count(), 1);
+        $this->assertEqual($count, $this->dbh->count());
+        $this->assertEqual($users[0]->Group[0]->name, 'Action Actors');
+        $this->assertEqual($count, $this->dbh->count());
     }
 
 
@@ -59,7 +87,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $task->name = "T2";
         $task->ResourceAlias[0]->name = "R3";
         $task->ResourceAlias[0]->Type[0]->type = 'TY2';
-        $task->ResourceAlias[0]->Type[0]->type = 'TY3';
+        $task->ResourceAlias[0]->Type[1]->type = 'TY3';
         $task->ResourceAlias[1]->name = "R4";
         $task->ResourceAlias[2]->name = "R5";
         $task->ResourceAlias[2]->Type[0]->type = 'TY4';
@@ -97,6 +125,16 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($tasks[0]->ResourceAlias[1]->Type->count(), 0);
 
         $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
+
+        $this->session->clear();
+        
+        $query->from("Task")->where("Task.ResourceAlias.Type.type = 'TY2' || Task.ResourceAlias.Type.type = 'TY1'");
+        $tasks = $query->execute();
+
+        $this->assertEqual($tasks->count(),2);
+        $this->assertEqual(count($this->dbh->query($query->getQuery())->fetchAll(PDO::FETCH_ASSOC)),2);
+        $this->assertEqual($tasks[0]->name, 'T1');
+        $this->assertEqual($tasks[1]->name, 'T2');
     }
 
 
@@ -889,18 +927,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         "SELECT entity.id AS User__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber REGEXP '[123]') AND (entity.type = 0)");
         $this->assertEqual($users->count(),8);
 
-        $users = $query->query("FROM User-b WHERE User.Group.name = 'Action Actors'");
-        $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS User__id FROM entity WHERE (entity.id IN (SELECT user_id FROM groupuser WHERE group_id IN (SELECT entity.id AS Group__id FROM entity WHERE (entity.name = 'Action Actors') AND (entity.type = 1)))) AND (entity.type = 0)");
-        $this->assertTrue($users instanceof Doctrine_Collection);
-        $this->assertEqual($users->count(),1);
-
-
-        $users = $query->query("FROM User-b WHERE User.Group.Phonenumber.phonenumber LIKE '123 123'");
-        $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS User__id FROM entity WHERE (entity.id IN (SELECT user_id FROM groupuser WHERE group_id IN (SELECT entity.id AS Group__id FROM entity, phonenumber WHERE (phonenumber.phonenumber LIKE '123 123') AND (entity.type = 1)))) AND (entity.type = 0)");
-        $this->assertTrue($users instanceof Doctrine_Collection);
-        $this->assertEqual($users->count(),1);
 
         //$values = $query->query("SELECT COUNT(User.name) AS users, MAX(User.name) AS max FROM User");
         //$this->assertEqual(trim($query->getQuery()),"SELECT COUNT(entity.name) AS users, MAX(entity.name) AS max FROM entity WHERE (entity.type = 0)");

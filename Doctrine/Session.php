@@ -454,8 +454,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     }
     /**
      * commits the current transaction
-     * if lockmode is optimistic this method starts a transaction 
+     * if lockmode is optimistic this method starts a transaction
      * and commits it instantly
+     *
      * @return void
      */
     public function commit() {
@@ -489,12 +490,14 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                     }
                 }
 
+                $this->dbh->commit();
+
             } catch(PDOException $e) {
                 $this->rollback();
 
                 throw new Doctrine_Exception($e->getMessage());
             }
-            $this->dbh->commit();
+
             $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this);
 
             $this->delete = array();

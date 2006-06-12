@@ -495,9 +495,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             // check if the property is null (= it is the Doctrine_Null object located in self::$null)
             if($this->data[$name] === self::$null) {
 
-                // no use trying to load the data from database if the Doctrine_Record is not a proxy
+                // only load the data from database if the Doctrine_Record is in proxy state
                 if($this->state == Doctrine_Record::STATE_PROXY) {
                     if( ! empty($this->collections)) {
+                        // delegate the loading operation to collections in which this record resides
                         foreach($this->collections as $collection) {
                             $collection->load($this);
                         }
@@ -525,6 +526,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * internalSet
+     *
+     * @param mixed $name
+     * @param mixed $value
      */
     final public function internalSet($name, $value) {
         $this->data[$name] = $value;
