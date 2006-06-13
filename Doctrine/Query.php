@@ -10,15 +10,15 @@ require_once("Access.php");
  */
 class Doctrine_Query extends Doctrine_Access {
     /**
-     * @var array $fetchmodes       an array containing all fetchmodes
+     * @var array $fetchmodes               an array containing all fetchmodes
      */
     private $fetchModes  = array();
     /**
-     * @var array $tables           an array containing all the tables used in the query
+     * @var array $tables                   an array containing all the tables used in the query
      */
     private $tables      = array();
     /**
-     * @var array $collections      an array containing all collections this parser has created/will create
+     * @var array $collections              an array containing all collections this parser has created/will create
      */
     private $collections = array();
 
@@ -26,19 +26,24 @@ class Doctrine_Query extends Doctrine_Access {
     
     private $joins       = array();
     /**
-     * @var array $data             fetched data
+     * @var array $data                     fetched data
      */
     private $data        = array();
     /**
-     * @var Doctrine_Session $session     Doctrine_Session object
+     * @var Doctrine_Session $session       Doctrine_Session object
      */
     private $session;
+    /**
+     * @var Doctrine_View $view             Doctrine_View object
+     */
+    private $view;
+    
 
     private $inheritanceApplied = false;
 
     private $aggregate  = false;
     /**
-     * @var array $connectors       component connectors
+     * @var array $connectors               component connectors
      */
     private $connectors  = array();
     /**
@@ -50,7 +55,7 @@ class Doctrine_Query extends Doctrine_Access {
      */
     private $tableIndexes = array();
     /**
-     * @var array $dql              DQL query string parts
+     * @var array $dql                      DQL query string parts
      */
     protected $dql = array(
         "columns"   => array(),
@@ -85,6 +90,32 @@ class Doctrine_Query extends Doctrine_Access {
     public function __construct(Doctrine_Session $session) {
         $this->session = $session;
     }
+    /**
+     * @return Doctrine_Session
+     */
+    public function getSession() {
+        return $this->session;
+    }
+    /**
+     * setView
+     * sets a database view this query object uses
+     * this method should only be called internally by doctrine
+     *
+     * @param Doctrine_View $view       database view
+     * @return void
+     */
+    public function setView(Doctrine_View $view) {
+        $this->view = $view;
+    }
+    /**
+     * getView
+     *
+     * @return Doctrine_View
+     */
+    public function getView() {
+        return $this->view;
+    }
+
     /**
      * clear
      * resets all the variables
@@ -393,13 +424,18 @@ class Doctrine_Query extends Doctrine_Access {
     public function execute($params = array()) {
         $this->data = array();
         $this->collections = array();
+        
+        if( ! $this->view)
+            $query = $this->getQuery();
+        else
+            $query = $this->view->getSelectSql();
 
         switch(count($this->tables)):
             case 0:
                 throw new DQLException();
             break;
             case 1:
-                $query = $this->getQuery();
+
 
                 $keys  = array_keys($this->tables);
 

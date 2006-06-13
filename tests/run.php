@@ -17,6 +17,8 @@ require_once("PessimisticLockingTestCase.php");
 require_once("CacheSqliteTestCase.php");
 require_once("CollectionOffsetTestCase.php");
 require_once("QueryTestCase.php");
+require_once("CacheQuerySqliteTestCase.php");
+require_once("ViewTestCase.php");
 
 error_reporting(E_ALL);
 
@@ -48,7 +50,9 @@ $test->addTestCase(new Doctrine_PessimisticLockingTestCase());
 
 $test->addTestCase(new Doctrine_QueryTestCase());
 
+$test->addTestCase(new Doctrine_ViewTestCase());
 
+//$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
