@@ -15,6 +15,44 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
     }
 
+    public function testHaving() {
+        $this->session->clear();
+
+
+        $query = new Doctrine_Query($this->session);
+        $query->from('User-l.Phonenumber-l');
+        $query->having("COUNT(User-l.Phonenumber-l.phonenumber) > 2");
+        $query->groupby('User.id');
+
+        $users = $query->execute();
+
+        $this->assertEqual($users->count(), 3);
+        
+        // test that users are in right order
+        $this->assertEqual($users[0]->id, 5);
+        $this->assertEqual($users[1]->id, 8);
+        $this->assertEqual($users[2]->id, 10);
+        
+
+        // test expanding
+        $count = $this->dbh->count();
+        $this->assertEqual($users[0]->Phonenumber->count(), 1);
+        $this->assertEqual($users[1]->Phonenumber->count(), 1);
+        $this->assertEqual($users[2]->Phonenumber->count(), 1);
+        
+        $users[0]->Phonenumber[1];
+        $this->assertEqual(++$count, $this->dbh->count());
+        $this->assertEqual($users[0]->Phonenumber->count(), 3);
+        
+        $users[1]->Phonenumber[1];
+        $this->assertEqual(++$count, $this->dbh->count());
+        $this->assertEqual($users[1]->Phonenumber->count(), 3);
+
+        $users[2]->Phonenumber[1];
+        $this->assertEqual(++$count, $this->dbh->count());
+        $this->assertEqual($users[2]->Phonenumber->count(), 3);
+    }
+
     public function testManyToManyFetchingWithColumnAggregationInheritance() {
         $query = new Doctrine_Query($this->session);
 

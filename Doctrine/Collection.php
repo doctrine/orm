@@ -378,6 +378,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * count
      * this class implements interface countable
+     *
      * @return integer                              number of records in this collection
      */
     public function count() {

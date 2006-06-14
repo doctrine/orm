@@ -75,7 +75,11 @@ class Doctrine_View {
      */
     public function create() {
         $sql = sprintf(self::CREATE, $this->name, $this->query->getQuery());
-        $this->dbh->query($sql);
+        try {
+            $this->dbh->query($sql);
+        } catch(Exception $e) {
+            throw new Doctrine_View_Exception($e->__toString());
+        }
     }
     /**
      * drops this view
@@ -83,7 +87,11 @@ class Doctrine_View {
      * @return void
      */
     public function drop() {
-        $this->dbh->query(sprintf(self::DROP, $this->name));
+        try {
+            $this->dbh->query(sprintf(self::DROP, $this->name));
+        } catch(Exception $e) {
+            throw new Doctrine_View_Exception($e->__toString());
+        }
     }
     /**
      * executes the view
