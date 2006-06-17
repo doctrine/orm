@@ -102,6 +102,12 @@ class Doctrine_Table extends Doctrine_Configurable {
      * @var array $parents                              the parent classes of this component
      */
     private $parents            = array();
+    /**
+     * @var array $enum                                 enum value arrays
+     */
+    private $enum               = array();
+
+
 
     /**
      * the constructor
@@ -328,7 +334,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      * getParents
      */
     final public function getParents() {
-        return $this->parents;                                   	
+        return $this->parents;
     }
     /**
      * @return boolean
@@ -742,11 +748,6 @@ class Doctrine_Table extends Doctrine_Configurable {
         if(isset($this->identityMap[$id]))
             $record = $this->identityMap[$id];
         else {
-        /**
-            if($this->createsChildren) {
-
-            }
-         */
             $record = new $this->name($this);
             $this->identityMap[$id] = $record;
         }
@@ -815,11 +816,35 @@ class Doctrine_Table extends Doctrine_Configurable {
         return $coll;
     }
     /**
+     * sets enumerated value array for given field
+     *
+     * @param string $field
+     * @param array $values
+     * @return void
+     */
+    final public function setEnumValues($field, array $values) {
+        $this->enum[$field] = $values;
+    }
+    /**
+     * enumValue
+     */
+    final public function enumValue($field, $index) {
+        return isset($this->enum[$field][$index])?$this->enum[$field][$index]:$index;
+    }
+    /**
+     * enumIndex
+     */
+    final public function enumIndex($field, $value) {
+        $v = array_search($value, $this->enum[$field]);
+        return ($v !== false)?$v:$value;
+    }
+    /**
      * @return integer
      */
     final public function getColumnCount() {
         return $this->columnCount;
     }
+
     /**
      * returns all columns and their definitions
      *
@@ -835,6 +860,13 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     public function getColumnNames() {
         return array_keys($this->columns);
+    }
+    /**
+     * getDefinitionOf
+     */
+    public function getDefinitionOf($column) {
+        if(isset($this->columns[$column]))
+            return $this->columns[$column];
     }
     /**
      * getTypeOf

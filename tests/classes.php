@@ -312,6 +312,12 @@ class ORM_AccessControlsGroups extends Doctrine_Record {
         $this->setPrimaryKey(array("accessControlID", "accessGroupID")); 
     }
 }
+class EnumTest extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("status","enum",11);
+        $this->setEnumValues("status", array("open","verified","closed"));
+    }
+}
 class Log_Entry extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("stamp", "timestamp");

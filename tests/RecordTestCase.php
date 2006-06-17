@@ -2,6 +2,30 @@
 require_once("UnitTestCase.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
+    public function prepareTables() {
+        $this->tables[] = "enumTest";
+        parent::prepareTables();
+    }
+    public function testEnumType() {
+        $enum = new EnumTest();
+        $enum->status = "open";
+        $this->assertEqual($enum->status, "open");
+        $enum->save();
+        $this->assertEqual($enum->status, "open");
+        $enum->refresh();
+        $this->assertEqual($enum->status, "open");      
+        
+        $enum->status = "closed";
+
+        $this->assertEqual($enum->status, "closed");
+
+        $enum->save();
+        $this->assertEqual($enum->status, "closed");
+
+        $enum->refresh();
+        $this->assertEqual($enum->status, "closed");
+    }
+
     public function testSerialize() {
         $user = $this->session->getTable("User")->find(4);
         $str = serialize($user);

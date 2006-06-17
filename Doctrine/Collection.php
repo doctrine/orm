@@ -428,6 +428,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return true;
     }
     /**
+     * populate
+     *
      * @param Doctrine_Query $query
      * @param integer $key              
      */
@@ -458,6 +460,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
     }
     /**
+     * getNormalIterator
+     * returns normal iterator - an iterator that will not expand this collection
+     *
      * @return Doctrine_Iterator_Normal
      */
     public function getNormalIterator() {
@@ -466,6 +471,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * save
      * saves all records
+     *
+     * @return void
      */
     public function save() {
         $this->table->getSession()->saveCollection($this);

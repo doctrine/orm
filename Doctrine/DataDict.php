@@ -82,6 +82,8 @@ class Doctrine_DataDict {
             case "bool":
                 return "L";
             break;
+            case "enum":
+            case "e":
             case "integer":
             case "int":
             case "i":

@@ -213,6 +213,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * $data = array("name"=>"John","lastname" => Object(Doctrine_Null));
      *
      * here column 'id' is removed since its auto-incremented primary key (protected) 
+     *
+     * @return integer
      */
     private function cleanData() {
         $tmp  = $this->data;
@@ -236,12 +238,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case "object":
                         if($tmp[$name] !== self::$null)
                             $this->data[$name] = unserialize($tmp[$name]);
-
+                    break;
+                    case "enum":
+                        $this->data[$name] = $this->table->enumValue($name, $tmp[$name]);
                     break;
                     default:
                         $this->data[$name] = $tmp[$name];
-                        $count++;
                 endswitch;
+                $count++;
             }
         }
         return $count;
@@ -429,6 +433,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * factoryRefresh
+     * refreshes the data from outer source (Doctrine_Table)
+     *
      * @throws Doctrine_Exception
      * @return void
      */
@@ -730,6 +736,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                $type == 'object') {
 
                 $a[$v] = serialize($this->data[$v]);
+                continue;
+
+            } elseif($type == 'enum') {
+                $a[$v] = $this->table->enumIndex($v,$this->data[$v]);
                 continue;
             }
 
@@ -1126,6 +1136,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                  endswitch;
             break;
         endswitch;
+    }
+    /**
+     * sets enumerated value array for given field
+     *
+     * @param string $field
+     * @param array $values
+     * @return void
+     */
+    final public function setEnumValues($field, array $values) {
+        $this->table->setEnumValues($field, $values);
     }
 
     /**

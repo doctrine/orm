@@ -386,7 +386,7 @@ class Doctrine_Query extends Doctrine_Access {
             foreach($maps as $map) {
                 $b = array();
                 foreach($map as $field => $value) {
-                    $b[] = $tname.".$field = $value";
+                    $b[] = $tname.".$field = $value";  //OR $tname.$field IS NULL";
                 }
                 if( ! empty($b)) $a[] = implode(" AND ",$b);
             }
@@ -526,9 +526,13 @@ class Doctrine_Query extends Doctrine_Access {
 
                         if($emptyID) {
 
+
                             $pointer = $this->joins[$name];
                             $alias   = $this->tables[$pointer]->getAlias($name);
                             $fk      = $this->tables[$pointer]->getForeignKey($alias);
+                            if( ! $prev[$pointer])
+                                continue;
+
                             $last    = $prev[$pointer]->getLast();
 
                             switch($fk->getType()):
