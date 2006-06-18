@@ -855,7 +855,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             switch($fk->getType()):
                 case Doctrine_Relation::ONE_COMPOSITE:
                 case Doctrine_Relation::MANY_COMPOSITE:
-                    $obj = $record->get($fk->getTable()->getComponentName());
+                    $obj = $record->get($record->getTable()->getAlias($fk->getTable()->getComponentName()));
                     $obj->delete();
                 break;
             endswitch;

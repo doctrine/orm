@@ -86,8 +86,9 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->session->flush();
 
         $users = $query->query("FROM User-b WHERE User.Group.name = 'Action Actors'");
+
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS User__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id WHERE (entity2.name = 'Action Actors') AND (entity.type = 0 || entity2.type = 1)");
+        "SELECT entity.id AS User__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id WHERE (entity2.name = 'Action Actors') AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
 
@@ -96,7 +97,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $users = $query->query("FROM User-b WHERE User.Group.Phonenumber.phonenumber LIKE '123 123'");
 
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS User__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id LEFT JOIN phonenumber ON entity2.id = phonenumber.entity_id WHERE (phonenumber.phonenumber LIKE '123 123') AND (entity.type = 0 || entity2.type = 1)");
+        "SELECT entity.id AS User__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id LEFT JOIN phonenumber ON entity2.id = phonenumber.entity_id WHERE (phonenumber.phonenumber LIKE '123 123') AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
 
@@ -111,7 +112,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[0]->Group[0]->name, 'Action Actors');
         $this->assertEqual($count, $this->dbh->count());
     }
-
 
     public function testNestedManyToManyRelations() {
         $task = new Task();
@@ -973,5 +973,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
+
 }
 ?>

@@ -381,19 +381,24 @@ class Doctrine_Query extends Doctrine_Access {
         $str = "";
         $c = array();
 
+        $index = 0;
         foreach($array as $tname => $maps) {
             $a = array();
             foreach($maps as $map) {
                 $b = array();
                 foreach($map as $field => $value) {
-                    $b[] = $tname.".$field = $value";  //OR $tname.$field IS NULL";
+                    if($index > 0)
+                        $b[] = "(".$tname.".$field = $value OR $tname.$field IS NULL)";
+                    else
+                        $b[] = $tname.".$field = $value";
                 }
                 if( ! empty($b)) $a[] = implode(" AND ",$b);
             }
-            if( ! empty($a)) $c[] = implode(" || ",$a);
+            if( ! empty($a)) $c[] = implode(" AND ",$a);
+            $index++;
         }
 
-        $str .= implode(" || ",$c);
+        $str .= implode(" AND ",$c);
 
         $this->addWhere($str);
         $this->inheritanceApplied = true;
