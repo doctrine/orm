@@ -172,6 +172,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 // listen the onLoad event
                 $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
             }
+
             $this->table->getRepository()->add($this);
         }
     }
@@ -229,7 +230,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if( ! isset($tmp[$name])) {
                 if($type == 'array') {
                     $this->data[$name] = array();
-                    $this->modified[]  = $name;
                 } else
                     $this->data[$name] = self::$null;
             } else {
@@ -715,7 +715,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     final public function getModified() {
         $a = array();
 
-        foreach($this->modified as $k=>$v) {
+        foreach($this->modified as $k => $v) {
             $a[$v] = $this->data[$v];
         }
         return $a;
@@ -726,10 +726,13 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return array
      */
-    final public function getPrepared() {
+    final public function getPrepared(array $array = array()) {
         $a = array();
 
-        foreach($this->modified as $k => $v) {
+        if(empty($array))
+            $array = $this->modified;
+
+        foreach($array as $k => $v) {
             $type = $this->table->getTypeOf($v);
 
             if($type == 'array' ||

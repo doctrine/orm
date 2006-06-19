@@ -158,5 +158,6 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($a["User"][0]["name"], Doctrine_Validator::ERR_LENGTH);
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
     }
+
 }
 ?>

@@ -312,8 +312,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @return boolean
      */
     public function remove($key) {
-        if( ! isset($this->data[$key]))
+        if( ! isset($this->data[$key])) {
+            $this->expand($key);
             throw new InvalidKeyException();
+        }
 
         $removed = $this->data[$key];
         
@@ -417,7 +419,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         
         if(in_array($record,$this->data)) {
             return false;
-        } else
+        }
 
         if(isset($this->generator)) {
             $key = $this->generator->getIndex($record);

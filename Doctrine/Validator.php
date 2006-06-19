@@ -106,21 +106,31 @@ class Doctrine_Validator {
         switch($record->getState()):
             case Doctrine_Record::STATE_TDIRTY:
             case Doctrine_Record::STATE_TCLEAN:
+                // all fields will be validated
                 $data = $record->getData();
             break;
             default:
+                // only the modified fields will be validated
                 $data = $record->getModified();
         endswitch;
 
         $err      = array();
-
         foreach($data as $key => $value) {
             if($value === self::$null)
                 $value = null;
 
             $column = $columns[$key];
+            
+            if($column[0] == "enum") {
+                $value = $record->getTable()->enumIndex($value);
 
-            if($column[0] == 'array' || $column[0] == 'object')
+                if($value === false) {
+                    $err[$key] = Doctrine_Validator::ERR_ENUM;
+                    continue;
+                }
+            }
+
+            if($column[0] == "array" || $column[0] == "object")
                 $length = strlen(serialize($value));
             else
                 $length = strlen($value);
@@ -199,6 +209,9 @@ class Doctrine_Validator {
      */
     public static function isValidType($var, $type) {
         $looseType = self::gettype($var);
+        if($type == 'enum')
+            $type = 'integer';
+
         switch($looseType):
             case 'float':
             case 'double':

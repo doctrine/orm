@@ -127,12 +127,9 @@ class Doctrine_Table extends Doctrine_Configurable {
 
         $record = new $name($this);
 
-
         $names = array();
 
         $class = $name;
-        
-
 
         // get parent classes
 
@@ -826,6 +823,16 @@ class Doctrine_Table extends Doctrine_Configurable {
         $this->enum[$field] = $values;
     }
     /**
+     * @param string $field
+     * @return array
+     */
+    final public function getEnumValues($field) {
+        if(isset($this->enum[$field])) 
+            return $this->enum[$field];
+        else
+            return array();
+    }
+    /**
      * enumValue
      */
     final public function enumValue($field, $index) {
@@ -836,7 +843,7 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     final public function enumIndex($field, $value) {
         $v = array_search($value, $this->enum[$field]);
-        return ($v !== false)?$v:$value;
+        return $v;
     }
     /**
      * @return integer

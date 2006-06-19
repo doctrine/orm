@@ -21,25 +21,24 @@ class Doctrine_Form implements Iterator {
         $definitions = $this->columns[$column];
 
         $e    = explode("|",$definitions[2]);
+        
+        
         $enum = false;
-        foreach($e as $v) {
-            $e2 = explode(":",$v);
-            if($e2[0] == "enum") {
-                $enum = explode("-",$e2[1]);
-                break;
-            }
-        }
+        
+        if($definitions[0] == "enum")
+            $enum = $this->record->getTable()->getEnumValues($column);
+
         $length = $definitions[1];
         if( ! in_array("autoincrement",$e) && ! in_array("protected",$e)) {
             if($enum) {
                 $elements[$column] = "<select name='data[$column]'>\n";
                 foreach($enum as $k => $v) {
-                    if($this->record->get($column) == $k) {
+                    if($this->record->get($column) == $v) {
                         $str = 'selected';
                     } else
                         $str = '';
 
-                    $elements[$column] .= "    <option value='$k' $str>$v</option>\n";
+                    $elements[$column] .= "    <option value='$v' $str>$v</option>\n";
                 }
                 $elements[$column] .= "</select>\n";
             } else {

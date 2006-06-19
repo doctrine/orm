@@ -29,7 +29,7 @@ class Doctrine_Lib {
      * @param Doctrine_Record $record
      * @return string
      */
-    public function getRecordAsString(Doctrine_Record $record) {
+    public static function getRecordAsString(Doctrine_Record $record) {
         $r[] = "<pre>";
         $r[] = "Component  : ".$record->getTable()->getComponentName();
         $r[] = "ID         : ".$record->getID();
@@ -65,7 +65,7 @@ class Doctrine_Lib {
      * @param Doctrine_Session $session
      * @return string
      */
-    public function getSessionAsString(Doctrine_Session $session) {
+    public static function getSessionAsString(Doctrine_Session $session) {
         $r[] = "<pre>";
         $r[] = "Doctrine_Session object";
         $r[] = "State               : ".Doctrine_Lib::getSessionStateAsString($session->getState());
@@ -109,7 +109,7 @@ class Doctrine_Lib {
      * @param Doctrine_Table $table
      * @return string
      */
-    public function getTableAsString(Doctrine_Table $table) {
+    public static function getTableAsString(Doctrine_Table $table) {
         $r[] = "<pre>";
         $r[] = "Component   : ".$this->getComponentName();
         $r[] = "Table       : ".$this->getTableName();
@@ -124,7 +124,7 @@ class Doctrine_Lib {
     /**
      * @return string
      */
-    public function formatSql($sql) {
+    public static function formatSql($sql) {
         $e = explode("\n",$sql);
         $color = "367FAC";
         $l = $sql;
@@ -146,7 +146,7 @@ class Doctrine_Lib {
      * @param Doctrine_Collection $collection
      * @return string
      */
-    public function getCollectionAsString(Doctrine_Collection $collection) {
+    public static function getCollectionAsString(Doctrine_Collection $collection) {
         $r[] = "<pre>";
         $r[] = get_class($collection);
 
