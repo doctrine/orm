@@ -210,7 +210,7 @@ class Doctrine_Locking_Manager_Pessimistic
      * When called without parameters all locks older than 15 minutes are released.
      *
      * @param  integer $age  The maximum valid age of locks in seconds
-     * @return boolean  TRUE if locks have been released, FALSE if no locks were released
+     * @return integer The number of locks that have been released
      * @throws Doctrine_Locking_Exception If the release process failed due to database errors
      */
     public function releaseAgedLocks($age = 900)
@@ -226,7 +226,7 @@ class Doctrine_Locking_Manager_Pessimistic
             
             $count = $stmt->rowCount();
             
-            return ($count > 0);
+            return $count;
         }
         catch(PDOException $pdoe)
         {

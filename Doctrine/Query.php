@@ -535,7 +535,7 @@ class Doctrine_Query extends Doctrine_Access {
                             $pointer = $this->joins[$name];
                             $alias   = $this->tables[$pointer]->getAlias($name);
                             $fk      = $this->tables[$pointer]->getForeignKey($alias);
-                            if( ! $prev[$pointer])
+                            if( ! isset($prev[$pointer]) )
                                 continue;
 
                             $last    = $prev[$pointer]->getLast();
