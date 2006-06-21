@@ -21,9 +21,9 @@ class Doctrine_Query extends Doctrine_Access {
      * @var array $collections              an array containing all collections this parser has created/will create
      */
     private $collections = array();
-
-    private $joined      = array();
-    
+    /**
+     * @var array $joins                    an array containing all table joins
+     */
     private $joins       = array();
     /**
      * @var array $data                     fetched data
@@ -54,20 +54,6 @@ class Doctrine_Query extends Doctrine_Access {
      * @var array $tableIndexes
      */
     private $tableIndexes = array();
-    /**
-     * @var array $dql                      DQL query string parts
-     */
-    protected $dql = array(
-        "columns"   => array(),
-        "from"      => array(),
-        "join"      => array(),
-        "where"     => array(),
-        "groupby"   => array(),
-        "having"    => array(),
-        "orderby"   => array(),
-        "limit"     => false,
-        "offset"    => false,
-        );
     /**
      * @var array $parts            SQL query string parts
      */
@@ -324,40 +310,7 @@ class Doctrine_Query extends Doctrine_Access {
 
         return $q;
     }
-    /**
-     * sql delete for mysql
-     */
-    final public function buildDelete() {
-        if(empty($this->parts["columns"]) || empty($this->parts["from"]))
-            return false;    
-        
-        $a = array_merge(array_keys($this->parts["from"]),$this->joined);
-        $q = "DELETE ".implode(", ",$a)." FROM ";
-        $a = array();
 
-        foreach($this->parts["from"] as $tname => $bool) {
-            $str = $tname;
-            if(isset($this->parts["join"][$tname]))
-                $str .= " ".$this->parts["join"][$tname];
-
-            $a[] = $str;
-        }
-
-        $q .= implode(", ",$a);
-        $this->applyInheritance();
-        if( ! empty($this->parts["where"]))
-            $q .= " WHERE ".implode(" ",$this->parts["where"]);
-
-
-
-        if( ! empty($this->parts["orderby"]))
-            $q .= " ORDER BY ".implode(", ",$this->parts["orderby"]);
-
-        if( ! empty($this->parts["limit"]) && ! empty($this->offset))
-            $q = $this->session->modifyLimitQuery($q,$this->parts["limit"],$this->offset);
-
-        return $q;
-    }
     /**
      * applyInheritance
      * applies column aggregation inheritance to DQL query

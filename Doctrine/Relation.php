@@ -30,7 +30,7 @@ class Doctrine_Relation {
     
 
     /**
-     * @var Doctrine_Table $table     foreign factory
+     * @var Doctrine_Table $table   foreign factory
      */
     private $table;
     /**
@@ -45,20 +45,22 @@ class Doctrine_Relation {
      * @var integer $type           bind type
      */
     private $type;
+
     /**
      * @param Doctrine_Table $table
      * @param string $local
      * @param string $foreign
      * @param integer $type
+     * @param string $alias
      */
-    public function __construct(Doctrine_Table $table,$local,$foreign,$type) {
+    public function __construct(Doctrine_Table $table, $local, $foreign, $type) {
         $this->table    = $table;
         $this->local    = $local;
         $this->foreign  = $foreign;
         $this->type     = $type;
     }
     /**
-     * @return integer              bind type 1 or 0
+     * @return integer                  the relation type, either 0 or 1
      */
     public function getType() {
         return $this->type;
@@ -70,14 +72,14 @@ class Doctrine_Relation {
         return $this->table;
     }
     /**
-     * @return string               the name of the local column
+     * @return string                   the name of the local column
      */
     public function getLocal() {
         return $this->local;
     }
     /**
-     * @return string               the name of the foreign column where
-     *                              the local column is pointing at
+     * @return string                   the name of the foreignkey column where
+     *                                  the localkey column is pointing at
      */
     public function getForeign() {
         return $this->foreign;

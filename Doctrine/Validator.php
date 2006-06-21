@@ -122,7 +122,7 @@ class Doctrine_Validator {
             $column = $columns[$key];
             
             if($column[0] == "enum") {
-                $value = $record->getTable()->enumIndex($value);
+                $value = $record->getTable()->enumIndex($key, $value);
 
                 if($value === false) {
                     $err[$key] = Doctrine_Validator::ERR_ENUM;

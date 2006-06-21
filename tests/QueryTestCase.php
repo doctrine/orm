@@ -14,6 +14,50 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->dbh->query("DROP TABLE IF EXISTS test_entries");
         parent::prepareTables();
     }
+    public function testMultiComponentFetching2() {
+        $this->session->clear();
+
+        $query = new Doctrine_Query($this->session);
+
+        $query->from("User.Email, User.Phonenumber");
+        $users = $query->execute();
+
+        $count = count($this->dbh);
+
+        $this->assertEqual($users->count(), 8);
+        $this->assertTrue($users[0]->Email instanceof Email);
+        $this->assertEqual($users[0]->Phonenumber->count(), 1);
+        $this->assertEqual($count, count($this->dbh));
+    }
+
+
+    public function testSelfReferencing() {
+        $category = new Forum_Category();
+
+        $category->name = "Root";
+        $category->Subcategory[0]->name = "Sub 1";
+        $category->Subcategory[1]->name = "Sub 2";
+        $category->Subcategory[0]->Subcategory[0]->name = "Sub 1 Sub 1";
+        $category->Subcategory[0]->Subcategory[1]->name = "Sub 1 Sub 2";
+        $category->Subcategory[1]->Subcategory[0]->name = "Sub 2 Sub 1";
+        $category->Subcategory[1]->Subcategory[1]->name = "Sub 2 Sub 2";
+
+        $this->session->flush();
+        $this->session->clear();
+        $category = $category->getTable()->find($category->id);
+
+        $this->assertEqual($category->name, "Root");
+        $this->assertEqual($category->Subcategory[0]->name, "Sub 1");
+        $this->assertEqual($category->Subcategory[1]->name, "Sub 2");
+        $this->assertEqual($category->Subcategory[0]->Subcategory[0]->name, "Sub 1 Sub 1");
+        $this->assertEqual($category->Subcategory[0]->Subcategory[1]->name, "Sub 1 Sub 2");
+        $this->assertEqual($category->Subcategory[1]->Subcategory[0]->name, "Sub 2 Sub 1");
+        $this->assertEqual($category->Subcategory[1]->Subcategory[1]->name, "Sub 2 Sub 2");
+        
+        $this->session->clear();
+        
+        $query = new Doctrine_Query($this->session);
+    }
 
     public function testHaving() {
         $this->session->clear();
@@ -973,6 +1017,5 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
-
 }
 ?>
