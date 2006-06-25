@@ -43,10 +43,6 @@ class Doctrine_Query extends Doctrine_Access {
 
     private $aggregate  = false;
     /**
-     * @var array $connectors               component connectors
-     */
-    private $connectors  = array();
-    /**
      * @var array $tableAliases
      */
     private $tableAliases = array();
@@ -54,6 +50,10 @@ class Doctrine_Query extends Doctrine_Access {
      * @var array $tableIndexes
      */
     private $tableIndexes = array();
+    /**
+     * @var array $paths
+     */
+    private $paths        = array();
     /**
      * @var array $parts            SQL query string parts
      */
@@ -126,7 +126,6 @@ class Doctrine_Query extends Doctrine_Access {
         $this->inheritanceApplied = false;
         $this->aggregate    = false;
         $this->data         = array();
-        $this->connectors   = array();
         $this->collections  = array();
         $this->joined       = array();
         $this->joins        = array();
@@ -144,7 +143,7 @@ class Doctrine_Query extends Doctrine_Access {
      * @param array $names                      fields to be loaded (only used in lazy property loading)
      * @return void
      */
-    private function loadFields(Doctrine_Table $table, $fetchmode, array $names) {
+    private function loadFields(Doctrine_Table $table, $fetchmode, array $names, $cpath) {
         $name = $table->getComponentName();
 
         switch($fetchmode):
@@ -152,31 +151,32 @@ class Doctrine_Query extends Doctrine_Access {
                 $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
             case Doctrine::FETCH_IMMEDIATE:
                 if( ! empty($names))
-                    throw new Doctrine_Exception("Lazy property loading can only be used with fetching strategies lazy, batch and lazyoffset.");
-
-                $names  = $table->getColumnNames();
+                    $names = array_unique(array_merge($table->getPrimaryKeys(), $names));
+                else
+                    $names = $table->getColumnNames();
             break;
             case Doctrine::FETCH_LAZY_OFFSET:
                 $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
             case Doctrine::FETCH_LAZY:
             case Doctrine::FETCH_BATCH:
-                $names = array_merge($table->getPrimaryKeys(), $names);
+                $names = array_unique(array_merge($table->getPrimaryKeys(), $names));
             break;
             default:
                 throw new Doctrine_Exception("Unknown fetchmode.");
         endswitch;
         
-        $component          = $table->getComponentName(); 
+        $component          = $table->getComponentName();
+        $tablename          = $this->tableAliases[$cpath];
 
-        $this->fetchModes[$component] = $fetchmode;
-        $tablename      = $this->tableAliases[$component];           
+        $this->fetchModes[$tablename] = $fetchmode;
+
         $count = count($this->tables);
 
         foreach($names as $name) {
             if($count == 0) {
                 $this->parts["columns"][] = $tablename.".".$name;
             } else {
-                $this->parts["columns"][] = $tablename.".".$name." AS ".$component."__".$name;
+                $this->parts["columns"][] = $tablename.".".$name." AS ".$tablename."__".$name;
             }
         }
     }
@@ -209,6 +209,8 @@ class Doctrine_Query extends Doctrine_Access {
                     $this->joins            = array();
                     $this->tables           = array();
                     $this->fetchModes       = array();
+                    $this->tableIndexes     = array();
+                    $this->tableAliases     = array();
                 default:
                     $this->parts[$name] = array();
                     $this->$method($args[0]);
@@ -259,6 +261,8 @@ class Doctrine_Query extends Doctrine_Access {
                     $this->joins            = array();
                     $this->tables           = array();
                     $this->fetchModes       = array();
+                    $this->tableIndexes     = array();
+                    $this->tableAliases     = array();
                 default:
                     $this->parts[$name] = array();
                     $this->$method($value);
@@ -324,10 +328,8 @@ class Doctrine_Query extends Doctrine_Access {
         // get the inheritance maps
         $array = array();
 
-        foreach($this->tables as $table):
-            $component = $table->getComponentName();
-            $tableName = $this->tableAliases[$component];
-            $array[$tableName][] = $table->getInheritanceMap();
+        foreach($this->tables as $alias => $table):
+            $array[$alias][] = $table->getInheritanceMap();
         endforeach;
 
         // apply inheritance maps
@@ -444,8 +446,9 @@ class Doctrine_Query extends Doctrine_Access {
 
                 $keys  = array_keys($this->tables);
                 $root  = $keys[0];
+
                 $stmt  = $this->session->execute($query,$params);
-                
+
                 $previd = array();
 
                 $coll        = $this->getCollection($root);
@@ -454,7 +457,7 @@ class Doctrine_Query extends Doctrine_Access {
                 $array = $this->parseData($stmt);
 
                 $colls = array();
-
+                
                 foreach($array as $data) {
                     /**
                      * remove duplicated data rows and map data into objects
@@ -480,14 +483,16 @@ class Doctrine_Query extends Doctrine_Access {
                         }
 
 
-                        $name    = $this->tables[$key]->getComponentName();
+                        $name    = $key;
 
                         if($emptyID) {
 
 
                             $pointer = $this->joins[$name];
-                            $alias   = $this->tables[$pointer]->getAlias($name);
+                            $path    = array_search($name, $this->tableAliases);
+                            $alias   = end( explode(".", $path));
                             $fk      = $this->tables[$pointer]->getForeignKey($alias);
+
                             if( ! isset($prev[$pointer]) )
                                 continue;
 
@@ -502,7 +507,7 @@ class Doctrine_Query extends Doctrine_Access {
                                     if($last instanceof Doctrine_Record) {
                                         if( ! $last->hasReference($alias)) {
                                             $prev[$name] = $this->getCollection($name);
-                                            $last->initReference($prev[$name],$this->connectors[$name]);
+                                            $last->initReference($prev[$name],$fk);
                                         }
                                     }
                             endswitch;
@@ -517,6 +522,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                         if($previd[$name] !== $row) {
                             // set internal data
+
                             $this->tables[$name]->setData($row);
 
                             // initialize a new record
@@ -528,7 +534,8 @@ class Doctrine_Query extends Doctrine_Access {
                             } else {
 
                                 $pointer = $this->joins[$name];
-                                $alias   = $this->tables[$pointer]->getAlias($name);
+                                $path    = array_search($name, $this->tableAliases);
+                                $alias   = end( explode(".", $path));
                                 $fk      = $this->tables[$pointer]->getForeignKey($alias);
                                 $last    = $prev[$pointer]->getLast();
 
@@ -537,7 +544,7 @@ class Doctrine_Query extends Doctrine_Access {
                                     case Doctrine_Relation::ONE_AGGREGATE:
                                         // one-to-one relation
 
-                                        $last->internalSet($this->connectors[$name]->getLocal(), $record->getID());
+                                        $last->internalSet($fk->getLocal(), $record->getID());
 
                                         $last->initSingleReference($record);
 
@@ -548,7 +555,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                                         if( ! $last->hasReference($alias)) {
                                             $prev[$name] = $this->getCollection($name);
-                                            $last->initReference($prev[$name],$this->connectors[$name]);
+                                            $last->initReference($prev[$name], $fk);
                                         } else {
                                             // previous entry found from identityMap
                                             $prev[$name] = $last->get($alias);
@@ -610,7 +617,7 @@ class Doctrine_Query extends Doctrine_Access {
      * @param integer $index
      */
     private function getCollection($name) {
-        $table = $this->session->getTable($name);
+        $table = $this->tables[$name];
         switch($this->fetchModes[$name]):
             case Doctrine::FETCH_BATCH:
                 $coll = new Doctrine_Collection_Batch($table);
@@ -627,6 +634,8 @@ class Doctrine_Query extends Doctrine_Access {
             case Doctrine::FETCH_LAZY_OFFSET:
                 $coll = new Doctrine_Collection_LazyOffset($table);
             break;
+            default:
+                throw new Doctrine_Exception("Unknown fetchmode");
         endswitch;
 
         $coll->populate($this);
@@ -657,6 +666,9 @@ class Doctrine_Query extends Doctrine_Access {
     }
     /**
      * DQL PARSER
+     * parses a DQL query
+     * first splits the query in parts and then uses individual
+     * parsers for each part
      *
      * @param string $query         DQL query
      * @return void
@@ -733,7 +745,8 @@ class Doctrine_Query extends Doctrine_Access {
                 $name      = end($a);
 
                 $this->load($reference, false);
-                $tname     = $this->tables[$name]->getTableName();
+                $alias     = $this->tableAliases[$reference];
+                $tname     = $this->tables[$alias]->getTableName();
 
                 $r = $tname.".".$field;
                 if(isset($e[1])) 
@@ -978,9 +991,7 @@ class Doctrine_Query extends Doctrine_Access {
                 $field     = array_pop($a);
                 $reference = implode(".",$a);
                 $table     = $this->load($reference, false);
-                $component = $table->getComponentName();
-
-                $func      = $this->tableAliases[$component].".".$field;
+                $func      = $this->tableAliases[$reference].".".$field;
 
                 return $func;
             } else {
@@ -990,8 +1001,10 @@ class Doctrine_Query extends Doctrine_Access {
     }
     /**
      * loadHaving
+     * returns the parsed query part
      *
      * @param string $having
+     * @return string
      */
     private function loadHaving($having) {
         $e = self::bracketExplode($having," ","(",")");
@@ -1009,8 +1022,10 @@ class Doctrine_Query extends Doctrine_Access {
     }
     /**
      * loadWhere
+     * returns the parsed query part
      *
      * @param string $where
+     * @return string
      */
     private function loadWhere($where) {
         $e = explode(" ",$where);
@@ -1025,55 +1040,97 @@ class Doctrine_Query extends Doctrine_Access {
             $reference = implode(".",$a);
             $count     = count($a);
 
-            $table = $this->load($reference, false);
-
-            $component = $table->getComponentName();
-            $where     = $this->tableAliases[$component].".".$field." ".$operator." ".$value;
+            $table     = $this->load($reference, false);
+            $where     = $this->tableAliases[$reference].".".$field." ".$operator." ".$value;
         }
         return $where;
     }
     /**
+     * generateAlias
+     *
+     * @param string $tableName
+     * @return string
+     */
+    final public function generateAlias($tableName) {
+        if(isset($this->tableIndexes[$tableName]))
+            return $tableName.++$this->tableIndexes[$tableName];
+        else {
+            $this->tableIndexes[$tableName] = 1;
+            return $tableName;
+        }
+    }
+    /**
+     * getTableAlias
+     *
+     * @param string $path
+     * @return string
+     */
+    final public function getTableAlias($path) {
+        if( ! isset($this->tableAliases[$path]))
+            return false;
+
+        return $this->tableAliases[$path];
+    }
+    /**
+     * loads a component
+     *
      * @param string $path              the path of the loadable component
      * @param integer $fetchmode        optional fetchmode, if not set the components default fetchmode will be used
      * @throws DQLException
+     * @return Doctrine_Table
      */
     final public function load($path, $loadFields = true) {
         $e = preg_split("/[.:]/",$path);
         $index = 0;
+        $currPath = '';
 
         foreach($e as $key => $fullname) {
             try {
-                $e2 = preg_split("/[-(]/",$fullname);
-                $name = $e2[0];
+                $copy  = $e;
+
+                $e2    = preg_split("/[-(]/",$fullname);
+                $name  = $e2[0];
+
+                $currPath .= ".".$name;
 
                 if($key == 0) {
+                    $currPath = substr($currPath,1);
 
                     $table = $this->session->getTable($name);
 
                     $tname = $table->getTableName();
+                    $this->tableIndexes[$tname] = 1;
+                    
                     $this->parts["from"][$tname] = true;
 
-                    $this->tableAliases[$name] = $tname;
+                    $this->tableAliases[$currPath] = $tname;
+                    
+                    $tableName = $tname;
                 } else {
 
                     $index += strlen($e[($key - 1)]) + 1;
                     // the mark here is either '.' or ':'
                     $mark  = substr($path,($index - 1),1);
 
-                    
-                    $parent = $table->getComponentName();
-
-                    if(isset($this->tableAliases[$parent])) {
-                        $tname = $this->tableAliases[$parent];
+                    if(isset($this->tableAliases[$prevPath])) {
+                        $tname = $this->tableAliases[$prevPath];
                     } else
                         $tname = $table->getTableName();
 
 
-                    $fk     = $table->getForeignKey($name);
-                    $name   = $fk->getTable()->getComponentName();  
-                    $tname2 = $fk->getTable()->getTableName();
+                    $fk       = $table->getForeignKey($name);
+                    $name     = $fk->getTable()->getComponentName();
+                    $original = $fk->getTable()->getTableName();
+                    
+                    if(isset($this->tableAliases[$currPath])) {
+                        $tname2 = $this->tableAliases[$currPath];
+                    } else
+                        $tname2 = $this->generateAlias($original);
 
-                    $this->connectors[$name] = $fk;
+                    if($original !== $tname2) 
+                        $aliasString = $original." AS ".$tname2;
+                    else
+                        $aliasString = $original;
 
                     switch($mark):
                         case ":":
@@ -1090,35 +1147,31 @@ class Doctrine_Query extends Doctrine_Access {
                     if($fk instanceof Doctrine_ForeignKey ||
                        $fk instanceof Doctrine_LocalKey) {
 
-                        $this->parts["join"][$tname][$tname2]  = $join.$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
+                        $this->parts["join"][$tname][$tname2]         = $join.$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
 
                     } elseif($fk instanceof Doctrine_Association) {
                         $asf = $fk->getAssociationFactory();
 
                         $assocTableName = $asf->getTableName();
 
-                        $this->parts["join"][$tname][$assocTableName]   = $join.$assocTableName." ON ".$tname.".id = ".$assocTableName.".".$fk->getLocal();
-                        
-                        if($tname == $tname2) {
-                            $tname2 = $tname."2";
-                            $alias  = $tname." AS ".$tname2;
-                        } else 
-                            $alias = $tname2;
-
-                        $this->parts["join"][$tname][$tname2]           = $join.$alias." ON ".$tname2.".id = ".$assocTableName.".".$fk->getForeign();
+                        $this->parts["join"][$tname][$assocTableName] = $join.$assocTableName." ON ".$tname.".id = ".$assocTableName.".".$fk->getLocal();
+                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString." ON ".$tname2.".id = ".$assocTableName.".".$fk->getForeign();
                     }
 
-                    $c = $table->getComponentName();
-                    $this->joins[$name] = $c;
+                    $this->joins[$tname2] = $prevTable;
 
 
                     $table = $fk->getTable();
+                    $this->tableAliases[$currPath] = $tname2;
 
-                    $this->tableAliases[$name] = $tname2;
+                    $tableName = $tname2;
                 }
 
-                if( ! isset($this->tables[$name])) {
-                    $this->tables[$name] = $table;    
+
+                // parse the fetchmode and load table fields
+
+                if( ! isset($this->tables[$tableName])) {
+                    $this->tables[$tableName] = $table;
 
                     if($loadFields && ! $this->aggregate) {
                         $fields = array();
@@ -1139,10 +1192,12 @@ class Doctrine_Query extends Doctrine_Access {
                                 $fields = explode(",",substr($e2[2],0,-1));
                         }
 
-                        $this->loadFields($table, $fetchmode, $fields);
+                        $this->loadFields($table, $fetchmode, $fields, $currPath);
                     }
                 }
 
+                $prevPath  = $currPath;
+                $prevTable = $tableName;
             } catch(Exception $e) {
                 throw new DQLException($e->__toString());
             }

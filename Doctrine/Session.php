@@ -74,7 +74,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
 
     /**
      * the constructor
-     * @param PDO $pdo  -- database handle
+     *
+     * @param Doctrine_Manager $manager     the manager object
+     * @param PDO $pdo                      the database handler
      */
     public function __construct(Doctrine_Manager $manager,PDO $pdo) {
         $this->dbh   = $pdo;
@@ -562,7 +564,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                     if($k == 0) {
                         // record uses auto_increment column
 
-                        $id = $this->dbh->lastinsertid();
+                        $id = $this->dbh->lastInsertID();
 
                         if( ! $id)
                             $id = $table->getMaxIdentifier();
