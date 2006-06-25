@@ -561,8 +561,11 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 if($increment) {
                     if($k == 0) {
                         // record uses auto_increment column
-    
-                        $id = $table->getMaxIdentifier();
+
+                        $id = $this->dbh->lastinsertid();
+
+                        if( ! $id)
+                            $id = $table->getMaxIdentifier();
                     }
     
                     $record->setID($id);
