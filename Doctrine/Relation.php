@@ -45,6 +45,10 @@ class Doctrine_Relation {
      * @var integer $type           bind type
      */
     private $type;
+    /**
+     * @var string $alias           relation alias
+     */
+    private $alias;
 
     /**
      * @param Doctrine_Table $table
@@ -58,6 +62,12 @@ class Doctrine_Relation {
         $this->local    = $local;
         $this->foreign  = $foreign;
         $this->type     = $type;
+    }
+    /**
+     * @return string                   the relation alias
+     */
+    public function getAlias() {
+        return $this->alias;
     }
     /**
      * @return integer                  the relation type, either 0 or 1

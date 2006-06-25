@@ -111,12 +111,12 @@ class Doctrine_Lib {
      */
     public static function getTableAsString(Doctrine_Table $table) {
         $r[] = "<pre>";
-        $r[] = "Component   : ".$this->getComponentName();
-        $r[] = "Table       : ".$this->getTableName();
-        $r[] = "Repository  : ".$this->getRepository()->count()." objects";
+        $r[] = "Component   : ".$table->getComponentName();
+        $r[] = "Table       : ".$table->getTableName();
+        $r[] = "Repository  : ".$table->getRepository()->count()." objects";
         if($table->getCache() instanceof Doctrine_Cache_File) {
-            $r[] = "Cache       : ".$this->getCache()->count()." objects";
-            $r[] = "Cache hits  : ".array_sum($this->getCache()->getStats())." hits";
+            $r[] = "Cache       : ".$table->getCache()->count()." objects";
+            $r[] = "Cache hits  : ".array_sum($table->getCache()->getStats())." hits";
         }
         $r[] = "</pre>";
         return implode("\n",$r)."<br>";

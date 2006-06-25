@@ -957,6 +957,7 @@ class ADODB_DataDict {
 		}
 		$s = "CREATE TABLE $tabname (\n";
 		$s .= implode(",\n", $lines);
+
 		if (sizeof($pkey)>0) {
 			$s .= ",\n				 PRIMARY KEY (";
 			$s .= implode(", ",$pkey).")";

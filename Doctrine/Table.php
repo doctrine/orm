@@ -870,17 +870,25 @@ class Doctrine_Table extends Doctrine_Configurable {
     }
     /**
      * getDefinitionOf
+     *
+     * @return mixed        array on success, false on failure
      */
     public function getDefinitionOf($column) {
         if(isset($this->columns[$column]))
             return $this->columns[$column];
+
+        return false;
     }
     /**
      * getTypeOf
+     *
+     * @return mixed        string on success, false on failure
      */
     public function getTypeOf($column) {
         if(isset($this->columns[$column]))
             return $this->columns[$column][0];
+
+        return false;
     }
     /**
      * setData

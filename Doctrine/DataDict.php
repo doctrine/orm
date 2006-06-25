@@ -1,6 +1,8 @@
 <?php
 class Doctrine_DataDict {
+
     private $dbh;
+
     public function __construct(PDO $dbh) {
         $manager = Doctrine_Manager::getInstance();
         require_once($manager->getRoot()."/adodb-hack/adodb.inc.php");
@@ -8,13 +10,23 @@ class Doctrine_DataDict {
         $this->dbh  = $dbh;
         $this->dict = NewDataDictionary($dbh);
     }
-
+    /**
+     * metaColumns
+     *
+     * @param Doctrine_Table $table
+     * @return array
+     */
     public function metaColumns(Doctrine_Table $table) {
         return $this->dict->metaColumns($table->getTableName());
     }
-
-
-    public function createTable($tablename, $columns) {
+    /**
+     * createTable
+     *
+     * @param string $tablename
+     * @param array $columns
+     * @return boolean
+     */
+    public function createTable($tablename, array $columns) {
         foreach($columns as $name => $args) {
             $r[] = $name." ".$this->getADOType($args[0],$args[1])." ".str_replace("|"," ",$args[2]);
         }
@@ -28,8 +40,6 @@ class Doctrine_DataDict {
             try {
                 $this->dbh->query($sql);
             } catch(PDOException $e) {
-                if($this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME) == "sqlite")
-                    throw $e;
                 $return = false;
             }
         }

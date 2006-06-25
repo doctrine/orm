@@ -417,7 +417,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $id = array_values($id);
 
-        $query          = $this->table->getQuery()." WHERE ".implode(" = ? && ",$this->table->getPrimaryKeys())." = ?";
+        $query          = $this->table->getQuery()." WHERE ".implode(" = ? AND ",$this->table->getPrimaryKeys())." = ?";
         $this->data     = $this->table->getSession()->execute($query,$id)->fetch(PDO::FETCH_ASSOC);
 
         $this->modified = array();
@@ -809,7 +809,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
                             foreach($r["delete"] as $record) {
                                 $query = "DELETE FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." = ?"
-                                                                            ." && ".$fk->getLocal()." = ?";
+                                                                            ." AND ".$fk->getLocal()." = ?";
                                 $this->table->getSession()->execute($query, array($record->getID(),$this->getID()));
                             }
                             foreach($r["add"] as $record) {
@@ -1037,6 +1037,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function loadReference($name) {
+
         $fk      = $this->table->getForeignKey($name);
         $table   = $fk->getTable();
 
@@ -1123,7 +1124,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     
                             $this->originals[$name]  = clone $coll;
 
-                        } elseif($fk instanceof Doctrine_Association) {            
+                        } elseif($fk instanceof Doctrine_Association) {     
+
                             $asf     = $fk->getAssociationFactory();
                             $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local." = ?";
 

@@ -273,8 +273,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $query .= " WHERE ".implode(" AND ",$where);
         }
 
-        $params = array_merge($params, array_values($this->table->getInheritanceMap()));
-        
         $coll   = $this->table->execute($query, $params, $limit, $offset);
 
         if( ! isset($offset)) {

@@ -10,8 +10,16 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "Log_Status";
         $this->tables[] = "Log_Entry";
 
-        $this->dbh->query("DROP TABLE IF EXISTS test_items");
-        $this->dbh->query("DROP TABLE IF EXISTS test_entries");
+        try {
+            $this->dbh->query("DROP TABLE test_items");
+        } catch(PDOException $e) {
+                                 	
+        }
+        try {
+            $this->dbh->query("DROP TABLE test_entries");
+        } catch(PDOException $e) {
+                                 	
+        }                         	
         parent::prepareTables();
     }
     public function testMultiComponentFetching2() {
@@ -1004,10 +1012,10 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(),0);
 
 
-        $users = $query->query("FROM User-b WHERE User.Phonenumber.phonenumber REGEXP '[123]'");
+        $users = $query->query("FROM User-b WHERE User.Phonenumber.phonenumber LIKE '%123%'");
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS User__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber REGEXP '[123]') AND (entity.type = 0)");
-        $this->assertEqual($users->count(),8);
+        "SELECT entity.id AS User__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber LIKE '%123%') AND (entity.type = 0)");
+        $this->assertEqual($users->count(),5);
 
 
         //$values = $query->query("SELECT COUNT(User.name) AS users, MAX(User.name) AS max FROM User");

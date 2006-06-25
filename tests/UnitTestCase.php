@@ -63,8 +63,10 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->listener = $this->manager->getAttribute(Doctrine::ATTR_LISTENER);
 
         } else {
-            $this->dbh     = Doctrine_DB::getConnection();
-            $this->session = $this->manager->openSession($this->dbh);
+            //$this->dbh     = Doctrine_DB::getConnection();
+            $this->dbh      = Doctrine_DB::getConn("sqlite::memory:");
+            //$this->dbh      = new PDO("sqlite::memory:");
+            $this->session  = $this->manager->openSession($this->dbh);
             $this->listener = new Doctrine_EventListener_Debugger();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
@@ -75,7 +77,12 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     }
     public function prepareTables() {
         foreach($this->tables as $name) {
-            $this->dbh->query("DROP TABLE IF EXISTS ".strtolower($name));
+            $query = "DROP TABLE ".strtolower($name);
+            try {
+                $this->dbh->query($query);
+            } catch(PDOException $e) {
+
+            }
         }
 
         foreach($this->tables as $name) {

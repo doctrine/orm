@@ -24,30 +24,76 @@ class ADODB2_sqlite extends ADODB_DataDict {
  	function ActualType($meta)
 	{
 		switch($meta) {
-		case 'C': return 'VARCHAR';
+		case 'C': return 'TEXT';
 		case 'XL':
-		case 'X': return 'VARCHAR(250)';
+		case 'X': return 'TEXT';
 		
-		case 'C2': return 'VARCHAR';
-		case 'X2': return 'VARCHAR(250)';
-		
-		case 'B': return 'VARCHAR';
+		case 'C2': return 'TEXT';
+		case 'X2': return 'TEXT';
+
+		case 'B': return 'BLOB';
 			
 		case 'D': return 'DATE';
 		case 'T': return 'DATE';
 		
-		case 'L': return 'DECIMAL(1)';
-		case 'I': return 'DECIMAL(10)';
-		case 'I1': return 'DECIMAL(3)';
-		case 'I2': return 'DECIMAL(5)';
-		case 'I4': return 'DECIMAL(10)';
-		case 'I8': return 'DECIMAL(20)';
+		case 'L': return 'REAL';
+		case 'I': return 'INTEGER';
+		case 'I1': return 'INTEGER';
+		case 'I2': return 'INTEGER';
+		case 'I4': return 'INTEGER';
+		case 'I8': return 'INTEGER';
 		
-		case 'F': return 'DECIMAL(32,8)';
+		case 'F': return 'REAL';
 		case 'N': return 'DECIMAL';
 		default:
 			return $meta;
 		}
+	}
+	// return string must begin with space
+	function _CreateSuffix($fname,$ftype,$fnotnull,$fdefault,$fautoinc,$fconstraint,$funsigned)
+	{	
+		$suffix = '';
+		if ($funsigned) $suffix .= ' UNSIGNED';
+		if ($fnotnull) $suffix .= ' NOT NULL';
+		if (strlen($fdefault)) $suffix .= " DEFAULT $fdefault";
+		if ($fautoinc) $suffix .= ' PRIMARY KEY AUTOINCREMENT';
+		if ($fconstraint) $suffix .= ' '.$fconstraint;
+		return $suffix;
+	}
+
+	function _TableSQL($tabname,$lines,$pkey,$tableoptions)
+	{
+		$sql = array();
+
+		if (isset($tableoptions['REPLACE']) || isset ($tableoptions['DROP'])) {
+			$sql[] = sprintf($this->dropTable,$tabname);
+			if ($this->autoIncrement) {
+				$sInc = $this->_DropAutoIncrement($tabname);
+				if ($sInc) $sql[] = $sInc;
+			}
+			if ( isset ($tableoptions['DROP']) ) {
+				return $sql;
+			}
+		}
+		$s = "CREATE TABLE $tabname (\n";
+		$s .= implode(",\n", $lines);
+        /**
+		if (sizeof($pkey)>0) {
+			$s .= ",\n				 PRIMARY KEY (";
+			$s .= implode(", ",$pkey).")";
+		}
+		*/
+        if (isset($tableoptions['CONSTRAINTS']))
+			$s .= "\n".$tableoptions['CONSTRAINTS'];
+
+		if (isset($tableoptions[$this->upperName.'_CONSTRAINTS'])) 
+			$s .= "\n".$tableoptions[$this->upperName.'_CONSTRAINTS'];
+
+		$s .= "\n)";
+		if (isset($tableoptions[$this->upperName])) $s .= $tableoptions[$this->upperName];
+		$sql[] = $s;
+
+		return $sql;
 	}
 
 	function AlterColumnSQL($tabname, $flds)

@@ -798,7 +798,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $params = array_merge($params, $id);
 
 
-        $sql  = "UPDATE ".$record->getTable()->getTableName()." SET ".implode(", ",$set)." WHERE ".implode(" = ? && ",$record->getTable()->getPrimaryKeys())." = ?";
+        $sql  = "UPDATE ".$record->getTable()->getTableName()." SET ".implode(", ",$set)." WHERE ".implode(" = ? AND ",$record->getTable()->getPrimaryKeys())." = ?";
 
         $stmt = $this->dbh->prepare($sql);
         $stmt->execute($params);
