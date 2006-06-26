@@ -5,6 +5,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "Forum_Entry";
         $this->tables[] = "Forum_Board";
         $this->tables[] = "Forum_Thread";
+
         $this->tables[] = "ORM_TestEntry";
         $this->tables[] = "ORM_TestItem";
         $this->tables[] = "Log_Status";
@@ -13,47 +14,16 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         try {
             $this->dbh->query("DROP TABLE test_items");
         } catch(PDOException $e) {
-                                 	
+
         }
         try {
             $this->dbh->query("DROP TABLE test_entries");
         } catch(PDOException $e) {
-                                 	
-        }                         	
+
+        }
         parent::prepareTables();
+
     }
-
-    public function testGetPath() {
-        $this->query->from("User.Group.Email");
-        
-        $this->assertEqual($this->query->getTableAlias("User"),  "entity");
-        $this->assertEqual($this->query->getTableAlias("User.Group"), "entity2");
-
-
-        $this->query->from("Task.Subtask.Subtask");
-        $this->assertEqual($this->query->getTableAlias("Task"), "task");
-        $this->assertEqual($this->query->getTableAlias("Task.Subtask"), "task2");
-        $this->assertEqual($this->query->getTableAlias("Task.Subtask.Subtask"), "task3");
-    }
-
-    public function testMultiComponentFetching2() {
-        $this->session->clear();
-
-        $query = new Doctrine_Query($this->session);
-
-        $query->from("User.Email, User.Phonenumber");
-        
-
-        $users = $query->execute();
-
-        $count = count($this->dbh);
-
-        $this->assertEqual($users->count(), 8);
-        $this->assertTrue($users[0]->Email instanceof Email);
-        $this->assertEqual($users[0]->Phonenumber->count(), 1);
-        $this->assertEqual($count, count($this->dbh));
-    }
-
 
     public function testSelfReferencing() {
         $category = new Forum_Category();
@@ -81,6 +51,56 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->session->clear();
         
         $query = new Doctrine_Query($this->session);
+        
+        $count = count($this->dbh);
+
+        $query->from("Forum_Category.Subcategory.Subcategory");
+        $coll = $query->execute();
+        $category = $coll[0];
+
+        $this->assertEqual($category->name, "Root");
+        $this->assertEqual($category->Subcategory[0]->name, "Sub 1");
+        $this->assertEqual($category->Subcategory[1]->name, "Sub 2");
+        $this->assertEqual($category->Subcategory[0]->Subcategory[0]->name, "Sub 1 Sub 1");
+        $this->assertEqual($category->Subcategory[0]->Subcategory[1]->name, "Sub 1 Sub 2");
+        $this->assertEqual($category->Subcategory[1]->Subcategory[0]->name, "Sub 2 Sub 1");
+        $this->assertEqual($category->Subcategory[1]->Subcategory[1]->name, "Sub 2 Sub 2");
+        $this->assertEqual(($count + 1), count($this->dbh));
+    }
+
+    public function testGetPath() {
+        $this->query->from("User.Group.Email");
+        
+        $this->assertEqual($this->query->getTableAlias("User"),  "entity");
+        $this->assertEqual($this->query->getTableAlias("User.Group"), "entity2");
+
+
+        $this->query->from("Task.Subtask.Subtask");
+        $this->assertEqual($this->query->getTableAlias("Task"), "task");
+        $this->assertEqual($this->query->getTableAlias("Task.Subtask"), "task2");
+        $this->assertEqual($this->query->getTableAlias("Task.Subtask.Subtask"), "task3");
+        
+
+        $this->assertEqual($this->query->getQuery(), 
+        "SELECT task.id AS task__id, task.name AS task__name, task.parent_id AS task__parent_id, task2.id AS task2__id, task2.name AS task2__name, task2.parent_id AS task2__parent_id, task3.id AS task3__id, task3.name AS task3__name, task3.parent_id AS task3__parent_id FROM task LEFT JOIN task AS task2 ON task.id = task2.parent_id LEFT JOIN task AS task3 ON task2.id = task3.parent_id");
+    }
+
+    public function testMultiComponentFetching2() {
+        $this->session->clear();
+
+        $query = new Doctrine_Query($this->session);
+
+        $query->from("User.Email, User.Phonenumber");
+        
+
+        $users = $query->execute();
+
+        $count = count($this->dbh);
+
+        $this->assertEqual($users->count(), 8);
+        $this->assertTrue($users[0]->Email instanceof Email);
+        $this->assertEqual($users[0]->Phonenumber->count(), 1);
+        $this->assertEqual($count, count($this->dbh));
     }
 
     public function testHaving() {

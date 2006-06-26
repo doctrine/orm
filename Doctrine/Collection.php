@@ -280,14 +280,14 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 if(isset($this->reference_field))
                     $record->rawSet($this->reference_field,$this->reference);
 
-                $this->reference->addReference($record);
+                $this->reference->addReference($record, $this->relation);
             }
         } else {
             $i = $offset;
 
             foreach($coll as $record) {
                 if(isset($this->reference)) {
-                    $this->reference->addReference($record,$i);
+                    $this->reference->addReference($record, $this->relation, $i);
                 } else
                     $this->data[$i] = $record;
                     

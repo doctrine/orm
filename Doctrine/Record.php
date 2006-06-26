@@ -1003,13 +1003,13 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     public function initReference(Doctrine_Collection $coll, Doctrine_Relation $connector) {
-        $name = $this->table->getAlias($coll->getTable()->getComponentName());
+        $alias = $connector->getAlias();
         
         if( ! ($connector instanceof Doctrine_Association))
             $coll->setReference($this, $connector);
 
-        $this->references[$name] = $coll;
-        $this->originals[$name]  = clone $coll;
+        $this->references[$alias] = $coll;
+        $this->originals[$alias]  = clone $coll;
     }
     /**
      * addReference
@@ -1017,11 +1017,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param mixed $key
      * @return void
      */
-    public function addReference(Doctrine_Record $record, $key = null) {
-        $name = $this->table->getAlias($record->getTable()->getComponentName());
+    public function addReference(Doctrine_Record $record, Doctrine_Relation $connector, $key = null) {
+        $alias = $connector->getAlias();
 
-        $this->references[$name]->add($record, $key);
-        $this->originals[$name]->add($record, $key);
+        $this->references[$alias]->add($record, $key);
+        $this->originals[$alias]->add($record, $key);
     }
     /**
      * getReferences

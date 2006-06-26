@@ -138,9 +138,9 @@ class Doctrine_Query extends Doctrine_Access {
      * fields of the tables become: [tablename].[fieldname] as [tablename]__[fieldname]
      *
      * @access private
-     * @param object Doctrine_Table $table       a Doctrine_Table object
-     * @param integer $fetchmode                 fetchmode the table is using eg. Doctrine::FETCH_LAZY
-     * @param array $names                      fields to be loaded (only used in lazy property loading)
+     * @param object Doctrine_Table $table          a Doctrine_Table object
+     * @param integer $fetchmode                    fetchmode the table is using eg. Doctrine::FETCH_LAZY
+     * @param array $names                          fields to be loaded (only used in lazy property loading)
      * @return void
      */
     private function loadFields(Doctrine_Table $table, $fetchmode, array $names, $cpath) {
@@ -296,9 +296,17 @@ class Doctrine_Query extends Doctrine_Access {
             }
         }
 
-        $this->applyInheritance();
-        if( ! empty($this->parts["where"]))
+        $string = $this->applyInheritance();
+
+        if( ! empty($this->parts["where"])) {
             $q .= " WHERE ".implode(" ",$this->parts["where"]);
+            if( ! empty($string))
+                $q .= " AND (".$string.")";
+        } else {
+            if( ! empty($string))
+                $q .= " WHERE (".$string.")";
+        }
+
 
         if( ! empty($this->parts["groupby"]))
             $q .= " GROUP BY ".implode(", ",$this->parts["groupby"]);
@@ -319,12 +327,9 @@ class Doctrine_Query extends Doctrine_Access {
      * applyInheritance
      * applies column aggregation inheritance to DQL query
      *
-     * @return boolean
+     * @return string
      */
     final public function applyInheritance() {
-        if($this->inheritanceApplied) 
-            return false;
-
         // get the inheritance maps
         $array = array();
 
@@ -355,9 +360,7 @@ class Doctrine_Query extends Doctrine_Access {
 
         $str .= implode(" AND ",$c);
 
-        $this->addWhere($str);
-        $this->inheritanceApplied = true;
-        return true;
+        return $str;
     }
     /**
      * @param string $where
@@ -490,7 +493,9 @@ class Doctrine_Query extends Doctrine_Access {
 
                             $pointer = $this->joins[$name];
                             $path    = array_search($name, $this->tableAliases);
-                            $alias   = end( explode(".", $path));
+                            $tmp     = explode(".", $path);
+                            $alias   = end($tmp);
+                            unset($tmp);
                             $fk      = $this->tables[$pointer]->getForeignKey($alias);
 
                             if( ! isset($prev[$pointer]) )
@@ -535,7 +540,9 @@ class Doctrine_Query extends Doctrine_Access {
 
                                 $pointer = $this->joins[$name];
                                 $path    = array_search($name, $this->tableAliases);
-                                $alias   = end( explode(".", $path));
+                                $tmp     = explode(".", $path);
+                                $alias   = end($tmp);
+                                unset($tmp);
                                 $fk      = $this->tables[$pointer]->getForeignKey($alias);
                                 $last    = $prev[$pointer]->getLast();
 
@@ -561,7 +568,7 @@ class Doctrine_Query extends Doctrine_Access {
                                             $prev[$name] = $last->get($alias);
                                         }
 
-                                        $last->addReference($record);
+                                        $last->addReference($record, $fk);
                                 endswitch;
                             }
                         }
@@ -1147,7 +1154,7 @@ class Doctrine_Query extends Doctrine_Access {
                     if($fk instanceof Doctrine_ForeignKey ||
                        $fk instanceof Doctrine_LocalKey) {
 
-                        $this->parts["join"][$tname][$tname2]         = $join.$tname2." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
+                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
 
                     } elseif($fk instanceof Doctrine_Association) {
                         $asf = $fk->getAssociationFactory();

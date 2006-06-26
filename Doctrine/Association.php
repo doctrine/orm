@@ -24,8 +24,8 @@ class Doctrine_Association extends Doctrine_Relation {
      * @param integer $type                         type of relation
      * @see Doctrine_Table constants
      */
-    public function __construct(Doctrine_Table $table, Doctrine_Table $associationTable, $local, $foreign, $type) {
-        parent::__construct($table, $local, $foreign, $type);
+    public function __construct(Doctrine_Table $table, Doctrine_Table $associationTable, $local, $foreign, $type, $alias) {
+        parent::__construct($table, $local, $foreign, $type, $alias);
         $this->associationTable = $associationTable;
     }
     /**

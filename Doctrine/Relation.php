@@ -57,11 +57,12 @@ class Doctrine_Relation {
      * @param integer $type
      * @param string $alias
      */
-    public function __construct(Doctrine_Table $table, $local, $foreign, $type) {
+    public function __construct(Doctrine_Table $table, $local, $foreign, $type, $alias) {
         $this->table    = $table;
         $this->local    = $local;
         $this->foreign  = $foreign;
         $this->type     = $type;
+        $this->alias    = $alias;
     }
     /**
      * @return string                   the relation alias

@@ -538,7 +538,7 @@ class Doctrine_Table extends Doctrine_Configurable {
                     if( ! isset($local))
                         $local = $table->getIdentifier();
 
-                    $relation = new Doctrine_LocalKey($table,$foreign,$local,$type);
+                    $relation = new Doctrine_LocalKey($table,$foreign,$local,$type, $alias);
                 } else
                     throw new Doctrine_Mapping_Exception("Only one-to-one relations are possible when local reference key is used.");
 
@@ -547,7 +547,7 @@ class Doctrine_Table extends Doctrine_Configurable {
                     $local = $this->identifier;
 
                 // ONE-TO-MANY or ONE-TO-ONE
-                $relation = new Doctrine_ForeignKey($table,$local,$foreign,$type);
+                $relation = new Doctrine_ForeignKey($table, $local, $foreign, $type, $alias);
 
             } else {
                 // MANY-TO-MANY
@@ -578,14 +578,14 @@ class Doctrine_Table extends Doctrine_Configurable {
 
                 if(count($fields) > 1) {
                     // SELF-REFERENCING THROUGH JOIN TABLE
-                    $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$fields[0],Doctrine_Relation::MANY_COMPOSITE);
+                    $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$fields[0],Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
                     
-                    $relation = new Doctrine_Association($table,$associationTable,$fields[0],$fields[1],$type);
+                    $relation = new Doctrine_Association($table,$associationTable,$fields[0],$fields[1], $type, $alias);
                 } else {
                     // NORMAL MANY-TO-MANY RELATIONSHIP
-                    $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$e2[1],Doctrine_Relation::MANY_COMPOSITE);
+                    $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$e2[1],Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
 
-                    $relation = new Doctrine_Association($table,$associationTable,$e2[1],$foreign,$type);
+                    $relation = new Doctrine_Association($table, $associationTable, $e2[1], $foreign, $type, $alias);
                 }
 
             }
