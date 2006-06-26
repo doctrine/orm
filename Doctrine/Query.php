@@ -524,7 +524,6 @@ class Doctrine_Query extends Doctrine_Access {
                         if( ! isset($previd[$name]))
                             $previd[$name] = array();
 
-
                         if($previd[$name] !== $row) {
                             // set internal data
 
@@ -536,6 +535,8 @@ class Doctrine_Query extends Doctrine_Access {
                             if($name == $root) {
                                 // add record into root collection
                                 $coll->add($record);
+                                unset($previd);
+
                             } else {
 
                                 $pointer = $this->joins[$name];
@@ -549,15 +550,17 @@ class Doctrine_Query extends Doctrine_Access {
                                 switch($fk->getType()):
                                     case Doctrine_Relation::ONE_COMPOSITE:
                                     case Doctrine_Relation::ONE_AGGREGATE:
+
                                         // one-to-one relation
 
                                         $last->internalSet($fk->getLocal(), $record->getID());
 
-                                        $last->initSingleReference($record);
+                                        $last->initSingleReference($record, $fk);
 
                                         $prev[$name] = $record;
                                     break;
                                     default:
+
                                         // one-to-many relation or many-to-many relation
 
                                         if( ! $last->hasReference($alias)) {
@@ -1059,9 +1062,9 @@ class Doctrine_Query extends Doctrine_Access {
      * @return string
      */
     final public function generateAlias($tableName) {
-        if(isset($this->tableIndexes[$tableName]))
+        if(isset($this->tableIndexes[$tableName])) {
             return $tableName.++$this->tableIndexes[$tableName];
-        else {
+        } else {
             $this->tableIndexes[$tableName] = 1;
             return $tableName;
         }
@@ -1106,7 +1109,9 @@ class Doctrine_Query extends Doctrine_Access {
                     $table = $this->session->getTable($name);
 
                     $tname = $table->getTableName();
-                    $this->tableIndexes[$tname] = 1;
+                    
+                    if( ! isset($this->tableAliases[$currPath]))
+                        $this->tableIndexes[$tname] = 1;
                     
                     $this->parts["from"][$tname] = true;
 

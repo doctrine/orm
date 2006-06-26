@@ -991,9 +991,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param Doctrine_Relation $connector
      * @return void
      */
-    public function initSingleReference(Doctrine_Record $record) {
-        $name = $this->table->getAlias($record->getTable()->getComponentName());
-        $this->references[$name] = $record;
+    public function initSingleReference(Doctrine_Record $record, Doctrine_Relation $connector) {
+        $alias = $connector->getAlias();
+
+        $this->references[$alias] = $record;
     }
     /**
      * initalizes a one-to-many / many-to-many relation

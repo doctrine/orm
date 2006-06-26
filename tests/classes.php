@@ -180,6 +180,7 @@ class Forum_Category extends Doctrine_Record {
     }
     public function setUp() {
         $this->hasMany("Forum_Category as Subcategory", "Subcategory.parent_category_id");
+        $this->hasOne("Forum_Category as Parent", "Forum_Category.parent_category_id");
         $this->hasOne("Forum_Category as Rootcategory", "Forum_Category.root_category_id");
     }
 }
