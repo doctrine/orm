@@ -5,7 +5,7 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      */
     const CACHE_TABLE = 'doctrine_query_cache';
     /**
-     * @var Doctrine_Table $table       the table object this cache container belongs to
+     * @var Doctrine_Session $session       the table object this cache container belongs to
      */
     private $table;
     /**
@@ -21,19 +21,19 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      * 
      * Doctrine_Table $table
      */
-    public function __construct(Doctrine_Table $table) {
-        $this->table = $table;
-        $dir = $this->table->getSession()->getAttribute(Doctrine::ATTR_CACHE_DIR);
+    public function __construct(Doctrine_Session $session) {
+        $this->session = $session;
+        $dir = $session->getAttribute(Doctrine::ATTR_CACHE_DIR);
 
         if( ! is_dir($dir))
             mkdir($dir, 0777);
 
         $this->path = $dir.DIRECTORY_SEPARATOR;
-        $this->dbh  = $this->table->getSession()->getCacheHandler();
         $this->dbh  = new PDO("sqlite::memory:");
 
+
         try {
-            if($this->table->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true)
+            if($this->session->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true)
             {
                 $columns = array();
                 $columns['query_md5']       = array('string', 32, 'notnull');

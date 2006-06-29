@@ -173,7 +173,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
             }
 
-            $this->table->getRepository()->add($this);
+            $repository = $this->table->getRepository();
+            $repository->add($this);
         }
     }
     /**

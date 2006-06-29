@@ -61,16 +61,18 @@ $test->addTestCase(new Doctrine_QueryTestCase());
 
 print "<pre>";
 $test->run(new HtmlReporter());
+/**
 $cache = Doctrine_Manager::getInstance()->getCurrentSession()->getCacheHandler();
 if(isset($cache)) {
     $a     = $cache->getQueries();
     print "Executed cache queries: ".count($a)."\n";
-    /**
+
     foreach($a as $query) {
         print $query."\n";
     }
-    */
+
 }
+*/
 
 $dbh = Doctrine_Manager::getInstance()->getCurrentSession()->getDBH();
 $a   = $dbh->getQueries();

@@ -246,6 +246,7 @@ final class Doctrine {
                 case "Sensei":
                 case "Iterator":
                 case "View":
+                case "Query":
                     $a[]  = $path.DIRECTORY_SEPARATOR.$entry;
                 break;
                 default:

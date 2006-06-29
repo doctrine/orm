@@ -24,6 +24,16 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
 
     }
+    /**
+    public function testQueryPart() {
+        $this->query->from[] = "User.Phonenumber";
+        $this->query->from[] = "User.Email";
+
+        $users = $this->query->execute();
+
+        $this->assertEqual($users->count(), 8);
+    }
+    */
 
     public function testSelfReferencing() {
         $query = new Doctrine_Query($this->session);
@@ -191,8 +201,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $query->having("COUNT(User.Phonenumber.phonenumber) > 2");
         $query->groupby('User.id');
         
-        //print Doctrine_Lib::formatSql($query->getQuery());
-        
         $users = $query->execute();
 
         $this->assertEqual($users->count(), 3);
@@ -220,6 +228,20 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $users[2]->Phonenumber[1];
         $this->assertEqual(++$count, $this->dbh->count());
         $this->assertEqual($users[2]->Phonenumber->count(), 3);
+
+        $this->session->clear();
+        $query->from('User-l.Phonenumber-l');
+        $query->having("COUNT(User.Phonenumber.phonenumber) > 2");
+        $query->groupby('User.id');
+
+        $users = $this->session->query("FROM User-l.Phonenumber-l GROUP BY User.id HAVING COUNT(User.Phonenumber.phonenumber) > 2");
+
+        $this->assertEqual($users->count(), 3);
+        
+        // test that users are in right order
+        $this->assertEqual($users[0]->id, 5);
+        $this->assertEqual($users[1]->id, 8);
+        $this->assertEqual($users[2]->id, 10);
     }
 
     public function testManyToManyFetchingWithColumnAggregationInheritance() {
@@ -257,7 +279,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $users = $query->query("FROM User-b WHERE User.Group.name = 'Action Actors'");
 
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id WHERE (entity2.name = 'Action Actors') AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
+        "SELECT entity.id AS entity__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id WHERE entity2.name = 'Action Actors' AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
 
@@ -266,7 +288,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $users = $query->query("FROM User-b WHERE User.Group.Phonenumber.phonenumber LIKE '123 123'");
 
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id LEFT JOIN phonenumber ON entity2.id = phonenumber.entity_id WHERE (phonenumber.phonenumber LIKE '123 123') AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
+        "SELECT entity.id AS entity__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id LEFT JOIN phonenumber ON entity2.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '123 123' AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
 
@@ -975,7 +997,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
     }
 
-    public function testQuery() {
+    public function testAlbumManager() {
 
         $query = new Doctrine_Query($this->session);
 
@@ -1012,10 +1034,11 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(count($user->Album[1]->Song), 4);
 
         $users = $query->query("FROM User WHERE User.Album.name like '%Damage%'");
+    }
 
-
-
+    function testQuery() {
         // DYNAMIC COLLECTION EXPANDING
+        $query = new Doctrine_Query($this->session);
 
         $user = $this->objTable->find(5);
         $user->Group[1]->name = "Tough guys inc.";
@@ -1043,7 +1066,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $users = $query->query("FROM User-b.Phonenumber-l WHERE User.Phonenumber.phonenumber LIKE '%123%'");
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber LIKE '%123%') AND (entity.type = 0)");
+        "SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '%123%' AND (entity.type = 0)");
 
         $count = $this->session->getDBH()->count();
 
@@ -1110,17 +1133,17 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $users = $query->query("FROM Email-b WHERE Email.address LIKE '%@example%'");
 
         $this->assertEqual($query->getQuery(),
-        "SELECT email.id AS email__id FROM email WHERE (email.address LIKE '%@example%')");
+        "SELECT email.id AS email__id FROM email WHERE email.address LIKE '%@example%'");
         $this->assertEqual($users->count(),8);
 
         $users = $query->query("FROM User-b WHERE User.name LIKE '%Jack%'");
-        $this->assertEqual($query->getQuery(), "SELECT entity.id AS entity__id FROM entity WHERE (entity.name LIKE '%Jack%') AND (entity.type = 0)");
+        $this->assertEqual($query->getQuery(), "SELECT entity.id AS entity__id FROM entity WHERE entity.name LIKE '%Jack%' AND (entity.type = 0)");
         $this->assertEqual($users->count(),0);
 
 
         $users = $query->query("FROM User-b WHERE User.Phonenumber.phonenumber LIKE '%123%'");
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (phonenumber.phonenumber LIKE '%123%') AND (entity.type = 0)");
+        "SELECT entity.id AS entity__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '%123%' AND (entity.type = 0)");
         $this->assertEqual($users->count(),5);
 
 
@@ -1131,6 +1154,5 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
-
 }
 ?>

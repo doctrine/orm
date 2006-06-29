@@ -126,9 +126,10 @@ class Doctrine_Query extends Doctrine_Access {
         $this->inheritanceApplied = false;
         $this->aggregate    = false;
         $this->data         = array();
-        $this->collections  = array();
-        $this->joined       = array();
-        $this->joins        = array();
+        $this->collections  = array();                  
+        $this->joins            = array();
+        $this->tableIndexes     = array();
+        $this->tableAliases     = array();
     }
     /**
      * loadFields      
@@ -192,9 +193,29 @@ class Doctrine_Query extends Doctrine_Access {
         if(isset($this->parts[$name])) {
             $method = "parse".ucwords($name);
             switch($name):
+                case "from":
+                    $this->parts['from']    = array();
+                    $this->parts['columns'] = array();
+                    $this->parts['join']    = array();
+                    $this->joins            = array();
+                    $this->tables           = array();
+                    $this->fetchModes       = array();
+                    $this->tableIndexes     = array();
+                    $this->tableAliases     = array();
+                    
+                    $class = "Doctrine_Query_".ucwords($name);
+                    $parser = new $class($this);
+                    
+                    $parser->parse($args[0]);
+                break;
                 case "where":
-                case "having":
-                    $this->parts[$name] = array($this->$method($args[0]));
+                case "having": 
+                case "orderby":
+                case "groupby":
+                    $class = "Doctrine_Query_".ucwords($name);
+                    $parser = new $class($this);
+
+                    $this->parts[$name] = array($parser->parse($args[0]));
                 break;
                 case "limit":
                 case "offset":
@@ -203,14 +224,6 @@ class Doctrine_Query extends Doctrine_Access {
 
                     $this->parts[$name] = $args[0];
                 break;
-                case "from":
-                    $this->parts['columns'] = array();
-                    $this->parts['join']    = array();
-                    $this->joins            = array();
-                    $this->tables           = array();
-                    $this->fetchModes       = array();
-                    $this->tableIndexes     = array();
-                    $this->tableAliases     = array();
                 default:
                     $this->parts[$name] = array();
                     $this->$method($args[0]);
@@ -308,14 +321,9 @@ class Doctrine_Query extends Doctrine_Access {
         }
 
 
-        if( ! empty($this->parts["groupby"]))
-            $q .= " GROUP BY ".implode(", ",$this->parts["groupby"]);
-
-        if( ! empty($this->parts["having"]))
-            $q .= " HAVING ".implode(" ",$this->parts["having"]);
-
-        if( ! empty($this->parts["orderby"]))
-            $q .= " ORDER BY ".implode(", ",$this->parts["orderby"]);
+        $q .= ( ! empty($this->parts['groupby']))?" GROUP BY ".implode(", ",$this->parts["groupby"]):'';
+        $q .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
+        $q .= ( ! empty($this->parts['orderby']))?" ORDER BY ".implode(" ",$this->parts["orderby"]):'';
 
         if( ! empty($this->parts["limit"]) || ! empty($this->offset))
             $q = $this->session->modifyLimitQuery($q,$this->parts["limit"],$this->offset);
@@ -361,36 +369,6 @@ class Doctrine_Query extends Doctrine_Access {
         $str .= implode(" AND ",$c);
 
         return $str;
-    }
-    /**
-     * @param string $where
-     * @return boolean
-     */
-    final public function addWhere($where) {
-        if(empty($where))
-            return false;
-
-        if($this->parts["where"]) {
-            $this->parts["where"][] = "AND (".$where.")";
-        } else {
-            $this->parts["where"][] = "(".$where.")";
-        }
-        return true;
-    }
-    /**
-     * @param string $having
-     * @return boolean
-     */
-    final public function addHaving($having) {
-        if(empty($having))
-            return false;
-
-        if($this->parts["having"]) {
-            $this->parts["having"][] = "AND (".$having.")";
-        } else {
-            $this->parts["having"][] = "(".$having.")";
-        }
-        return true;
     }
     /**
      * getData
@@ -695,15 +673,18 @@ class Doctrine_Query extends Doctrine_Access {
                 case "where":
                 case "limit":
                 case "offset":
+                case "having":
                     $p = $part;
                     $parts[$part] = array();
                 break;
                 case "order":
-                    $p = $part;
-                    $i = $k+1;
-                    if(isset($e[$i]) && strtolower($e[$i]) == "by") {
+                case "group":
+                    $i = ($k + 1);
+                    if(isset($e[$i]) && strtolower($e[$i]) === "by") {
+                        $p = $part;
                         $parts[$part] = array();
-                    }
+                    } else 
+                        $parts[$p][] = $part;
                 break;
                 case "by":
                     continue;
@@ -719,14 +700,22 @@ class Doctrine_Query extends Doctrine_Access {
                     $this->parseSelect($part);
                 break;
                 case "FROM":
-                    $this->parseFrom($part);
+
+                    $class  = "Doctrine_Query_".ucwords(strtolower($k));
+                    $parser = new $class($this);
+                    $parser->parse($part);
                 break;
-                case "WHERE":
-                    $this->addWhere($this->parseWhere($part));
-                break;
+                case "GROUP":
                 case "ORDER":
-                    $this->parseOrderBy($part);
-                break;  
+                    $k .= "by";
+                case "WHERE":
+                case "HAVING":
+                    $class  = "Doctrine_Query_".ucwords(strtolower($k));
+                    $parser = new $class($this);
+
+                    $name = strtolower($k);
+                    $this->parts[$name][] = $parser->parse($part);
+                break;
                 case "LIMIT":
                     $this->parts["limit"] = trim($part);
                 break;
@@ -743,86 +732,9 @@ class Doctrine_Query extends Doctrine_Access {
      * @param string $str
      * @return void
      */
-    private function parseOrderBy($str) {
-        foreach(explode(",",trim($str)) as $r) {
-            $r = trim($r);
-            $e = explode(" ",$r);
-            $a = explode(".",$e[0]);
-    
-            if(count($a) > 1) {
-                $field     = array_pop($a);
-                $reference = implode(".",$a);
-                $name      = end($a);
-
-                $this->load($reference, false);
-                $alias     = $this->tableAliases[$reference];
-                $tname     = $this->tables[$alias]->getTableName();
-
-                $r = $tname.".".$field;
-                if(isset($e[1])) 
-                    $r .= " ".$e[1];
-            }
-            $this->parts["orderby"][] = $r;
-        }
-    }
-    /**
-     * DQL SELECT PARSER
-     * parses the select part of the query string
-     *
-     * @param string $str
-     * @return void
-     */
-    private function parseSelect($str) {
-        $this->aggregate = true;
-        foreach(explode(",",trim($str)) as $reference) {
-
-            $e = explode(" AS ",trim($reference));
-
-            $f = explode("(",$e[0]);
-            $a = explode(".",$f[1]);
-            $field = substr(array_pop($a),0,-1);
-
-            $reference = trim(implode(".",$a));
-
-            $objTable = $this->load($reference);
-            if(isset($e[1]))
-                $s = " AS $e[1]";
-
-            $this->parts["columns"][] = $f[0]."(".$objTable->getTableName().".$field)$s";
-
-        }
-    }
-    /**
-     * DQL GROUP BY PARSER
-     * parses the group by part of the query string
-
-     * @param string $str
-     * @return void
-     */
-    private function parseGroupBy($str) {
-        foreach(explode(",", $str) as $reference) {
-            $reference = trim($reference);
-            $e     = explode(".",$reference);
-            $field = array_pop($e);
-            $table = $this->load(implode(".",$e));
-            $component = $table->getComponentName();
-            $this->parts["groupby"][] = $this->tableAliases[$component].".".$field;
-        }
-    }
-    /**
-     * DQL FROM PARSER
-     * parses the from part of the query string
-
-     * @param string $str
-     * @return void
-     */
-    private function parseFrom($str) {
-        foreach(self::bracketExplode(trim($str),",", "(",")") as $reference) {
-            $reference = trim($reference);
-            $a         = explode(".",$reference);
-            $field     = array_pop($a);
-            $table = $this->load($reference);
-        }
+    final public function parseOrderBy($str) {
+        $parser = new Doctrine_Query_Part_Orderby($this);
+        return $parser->parse($str);
     }
     /**
      * returns Doctrine::FETCH_* constant
@@ -830,7 +742,7 @@ class Doctrine_Query extends Doctrine_Access {
      * @param string $mode
      * @return integer
      */
-    private function parseFetchMode($mode) {
+    final public function parseFetchMode($mode) {
         switch(strtolower($mode)):
             case "i":
             case "immediate":
@@ -855,74 +767,6 @@ class Doctrine_Query extends Doctrine_Access {
                 throw new DQLException("Unknown fetchmode '$mode'. The availible fetchmodes are 'i', 'b' and 'l'.");
         endswitch;
         return $fetchmode;
-    }
-    /**
-     * DQL CONDITION PARSER
-     * parses the where/having part of the query string
-     *
-     *
-     * @param string $str
-     * @return string
-     */
-    private function parseCondition($str, $type = 'Where') {
-
-        $tmp = trim($str);
-        $str = self::bracketTrim($tmp,"(",")");
-        
-        $brackets = false;
-        $loadMethod = "load".$type;
-
-        while($tmp != $str) {
-            $brackets = true;
-            $tmp = $str;
-            $str = self::bracketTrim($str,"(",")");
-        }
-
-        $parts = self::bracketExplode($str," && ","(",")");
-        if(count($parts) > 1) {
-            $ret = array();
-            foreach($parts as $part) {
-                $ret[] = $this->parseCondition($part, $type);
-            }
-            $r = implode(" AND ",$ret);
-        } else {
-            $parts = self::bracketExplode($str," || ","(",")");
-            if(count($parts) > 1) {
-                $ret = array();
-                foreach($parts as $part) {
-                    $ret[] = $this->parseCondition($part, $type);
-                }
-                $r = implode(" OR ",$ret);
-            } else {
-                return $this->$loadMethod($parts[0]);
-            }
-        }
-        if($brackets)
-            return "(".$r.")";
-        else
-            return $r;
-    }
-    /**
-     * DQL WHERE PARSER
-     * parses the where part of the query string
-     *
-     *
-     * @param string $str
-     * @return string
-     */
-    private function parseWhere($str) {
-        return $this->parseCondition($str,'Where');
-    }
-    /**
-     * DQL HAVING PARSER
-     * parses the having part of the query string
-     *
-     *
-     * @param string $str
-     * @return string
-     */
-    private function parseHaving($str) {
-        return $this->parseCondition($str,'Having');
     }
     /**
      * trims brackets
@@ -970,91 +814,7 @@ class Doctrine_Query extends Doctrine_Access {
         }
         return $term;
     }
-    /**
-     * DQL Aggregate Function parser
-     *
-     * @param string $func
-     * @return mixed
-     */
-    private function parseAggregateFunction($func) {
-        $pos = strpos($func,"(");
 
-        if($pos !== false) {
-
-            $funcs  = array();
-
-            $name   = substr($func, 0, $pos);
-            $func   = substr($func, ($pos + 1), -1);
-            $params = self::bracketExplode($func, ",", "(", ")");
-
-            foreach($params as $k => $param) {
-                $params[$k] = $this->parseAggregateFunction($param);
-            }
-
-            $funcs = $name."(".implode(", ", $params).")";
-
-            return $funcs;
-
-        } else {
-            if( ! is_numeric($func)) {
-                $a = explode(".",$func);
-                $field     = array_pop($a);
-                $reference = implode(".",$a);
-                $table     = $this->load($reference, false);
-                $func      = $this->tableAliases[$reference].".".$field;
-
-                return $func;
-            } else {
-                return $func;
-            }
-        }
-    }
-    /**
-     * loadHaving
-     * returns the parsed query part
-     *
-     * @param string $having
-     * @return string
-     */
-    private function loadHaving($having) {
-        $e = self::bracketExplode($having," ","(",")");
-
-        $r = array_shift($e);
-        $t = explode("(",$r);
-
-        $count = count($t);
-        $r = $this->parseAggregateFunction($r);
-        $operator  = array_shift($e);
-        $value     = implode(" ",$e);
-        $r .= " ".$operator." ".$value;
-
-        return $r;
-    }
-    /**
-     * loadWhere
-     * returns the parsed query part
-     *
-     * @param string $where
-     * @return string
-     */
-    private function loadWhere($where) {
-        $e = explode(" ",$where);
-        $r = array_shift($e);
-        $a = explode(".",$r);
-
-
-        if(count($a) > 1) {
-            $field     = array_pop($a);
-            $operator  = array_shift($e);
-            $value     = implode(" ",$e);
-            $reference = implode(".",$a);
-            $count     = count($a);
-
-            $table     = $this->load($reference, false);
-            $where     = $this->tableAliases[$reference].".".$field." ".$operator." ".$value;
-        }
-        return $where;
-    }
     /**
      * generateAlias
      *

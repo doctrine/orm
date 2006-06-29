@@ -6,6 +6,87 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "enumTest";
         parent::prepareTables();
     }
+
+    public function testJoinTableSelfReferencing() {
+        $e = new Entity();
+        $e->name = "Entity test";
+        $this->assertTrue($e->Entity[0] instanceof Entity);
+        $this->assertTrue($e->Entity[1] instanceof Entity);
+
+        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_TCLEAN);
+        
+        $e->Entity[0]->name = "Friend 1";
+        $e->Entity[1]->name = "Friend 2";
+        
+        $e->Entity[0]->Entity[0]->name = "Friend 1 1";
+        $e->Entity[0]->Entity[1]->name = "Friend 1 2";
+
+        $e->Entity[1]->Entity[0]->name = "Friend 2 1";
+        $e->Entity[1]->Entity[1]->name = "Friend 2 2";
+
+        $this->assertEqual($e->Entity[0]->name, "Friend 1");
+        $this->assertEqual($e->Entity[1]->name, "Friend 2");
+
+        $this->assertEqual($e->Entity[0]->Entity[0]->name, "Friend 1 1");
+        $this->assertEqual($e->Entity[0]->Entity[1]->name, "Friend 1 2");
+
+        $this->assertEqual($e->Entity[1]->Entity[0]->name, "Friend 2 1");
+        $this->assertEqual($e->Entity[1]->Entity[1]->name, "Friend 2 2");
+
+
+        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_TDIRTY);
+
+        $e->save();
+
+        $this->assertTrue($e->Entity[0] instanceof Entity);
+        $this->assertTrue($e->Entity[1] instanceof Entity);
+
+        $this->assertEqual($e->Entity[0]->name, "Friend 1");
+        $this->assertEqual($e->Entity[1]->name, "Friend 2");
+
+        $this->assertEqual($e->Entity[0]->Entity[0]->name, "Friend 1 1");
+        $this->assertEqual($e->Entity[0]->Entity[1]->name, "Friend 1 2");
+
+        $this->assertEqual($e->Entity[1]->Entity[0]->name, "Friend 2 1");
+        $this->assertEqual($e->Entity[1]->Entity[1]->name, "Friend 2 2");
+
+        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
+
+        $e = $e->getTable()->find($e->getID());
+        
+        $this->assertTrue($e->Entity[0] instanceof Entity);
+        $this->assertTrue($e->Entity[1] instanceof Entity);
+
+        $this->assertEqual($e->Entity[0]->name, "Friend 1");
+        $this->assertEqual($e->Entity[1]->name, "Friend 2");
+
+        $this->assertEqual($e->Entity[0]->Entity[0]->name, "Friend 1 1");
+        $this->assertEqual($e->Entity[0]->Entity[1]->name, "Friend 1 2");
+
+        $this->assertEqual($e->Entity[1]->Entity[0]->name, "Friend 2 1");
+        $this->assertEqual($e->Entity[1]->Entity[1]->name, "Friend 2 2");
+
+        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
+        
+        $coll = $this->session->query("FROM Entity WHERE Entity.name = 'Friend 1'");
+        $this->assertEqual($coll->count(), 1);
+        $this->assertEqual($coll[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        
+        $this->assertEqual($coll[0]->name, "Friend 1");
+        
+        $query = new Doctrine_Query($this->session);
+
+        $query->from("Entity.Entity")->where("Entity.Entity.name = 'Friend 1 1'");
+
+        $coll = $query->execute();
+
+        $this->assertEqual($coll->count(), 1);
+    }
+
     public function testEnumType() {
         $enum = new EnumTest();
         $enum->status = "open";
@@ -44,52 +125,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->name, 'z');
     }
 
-    public function testJoinTableSelfReferencing() {
-        $e = new Entity();
-        $e->name = "Entity test";
-        $this->assertTrue($e->Entity[0] instanceof Entity);
-        $this->assertTrue($e->Entity[1] instanceof Entity);
 
-        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_TCLEAN);
-        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_TCLEAN);
-        
-        $e->Entity[0]->name = "Subentity 1";
-        $e->Entity[1]->name = "Subentity 2";
-        
-        $this->assertEqual($e->Entity[0]->name, "Subentity 1");
-        $this->assertEqual($e->Entity[1]->name, "Subentity 2");   
-
-        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_TDIRTY);
-        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_TDIRTY);
-
-        $e->save();
-
-        $this->assertTrue($e->Entity[0] instanceof Entity);
-        $this->assertTrue($e->Entity[1] instanceof Entity);
-        
-        $this->assertEqual($e->Entity[0]->name, "Subentity 1");
-        $this->assertEqual($e->Entity[1]->name, "Subentity 2");
-
-        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
-
-        $e = $e->getTable()->find($e->getID());
-        
-        $this->assertTrue($e->Entity[0] instanceof Entity);
-        $this->assertTrue($e->Entity[1] instanceof Entity);
-
-        $this->assertEqual($e->Entity[0]->name, "Subentity 1");
-        $this->assertEqual($e->Entity[1]->name, "Subentity 2");
-
-        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
-        
-        $coll = $this->session->query("FROM Entity WHERE Entity.name = 'Subentity 1'");
-        $this->assertEqual($coll->count(), 1);
-        $this->assertEqual($coll[0]->getState(), Doctrine_Record::STATE_CLEAN);
-        
-        $this->assertEqual($coll[0]->name, "Subentity 1");
-    }
 
     public function testCompositePK() {
         $record = new EntityReference();

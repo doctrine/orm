@@ -39,11 +39,6 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @var integer $transaction_level      the nesting level of transactions, used by transaction methods
      */
     private $transaction_level  = 0;
-
-    /**
-     * @var PDO $cacheHandler               cache handler
-     */
-    private $cacheHandler;
     /**
      * @var array $tables                   an array containing all the initialized Doctrine_Table objects
      *                                      keys representing Doctrine_Table component names and values as Doctrine_Table objects
@@ -87,22 +82,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);   
 
-        switch($this->getAttribute(Doctrine::ATTR_CACHE)):
-            case Doctrine::CACHE_SQLITE:
-                $dir = $this->getAttribute(Doctrine::ATTR_CACHE_DIR).DIRECTORY_SEPARATOR;
-                $dsn = "sqlite:".$dir."data.cache";
-
-                $this->cacheHandler = Doctrine_DB::getConn($dsn);
-                $this->cacheHandler->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $this->cacheHandler->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-            break;
-        endswitch;
-
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
-    }
-
-    public function getCacheHandler() {
-        return $this->cacheHandler;
     }
     /**
      * returns the state of this session

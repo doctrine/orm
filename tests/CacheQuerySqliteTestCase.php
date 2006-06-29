@@ -10,7 +10,7 @@ class Doctrine_Cache_Query_SqliteTestCase extends Doctrine_UnitTestCase {
         if(file_exists($dir.DIRECTORY_SEPARATOR."stats.cache"))
             unlink($dir.DIRECTORY_SEPARATOR."stats.cache");
 
-        $this->cache = new Doctrine_Cache_Query_Sqlite($this->objTable);
+        $this->cache = new Doctrine_Cache_Query_Sqlite($this->session);
         $this->cache->deleteAll();
     }
     public function testStore() {
