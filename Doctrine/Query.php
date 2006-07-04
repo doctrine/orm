@@ -181,7 +181,27 @@ class Doctrine_Query extends Doctrine_Access {
             }
         }
     }
-    /** 
+    /**
+     * addFrom
+     * 
+     * @param strint $from
+     */
+    public function addFrom($from) {
+        $class = "Doctrine_Query_From";
+        $parser = new $class($this);
+        $parser->parse($from);
+    }
+    /**
+     * addWhere
+     *
+     * @param string $where
+     */
+    public function addWhere($where) {
+        $class  = "Doctrine_Query_Where";
+        $parser = new $class($this);
+        $this->parts['where'][] = $parser->parse($where);
+    }
+    /**
      * sets a query part
      *
      * @param string $name
@@ -190,6 +210,7 @@ class Doctrine_Query extends Doctrine_Access {
      */
     public function __call($name, $args) {
         $name = strtolower($name);
+        
         if(isset($this->parts[$name])) {
             $method = "parse".ucwords($name);
             switch($name):
@@ -423,8 +444,6 @@ class Doctrine_Query extends Doctrine_Access {
                 return $this->getCollection($keys[0]);
             break;
             default:
-                $query = $this->getQuery();
-
                 $keys  = array_keys($this->tables);
                 $root  = $keys[0];
 
@@ -436,6 +455,7 @@ class Doctrine_Query extends Doctrine_Access {
                 $prev[$root] = $coll;
 
                 $array = $this->parseData($stmt);
+
 
                 $colls = array();
                 
@@ -664,7 +684,8 @@ class Doctrine_Query extends Doctrine_Access {
     final public function parseQuery($query) {
         $this->clear();
         $e = self::bracketExplode($query," ","(",")");
-            
+
+
         $parts = array();
         foreach($e as $k=>$part):
             switch(strtolower($part)):
@@ -939,34 +960,14 @@ class Doctrine_Query extends Doctrine_Access {
                     $tableName = $tname2;
                 }
 
-
-                // parse the fetchmode and load table fields
-
                 if( ! isset($this->tables[$tableName])) {
                     $this->tables[$tableName] = $table;
 
                     if($loadFields && ! $this->aggregate) {
-                        $fields = array();
-
-                        if(strpos($fullname, "-") === false) {
-                            $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
-                            
-                            if(isset($e2[1]))
-                                $fields = explode(",",substr($e2[1],0,-1));
-
-                        } else {
-                            if(isset($e2[1])) {
-                                $fetchmode = $this->parseFetchMode($e2[1]);
-                            } else
-                                $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
-                                
-                            if(isset($e2[2]))
-                                $fields = explode(",",substr($e2[2],0,-1));
-                        }
-
-                        $this->loadFields($table, $fetchmode, $fields, $currPath);
+                        $this->parseFields($fullname, $tableName, $e2, $currPath);
                     }
                 }
+
 
                 $prevPath  = $currPath;
                 $prevTable = $tableName;
@@ -975,6 +976,38 @@ class Doctrine_Query extends Doctrine_Access {
             }
         }
         return $table;
+    }
+    /**
+     * parseFields
+     *
+     * @param string $fullName
+     * @param string $tableName
+     * @param array $exploded
+     * @param string $currPath
+     * @return void
+     */
+    final public function parseFields($fullName, $tableName, $exploded, $currPath) {
+        $table = $this->tables[$tableName];
+
+        $fields = array();
+
+        if(strpos($fullName, "-") === false) {
+            $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
+
+            if(isset($exploded[1]))
+                $fields = explode(",",substr($exploded[1],0,-1));
+
+            } else {
+                if(isset($exploded[1])) {
+                    $fetchmode = $this->parseFetchMode($exploded[1]);
+                } else
+                    $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
+
+                if(isset($exploded[2]))
+                    $fields = explode(",",substr($exploded[2],0,-1));
+            }
+
+        $this->loadFields($table, $fetchmode, $fields, $currPath);
     }
 }
 

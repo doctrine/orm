@@ -34,6 +34,41 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(), 8);
     }
     */
+    public function testConditionParser() {
+        $query = new Doctrine_Query($this->session);
+
+        $query->from("User(id)")->where("User.name LIKE 'z%' || User.name LIKE 's%'");
+
+        $sql = "SELECT entity.id AS entity__id FROM entity WHERE (entity.name LIKE 'z%' OR entity.name LIKE 's%') AND (entity.type = 0)";
+        $this->assertEqual($query->getQuery(), $sql);
+
+        $query->where("(User.name LIKE 'z%') || (User.name LIKE 's%')");
+        $this->assertEqual($query->getQuery(), $sql);
+
+        $query->where("((User.name LIKE 'z%') || (User.name LIKE 's%'))");
+        $this->assertEqual($query->getQuery(), $sql);
+
+        $query->where("(((User.name LIKE 'z%') || (User.name LIKE 's%')))");
+        $this->assertEqual($query->getQuery(), $sql);
+
+        $query->where("(((User.name LIKE 'z%') || User.name LIKE 's%'))");
+        $this->assertEqual($query->getQuery(), $sql);
+
+        $query->where("(User.name LIKE 'z%') || User.name LIKE 's%' && User.name LIKE 'a%'");
+
+        $sql = "SELECT entity.id AS entity__id FROM entity WHERE ((entity.name LIKE 'z%' OR entity.name LIKE 's%') AND entity.name LIKE 'a%') AND (entity.type = 0)";
+
+        $this->assertEqual($query->getQuery(), $sql);
+
+        $query->where("(((User.name LIKE 'z%') || User.name LIKE 's%')) && User.name LIKE 'a%'");
+        $this->assertEqual($query->getQuery(), $sql);
+
+        $query->where("((((User.name LIKE 'z%') || User.name LIKE 's%')) && User.name LIKE 'a%')");
+        $this->assertEqual($query->getQuery(), $sql);
+
+        $query->where("(((((User.name LIKE 'z%') || User.name LIKE 's%')) && User.name LIKE 'a%'))");
+        $this->assertEqual($query->getQuery(), $sql);
+    }
 
     public function testSelfReferencing() {
         $query = new Doctrine_Query($this->session);

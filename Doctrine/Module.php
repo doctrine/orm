@@ -3,7 +3,7 @@ class Doctrine_Module implements IteratorAggregate, Countable {
     /**
      * @var array $components   an array containing all the components in this module
      */
-    private $components = array();
+    protected $components = array();
     /**
      * @var string $name        the name of this module
      */
