@@ -16,6 +16,7 @@ class Doctrine_DebugMessage {
     }
 }
 class Doctrine_EventListener_Debugger extends Doctrine_EventListener {
+
     const EVENT_LOAD            = 1;
     const EVENT_PRELOAD         = 2;
     const EVENT_SLEEP           = 3;

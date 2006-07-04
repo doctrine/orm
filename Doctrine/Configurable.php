@@ -118,8 +118,12 @@ abstract class Doctrine_Configurable {
      * @param Doctrine_EventListener $listener
      * @return void
      */
-    final public function setEventListener(Doctrine_EventListener $listener) {
+    final public function setEventListener($listener) {
         $i = Doctrine::ATTR_LISTENER;
+        if( ! ($listener instanceof Doctrine_EventListener) && 
+            ! ($listener instanceof Doctrine_EventListener_Chain))
+            throw new Doctrine_Exception("EventListener must extend Doctrine_EventListener or Doctrine_EventListener_Chain");
+
         $this->attributes[$i] = $listener;
     }
     /**
