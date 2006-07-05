@@ -40,7 +40,8 @@ class Doctrine_DataDict {
             try {
                 $this->dbh->query($sql);
             } catch(PDOException $e) {
-                $return = false;
+
+                $return = $e;
             }
         }
 

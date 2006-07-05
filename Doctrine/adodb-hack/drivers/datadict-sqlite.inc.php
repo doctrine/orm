@@ -56,6 +56,7 @@ class ADODB2_sqlite extends ADODB_DataDict {
 		if ($funsigned) $suffix .= ' UNSIGNED';
 		if ($fnotnull) $suffix .= ' NOT NULL';
 		if (strlen($fdefault)) $suffix .= " DEFAULT $fdefault";
+
 		if ($fautoinc) $suffix .= ' PRIMARY KEY AUTOINCREMENT';
 		if ($fconstraint) $suffix .= ' '.$fconstraint;
 		return $suffix;
@@ -77,12 +78,12 @@ class ADODB2_sqlite extends ADODB_DataDict {
 		}
 		$s = "CREATE TABLE $tabname (\n";
 		$s .= implode(",\n", $lines);
-        /**
-		if (sizeof($pkey)>0) {
+
+		if (sizeof($pkey)>0 && ! $this->autoIncrement) {
 			$s .= ",\n				 PRIMARY KEY (";
 			$s .= implode(", ",$pkey).")";
 		}
-		*/
+
         if (isset($tableoptions['CONSTRAINTS']))
 			$s .= "\n".$tableoptions['CONSTRAINTS'];
 
