@@ -61,15 +61,15 @@ class Doctrine_DataDict {
             case "o":
             case "string":
             case "s":
-                if($length < 255)
+                if($length <= 255)
                     return "C($length)";
-                elseif($length < 4000) 
+                elseif($length <= 4000)
                     return "X";
                 else
                     return "X2";
             break;
             case "mbstring":
-                if($length < 255) 
+                if($length <= 255)
                     return "C2($length)";
                 
                 return "X2";
