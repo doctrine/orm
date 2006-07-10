@@ -812,14 +812,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                                 $this->loadReference($alias);
                             }
 
-                            $r = $this->getRelationOperations($alias,$new);
+                            $r = Doctrine_Relation::getDeleteOperations($this->originals[$alias],$new);
 
-                            foreach($r["delete"] as $record) {
+                            foreach($r as $record) {
                                 $query = "DELETE FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." = ?"
                                                                             ." AND ".$fk->getLocal()." = ?";
                                 $this->table->getSession()->execute($query, array($record->getIncremented(),$this->getIncremented()));
                             }
-                            foreach($r["add"] as $record) {
+                            
+                            $r = Doctrine_Relation::getInsertOperations($this->originals[$alias],$new);
+                            foreach($r as $record) {
                                 $reldao = $asf->create();
                                 $reldao->set($fk->getForeign(),$record);
                                 $reldao->set($fk->getLocal(),$this);
@@ -846,9 +848,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             if( ! isset($this->originals[$alias]))
                                 $this->loadReference($alias);
 
-                            $r = $this->getRelationOperations($alias,$new);
+                            $r = Doctrine_Relation::getDeleteOperations($this->originals[$alias], $new);
 
-                            foreach($r["delete"] as $record) {
+                            foreach($r as $record) {
                                 $record->delete();
                             }
                             
@@ -858,68 +860,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 endswitch;
             }
         endforeach;
-    }
-    /**
-     * get the records that need to be added
-     * and/or deleted in order to change the old collection
-     * to the new one
-     *
-     * The algorithm here is very simple and definitely not
-     * the fastest one, since we have to iterate through the collections twice.
-     * the complexity of this algorithm is O(n^2)
-     *
-     * First we iterate through the new collection and get the
-     * records that do not exist in the old collection (Doctrine_Records that need to be added).
-     *
-     * Then we iterate through the old collection and get the records
-     * that do not exists in the new collection (Doctrine_Records that need to be deleted).
-     */
-    final public function getRelationOperations($name, Doctrine_Collection $new) {
-        $r["add"]    = array();
-        $r["delete"] = array();
-
-
-
-        foreach($new as $k=>$record) {
-
-            $found = false;
-
-            $id = $record->getIncremented();
-            if( ! empty($id)) {
-                foreach($this->originals[$name] as $k2 => $record2) {
-                    if($record2->getIncremented() === $record->getIncremented()) {
-                        $found = true;
-                        break;
-                    }
-                }
-            }
-            if( ! $found) {
-                $this->originals[$name][] = $record;
-                $r["add"][] = $record;
-            }
-        }
-
-        foreach($this->originals[$name] as $k => $record) {
-            $id = $record->getIncremented();
-
-            if(empty($id))
-                continue;
-
-            $found = false;
-            foreach($new as $k2 => $record2) {
-                if($record2->getIncremented() === $record->getIncremented()) {
-                    $found = true;
-                    break;
-                }
-            }
-
-            if( ! $found)  {
-                $r["delete"][] = $record;
-                unset($this->originals[$name][$k]);
-            }
-        }
-
-        return $r;
     }
     /**
      * getOriginals

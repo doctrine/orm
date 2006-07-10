@@ -96,6 +96,80 @@ class Doctrine_Relation {
         return $this->foreign;
     }
     /**
+     * getDeleteOperations
+     *
+     * get the records that need to be deleted in order to change the old collection
+     * to the new one
+     *
+     * The algorithm here is very simple and definitely not
+     * the fastest one, since we have to iterate through the collections twice.
+     * the complexity of this algorithm is O(n^2)
+     *
+     * We iterate through the old collection and get the records
+     * that do not exists in the new collection (Doctrine_Records that need to be deleted).
+     */
+    final public static function getDeleteOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
+        $r = array();
+
+        foreach($old as $k => $record) {
+            $id = $record->getIncremented();
+
+            if(empty($id))
+                continue;
+
+            $found = false;
+            foreach($new as $k2 => $record2) {
+                if($record2->getIncremented() === $record->getIncremented()) {
+                    $found = true;
+                    break;
+                }
+            }
+
+            if( ! $found)  {
+                $r[] = $record;
+                unset($old[$k]);
+            }
+        }
+
+        return $r;
+    }
+    /**
+     * getInsertOperations
+     *
+     * get the records that need to be added in order to change the old collection
+     * to the new one
+     *
+     * The algorithm here is very simple and definitely not
+     * the fastest one, since we have to iterate through the collections twice.
+     * the complexity of this algorithm is O(n^2)
+     *
+     * We iterate through the old collection and get the records
+     * that exists only in the new collection (Doctrine_Records that need to be added).
+     */
+    final public static function getInsertOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
+        $r = array();
+
+        foreach($new as $k => $record) {
+            $found = false;
+
+            $id = $record->getIncremented();
+            if( ! empty($id)) {
+                foreach($old as $k2 => $record2) {
+                    if($record2->getIncremented() === $record->getIncremented()) {
+                        $found = true;
+                        break;
+                    }
+                }
+            }
+            if( ! $found) {
+                $old[] = $record;
+                $r[] = $record;
+            }
+        }
+
+        return $r;
+    }
+    /**
      * __toString
      */
     public function __toString() {
