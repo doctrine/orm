@@ -551,7 +551,7 @@ class Doctrine_Query extends Doctrine_Access {
 
                                         // one-to-one relation
 
-                                        $last->internalSet($fk->getLocal(), $record->getID());
+                                        $last->internalSet($fk->getLocal(), $record->getIncremented());
 
                                         $last->initSingleReference($record, $fk);
 

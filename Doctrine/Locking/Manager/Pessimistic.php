@@ -86,7 +86,9 @@ class Doctrine_Locking_Manager_Pessimistic
             try {
                 $stmt->execute();
                 $gotLock = true;
-            } catch(PDOException $pkviolation) {
+            
+            // we catch an Exception here instead of PDOException since we might also be catching Doctrine_Exception
+            } catch(Exception $pkviolation) {
                 // PK violation occured => existing lock!
             }
             
@@ -112,9 +114,9 @@ class Doctrine_Locking_Manager_Pessimistic
             $dbh->commit();
                        
         }
-        catch(PDOException $pdoe)
+        catch(Exception $pdoe)
         {
-            $dbh->rollBack();
+            $dbh->rollback();
             throw new Doctrine_Locking_Exception($pdoe->getMessage());
         }
         

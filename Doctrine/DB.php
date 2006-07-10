@@ -129,12 +129,17 @@ class Doctrine_DBStatement extends PDOStatement {
     /**
      * @param array $params
      */
-    public function execute(array $params = null) {
-        $time     = microtime();
-        $result   = parent::execute($params);
+    public function execute(array $params = array()) {
 
+        $time     = microtime();
+        try {
+            $result   = parent::execute($params);
+        } catch(PDOException $e) {
+            throw new Doctrine_Exception($this->queryString." ".$e->__toString());
+        }
         $exectime = (microtime() - $time);
         $this->dbh->addExecTime($exectime);
+
         return $result;
     }
 }

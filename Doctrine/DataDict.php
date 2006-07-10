@@ -37,10 +37,9 @@ class Doctrine_DataDict {
 
         $return = true;
         foreach($a as $sql) {
-            try {
+            try {   
                 $this->dbh->query($sql);
-            } catch(PDOException $e) {
-
+            } catch(Exception $e) {
                 $return = $e;
             }
         }
@@ -71,7 +70,7 @@ class Doctrine_DataDict {
             case "mbstring":
                 if($length <= 255)
                     return "C2($length)";
-                
+
                 return "X2";
             case "clob":
                 return "XL";

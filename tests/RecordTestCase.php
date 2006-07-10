@@ -7,6 +7,12 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
     }
 
+    public function testReferences2() {
+        $user = new User();
+        $user->Phonenumber[0]->phonenumber = '123 123';
+        $this->assertEqual($user->Phonenumber[0]->entity_id, $user);
+    }
+
     public function testJoinTableSelfReferencing() {
         $e = new Entity();
         $e->name = "Entity test";
@@ -54,8 +60,9 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
+        
 
-        $e = $e->getTable()->find($e->getID());
+        $e = $e->getTable()->find($e->id);
         
         $this->assertTrue($e->Entity[0] instanceof Entity);
         $this->assertTrue($e->Entity[1] instanceof Entity);
@@ -256,7 +263,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $account = $user->Account;
         $this->assertTrue($account instanceof Account);
         $this->assertEqual($account->getState(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($account->entity_id, $user->getID());
+        $this->assertEqual($account->entity_id, $user->id);
         $this->assertEqual($account->amount, 1000);
         $this->assertEqual($user->name, "Richard Linklater");
 
@@ -272,11 +279,11 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($account instanceof Account);
 
         $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
-        $this->assertEqual($account->entity_id, $user->getID());
+        $this->assertEqual($account->entity_id, $user->id);
         $this->assertEqual($account->amount, 2000);
 
 
-        $user = $user->getTable()->find($user->getID());
+        $user = $user->getTable()->find($user->id);
         $this->assertEqual($user->getState(), Doctrine_Record::STATE_CLEAN);
 
 
@@ -286,7 +293,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($account->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
 
-        $this->assertEqual($account->entity_id, $user->getID());
+        $this->assertEqual($account->entity_id, $user->id);
         $this->assertEqual($account->amount, 2000);
         $this->assertEqual($user->name, "John Rambo");
 
@@ -512,22 +519,32 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $coll = new Doctrine_Collection($pf);
 
         $user->Phonenumber = $coll;
-        $this->assertTrue($user->Phonenumber->count() == 0);
+        $this->assertEqual($user->Phonenumber->count(), 0);
         $user->save();
-        unset($user);
+        
+        $user->getTable()->clear();
+
         $user = $this->objTable->find(5);
 
         $this->assertEqual($user->Phonenumber->count(), 0);
+
+        $this->assertEqual(get_class($user->Phonenumber), "Doctrine_Collection_Immediate");
+
+        $user->Phonenumber[0]->phonenumber;
+        $this->assertEqual($user->Phonenumber->count(), 1);
 
         // ADDING REFERENCES
 
         $user->Phonenumber[0]->phonenumber = "123 123";
 
+        $this->assertEqual($user->Phonenumber->count(), 1);
         $user->Phonenumber[1]->phonenumber = "123 123";
+        $this->assertEqual($user->Phonenumber->count(), 2);
+
         $user->save();
 
 
-        $this->assertTrue($user->Phonenumber->count() == 2);
+        $this->assertEqual($user->Phonenumber->count(), 2);
 
         unset($user);
         $user = $this->objTable->find(5);
@@ -536,30 +553,30 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user->Phonenumber[3]->phonenumber = "123 123";
         $user->save();
 
-        $this->assertTrue($user->Phonenumber->count() == 3);
+        $this->assertEqual($user->Phonenumber->count(), 3);
         unset($user);
         $user = $this->objTable->find(5);
-        $this->assertTrue($user->Phonenumber->count() == 3);
+        $this->assertEqual($user->Phonenumber->count(), 3);
 
         // DELETING REFERENCES
 
         $user->Phonenumber->delete();
 
-        $this->assertTrue($user->Phonenumber->count() == 0);
+        $this->assertEqual($user->Phonenumber->count(), 0);
         unset($user);
         $user = $this->objTable->find(5);
-        $this->assertTrue($user->Phonenumber->count() == 0);
-        
+        $this->assertEqual($user->Phonenumber->count(), 0);
+
         // ADDING REFERENCES WITH STRING KEYS
 
         $user->Phonenumber["home"]->phonenumber = "123 123";
         $user->Phonenumber["work"]->phonenumber = "444 444";
         $user->save();
 
-        $this->assertTrue($user->Phonenumber->count() == 2);
+        $this->assertEqual($user->Phonenumber->count(), 2);
         unset($user);
         $user = $this->objTable->find(5);
-        $this->assertTrue($user->Phonenumber->count() == 2);
+        $this->assertEqual($user->Phonenumber->count(), 2);
 
         // REPLACING ONE-TO-MANY REFERENCE
         unset($coll);
@@ -586,15 +603,15 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertTrue($user->Email instanceof Email);
         $this->assertEqual($user->Email->address, "drinker@drinkmore.info");
-        $this->assertEqual($user->Email->getID(), $user->email_id);
+        $this->assertEqual($user->Email->id, $user->email_id);
 
         $user = $this->objTable->find(5);
 
         $this->assertTrue($user->Email instanceof Email);
-        $this->assertEqual($user->Email->getID(), $user->email_id);
+        $this->assertEqual($user->Email->id, $user->email_id);
         $this->assertEqual($user->Email->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($user->Email->address, "drinker@drinkmore.info");
-        $id = $user->Email->getID();
+        $id = $user->Email->id;
 
         // REPLACING ONE-TO-ONE REFERENCES
 
@@ -744,5 +761,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user = $this->session->getTable("User")->find(4);
         $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
+
 }
 ?>

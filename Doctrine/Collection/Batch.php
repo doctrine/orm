@@ -81,7 +81,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
 
             for($i = $e; $i < $e2 && $i < $this->count(); $i++):
                 if($this->data[$i] instanceof Doctrine_Record)
-                    $id = $this->data[$i]->getID();
+                    $id = $this->data[$i]->getIncremented();
                 elseif(is_array($this->data[$i]))
                     $id = $this->data[$i][$identifier];
 

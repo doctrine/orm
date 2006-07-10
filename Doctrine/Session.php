@@ -446,7 +446,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $this->transaction_level--;
     
         if($this->transaction_level == 0) {
-    
+
     
             if($this->getAttribute(Doctrine::ATTR_LOCKMODE) == Doctrine::LOCK_OPTIMISTIC) {
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this);
@@ -477,7 +477,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             } catch(PDOException $e) {
                 $this->rollback();
 
-                throw new Doctrine_Exception($e->getMessage());
+                throw new Doctrine_Exception($e->__toString());
             }
 
             $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this);
@@ -534,9 +534,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             }
 
             foreach($inserts as $k => $record) {
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
+                $table->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
                 // listen the onPreInsert event
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
+                $table->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
 
 
                 $this->insert($record);
@@ -556,9 +556,9 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                     $record->setID(true);
 
                 // listen the onInsert event
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
+                $table->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
 
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
+                $table->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
             }
         }
         $this->insert = array();
@@ -610,11 +610,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onUpdate($record);
 
                 $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
-
-                $ids[] = $record->getID();
             }
-            if(isset($record))
-                $record->getTable()->getCache()->deleteMultiple($ids);
         }
         $this->update = array();
     }
@@ -629,7 +625,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             $record = false;
             $ids    = array();
             foreach($deletes as $k => $record) {
-                $ids[] = $record->getID();
+                $ids[] = $record->getIncremented();
                 $record->setID(false);
             }
             if($record instanceof Doctrine_Record) {
@@ -745,7 +741,6 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      */
     private function update(Doctrine_Record $record) {
         $array = $record->getPrepared();
-        
 
         if(empty($array))
             return false;
@@ -760,8 +755,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                         case Doctrine_Record::STATE_TDIRTY:
                             $record->save();
                         default:
-                            $array[$name] = $value->getID();
-                            $record->set($name, $value->getID());
+                            $array[$name] = $value->getIncremented();
+                            $record->set($name, $value->getIncremented());
                     endswitch;
                 }
         endforeach;

@@ -234,7 +234,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         if(isset($this->relation)) {
             if($this->relation instanceof Doctrine_ForeignKey) {
-                $params = array($this->reference->getID());
+                $params[] = $this->reference->getIncremented();
                 $where[] = $this->reference_field." = ?";
 
                 if( ! isset($offset)) {
@@ -252,7 +252,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             } elseif($this->relation instanceof Doctrine_Association) {
     
                 $asf     = $this->relation->getAssociationFactory();
-                $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local."=".$this->getID();
+                $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local."=".$this->getIncremented();
     
                 $table = $fk->getTable();
                 $graph   = new Doctrine_DQL_Parser($table->getSession());
@@ -344,6 +344,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 if($value !== null) {
                     $this->data[$key]->rawSet($this->reference_field, $value);
                 } else {
+
                     $this->data[$key]->rawSet($this->reference_field, $this->reference);
                 }
             }
@@ -363,7 +364,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             if(is_array($record) && isset($record[$name])) {
                 $list[] = $record[$name];
             } else {
-                $list[] = $record->getID();
+                $list[] = $record->getIncremented();
             }
         endforeach;
         return $list;
@@ -407,16 +408,16 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if(isset($this->reference_field))
             $record->rawSet($this->reference_field,$this->reference);
 
+        if(in_array($record,$this->data)) {
+            return false;
+        }
+
         if(isset($key)) {
             if(isset($this->data[$key]))
                 return false;
 
             $this->data[$key] = $record;
             return true;
-        }
-        
-        if(in_array($record,$this->data)) {
-            return false;
         }
 
         if(isset($this->generator)) {

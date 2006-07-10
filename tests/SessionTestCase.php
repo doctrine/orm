@@ -136,11 +136,11 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(count($user->Group), 2);
         $user2 = $user;
 
-        $user = $this->objTable->find($user->getID());
+        $user = $this->objTable->find($user->id);
 
-        $this->assertEqual($user->getID(), $user2->getID());
+        $this->assertEqual($user->id, $user2->id);
 
-        $this->assertTrue(is_numeric($user->getID()));
+        $this->assertTrue(is_numeric($user->id));
         $this->assertTrue(is_numeric($user->email_id));
 
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
@@ -176,7 +176,7 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->session->flush();
 
 
-        $this->assertTrue($user->Phonenumber->count() == 2);
+        $this->assertEqual($user->Phonenumber->count(), 2);
 
         unset($user);
         $user = $this->objTable->find(5);
@@ -185,19 +185,19 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $user->Phonenumber[3]->phonenumber = "123 123";
         $this->session->flush();
 
-        $this->assertTrue($user->Phonenumber->count() == 3);
+        $this->assertEqual($user->Phonenumber->count(), 3);
         unset($user);
         $user = $this->objTable->find(5);
-        $this->assertTrue($user->Phonenumber->count() == 3);
+        $this->assertEqual($user->Phonenumber->count(), 3);
 
         // DELETING REFERENCES
 
         $user->Phonenumber->delete();
 
-        $this->assertTrue($user->Phonenumber->count() == 0);
+        $this->assertEqual($user->Phonenumber->count(), 0);
         unset($user);
         $user = $this->objTable->find(5);
-        $this->assertTrue($user->Phonenumber->count() == 0);
+        $this->assertEqual($user->Phonenumber->count(), 0);
         
         // ADDING REFERENCES WITH STRING KEYS
 
@@ -207,10 +207,10 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->Phonenumber->count(), 2);
         $this->session->flush();
 
-        $this->assertTrue($user->Phonenumber->count() == 2);
+        $this->assertEqual($user->Phonenumber->count(), 2);
         unset($user);
         $user = $this->objTable->find(5);
-        $this->assertTrue($user->Phonenumber->count() == 2);
+        $this->assertEqual($user->Phonenumber->count(), 2);
 
         // REPLACING ONE-TO-MANY REFERENCE
 
@@ -238,7 +238,7 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($user->Email instanceof Email);
         $user = $this->objTable->find(5);
         $this->assertEqual($user->Email->address, "drinker@drinkmore.info");
-        $id = $user->Email->getID();
+        $id = $user->Email->id;
 
         // REPLACING ONE-TO-ONE REFERENCES
 

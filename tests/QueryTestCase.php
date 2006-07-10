@@ -34,6 +34,46 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(), 8);
     }
     */
+    public function testMultipleFetching() {
+        $count = $this->dbh->count();
+        $this->session->getTable('User')->clear();
+        $this->session->getTable('Email')->clear();
+        $this->session->getTable('Phonenumber')->clear();
+
+        $users = $this->query->from("User-l.Phonenumber-i, User-l:Email-i")->execute();
+        $this->assertEqual(($count + 1),$this->dbh->count());
+        $this->assertEqual(count($users), 8);
+
+        $this->assertEqual($users[0]->Phonenumber->count(), 1);
+        $this->assertEqual(($count + 1), $this->dbh->count());
+        $this->assertEqual($users[0]->Phonenumber[0]->phonenumber, "123 123");
+        $this->assertEqual(($count + 1), $this->dbh->count());
+
+        $this->assertEqual($users[1]->Phonenumber->count(), 3);
+        $this->assertEqual(($count + 1), $this->dbh->count());
+        $this->assertEqual($users[1]->Phonenumber[0]->phonenumber, "123 123");
+        $this->assertEqual($users[1]->Phonenumber[1]->phonenumber, "456 456");
+        $this->assertEqual($users[1]->Phonenumber[2]->phonenumber, "789 789");
+        $this->assertEqual(($count + 1), $this->dbh->count());
+
+        $this->assertEqual($users[7]->Phonenumber->count(), 1);
+        $this->assertEqual(($count + 1), $this->dbh->count());
+        $this->assertEqual($users[7]->Phonenumber[0]->phonenumber, "111 567 333");
+        $this->assertEqual(($count + 1), $this->dbh->count());
+
+        $this->assertTrue($users[0]->Email instanceof Email);
+        $this->assertEqual($users[0]->Email->address, "zYne@example.com");
+        $this->assertEqual(($count + 1), $this->dbh->count());
+        $this->assertEqual($users[0]->email_id, $users[0]->Email->id);
+        $this->assertEqual(($count + 1), $this->dbh->count());
+        
+        $this->assertTrue($users[1]->Email instanceof Email);
+        $this->assertEqual($users[1]->Email->address, "arnold@example.com");
+        $this->assertEqual(($count + 1), $this->dbh->count());
+        $this->assertEqual($users[1]->email_id, $users[1]->Email->id);
+        $this->assertEqual(($count + 1), $this->dbh->count());
+    }
+
     public function testConditionParser() {
         $query = new Doctrine_Query($this->session);
 
@@ -698,45 +738,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($count, count($this->dbh));
     }
 
-    public function testMultipleFetching() {
-        $count = $this->dbh->count();
-        $this->session->getTable('User')->clear();
-        $this->session->getTable('Email')->clear();
-        $this->session->getTable('Phonenumber')->clear();
 
-        $users = $this->query->from("User-l.Phonenumber-i, User-l:Email-i")->execute();
-        $this->assertEqual(($count + 1),$this->dbh->count());
-        $this->assertEqual(count($users), 8);
-
-        $this->assertEqual($users[0]->Phonenumber->count(), 1);
-        $this->assertEqual(($count + 1), $this->dbh->count());
-        $this->assertEqual($users[0]->Phonenumber[0]->phonenumber, "123 123");
-        $this->assertEqual(($count + 1), $this->dbh->count());
-
-        $this->assertEqual($users[1]->Phonenumber->count(), 3);
-        $this->assertEqual(($count + 1), $this->dbh->count());
-        $this->assertEqual($users[1]->Phonenumber[0]->phonenumber, "123 123");
-        $this->assertEqual($users[1]->Phonenumber[1]->phonenumber, "456 456");
-        $this->assertEqual($users[1]->Phonenumber[2]->phonenumber, "789 789");
-        $this->assertEqual(($count + 1), $this->dbh->count());
-
-        $this->assertEqual($users[7]->Phonenumber->count(), 1);
-        $this->assertEqual(($count + 1), $this->dbh->count());
-        $this->assertEqual($users[7]->Phonenumber[0]->phonenumber, "111 567 333");
-        $this->assertEqual(($count + 1), $this->dbh->count());
-
-        $this->assertTrue($users[0]->Email instanceof Email);
-        $this->assertEqual($users[0]->Email->address, "zYne@example.com");
-        $this->assertEqual(($count + 1), $this->dbh->count());
-        $this->assertEqual($users[0]->email_id, $users[0]->Email->id);
-        $this->assertEqual(($count + 1), $this->dbh->count());
-        
-        $this->assertTrue($users[1]->Email instanceof Email);
-        $this->assertEqual($users[1]->Email->address, "arnold@example.com");
-        $this->assertEqual(($count + 1), $this->dbh->count());
-        $this->assertEqual($users[1]->email_id, $users[1]->Email->id);
-        $this->assertEqual(($count + 1), $this->dbh->count());
-    }
 
     public function testForeignKeyRelationFetching() {
         $count = $this->dbh->count();
@@ -870,7 +872,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $board->getTable()->clear();
 
-        $board = $board->getTable()->find($board->getID());
+        $board = $board->getTable()->find($board->id);
         $this->assertEqual($board->Threads->count(), 1);
         $this->assertEqual($board->name, "Doctrine Forum");
         $this->assertEqual($board->Category->name, "General discussion");
@@ -1189,5 +1191,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
+
 }
 ?>
