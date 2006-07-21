@@ -67,11 +67,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * @var integer $id                     the primary keys of this object
      */
-    protected $id         = array();
+    protected $id           = array();
     /**
      * @var array $data                     the record data
      */
-    protected $data       = array();
+    protected $data         = array();
     /**
      * @var integer $state                  the state of this record
      * @see STATE_* constants
@@ -80,23 +80,27 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * @var array $modified                 an array containing properties that have been modified
      */
-    protected $modified   = array();
+    protected $modified     = array();
     /**
      * @var array $collections              the collections this record is in
      */
-    private $collections = array();
+    private $collections    = array();
     /**
-     * @var mixed $references               an array containing all the references
+     * @var array $references               an array containing all the references
      */
-    private $references  = array();
+    private $references     = array();
     /**
-     * @var mixed $originals                an array containing all the original references
+     * @var array $originals                an array containing all the original references
      */
-    private $originals   = array();
+    private $originals      = array();
+    /**
+     * @var array $filters
+     */
+    private $filters        = array();
     /**
      * @var integer $index                  this index is used for creating object identifiers
      */
-    private static $index = 1;
+    private static $index   = 1;
     /**
      * @var Doctrine_Null $null             a Doctrine_Null object used for extremely fast
      *                                      null value testing
@@ -1107,6 +1111,20 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                  endswitch;
             break;
         endswitch;
+    }
+    /**
+     * filterRelated
+     * lazy initializes a new filter instance for given related component
+     *
+     * @param $componentName        name of the related component
+     * @return Doctrine_Filter
+     */
+    final public function filterRelated($componentName) {
+        if( ! isset($this->filters[$componentName])) {
+            $this->filters[$componentName] = new Doctrine_Filter($componentName);
+        }
+
+        return $this->filters[$componentName];
     }
     /**
      * sets enumerated value array for given field

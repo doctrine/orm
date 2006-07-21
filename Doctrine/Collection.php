@@ -434,7 +434,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param Doctrine_Query $query
      * @param integer $key              
      */
-    public function populate(Doctrine_Query $query) {
+    public function populate(Doctrine_Hydrate $query) {
         $name = $this->table->getComponentName();
 
         if($this instanceof Doctrine_Collection_Immediate ||

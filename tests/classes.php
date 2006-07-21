@@ -310,7 +310,7 @@ class ORM_AccessControlsGroups extends Doctrine_Record {
         $this->hasColumn("accessControlID", "integer", 11); 
         $this->hasColumn("accessGroupID", "integer", 11); 
        
-        $this->setPrimaryKey(array("accessControlID", "accessGroupID")); 
+        $this->setPrimaryKey(array("accessControlID", "accessGroupID"));
     }
 }
 class EnumTest extends Doctrine_Record {
@@ -328,7 +328,28 @@ class Log_Entry extends Doctrine_Record {
         $this->hasOne("Log_Status", "Log_Entry.status_id");
     }
 }
-
+class CPK_Test extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 255);
+    }
+    public function setUp() {
+        $this->hasMany("CPK_Test2 as Test","CPK_Association.test2_id");
+    }
+}
+class CPK_Test2 extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 255);
+    }
+    public function setUp() {
+        $this->hasMany("CPK_Test as Test","CPK_Association.test1_id");
+    }
+}
+class CPK_Association extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("test1_id", "integer", 11, "primary");
+        $this->hasColumn("test2_id", "integer", 11, "primary");
+    }
+}
 class Log_Status extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("name", "string", 255);

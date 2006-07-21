@@ -13,10 +13,6 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      */
     private $dbh;
     /**
-     * @var array $fetched              an array of fetched primary keys
-     */
-    private $fetched = array();
-    /**
      * constructor
      * 
      * Doctrine_Table $table

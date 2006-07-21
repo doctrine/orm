@@ -67,34 +67,35 @@ class Doctrine_Relation {
     /**
      * @return string                   the relation alias
      */
-    public function getAlias() {
+    final public function getAlias() {
         return $this->alias;
     }
     /**
      * @return integer                  the relation type, either 0 or 1
      */
-    public function getType() {
+    final public function getType() {
         return $this->type;
     }
     /**
      * @return object Doctrine_Table    foreign factory object
      */
-    public function getTable() {
+    final public function getTable() {
         return $this->table;
     }
     /**
      * @return string                   the name of the local column
      */
-    public function getLocal() {
+    final public function getLocal() {
         return $this->local;
     }
     /**
      * @return string                   the name of the foreignkey column where
      *                                  the localkey column is pointing at
      */
-    public function getForeign() {
+    final public function getForeign() {
         return $this->foreign;
     }
+
     /**
      * getDeleteOperations
      *
@@ -171,6 +172,8 @@ class Doctrine_Relation {
     }
     /**
      * __toString
+     *
+     * @return string
      */
     public function __toString() {
         $r[] = "<pre>";
