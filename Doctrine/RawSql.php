@@ -31,7 +31,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * parseQuery
      *
      * @param string $query
-     * @return void
+     * @return Doctrine_RawSql
      */
     public function parseQuery($query) {
         preg_match_all('/{([^}{]*)}/U', $query, $m);    
@@ -71,6 +71,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
 
         $this->parts = $parts;
         $this->parts["select"] = array();
+        
+        return $this;
     }
     /**
      * getQuery
@@ -144,7 +146,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      *
      * @param string $tableAlias
      * @param string $componentName
-     * @return void
+     * @return Doctrine_RawSql
      */
     public function addComponent($tableAlias, $componentName) {
         $e = explode(".", $componentName);
@@ -172,6 +174,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
             $prevAlias = $alias;
             $prevPath  = $currPath;
         }
+        
+        return $this;
     }
 
 }
