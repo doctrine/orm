@@ -157,7 +157,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @return mixed
      */
     public function getFirst() {
-        return $this->data[0];
+        return reset($this->data);
     }
     /**
      * @return mixed
