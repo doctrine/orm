@@ -32,7 +32,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * @var boolean $expandable             whether or not this collection has been expanded
      */
-    protected $expandable = true;   
+    protected $expandable = true;
     /**
      * @var array $expanded
      */
@@ -51,7 +51,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function __construct(Doctrine_Table $table) {
         $this->table = $table;
-        
+
         $name = $table->getAttribute(Doctrine::ATTR_COLL_KEY);
         if($name !== null) {
             $this->generator = new Doctrine_IndexGenerator($name);
@@ -85,7 +85,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         unset($vars['generator']);
 
         $vars['table'] = $vars['table']->getComponentName();
-        
+
         return serialize($vars);
     }
     /**
@@ -97,13 +97,13 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function unserialize($serialized) {
         $manager    = Doctrine_Manager::getInstance();
         $session    = $manager->getCurrentSession();
-        
+
         $array = unserialize($serialized);
 
         foreach($array as $name => $values) {
             $this->$name = $values;
         }
-        
+
         $this->table        = $session->getTable($this->table);
 
         $this->expanded     = array();
@@ -141,7 +141,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function getGenerator() {
         return $this->generator;
     }
-    /** 
+    /**
      * @return array
      */
     public function getData() {
@@ -152,6 +152,12 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function addData(array $data) {
         $this->data[] = $data;
+    }
+    /**
+     * @return mixed
+     */
+    public function getFirst() {
+        return $this->data[0];
     }
     /**
      * @return mixed
@@ -168,7 +174,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         if($relation instanceof Doctrine_ForeignKey ||
            $relation instanceof Doctrine_LocalKey) {
-           
+
             $this->reference_field = $relation->getForeign();
 
             $value = $record->get($relation->getLocal());
@@ -206,10 +212,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
                 if( ! $this->expandable && isset($this->expanded[$offset]))
                     return false;
-                    
+
                 $fields = implode(", ",$this->table->getColumnNames());
             break;
-            default: 
+            default:
                 if( ! $this->expandable)
                     return false;
 
@@ -239,7 +245,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
                 if( ! isset($offset)) {
                     $ids = $this->getPrimaryKeys();
-    
+
                     if( ! empty($ids)) {
                         $where[] = $this->table->getIdentifier()." NOT IN (".substr(str_repeat("?, ",count($ids)),0,-2).")";
                         $params  = array_merge($params,$ids);
@@ -250,20 +256,20 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
 
             } elseif($this->relation instanceof Doctrine_Association) {
-    
+
                 $asf     = $this->relation->getAssociationFactory();
                 $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local."=".$this->getIncremented();
-    
+
                 $table = $fk->getTable();
                 $graph   = new Doctrine_DQL_Parser($table->getSession());
-    
+
                 $q       = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($query)";
-    
+
             }
         }
 
         $query  = "SELECT ".$fields." FROM ".$this->table->getTableName();
-        
+
         // apply column aggregation inheritance
         foreach($this->table->getInheritanceMap() as $k => $v) {
             $where[]  = $k." = ?";
@@ -290,7 +296,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     $this->reference->addReference($record, $this->relation, $i);
                 } else
                     $this->data[$i] = $record;
-                    
+
                 $i++;
             }
 
@@ -316,7 +322,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
 
         $removed = $this->data[$key];
-        
+
         unset($this->data[$key]);
         return $removed;
     }
@@ -386,7 +392,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return count($this->data);
     }
     /**
-     * set 
+     * set
      * @param integer $key
      * @param Doctrine_Record $record
      * @return void
@@ -432,7 +438,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * populate
      *
      * @param Doctrine_Query $query
-     * @param integer $key              
+     * @param integer $key
      */
     public function populate(Doctrine_Hydrate $query) {
         $name = $this->table->getComponentName();
@@ -457,7 +463,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     $this->data[$i] = $record;
                     unset($this->data[$k]);
                 }
-            }                                                    	
+            }
         }
     }
     /**
