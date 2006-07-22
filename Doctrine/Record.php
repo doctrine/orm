@@ -133,7 +133,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if($this->table->getSession()->hasTable($this->table->getComponentName())) {
 
             $this->oid = self::$index;
-    
+
             self::$index++;
 
             $keys = $this->table->getPrimaryKeys();
@@ -195,7 +195,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public static function getNullObject() {
         return self::$null;
     }
-    /** 
+    /**
      * setUp
      * implemented by child classes
      */
@@ -218,7 +218,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * $data after operation:
      * $data = array("name"=>"John","lastname" => Object(Doctrine_Null));
      *
-     * here column 'id' is removed since its auto-incremented primary key (protected) 
+     * here column 'id' is removed since its auto-incremented primary key (protected)
      *
      * @return integer
      */
@@ -226,7 +226,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $tmp  = $this->data;
 
         $this->data = array();
-        
+
         $count = 0;
 
         foreach($this->table->getColumnNames() as $name) {
@@ -283,7 +283,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 foreach($names as $name) {
                     if($this->data[$name] === self::$null)
                         $this->id[$name] = null;
-                    else 
+                    else
                         $this->id[$name] = $this->data[$name];
                 }
             break;
@@ -298,7 +298,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onSleep($this);
 
         $vars = get_object_vars($this);
-        
+
         unset($vars['references']);
         unset($vars['collections']);
         unset($vars['originals']);
@@ -339,7 +339,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         self::$index++;
 
         $this->table = $session->getTable(get_class($this));
-        
+
 
         $array = unserialize($serialized);
 
@@ -370,7 +370,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     final public function addCollection(Doctrine_Collection $collection,$key = null) {
         if($key !== null) {
-            if(isset($this->collections[$key])) 
+            if(isset($this->collections[$key]))
                 throw InvalidKeyException();
 
             $this->collections[$key] = $collection;
@@ -406,7 +406,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $this->state;
     }
     /**
-     * refresh   
+     * refresh
      * refresh internal data from the database
      *
      * @return boolean
@@ -485,7 +485,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function rawGet($name) {
         if( ! isset($this->data[$name]))
             throw new InvalidKeyException();
-            
+
         if($this->data[$name] == self::$null)
             return null;
 
@@ -493,7 +493,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * get
-     * returns a value of a property or a related component 
+     * returns a value of a property or a related component
      *
      * @param $name                     name of the property or related component
      * @throws InvalidKeyException
@@ -526,7 +526,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         if(isset($this->id[$name]))
             return $this->id[$name];
-        
+
         if($name === $this->table->getIdentifier())
             return null;
 
@@ -598,11 +598,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
             if($value instanceof Doctrine_Record) {
                 $id = $value->getIncremented();
-                
+
                 if($id !== null)
                     $value = $id;
             }
-            
+
             $old = $this->get($name);
 
             if($old !== $value) {
@@ -695,9 +695,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     final public function save() {
         $this->table->getSession()->beginTransaction();
 
-        // listen the onPreSave event
-        $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($this);
-
         $saveLater = $this->table->getSession()->saveRelated($this);
 
         $this->table->getSession()->save($this);
@@ -715,7 +712,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         // save the MANY-TO-MANY associations
 
         $this->saveAssociations();
-            
+
         $this->table->getSession()->commit();
     }
     /**
@@ -759,7 +756,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if($this->data[$v] instanceof Doctrine_Record) {
                 $this->data[$v] = $this->data[$v]->getIncremented();
             }
-            
+
             $a[$v] = $this->data[$v];
         }
 
@@ -823,7 +820,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                                                                             ." AND ".$fk->getLocal()." = ?";
                                 $this->table->getSession()->execute($query, array($record->getIncremented(),$this->getIncremented()));
                             }
-                            
+
                             $r = Doctrine_Relation::getInsertOperations($this->originals[$alias],$new);
                             foreach($r as $record) {
                                 $reldao = $asf->create();
@@ -831,19 +828,19 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                                 $reldao->set($fk->getLocal(),$this);
                                 $reldao->save();
 
-                            }  
+                            }
                             $this->originals[$alias] = clone $this->references[$alias];
                         }
                     break;
                 endswitch;
-            } elseif($fk instanceof Doctrine_ForeignKey || 
+            } elseif($fk instanceof Doctrine_ForeignKey ||
                      $fk instanceof Doctrine_LocalKey) {
 
                 switch($fk->getType()):
                     case Doctrine_Relation::ONE_COMPOSITE:
                         if(isset($this->originals[$alias]) && $this->originals[$alias]->getID() != $this->references[$alias]->getID())
                             $this->originals[$alias]->delete();
-                    
+
                     break;
                     case Doctrine_Relation::MANY_COMPOSITE:
                         if(isset($this->references[$alias])) {
@@ -857,7 +854,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             foreach($r as $record) {
                                 $record->delete();
                             }
-                            
+
                             $this->originals[$alias] = clone $this->references[$alias];
                         }
                     break;
@@ -908,7 +905,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $this->modified = array();
         } else {
             $name            = $this->table->getIdentifier();
-            
+
             $this->id[$name] = $id;
             $this->state     = Doctrine_Record::STATE_CLEAN;
             $this->modified  = array();
@@ -931,7 +928,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $id = current($this->id);
         if($id === false)
             return null;
-        
+
         return $id;
     }
     /**
@@ -974,7 +971,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function initReference(Doctrine_Collection $coll, Doctrine_Relation $connector) {
         $alias = $connector->getAlias();
-        
+
         if( ! ($connector instanceof Doctrine_Association))
             $coll->setReference($this, $connector);
 
@@ -1060,11 +1057,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
                                 $record = $table->find($id);
 
-                                if($record !== false) 
+                                if($record !== false)
                                     $this->references[$name] = $record;
                                 else
                                     $this->references[$name] = $table->create();
-                                    
+
                                     //$this->set($fk->getLocal(),$this->references[$name]);
 
                             }
@@ -1091,10 +1088,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
                             $this->references[$name] = $coll;
                             $this->references[$name]->setReference($this, $fk);
-    
+
                             $this->originals[$name]  = clone $coll;
 
-                        } elseif($fk instanceof Doctrine_Association) {     
+                        } elseif($fk instanceof Doctrine_Association) {
 
                             $asf     = $fk->getAssociationFactory();
                             $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local." = ?";
@@ -1103,7 +1100,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             $query   = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($query)";
 
                             $coll    = $graph->query($query, array($this->getIncremented()));
-        
+
                             $this->references[$name] = $coll;
                             $this->originals[$name]  = clone $coll;
 
