@@ -13,7 +13,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * @return Doctrine_RawSql
      */
     public function __call($name, $args) {
-        if( ! isset($this->parts[$name])) 
+        if( ! isset($this->parts[$name]))
             throw new Doctrine_Exception("Unknown overload method");
 
         if($name == 'select') {
@@ -21,7 +21,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
 
             $this->fields = $m[1];
             $this->parts["select"] = array();
-        } else 
+        } else
             $this->parts[$name][] = $args[0];
 
         return $this;
@@ -34,7 +34,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * @return Doctrine_RawSql
      */
     public function parseQuery($query) {
-        preg_match_all('/{([^}{]*)}/U', $query, $m);    
+        preg_match_all('/{([^}{]*)}/U', $query, $m);
 
         $this->fields = $m[1];
         $this->clear();
@@ -76,8 +76,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
     }
     /**
      * getQuery
-     * 
-     * 
+     *
+     *
      * @return string
      */
     public function getQuery() {
@@ -87,12 +87,12 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
             $e = explode(".", $field);
             if( ! isset($e[1]))
                 throw new Doctrine_Exception("All selected fields in Sql query must be in format tableAlias.fieldName");
-            
+
             if( ! isset($this->tables[$e[0]])) {
                 try {
                     $this->addComponent($e[0], ucwords($e[0]));
-                } catch(Doctrine_Exception $e) {
-                    throw new Doctrine_Exception("The associated component for tablealias $e[0] couldn't be found.");
+                } catch(Doctrine_Exception $exception) {
+                    throw new Doctrine_Exception("The associated component for table alias $e[0] couldn't be found.");
                 }
             }
 
@@ -106,7 +106,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
                 $this->parts["select"][$field] = $field." AS ".$e[0]."__".$e[1];
             }
         }
-        
+
         // force-add all primary key fields
 
         foreach($this->tableAliases as $alias) {
@@ -118,7 +118,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
         }
 
         $q[] = "SELECT ".implode(', ', $this->parts['select']);
-        
+
         $string = $this->applyInheritance();
         if( ! empty($string))
             $this->parts["where"][] = $string;
@@ -150,12 +150,12 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      */
     public function addComponent($tableAlias, $componentName) {
         $e = explode(".", $componentName);
-        
+
         $currPath = '';
 
         foreach($e as $k => $component) {
             $currPath .= '.'.$component;
-            if($k == 0) 
+            if($k == 0)
                 $currPath = substr($currPath,1);
 
             if(isset($this->tableAliases[$currPath]))
