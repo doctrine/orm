@@ -1,0 +1,3 @@
+<?php
+$copy = $user->copy();
+?>

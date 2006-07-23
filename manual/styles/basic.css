@@ -1,0 +1,49 @@
+body {
+margin: 10,0,0,0;
+font-family: Verdana, Arial, Helvetica;
+text-decoration: none;
+}
+
+hr {
+color: A50A3D;
+}
+hr.small {
+color: A50A3D;
+width: 100%;
+align: left;
+height: 1 px;
+}
+td.small {
+font-family: Verdana, Arial, Helvetica;
+font-size: 12 px;
+}
+dd {
+    line-height: 1.5em;
+}
+ul {
+    line-height: 1.5em;
+}
+td {
+font-size: 12 px;
+font-family: Verdana, Arial, Helvetica;
+}
+joo {
+color: A50A3D;
+}
+table.dashed {
+border-style: solid;
+border-color: 116699;
+border-width: 1 px;
+}
+b.title {
+color: #A50A3D;
+}
+u.title {
+color: #367FAC;
+}
+a.big {
+font-size: 13 px;
+}
+a {
+color: #367FAC;
+}
