@@ -1,4 +1,6 @@
 <?php
+Doctrine::autoload('Doctrine_Access');
+
 class Doctrine_Hydrate extends Doctrine_Access {
     /**
      * @var array $fetchmodes               an array containing all fetchmodes

@@ -14,7 +14,7 @@ require_once("Configurable.php");
  * @license     LGPL
  * @version     1.0 alpha
  */
-class Doctrine_Table extends Doctrine_Configurable {
+class Doctrine_Table extends Doctrine_Configurable implements Countable {
     /**
      * @var boolean $isNewEntry                         whether ot not this table created a new record or not, used only internally
      */
@@ -777,6 +777,15 @@ class Doctrine_Table extends Doctrine_Configurable {
      */
     final public function getTableDescription() {
         return $this->columns;
+    }
+    /**
+     * count
+     * 
+     * @return integer
+     */
+    public function count() {
+        $a = $this->session->getDBH()->query("SELECT COUNT(1) FROM ".$this->tableName)->fetch(PDO::FETCH_NUM);
+        return current($a);
     }
     /**
      * @return Doctrine_Query                           a Doctrine_Query object
