@@ -241,8 +241,10 @@ $menu = array("Getting started" =>
 
                       "Locking Manager" => array(
                                         "Introduction",
-                                        "Pessimistic locking",
-                                        "Examples"),
+                                        "Examples",
+                                        "Planned",
+                                        "Technical Details",
+                                        "Maintainer"),
                       /**
                       "Debugger" => array(
                                         "Introduction",
