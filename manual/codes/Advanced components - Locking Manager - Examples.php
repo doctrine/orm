@@ -6,13 +6,17 @@ $lockingMngr = new Doctrine_Locking_Manager_Pessimistic();
 
 try
 {
-    // Ensure that old locks which timed out are released before we try to acquire our lock
-    $lockingMngr->releaseAgedLocks(300); // 300 seconds = 5 minutes timeout
+    // Ensure that old locks which timed out are released 
+    // before we try to acquire our lock
+    // 300 seconds = 5 minutes timeout
+    $lockingMngr->releaseAgedLocks(300);
 
     // Try to get the lock on a record
     $gotLock = $lockingMngr->getLock(
-                       $myRecordToLock, // The record to lock. This can be any Doctrine_Record
-                       'Bart Simpson'   // The unique identifier of the user who is trying to get the lock
+     // The record to lock. This can be any Doctrine_Record
+                        $myRecordToLock,
+    // The unique identifier of the user who is trying to get the lock
+                       'Bart Simpson'
                );
 
     if($gotLock)

@@ -319,6 +319,12 @@ class EnumTest extends Doctrine_Record {
         $this->setEnumValues("status", array("open","verified","closed"));
     }
 }
+class CustomPK extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("uid","integer",11,"autoincrement|primary");
+        $this->hasColumn("name","string",255);
+    }
+}
 class Log_Entry extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("stamp", "timestamp");
