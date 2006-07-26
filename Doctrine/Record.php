@@ -608,6 +608,18 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
     }
     /**
+     * has
+     * method for checking existence of properties and Doctrine_Record references
+     *
+     * @param mixed $name               name of the property or reference
+     * @return boolean
+     */
+    public function has($name) {
+        if(isset($this->data[$name]) OR isset($this->id[$name]))
+            return true;
+        return $this->table->hasForeignKey($name);
+    }
+    /**
      * set
      * method for altering properties and Doctrine_Record references
      *
