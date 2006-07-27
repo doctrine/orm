@@ -65,6 +65,15 @@ class Doctrine_Hydrate extends Doctrine_Access {
     public function __construct(Doctrine_Session $session) {
         $this->session = $session;
     }
+	public function remove($name) {
+		if(isset($this->parts[$name])) {
+			if($name == "limit" || $name == "offset")
+				$this->parts[$name] = false;
+			else 
+				$this->parts[$name] = array(); 
+		}
+		return $this;
+	}
     /**
      * clear
      * resets all the variables

@@ -615,8 +615,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return boolean
      */
     public function has($name) {
-        if(isset($this->data[$name]) OR isset($this->id[$name]))
+        if(isset($this->data[$name]) || isset($this->id[$name]))
             return true;
+
         return $this->table->hasForeignKey($name);
     }
     /**
@@ -1036,10 +1037,22 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function getReferences() {
         return $this->references;
     }
-
     /**
+     * setRelated
+     *
+     * @param string $alias
+     * @param Doctrine_Access $coll
+     */
+    final public function setRelated($alias, Doctrine_Access $coll) {
+        $this->references[$alias] = $coll;
+        $this->originals[$alias]  = $coll;
+    }
+    /**
+     * loadReference
+     * loads a related component
+     *
      * @throws InvalidKeyException
-     * @param name
+     * @param string $name
      * @return void
      */
     final public function loadReference($name) {
@@ -1152,15 +1165,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * filterRelated
      * lazy initializes a new filter instance for given related component
      *
-     * @param $componentName        name of the related component
+     * @param $componentAlias        alias of the related component
      * @return Doctrine_Filter
      */
-    final public function filterRelated($componentName) {
-        if( ! isset($this->filters[$componentName])) {
-            $this->filters[$componentName] = new Doctrine_Filter($componentName);
+    final public function filterRelated($componentAlias) {
+        if( ! isset($this->filters[$componentAlias])) {
+            $this->filters[$componentAlias] = new Doctrine_Filter($componentAlias);
         }
 
-        return $this->filters[$componentName];
+        return $this->filters[$componentAlias];
     }
     /**
      * sets enumerated value array for given field

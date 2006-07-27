@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -280,7 +280,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local."=".$this->getIncremented();
 
                 $table = $fk->getTable();
-                $graph   = new Doctrine_DQL_Parser($table->getSession());
+                $graph   = new Doctrine_Query($table->getSession());
 
                 $q       = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($query)";
 
@@ -484,6 +484,105 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 }
             }
         }
+    }
+    /**
+     * loadRelated
+     *
+     * @param string $name
+     */
+    public function loadRelated($name) {
+        $rel   = $this->table->getForeignKey($name);
+        $table = $rel->getTable();
+        $query = new Doctrine_Query($this->table->getSession());
+        $foreign = $rel->getForeign();
+        $local   = $rel->getLocal();
+
+        $list = array();
+        if($rel instanceof Doctrine_LocalKey || $rel instanceof Doctrine_ForeignKey) {
+            foreach($this->data as $record):
+                $list[] = $record[$local];
+            endforeach;
+        } else {
+            foreach($this->data as $record):
+                $value = $record->getIncremented();
+                if($value !== null) 
+                    $list[] = $value;
+            endforeach;
+        }
+        $paramStr = "(".substr(str_repeat("?, ", count($list)),0,-2).")";
+        $multi    = true;
+
+        if($rel instanceof Doctrine_LocalKey ||
+           $rel instanceof Doctrine_ForeignKey) 
+            $dql  = "FROM ".$table->getComponentName().
+                    " WHERE ".$table->getComponentName().".".$rel->getForeign().
+                    " IN ".$paramStr;
+
+
+        if($rel instanceof Doctrine_LocalKey) {
+            $multi = false;
+        } elseif($rel instanceof Doctrine_Association) {
+            $asf     = $rel->getAssociationFactory();
+            $sub     = "SELECT ".$foreign.
+                       " FROM ".$asf->getTableName().
+                       " WHERE ".$local.
+                       " IN ".$paramStr;
+
+            $dql     = "FROM ".$table->getComponentName().":".$asf->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($sub)";
+            //$query->parseQuery($dql);
+            //print Doctrine_Lib::formatSql($query->getQuery());
+        }
+        $coll    = $query->query($dql, $list);
+        
+
+
+        if($rel instanceof Doctrine_LocalKey) {
+            foreach($this->data as $key => $record) {
+                foreach($coll as $k => $related) {
+                    if($related[$foreign] == $record[$local]) {
+                        $this->data[$key]->setRelated($name, $related);
+                    }
+                }
+            }
+        } elseif($rel instanceof Doctrine_ForeignKey) {
+            foreach($this->data as $key => $record) {
+                if($record->getState() == Doctrine_Record::STATE_TCLEAN ||
+                   $record->getState() == Doctrine_Record::STATE_TDIRTY)
+                    continue;
+
+                $sub = new Doctrine_Collection($table);
+
+                foreach($coll as $k => $related) {
+                    if($related[$foreign] == $record[$local]) {
+                        $sub->add($related);
+                        $coll->remove($k);
+                    }
+                }
+
+                $this->data[$key]->setRelated($name, $sub);
+            }
+        } elseif($rel instanceof Doctrine_Association) {
+            $identifier = $this->table->getIdentifier();
+
+            foreach($this->data as $key => $record) {
+                if($record->getState() == Doctrine_Record::STATE_TCLEAN ||
+                   $record->getState() == Doctrine_Record::STATE_TDIRTY)
+                    continue;
+
+                $sub = new Doctrine_Collection($table);
+                $association = $asf->getComponentName();
+
+                foreach($coll as $k => $related) {
+                    if($related[$association][0]->get($local) == $record[$identifier]) {
+                        $sub->add($related);
+                        $coll->remove($k);
+                    }
+                }
+
+                $this->data[$key]->setRelated($name, $sub);
+            }
+        }
+
     }
     /**
      * getNormalIterator
