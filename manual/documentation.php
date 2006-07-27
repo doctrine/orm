@@ -125,6 +125,7 @@ $menu = array("Getting started" =>
                                          "Saving the collection",
                                          "Deleting collection",
                                          "Fetching strategies",
+                                         "Loading related records",
                                          "Collection expanding",
                                          ),
 
