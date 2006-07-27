@@ -292,7 +292,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         switch($this->table->getIdentifierType()):
             case Doctrine_Identifier::AUTO_INCREMENT:
             case Doctrine_Identifier::SEQUENCE:
-
                 $name = $this->table->getIdentifier();
 
                 if($exists) {
@@ -303,9 +302,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 unset($this->data[$name]);
 
             break;
+            case Doctrine_Identifier::NORMAL:
+                 $this->id   = array();
+                 $name       = $this->table->getIdentifier();
+                 
+                 if(isset($this->data[$name]) && $this->data[$name] !== self::$null)
+                    $this->id[$name] = $this->data[$name];
+            break;
             case Doctrine_Identifier::COMPOSITE:
                 $names      = $this->table->getIdentifier();
-                $this->id   = array();
+
 
                 foreach($names as $name) {
                     if($this->data[$name] === self::$null)
