@@ -491,6 +491,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $name
      */
     public function loadRelated($name) {
+
         $rel   = $this->table->getForeignKey($name);
         $table = $rel->getTable();
         $query = new Doctrine_Query($this->table->getSession());
@@ -527,11 +528,14 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                        " FROM ".$asf->getTableName().
                        " WHERE ".$local.
                        " IN ".$paramStr;
+			
+			$table->getForeignKey($table->getAlias($this->table->getComponentName()));
 
             $dql     = "FROM ".$table->getComponentName().":".$asf->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($sub)";
-            //$query->parseQuery($dql);
+			//$query->parseQuery($dql);
             //print Doctrine_Lib::formatSql($query->getQuery());
         }
+
         $coll    = $query->query($dql, $list);
         
 

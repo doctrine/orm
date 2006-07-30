@@ -260,16 +260,22 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $type = $this->table->getTypeOf($name);
 
             if( ! isset($tmp[$name])) {
-                if($type == 'array') {
-                    $this->data[$name] = array();
-                } else
+                //if($type == 'array') {
+                //    $this->data[$name] = array();
+                //} else
                     $this->data[$name] = self::$null;
             } else {
                 switch($type):
                     case "array":
                     case "object":
-                        if($tmp[$name] !== self::$null)
-                            $this->data[$name] = unserialize($tmp[$name]);
+
+                        if($tmp[$name] !== self::$null) {
+                            $value = unserialize($tmp[$name]);
+                            if($value === false) 
+                                throw new Doctrine_Exception("Unserialization of $name failed. ".var_dump($tmp[$name],true));
+                            print_r($value);
+                            $this->data[$name] = $value;
+                        }
                     break;
                     case "enum":
                         $this->data[$name] = $this->table->enumValue($name, $tmp[$name]);
@@ -280,6 +286,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $count++;
             }
         }
+
         return $count;
     }
     /**
@@ -476,7 +483,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function factoryRefresh() {
-        $data = $this->table->getData();
+        $this->data = $this->table->getData();
         $old  = $this->id;
 
         $this->cleanData();
@@ -485,8 +492,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         if($this->id != $old)
             throw new Doctrine_Record_Exception();
-
-        $this->data     = $data;
 
         $this->state    = Doctrine_Record::STATE_CLEAN;
         $this->modified = array();
@@ -637,9 +642,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     public function set($name,$value) {
-        if(is_array($value))
-            throw new Exception($value);
-
         if(isset($this->data[$name])) {
 
             if($value instanceof Doctrine_Record) {

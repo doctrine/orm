@@ -27,7 +27,38 @@ require_once("Access.php");
  * @license     LGPL
  */
 class Doctrine_Query extends Doctrine_Hydrate {
+	/**
+ 	 * count
+     *
+	 * @return integer
+     */
+	public function count(Doctrine_Table $table, $params = array()) {
+		$this->remove('select');
+		$join  = $this->join;
+		$where = $this->where;
+		$having = $this->having;
+		
+		$q = "SELECT COUNT(1) FROM ".$table." ";
+		foreach($join as $j) {
+			$q .= implode(" ",$j);
+		}
+        $string = $query->applyInheritance();
 
+        if( ! empty($where)) {
+            $q .= " WHERE ".implode(" AND ",$where);
+            if( ! empty($string))
+                $q .= " AND (".$string.")";
+        } else {
+            if( ! empty($string))
+                $q .= " WHERE (".$string.")";
+        }
+			
+		if( ! empty($having)) 
+			$q .= " HAVING ".implode(' AND ',$having);
+
+		$a = $this->table->getSession()->execute($q, $params)->fetch(PDO::FETCH_NUM);
+		return $a[0];		
+	}
     /**
      * loadFields      
      * loads fields for a given table and
@@ -230,7 +261,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
         $string = $this->applyInheritance();
 
         if( ! empty($this->parts["where"])) {
-            $q .= " WHERE ".implode(" ",$this->parts["where"]);
+            $q .= " WHERE ".implode(" AND ",$this->parts["where"]);
             if( ! empty($string))
                 $q .= " AND (".$string.")";
         } else {
@@ -601,5 +632,4 @@ class Doctrine_Query extends Doctrine_Hydrate {
         $this->loadFields($table, $fetchmode, $fields, $currPath);
     }
 }
-
 ?>
