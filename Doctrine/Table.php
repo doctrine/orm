@@ -398,7 +398,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     final public function getBound($name) {
         if( ! isset($this->bound[$name]))
-            throw new InvalidKeyException();
+            throw new InvalidKeyException('Unknown bound '.$name);
 
         return $this->bound[$name];
     }
@@ -414,7 +414,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 return $this->bound[$k];
             }
         }
-        throw new InvalidKeyException();
+        throw new InvalidKeyException('Unknown bound '.$name);
     }
     /**
      * returns the alias for given component name
@@ -438,7 +438,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         if($name = array_search($this->boundAliases,$alias))
             return $name;
 
-        throw new InvalidKeyException();
+        throw new InvalidKeyException('Unknown alias '.$alias);
     }
     /**
      * unbinds all relations
@@ -480,7 +480,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     final public function bind($name,$field,$type,$localKey) {
         if(isset($this->relations[$name]))
-            throw new InvalidKeyException();
+            throw new InvalidKeyException('Relation already set for '.$name);
 
         $e          = explode(" as ",$name);
         $name       = $e[0];
@@ -540,6 +540,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return Doctrine_Relation
      */
     final public function getForeignKey($name) {
+        $original = $name;
+
         if(isset($this->relations[$name]))
             return $this->relations[$name];
 
@@ -614,7 +616,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $this->relations[$alias] = $relation;
             return $this->relations[$alias];
         }
-        throw new InvalidKeyException();
+        throw new InvalidKeyException('Unknown relation '.$original);
     }
     /**
      * returns an array containing all foreign key objects

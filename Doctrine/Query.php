@@ -38,11 +38,11 @@ class Doctrine_Query extends Doctrine_Hydrate {
 		$where = $this->where;
 		$having = $this->having;
 		
-		$q = "SELECT COUNT(1) FROM ".$table." ";
+		$q = "SELECT COUNT(1) FROM ".$table->getComponentName()." ";
 		foreach($join as $j) {
 			$q .= implode(" ",$j);
 		}
-        $string = $query->applyInheritance();
+        $string = $this->applyInheritance();
 
         if( ! empty($where)) {
             $q .= " WHERE ".implode(" AND ",$where);
@@ -56,7 +56,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
 		if( ! empty($having)) 
 			$q .= " HAVING ".implode(' AND ',$having);
 
-		$a = $this->table->getSession()->execute($q, $params)->fetch(PDO::FETCH_NUM);
+		$a = $this->getSession()->execute($q, $params)->fetch(PDO::FETCH_NUM);
 		return $a[0];		
 	}
     /**
