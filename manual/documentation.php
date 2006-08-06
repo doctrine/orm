@@ -88,7 +88,14 @@ $menu = array("Getting started" =>
                                         "Introduction",
                                         "Data types and lengths",
                                         "Constraints and validators",
+                                        "Enum emulation"
                                         ),
+                        "Record identifiers" => array(
+                                        "Introduction",
+                                        "Autoincremented",
+                                        "Natural",
+                                        "Composite",
+                                        "Sequential")
                         ),
            "Basic Components" =>
                         array(

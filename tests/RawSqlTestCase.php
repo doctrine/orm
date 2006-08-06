@@ -61,10 +61,10 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
 
         $query->addComponent("entity", "Entity");
         $query->addComponent("phonenumber", "Entity.Phonenumber");
-
+        
         $coll = $query->execute();
         $this->assertEqual($coll->count(), 11);
-        
+
         $count = $this->dbh->count();
         
         $coll[4]->Phonenumber[0]->phonenumber;

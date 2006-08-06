@@ -32,6 +32,7 @@ class Doctrine_Form implements Iterator {
         if( ! in_array("autoincrement",$e) && ! in_array("protected",$e)) {
             if($enum) {
                 $elements[$column] = "<select name='data[$column]'>\n";
+				$elements[$column] .= "	  <option value='-'>-</option>\n";
                 foreach($enum as $k => $v) {
                     if($this->record->get($column) == $v) {
                         $str = 'selected';

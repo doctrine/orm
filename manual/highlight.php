@@ -472,7 +472,7 @@ class PHP_Highlight
 
             case T_COMMENT:
             case T_DOC_COMMENT:
-            case T_ML_COMMENT:
+            //case T_ML_COMMENT:
                 return $this->highlight['comment'];
             break;
 
