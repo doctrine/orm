@@ -1,5 +1,4 @@
 <?php
-Doctrine::autoload('Doctrine_Session');
 /**
  * standard session, the parent of pgsql, mysql and sqlite
  */

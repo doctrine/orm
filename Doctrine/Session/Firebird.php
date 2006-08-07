@@ -1,5 +1,4 @@
 <?php
-Doctrine::autoload('Doctrine_Session');
 /**
  * firebird driver
  */
