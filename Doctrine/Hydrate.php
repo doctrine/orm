@@ -272,8 +272,6 @@ class Doctrine_Hydrate extends Doctrine_Access {
                 if($return == Doctrine::RETURN_VHOLDER) {
                     return $this->hydrateHolders($array);
                 }
-
-                $colls = array();
                 
                 foreach($array as $data) {
                     /**
