@@ -301,6 +301,87 @@ final class Doctrine {
         }
     }
     /**
+     * method for making a single file of 
+     * most used doctrine components
+     *
+     * @throws Doctrine_Exception
+     * @return void
+     */
+    public static function compile() {
+        if(! self::$path)
+            self::$path = dirname(__FILE__);
+
+        $classes = array("Doctrine",
+                         "Configurable",
+                         "Manager",
+                         "Session",
+                         "Table",
+                         "Iterator",
+                         "Exception",
+                         "Access",
+                         "Record",
+                         "Record_Iterator",
+                         "Collection",
+                         "Validator",
+                         "Hydrate",
+                         "Query",
+                         "Query_Part",
+                         "Query_From",
+                         "Query_Orderby",
+                         "Query_Groupby",
+                         "Query_Condition",
+                         "Query_Where",
+                         "Query_Having",
+                         "RawSql",
+                         "EventListener_Interface",
+                         "EventListener",
+                         "Relation",
+                         "ForeignKey",
+                         "LocalKey",
+                         "Association",
+                         "DB");
+        
+
+        $ret     = array();
+
+        foreach($classes as $class) {
+            if($class !== "Doctrine")
+                $class = 'Doctrine_'.$class;
+            
+            $file  = self::$path.DIRECTORY_SEPARATOR.str_replace("_",DIRECTORY_SEPARATOR,$class).".php";
+
+            if( ! file_exists($file))
+                throw new Doctrine_Exception("Couldn't compile $file. File $file does not exists.");
+
+            self::autoload($class);
+            $refl  = new ReflectionClass($class);
+            $lines = file($file);
+
+            $start = $refl->getStartLine() - 1;
+            $end   = $refl->getEndLine() - 2;
+
+            $i = 0;
+            while($i < count($lines)) {
+                $i++;
+
+                if($i < $start)
+                    continue;
+
+                $ret[] = $lines[$i];
+
+                if($i > $end)
+                    break;
+            }
+        }
+
+
+        $fp = fopen(self::$path.DIRECTORY_SEPARATOR.'Doctrine.compiled.php', 'w+');
+        fwrite($fp, "<?php
+".implode('', $ret)."
+?>");
+        fclose($fp);
+    }
+    /**
      * simple autoload function
      * returns true if the class was loaded, otherwise false
      *
