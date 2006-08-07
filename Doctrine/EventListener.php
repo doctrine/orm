@@ -62,9 +62,6 @@ abstract class Doctrine_EventListener implements Doctrine_EventListener_Interfac
     public function onCollectionDelete(Doctrine_Collection $collection) { }
     public function onPreCollectionDelete(Doctrine_Collection $collection) { }
 }
-/**
- * an emtpy listener all components use this by default
- */
-class EmptyEventListener extends Doctrine_EventListener { }
+
 
 ?>
