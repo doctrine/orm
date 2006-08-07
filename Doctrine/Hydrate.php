@@ -28,7 +28,7 @@ Doctrine::autoload('Doctrine_Access');
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_Hydrate extends Doctrine_Access {
+abstract class Doctrine_Hydrate extends Doctrine_Access {
     /**
      * @var array $fetchmodes               an array containing all fetchmodes
      */
@@ -92,6 +92,12 @@ class Doctrine_Hydrate extends Doctrine_Access {
     public function __construct(Doctrine_Session $session) {
         $this->session = $session;
     }
+    /** 
+     * getQuery
+     *
+     * @return string
+     */
+    abstract public function getQuery();
     /**
      * remove
      *
@@ -272,7 +278,7 @@ class Doctrine_Hydrate extends Doctrine_Access {
                 if($return == Doctrine::RETURN_VHOLDER) {
                     return $this->hydrateHolders($array);
                 }
-                
+
                 foreach($array as $data) {
                     /**
                      * remove duplicated data rows and map data into objects
