@@ -395,6 +395,8 @@ final class Doctrine {
         if(! self::$path)
             self::$path = dirname(__FILE__);
 
+        if(class_exists($classname))
+            return false;
 
         $class = self::$path.DIRECTORY_SEPARATOR.str_replace("_",DIRECTORY_SEPARATOR,$classname).".php";
 

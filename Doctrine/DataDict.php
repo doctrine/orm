@@ -4,8 +4,12 @@ class Doctrine_DataDict {
     private $dbh;
 
     public function __construct(PDO $dbh) {
-        $manager = Doctrine_Manager::getInstance();
-        require_once($manager->getRoot()."/adodb-hack/adodb.inc.php");
+        $file = Doctrine::getPath().DIRECTORY_SEPARATOR."Doctrine".DIRECTORY_SEPARATOR."adodb-hack".DIRECTORY_SEPARATOR."adodb.inc.php";
+        
+        if( ! file_exists($file)) 
+            throw new Doctrine_Exception("Couldn't include datadict. File $file does not exist");
+
+        require_once($file);
 
         $this->dbh  = $dbh;
         $this->dict = NewDataDictionary($dbh);
@@ -37,7 +41,7 @@ class Doctrine_DataDict {
 
         $return = true;
         foreach($a as $sql) {
-            try {   
+            try {
                 $this->dbh->query($sql);
             } catch(Exception $e) {
                 $return = $e;
