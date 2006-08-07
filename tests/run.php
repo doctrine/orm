@@ -22,6 +22,7 @@ require_once("ViewTestCase.php");
 require_once("RawSqlTestCase.php");
 require_once("CustomPrimaryKeyTestCase.php");
 require_once("FilterTestCase.php");
+require_once("ValueHolderTestCase.php");
 
 error_reporting(E_ALL);
 
@@ -63,6 +64,7 @@ $test->addTestCase(new Doctrine_CustomPrimaryKeyTestCase());
 
 $test->addTestCase(new Doctrine_Filter_TestCase());
 
+$test->addTestCase(new Doctrine_ValueHolder_TestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 

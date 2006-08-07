@@ -92,6 +92,11 @@ class Doctrine_Hydrate extends Doctrine_Access {
     public function __construct(Doctrine_Session $session) {
         $this->session = $session;
     }
+    /**
+     * remove
+     *
+     * @param $name
+     */
 	public function remove($name) {
 		if(isset($this->parts[$name])) {
 			if($name == "limit" || $name == "offset")
@@ -215,7 +220,7 @@ class Doctrine_Hydrate extends Doctrine_Access {
      * @param string $params
      * @return Doctrine_Collection            the root collection
      */
-    public function execute($params = array()) {
+    public function execute($params = array(), $return = Doctrine::RETURN_RECORD) {
         $this->data = array();
         $this->collections = array();
         
@@ -223,6 +228,8 @@ class Doctrine_Hydrate extends Doctrine_Access {
             $query = $this->getQuery();
         else
             $query = $this->view->getSelectSql();
+
+
 
         switch(count($this->tables)):
             case 0:
@@ -262,6 +269,9 @@ class Doctrine_Hydrate extends Doctrine_Access {
 
                 $array = $this->parseData($stmt);
 
+                if($return == Doctrine::RETURN_VHOLDER) {
+                    return $this->hydrateHolders($array);
+                }
 
                 $colls = array();
                 
@@ -388,12 +398,46 @@ class Doctrine_Hydrate extends Doctrine_Access {
         endswitch;
     }
     /**
+     * hydrateHolders
+     *
+     * @param array $array
+     */
+    public function hydrateHolders(array $array) {
+        $keys  = array_keys($this->tables);
+        $root  = $keys[0];
+        $coll  = new Doctrine_ValueHolder($this->tables[$root]);
+
+        foreach($keys as $key) {
+            $prev[$key] = array();
+        }
+
+        foreach($array as $data) {
+            foreach($data as $alias => $row) {
+                if(isset($prev[$alias]) && $row !== $prev[$alias]) {
+                    $holder       = new Doctrine_ValueHolder($this->tables[$alias]);
+                    $holder->data = $row;
+
+                    if($alias === $root) {
+                        $coll->data[] = $holder;
+                    } else {
+                        $pointer   = $this->joins[$alias];
+                        $component = $this->tables[$alias]->getComponentName();
+                        $last[$pointer]->data[$component][] = $holder;
+                    }
+                    $last[$alias] = $holder;
+                }
+                $prev[$alias] = $row;
+            }
+        }
+        return $coll;
+    }
+    /**
      * applyInheritance
-     * applies column aggregation inheritance to DQL query
+     * applies column aggregation inheritance to DQL / SQL query
      *
      * @return string
      */
-    final public function applyInheritance() {
+    public function applyInheritance() {
         // get the inheritance maps
         $array = array();
 

@@ -721,17 +721,17 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         return $users;
     }
     /**
-     * findBySql
-     * finds records with given sql where clause
+     * findByDql
+     * finds records with given DQL where clause
      * returns a collection of records
      *
-     * @param string $sql               SQL after WHERE clause
+     * @param string $dql               DQL after WHERE clause
      * @param array $params             query parameters
      * @return Doctrine_Collection
      */
-    public function findBySql($sql, array $params = array()) {
+    public function findBySql($dql, array $params = array()) {
         $q = new Doctrine_Query($this->session);
-        $users = $q->query("FROM ".$this->name." WHERE ".$sql, $params);
+        $users = $q->query("FROM ".$this->name." WHERE ".$dql, $params);
         return $users;
     }
     /**

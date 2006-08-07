@@ -197,6 +197,20 @@ final class Doctrine {
      */
     const FETCH_LAZY_OFFSET     = 4;
     /**
+     * RETURN CONSTANTS
+     */
+
+
+    /**
+     * RETURN VALUEHOLDER
+     */
+    const RETURN_VHOLDER         = 1;
+    /**
+     * RETURN RECORD
+     */
+    const RETURN_RECORD          = 2;
+
+    /**
      * LOCKMODE CONSTANTS
      */
      

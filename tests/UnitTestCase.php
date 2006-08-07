@@ -22,6 +22,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     protected $listener;
     protected $cache;
     protected $users;
+    protected $valueHolder;
     protected $tables = array();
 
     private $init = false;
@@ -70,10 +71,11 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->listener = new Doctrine_EventListener_Debugger();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
-
         $this->query = new Doctrine_Query($this->session);
         $this->prepareTables();
         $this->prepareData();
+
+        $this->valueHolder = new Doctrine_ValueHolder($this->session->getTable('User'));
     }
     public function prepareTables() {
         foreach($this->tables as $name) {
