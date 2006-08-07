@@ -83,6 +83,7 @@ $menu = array("Getting started" =>
                         array(
                         "Requirements",
                         "Installation",
+                        "Compiling",
                         "Starting new project",
                         "Setting table definition" => array(
                                         "Introduction",

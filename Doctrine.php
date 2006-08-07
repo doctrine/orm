@@ -301,8 +301,10 @@ final class Doctrine {
         }
     }
     /**
-     * method for making a single file of 
-     * most used doctrine components
+     * method for making a single file of most used doctrine components
+     *
+     * including the compiled file instead of multiple files (in worst 
+     * cases dozens of files) can improve performance by order of magnitude
      *
      * @throws Doctrine_Exception
      * @return void
@@ -339,13 +341,14 @@ final class Doctrine {
                          "ForeignKey",
                          "LocalKey",
                          "Association",
-                         "DB");
+                         "DB",
+                         "DBStatement");
         
 
         $ret     = array();
 
         foreach($classes as $class) {
-            if($class !== "Doctrine")
+            if($class !== 'Doctrine')
                 $class = 'Doctrine_'.$class;
             
             $file  = self::$path.DIRECTORY_SEPARATOR.str_replace("_",DIRECTORY_SEPARATOR,$class).".php";

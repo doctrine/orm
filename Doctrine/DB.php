@@ -134,32 +134,4 @@ class Doctrine_DB extends PDO implements Countable, IteratorAggregate {
     }
 
 }
-class Doctrine_DBStatement extends PDOStatement {
-    /**
-     * @param Doctrine_DB $dbh        Doctrine Database Handler
-     */
-    private $dbh;
-    /**
-     * @param Doctrine_DB $dbh
-     */
-    private function __construct(Doctrine_DB $dbh) {
-        $this->dbh = $dbh;
-    }
-    /**
-     * @param array $params
-     */
-    public function execute(array $params = array()) {
-
-        $time     = microtime();
-        try {
-            $result   = parent::execute($params);
-        } catch(PDOException $e) {
-            throw new Doctrine_Exception($this->queryString." ".$e->__toString());
-        }
-        $exectime = (microtime() - $time);
-        $this->dbh->addExecTime($exectime);
-
-        return $result;
-    }
-}
 ?>
