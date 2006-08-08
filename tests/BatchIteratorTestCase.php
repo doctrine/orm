@@ -2,6 +2,12 @@
 require_once("UnitTestCase.php");
 
 class Doctrine_BatchIteratorTestCase extends Doctrine_UnitTestCase {
+
+    public function prepareTables() {
+        $this->tables = array("Entity", "User","Group","Address","Phonenumber");
+        parent::prepareTables();
+    }
+
     public function testIterator() {
         $graph = new Doctrine_Query($this->session);
         $entities = $graph->query("FROM Entity");

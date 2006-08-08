@@ -381,6 +381,8 @@ final class Doctrine {
         $fp = fopen(self::$path.DIRECTORY_SEPARATOR.'Doctrine.compiled.php', 'w+');
         fwrite($fp, "<?php
 ".implode('', $ret)."
+class InvalidKeyException extends Exception { }
+class DQLException extends Exception { }
 ?>");
         fclose($fp);
     }

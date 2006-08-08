@@ -1,5 +1,10 @@
 <?php
-require_once("../Doctrine.compiled.php");
+require_once("../Doctrine.php");
+
+Doctrine::compile();
+
+//require_once("../Doctrine.compiled.php");
+
 
 //Doctrine::loadAll();
 function __autoload($class) {

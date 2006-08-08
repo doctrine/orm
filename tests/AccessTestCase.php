@@ -1,6 +1,10 @@
 <?php
 class Doctrine_AccessTestCase extends Doctrine_UnitTestCase {
     public function prepareData() { }
+    public function prepareTables() {
+        $this->tables = array("Entity", "User"); 
+        parent::prepareTables();                               	
+    }
     public function testOffsetMethods() {
         $user = new User();
         $this->assertEqual($user["name"],null);
