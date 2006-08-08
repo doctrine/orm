@@ -21,7 +21,7 @@
 /**
  * Doctrine_Tree_PathModel
  *
- * the purpose of Doctrine_Tree_NestedSet is to provide PathModel tree access
+ * the purpose of Doctrine_Tree_PathModel is to provide PathModel tree access
  * strategy for all records extending it
  *
  * @package     Doctrine ORM
@@ -34,7 +34,7 @@ class Doctrine_Tree_PathModel extends Doctrine_Record {
 
     public function getPath() { }
 
-    public function getDepth() { }     
+    public function getDepth() { }
 
     public function removeNode() { }
     

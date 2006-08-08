@@ -5,7 +5,7 @@ class Doctrine_DataDict {
 
     public function __construct(PDO $dbh) {
         $file = Doctrine::getPath().DIRECTORY_SEPARATOR."Doctrine".DIRECTORY_SEPARATOR."adodb-hack".DIRECTORY_SEPARATOR."adodb.inc.php";
-        
+
         if( ! file_exists($file)) 
             throw new Doctrine_Exception("Couldn't include datadict. File $file does not exist");
 
@@ -59,11 +59,8 @@ class Doctrine_DataDict {
     public function getADOType($type,$length) {
         switch($type):
             case "array":
-            case "a":
             case "object":
-            case "o":
             case "string":
-            case "s":
                 if($length <= 255)
                     return "C($length)";
                 elseif($length <= 4000)
@@ -79,28 +76,21 @@ class Doctrine_DataDict {
             case "clob":
                 return "XL";
             break;
-            case "d":
             case "date":
                 return "D";
             break;
             case "float":
-            case "f":
             case "double":
                 return "F";
             break;
             case "timestamp":
-            case "t":
                 return "T";
             break;
             case "boolean":
-            case "bool":
                 return "L";
             break;
-            case "enum":
-            case "e":
+            case "enum":   
             case "integer":
-            case "int":
-            case "i":
                 if(empty($length))
                     return "I8";
                 elseif($length < 4)
@@ -115,6 +105,8 @@ class Doctrine_DataDict {
                     throw new Doctrine_Exception("Too long integer (max length is 20).");
 
             break;
+            default:
+                throw new Doctrine_Exception("Unknown column type $type");
         endswitch;
     }
 }
