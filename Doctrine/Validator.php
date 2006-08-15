@@ -227,9 +227,12 @@ class Doctrine_Validator {
      * @return boolean
      */
     public static function isValidType($var, $type) {
+        if($type == 'boolean')
+            return true;
+
         $looseType = self::gettype($var);
         if($type == 'enum')
-            $type = 'integer';
+            $type = 'integer'; 
 
         switch($looseType):
             case 'float':
