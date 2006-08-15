@@ -3,6 +3,13 @@
  * oracle driver
  */
 class Doctrine_Session_Oracle extends Doctrine_Session {
+    /**
+     * Adds an driver-specific LIMIT clause to the query
+     *
+     * @param string $query
+     * @param mixed $limit
+     * @param mixed $offset
+     */
     public function modifyLimitQuery($query,$limit,$offset) {
         $e      = explode("select ",strtolower($query));
         $e2     = explode(" from ",$e[1]);

@@ -30,11 +30,21 @@
  */
 class Doctrine_Tree_NestedSet extends Doctrine_Record {
 
-    public function getLeafNodes() { }
+    public function getLeafNodes() { 
+        $query = "SELECT ".implode(", ",$this->table->getColumnNames()).
+                 " FROM ".$this->table->getTableName().
+                 " WHERE rgt = lft + 1";
+    }
 
     public function getPath() { }
 
-    public function getDepth() { }
+    public function getDepth() { 
+        $query = "SELECT (COUNT(parent.name) - 1) AS depth
+                  FROM ".$this->table->getTableName()." AS node,".
+                  $this->table->getTableName()." AS parent
+                  WHERE node.lft BETWEEN parent.lft AND parent.rgt
+                  GROUP BY node.name";
+    }
 
     public function removeNode() { }
     
