@@ -242,40 +242,73 @@ class Doctrine_Query extends Doctrine_Hydrate {
     final public function getQuery() {
         if(empty($this->parts["select"]) || empty($this->parts["from"]))
             return false;
+        
+        $needsSubQuery = false;
+        $subquery = '';
+
+        if( ! empty($this->parts['limit']))
+            $needsSubQuery = true;
 
         // build the basic query
         $q = "SELECT ".implode(", ",$this->parts["select"]).
              " FROM ";
-        
+
         foreach($this->parts["from"] as $tname => $bool) {
             $a[] = $tname;
         }
         $q .= implode(", ",$a);
-        
+        $k  = array_keys($this->tables);
+        $table = $this->tables[$k[0]];
+
+        if($needsSubQuery)
+            $subquery = 'SELECT '.$table->getTableName().".".$table->getIdentifier().
+                        ' FROM '.$table->getTableName();
+
         if( ! empty($this->parts['join'])) {
             foreach($this->parts['join'] as $part) {
                 $q .= " ".implode(' ', $part);
             }
+
+            if($needsSubQuery) {
+                foreach($this->parts['join'] as $parts) {
+                    foreach($parts as $part) {
+                        if(substr($part,0,9) !== 'LEFT JOIN')
+                            $subquery .= " ".$part;
+                    }
+                }
+            }
         }
+
 
         $string = $this->applyInheritance();
 
-        if( ! empty($this->parts["where"])) {
-            $q .= " WHERE ".implode(" AND ",$this->parts["where"]);
-            if( ! empty($string))
-                $q .= " AND (".$string.")";
-        } else {
-            if( ! empty($string))
-                $q .= " WHERE (".$string.")";
+        if( ! empty($string))
+            $this->parts['where'][] = '('.$string.')';
+
+        if($needsSubQuery) {
+            $subquery .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';
+            $subquery .= ( ! empty($this->parts['groupby']))?" GROUP BY ".implode(", ",$this->parts["groupby"]):'';
+            $subquery .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
+            $subquery .= ( ! empty($this->parts['orderby']))?" ORDER BY ".implode(" ",$this->parts["orderby"]):'';
         }
 
+        if( ! empty($this->parts["limit"]) || ! empty($this->parts["offset"]) && $needsSubQuery) {
+            $subquery = $this->session->modifyLimitQuery($subquery,$this->parts["limit"],$this->parts["offset"]);
 
+            $field    = $table->getTableName().'.'.$table->getIdentifier();
+            array_unshift($this->parts['where'], $field.' IN ('.$subquery.')');
+        }
+
+        $q .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';
         $q .= ( ! empty($this->parts['groupby']))?" GROUP BY ".implode(", ",$this->parts["groupby"]):'';
         $q .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
         $q .= ( ! empty($this->parts['orderby']))?" ORDER BY ".implode(" ",$this->parts["orderby"]):'';
 
-        if( ! empty($this->parts["limit"]) || ! empty($this->offset))
-            $q = $this->session->modifyLimitQuery($q,$this->parts["limit"],$this->offset);
+        // return to the previous state
+        if( ! empty($string))
+            array_pop($this->parts['where']);
+        if($needsSubQuery)
+            array_shift($this->parts['where']);
 
         return $q;
     }
@@ -294,7 +327,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
         if($this->aggregate) {
             $keys  = array_keys($this->tables);
             $query = $this->getQuery();
-            $stmt  = $this->tables[$keys[0]]->getSession()->select($query,$this->parts["limit"],$this->offset);
+            $stmt  = $this->tables[$keys[0]]->getSession()->select($query,$this->parts["limit"],$this->parts["offset"]);
             $data  = $stmt->fetch(PDO::FETCH_ASSOC);
             if(count($data) == 1) {
                 return current($data);
@@ -374,7 +407,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
                     $this->parts["limit"] = trim($part);
                 break;
                 case "OFFSET":
-                    $this->offset = trim($part);
+                    $this->parts["offset"] = trim($part);
                 break;
             endswitch;
         }

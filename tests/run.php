@@ -53,7 +53,7 @@ $test->addTestCase(new Doctrine_ViewTestCase());
 
 $test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 
-$test->addTestCase(new Doctrine_QueryTestCase());
+
 
 $test->addTestCase(new Doctrine_RawSql_TestCase());
 
@@ -66,6 +66,8 @@ $test->addTestCase(new Doctrine_ValueHolder_TestCase());
 $test->addTestCase(new Doctrine_ValidatorTestCase());
 
 $test->addTestCase(new Doctrine_CollectionTestCase());
+
+$test->addTestCase(new Doctrine_QueryTestCase());
 
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 

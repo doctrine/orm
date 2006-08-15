@@ -34,6 +34,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(), 8);
     }
     */
+
     public function testMultipleFetching() {
         $count = $this->dbh->count();
         $this->session->getTable('User')->clear();
@@ -990,7 +991,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
     public function testLimit() {
         $query = new Doctrine_Query($this->session);
-        $coll  = $query->query("FROM User LIMIT 3");
+        $coll  = $query->query("FROM User(id) LIMIT 3");
         $this->assertEqual($query->limit, 3);
         $this->assertEqual($coll->count(), 3);
     }

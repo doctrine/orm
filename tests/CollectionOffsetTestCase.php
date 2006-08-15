@@ -45,10 +45,10 @@ class Doctrine_Collection_OffsetTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(count($users), 1);
 
         $coll = $users[0]->Phonenumber;
-        $this->assertEqual(count($coll), 1);
+        $this->assertEqual(count($coll), 3);
         $coll[1];
 
-        $this->assertEqual(count($coll), 2);
+        $this->assertEqual(count($coll), 3);
         $this->assertEqual($coll[1]->phonenumber, "456 456");
 
     }
