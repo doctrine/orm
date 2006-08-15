@@ -23,6 +23,7 @@ require_once("RawSqlTestCase.php");
 require_once("CustomPrimaryKeyTestCase.php");
 require_once("FilterTestCase.php");
 require_once("ValueHolderTestCase.php");
+require_once("QueryLimitTestCase.php");
 
 error_reporting(E_ALL);
 
@@ -65,6 +66,8 @@ $test->addTestCase(new Doctrine_ValueHolder_TestCase());
 $test->addTestCase(new Doctrine_ValidatorTestCase());
 
 $test->addTestCase(new Doctrine_CollectionTestCase());
+
+$test->addTestCase(new Doctrine_Query_Limit_TestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());

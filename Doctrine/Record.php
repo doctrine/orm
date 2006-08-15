@@ -1140,27 +1140,19 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                         }
                     break;
                     default:
+                        $query   = $fk->getRelationDql(1);
+
                         // ONE-TO-MANY
                         if($fk instanceof Doctrine_ForeignKey) {
                             $id      = $this->get($local);
-                            $query = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$fk->getForeign()." = ?";
-                            $coll = $graph->query($query,array($id));
-
-                            $this->references[$name] = $coll;
-                            $this->references[$name]->setReference($this, $fk);
-
-                            $this->originals[$name]  = clone $coll;
-
+                            $coll    = $graph->query($query,array($id));
+                            $coll->setReference($this, $fk);
                         } elseif($fk instanceof Doctrine_Association) {
-
-                            $query   = $fk->getRelationDql(1);
-
-                            $coll    = $graph->query($query, array($this->getIncremented()));
-
-                            $this->references[$name] = $coll;
-                            $this->originals[$name]  = clone $coll;
-
+                            $id      = $this->getIncremented();
+                            $coll    = $graph->query($query, array($id));
                         }
+                        $this->references[$name] = $coll;
+                        $this->originals[$name]  = clone $coll;
                  endswitch;
             break;
         endswitch;
@@ -1179,17 +1171,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         return $this->filters[$componentAlias];
     }
-    /**
-     * sets enumerated value array for given field
-     *
-     * @param string $field
-     * @param array $values
-     * @return void
-     */
-    final public function setEnumValues($field, array $values) {
-        $this->table->setEnumValues($field, $values);
-    }
-
     /**
      * binds One-to-One composite relation
      *
@@ -1231,37 +1212,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->table->bind($componentName,$foreignKey,Doctrine_Relation::MANY_AGGREGATE, $localKey);
     }
     /**
-     * setInheritanceMap
-     * @param array $inheritanceMap
-     * @return void
-     */
-    final public function setInheritanceMap(array $inheritanceMap) {
-        $this->table->setInheritanceMap($inheritanceMap);
-    }
-    /**
      * setPrimaryKey
      * @param mixed $key
      */
     final public function setPrimaryKey($key) {
         $this->table->setPrimaryKey($key);
-    }
-    /**
-     * setTableName
-     * @param string $name              table name
-     * @return void
-     */
-    final public function setTableName($name) {
-        $this->table->setTableName($name);
-    }
-    /**
-     * setAttribute
-     * @param integer $attribute
-     * @param mixed $value
-     * @see Doctrine::ATTR_* constants
-     * @return void
-     */
-    final public function setAttribute($attribute, $value) {
-        $this->table->setAttribute($attribute,$value);
     }
     /**
      * hasColumn
@@ -1294,6 +1249,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param array $a
      */
     public function __call($m,$a) {
+        if(method_exists($this->table, $m))
+            return call_user_func_array(array($this->table, $m), $a);
+
         if( ! function_exists($m))
             throw new Doctrine_Record_Exception("unknown callback '$m'");
 
@@ -1302,16 +1260,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $a[0] = $this->get($column);
 
             $newvalue = call_user_func_array($m, $a);
-
-            /**
-            if( ! isset($a[1]) || $a[1] == Doctrine_Record::CALLBACK_RAW) {
-            */
-                $this->data[$column] = $newvalue;
-            /**
-            } elseif($a[1] == Doctrine_Record::CALLBACK_STATEWISE) {
-                $this->set($column, call_user_func_array($m, $a));
-            }
-            */
+            
+            $this->data[$column] = $newvalue;
         }
         return $this;
     }

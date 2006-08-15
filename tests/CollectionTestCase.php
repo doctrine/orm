@@ -14,13 +14,7 @@ class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($coll->count(),3);
         $this->assertEqual($coll->getKeys(), array(0,1,2));
     }
-    public function testLoadRelated() {
-        $coll = $this->session->query("FROM User");
 
-        $q = $coll->loadRelated();
-
-        $this->assertTrue($q instanceof Doctrine_Query);
-    }
     public function testLoadRelatedForAssociation() {
         $coll = $this->session->query("FROM User");
 
@@ -75,7 +69,22 @@ class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
 
         $this->session->clear();
     }
+    public function testLoadRelated() {
+        $coll = $this->session->query("FROM User(id)");
 
+        $q = $coll->loadRelated();
+
+        $this->assertTrue($q instanceof Doctrine_Query);
+        
+        $q->addFrom('User.Group');
+
+        $coll2 = $q->execute($coll->getPrimaryKeys());
+        $this->assertEqual($coll2->count(), $coll->count());
+
+        $count = $this->dbh->count();
+        $coll[0]->Group[0];
+        $this->assertEqual($count, $this->dbh->count());
+    }
     public function testLoadRelatedForLocalKeyRelation() {
         $coll = $this->session->query("FROM User");
 

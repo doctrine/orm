@@ -493,8 +493,17 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function loadRelated($name = null) {
         $query   = new Doctrine_Query($this->table->getSession());
 
-        if( ! isset($name))
+        if( ! isset($name)) {
+            foreach($this->data as $record):
+                $value = $record->getIncremented();
+                if($value !== null) 
+                    $list[] = $value;
+            endforeach;
+            $query->from($this->table->getComponentName()."(".implode(", ",$this->table->getPrimaryKeys()).")");
+            $query->where($this->table->getComponentName().".id IN (".substr(str_repeat("?, ", count($list)),0,-2).")");
+
             return $query;
+        }
 
         $rel     = $this->table->getForeignKey($name);
         $table   = $rel->getTable();
@@ -516,7 +525,20 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $dql     = $rel->getRelationDql(count($list), 'collection');
         $coll    = $query->query($dql, $list);
         
-
+        $this->populateRelated($name, $coll);
+    }
+    /**
+     * populateRelated
+     *
+     * @param string $name
+     * @param Doctrine_Collection $coll
+     * @return void
+     */
+    public function populateRelated($name, Doctrine_Collection $coll) {
+        $rel     = $this->table->getForeignKey($name);
+        $table   = $rel->getTable();
+        $foreign = $rel->getForeign();
+        $local   = $rel->getLocal();
 
         if($rel instanceof Doctrine_LocalKey) {
             foreach($this->data as $key => $record) {
@@ -565,7 +587,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 $this->data[$key]->setRelated($name, $sub);
             }
         }
-
     }
     /**
      * getNormalIterator
