@@ -488,13 +488,16 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * loadRelated
      *
-     * @param string $name
+     * @param mixed $name
      */
-    public function loadRelated($name) {
+    public function loadRelated($name = null) {
+        $query   = new Doctrine_Query($this->table->getSession());
 
-        $rel   = $this->table->getForeignKey($name);
-        $table = $rel->getTable();
-        $query = new Doctrine_Query($this->table->getSession());
+        if( ! isset($name))
+            return $query;
+
+        $rel     = $this->table->getForeignKey($name);
+        $table   = $rel->getTable();
         $foreign = $rel->getForeign();
         $local   = $rel->getLocal();
 
@@ -510,32 +513,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     $list[] = $value;
             endforeach;
         }
-        $paramStr = "(".substr(str_repeat("?, ", count($list)),0,-2).")";
-        $multi    = true;
-
-        if($rel instanceof Doctrine_LocalKey ||
-           $rel instanceof Doctrine_ForeignKey) 
-            $dql  = "FROM ".$table->getComponentName().
-                    " WHERE ".$table->getComponentName().".".$rel->getForeign().
-                    " IN ".$paramStr;
-
-
-        if($rel instanceof Doctrine_LocalKey) {
-            $multi = false;
-        } elseif($rel instanceof Doctrine_Association) {
-            $asf     = $rel->getAssociationFactory();
-            $sub     = "SELECT ".$foreign.
-                       " FROM ".$asf->getTableName().
-                       " WHERE ".$local.
-                       " IN ".$paramStr;
-			
-			$table->getForeignKey($table->getAlias($this->table->getComponentName()));
-
-            $dql     = "FROM ".$table->getComponentName().":".$asf->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($sub)";
-			//$query->parseQuery($dql);
-            //print Doctrine_Lib::formatSql($query->getQuery());
-        }
-
+        $dql     = $rel->getRelationDql(count($list), 'collection');
         $coll    = $query->query($dql, $list);
         
 
@@ -567,6 +545,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             }
         } elseif($rel instanceof Doctrine_Association) {
             $identifier = $this->table->getIdentifier();
+            $asf        = $rel->getAssociationFactory();
 
             foreach($this->data as $key => $record) {
                 if($record->getState() == Doctrine_Record::STATE_TCLEAN ||

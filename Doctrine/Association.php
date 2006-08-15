@@ -34,5 +34,27 @@ class Doctrine_Association extends Doctrine_Relation {
     public function getAssociationFactory() {
         return $this->associationTable;
     }
+    /**
+     * getRelationDql
+     *
+     * @param integer $count
+     * @return string
+     */
+    public function getRelationDql($count, $context = 'record') {
+        $sub    = "SELECT ".$this->foreign.
+                  " FROM ".$this->associationTable->getTableName().
+                  " WHERE ".$this->local.
+                  " IN (".substr(str_repeat("?, ", $count),0,-2).")";
+
+        $dql    = "FROM ".$this->table->getComponentName();
+        
+        if($context != 'record')
+            $dql .= ":".$this->associationTable->getComponentName();
+
+        $dql   .= " WHERE ".$this->table->getComponentName().".".$this->table->getIdentifier().
+                  " IN ($sub)";
+
+        return $dql;
+    }
 }
 ?>

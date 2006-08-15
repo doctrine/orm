@@ -52,23 +52,23 @@ class Doctrine_Relation {
     /**
      * @var Doctrine_Table $table   foreign factory
      */
-    private $table;
+    protected $table;
     /**
      * @var string $local           local field
      */
-    private $local;
+    protected $local;
     /**
      * @var string $foreign         foreign field
      */
-    private $foreign;
+    protected $foreign;
     /**
      * @var integer $type           bind type
      */
-    private $type;
+    protected $type;
     /**
      * @var string $alias           relation alias
      */
-    private $alias;
+    protected $alias;
 
     /**
      * @param Doctrine_Table $table
@@ -115,7 +115,19 @@ class Doctrine_Relation {
     final public function getForeign() {
         return $this->foreign;
     }
-
+    /** 
+     * getRelationDql
+     *
+     * @param integer $count
+     * @return string
+     */
+    public function getRelationDql($count) {
+        $dql  = "FROM ".$this->table->getComponentName().
+                " WHERE ".$this->table->getComponentName(). '.' . $this->foreign.
+                " IN (".substr(str_repeat("?, ", $count),0,-2).")";
+        
+        return $dql;
+    }
     /**
      * getDeleteOperations
      *

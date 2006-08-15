@@ -1153,11 +1153,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
                         } elseif($fk instanceof Doctrine_Association) {
 
-                            $asf     = $fk->getAssociationFactory();
-                            $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local." = ?";
-
-                            $graph   = new Doctrine_Query($table->getSession());
-                            $query   = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($query)";
+                            $query   = $fk->getRelationDql(1);
 
                             $coll    = $graph->query($query, array($this->getIncremented()));
 

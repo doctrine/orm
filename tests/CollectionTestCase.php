@@ -14,6 +14,13 @@ class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($coll->count(),3);
         $this->assertEqual($coll->getKeys(), array(0,1,2));
     }
+    public function testLoadRelated() {
+        $coll = $this->session->query("FROM User");
+
+        $q = $coll->loadRelated();
+
+        $this->assertTrue($q instanceof Doctrine_Query);
+    }
     public function testLoadRelatedForAssociation() {
         $coll = $this->session->query("FROM User");
 

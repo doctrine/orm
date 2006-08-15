@@ -46,8 +46,6 @@ $test->addTestCase(new Doctrine_ConfigurableTestCase());
 
 $test->addTestCase(new Doctrine_Collection_OffsetTestCase());
 
-$test->addTestCase(new Doctrine_CollectionTestCase());
-
 $test->addTestCase(new Doctrine_PessimisticLockingTestCase());
 
 $test->addTestCase(new Doctrine_ViewTestCase());
@@ -65,6 +63,9 @@ $test->addTestCase(new Doctrine_Filter_TestCase());
 $test->addTestCase(new Doctrine_ValueHolder_TestCase());
 
 $test->addTestCase(new Doctrine_ValidatorTestCase());
+
+$test->addTestCase(new Doctrine_CollectionTestCase());
+
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
