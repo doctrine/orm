@@ -382,6 +382,8 @@ class Validator_Test extends Doctrine_Record {
         $this->hasColumn("myarray", "array", 1000);
         $this->hasColumn("myobject", "object", 1000);
         $this->hasColumn("myinteger", "integer", 11);
+        $this->hasColumn("myemail", "string", 100, "email");
+        $this->hasColumn("myemail2", "string", 100, "email|notblank");
     }
 }
 ?>

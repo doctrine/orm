@@ -34,8 +34,6 @@ $test->addTestCase(new Doctrine_SessionTestCase());
 
 $test->addTestCase(new Doctrine_TableTestCase());
 
-$test->addTestCase(new Doctrine_ValidatorTestCase());
-
 $test->addTestCase(new Doctrine_ManagerTestCase());
 
 $test->addTestCase(new Doctrine_AccessTestCase());
@@ -65,6 +63,8 @@ $test->addTestCase(new Doctrine_CustomPrimaryKeyTestCase());
 $test->addTestCase(new Doctrine_Filter_TestCase());
 
 $test->addTestCase(new Doctrine_ValueHolder_TestCase());
+
+$test->addTestCase(new Doctrine_ValidatorTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 

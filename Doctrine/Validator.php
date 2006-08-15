@@ -183,12 +183,6 @@ class Doctrine_Validator {
                     break;
                 }
             }
-            /**
-            if(self::gettype($value) !== $column[0] && self::gettype($value) != 'NULL') {
-                $err[$key] = Doctrine_Validator::ERR_TYPE;
-                continue;
-            }
-            */
             if( ! self::isValidType($value, $column[0])) {
                 $err[$key] = Doctrine_Validator::ERR_TYPE;
                 continue;

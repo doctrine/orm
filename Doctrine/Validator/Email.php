@@ -8,6 +8,9 @@ class Doctrine_Validator_Email {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value, $args) {
+        if(empty($value)) 
+            return true;
+
         $parts = explode("@", $value);
 
         if(count($parts) != 2) 

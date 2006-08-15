@@ -81,7 +81,9 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_array($stack));
 
         $stack = $stack['Validator_Test'][0];
+
         $this->assertEqual($stack['mystring'], Doctrine_Validator::ERR_NOTNULL);
+        $this->assertEqual($stack['myemail2'], Doctrine_Validator::ERR_NOTBLANK);
 
         $test->mystring = 'str';
 
@@ -137,7 +139,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
     }
     public function testSave() {
         $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
-        $user = $this->session->getTable("User")->find(4); 
+        $user = $this->session->getTable("User")->find(4);
         try {
             $user->name = "this is an example of too long name not very good example but an example nevertheless";
             $user->save();
