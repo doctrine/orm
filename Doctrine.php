@@ -236,7 +236,12 @@ final class Doctrine {
      */
     const UNIQUE_KEY            = 1;
     
-
+    /**
+     * constructor
+     */
+    public function __construct() {
+        throw new Doctrine_Exception('Doctrine is static class. No instances can be created.');
+    }
     /**
      * @var string $path            doctrine root directory
      */
