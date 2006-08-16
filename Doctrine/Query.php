@@ -27,6 +27,14 @@ require_once("Hydrate.php");
  * @license     LGPL
  */
 class Doctrine_Query extends Doctrine_Hydrate {
+    /**
+     * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
+     */
+    private $subqueryAliases = array();
+    /**
+     * @param boolean $needsSubquery
+     */
+    private $needsSubquery   = false;
 	/**
  	 * count
      *
@@ -246,7 +254,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
         $needsSubQuery = false;
         $subquery = '';
 
-        if( ! empty($this->parts['limit']))
+        if( ! empty($this->parts['limit']) && $this->needsSubquery)
             $needsSubQuery = true;
 
         // build the basic query
@@ -261,7 +269,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
         $table = $this->tables[$k[0]];
 
         if($needsSubQuery)
-            $subquery = 'SELECT '.$table->getTableName().".".$table->getIdentifier().
+            $subquery = 'SELECT DISTINCT '.$table->getTableName().".".$table->getIdentifier().
                         ' FROM '.$table->getTableName();
 
         if( ! empty($this->parts['join'])) {
@@ -272,13 +280,18 @@ class Doctrine_Query extends Doctrine_Hydrate {
             if($needsSubQuery) {
                 foreach($this->parts['join'] as $parts) {
                     foreach($parts as $part) {
-                        if(substr($part,0,9) !== 'LEFT JOIN')
-                            $subquery .= " ".$part;
+                        if(substr($part,0,9) === 'LEFT JOIN') {
+                            $e = explode(' ', $part);
+
+                            if( ! in_array($e[2],$this->subqueryAliases))
+                                continue;
+                        }
+
+                        $subquery .= " ".$part;
                     }
                 }
             }
         }
-
 
         $string = $this->applyInheritance();
 
@@ -292,17 +305,23 @@ class Doctrine_Query extends Doctrine_Hydrate {
             $subquery .= ( ! empty($this->parts['orderby']))?" ORDER BY ".implode(" ",$this->parts["orderby"]):'';
         }
 
-        if( ! empty($this->parts["limit"]) || ! empty($this->parts["offset"]) && $needsSubQuery) {
-            $subquery = $this->session->modifyLimitQuery($subquery,$this->parts["limit"],$this->parts["offset"]);
-
-            $field    = $table->getTableName().'.'.$table->getIdentifier();
-            array_unshift($this->parts['where'], $field.' IN ('.$subquery.')');
+        $modifyLimit = false;
+        if( ! empty($this->parts["limit"]) || ! empty($this->parts["offset"])) {
+            if($needsSubQuery) {
+                $subquery = $this->session->modifyLimitQuery($subquery,$this->parts["limit"],$this->parts["offset"]);
+    
+                $field    = $table->getTableName().'.'.$table->getIdentifier();
+                array_unshift($this->parts['where'], $field.' IN ('.$subquery.')');
+            } else
+                $modifyLimit = true;    
         }
 
         $q .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';
         $q .= ( ! empty($this->parts['groupby']))?" GROUP BY ".implode(", ",$this->parts["groupby"]):'';
         $q .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
         $q .= ( ! empty($this->parts['orderby']))?" ORDER BY ".implode(" ",$this->parts["orderby"]):'';
+        if($modifyLimit)
+            $q = $this->session->modifyLimitQuery($q,$this->parts["limit"],$this->parts["offset"]);
 
         // return to the previous state
         if( ! empty($string))
@@ -545,7 +564,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
                     $table = $this->session->getTable($name);
 
                     $tname = $table->getTableName();
-                    
+
                     if( ! isset($this->tableAliases[$currPath]))
                         $this->tableIndexes[$tname] = 1;
                     
@@ -569,7 +588,9 @@ class Doctrine_Query extends Doctrine_Hydrate {
                     $fk       = $table->getForeignKey($name);
                     $name     = $fk->getTable()->getComponentName();
                     $original = $fk->getTable()->getTableName();
-                    
+
+
+
                     if(isset($this->tableAliases[$currPath])) {
                         $tname2 = $this->tableAliases[$currPath];
                     } else
@@ -591,6 +612,13 @@ class Doctrine_Query extends Doctrine_Hydrate {
                             throw new Doctrine_Exception("Unknown operator '$mark'");
                     endswitch;
 
+                    if($fk->getType() == Doctrine_Relation::MANY_AGGREGATE ||
+                       $fk->getType() == Doctrine_Relation::MANY_COMPOSITE) {
+                        if( ! $loadFields)
+                            $this->subqueryAliases[] = $tname2;
+                    
+                        $this->needsSubquery = true;
+                    }
 
                     if($fk instanceof Doctrine_ForeignKey ||
                        $fk instanceof Doctrine_LocalKey) {

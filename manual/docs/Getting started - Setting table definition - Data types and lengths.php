@@ -1,27 +1,27 @@
 Following data types are availible in doctrine:
     <ul>
-    <li /><b> string / s</b>
+    <li /><b> string </b>
         <dd /> The same as type 'string' in php
-    <li /><b> float / double / f</b>
+    <li /><b> float / double</b>
         <dd /> The same as type 'float' in php<br />
-    <li /><b> integer / int / i</b>
+    <li /><b> integer</b>
         <dd /> The same as type 'integer' in php<br />
-    <li /><b> boolean / bool</b>
+    <li /><b> boolean </b>
         <dd /> The same as type 'boolean' in php<br />
-    <li /><b> array / a</b>
+    <li /><b> array </b>
         <ul> The same as type 'array' in php. Automatically serialized when saved into database and unserialized when retrieved from database.</ul>
-    <li /><b> object / o</b>
+    <li /><b> object </b>
         <ul> The same as type 'object' in php. Automatically serialized when saved into database and unserialized when retrieved from database.</ul>
-    <li /><b> enum / e</b>
+    <li /><b> enum </b>
         <ul> Unified 'enum' type. Automatically converts the string values into index numbers and vice versa. The possible values for the column 
         can be specified with Doctrine_Record::setEnumValues(columnName, array values).</ul>
-    <li /><b> timestamp / t</b>
+    <li /><b> timestamp </b>
         <dd /> Database 'timestamp' type
     <li /><b> clob</b>
         <dd /> Database 'clob' type
     <li /><b> blob</b>
         <dd /> Database 'blob' type
-    <li /><b> date / d</b>
+    <li /><b> date </b>
         <dd /> Database 'date' type
     </ul>
 
@@ -36,6 +36,4 @@ However when the record is validated it is only allowed to have 'content' -colum
 
 In general Doctrine is smart enough to know which integer/string type to use depending on the specified length.
 
-<br \>
-
-
+<br \>  
