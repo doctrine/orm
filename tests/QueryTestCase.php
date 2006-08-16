@@ -976,7 +976,8 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($query->limit, 10);
         $this->assertTrue(strpos($query->getQuery(),"LIMIT"));
 
-        $query->limit = null;
+        $query->remove('limit')->remove('offset');
+
         $this->assertFalse(strpos($query->getQuery(),"LIMIT"));
 
         $coll = $query->execute();
