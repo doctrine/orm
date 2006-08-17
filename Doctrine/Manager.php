@@ -30,9 +30,9 @@ require_once("EventListener.php");
  */
 class Doctrine_Manager extends Doctrine_Configurable implements Countable, IteratorAggregate {
     /**
-     * @var array $session          an array containing all the opened sessions
+     * @var array $connections      an array containing all the opened connections
      */
-    private $sessions   = array();
+    private $connections   = array();
     /**
      * @var integer $index          the incremented index
      */
@@ -143,20 +143,20 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         $this->attributes[Doctrine::ATTR_CREATE_TABLES] = $old;
     }
     /**
-     * openSession                          
-     * opens a new session and saves it to Doctrine_Manager->sessions
+     * openConnection
+     * opens a new connection and saves it to Doctrine_Manager->sessions
      *
      * @param PDO $pdo                      PDO database driver
-     * @param string $name                  name of the session, if empty numeric key is used
+     * @param string $name                  name of the connection, if empty numeric key is used
      * @return Doctrine_Session
      */
-    final public function openSession(PDO $pdo, $name = null) {
+    public function openConnection(PDO $pdo, $name = null) {
         // initialize the default attributes
         $this->setDefaultAttributes();
 
         if($name !== null) {
             $name = (string) $name;
-            if(isset($this->sessions[$name]))
+            if(isset($this->connections[$name]))
                 throw new InvalidKeyException();
         
         } else {
@@ -165,31 +165,34 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         switch($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)):
             case "mysql":
-                $this->sessions[$name] = new Doctrine_Session_Mysql($this,$pdo);
+                $this->connections[$name] = new Doctrine_Session_Mysql($this,$pdo);
             break;
             case "sqlite":
-                $this->sessions[$name] = new Doctrine_Session_Sqlite($this,$pdo);
+                $this->connections[$name] = new Doctrine_Session_Sqlite($this,$pdo);
             break;
             case "pgsql":
-                $this->sessions[$name] = new Doctrine_Session_Pgsql($this,$pdo);
+                $this->connections[$name] = new Doctrine_Session_Pgsql($this,$pdo);
             break;
             case "oci":
-                $this->sessions[$name] = new Doctrine_Session_Oracle($this,$pdo);
+                $this->connections[$name] = new Doctrine_Session_Oracle($this,$pdo);
             break;
             case "mssql":
-                $this->sessions[$name] = new Doctrine_Session_Mssql($this,$pdo);
+                $this->connections[$name] = new Doctrine_Session_Mssql($this,$pdo);
             break;
             case "firebird":
-                $this->sessions[$name] = new Doctrine_Session_Firebird($this,$pdo);
+                $this->connections[$name] = new Doctrine_Session_Firebird($this,$pdo);
             break;
             case "informix":
-                $this->sessions[$name] = new Doctrine_Session_Informix($this,$pdo);
+                $this->connections[$name] = new Doctrine_Session_Informix($this,$pdo);
             break;
         endswitch;
 
 
         $this->currIndex = $name;
-        return $this->sessions[$name];
+        return $this->connections[$name];
+    }
+    public function openSession(PDO $pdo, $name = null) {
+        return $this->openConnection($pdo, $name);
     }
     /**
      * getSession
@@ -197,46 +200,55 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return object Doctrine_Session
      * @throws InvalidKeyException
      */
-    final public function getSession($index) {
-        if( ! isset($this->sessions[$index]))
+    public function getConnection($index) {
+        if( ! isset($this->connections[$index]))
             throw new InvalidKeyException();
 
         $this->currIndex = $index;
-        return $this->sessions[$index];
+        return $this->connections[$index];
     }
+    public function getSession($index) { return $this->getConnection($index); }
+
     /**
      * closes the session
      *
      * @param Doctrine_Session $session
      * @return void
      */
-    final public function closeSession(Doctrine_Session $session) {
+    public function closeConnection(Doctrine_Session $session) {
         $session->close();
         unset($session);
     }
+    public function closeSession(Doctrine_Session $session) { $this->closeConnection($session); }
     /**
-     * getSessions
-     * returns all opened sessions
+     * getConnections
+     * returns all opened connections
      *
      * @return array
      */
-    final public function getSessions() {
-        return $this->sessions;
+    public function getConnections() {
+        return $this->connections;
+    }
+    public function getSessions() {
+        return $this->connections;
     }
     /**
-     * setCurrentSession
-     * sets the current session to $key
+     * setCurrentConnection
+     * sets the current connection to $key
      *
-     * @param mixed $key                        the session key
+     * @param mixed $key                        the connection key
      * @throws InvalidKeyException
      * @return void
      */
-    final public function setCurrentSession($key) {
+    public function setCurrentConnection($key) {
         $key = (string) $key;
-        if( ! isset($this->sessions[$key]))
+        if( ! isset($this->connections[$key]))
             throw new InvalidKeyException();
         
         $this->currIndex = $key;
+    }
+    public function setCurrentSession($key) {
+        $this->setCurrentConnection($key);
     }
     /**
      * count
@@ -245,7 +257,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return integer
      */
     public function count() {
-        return count($this->sessions);
+        return count($this->connections);
     }
     /**
      * getIterator
@@ -254,22 +266,23 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return ArrayIterator
      */
     public function getIterator() {
-        return new ArrayIterator($this->sessions);
+        return new ArrayIterator($this->connections);
     }
     /**
-     * getCurrentSession
-     * returns the current session
+     * getCurrentConnection
+     * returns the current connection
      *
      * @throws Doctrine_Session_Exception       if there are no open sessions
      * @return Doctrine_Session
      */
-    final public function getCurrentSession() {
+    public function getCurrentConnection() {
         $i = $this->currIndex;
-        if( ! isset($this->sessions[$i]))
+        if( ! isset($this->connections[$i]))
             throw new Doctrine_Session_Exception();
 
-        return $this->sessions[$i];
+        return $this->connections[$i];
     }
+    public function getCurrentSession() { return $this->getCurrentConnection(); }
     /**
      * __toString
      * returns a string representation of this object
@@ -279,7 +292,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function __toString() {
         $r[] = "<pre>";
         $r[] = "Doctrine_Manager";
-        $r[] = "Sessions : ".count($this->sessions);
+        $r[] = "Sessions : ".count($this->connections);
         $r[] = "</pre>";
         return implode("\n",$r);
     }
