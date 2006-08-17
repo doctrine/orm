@@ -9,9 +9,11 @@ class UserTable extends Doctrine_Table {
 }
 class User extends Doctrine_Record { }
 
-$session = Doctrine_Manager::getInstance()->openSession(new PDO("dsn","username","password"));
+$session = Doctrine_Manager::getInstance()
+           ->openSession(new PDO("dsn","username","password"));
 
-// doctrine will now check if a class called UserTable exists and if it inherits Doctrine_Table
+// doctrine will now check if a class called UserTable exists 
+// and if it inherits Doctrine_Table
 
 $table   = $session->getTable("User");
 

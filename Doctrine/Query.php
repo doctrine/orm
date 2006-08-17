@@ -247,7 +247,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
      *
      * @return string
      */
-    final public function getQuery() {
+    public function getQuery() {
         if(empty($this->parts["select"]) || empty($this->parts["from"]))
             return false;
         
@@ -299,10 +299,10 @@ class Doctrine_Query extends Doctrine_Hydrate {
             $this->parts['where'][] = '('.$string.')';
 
         if($needsSubQuery) {
+            // all conditions must be preserved in subquery
             $subquery .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';
             $subquery .= ( ! empty($this->parts['groupby']))?" GROUP BY ".implode(", ",$this->parts["groupby"]):'';
             $subquery .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
-            $subquery .= ( ! empty($this->parts['orderby']))?" ORDER BY ".implode(" ",$this->parts["orderby"]):'';
         }
 
         $modifyLimit = false;
@@ -313,7 +313,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
                 $field    = $table->getTableName().'.'.$table->getIdentifier();
                 array_unshift($this->parts['where'], $field.' IN ('.$subquery.')');
             } else
-                $modifyLimit = true;    
+                $modifyLimit = true;
         }
 
         $q .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';

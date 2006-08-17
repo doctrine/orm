@@ -1,15 +1,11 @@
 <?php
 $table = $session->getTable("User");
 
-try {
-    $user = $table->find(2);
-} catch(Doctrine_Find_Exception $e) {
-    print "Couldn't find user";
-}
+$user = $table->find(2);
 
 // deletes user and all related composite objects
-
-$user->delete();
+if($user !== false)
+    $user->delete();
 
 
 $users = $table->findAll();

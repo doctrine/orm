@@ -1,7 +1,7 @@
 <?php
 // delete all users with name 'John'
 
-$users = $table->findBySql("name LIKE '%John%'");
+$users = $table->findByDql("name LIKE '%John%'");
 
 $users->delete();
 ?>

@@ -734,6 +734,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         $users = $q->query("FROM ".$this->name." WHERE ".$dql, $params);
         return $users;
     }
+    
+    public function findByDql($dql, array $params = array()) {
+        return $this->findBySql($dql, $params);
+    }
     /**
      * clear
      * clears the first level cache (identityMap)

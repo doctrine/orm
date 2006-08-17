@@ -7,6 +7,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $users = $q->execute();
         $this->assertEqual($users->count(), 5);
+        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id, email.id AS email__id, email.address AS email__address FROM entity LEFT JOIN email ON entity.email_id = email.id WHERE (entity.type = 0) LIMIT 5");
 
     }
     public function testLimitWithOneToOneInnerJoin() {
@@ -15,6 +16,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $users = $q->execute();
         $this->assertEqual($users->count(), 5);
+        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id, email.id AS email__id, email.address AS email__address FROM entity INNER JOIN email ON entity.email_id = email.id WHERE (entity.type = 0) LIMIT 5");
     }
     public function testLimitWithOneToManyLeftJoin() {
         $this->query->from("User(id).Phonenumber");
@@ -98,6 +100,9 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
     public function testLimitWithManyToManyLeftJoin() {
         $q = new Doctrine_Query($this->session);
         $q->from("User.Group")->limit(5);
+        $users = $q->execute();
+
+        $this->assertEqual($users->count(), 5);
     }
 
 }
