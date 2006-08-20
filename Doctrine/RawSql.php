@@ -53,7 +53,15 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
 
         return $this;
     }
-
+    /**
+     * get
+     */
+    public function get($name) {
+        if( ! isset($this->parts[$name])) 
+            throw new Doctrine_Exception('Unknown query part '.$name);
+            
+        return $this->parts[$name];
+    }
     /**
      * parseQuery
      *
@@ -66,7 +74,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
         $this->fields = $m[1];
         $this->clear();
 
-        $e = explode(" ", $query);
+        $e = Doctrine_Query::bracketExplode($query,' ');
 
         foreach($e as $k => $part):
             $low = strtolower($part);
@@ -78,7 +86,10 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
                 case "offset":
                 case "having":
                     $p = $low;
-                    $parts[$low] = array();
+                    if( ! isset($parts[$low]))
+                        $parts[$low] = array();
+                    else
+                        $count[$low]++;
                 break;
                 case "order":
                 case "group":
@@ -92,7 +103,10 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
                 case "by":
                     continue;
                 default:
-                    $parts[$p][] = $part;
+                    if( ! isset($parts[$p][0])) 
+                        $parts[$p][0] = $part;
+                    else
+                        $parts[$p][0] .= ' '.$part;
             endswitch;
         endforeach;
 

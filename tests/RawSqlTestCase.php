@@ -1,5 +1,20 @@
 <?php
 class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
+    public function testQueryParser() {
+        $sql = "SELECT {p.*} FROM photos p";
+        $query = new Doctrine_RawSql($this->session);
+        $query->parseQuery($sql);
+        
+        $this->assertEqual($query->from, array('photos p'));
+
+
+        $sql = "SELECT {p.*} FROM (SELECT p.* FROM photos p LEFT JOIN photos_tags t ON t.photo_id = p.id WHERE t.tag_id = 65) p LEFT JOIN photos_tags t ON t.photo_id = p.id WHERE p.can_see = -1 AND t.tag_id = 62 LIMIT 200";
+        $query->parseQuery($sql);
+
+        $this->assertEqual($query->from, array("(SELECT p.* FROM photos p LEFT JOIN photos_tags t ON t.photo_id = p.id WHERE t.tag_id = 65) p LEFT JOIN photos_tags t ON t.photo_id = p.id"));
+        $this->assertEqual($query->limit, array(200));
+    }
+
     public function testAsteriskOperator() {
         // Selecting with *
 

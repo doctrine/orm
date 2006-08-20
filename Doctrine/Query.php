@@ -501,7 +501,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
      * @param string $e2        the second bracket, usually ')'
      *
      */
-    public static function bracketExplode($str,$d,$e1,$e2) {
+    public static function bracketExplode($str,$d,$e1 = '(',$e2 = ')') {
         $str = explode("$d",$str);
         $i = 0;
         $term = array();
