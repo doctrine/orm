@@ -11,6 +11,14 @@ class Doctrine_Validator_Email {
         if(empty($value)) 
             return true;
 
+        return self::validateEmail($value);
+    }
+    /**
+     * validateEmail
+     *
+     * @param string $value
+     */
+    public static function validateEmail($value) {
         $parts = explode("@", $value);
 
         if(count($parts) != 2) 
@@ -27,7 +35,7 @@ class Doctrine_Validator_Email {
             if (!ereg("^(([A-Za-z0-9!#$%&'*+/=?^_`{|}~-][A-Za-z0-9!#$%&'*+/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$", $parts[$i])) {
                 return false;
             }
-        }  
+        }
         if (!ereg("^\[?[0-9\.]+\]?$", $parts[1])) { // Check if domain is IP. If not, it should be valid domain name
             $domain_array = explode(".", $parts[1]);
             if (count($domain_array) < 2) {

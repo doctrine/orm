@@ -1239,7 +1239,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function merge(array $values) {
         foreach($this->table->getColumnNames() as $value) {
             try {
-                $this->data[$value] = $values[$value];
+                if(isset($values[$value]))
+                    $this->set($value, $values[$value]);
             } catch(Exception $e) { }
         }
     }

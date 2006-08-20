@@ -50,7 +50,8 @@ class ADODB2_sqlite extends ADODB_DataDict {
 		}
 	}
 	// return string must begin with space
-	function _CreateSuffix($fname,$ftype,$fnotnull,$fdefault,$fautoinc,$fconstraint,$funsigned)
+
+	function _CreateSuffix($fname,$ftype,$fnotnull,$fdefault,$fautoinc,$fconstraint,$funsigned = null)
 	{	
 		$suffix = '';
 		if ($funsigned) $suffix .= ' UNSIGNED';
@@ -97,14 +98,14 @@ class ADODB2_sqlite extends ADODB_DataDict {
 		return $sql;
 	}
 
-	function AlterColumnSQL($tabname, $flds)
+	function AlterColumnSQL($tabname, $flds, $tableflds='',$tableoptions='')
 	{
 		if ($this->debug) $this->outp("AlterColumnSQL not supported");
 		return array();
 	}
 	
 	
-	function DropColumnSQL($tabname, $flds)
+	function DropColumnSQL($tabname, $flds, $tableflds='',$tableoptions='')
 	{
 		if ($this->debug) $this->outp("DropColumnSQL not supported");
 		return array();

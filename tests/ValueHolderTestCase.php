@@ -19,7 +19,7 @@ class Doctrine_ValueHolder_TestCase extends Doctrine_UnitTestCase {
     public function testSimpleQuery() {
         $q = new Doctrine_Query($this->session);
         $q->from("User");
-        $users = $q->execute(array(), Doctrine::RETURN_VHOLDER);
+        $users = $q->execute(array(), Doctrine::FETCH_VHOLDER);
         $this->assertEqual($users->count(), 8);
 
 
@@ -27,7 +27,7 @@ class Doctrine_ValueHolder_TestCase extends Doctrine_UnitTestCase {
     public function testQueryWithOneToManyRelation() {
         $q = new Doctrine_Query($this->session);
         $q->from("User.Phonenumber");
-        $users = $q->execute(array(), Doctrine::RETURN_VHOLDER);
+        $users = $q->execute(array(), Doctrine::FETCH_VHOLDER);
         $this->assertEqual($users->count(), 8);
         $this->assertTrue($users[0] instanceof Doctrine_ValueHolder);
         $this->assertTrue($users[3] instanceof Doctrine_ValueHolder);

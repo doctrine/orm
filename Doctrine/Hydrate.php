@@ -226,7 +226,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param string $params
      * @return Doctrine_Collection            the root collection
      */
-    public function execute($params = array(), $return = Doctrine::RETURN_RECORD) {
+    public function execute($params = array(), $return = Doctrine::FETCH_RECORD) {
         $this->data = array();
         $this->collections = array();
         
@@ -275,9 +275,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
                 $array = $this->parseData($stmt);
 
-                if($return == Doctrine::RETURN_VHOLDER) {
+                if($return == Doctrine::FETCH_VHOLDER) {
                     return $this->hydrateHolders($array);
-                }
+                } elseif($return == Doctrine::FETCH_ARRAY)
+                    return $array;
 
                 foreach($array as $data) {
                     /**

@@ -143,7 +143,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         // reverse names
         $names = array_reverse($names);
 
-
         // create database table
         if(method_exists($record,"setTableDefinition")) {
             $record->setTableDefinition();
@@ -734,7 +733,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         $users = $q->query("FROM ".$this->name." WHERE ".$dql, $params);
         return $users;
     }
-    
+
     public function findByDql($dql, array $params = array()) {
         return $this->findBySql($dql, $params);
     }

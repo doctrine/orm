@@ -84,10 +84,12 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($stack['mystring'], Doctrine_Validator::ERR_NOTNULL);
         $this->assertEqual($stack['myemail2'], Doctrine_Validator::ERR_NOTBLANK);
-
         $test->mystring = 'str';
 
+
         $test->save();
+    }
+    public function testEmailValidation() {
     }
 
     public function testValidate() {
