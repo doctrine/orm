@@ -88,8 +88,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
                     $p = $low;
                     if( ! isset($parts[$low]))
                         $parts[$low] = array();
-                    else
-                        $count[$low]++;
+
                 break;
                 case "order":
                 case "group":

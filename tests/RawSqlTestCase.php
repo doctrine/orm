@@ -12,6 +12,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $query->parseQuery($sql);
 
         $this->assertEqual($query->from, array("(SELECT p.* FROM photos p LEFT JOIN photos_tags t ON t.photo_id = p.id WHERE t.tag_id = 65) p LEFT JOIN photos_tags t ON t.photo_id = p.id"));
+        $this->assertEqual($query->where, array('p.can_see = -1 AND t.tag_id = 62'));
         $this->assertEqual($query->limit, array(200));
     }
 
