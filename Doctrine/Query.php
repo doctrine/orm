@@ -626,9 +626,10 @@ class Doctrine_Query extends Doctrine_Hydrate {
 
                     if($fk->getType() == Doctrine_Relation::MANY_AGGREGATE ||
                        $fk->getType() == Doctrine_Relation::MANY_COMPOSITE) {
-                        if( ! $loadFields)
+                        if( ! $loadFields) {
                             $this->subqueryAliases[] = $tname2;
-                    
+                        }
+                        
                         $this->needsSubquery = true;
                     }
 

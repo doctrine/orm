@@ -422,7 +422,35 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         $this->data[$key] = $record;
     }
+    /**
+     * adds a record to collection
+     * @param Doctrine_Record $record              record to be added
+     * @param string $key                          optional key for the record
+     * @return boolean
+     */
+    public function internalAdd(Doctrine_Record $record,$key = null) {
+        if(in_array($record,$this->data))
+            return false;
+        
+        if(isset($this->reference_field))
+            $record->internalSet($this->reference_field,$this->reference);
 
+        if(isset($key)) {
+            if(isset($this->data[$key]))
+                return false;
+
+            $this->data[$key] = $record;
+            return true;
+        }
+
+        if(isset($this->generator)) {
+            $key = $this->generator->getIndex($record);
+            $this->data[$key] = $record;
+        } else
+            $this->data[] = $record;
+
+        return true;
+    }
     /**
      * adds a record to collection
      * @param Doctrine_Record $record              record to be added

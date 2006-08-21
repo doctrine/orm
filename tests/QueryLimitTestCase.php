@@ -29,6 +29,8 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(), 5);
         $users[0]->Phonenumber[0];
         $this->assertEqual($count, $this->dbh->count());
+        
+
         $this->assertEqual($this->query->getQuery(), 
         'SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity WHERE (entity.type = 0) LIMIT 5) AND (entity.type = 0)');
 
@@ -41,6 +43,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $users[3]->Phonenumber[0];
         $this->assertEqual($count, $this->dbh->count());
     }
+
     public function testLimitWithOneToManyLeftJoinAndCondition() {
         $q = new Doctrine_Query($this->session);
         $q->from("User(name)")->where("User.Phonenumber.phonenumber LIKE '%123%'")->limit(5);
@@ -53,10 +56,11 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[4]->name, 'Jean Reno');
 
         $this->assertEqual($users->count(), 5);
+
         $this->assertEqual($q->getQuery(),
         "SELECT entity.id AS entity__id, entity.name AS entity__name FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '%123%' AND (entity.type = 0) LIMIT 5) AND phonenumber.phonenumber LIKE '%123%' AND (entity.type = 0)");
-    }   
-    
+    }
+
     public function testLimitWithOneToManyLeftJoinAndOrderBy() {
         $q = new Doctrine_Query($this->session);
         $q->from("User(name)")->where("User.Phonenumber.phonenumber LIKE '%123%'")->orderby("User.Email.address")->limit(5);
@@ -108,7 +112,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $count = $this->dbh->count();
         $users[0]->Phonenumber[0];
         $this->assertEqual($count, $this->dbh->count());
-        
+
         $this->assertEqual($q->getQuery(),
         'SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity WHERE entity.name = ? AND (entity.type = 0) LIMIT 5) AND entity.name = ? AND (entity.type = 0)');
 
@@ -116,23 +120,70 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $q->from("User(id).Phonenumber(id)");
         $q->where("User.name LIKE ? || User.name LIKE ?");
         $q->limit(5);
-
         $users = $q->execute(array('%zYne%', '%Arnold%'));
         $this->assertEqual($users->count(), 2);
+
+
         $count = $this->dbh->count();
         $users[0]->Phonenumber[0];
         $this->assertEqual($count, $this->dbh->count());
 
         $this->assertEqual($q->getQuery(),
         "SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity WHERE (entity.name LIKE ? OR entity.name LIKE ?) AND (entity.type = 0) LIMIT 5) AND (entity.name LIKE ? OR entity.name LIKE ?) AND (entity.type = 0)");
+
+    }    
+
+    public function testConnectionFlushing() {
+        $q = new Doctrine_Query();
+        $q->from("User(id).Phonenumber(id)");
+        $q->where("User.name = ?");
+        $q->limit(5);
+        $users = $q->execute(array('zYne'));
+        
+        $this->assertEqual($users->count(), 1);
+        $this->session->flush();
     }
+
     public function testLimitWithManyToManyLeftJoin() {
         $q = new Doctrine_Query($this->session);
         $q->from("User.Group")->limit(5);
         $users = $q->execute();
 
         $this->assertEqual($users->count(), 5);
+        
+        $user = $this->objTable->find(5);
+        $user->Group[1]->name = "Tough guys inc.";
+        $user->Group[2]->name = "Terminators";
+        
+        $user2 = $this->objTable->find(4);
+        $user2->Group = $user->Group;
+        
+        $user3 = $this->objTable->find(6);
+        $user3->Group = $user->Group;
+
+        $this->assertEqual($user->Group[0]->name, "Action Actors");
+        
+        $this->session->flush();
+
+        $this->assertEqual($user->Group[0]->name, "Action Actors");
+        $this->assertEqual(count($user->Group), 3);
+
+
+
+        $q = new Doctrine_Query();
+        $q->from("User")->where("User.Group.id = ?")->orderby("User.id DESC")->limit(5);
+        $users = $q->execute(array($user->Group[1]->id));
+
+        $this->assertEqual($users->count(), 3);
+
+        $this->session->clear();
+        $q = new Doctrine_Query();
+        $q->from("User")->where("User.Group.id = ?")->orderby("User.id DESC");
+        $users = $q->execute(array($user->Group[1]->id));
+
+        $this->assertEqual($users->count(), 3);
     }
+
 
 }
 ?>
