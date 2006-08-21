@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -33,7 +33,7 @@ final class Doctrine {
     /**
      * ERROR MODE CONSTANTS
      */
-    
+
     /**
      * NO PRIMARY KEY COLUMN ERROR
      * no primary key column found error code
@@ -47,7 +47,7 @@ final class Doctrine {
     const ERR_REFRESH               = 1;
     /**
      * FIND ERROR
-     * this code used when for example Doctrine_Table::find() is called and 
+     * this code used when for example Doctrine_Table::find() is called and
      * a Data Access Object is not found
      */
     const ERR_FIND                  = 2;
@@ -145,7 +145,7 @@ final class Doctrine {
      * collection key attribute
      */
     const ATTR_COLL_KEY         = 15;
-    /** 
+    /**
      * collection limit attribute
      */
     const ATTR_COLL_LIMIT       = 16;
@@ -155,7 +155,7 @@ final class Doctrine {
     /**
      * CACHE CONSTANTS
      */
-    
+
     /**
      * sqlite cache constant
      */
@@ -164,9 +164,9 @@ final class Doctrine {
      * constant for disabling the caching
      */
     const CACHE_NONE            = 1;
-    
-    
-    
+
+
+
     /**
      * FETCHMODE CONSTANTS
      */
@@ -219,7 +219,7 @@ final class Doctrine {
     /**
      * LOCKMODE CONSTANTS
      */
-     
+
     /**
      * mode for optimistic locking
      */
@@ -228,11 +228,11 @@ final class Doctrine {
      * mode for pessimistic locking
      */
     const LOCK_PESSIMISTIC      = 1;
-    
+
     /**
      * PRIMARY KEY TYPE CONSTANTS
      */
-     
+
     /**
      * auto-incremented/(sequence updated) primary key
      */
@@ -241,7 +241,7 @@ final class Doctrine {
      * unique key
      */
     const UNIQUE_KEY            = 1;
-    
+
     /**
      * constructor
      */
@@ -314,7 +314,7 @@ final class Doctrine {
     /**
      * method for making a single file of most used doctrine components
      *
-     * including the compiled file instead of multiple files (in worst 
+     * including the compiled file instead of multiple files (in worst
      * cases dozens of files) can improve performance by order of magnitude
      *
      * @throws Doctrine_Exception
@@ -354,14 +354,14 @@ final class Doctrine {
                          "Association",
                          "DB",
                          "DBStatement");
-        
+
 
         $ret     = array();
 
         foreach($classes as $class) {
             if($class !== 'Doctrine')
                 $class = 'Doctrine_'.$class;
-            
+
             $file  = self::$path.DIRECTORY_SEPARATOR.str_replace("_",DIRECTORY_SEPARATOR,$class).".php";
 
             if( ! file_exists($file))
@@ -419,6 +419,24 @@ class DQLException extends Exception { }
 
         require_once($class);
         return true;
+    }
+    /**
+     * returns table name from class name
+     *
+     * @param string $classname
+     * @return string
+     */
+    public static function tableize($classname) {
+         return strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $classname));
+    }
+    /**
+     * returns class name from table name
+     *
+     * @param string $tablename
+     * @return string
+     */
+    public static function classify($tablename) {
+        return  preg_replace('~(_?)(_)([\w])~e', '"$1".strtoupper($3)', ucfirst($tablename));
     }
 }
 ?>

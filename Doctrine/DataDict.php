@@ -6,7 +6,7 @@ class Doctrine_DataDict {
     public function __construct(PDO $dbh) {
         $file = Doctrine::getPath().DIRECTORY_SEPARATOR."Doctrine".DIRECTORY_SEPARATOR."adodb-hack".DIRECTORY_SEPARATOR."adodb.inc.php";
 
-        if( ! file_exists($file)) 
+        if( ! file_exists($file))
             throw new Doctrine_Exception("Couldn't include datadict. File $file does not exist");
 
         require_once($file);
@@ -89,7 +89,7 @@ class Doctrine_DataDict {
             case "boolean":
                 return "L";
             break;
-            case "enum":   
+            case "enum":
             case "integer":
                 if(empty($length))
                     return "I8";
@@ -108,6 +108,17 @@ class Doctrine_DataDict {
             default:
                 throw new Doctrine_Exception("Unknown column type $type");
         endswitch;
+    }
+    /**
+     * checks for valid class name (uses camel case and underscores)
+     *
+     * @param string $classname
+     * @return boolean
+     */
+    public static function isValidClassname($classname) {
+        if(preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname))
+            throw new Doctrine_Exception("Class name is not valid. use camel case and underscores (i.e My_PerfectClass).");
+        return true;
     }
 }
 ?>

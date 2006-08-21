@@ -154,7 +154,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 $class     = $method->getDeclaringClass();
 
                 if( ! isset($this->tableName))
-                    $this->tableName = strtolower($class->getName());
+                    $this->tableName = Doctrine::tableize($class->getName());
 
                 switch(count($this->primaryKeys)):
                     case 0:
@@ -205,7 +205,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                         }
                 endswitch;
 
-                if($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
+                 if(Doctrine_DataDict::isValidClassname($class->getName()) && $this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
                     $dict      = new Doctrine_DataDict($this->getSession()->getDBH());
                     $dict->createTable($this->tableName, $this->columns);
                 }
@@ -456,7 +456,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param $name
      * @return boolean
      */
-    final public function unbind() {
+    final public function unbind($name) {
         if( ! isset($this->bound[$name]))
             return false;
 
@@ -807,7 +807,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     }
     /**
      * count
-     * 
+     *
      * @return integer
      */
     public function count() {
