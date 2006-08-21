@@ -7,7 +7,7 @@ GoF [Gang Of Four] design patterns used:
 <dd>For leveled configuration
 
 <li \><a href="http://www.dofactory.com/Patterns/PatternFactory.aspx">Factory</a><br \>
-<dd>For session driver loading and many other things
+<dd>For connection driver loading and many other things
 
 <li \><a href="http://www.dofactory.com/Patterns/PatternObserver.aspx">Observer</a><br \>
 <dd>For event listening
@@ -16,10 +16,10 @@ GoF [Gang Of Four] design patterns used:
 <dd>For efficient usage of validators
 
 <li \><a href="http://www.dofactory.com/Patterns/PatternFlyweight.aspx">Iterator</a><br \>
-<dd>For iterating through components [Tables, Sessions, Records etc.]
+<dd>For iterating through components [Tables, Connections, Records etc.]
 
 <li \><a href="http://www.dofactory.com/Patterns/PatternState.aspx">State</a><br \>
-<dd>For state-wise sessions
+<dd>For state-wise connections
 
 <li \><a href="http://www.dofactory.com/Patterns/PatternStrategy.aspx">Strategy</a><br \>
 <dd>For algorithm strategies

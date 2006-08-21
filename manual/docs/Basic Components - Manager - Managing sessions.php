@@ -1,3 +1,3 @@
-Switching between sessions in Doctrine is very easy, you just call Doctrine_Manager::setCurrentSession() method.
-You can access the session by calling Doctrine_Manager::getSession() or Doctrine_Manager::getCurrentSession() if you only 
-want to get the current session.
+Switching between connections in Doctrine is very easy, you just call Doctrine_Manager::setCurrentConnection() method.
+You can access the connection by calling Doctrine_Manager::getConnection() or Doctrine_Manager::getCurrentConnection() if you only
+want to get the current connection.

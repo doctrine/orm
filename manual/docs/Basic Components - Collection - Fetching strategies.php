@@ -1,4 +1,4 @@
-Whenever you fetch records with eg. Doctrine_Table::findAll or Doctrine_Session::query methods an instance of
+Whenever you fetch records with eg. Doctrine_Table::findAll or Doctrine_Connection::query methods an instance of
 Doctrine_Collection is returned. There are many types of collections in Doctrine and it is crucial to understand
 the differences of these collections. Remember choosing the right fetching strategy (collection type) is one of the most 
 influental things when it comes to boosting application performance.

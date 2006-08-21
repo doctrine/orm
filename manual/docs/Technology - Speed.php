@@ -5,7 +5,7 @@ For collection elements
 Doctrine knows how to fetch collections efficiently using a subselect.
 <br \><br \>
 <li \><b class="title">Executing SQL statements later, when needed</b><br \>
-The session never issues an INSERT or UPDATE until it is actually needed. So if an exception occurs and you need to abort the transaction, some statements will never actually be issued. Furthermore, this keeps lock times in the database as short as possible (from the late UPDATE to the transaction end).
+The connection never issues an INSERT or UPDATE until it is actually needed. So if an exception occurs and you need to abort the transaction, some statements will never actually be issued. Furthermore, this keeps lock times in the database as short as possible (from the late UPDATE to the transaction end).
 <br \><br \>
 <li \><b class="title">Join fetching</b><br \>
 Doctrine knows how to fetch complex object graphs using joins and subselects

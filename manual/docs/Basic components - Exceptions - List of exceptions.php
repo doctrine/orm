@@ -14,8 +14,8 @@ Doctrine_Find_Exception                thrown when user tries to find a Doctrine
 Doctrine_Naming_Exception              thrown when user defined Doctrine_Table is badly named
 
 
-Doctrine_Session_Exception             thrown when user tries to get the current
-                                       session and there are no open sessions
+Doctrine_Connection_Exception             thrown when user tries to get the current
+                                       connection and there are no open connections
 
 Doctrine_Table_Exception               thrown when user tries to initialize a new instance of Doctrine_Table,
                                        while there already exists an instance of that factory
