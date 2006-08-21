@@ -35,6 +35,10 @@ $user->Group[1]->name = "Second Group";
 // save changes into database
 $user->save();
 
+// deleting the associations between user and groups it belongs to
+
+$user->Groupuser->delete();
+
 $groups = new Doctrine_Collection($session->getTable("Group"));
 
 $groups[0]->name = "Third Group";
@@ -46,4 +50,5 @@ $user->Group[2] = $groups[0];
 
 $user->Group = $groups;
 // $user will now have two groups 'Third Group' and 'Fourth Group'
+
 ?>

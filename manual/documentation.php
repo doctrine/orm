@@ -32,7 +32,9 @@ function render($title,$t,$e) {
     if(file_exists("codes/$title - $t.php")) {
         print "<table border=1 class='dashed' cellpadding=0 cellspacing=0>";
         print "<tr><td>";
-        $c = file_get_contents("codes/$title - $t.php");
+         $c = file_get_contents("codes/$title - $t.php");
+        $c = trim($c);
+
         $h->loadString($c);
         print $h->toHtml();
         print "</td></tr>";
@@ -52,13 +54,18 @@ function render_block($name) {
         }
     }
     if(file_exists("codes/$name.php")) {
+        $c = file_get_contents("codes/$name.php");
+        $c = trim($c);
+        if( ! empty($c)) {
+        $h->loadString($c);
+
         print "<table width=500 border=1 class='dashed' cellpadding=0 cellspacing=0>";
         print "<tr><td>";
-        $c = file_get_contents("codes/$name.php");
-        $h->loadString($c);
+
         print $h->toHtml();
         print "</td></tr>";
         print "</table>";
+        }
     }
 }
 function array2path($array, $path = '') {
@@ -189,7 +196,8 @@ $menu = array("Getting started" =>
                                         "Creating related records",
                                         "Retrieving related records",
                                         "Updating related records",
-                                        "Deleting related records"),
+                                        "Deleting related records",
+                                        "Working with associations"),
                         "Inheritance" =>
                                         array("One table many classes",
                                         "One table one class",
@@ -315,6 +323,7 @@ $menu = array("Getting started" =>
             "Real world examples" => array("User management system","Forum application","Album lister")
             );
 
+
 ?>
 
 
@@ -352,14 +361,16 @@ $menu = array("Getting started" =>
                                 if( ! file_exists("docs/$title - $k - $v2.php")) {
                                     $missing[0]++;
                                     $str .= " [ <font color='red'>doc</font> ] ";
+                                    //touch("docs/$title - $k - $v2.php");
                                 }
                                 if( ! file_exists("codes/$title - $k - $v2.php")) {
                                     $missing[1]++;
                                     $str .= " [ <font color='red'>code</font> ] ";
+                                    //touch("codes/$title - $k - $v2.php");
                                 }
 
                                 $e = implode(".",array($i,$i2,$i3));
-                                print "<dd><dd>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i.$i2#$e\">".$v2."</a><br>\n";
+                                print "<dd><dd>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i.$i2#$e\">".$v2."</a>$str<br>\n";
                                 $i3++;
                             }
                         } else {
@@ -367,12 +378,14 @@ $menu = array("Getting started" =>
                             if( ! file_exists("docs/$title - $t.php")) {
                                 $missing[0]++;
                                 $str .= " [ <font color='red'>doc</font> ] ";
+                                //touch("docs/$title - $t.php");
                             }
                             if( ! file_exists("codes/$title - $t.php")) {
                                 $missing[1]++;
                                 $str .= " [ <font color='red'>code</font> ] ";
+                                //touch("codes/$title - $t.php");
                             }
-                            print "<dd>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i#$e\">".$t."</a><br>\n";
+                            print "<dd>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i#$e\">".$t."</a>$str<br>\n";
                         }
                         $i2++;
                     }

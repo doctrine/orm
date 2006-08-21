@@ -8,7 +8,14 @@ class Doctrine_Validator_Date {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value, $args) {
-        return checkdate($value);
+        if(empty($value))
+            return true;
+
+        $e = explode("-", $value);
+        if(count($e) !== 3) 
+            return false;
+
+        return checkdate($e[1], $e[0], $e[2]);
     }
 }
 ?>

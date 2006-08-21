@@ -226,7 +226,9 @@ class Doctrine_Validator {
 
         $looseType = self::gettype($var);
         if($type == 'enum')
-            $type = 'integer'; 
+            $type = 'integer';
+        elseif($type == 'date' || $type == 'clob')
+            $type = 'string';
 
         switch($looseType):
             case 'float':
