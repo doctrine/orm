@@ -642,7 +642,10 @@ class Doctrine_Query extends Doctrine_Hydrate {
                         $asf = $fk->getAssociationFactory();
 
                         $assocTableName = $asf->getTableName();
-
+                        
+                        if( ! $loadFields) {
+                            $this->subqueryAliases[] = $assocTableName;
+                        }
                         $this->parts["join"][$tname][$assocTableName] = $join.$assocTableName." ON ".$tname.".id = ".$assocTableName.".".$fk->getLocal();
                         $this->parts["join"][$tname][$tname2]         = $join.$aliasString." ON ".$tname2.".id = ".$assocTableName.".".$fk->getForeign();
                     }

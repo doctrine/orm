@@ -386,4 +386,30 @@ class Validator_Test extends Doctrine_Record {
         $this->hasColumn("myemail2", "string", 100, "email|notblank");
     }
 }
+
+ 
+
+class Tag extends Doctrine_Record {
+    public function setUp() {
+        $this->hasMany("Photo", "Phototag.photo_id");
+    }
+    public function setTableDefinition() {
+        $this->hasColumn("tag", "string", 100);
+    }
+}
+class Photo extends Doctrine_Record {
+    public function setUp() {
+        $this->hasMany("Tag", "Phototag.tag_id");
+    }
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 100);
+    }
+}
+
+class Phototag extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("photo_id", "integer");
+        $this->hasColumn("tag_id", "integer");
+    }
+}
 ?>

@@ -1,6 +1,12 @@
 <?php
 class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
+    public function prepareTables() {
+        $this->tables[] = "Photo";
+        $this->tables[] = "Tag";
+        $this->tables[] = "Phototag";
 
+        parent::prepareTables();
+    }
     public function testLimitWithOneToOneLeftJoin() {
         $q = new Doctrine_Query($this->session);
         $q->from('User(id).Email')->limit(5);
@@ -144,7 +150,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->session->flush();
     }
 
-    public function testLimitWithManyToManyLeftJoin() {
+    public function testLimitWithManyToManyColumnAggInheritanceLeftJoin() {
         $q = new Doctrine_Query($this->session);
         $q->from("User.Group")->limit(5);
         $users = $q->execute();
@@ -183,7 +189,27 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 3);
     }
+    public function testLimitWithNormalManyToMany() {
+        $coll = new Doctrine_Collection($this->session->getTable("Photo"));
+        $tag = new Tag();
+        $tag->tag = "Some tag";
+        $coll[0]->Tag[0] = $tag;
+        $coll[0]->name = "photo 1";
+        $coll[1]->Tag[0] = $tag;
+        $coll[1]->name = "photo 2";
+        $coll[2]->Tag[0] = $tag;
+        $coll[2]->name = "photo 3";
+        $coll[3]->Tag[0]->tag = "Other tag";
+        $coll[3]->name = "photo 4";
+        $this->session->flush();
 
+        $q = new Doctrine_Query();
+        $q->from("Photo")->where("Photo.Tag.id = ?")->orderby("Photo.id DESC")->limit(100);
+        $photos = $q->execute(array(1));
+        $this->assertEqual($photos->count(), 3);
+        $this->assertEqual($q->getQuery(), 
+        "SELECT photo.id AS photo__id, photo.name AS photo__name FROM photo LEFT JOIN phototag ON photo.id = phototag.photo_id LEFT JOIN tag ON tag.id = phototag.tag_id WHERE photo.id IN (SELECT DISTINCT photo.id FROM photo LEFT JOIN phototag ON photo.id = phototag.photo_id LEFT JOIN tag ON tag.id = phototag.tag_id WHERE tag.id = ? LIMIT 100) AND tag.id = ? ORDER BY photo.id DESC");
+    }
 
 }
 ?>
