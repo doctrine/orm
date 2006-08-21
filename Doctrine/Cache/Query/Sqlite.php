@@ -14,15 +14,15 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
     private $dbh;
     /**
      * constructor
-     * 
-     * Doctrine_Table $table
+     *
+     * @param Doctrine_Connection|null $connection
      */
-    public function __construct(Doctrine_Session $session) {
-        $this->session = $session;
-        $dir = $session->getAttribute(Doctrine::ATTR_CACHE_DIR);
+    public function __construct($connection = null) {
+        if( ! ($connection instanceof Doctrine_Session)) 
+            $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
 
-        if( ! is_dir($dir))
-            mkdir($dir, 0777);
+        $this->session = $connection;
+        $dir = $this->session->getAttribute(Doctrine::ATTR_CACHE_DIR);
 
         $this->path = $dir.DIRECTORY_SEPARATOR;
         $this->dbh  = new PDO("sqlite::memory:");
@@ -82,6 +82,17 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
         $sql    = "DELETE FROM ".self::CACHE_TABLE;
         $stmt   = $this->dbh->query($sql);
         return $stmt->rowCount();
+    }
+    /**
+     * deleteExpired
+     * returns the number of deleted rows
+     *
+     * @return integer
+     */
+    public function deleteExpired() {
+        $sql    = "DELETE FROM ".self::CACHE_TABLE." WHERE expired < ?";
+        $stmt   = $this->dbh->prepare($sql);
+        $stmt->execute(array(time()));
     }
     /**
      * delete

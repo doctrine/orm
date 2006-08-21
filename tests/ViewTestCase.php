@@ -35,8 +35,9 @@ class Doctrine_ViewTestCase extends Doctrine_UnitTestCase {
             $success = false;
         }
         $this->assertTrue($success);
-
-
     }
+    public function testConstructor() {
+                                      	
+    }                                  	
 }
 ?>

@@ -250,7 +250,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
      * @return boolean
      */
     public function isLimitSubqueryUsed() {
-        return true;
+        return $this->limitSubqueryUsed;
     }
     /**
      * returns the built sql query

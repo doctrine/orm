@@ -278,7 +278,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 
                 if($this->isLimitSubqueryUsed())
                     $params = array_merge($params, $params);
-                    
+
                 $stmt  = $this->session->execute($query,$params);
 
                 $previd = array();
