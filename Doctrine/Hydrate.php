@@ -50,9 +50,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      */
     protected $data        = array();
     /**
-     * @var Doctrine_Session $session       Doctrine_Session object
+     * @var Doctrine_Connection $connection       Doctrine_Connection object
      */
-    protected $session;
+    protected $connection;
     /**
      * @var Doctrine_View $view             Doctrine_View object
      */
@@ -90,10 +90,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param Doctrine_Connection|null $connection
      */
     public function __construct($connection = null) {
-        if( ! ($connection instanceof Doctrine_Session))
+        if( ! ($connection instanceof Doctrine_Connection))
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
 
-        $this->session = $connection;
+        $this->connection = $connection;
     }
     /** 
      * getQuery
@@ -151,10 +151,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         $this->tableAliases     = array();
     }
     /**
-     * @return Doctrine_Session
+     * @return Doctrine_Connection
      */
-    public function getSession() {
-        return $this->session;
+    public function getConnection() {
+        return $this->connection;
     }
     /**
      * setView
@@ -255,7 +255,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 $keys  = array_keys($this->tables);
 
                 $name  = $this->tables[$keys[0]]->getComponentName();
-                $stmt  = $this->session->execute($query,$params);
+                $stmt  = $this->connection->execute($query,$params);
 
                 while($data = $stmt->fetch(PDO::FETCH_ASSOC)):
                     foreach($data as $key => $value):
@@ -279,7 +279,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 if($this->isLimitSubqueryUsed())
                     $params = array_merge($params, $params);
 
-                $stmt  = $this->session->execute($query,$params);
+                $stmt  = $this->connection->execute($query,$params);
 
                 $previd = array();
 

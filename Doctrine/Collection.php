@@ -75,7 +75,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $table = Doctrine_Manager::getInstance()
                         ->getCurrentConnection()
                         ->getTable($table);
-                        
+
         $this->table = $table;
 
         $name = $table->getAttribute(Doctrine::ATTR_COLL_KEY);
@@ -122,7 +122,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function unserialize($serialized) {
         $manager    = Doctrine_Manager::getInstance();
-        $session    = $manager->getCurrentSession();
+        $connection    = $manager->getCurrentConnection();
 
         $array = unserialize($serialized);
 
@@ -130,7 +130,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $this->$name = $values;
         }
 
-        $this->table        = $session->getTable($this->table);
+        $this->table        = $connection->getTable($this->table);
 
         $this->expanded     = array();
         $this->expandable   = true;
@@ -287,7 +287,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local."=".$this->getIncremented();
 
                 $table = $fk->getTable();
-                $graph   = new Doctrine_Query($table->getSession());
+                $graph   = new Doctrine_Query($table->getConnection());
 
                 $q       = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($query)";
 
@@ -526,7 +526,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param mixed $name
      */
     public function loadRelated($name = null) {
-        $query   = new Doctrine_Query($this->table->getSession());
+        $query   = new Doctrine_Query($this->table->getConnection());
 
         if( ! isset($name)) {
             foreach($this->data as $record):
@@ -639,7 +639,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @return void
      */
     public function save() {
-        $this->table->getSession()->saveCollection($this);
+        $this->table->getConnection()->saveCollection($this);
     }
     /**
      * single shot delete
@@ -648,7 +648,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @return boolean
      */
     public function delete() {
-        $ids = $this->table->getSession()->deleteCollection($this);
+        $ids = $this->table->getConnection()->deleteCollection($this);
         $this->data = array();
     }
     /**

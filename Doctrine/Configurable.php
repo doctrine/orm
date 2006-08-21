@@ -20,7 +20,7 @@
  */
 /**
  * Doctrine_Configurable
- * the base for Doctrine_Table, Doctrine_Manager and Doctrine_Session
+ * the base for Doctrine_Table, Doctrine_Manager and Doctrine_Connection
  *
  *
  * @package     Doctrine ORM
@@ -89,17 +89,17 @@ abstract class Doctrine_Configurable {
 
             break;
             case Doctrine::ATTR_LOCKMODE:
-                if($this instanceof Doctrine_Session) {
-                    if($this->getState() != Doctrine_Session::STATE_OPEN)
+                if($this instanceof Doctrine_Connection) {
+                    if($this->getState() != Doctrine_Connection::STATE_OPEN)
                         throw new Doctrine_Exception("Couldn't set lockmode. There are transactions open.");
 
                 } elseif($this instanceof Doctrine_Manager) {
-                    foreach($this as $session) {
-                        if($session->getState() != Doctrine_Session::STATE_OPEN)
+                    foreach($this as $connection) {
+                        if($connection->getState() != Doctrine_Connection::STATE_OPEN)
                             throw new Doctrine_Exception("Couldn't set lockmode. There are transactions open.");
                     }
                 } else {
-                    throw new Doctrine_Exception("Lockmode attribute can only be set at the global or session level.");
+                    throw new Doctrine_Exception("Lockmode attribute can only be set at the global or connection level.");
                 }
             break;
             case Doctrine::ATTR_CREATE_TABLES:

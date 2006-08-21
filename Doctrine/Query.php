@@ -68,7 +68,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
 		if( ! empty($having)) 
 			$q .= " HAVING ".implode(' AND ',$having);
 
-		$a = $this->getSession()->execute($q, $params)->fetch(PDO::FETCH_NUM);
+		$a = $this->getConnection()->execute($q, $params)->fetch(PDO::FETCH_NUM);
 		return $a[0];		
 	}
     /**
@@ -320,7 +320,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
         $modifyLimit = false;
         if( ! empty($this->parts["limit"]) || ! empty($this->parts["offset"])) {
             if($needsSubQuery) {
-                $subquery = $this->session->modifyLimitQuery($subquery,$this->parts["limit"],$this->parts["offset"]);
+                $subquery = $this->connection->modifyLimitQuery($subquery,$this->parts["limit"],$this->parts["offset"]);
     
                 $field    = $table->getTableName().'.'.$table->getIdentifier();
                 array_unshift($this->parts['where'], $field.' IN ('.$subquery.')');
@@ -333,7 +333,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
         $q .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
         $q .= ( ! empty($this->parts['orderby']))?" ORDER BY ".implode(" ",$this->parts["orderby"]):'';
         if($modifyLimit)
-            $q = $this->session->modifyLimitQuery($q,$this->parts["limit"],$this->parts["offset"]);
+            $q = $this->connection->modifyLimitQuery($q,$this->parts["limit"],$this->parts["offset"]);
 
         // return to the previous state
         if( ! empty($string))
@@ -358,7 +358,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
         if($this->aggregate) {
             $keys  = array_keys($this->tables);
             $query = $this->getQuery();
-            $stmt  = $this->tables[$keys[0]]->getSession()->select($query,$this->parts["limit"],$this->parts["offset"]);
+            $stmt  = $this->tables[$keys[0]]->getConnection()->select($query,$this->parts["limit"],$this->parts["offset"]);
             $data  = $stmt->fetch(PDO::FETCH_ASSOC);
             if(count($data) == 1) {
                 return current($data);
@@ -573,7 +573,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
                 if($key == 0) {
                     $currPath = substr($currPath,1);
 
-                    $table = $this->session->getTable($name);
+                    $table = $this->connection->getTable($name);
 
                     $tname = $table->getTableName();
 

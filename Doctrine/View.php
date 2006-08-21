@@ -41,7 +41,7 @@ class Doctrine_View {
         $this->name  = $viewName;
         $this->query = $query;
         $this->query->setView($this);
-        $this->dbh   = $query->getSession()->getDBH();
+        $this->dbh   = $query->getConnection()->getDBH();
     }
     /**
      * simple get method for getting 

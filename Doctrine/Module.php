@@ -31,9 +31,9 @@ class Doctrine_Module implements IteratorAggregate, Countable {
      * @return void
      */
     public function flush() {
-        $session = Doctrine_Manager::getInstance()->getCurrentSession();
+        $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
         
-        $tree = $session->buildFlushTree($this->components);
+        $tree = $connection->buildFlushTree($this->components);
     }
     /**
      * getIterator

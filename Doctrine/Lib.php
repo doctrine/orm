@@ -68,40 +68,40 @@ class Doctrine_Lib {
     }
     /**
      * getStateAsString
-     * returns a given session state as string
-     * @param integer $state        session state
+     * returns a given connection state as string
+     * @param integer $state        connection state
      */
-    public static function getSessionStateAsString($state) {
+    public static function getConnectionStateAsString($state) {
         switch($state):
-            case Doctrine_Session::STATE_OPEN:
+            case Doctrine_Connection::STATE_OPEN:
                 return "open";
             break;
-            case Doctrine_Session::STATE_CLOSED:
+            case Doctrine_Connection::STATE_CLOSED:
                 return "closed";
             break;
-            case Doctrine_Session::STATE_BUSY:
+            case Doctrine_Connection::STATE_BUSY:
                 return "busy";
             break;
-            case Doctrine_Session::STATE_ACTIVE:
+            case Doctrine_Connection::STATE_ACTIVE:
                 return "active";
             break;
         endswitch;
     }
     /**
-     * returns a string representation of Doctrine_Session object
-     * @param Doctrine_Session $session
+     * returns a string representation of Doctrine_Connection object
+     * @param Doctrine_Connection $connection
      * @return string
      */
-    public static function getSessionAsString(Doctrine_Session $session) {
+    public static function getConnectionAsString(Doctrine_Connection $connection) {
         $r[] = "<pre>";
-        $r[] = "Doctrine_Session object";
-        $r[] = "State               : ".Doctrine_Lib::getSessionStateAsString($session->getState());
-        $r[] = "Open Transactions   : ".$session->getTransactionLevel();
-        $r[] = "Open Factories      : ".$session->count();
+        $r[] = "Doctrine_Connection object";
+        $r[] = "State               : ".Doctrine_Lib::getConnectionStateAsString($connection->getState());
+        $r[] = "Open Transactions   : ".$connection->getTransactionLevel();
+        $r[] = "Open Factories      : ".$connection->count();
         $sum = 0;
         $rsum = 0;
         $csum = 0;
-        foreach($session->getTables() as $objTable) {
+        foreach($connection->getTables() as $objTable) {
             if($objTable->getCache() instanceof Doctrine_Cache_File) {
                 $sum += array_sum($objTable->getCache()->getStats());
                 $rsum += $objTable->getRepository()->count();
@@ -113,11 +113,11 @@ class Doctrine_Lib {
 
         $r[] = "Repositories        : ".$rsum." objects ";
         $queries = false;
-        if($session->getDBH() instanceof Doctrine_DB) {
+        if($connection->getDBH() instanceof Doctrine_DB) {
             $handler = "Doctrine Database Handler";
-            $queries = count($session->getDBH()->getQueries());
-            $sum     = array_sum($session->getDBH()->getExecTimes());
-        } elseif($session->getDBH() instanceof PDO) {
+            $queries = count($connection->getDBH()->getQueries());
+            $sum     = array_sum($connection->getDBH()->getExecTimes());
+        } elseif($connection->getDBH() instanceof PDO) {
             $handler = "PHP Native PDO Driver";
         } else
             $handler = "Unknown Database Handler";

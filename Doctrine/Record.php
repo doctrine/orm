@@ -141,23 +141,23 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * constructor
      * @param Doctrine_Table $table         a Doctrine_Table object
-     * @throws Doctrine_Session_Exception   if object is created using the new operator and there are no
-     *                                      open sessions
+     * @throws Doctrine_Connection_Exception   if object is created using the new operator and there are no
+     *                                      open connections
      */
     public function __construct($table = null) {
         if(isset($table) && $table instanceof Doctrine_Table) {
             $this->table = $table;
             $exists  = ( ! $this->table->isNewEntry());
         } else {
-            $this->table = Doctrine_Manager::getInstance()->getCurrentSession()->getTable(get_class($this));
+            $this->table = Doctrine_Manager::getInstance()->getCurrentConnection()->getTable(get_class($this));
             $exists  = false;
         }
 
-        // Check if the current session has the records table in its registry
+        // Check if the current connection has the records table in its registry
         // If not this is record is only used for creating table definition and setting up
         // relations.
 
-        if($this->table->getSession()->hasTable($this->table->getComponentName())) {
+        if($this->table->getConnection()->hasTable($this->table->getComponentName())) {
 
             $this->oid = self::$index;
 
@@ -373,12 +373,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function unserialize($serialized) {
         $manager    = Doctrine_Manager::getInstance();
-        $session    = $manager->getCurrentSession();
+        $connection    = $manager->getCurrentConnection();
 
         $this->oid  = self::$index;
         self::$index++;
 
-        $this->table = $session->getTable(get_class($this));
+        $this->table = $connection->getTable(get_class($this));
 
 
         $array = unserialize($serialized);
@@ -462,7 +462,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $id = array_values($id);
 
         $query          = $this->table->getQuery()." WHERE ".implode(" = ? AND ",$this->table->getPrimaryKeys())." = ?";
-        $this->data     = $this->table->getSession()->execute($query,$id)->fetch(PDO::FETCH_ASSOC);
+        $this->data     = $this->table->getConnection()->execute($query,$id)->fetch(PDO::FETCH_ASSOC);
 
         $this->modified = array();
         $this->cleanData();
@@ -741,11 +741,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function save() {
-        $this->table->getSession()->beginTransaction();
+        $this->table->getConnection()->beginTransaction();
 
-        $saveLater = $this->table->getSession()->saveRelated($this);
+        $saveLater = $this->table->getConnection()->saveRelated($this);
 
-        $this->table->getSession()->save($this);
+        $this->table->getConnection()->save($this);
 
         foreach($saveLater as $fk) {
             $table   = $fk->getTable();
@@ -761,7 +761,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->saveAssociations();
 
-        $this->table->getSession()->commit();
+        $this->table->getConnection()->commit();
     }
     /**
      * returns an array of modified fields and associated values
@@ -866,7 +866,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             foreach($r as $record) {
                                 $query = "DELETE FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." = ?"
                                                                             ." AND ".$fk->getLocal()." = ?";
-                                $this->table->getSession()->execute($query, array($record->getIncremented(),$this->getIncremented()));
+                                $this->table->getConnection()->execute($query, array($record->getIncremented(),$this->getIncremented()));
                             }
 
                             $r = Doctrine_Relation::getInsertOperations($this->originals[$alias],$new);
@@ -928,7 +928,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return boolean      true on success, false on failure
      */
     public function delete() {
-        return $this->table->getSession()->delete($this);
+        return $this->table->getConnection()->delete($this);
     }
     /**
      * returns a copy of this object
