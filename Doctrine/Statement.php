@@ -44,7 +44,7 @@ class Doctrine_Statement extends Doctrine_Access {
      * @return Doctrine_Collection
      */
     private function getCollection($name) {
-        $table = $this->session->getTable($name);
+        $table = $this->connection->getTable($name);
         switch($this->fetchModes[$name]):
             case Doctrine::FETCH_BATCH:
                 $coll = new Doctrine_Collection_Batch($table);
@@ -85,7 +85,7 @@ class Doctrine_Statement extends Doctrine_Access {
                 $keys  = array_keys($this->tables);
     
                 $name  = $this->tables[$keys[0]]->getComponentName();
-                $stmt  = $this->session->execute($query,$params);
+                $stmt  = $this->connection->execute($query,$params);
 
                 while($data = $stmt->fetch(PDO::FETCH_ASSOC)):
                     foreach($data as $key => $value):
@@ -107,7 +107,7 @@ class Doctrine_Statement extends Doctrine_Access {
 
                 $keys  = array_keys($this->tables);
                 $root  = $keys[0];
-                $stmt  = $this->session->execute($query,$params);
+                $stmt  = $this->connection->execute($query,$params);
                 
                 $previd = array();
 
