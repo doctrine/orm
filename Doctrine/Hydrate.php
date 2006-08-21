@@ -102,6 +102,13 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      */
     abstract public function getQuery();
     /**
+     * limitSubqueryUsed
+     */
+    public function isLimitSubqueryUsed() {
+        return false;
+    }
+
+    /**
      * remove
      *
      * @param $name
@@ -268,7 +275,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             default:
                 $keys  = array_keys($this->tables);
                 $root  = $keys[0];
-
+                
+                if($this->isLimitSubqueryUsed())
+                    $params = array_merge($params, $params);
+                    
                 $stmt  = $this->session->execute($query,$params);
 
                 $previd = array();

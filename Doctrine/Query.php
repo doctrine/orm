@@ -30,11 +30,15 @@ class Doctrine_Query extends Doctrine_Hydrate {
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
      */
-    private $subqueryAliases = array();
+    private $subqueryAliases  = array();
     /**
      * @param boolean $needsSubquery
      */
-    private $needsSubquery   = false;
+    private $needsSubquery    = false;
+    /**
+     * @param boolean $limitSubqueryUsed
+     */
+    private $limitSubqueryUsed = false;
 	/**
  	 * count
      *
@@ -243,6 +247,12 @@ class Doctrine_Query extends Doctrine_Hydrate {
         return false;
     }
     /**
+     * @return boolean
+     */
+    public function isLimitSubqueryUsed() {
+        return true;
+    }
+    /**
      * returns the built sql query
      *
      * @return string
@@ -250,12 +260,14 @@ class Doctrine_Query extends Doctrine_Hydrate {
     public function getQuery() {
         if(empty($this->parts["select"]) || empty($this->parts["from"]))
             return false;
-        
+
         $needsSubQuery = false;
         $subquery = '';
 
-        if( ! empty($this->parts['limit']) && $this->needsSubquery)
+        if( ! empty($this->parts['limit']) && $this->needsSubquery) {
             $needsSubQuery = true;
+            $this->limitSubqueryUsed = true;
+        }
 
         // build the basic query
         $q = "SELECT ".implode(", ",$this->parts["select"]).

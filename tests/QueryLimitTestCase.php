@@ -94,12 +94,38 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $users[3]->Phonenumber[0];
         $this->assertEqual($count, $this->dbh->count());
         
-        $this->assertEqual($this->query->getQuery(), 
+        $this->assertEqual($this->query->getQuery(),
         'SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity INNER JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity INNER JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0) LIMIT 5 OFFSET 2) AND (entity.type = 0)');
     }
     public function testLimitWithPreparedQueries() {
-                                                   	
-    }                                               	
+        $q = new Doctrine_Query();
+        $q->from("User(id).Phonenumber(id)");
+        $q->where("User.name = ?");
+        $q->limit(5);
+        $users = $q->execute(array('zYne'));
+        
+        $this->assertEqual($users->count(), 1);
+        $count = $this->dbh->count();
+        $users[0]->Phonenumber[0];
+        $this->assertEqual($count, $this->dbh->count());
+        
+        $this->assertEqual($q->getQuery(),
+        'SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity WHERE entity.name = ? AND (entity.type = 0) LIMIT 5) AND entity.name = ? AND (entity.type = 0)');
+
+        $q = new Doctrine_Query();
+        $q->from("User(id).Phonenumber(id)");
+        $q->where("User.name LIKE ? || User.name LIKE ?");
+        $q->limit(5);
+
+        $users = $q->execute(array('%zYne%', '%Arnold%'));
+        $this->assertEqual($users->count(), 2);
+        $count = $this->dbh->count();
+        $users[0]->Phonenumber[0];
+        $this->assertEqual($count, $this->dbh->count());
+
+        $this->assertEqual($q->getQuery(),
+        "SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity WHERE (entity.name LIKE ? OR entity.name LIKE ?) AND (entity.type = 0) LIMIT 5) AND (entity.name LIKE ? OR entity.name LIKE ?) AND (entity.type = 0)");
+    }
     public function testLimitWithManyToManyLeftJoin() {
         $q = new Doctrine_Query($this->session);
         $q->from("User.Group")->limit(5);
