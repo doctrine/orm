@@ -37,8 +37,8 @@ class Doctrine_View {
      *
      * @param Doctrine_Query $query
      */
-    public function __construct(Doctrine_Query $query) {
-        $this->name  = get_class($this);
+    public function __construct(Doctrine_Query $query, $viewName) {
+        $this->name  = $viewName;
         $this->query = $query;
         $this->query->setView($this);
         $this->dbh   = $query->getSession()->getDBH();

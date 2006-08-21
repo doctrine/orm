@@ -64,7 +64,7 @@ to use column aggregation inheritance even in the subquery.
 <br \><br \>
 <?php
 $str = "
-DQL QUERY: FROM User.Phonenumber LIMIT 20
+DQL QUERY: FROM User(id).Phonenumber LIMIT 20
 
 SQL QUERY: SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity WHERE (entity.type = 0) LIMIT 20) AND (entity.type = 0)
 ";
@@ -76,7 +76,7 @@ Notice how the DQL parser is smart enough to use the INNER JOIN in the subquery.
 <br \>
 <?php
 $str = "
-DQL QUERY: FROM User:Phonenumber LIMIT 20
+DQL QUERY: FROM User(id):Phonenumber LIMIT 20
 
 SQL QUERY: SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity INNER JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity INNER JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0) LIMIT 20) AND (entity.type = 0)
 ";

@@ -1,12 +1,10 @@
 <?php
-class MyView extends Doctrine_View { }
-
 class Doctrine_ViewTestCase extends Doctrine_UnitTestCase {
     public function testCreateView() {
         $query = new Doctrine_Query($this->session);
         $query->from('User');
 
-        $view = new MyView($query);
+        $view = new Doctrine_View($query, 'MyView');
 
         $this->assertEqual($view->getName(), 'MyView');
         $this->assertEqual($view->getQuery(), $query);
