@@ -1,7 +1,7 @@
 <?php
 class Doctrine_ViewTestCase extends Doctrine_UnitTestCase {
     public function testCreateView() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
         $query->from('User');
 
         $view = new Doctrine_View($query, 'MyView');
@@ -38,6 +38,6 @@ class Doctrine_ViewTestCase extends Doctrine_UnitTestCase {
     }
     public function testConstructor() {
                                       	
-    }                                  	
+    }
 }
 ?>

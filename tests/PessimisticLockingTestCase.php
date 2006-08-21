@@ -15,7 +15,7 @@ class Doctrine_PessimisticLockingTestCase extends Doctrine_UnitTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->lockingManager = new Doctrine_Locking_Manager_Pessimistic($this->session);
+        $this->lockingManager = new Doctrine_Locking_Manager_Pessimistic($this->connection);
         
         // Create sample data to test on
         $entry1 = new Forum_Entry();
@@ -31,7 +31,7 @@ class Doctrine_PessimisticLockingTestCase extends Doctrine_UnitTestCase
      */
     public function testLock()
     {
-        $entries = $this->session->query("FROM Forum_Entry WHERE Forum_Entry.author = 'Bart Simpson'");
+        $entries = $this->connection->query("FROM Forum_Entry WHERE Forum_Entry.author = 'Bart Simpson'");
         
         // Test successful lock
         $gotLock = $this->lockingManager->getLock($entries[0], 'romanb');
@@ -51,7 +51,7 @@ class Doctrine_PessimisticLockingTestCase extends Doctrine_UnitTestCase
      */
     public function testReleaseAgedLocks()
     {
-        $entries = $this->session->query("FROM Forum_Entry WHERE Forum_Entry.author = 'Bart Simpson'");
+        $entries = $this->connection->query("FROM Forum_Entry WHERE Forum_Entry.author = 'Bart Simpson'");
         $this->lockingManager->getLock($entries[0], 'romanb');
         $released = $this->lockingManager->releaseAgedLocks(-1); // age -1 seconds => release all
         $this->assertTrue($released);

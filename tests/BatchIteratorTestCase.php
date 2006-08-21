@@ -9,7 +9,7 @@ class Doctrine_BatchIteratorTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testIterator() {
-        $graph = new Doctrine_Query($this->session);
+        $graph = new Doctrine_Query($this->connection);
         $entities = $graph->query("FROM Entity");
         $i = 0;
         foreach($entities as $entity) {

@@ -47,8 +47,8 @@ class Address extends Doctrine_Record {
     }
 }
 
-// grouptable doesn't extend Doctrine_Table -> Doctrine_Session
-// won't initialize grouptable when Doctrine_Session->getTable("Group") is called
+// grouptable doesn't extend Doctrine_Table -> Doctrine_Connection
+// won't initialize grouptable when Doctrine_Connection->getTable("Group") is called
 
 class GroupTable { }
 class Group extends Entity {

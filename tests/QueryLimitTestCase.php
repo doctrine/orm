@@ -8,7 +8,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
     }
     public function testLimitWithOneToOneLeftJoin() {
-        $q = new Doctrine_Query($this->session);
+        $q = new Doctrine_Query($this->connection);
         $q->from('User(id).Email')->limit(5);
 
         $users = $q->execute();
@@ -17,7 +17,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
     }
     public function testLimitWithOneToOneInnerJoin() {
-        $q = new Doctrine_Query($this->session);
+        $q = new Doctrine_Query($this->connection);
         $q->from('User(id):Email')->limit(5);
 
         $users = $q->execute();
@@ -51,7 +51,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
     }
 
     public function testLimitWithOneToManyLeftJoinAndCondition() {
-        $q = new Doctrine_Query($this->session);
+        $q = new Doctrine_Query($this->connection);
         $q->from("User(name)")->where("User.Phonenumber.phonenumber LIKE '%123%'")->limit(5);
         $users = $q->execute();
         
@@ -68,7 +68,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
     }
 
     public function testLimitWithOneToManyLeftJoinAndOrderBy() {
-        $q = new Doctrine_Query($this->session);
+        $q = new Doctrine_Query($this->connection);
         $q->from("User(name)")->where("User.Phonenumber.phonenumber LIKE '%123%'")->orderby("User.Email.address")->limit(5);
         $users = $q->execute();
 
@@ -147,11 +147,11 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $users = $q->execute(array('zYne'));
         
         $this->assertEqual($users->count(), 1);
-        $this->session->flush();
+        $this->connection->flush();
     }
 
     public function testLimitWithManyToManyColumnAggInheritanceLeftJoin() {
-        $q = new Doctrine_Query($this->session);
+        $q = new Doctrine_Query($this->connection);
         $q->from("User.Group")->limit(5);
         $users = $q->execute();
 
@@ -169,7 +169,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($user->Group[0]->name, "Action Actors");
         
-        $this->session->flush();
+        $this->connection->flush();
 
         $this->assertEqual($user->Group[0]->name, "Action Actors");
         $this->assertEqual(count($user->Group), 3);
@@ -182,7 +182,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 3);
 
-        $this->session->clear();
+        $this->connection->clear();
         $q = new Doctrine_Query();
         $q->from("User")->where("User.Group.id = ?")->orderby("User.id DESC");
         $users = $q->execute(array($user->Group[1]->id));
@@ -190,7 +190,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(), 3);
     }
     public function testLimitWithNormalManyToMany() {
-        $coll = new Doctrine_Collection($this->session->getTable("Photo"));
+        $coll = new Doctrine_Collection($this->connection->getTable("Photo"));
         $tag = new Tag();
         $tag->tag = "Some tag";
         $coll[0]->Tag[0] = $tag;
@@ -201,7 +201,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $coll[2]->name = "photo 3";
         $coll[3]->Tag[0]->tag = "Other tag";
         $coll[3]->name = "photo 4";
-        $this->session->flush();
+        $this->connection->flush();
 
         $q = new Doctrine_Query();
         $q->from("Photo")->where("Photo.Tag.id = ?")->orderby("Photo.id DESC")->limit(100);

@@ -37,9 +37,9 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
     public function testMultipleFetching() {
         $count = $this->dbh->count();
-        $this->session->getTable('User')->clear();
-        $this->session->getTable('Email')->clear();
-        $this->session->getTable('Phonenumber')->clear();
+        $this->connection->getTable('User')->clear();
+        $this->connection->getTable('Email')->clear();
+        $this->connection->getTable('Phonenumber')->clear();
 
         $users = $this->query->from("User-l.Phonenumber-i, User-l:Email-i")->execute();
         $this->assertEqual(($count + 1),$this->dbh->count());
@@ -76,7 +76,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testConditionParser() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
 
         $query->from("User(id)")->where("User.name LIKE 'z%' || User.name LIKE 's%'");
 
@@ -112,7 +112,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testSelfReferencing() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
 
         $category = new Forum_Category();
 
@@ -124,8 +124,8 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $category->Subcategory[1]->Subcategory[0]->name = "Sub 2 Sub 1";
         $category->Subcategory[1]->Subcategory[1]->name = "Sub 2 Sub 2";
 
-        $this->session->flush();
-        $this->session->clear();
+        $this->connection->flush();
+        $this->connection->clear();
 
         $category = $category->getTable()->find($category->id);
 
@@ -137,7 +137,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($category->Subcategory[1]->Subcategory[0]->name, "Sub 2 Sub 1");
         $this->assertEqual($category->Subcategory[1]->Subcategory[1]->name, "Sub 2 Sub 2");
 
-        $this->session->clear();
+        $this->connection->clear();
 
 
 
@@ -160,7 +160,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($category->Subcategory[1]->Subcategory[1]->name, "Sub 2 Sub 2");
         $this->assertEqual($count, count($this->dbh));
         
-        $this->session->clear();
+        $this->connection->clear();
         $query->from("Forum_Category.Parent.Parent")->where("Forum_Category.name LIKE 'Sub%Sub%'");
         $coll = $query->execute();
 
@@ -211,7 +211,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($count, count($this->dbh));
         
-        $this->session->clear();
+        $this->connection->clear();
 
         $query->from("Forum_Category.Subcategory.Subcategory")->where("Forum_Category.parent_category_id IS NULL");
         $coll = $query->execute();
@@ -251,9 +251,9 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testMultiComponentFetching2() {
-        $this->session->clear();
+        $this->connection->clear();
 
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
 
         $query->from("User.Email, User.Phonenumber");
         
@@ -269,10 +269,10 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testHaving() {
-        $this->session->clear();
+        $this->connection->clear();
 
 
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
         $query->from('User-l.Phonenumber-l');
         $query->having("COUNT(User.Phonenumber.phonenumber) > 2");
         $query->groupby('User.id');
@@ -305,12 +305,12 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(++$count, $this->dbh->count());
         $this->assertEqual($users[2]->Phonenumber->count(), 3);
 
-        $this->session->clear();
+        $this->connection->clear();
         $query->from('User-l.Phonenumber-l');
         $query->having("COUNT(User.Phonenumber.phonenumber) > 2");
         $query->groupby('User.id');
 
-        $users = $this->session->query("FROM User-l.Phonenumber-l GROUP BY User.id HAVING COUNT(User.Phonenumber.phonenumber) > 2");
+        $users = $this->connection->query("FROM User-l.Phonenumber-l GROUP BY User.id HAVING COUNT(User.Phonenumber.phonenumber) > 2");
 
         $this->assertEqual($users->count(), 3);
         
@@ -321,7 +321,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testManyToManyFetchingWithColumnAggregationInheritance() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
 
         $query->from('User-l:Group-l');
 
@@ -350,7 +350,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[1]->type, 0);
         $this->assertEqual($users[2]->type, 0);
 
-        $this->session->flush();
+        $this->connection->flush();
 
         $users = $query->query("FROM User-b WHERE User.Group.name = 'Action Actors'");
 
@@ -411,11 +411,11 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $task = new Task();
         $task->name = "T4";
 
-        $this->session->flush();
+        $this->connection->flush();
 
-        $this->session->clear();
+        $this->connection->clear();
 
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
         $query->from("Task.ResourceAlias.Type");
         $tasks = $query->execute();
 
@@ -431,7 +431,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
 
-        $this->session->clear();
+        $this->connection->clear();
         
         $query->from("Task")->where("Task.ResourceAlias.Type.type = 'TY2' || Task.ResourceAlias.Type.type = 'TY1'");
         $tasks = $query->execute();
@@ -444,14 +444,14 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
 
     public function testManyToManyFetchingWithColonOperator() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
 
         $task = new Task();
 
         // clear identity maps
-        $this->session->getTable('Task')->clear();
-        $this->session->getTable('Assignment')->clear();
-        $this->session->getTable('Resource')->clear();
+        $this->connection->getTable('Task')->clear();
+        $this->connection->getTable('Assignment')->clear();
+        $this->connection->getTable('Resource')->clear();
 
         $tasks[1] = $task->getTable()->find(2);
         $this->assertEqual($tasks[1]->ResourceAlias[0]->name, "R3");
@@ -461,8 +461,8 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         // clear identity maps
         $task->getTable()->clear();
-        $this->session->getTable('Assignment')->clear();
-        $this->session->getTable('Resource')->clear();
+        $this->connection->getTable('Assignment')->clear();
+        $this->connection->getTable('Resource')->clear();
 
         $query->from("Task-l:ResourceAlias-l");
         $tasks = $query->execute();
@@ -495,11 +495,11 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testManyToManyFetchingWithDotOperator() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
 
-        $this->session->getTable('Task')->clear();
-        $this->session->getTable('Assignment')->clear();
-        $this->session->getTable('Resource')->clear();
+        $this->connection->getTable('Task')->clear();
+        $this->connection->getTable('Assignment')->clear();
+        $this->connection->getTable('Resource')->clear();
 
         $tasks = $query->query("FROM Task-l.ResourceAlias-l");
         $this->assertEqual($tasks->count(), 4);
@@ -536,7 +536,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testManyToManyFetchingWithDotOperatorAndLoadedIdentityMaps() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
 
         $tasks = $query->query("FROM Task-l.ResourceAlias-l");
         $this->assertEqual($tasks->count(), 4);
@@ -588,14 +588,14 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
 
 
-        $this->session->flush();
+        $this->connection->flush();
         
         // clear the identity maps
 
         $entries[0]->Log_Status->getTable()->clear();
         $entries[0]->getTable()->clear();
 
-        $entries = $this->session->query("FROM Log_Entry-I.Log_Status-i");
+        $entries = $this->connection->query("FROM Log_Entry-I.Log_Status-i");
 
         $this->assertEqual($entries->count(), 2);
 
@@ -620,7 +620,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $entries[0]->Log_Status->getTable()->clear();
         $entries[0]->getTable()->clear();
 
-        $entries = $this->session->query("FROM Log_Entry-I.Log_Status-i");
+        $entries = $this->connection->query("FROM Log_Entry-I.Log_Status-i");
         $this->assertEqual($entries->count(), 2);
 
         $this->assertTrue($entries[0]->Log_Status instanceof Log_Status);
@@ -641,11 +641,11 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $entry->amount = '123.123';
         $entry->ORM_TestItem->name = 'item 2';
         
-        $this->session->flush();
+        $this->connection->flush();
         
         $count = $this->dbh->count();
 
-        $entries = $this->session->query("FROM ORM_TestEntry-i.ORM_TestItem-i");
+        $entries = $this->connection->query("FROM ORM_TestEntry-i.ORM_TestItem-i");
 
         $this->assertEqual($entries->count(), 2);
 
@@ -671,9 +671,9 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
     public function testImmediateFetching() {
         $count = $this->dbh->count();
-        $this->session->getTable('User')->clear();
-        $this->session->getTable('Email')->clear();
-        $this->session->getTable('Phonenumber')->clear();
+        $this->connection->getTable('User')->clear();
+        $this->connection->getTable('Email')->clear();
+        $this->connection->getTable('Phonenumber')->clear();
 
         $users = $this->query->from("User-i.Email-i")->execute();
         $this->assertEqual(($count + 1),$this->dbh->count());
@@ -694,7 +694,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
     public function testLazyPropertyFetchingWithMultipleColumns() {
 
-        $q = new Doctrine_Query($this->session);
+        $q = new Doctrine_Query($this->connection);
         $q->from("User-l(name, email_id)");
         $users = $q->execute();
         $this->assertEqual($users->count(), 8);
@@ -808,7 +808,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testValidLazyPropertyFetching() {
-        $q = new Doctrine_Query($this->session);
+        $q = new Doctrine_Query($this->connection);
         $q->from("User-l(name)");
         $users = $q->execute();
         $this->assertEqual($users->count(), 8);
@@ -839,7 +839,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testQueryWithComplexAliases() {
-        $q = new Doctrine_Query($this->session);
+        $q = new Doctrine_Query($this->connection);
 
         $board = new Forum_Board();
         $table = $board->getTable();
@@ -869,7 +869,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($thread->Entries[0]->getState(), Doctrine_Record::STATE_TDIRTY);
         $this->assertTrue($thread->Entries[0] instanceof Forum_Entry);
 
-        $this->session->flush();
+        $this->connection->flush();
 
         $board->getTable()->clear();
 
@@ -887,8 +887,8 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $coll = $q->execute();
         $this->assertEqual($coll->count(), 1);
 
-        $table = $this->session->getTable("Forum_Board")->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_LAZY);
-        $table = $this->session->getTable("Forum_Thread")->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_LAZY);
+        $table = $this->connection->getTable("Forum_Board")->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_LAZY);
+        $table = $this->connection->getTable("Forum_Thread")->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_LAZY);
         $q->from("Forum_Board.Threads");
 
         $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS forum_board__id, forum_thread.id AS forum_thread__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id");
@@ -900,7 +900,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $q->from("Forum_Board-l.Threads-l");
         $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS forum_board__id, forum_thread.id AS forum_thread__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id");
 
-        //$this->session->clear();
+        //$this->connection->clear();
 
         $q->from("Forum_Board-l.Threads-l.Entries-l");
         $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS forum_board__id, forum_thread.id AS forum_thread__id, forum_entry.id AS forum_entry__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id LEFT JOIN forum_entry ON forum_thread.id = forum_entry.thread_id");
@@ -922,7 +922,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testQueryWithAliases() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
 
         $task = new Task();
         $task->name = "Task 1";
@@ -939,7 +939,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testQueryArgs() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
         $query = $query->from("User-l");
 
         $this->assertTrue($query instanceof Doctrine_Query);
@@ -991,23 +991,23 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testLimit() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
         $coll  = $query->query("FROM User(id) LIMIT 3");
         $this->assertEqual($query->limit, 3);
         $this->assertEqual($coll->count(), 3);
     }
     public function testOffset() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
         $coll  = $query->query("FROM User LIMIT 3 OFFSET 3");
         $this->assertEqual($query->offset, 3);
         $this->assertEqual($coll->count(), 3);
     }
     public function testPreparedQuery() {
-        $coll = $this->session->query("FROM User WHERE User.name = :name", array(":name" => "zYne"));
+        $coll = $this->connection->query("FROM User WHERE User.name = :name", array(":name" => "zYne"));
         $this->assertEqual($coll->count(), 1);
     }
     public function testOrderBy() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
         $query->from("User-b")->orderby("User.name ASC, User.Email.address");
         $users = $query->execute();
 
@@ -1017,7 +1017,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($users[0]->name == "Arnold Schwarzenegger");
     }
     public function testBatchFetching() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
         $users = $query->query("FROM User-b");
         $this->assertEqual(trim($query->getQuery()),
         "SELECT entity.id AS entity__id FROM entity WHERE (entity.type = 0)");
@@ -1026,7 +1026,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($users instanceof Doctrine_Collection_Batch);
     }
     public function testLazyFetching() {
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
         $users = $query->query("FROM User-l");
         $this->assertEqual(trim($query->getQuery()),
         "SELECT entity.id AS entity__id FROM entity WHERE (entity.type = 0)");
@@ -1038,14 +1038,14 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
     public function testAlbumManager() {
 
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
 
         $this->graph = $query;
 
         $user = $this->objTable->find(5);
 
 
-        $album = $this->session->create("Album");
+        $album = $this->connection->create("Album");
         $album->Song[0];
 
         $user->Album[0]->name = "Damage Done";
@@ -1077,7 +1077,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
     function testQuery() {
         // DYNAMIC COLLECTION EXPANDING
-        $query = new Doctrine_Query($this->session);
+        $query = new Doctrine_Query($this->connection);
 
         $user = $this->objTable->find(5);
         $user->Group[1]->name = "Tough guys inc.";
@@ -1100,14 +1100,14 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertEqual($users[0]->Group[2]->name, "Terminators");
         //$this->assertEqual(count($users[0]->Group), 3);
 
-        $this->session->getTable("User")->clear();
-        $this->session->getTable("Phonenumber")->clear();
+        $this->connection->getTable("User")->clear();
+        $this->connection->getTable("Phonenumber")->clear();
 
         $users = $query->query("FROM User-b.Phonenumber-l WHERE User.Phonenumber.phonenumber LIKE '%123%'");
         $this->assertEqual(trim($query->getQuery()),
         "SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '%123%' AND (entity.type = 0)");
 
-        $count = $this->session->getDBH()->count();
+        $count = $this->connection->getDBH()->count();
 
         $users[1]->Phonenumber[0]->phonenumber;
         $users[1]->Phonenumber[1]->phonenumber;
@@ -1115,7 +1115,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $users[1]->Phonenumber[2]->phonenumber;
         $this->assertEqual($users[1]->Phonenumber[1]->getState(),Doctrine_Record::STATE_CLEAN);
-        $count2 = $this->session->getDBH()->count();
+        $count2 = $this->connection->getDBH()->count();
         $this->assertEqual($count + 4,$count2);
 
 
@@ -1133,11 +1133,11 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(trim($query->getQuery()),
         "SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity WHERE (entity.type = 0)");
 
-        $count = $this->session->getDBH()->count();
+        $count = $this->connection->getDBH()->count();
         $this->assertEqual($users[0]->name, "zYne");
 
         $this->assertTrue($users instanceof Doctrine_Collection_Immediate);
-        $count2 = $this->session->getDBH()->count();
+        $count2 = $this->connection->getDBH()->count();
 
 
 
@@ -1154,9 +1154,9 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         // EXPECTED THAT ONE NEW QUERY IS NEEDED TO GET THE FIRST USER's PHONENUMBER
 
-        $count = $this->session->getDBH()->count();
+        $count = $this->connection->getDBH()->count();
         $users[0]->Phonenumber[0]->phonenumber;
-        $count2 = $this->session->getDBH()->count();
+        $count2 = $this->connection->getDBH()->count();
         $this->assertEqual($count + 1,$count2);
 
 

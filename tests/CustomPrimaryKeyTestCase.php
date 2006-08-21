@@ -16,9 +16,9 @@ class Doctrine_CustomPrimaryKeyTestCase extends Doctrine_UnitTestCase {
         
         $c->save();
         $this->assertEqual($c->getID(), array("uid" => 1));
-        $this->session->clear();
+        $this->connection->clear();
         
-        $c = $this->session->getTable('CustomPK')->find(1);
+        $c = $this->connection->getTable('CustomPK')->find(1);
     
         $this->assertEqual($c->getID(), array("uid" => 1));
     }

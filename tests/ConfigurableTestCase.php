@@ -5,7 +5,7 @@ class Doctrine_ConfigurableTestCase extends Doctrine_UnitTestCase {
     public function prepareTables() { }
     public function prepareData() { }
     public function testSetAttribute() {
-        $table = $this->session->getTable("User");
+        $table = $this->connection->getTable("User");
 
         $this->manager->setAttribute(Doctrine::ATTR_CACHE_TTL,100);
         $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_CACHE_TTL),100);
@@ -52,11 +52,11 @@ class Doctrine_ConfigurableTestCase extends Doctrine_UnitTestCase {
         }
 
         try {
-            $this->session->beginTransaction();
+            $this->connection->beginTransaction();
             $this->manager->setAttribute(Doctrine::ATTR_LOCKMODE, Doctrine::LOCK_OPTIMISTIC);
         } catch(Exception $e) {
             $this->assertTrue($e instanceof Exception);
-            $this->session->commit();
+            $this->connection->commit();
         }
 
         $e = false;
@@ -82,11 +82,11 @@ class Doctrine_ConfigurableTestCase extends Doctrine_UnitTestCase {
 
         $e = false;
         try {
-            $this->session->beginTransaction();
-            $this->session->setAttribute(Doctrine::ATTR_LOCKMODE, Doctrine::LOCK_PESSIMISTIC);
+            $this->connection->beginTransaction();
+            $this->connection->setAttribute(Doctrine::ATTR_LOCKMODE, Doctrine::LOCK_PESSIMISTIC);
         } catch(Exception $e) {
             $this->assertTrue($e instanceof Exception);
-            $this->session->commit();
+            $this->connection->commit();
         }
         try {
             $this->manager->setAttribute(Doctrine::ATTR_PK_TYPE,-12);

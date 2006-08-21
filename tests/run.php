@@ -3,7 +3,7 @@ ob_start();
 
 require_once("ConfigurableTestCase.php");
 require_once("ManagerTestCase.php");
-require_once("SessionTestCase.php");
+require_once("ConnectionTestCase.php");
 require_once("TableTestCase.php");
 require_once("EventListenerTestCase.php");
 require_once("BatchIteratorTestCase.php");
@@ -31,7 +31,7 @@ $test = new GroupTest("Doctrine Framework Unit Tests");
 
 $test->addTestCase(new Doctrine_RecordTestCase());
 
-$test->addTestCase(new Doctrine_SessionTestCase());
+$test->addTestCase(new Doctrine_ConnectionTestCase());
 
 $test->addTestCase(new Doctrine_TableTestCase());
 
@@ -76,7 +76,7 @@ $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 print "<pre>";
 $test->run(new HtmlReporter());
 /**
-$cache = Doctrine_Manager::getInstance()->getCurrentSession()->getCacheHandler();
+$cache = Doctrine_Manager::getInstance()->getCurrentConnection()->getCacheHandler();
 if(isset($cache)) {
     $a     = $cache->getQueries();
     print "Executed cache queries: ".count($a)."\n";
@@ -88,7 +88,7 @@ if(isset($cache)) {
 }
 */
 
-$dbh = Doctrine_Manager::getInstance()->getCurrentSession()->getDBH();
+$dbh = Doctrine_Manager::getInstance()->getCurrentConnection()->getDBH();
 $a   = $dbh->getQueries();
 
 print "Executed queries: ".count($a)."\n";

@@ -2,7 +2,7 @@
 class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
     public function testQueryParser() {
         $sql = "SELECT {p.*} FROM photos p";
-        $query = new Doctrine_RawSql($this->session);
+        $query = new Doctrine_RawSql($this->connection);
         $query->parseQuery($sql);
         
         $this->assertEqual($query->from, array('photos p'));
@@ -19,7 +19,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
     public function testAsteriskOperator() {
         // Selecting with *
 
-        $query = new Doctrine_RawSql($this->session);
+        $query = new Doctrine_RawSql($this->connection);
         $query->parseQuery("SELECT {entity.*} FROM entity");
         $fields = $query->getFields();
 
@@ -33,8 +33,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
     }
 
     public function testLazyPropertyLoading() {
-        $query = new Doctrine_RawSql($this->session);
-        $this->session->clear();
+        $query = new Doctrine_RawSql($this->connection);
+        $this->connection->clear();
 
         // selecting proxy objects (lazy property loading)
 
@@ -53,7 +53,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
     }
 
     public function testSmartMapping() {
-        $query = new Doctrine_RawSql($this->session);
+        $query = new Doctrine_RawSql($this->connection);
         // smart component mapping (no need for additional addComponent call
         
         $query->parseQuery("SELECT {entity.name}, {entity.id} FROM entity");
@@ -70,7 +70,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
     }
 
     public function testMultipleComponents() {
-        $query = new Doctrine_RawSql($this->session);
+        $query = new Doctrine_RawSql($this->connection);
         // multi component fetching
 
         $query->parseQuery("SELECT {entity.name}, {entity.id}, {phonenumber.*} FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id");
@@ -92,7 +92,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
     public function testPrimaryKeySelectForcing() {
         // forcing the select of primary key fields
         
-        $query = new Doctrine_RawSql($this->session);
+        $query = new Doctrine_RawSql($this->connection);
 
         $query->parseQuery("SELECT {entity.name} FROM entity");
         
@@ -104,7 +104,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($coll[7]->id));
     }
     public function testMethodOverloading() {
-        $query = new Doctrine_RawSql($this->session);
+        $query = new Doctrine_RawSql($this->connection);
         $query->select('{entity.name}')->from('entity');
         $query->addComponent("entity", "User");
         $coll = $query->execute();
@@ -117,7 +117,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
     public function testColumnAggregationInheritance() {
         // forcing the select of primary key fields
         
-        $query = new Doctrine_RawSql($this->session);
+        $query = new Doctrine_RawSql($this->connection);
 
         $query->parseQuery("SELECT {entity.name} FROM entity");
         $query->addComponent("entity", "User");

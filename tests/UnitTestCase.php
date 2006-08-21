@@ -19,7 +19,7 @@ require_once("simpletest/reporter.php");
 
 class Doctrine_UnitTestCase extends UnitTestCase {
     protected $manager;
-    protected $session;
+    protected $connection;
     protected $objTable;
     protected $new;
     protected $old;
@@ -63,24 +63,24 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
 
         if($this->manager->count() > 0) {
-            $this->session = $this->manager->getSession(0);
-            $this->session->evictTables();
-            $this->dbh     = $this->session->getDBH();
+            $this->connection = $this->manager->getConnection(0);
+            $this->connection->evictTables();
+            $this->dbh     = $this->connection->getDBH();
             $this->listener = $this->manager->getAttribute(Doctrine::ATTR_LISTENER);
 
         } else {
             //$this->dbh     = Doctrine_DB::getConnection();
             $this->dbh      = Doctrine_DB::getConn("sqlite::memory:");
             //$this->dbh      = new PDO("sqlite::memory:");
-            $this->session  = $this->manager->openSession($this->dbh);
+            $this->connection  = $this->manager->openConnection($this->dbh);
             $this->listener = new Doctrine_EventListener_Debugger();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
-        $this->query = new Doctrine_Query($this->session);
+        $this->query = new Doctrine_Query($this->connection);
         $this->prepareTables();
         $this->prepareData();
 
-        $this->valueHolder = new Doctrine_ValueHolder($this->session->getTable('User'));
+        $this->valueHolder = new Doctrine_ValueHolder($this->connection->getTable('User'));
     }
     public function prepareTables() {
         foreach($this->tables as $name) {
@@ -94,15 +94,15 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
         foreach($this->tables as $name) {
             $name = ucwords($name);
-            $table = $this->session->getTable($name);
+            $table = $this->connection->getTable($name);
             $table->getCache()->deleteAll();
             $table->clear(); 
         }
 
-        $this->objTable = $this->session->getTable("User");
+        $this->objTable = $this->connection->getTable("User");
     }
     public function prepareData() {
-        $groups = new Doctrine_Collection($this->session->getTable("Group"));
+        $groups = new Doctrine_Collection($this->connection->getTable("Group"));
 
         $groups[0]->name = "Drama Actors";
 
@@ -113,7 +113,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $groups[2]["Phonenumber"][0]->phonenumber = "123 123";
         $groups->save();
 
-        $users = new Doctrine_Collection($this->session->getTable("User"));
+        $users = new Doctrine_Collection($this->connection->getTable("User"));
 
 
         $users[0]->name = "zYne";
@@ -156,14 +156,14 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $users[7]->Phonenumber[0]->phonenumber = "111 567 333";
 
         $this->users = $users;
-        $this->session->flush();
+        $this->connection->flush();
     }
-    public function getSession() {
-        return $this->session;
+    public function getConnection() {
+        return $this->connection;
     }
     public function clearCache() {
         foreach($this->tables as $name) {
-            $table = $this->session->getTable($name);
+            $table = $this->connection->getTable($name);
             $table->getCache()->deleteAll();
         }
     }

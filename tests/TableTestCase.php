@@ -2,11 +2,11 @@
 require_once("UnitTestCase.php");
 class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
     public function testBind() {
-        $table = $this->session->getTable("User");
+        $table = $this->connection->getTable("User");
     }
 
     public function testGetIdentifier() {
-        $table = $this->session->getTable("User");
+        $table = $this->connection->getTable("User");
     }
     public function testGetForeignKey() {
         $fk = $this->objTable->getForeignKey("Group");
@@ -39,8 +39,8 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
     public function testGetTableName() {
         $this->assertTrue($this->objTable->getTableName() == "entity");
     } 
-    public function testGetSession() {
-        $this->assertTrue($this->objTable->getSession() instanceof Doctrine_Session);
+    public function testGetConnection() {
+        $this->assertTrue($this->objTable->getConnection() instanceof Doctrine_Connection);
     }
     public function testGetData() {
         $this->assertTrue($this->objTable->getData() == array());

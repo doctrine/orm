@@ -93,7 +93,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testValidate() {
-        $user = $this->session->getTable("User")->find(4); 
+        $user = $this->connection->getTable("User")->find(4); 
 
         $set = array("password" => "this is an example of too long password",
                      "loginname" => "this is an example of too long loginname",
@@ -129,7 +129,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
 
         $validator = new Doctrine_Validator_Email();
 
-        $email = $this->session->create("Email");
+        $email = $this->connection->create("Email");
         $this->assertFalse($validator->validate($email,"address","example@example",null));
         $this->assertFalse($validator->validate($email,"address","example@@example",null));
         $this->assertFalse($validator->validate($email,"address","example@example.",null));
@@ -141,7 +141,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
     }
     public function testSave() {
         $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
-        $user = $this->session->getTable("User")->find(4);
+        $user = $this->connection->getTable("User")->find(4);
         try {
             $user->name = "this is an example of too long name not very good example but an example nevertheless";
             $user->save();
@@ -150,7 +150,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         }
 
         try {
-            $user = $this->session->create("User");
+            $user = $this->connection->create("User");
             $user->Email->address = "jackdaniels@drinkmore.info...";
             $user->name = "this is an example of too long user name not very good example but an example nevertheles";
             $user->save();

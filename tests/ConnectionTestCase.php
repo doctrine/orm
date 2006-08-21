@@ -1,94 +1,94 @@
 <?php
 require_once("UnitTestCase.php");
-class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
+class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
 
     public function testBuildFlushTree() {
         $correct = array("Task","ResourceType","Resource","Assignment","ResourceReference");
 
         $task = new Task();
 
-        $tree = $this->session->buildFlushTree(array("Task"));
+        $tree = $this->connection->buildFlushTree(array("Task"));
         $this->assertEqual($tree,array("Resource","Task","Assignment"));
 
-        $tree = $this->session->buildFlushTree(array("Task","Resource"));
+        $tree = $this->connection->buildFlushTree(array("Task","Resource"));
         $this->assertEqual($tree,$correct);
 
-        $tree = $this->session->buildFlushTree(array("Task","Assignment","Resource"));
+        $tree = $this->connection->buildFlushTree(array("Task","Assignment","Resource"));
         $this->assertEqual($tree,$correct);
 
-        $tree = $this->session->buildFlushTree(array("Assignment","Task","Resource"));
+        $tree = $this->connection->buildFlushTree(array("Assignment","Task","Resource"));
         $this->assertEqual($tree,$correct);
 
 
         $correct = array("Forum_Category","Forum_Board","Forum_Thread");
 
-        $tree = $this->session->buildFlushTree(array("Forum_Board"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Board"));
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Category","Forum_Board"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Category","Forum_Board"));
         $this->assertEqual($tree, $correct);
 
         $correct = array("Forum_Category","Forum_Board","Forum_Thread","Forum_Entry");
 
-        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Board"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Entry","Forum_Board"));
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Entry"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Thread"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Board","Forum_Entry"));
         $this->assertEqual($tree, $correct);
 
-        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Entry"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Thread","Forum_Board"));
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Entry","Forum_Thread"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Board","Forum_Thread"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Board"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Board","Forum_Thread"));
         $this->assertEqual($tree, $correct);
 
-        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Entry"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Entry"));
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Entry","Forum_Board"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Board","Forum_Entry","Forum_Thread"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->connection->buildFlushTree(array("Forum_Entry","Forum_Board","Forum_Thread"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->connection->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->connection->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Entry"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->connection->buildFlushTree(array("Forum_Thread","Forum_Entry","Forum_Board"));
         $this->assertEqual($tree, $correct);
 
 
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Category"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Category"));
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Category","Forum_Thread","Forum_Board"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Category","Forum_Thread","Forum_Board"));
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Category"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Category","Forum_Entry"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Entry","Forum_Category"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Board","Forum_Category","Forum_Thread","Forum_Entry"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Category"));
         $this->assertEqual($tree, $correct);
 
-        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Board","Forum_Category"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Category","Forum_Entry"));
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Category","Forum_Board"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Entry","Forum_Category"));
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Entry","Forum_Category","Forum_Board","Forum_Thread"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Category","Forum_Board","Forum_Entry"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Entry","Forum_Category","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Entry","Forum_Category"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Board","Forum_Category","Forum_Thread","Forum_Entry"));
         $this->assertEqual($tree, $correct);
 
-        $tree = $this->session->buildFlushTree(array("Forum_Category","Forum_Entry","Forum_Board","Forum_Thread"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Board","Forum_Category"));
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Category","Forum_Thread","Forum_Entry","Forum_Board"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Category","Forum_Board"));
         $this->assertEqual($tree, $correct);
-        $tree = $this->session->buildFlushTree(array("Forum_Category","Forum_Board","Forum_Thread","Forum_Entry"));
+        $tree = $this->connection->buildFlushTree(array("Forum_Entry","Forum_Category","Forum_Board","Forum_Thread"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->connection->buildFlushTree(array("Forum_Thread","Forum_Category","Forum_Board","Forum_Entry"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->connection->buildFlushTree(array("Forum_Thread","Forum_Entry","Forum_Category","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->connection->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Entry","Forum_Category"));
+        $this->assertEqual($tree, $correct);
+
+        $tree = $this->connection->buildFlushTree(array("Forum_Category","Forum_Entry","Forum_Board","Forum_Thread"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->connection->buildFlushTree(array("Forum_Category","Forum_Thread","Forum_Entry","Forum_Board"));
+        $this->assertEqual($tree, $correct);
+        $tree = $this->connection->buildFlushTree(array("Forum_Category","Forum_Board","Forum_Thread","Forum_Entry"));
         $this->assertEqual($tree, $correct);
 
     }
@@ -104,12 +104,12 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testFlush() {
-        $user = $this->session->getTable("User")->find(4);
+        $user = $this->connection->getTable("User")->find(4);
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
 
-        $user    = $this->session->create("Email");
-        $user    = $this->session->create("User");
-        $record  = $this->session->create("Phonenumber");
+        $user    = $this->connection->create("Email");
+        $user    = $this->connection->create("User");
+        $record  = $this->connection->create("Phonenumber");
 
         $user->Email->address = "example@drinkmore.info";
         $this->assertTrue($user->email_id instanceof Email);
@@ -129,7 +129,7 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($user->Phonenumber[0]->entity_id instanceof User);
         $this->assertTrue($user->Phonenumber[2]->entity_id instanceof User);
 
-        $this->session->flush();
+        $this->connection->flush();
 
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
 
@@ -151,7 +151,7 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
 
         $user = $this->objTable->find(5);
 
-        $pf   = $this->session->getTable("Phonenumber");
+        $pf   = $this->connection->getTable("Phonenumber");
 
         $this->assertTrue($user->Phonenumber instanceof Doctrine_Collection);
         $this->assertTrue($user->Phonenumber->count() == 3);
@@ -161,7 +161,7 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $user->Phonenumber = $coll;
         $this->assertTrue($user->Phonenumber->count() == 0);
 
-        $this->session->flush();
+        $this->connection->flush();
         unset($user);
         $user = $this->objTable->find(5);
 
@@ -173,7 +173,7 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
 
         $user->Phonenumber[1]->phonenumber = "123 123";
-        $this->session->flush();
+        $this->connection->flush();
 
 
         $this->assertEqual($user->Phonenumber->count(), 2);
@@ -183,7 +183,7 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->Phonenumber->count(), 2);
 
         $user->Phonenumber[3]->phonenumber = "123 123";
-        $this->session->flush();
+        $this->connection->flush();
 
         $this->assertEqual($user->Phonenumber->count(), 3);
         unset($user);
@@ -205,7 +205,7 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
         $user->Phonenumber["work"]->phonenumber = "444 444";
 
         $this->assertEqual($user->Phonenumber->count(), 2);
-        $this->session->flush();
+        $this->connection->flush();
 
         $this->assertEqual($user->Phonenumber->count(), 2);
         unset($user);
@@ -224,7 +224,7 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
 
 
         $user->Phonenumber = $coll;
-        $this->session->flush();
+        $this->connection->flush();
         $this->assertEqual($user->Phonenumber->count(), 3);
         $user = $this->objTable->find(5);
         $this->assertEqual($user->Phonenumber->count(), 3);
@@ -234,7 +234,7 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
 
         $user->Email->address = "drinker@drinkmore.info";
         $this->assertTrue($user->Email instanceof Email);
-        $this->session->flush();
+        $this->connection->flush();
         $this->assertTrue($user->Email instanceof Email);
         $user = $this->objTable->find(5);
         $this->assertEqual($user->Email->address, "drinker@drinkmore.info");
@@ -242,87 +242,87 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
 
         // REPLACING ONE-TO-ONE REFERENCES
 
-        $email = $this->session->create("Email");
+        $email = $this->connection->create("Email");
         $email->address = "absolutist@nottodrink.com";
         $user->Email = $email;
 
         $this->assertTrue($user->Email instanceof Email);
         $this->assertEqual($user->Email->address, "absolutist@nottodrink.com");
-        $this->session->flush();
+        $this->connection->flush();
         unset($user);
 
         $user = $this->objTable->find(5);
         $this->assertTrue($user->Email instanceof Email);
         $this->assertEqual($user->Email->address, "absolutist@nottodrink.com");
         
-        $emails = $this->session->query("FROM Email WHERE Email.id = $id");
+        $emails = $this->connection->query("FROM Email WHERE Email.id = $id");
         //$this->assertEqual(count($emails),0);
 
 
     }
 
     public function testGetManager() {
-        $this->assertEqual($this->session->getManager(),$this->manager);
+        $this->assertEqual($this->connection->getManager(),$this->manager);
     }
     public function testQuery() {
-        $this->assertTrue($this->session->query("FROM User") instanceof Doctrine_Collection);
+        $this->assertTrue($this->connection->query("FROM User") instanceof Doctrine_Collection);
     }
 
     public function testDelete() {
-        $user = $this->session->create("User");
-        $this->session->delete($user);
+        $user = $this->connection->create("User");
+        $this->connection->delete($user);
         $this->assertEqual($user->getState(),Doctrine_Record::STATE_TCLEAN);
     }
     public function testGetTable() {
-        $table = $this->session->getTable("Group");
+        $table = $this->connection->getTable("Group");
         $this->assertTrue($table instanceof Doctrine_Table);
         try {
-            $table = $this->session->getTable("Unknown");
+            $table = $this->connection->getTable("Unknown");
             $f = false;
         } catch(Doctrine_Exception $e) {
             $f = true;
         }
         $this->assertTrue($f);
 
-        $table = $this->session->getTable("User");
+        $table = $this->connection->getTable("User");
         $this->assertTrue($table instanceof UserTable);
 
     }
     public function testCreate() {
-        $email = $this->session->create("Email");
+        $email = $this->connection->create("Email");
         $this->assertTrue($email instanceof Email);
     }
     public function testGetDBH() {
-        $this->assertTrue($this->session->getDBH() instanceof PDO);
+        $this->assertTrue($this->connection->getDBH() instanceof PDO);
     }
     public function testCount() {
-        $this->assertTrue(is_integer(count($this->session)));
+        $this->assertTrue(is_integer(count($this->connection)));
     }
     public function testGetIterator() {
-        $this->assertTrue($this->session->getIterator() instanceof ArrayIterator);
+        $this->assertTrue($this->connection->getIterator() instanceof ArrayIterator);
     }
     public function testGetState() {
-        $this->assertEqual($this->session->getState(),Doctrine_Session::STATE_OPEN);
-        $this->assertEqual(Doctrine_Lib::getSessionStateAsString($this->session->getState()), "open");
+        $this->assertEqual($this->connection->getState(),Doctrine_Connection::STATE_OPEN);
+        $this->assertEqual(Doctrine_Lib::getConnectionStateAsString($this->connection->getState()), "open");
     }
     public function testGetTables() {
-        $this->assertTrue(is_array($this->session->getTables()));
+        $this->assertTrue(is_array($this->connection->getTables()));
     }
 
     public function testTransactions() {
 
-        $this->session->beginTransaction();
-        $this->assertEqual($this->session->getState(),Doctrine_Session::STATE_ACTIVE);
-        $this->session->commit();
-        $this->assertEqual($this->session->getState(),Doctrine_Session::STATE_OPEN);
+        $this->connection->beginTransaction();
+        $this->assertEqual($this->connection->getState(),Doctrine_Connection::STATE_ACTIVE);
+        $this->connection->commit();
+        $this->assertEqual($this->connection->getState(),Doctrine_Connection::STATE_OPEN);
 
-        $this->session->beginTransaction();
+        $this->connection->beginTransaction();
         
         $user = $this->objTable->find(6);
         
         $user->name = "Jack Daniels";
-        $this->session->flush();
-        $this->session->commit();
+        $this->connection->flush();
+        $this->connection->commit();
 
         $user = $this->objTable->find(6);
         $this->assertEqual($user->name, "Jack Daniels");
@@ -330,27 +330,27 @@ class Doctrine_SessionTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testRollback() {
-        $this->session->beginTransaction();
-        $this->assertEqual($this->session->getTransactionLevel(),1);
-        $this->assertEqual($this->session->getState(),Doctrine_Session::STATE_ACTIVE);
-        $this->session->rollback();
-        $this->assertEqual($this->session->getState(),Doctrine_Session::STATE_OPEN);
-        $this->assertEqual($this->session->getTransactionLevel(),0);
+        $this->connection->beginTransaction();
+        $this->assertEqual($this->connection->getTransactionLevel(),1);
+        $this->assertEqual($this->connection->getState(),Doctrine_Connection::STATE_ACTIVE);
+        $this->connection->rollback();
+        $this->assertEqual($this->connection->getState(),Doctrine_Connection::STATE_OPEN);
+        $this->assertEqual($this->connection->getTransactionLevel(),0);
     }
     public function testNestedTransactions() {
-        $this->assertEqual($this->session->getTransactionLevel(),0);
-        $this->session->beginTransaction();
-        $this->assertEqual($this->session->getTransactionLevel(),1);
-        $this->assertEqual($this->session->getState(),Doctrine_Session::STATE_ACTIVE);
-        $this->session->beginTransaction();
-        $this->assertEqual($this->session->getState(),Doctrine_Session::STATE_BUSY);
-        $this->assertEqual($this->session->getTransactionLevel(),2);
-        $this->session->commit();
-        $this->assertEqual($this->session->getState(),Doctrine_Session::STATE_ACTIVE);
-        $this->assertEqual($this->session->getTransactionLevel(),1);
-        $this->session->commit();
-        $this->assertEqual($this->session->getState(),Doctrine_Session::STATE_OPEN);
-        $this->assertEqual($this->session->getTransactionLevel(),0);
+        $this->assertEqual($this->connection->getTransactionLevel(),0);
+        $this->connection->beginTransaction();
+        $this->assertEqual($this->connection->getTransactionLevel(),1);
+        $this->assertEqual($this->connection->getState(),Doctrine_Connection::STATE_ACTIVE);
+        $this->connection->beginTransaction();
+        $this->assertEqual($this->connection->getState(),Doctrine_Connection::STATE_BUSY);
+        $this->assertEqual($this->connection->getTransactionLevel(),2);
+        $this->connection->commit();
+        $this->assertEqual($this->connection->getState(),Doctrine_Connection::STATE_ACTIVE);
+        $this->assertEqual($this->connection->getTransactionLevel(),1);
+        $this->connection->commit();
+        $this->assertEqual($this->connection->getState(),Doctrine_Connection::STATE_OPEN);
+        $this->assertEqual($this->connection->getTransactionLevel(),0);
     }
 }
 ?>
