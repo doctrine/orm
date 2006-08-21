@@ -1,18 +1,18 @@
 <?php
-$session->beginTransaction();
+$conn->beginTransaction();
 
 $user = new User();
 $user->name = 'New user';
 $user->save();
 
-$user = $session->getTable('User')->find(5);
+$user = $conn->getTable('User')->find(5);
 $user->name = 'Modified user';
 $user->save();
 
 
-$pending = $session->getInserts(); // an array containing one element
+$pending = $conn->getInserts(); // an array containing one element
 
-$pending = $session->getUpdates(); // an array containing one element
+$pending = $conn->getUpdates(); // an array containing one element
 
-$session->commit(); // all the queries are executed here
+$conn->commit(); // all the queries are executed here
 ?>

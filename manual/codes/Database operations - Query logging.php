@@ -2,7 +2,7 @@
 
 // works only if you use doctrine database handler
 
-$dbh = $session->getDBH();
+$dbh = $conn->getDBH();
 
 $times = $dbh->getExecTimes();
 

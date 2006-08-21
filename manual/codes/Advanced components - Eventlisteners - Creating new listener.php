@@ -22,13 +22,13 @@ $manager = Doctrine_Manager::getInstance();
 
 $manager->setAttribute(Doctrine::ATTR_LISTENER,new MyListener());
 
-// setting session level listener
-$session = $manager->openSession($dbh);
+// setting connection level listener
+$conn = $manager->openConnection($dbh);
 
-$session->setAttribute(Doctrine::ATTR_LISTENER,new MyListener2());
+$conn->setAttribute(Doctrine::ATTR_LISTENER,new MyListener2());
 
 // setting factory level listener
-$table = $session->getTable("User");
+$table = $conn->getTable("User");
 
 $table->setAttribute(Doctrine::ATTR_LISTENER,new MyListener());
 ?>

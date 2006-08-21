@@ -25,19 +25,19 @@ interface iDoctrine_EventListener {
     
     public function onWakeUp(Doctrine_Record $record);
     
-    public function onClose(Doctrine_Session $session);
-    public function onPreClose(Doctrine_Session $session);
+    public function onClose(Doctrine_Connection $conn);
+    public function onPreClose(Doctrine_Connection $conn);
     
-    public function onOpen(Doctrine_Session $session);
+    public function onOpen(Doctrine_Connection $conn);
 
-    public function onTransactionCommit(Doctrine_Session $session);
-    public function onPreTransactionCommit(Doctrine_Session $session);
+    public function onTransactionCommit(Doctrine_Connection $conn);
+    public function onPreTransactionCommit(Doctrine_Connection $conn);
 
-    public function onTransactionRollback(Doctrine_Session $session);
-    public function onPreTransactionRollback(Doctrine_Session $session);
+    public function onTransactionRollback(Doctrine_Connection $conn);
+    public function onPreTransactionRollback(Doctrine_Connection $conn);
 
-    public function onTransactionBegin(Doctrine_Session $session);
-    public function onPreTransactionBegin(Doctrine_Session $session);
+    public function onTransactionBegin(Doctrine_Connection $conn);
+    public function onPreTransactionBegin(Doctrine_Connection $conn);
     
     public function onCollectionDelete(Doctrine_Collection $collection);
     public function onPreCollectionDelete(Doctrine_Collection $collection);

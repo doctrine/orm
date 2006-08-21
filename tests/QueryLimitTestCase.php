@@ -210,6 +210,5 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($q->getQuery(), 
         "SELECT photo.id AS photo__id, photo.name AS photo__name FROM photo LEFT JOIN phototag ON photo.id = phototag.photo_id LEFT JOIN tag ON tag.id = phototag.tag_id WHERE photo.id IN (SELECT DISTINCT photo.id FROM photo LEFT JOIN phototag ON photo.id = phototag.photo_id LEFT JOIN tag ON tag.id = phototag.tag_id WHERE tag.id = ? LIMIT 100) AND tag.id = ? ORDER BY photo.id DESC");
     }
-
 }
 ?>

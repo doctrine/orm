@@ -39,7 +39,7 @@ $user->save();
 
 $user->Groupuser->delete();
 
-$groups = new Doctrine_Collection($session->getTable("Group"));
+$groups = new Doctrine_Collection($conn->getTable("Group"));
 
 $groups[0]->name = "Third Group";
 

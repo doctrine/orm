@@ -1,5 +1,5 @@
 <?php
-$sess = Doctrine_Manager::getInstance()->openSession(new PDO("dsn","username","password"));
+$sess = Doctrine_Manager::getInstance()->openConnection(new PDO("dsn","username","password"));
 try {
 $sess->beginTransaction();
 

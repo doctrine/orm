@@ -1,5 +1,5 @@
 <?php
-$table = $session->getTable("User");
+$table = $conn->getTable("User");
 
 $table->setEventListener(new MyListener2());
 

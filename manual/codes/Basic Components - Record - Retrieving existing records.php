@@ -1,5 +1,5 @@
 <?php
-$table = $session->getTable("User");
+$table = $conn->getTable("User");
 
 // find by primary key
 
@@ -19,5 +19,5 @@ foreach($table->findByDql("name LIKE '%John%'") as $user) {
 
 // finding objects with DQL
 
-$users = $session->query("FROM User WHERE User.name LIKE '%John%'");
+$users = $conn->query("FROM User WHERE User.name LIKE '%John%'");
 ?>

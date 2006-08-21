@@ -1,11 +1,11 @@
 <?php
 $manager = Doctrine_Manager::getInstance();
 
-// open new session
+// open new connection
 
-$session = $manager->openSession(new PDO("dsn","username","password"));
+$conn = $manager->openConnection(new PDO("dsn","username","password"));
 
 // getting a table object
 
-$table = $session->getTable("User");   
+$table = $conn->getTable("User");
 ?>

@@ -1,18 +1,18 @@
 <?php
-$sess = $manager->openSession(Doctrine_DB::getConnection("schema://username:password@hostname/database"));
+$sess = $manager->openConnection(Doctrine_DB::getConnection("schema://username:password@hostname/database"));
 
-// get session state:
+// get connection state:
 switch($sess):
-    case Doctrine_Session::STATE_BUSY:
+    case Doctrine_Connection::STATE_BUSY:
         // multiple open transactions
     break;
-    case Doctrine_Session::STATE_ACTIVE:
+    case Doctrine_Connection::STATE_ACTIVE:
         // one open transaction
     break;
-    case Doctrine_Session::STATE_CLOSED:
+    case Doctrine_Connection::STATE_CLOSED:
         // closed state
     break;
-    case Doctrine_Session::STATE_OPEN:
+    case Doctrine_Connection::STATE_OPEN:
         // open state and zero open transactions
     break;
 endswitch;
@@ -21,10 +21,10 @@ endswitch;
 
 $dbh = $sess->getDBH();
 
-// flushing the session
+// flushing the connection
 $sess->flush();
 
 
-// print lots of useful info about session:
+// print lots of useful info about connection:
 print $sess;
 ?>

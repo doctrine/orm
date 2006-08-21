@@ -2,10 +2,10 @@
 $user = new User();
 $user->name = "Jack";
 
-$group = $session->create("Group");
+$group = $conn->create("Group");
 $group->name = "Drinking Club";
 
 // saves all the changed objects into database
 
-$session->flush();
+$conn->flush();
 ?>

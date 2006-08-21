@@ -1,5 +1,5 @@
 <?php
-$query = new Doctrine_RawSql($session);
+$query = new Doctrine_RawSql($conn);
 
 $query->select('{entity.name}')
       ->from('entity');

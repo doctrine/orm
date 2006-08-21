@@ -1,25 +1,25 @@
 <?php
-// Doctrine_Manager controls all the sessions 
+// Doctrine_Manager controls all the connections 
 
 $manager = Doctrine_Manager::getInstance();
 
-// open first session
+// open first connection
 
-$session = $manager->openSession(new PDO("dsn","username","password"), "session 1");
+$conn = $manager->openConnection(new PDO("dsn","username","password"), "connection 1");
 
-// open second session
+// open second connection
 
-$session2 = $manager->openSession(new PDO("dsn2","username2","password2"), "session 2");
+$conn2 = $manager->openConnection(new PDO("dsn2","username2","password2"), "connection 2");
 
-$manager->getCurrentSession(); // $session2
+$manager->getCurrentConnection(); // $conn2
 
-$manager->setCurrentSession("session 1");
+$manager->setCurrentConnection("connection 1");
 
-$manager->getCurrentSession(); // $session
+$manager->getCurrentConnection(); // $conn
 
-// iterating through sessions
+// iterating through connections
 
-foreach($manager as $session) {
+foreach($manager as $conn) {
     
 }
 ?>

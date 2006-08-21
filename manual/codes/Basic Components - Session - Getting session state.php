@@ -1,16 +1,16 @@
 <?php
-switch($session->getState())
-    case Doctrine_Session::STATE_ACTIVE:
-        // session open and zero open transactions
+switch($conn->getState())
+    case Doctrine_Connection::STATE_ACTIVE:
+        // connection open and zero open transactions
     break;
-    case Doctrine_Session::STATE_ACTIVE:
+    case Doctrine_Connection::STATE_ACTIVE:
         // one open transaction
     break;
-    case Doctrine_Session::STATE_BUSY:
+    case Doctrine_Connection::STATE_BUSY:
         // multiple open transactions
     break;
-    case Doctrine_Session::STATE_CLOSED:
-        // session closed
+    case Doctrine_Connection::STATE_CLOSED:
+        // connection closed
     break;
 endswitch;
 ?>

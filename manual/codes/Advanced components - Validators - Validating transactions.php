@@ -17,7 +17,7 @@ class Email extends Doctrine_Record {
         $this->hasColumn("address","string",150,"email|unique");
     }
 }
-$session = Doctrine_Manager::getInstance()->openSession(new PDO("dsn","username","password"));
+$conn = Doctrine_Manager::getInstance()->openConnection(new PDO("dsn","username","password"));
 $user = new User();
 $user->name = "this is an example of too long name";
 
@@ -36,7 +36,7 @@ $user->Email->address = "drink@drinkmore.info";
 $user->save(); // saved
 
 
-$user   = $session->create("User");
+$user   = $conn->create("User");
 $user->Email->address = "drink@drinkmore.info"; // not unique!
 $user->save(); // throws a Doctrine_Validator_Exception     
 ?>

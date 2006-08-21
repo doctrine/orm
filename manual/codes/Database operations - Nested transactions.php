@@ -1,17 +1,17 @@
 <?php
 try {
-    $session->beginTransaction();
+    $conn->beginTransaction();
     
     $user->save();
         
-        $session->beginTransaction();
+        $conn->beginTransaction();
             $group->save();
             $email->save();
             
-        $session->commit();
+        $conn->commit();
 
-    $session->commit();
+    $conn->commit();
 } catch(Exception $e) {
-    $session->rollback();
+    $conn->rollback();
 }
 ?>

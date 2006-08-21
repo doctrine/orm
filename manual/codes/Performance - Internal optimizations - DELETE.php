@@ -5,7 +5,7 @@
  */
 $users->delete();
 /**
- * On session drivers other than mysql doctrine would now perform three queries
+ * On connection drivers other than mysql doctrine would now perform three queries
  * regardless of how many users, emails and phonenumbers there are
  *
  * the queries would look something like:

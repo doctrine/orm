@@ -1,5 +1,5 @@
 <?php
-$users = $session->query("FROM User");
+$users = $conn->query("FROM User");
 
 // now lets load phonenumbers for all users
 

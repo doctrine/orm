@@ -67,8 +67,15 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
     /**
      * constructor
+     *
+     * @param Doctrine_Table|string $table
      */
-    public function __construct(Doctrine_Table $table) {
+    public function __construct($table) {
+        if( ! ($table instanceof Doctrine_Table)) 
+            $table = Doctrine_Manager::getInstance()
+                        ->getCurrentConnection()
+                        ->getTable($table);
+                        
         $this->table = $table;
 
         $name = $table->getAttribute(Doctrine::ATTR_COLL_KEY);

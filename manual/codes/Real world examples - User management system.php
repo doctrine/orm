@@ -62,7 +62,7 @@ class EntityListener extends Doctrine_EventListener {
 
 $manager = Doctrine_Manager::getInstance();
 
-$session = $manager->openSession(new PDO("DSN","username","password"));
+$conn = $manager->openConnection(new PDO("DSN","username","password"));
 
 $user = new User();
 

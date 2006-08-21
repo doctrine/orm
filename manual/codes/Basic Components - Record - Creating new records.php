@@ -1,9 +1,9 @@
 <?php
-$user = $session->create("User");
+$user = $conn->create("User");
 
 // alternative way:
 
-$table = $session->getTable("User");
+$table = $conn->getTable("User");
 
 $user = $table->create();
 

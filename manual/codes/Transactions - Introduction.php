@@ -1,13 +1,13 @@
 <?php
-$session->beginTransaction();
+$conn->beginTransaction();
 
 $user = new User();
 $user->name = 'New user';
 $user->save();
 
-$user = $session->getTable('User')->find(5);
+$user = $conn->getTable('User')->find(5);
 $user->name = 'Modified user';
 $user->save();
 
-$session->commit(); // all the queries are executed here
+$conn->commit(); // all the queries are executed here
 ?>
