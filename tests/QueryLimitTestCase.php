@@ -76,6 +76,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->query->from("User(id):Phonenumber");
         $this->query->limit(5);
 
+
         $sql = $this->query->getQuery();
 
         $users = $this->query->execute();

@@ -166,12 +166,13 @@ $menu = array("Getting started" =>
                                          "Using SQL",
                                          "Adding components",
                                          "Method overloading"),
+                                         /**
                         "Statement - <font color='red'>UNDER CONSTRUCTION</font>" => array("Introduction",
                                              "Setting parameters",
                                              "Getting parameters",
                                              "Getting row count",
                                              "Executing the statement"),
-
+                                            */
                         "Exceptions" => array(
                                     "Overview",
                                     "List of exceptions"

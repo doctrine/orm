@@ -50,6 +50,7 @@ class Doctrine_Form implements Iterator {
                 } else {
                     $elements[$column] = "<textarea name='data[$column]' cols=80 rows=25>".$this->record->get($column)."</textarea>\n";
                 }
+                
             }
             return $elements[$column];
         } else {
