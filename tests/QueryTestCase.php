@@ -1126,7 +1126,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
             $users = $query->query("FROM User-unknown");
         } catch(Exception $e) {
         }
-        $this->assertTrue($e instanceof DQLException);
+        $this->assertTrue($e instanceof Doctrine_Query_Exception);
 
 
         $users = $query->query("FROM User-i");

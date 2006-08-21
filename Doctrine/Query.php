@@ -470,7 +470,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
             case "lazyoffset":
                 $fetchmode = Doctrine::FETCH_LAZYOFFSET;
             default:
-                throw new DQLException("Unknown fetchmode '$mode'. The availible fetchmodes are 'i', 'b' and 'l'.");
+                throw new Doctrine_Query_Exception("Unknown fetchmode '$mode'. The availible fetchmodes are 'i', 'b' and 'l'.");
         endswitch;
         return $fetchmode;
     }
@@ -541,7 +541,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
      *
      * @param string $path              the path of the loadable component
      * @param integer $fetchmode        optional fetchmode, if not set the components default fetchmode will be used
-     * @throws DQLException
+     * @throws Doctrine_Query_Exception
      * @return Doctrine_Table
      */
     final public function load($path, $loadFields = true) {
@@ -655,7 +655,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
                 $prevPath  = $currPath;
                 $prevTable = $tableName;
             } catch(Exception $e) {
-                throw new DQLException($e->__toString());
+                throw new Doctrine_Query_Exception($e->__toString());
             }
         }
         return $table;

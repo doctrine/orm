@@ -97,7 +97,9 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->query->getQuery(), 
         'SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity INNER JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity INNER JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0) LIMIT 5 OFFSET 2) AND (entity.type = 0)');
     }
-    
+    public function testLimitWithPreparedQueries() {
+                                                   	
+    }                                               	
     public function testLimitWithManyToManyLeftJoin() {
         $q = new Doctrine_Query($this->session);
         $q->from("User.Group")->limit(5);

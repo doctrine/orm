@@ -87,10 +87,13 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
     /**
      * constructor
      *
-     * @param Doctrine_Session $session
+     * @param Doctrine_Connection|null $connection
      */
-    public function __construct(Doctrine_Session $session) {
-        $this->session = $session;
+    public function __construct($connection = null) {
+        if( ! ($connection instanceof Doctrine_Session))
+            $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
+
+        $this->session = $connection;
     }
     /** 
      * getQuery
