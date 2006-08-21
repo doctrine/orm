@@ -109,8 +109,8 @@ $menu = array("Getting started" =>
                         array(
                         "Manager" 
                                 => array("Introduction",
-                                         "Opening a new session",
-                                         "Managing sessions"),
+                                         "Opening a new connection",
+                                         "Managing connections"),
                         "Record"
                                 => array("Introduction",
                                          "Creating new records",
@@ -122,13 +122,13 @@ $menu = array("Getting started" =>
                                          "Getting object copy",
                                          "Serializing",
                                          "Callbacks"),
-                        "Session"
+                        "Connection"
                                 => array("Introduction",
                                          "Availible drivers",
                                          "Getting a table object",
-                                         "Flushing the session",
+                                         "Flushing the connection",
                                          "Querying the database",
-                                         "Getting session state"),
+                                         "Getting connection state"),
 
                         "Collection"
                                 => array("Introduction",
