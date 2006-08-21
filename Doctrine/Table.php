@@ -44,9 +44,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     private $query;
     /**
-     * @var Doctrine_Session $session                   Doctrine_Session object that created this table
+     * @var Doctrine_Connection $connection                   Doctrine_Connection object that created this table
      */
-    private $session;
+    private $connection;
     /**
      * @var string $name                                name of the component, for example component name of the GroupTable is 'Group'
      */
@@ -111,14 +111,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
     /**
      * the constructor
-     * @throws Doctrine_ManagerException        if there are no opened sessions
+     * @throws Doctrine_ManagerException        if there are no opened connections
      * @throws Doctrine_TableException          if there is already an instance of this table
      * @return void
      */
     public function __construct($name) {
-        $this->session = Doctrine_Manager::getInstance()->getCurrentSession();
+        $this->connection = Doctrine_Manager::getInstance()->getCurrentConnection();
 
-        $this->setParent($this->session);
+        $this->setParent($this->connection);
 
         $this->name = $name;
 
@@ -206,7 +206,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 endswitch;
 
                  if(Doctrine_DataDict::isValidClassname($class->getName()) && $this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
-                    $dict      = new Doctrine_DataDict($this->getSession()->getDBH());
+                    $dict      = new Doctrine_DataDict($this->getConnection()->getDBH());
                     $dict->createTable($this->tableName, $this->columns);
                 }
 
@@ -224,7 +224,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         $this->query     = "SELECT ".implode(", ",array_keys($this->columns))." FROM ".$this->getTableName();
 
         // check if an instance of this table is already initialized
-        if( ! $this->session->addTable($this))
+        if( ! $this->connection->addTable($this))
             throw new Doctrine_Table_Exception();
 
         $this->initComponents();
@@ -501,10 +501,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         return $this->name;
     }
     /**
-     * @return Doctrine_Session
+     * @return Doctrine_Connection
      */
-    final public function getSession() {
-        return $this->session;
+    final public function getConnection() {
+        return $this->connection;
     }
     /**
      * @return Doctrine_Cache
@@ -551,7 +551,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $alias      = $name;
             $name       = $this->bound[$alias][3];
 
-            $table      = $this->session->getTable($name);
+            $table      = $this->connection->getTable($name);
 
             if($component == $this->name || in_array($component, $this->parents)) {
 
@@ -597,7 +597,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 if($e2[0] != $component)
                     throw new Doctrine_Mapping_Exception($e2[0]." doesn't match ".$component);
 
-                $associationTable = $this->session->getTable($e2[0]);
+                $associationTable = $this->connection->getTable($e2[0]);
 
                 if(count($fields) > 1) {
                     // SELF-REFERENCING THROUGH JOIN TABLE
@@ -683,7 +683,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
             $params = array_merge($id, array_values($this->inheritanceMap));
 
-            $stmt  = $this->session->execute($query,$params);
+            $stmt  = $this->connection->execute($query,$params);
 
             $this->data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -715,7 +715,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return Doctrine_Collection
      */
     public function findAll() {
-        $graph = new Doctrine_Query($this->session);
+        $graph = new Doctrine_Query($this->connection);
         $users = $graph->query("FROM ".$this->name);
         return $users;
     }
@@ -729,7 +729,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return Doctrine_Collection
      */
     public function findBySql($dql, array $params = array()) {
-        $q = new Doctrine_Query($this->session);
+        $q = new Doctrine_Query($this->connection);
         $users = $q->query("FROM ".$this->name." WHERE ".$dql, $params);
         return $users;
     }
@@ -791,7 +791,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
             $params = array_merge(array($id), array_values($this->inheritanceMap));
 
-            $this->data = $this->session->execute($query,$params)->fetch(PDO::FETCH_ASSOC);
+            $this->data = $this->connection->execute($query,$params)->fetch(PDO::FETCH_ASSOC);
 
             if($this->data === false)
                 throw new Doctrine_Find_Exception();
@@ -811,14 +811,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return integer
      */
     public function count() {
-        $a = $this->session->getDBH()->query("SELECT COUNT(1) FROM ".$this->tableName)->fetch(PDO::FETCH_NUM);
+        $a = $this->connection->getDBH()->query("SELECT COUNT(1) FROM ".$this->tableName)->fetch(PDO::FETCH_NUM);
         return current($a);
     }
     /**
      * @return Doctrine_Query                           a Doctrine_Query object
      */
     public function getQueryObject() {
-        $graph = new Doctrine_Query($this->getSession());
+        $graph = new Doctrine_Query($this->getConnection());
         $graph->load($this->getComponentName());
         return $graph;
     }
@@ -831,12 +831,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     public function execute($query, array $array = array(), $limit = null, $offset = null) {
         $coll  = new Doctrine_Collection($this);
-        $query = $this->session->modifyLimitQuery($query,$limit,$offset);
+        $query = $this->connection->modifyLimitQuery($query,$limit,$offset);
         if( ! empty($array)) {
-            $stmt = $this->session->getDBH()->prepare($query);
+            $stmt = $this->connection->getDBH()->prepare($query);
             $stmt->execute($array);
         } else {
-            $stmt = $this->session->getDBH()->query($query);
+            $stmt = $this->connection->getDBH()->query($query);
         }
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
@@ -944,7 +944,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     final public function getMaxIdentifier() {
         $sql  = "SELECT MAX(".$this->getIdentifier().") FROM ".$this->getTableName();
-        $stmt = $this->session->getDBH()->query($sql);
+        $stmt = $this->connection->getDBH()->query($sql);
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return isset($data[0])?$data[0]:1;
     }
