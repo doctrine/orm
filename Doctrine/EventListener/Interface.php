@@ -36,19 +36,19 @@ interface Doctrine_EventListener_Interface {
     
     public function onWakeUp(Doctrine_Record $record);
     
-    public function onClose(Doctrine_Session $session);
-    public function onPreClose(Doctrine_Session $session);
+    public function onClose(Doctrine_Connection $connection);
+    public function onPreClose(Doctrine_Connection $connection);
     
-    public function onOpen(Doctrine_Session $session);
+    public function onOpen(Doctrine_Connection $connection);
 
-    public function onTransactionCommit(Doctrine_Session $session);
-    public function onPreTransactionCommit(Doctrine_Session $session);
+    public function onTransactionCommit(Doctrine_Connection $connection);
+    public function onPreTransactionCommit(Doctrine_Connection $connection);
 
-    public function onTransactionRollback(Doctrine_Session $session);
-    public function onPreTransactionRollback(Doctrine_Session $session);
+    public function onTransactionRollback(Doctrine_Connection $connection);
+    public function onPreTransactionRollback(Doctrine_Connection $connection);
 
-    public function onTransactionBegin(Doctrine_Session $session);
-    public function onPreTransactionBegin(Doctrine_Session $session);
+    public function onTransactionBegin(Doctrine_Connection $connection);
+    public function onPreTransactionBegin(Doctrine_Connection $connection);
     
     public function onCollectionDelete(Doctrine_Collection $collection);
     public function onPreCollectionDelete(Doctrine_Collection $collection);

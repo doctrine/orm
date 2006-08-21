@@ -110,36 +110,36 @@ class Doctrine_EventListener_Debugger extends Doctrine_EventListener {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_PREEVICT);
     }
 
-    public function onClose(Doctrine_Session $session) { 
-         $this->debug[] = new Doctrine_DebugMessage($session,self::EVENT_CLOSE);
+    public function onClose(Doctrine_Connection $connection) { 
+         $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_CLOSE);
     }
-    public function onPreClose(Doctrine_Session $session) { 
-         $this->debug[] = new Doctrine_DebugMessage($session,self::EVENT_PRECLOSE);
-    }
-
-    public function onOpen(Doctrine_Session $session) { 
-         $this->debug[] = new Doctrine_DebugMessage($session,self::EVENT_OPEN);
+    public function onPreClose(Doctrine_Connection $connection) { 
+         $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_PRECLOSE);
     }
 
-    public function onTransactionCommit(Doctrine_Session $session) { 
-         $this->debug[] = new Doctrine_DebugMessage($session,self::EVENT_COMMIT);
-    }
-    public function onPreTransactionCommit(Doctrine_Session $session) { 
-        $this->debug[] = new Doctrine_DebugMessage($session,self::EVENT_PRECOMMIT);
+    public function onOpen(Doctrine_Connection $connection) { 
+         $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_OPEN);
     }
 
-    public function onTransactionRollback(Doctrine_Session $session) {
-        $this->debug[] = new Doctrine_DebugMessage($session,self::EVENT_ROLLBACK);
+    public function onTransactionCommit(Doctrine_Connection $connection) { 
+         $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_COMMIT);
     }
-    public function onPreTransactionRollback(Doctrine_Session $session) {
-        $this->debug[] = new Doctrine_DebugMessage($session,self::EVENT_PREROLLBACK);
+    public function onPreTransactionCommit(Doctrine_Connection $connection) { 
+        $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_PRECOMMIT);
     }
 
-    public function onTransactionBegin(Doctrine_Session $session) {
-        $this->debug[] = new Doctrine_DebugMessage($session,self::EVENT_BEGIN);
+    public function onTransactionRollback(Doctrine_Connection $connection) {
+        $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_ROLLBACK);
     }
-    public function onPreTransactionBegin(Doctrine_Session $session) {
-        $this->debug[] = new Doctrine_DebugMessage($session,self::EVENT_PREBEGIN);
+    public function onPreTransactionRollback(Doctrine_Connection $connection) {
+        $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_PREROLLBACK);
+    }
+
+    public function onTransactionBegin(Doctrine_Connection $connection) {
+        $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_BEGIN);
+    }
+    public function onPreTransactionBegin(Doctrine_Connection $connection) {
+        $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_PREBEGIN);
     }
     
     public function onCollectionDelete(Doctrine_Collection $collection) { 

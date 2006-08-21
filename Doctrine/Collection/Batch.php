@@ -97,7 +97,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
             $query .= substr(str_repeat("?, ",count($a)),0,-2);
             $query .= ($c > 1)?") ORDER BY ".$pk[0]." ASC":"";
 
-            $stmt  = $this->table->getSession()->execute($query,array_values($a));
+            $stmt  = $this->table->getConnection()->execute($query,array_values($a));
 
              foreach($a as $k => $id) {
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);

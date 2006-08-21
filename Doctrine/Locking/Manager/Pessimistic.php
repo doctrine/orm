@@ -25,12 +25,12 @@ class Doctrine_Locking_Manager_Pessimistic
     /**
      * Constructs a new locking manager object
      * 
-     * When the CREATE_TABLES attribute of the session on which the manager
+     * When the CREATE_TABLES attribute of the connection on which the manager
      * is supposed to work on is set to true, the locking table is created.
      *
-     * @param Doctrine_Session $dataSource The database session to use
+     * @param Doctrine_Connection $dataSource The database connection to use
      */
-    public function __construct(Doctrine_Session $dataSource)
+    public function __construct(Doctrine_Connection $dataSource)
     {
         $this->_dataSource = $dataSource;
         
