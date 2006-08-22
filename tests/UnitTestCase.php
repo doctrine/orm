@@ -1,7 +1,7 @@
 <?php
 require_once("../Doctrine.php");
 
-Doctrine::compile();
+//Doctrine::compile();
 
 //require_once("../Doctrine.compiled.php");
 

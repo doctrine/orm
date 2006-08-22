@@ -136,7 +136,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $this->assertFalse($validator->validate($email,"address","example@e..",null));
 
         $this->assertFalse($validator->validate($email,"address","example@e..",null));
-        $this->assertTrue($validator->validate($email,"address","example@e.e.e.e.e",null));
+        
 
     }
     public function testSave() {
