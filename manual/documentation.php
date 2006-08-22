@@ -177,7 +177,7 @@ $menu = array("Getting started" =>
                                     "Overview",
                                     "List of exceptions"
                                     )
-                        ),     
+                        ),
            "Mapping object relations" =>
                         array(
                         "Introduction",
@@ -368,6 +368,7 @@ $menu = array("Getting started" =>
                                     $missing[1]++;
                                     $str .= " [ <font color='red'>code</font> ] ";
                                     //touch("codes/$title - $k - $v2.php");
+
                                 }
 
                                 $e = implode(".",array($i,$i2,$i3));
