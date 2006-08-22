@@ -8,7 +8,7 @@ class Doctrine_Validator_Ip {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value, $args) {
-        return (bool)ip2long(str_replace("\0", '', $value));
+        return (bool) ip2long(str_replace("\0", '', $value));
     }
 }
 ?>
