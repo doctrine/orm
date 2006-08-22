@@ -255,13 +255,17 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 $keys  = array_keys($this->tables);
 
                 $name  = $this->tables[$keys[0]]->getComponentName();
+
+
                 $stmt  = $this->connection->execute($query,$params);
 
                 while($data = $stmt->fetch(PDO::FETCH_ASSOC)):
+
                     foreach($data as $key => $value):
                         $e = explode("__",$key);
                         if(count($e) > 1) {
-                            $data[$e[1]] = $value;
+
+                            $data[end($e)] = $value;
                         } else {
                             $data[$e[0]] = $value;
                         }
@@ -269,6 +273,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                     endforeach;
                     $this->data[$name][] = $data;
                 endwhile;
+                
 
                 return $this->getCollection($keys[0]);
             break;
@@ -278,7 +283,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 
                 if($this->isLimitSubqueryUsed())
                     $params = array_merge($params, $params);
+                
 
+                
                 $stmt  = $this->connection->execute($query,$params);
 
                 $previd = array();
@@ -292,6 +299,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                     return $this->hydrateHolders($array);
                 } elseif($return == Doctrine::FETCH_ARRAY)
                     return $array;
+                
+
 
                 foreach($array as $data) {
                     /**
@@ -504,15 +513,15 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             foreach($data as $key => $value):
                 $e = explode("__",$key);
 
-                if(count($e) > 1) {
-                    $data[$e[0]][$e[1]] = $value;
-                } else {
-                    $data[0][$e[0]] = $value;
-                }
+                $field     = array_pop($e);
+                $component = implode("__",$e);
+                $data[$component][$field] = $value;
+
                 unset($data[$key]);
             endforeach;
             $array[] = $data;
         endwhile;
+
         $stmt->closeCursor();
         return $array;
     }

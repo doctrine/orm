@@ -94,8 +94,10 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
                 case "group":
                     $i = ($k + 1);
                     if(isset($e[$i]) && strtolower($e[$i]) === "by") {
-                        $p = $part;
-                        $parts[$low] = array();
+                        $p = $low;
+                        $p .= "by";
+                        $parts[$low."by"] = array();
+
                     } else
                         $parts[$p][] = $part;
                 break;
@@ -121,7 +123,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * @return string
      */
     public function getQuery() {
-        $q = array();
+
 
         foreach($this->fields as $field) {
             $e = explode(".", $field);
@@ -157,7 +159,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
             }
         }
 
-        $q[] = "SELECT ".implode(', ', $this->parts['select']);
+        $q = "SELECT ".implode(', ', $this->parts['select']);
 
         $string = $this->applyInheritance();
         if( ! empty($string))
@@ -165,13 +167,17 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
 
         $copy = $this->parts;
         unset($copy['select']);
-        foreach($copy as $name => $part) {
-            if(empty($part))
-                continue;
 
-            $q[] = strtoupper($name).' '.implode(' ',$part);
-        }
-        return implode(' ', $q);
+        $q .= ( ! empty($this->parts['from']))?" FROM ".implode(" ",$this->parts["from"]):'';
+        $q .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';
+        $q .= ( ! empty($this->parts['groupby']))?" GROUP BY ".implode(", ",$this->parts["groupby"]):'';
+        $q .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
+        $q .= ( ! empty($this->parts['orderby']))?" ORDER BY ".implode(" ",$this->parts["orderby"]):'';
+
+        if( ! empty($string))
+            array_pop($this->parts['where']);
+
+        return $q;
     }
     /**
      * getFields

@@ -19,6 +19,13 @@ class Doctrine_ManagerTestCase extends Doctrine_UnitTestCase {
     public function testGetConnections() {
         $this->assertEqual(count($this->manager->getConnections()),1);
     }
+    public function testClassifyTableize() {
+        $name = "Forum_Category";
+        $this->assertEqual(Doctrine::tableize($name), "forum__category");
+        $this->assertEqual(Doctrine::classify(Doctrine::tableize($name)), $name);
+        
+        
+    }
     public function prepareData() { }
     public function prepareTables() { }
 }

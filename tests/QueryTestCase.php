@@ -110,7 +110,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $query->where("(((((User.name LIKE 'z%') || User.name LIKE 's%')) && User.name LIKE 'a%'))");
         $this->assertEqual($query->getQuery(), $sql);
     }
-
     public function testSelfReferencing() {
         $query = new Doctrine_Query($this->connection);
 
@@ -187,7 +186,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual($count, count($this->dbh));
 
-        $query->from("Forum_Category.Parent, Forum_Category.Subcategory")->where("Forum_Category.name = 'Sub 1' OR Forum_Category.name = 'Sub 2'");
+        $query->from("Forum_Category.Parent, Forum_Category.Subcategory")->where("Forum_Category.name = 'Sub 1' || Forum_Category.name = 'Sub 2'");
         
         $coll = $query->execute();
         
@@ -891,19 +890,19 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $table = $this->connection->getTable("Forum_Thread")->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_LAZY);
         $q->from("Forum_Board.Threads");
 
-        $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS forum_board__id, forum_thread.id AS forum_thread__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id");
+        $this->assertEqual($q->getQuery(), "SELECT forum__board.id AS forum__board__id, forum__thread.id AS forum__thread__id FROM forum__board LEFT JOIN forum__thread ON forum__board.id = forum__thread.board_id");
         $coll = $q->execute();
         $this->assertEqual($coll->count(), 1);
 
 
 
         $q->from("Forum_Board-l.Threads-l");
-        $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS forum_board__id, forum_thread.id AS forum_thread__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id");
+        $this->assertEqual($q->getQuery(), "SELECT forum__board.id AS forum__board__id, forum__thread.id AS forum__thread__id FROM forum__board LEFT JOIN forum__thread ON forum__board.id = forum__thread.board_id");
 
         //$this->connection->clear();
 
         $q->from("Forum_Board-l.Threads-l.Entries-l");
-        $this->assertEqual($q->getQuery(), "SELECT forum_board.id AS forum_board__id, forum_thread.id AS forum_thread__id, forum_entry.id AS forum_entry__id FROM forum_board LEFT JOIN forum_thread ON forum_board.id = forum_thread.board_id LEFT JOIN forum_entry ON forum_thread.id = forum_entry.thread_id");
+        $this->assertEqual($q->getQuery(), "SELECT forum__board.id AS forum__board__id, forum__thread.id AS forum__thread__id, forum__entry.id AS forum__entry__id FROM forum__board LEFT JOIN forum__thread ON forum__board.id = forum__thread.board_id LEFT JOIN forum__entry ON forum__thread.id = forum__entry.thread_id");
         $boards = $q->execute();
         $this->assertEqual($boards->count(), 1);
         $count = count($this->dbh);

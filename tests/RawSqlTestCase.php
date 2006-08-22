@@ -1,5 +1,6 @@
 <?php
 class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
+
     public function testQueryParser() {
         $sql = "SELECT {p.*} FROM photos p";
         $query = new Doctrine_RawSql($this->connection);
@@ -114,6 +115,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($coll[3]->id));
         $this->assertTrue(is_numeric($coll[7]->id));
     }
+
     public function testColumnAggregationInheritance() {
         // forcing the select of primary key fields
         
@@ -128,5 +130,26 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($coll[3]->id));
         $this->assertTrue(is_numeric($coll[7]->id));
     }
+
+    public function testColumnAggregationInheritanceWithOrderBy() {
+        // forcing the select of primary key fields
+
+        $query = new Doctrine_RawSql($this->connection);
+
+        $query->parseQuery("SELECT {entity.name} FROM entity ORDER BY entity.name");
+        $query->addComponent("entity", "User");
+
+        $this->assertEqual($query->getQuery(), "SELECT entity.name AS entity__name, entity.id AS entity__id FROM entity WHERE entity.type = 0 ORDER BY entity.name");
+
+
+        $coll = $query->execute();
+
+        $this->assertEqual($coll->count(), 8);
+        $this->assertTrue(is_numeric($coll[0]->id));
+        $this->assertTrue(is_numeric($coll[3]->id));
+        $this->assertTrue(is_numeric($coll[7]->id));
+
+    }
+
 }
 ?>

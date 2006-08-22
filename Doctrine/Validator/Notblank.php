@@ -8,7 +8,7 @@ class Doctrine_Validator_Notblank {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value, $args) {
-        return (trim($var) != ""); 
+        return (trim($value) != ""); 
     }
 }
 ?>

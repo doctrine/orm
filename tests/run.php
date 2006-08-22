@@ -28,15 +28,15 @@ require_once("QueryLimitTestCase.php");
 error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
-
+/**
 $test->addTestCase(new Doctrine_RecordTestCase());
 
 $test->addTestCase(new Doctrine_ConnectionTestCase());
 
 $test->addTestCase(new Doctrine_TableTestCase());
-
+*/
 $test->addTestCase(new Doctrine_ManagerTestCase());
-
+/**
 $test->addTestCase(new Doctrine_AccessTestCase());
 
 $test->addTestCase(new Doctrine_EventListenerTestCase());
@@ -63,12 +63,12 @@ $test->addTestCase(new Doctrine_ValidatorTestCase());
 
 $test->addTestCase(new Doctrine_CollectionTestCase());
 
-$test->addTestCase(new Doctrine_QueryTestCase());   
+$test->addTestCase(new Doctrine_QueryTestCase());
 
 $test->addTestCase(new Doctrine_RawSql_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
-
+*/
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 

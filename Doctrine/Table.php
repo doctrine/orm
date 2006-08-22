@@ -759,10 +759,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         if( ! is_array($key))
             $key = array($key);
 
-
         foreach($key as $k) {
             if( ! isset($this->data[$k]))
-                throw new Doctrine_Exception("No primary key found");
+                throw new Doctrine_Exception("Primary key value for $k wasn't found");
 
             $id[] = $this->data[$k];
         }
