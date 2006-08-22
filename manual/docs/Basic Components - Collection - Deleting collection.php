@@ -7,3 +7,7 @@ of users doctrine only performs two queries for this whole transaction. The quer
 <br \><br \>
 DELETE FROM user WHERE id IN (1,2,3, ... ,N)<br \>
 DELETE FROM phonenumber WHERE id IN (1,2,3, ... ,M)<br \>
+<br \><br \>
+It should also be noted that Doctrine is smart enough to perform single-shot-delete per table when transactions are used.
+So if you are deleting a lot of records and want to optimize the operation just wrap the delete calls in Doctrine_Connection transaction.
+
