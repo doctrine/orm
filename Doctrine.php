@@ -436,7 +436,7 @@ class DQLException extends Exception { }
      * @return string
      */
     public static function classify($tablename) {
-        return  preg_replace('~(_?)(_)([\w])~e', '"$1".strtoupper($3)', ucfirst($tablename));
+        return  preg_replace('~(_?)(_)([\w])~e', '"$1".strtoupper("$3")', ucfirst($tablename));
     }
 }
 ?>
