@@ -177,7 +177,7 @@ $menu = array("Getting started" =>
                                     "Overview",
                                     "List of exceptions"
                                     )
-                        ),
+                        ),     
            "Mapping object relations" =>
                         array(
                         "Introduction",
