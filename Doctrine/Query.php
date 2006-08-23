@@ -380,7 +380,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
      */
     public function parseQuery($query) {
         $this->clear();
-        $e = self::bracketExplode($query," ","(",")");
+        $e = self::sqlExplode($query," ","(",")");
 
 
         $parts = array();
@@ -528,6 +528,45 @@ class Doctrine_Query extends Doctrine_Hydrate {
                 $c1 = substr_count($term[$i],"$e1");
                 $c2 = substr_count($term[$i],"$e2");
                     if($c1 == $c2) $i++;
+            }
+        }
+        return $term;
+    }
+
+    public static function sqlExplode($str,$d = " ",$e1 = '(',$e2 = ')') {
+        $str = explode("$d",$str);
+        $i = 0;
+        $term = array();
+        foreach($str as $key => $val) {
+            if (empty($term[$i])) {
+                $term[$i] = trim($val);
+
+                $s1 = substr_count($term[$i],"$e1");
+                $s2 = substr_count($term[$i],"$e2");
+
+                if(substr($term[$i],0,1) == "(") {
+                    if($s1 == $s2)
+                        $i++;
+                } else {
+                    if( ! (substr_count($term[$i], "'") & 1) &&
+                        ! (substr_count($term[$i], "\"") & 1) &&
+                        ! (substr_count($term[$i], "´") & 1)
+                        ) $i++;
+                }
+            } else {
+                $term[$i] .= "$d".trim($val);
+                $c1 = substr_count($term[$i],"$e1");
+                $c2 = substr_count($term[$i],"$e2");
+
+                if(substr($term[$i],0,1) == "(") {
+                    if($c1 == $c2)
+                        $i++;
+                } else {
+                    if( ! (substr_count($term[$i], "'") & 1) &&
+                        ! (substr_count($term[$i], "\"") & 1) &&
+                        ! (substr_count($term[$i], "´") & 1)
+                        ) $i++;
+                }
             }
         }
         return $term;

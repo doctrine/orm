@@ -150,6 +150,75 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($coll[7]->id));
 
     }
+    public function testsqlExplode() {
+        $str = "word1 word2 word3";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "word2", "word3"));
+        
+        $str = "word1 (word2 word3)";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "(word2 word3)"));
+        
+        $str = "word1 'word2 word3'";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "'word2 word3'"));
+
+        $str = "word1 ´word2 word3´";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "´word2 word3´"));
+
+        $str = "word1 \"word2 word3\"";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "\"word2 word3\""));
+
+        $str = "word1 ((word2) word3)";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "((word2) word3)"));
+
+        $str = "word1 ( (word2) 'word3')";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "( (word2) 'word3')"));
+
+        $str = "word1 ( \"(word2) 'word3')";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "( \"(word2) 'word3')"));
+
+        $str = "word1 ( ´´(word2) 'word3')";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "( ´´(word2) 'word3')"));
+
+        $str = "word1 ( ´()()´(word2) 'word3')";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "( ´()()´(word2) 'word3')"));
+
+        $str = "word1 'word2)() word3'";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "'word2)() word3'"));
+
+        $str = "word1 ´word2)() word3´";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "´word2)() word3´"));
+
+        $str = "word1 \"word2)() word3\"";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("word1", "\"word2)() word3\""));
+
+        $str = "something (subquery '')";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("something", "(subquery '')"));
+
+        $str = "something ((  ))";
+        $a   = Doctrine_Query::sqlExplode($str);
+        $this->assertEqual($a, array("something", "((  ))"));
+    }
+    public function testQueryParser2() {
+        $query = new Doctrine_RawSql();
+        
+        $query->parseQuery("SELECT {entity.name} FROM (SELECT entity.name FROM entity WHERE entity.name = 'something') WHERE entity.id = 2 ORDER BY entity.name");
+
+        $this->assertEqual($query->getQuery(),
+        "SELECT entity.name AS entity__name, entity.id AS entity__id FROM (SELECT entity.name FROM entity WHERE entity.name = 'something') WHERE entity.id = 2 ORDER BY entity.name");
+    }
 
 }
 ?>

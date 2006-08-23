@@ -4,7 +4,8 @@
  */
 class Doctrine_Connection_Firebird extends Doctrine_Connection {
     public function modifyLimitQuery($query,$limit,$offset) {
-        return preg_replace("/([\s(])*SELECT/i","\\1SELECT TOP($from, $count)", $query);
+        return preg_replace('/^([\s(])*SELECT(?!\s*FIRST\s*\d+)/i',
+                "SELECT FIRST $limit SKIP $offset", $query);
     }
     /**
      * returns the next value in the given sequence

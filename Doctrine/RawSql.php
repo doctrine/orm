@@ -74,7 +74,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
         $this->fields = $m[1];
         $this->clear();
 
-        $e = Doctrine_Query::bracketExplode($query,' ');
+        $e = Doctrine_Query::sqlExplode($query,' ');
 
         foreach($e as $k => $part):
             $low = strtolower($part);
