@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -29,7 +29,7 @@ require_once("Access.php");
  * @license     LGPL
  * @package     Doctrine
  */
- 
+
 abstract class Doctrine_Record extends Doctrine_Access implements Countable, IteratorAggregate, Serializable {
     /**
      * STATE CONSTANTS
@@ -271,7 +271,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
                         if($tmp[$name] !== self::$null) {
                             $value = unserialize($tmp[$name]);
-                            if($value === false) 
+                            if($value === false)
                                 throw new Doctrine_Exception("Unserialization of $name failed. ".var_dump($tmp[$name],true));
 
                             $this->data[$name] = $value;
@@ -312,7 +312,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             case Doctrine_Identifier::NORMAL:
                  $this->id   = array();
                  $name       = $this->table->getIdentifier();
-                 
+
                  if(isset($this->data[$name]) && $this->data[$name] !== self::$null)
                     $this->id[$name] = $this->data[$name];
             break;
@@ -618,19 +618,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $this->modified[]  = $name;
         }
     }
-    /**
-     * has
-     * method for checking existence of properties and Doctrine_Record references
-     *
-     * @param mixed $name               name of the property or reference
-     * @return boolean
-     */
-    public function has($name) {
-        if(isset($this->data[$name]) || isset($this->id[$name]))
-            return true;
 
-        return $this->table->hasForeignKey($name);
-    }
     /**
      * set
      * method for altering properties and Doctrine_Record references
@@ -825,6 +813,29 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function count() {
         return count($this->data);
+    }
+    /**
+     * alias for count()
+     */
+    public function getColumnCount() {
+        return $this->count();
+    }
+    /**
+     * checks if record has data
+     * @return boolean
+     */
+    public function exists() {
+        return $this->state !== Doctrine_Record::STATE_TCLEAN;
+    }
+    /**
+     * method for checking existence of properties and Doctrine_Record references
+     * @param mixed $name               name of the property or reference
+     * @return boolean
+     */
+    public function hasRelation($name) {
+        if(isset($this->data[$name]) || isset($this->id[$name]))
+            return true;
+        return $this->table->hasForeignKey($name);
     }
     /**
      * getIterator
@@ -1261,7 +1272,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $a[0] = $this->get($column);
 
             $newvalue = call_user_func_array($m, $a);
-            
+
             $this->data[$column] = $newvalue;
         }
         return $this;
