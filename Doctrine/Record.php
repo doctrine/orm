@@ -824,7 +824,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * checks if record has data
      * @return boolean
      */
-    public function exists() {
+    final public function exists() {
         return $this->state !== Doctrine_Record::STATE_TCLEAN;
     }
     /**
