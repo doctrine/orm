@@ -26,7 +26,7 @@ require_once("Hydrate.php");
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_Query extends Doctrine_Hydrate {
+class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
      */
@@ -50,7 +50,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
 		$where = $this->where;
 		$having = $this->having;
 		
-		$q = "SELECT COUNT(1) FROM ".$table->getComponentName()." ";
+		$q = "SELECT COUNT(1) FROM ".$table->getTableName()." ";
 		foreach($join as $j) {
 			$q .= implode(" ",$j);
 		}
