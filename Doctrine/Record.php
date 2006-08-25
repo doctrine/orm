@@ -270,12 +270,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case "object":
 
                         if($tmp[$name] !== self::$null) {
-                            if( ! is_array($tmp[$name] && ! is_object($tmp[$name]))
+                            if(is_string($tmp[$name])) {
                                 $value = unserialize($tmp[$name]);
-                            
-                            if($value === false)
-                                throw new Doctrine_Exception("Unserialization of $name failed. ".var_dump($tmp[$name],true));
 
+                                if($value === false)
+                                    throw new Doctrine_Exception("Unserialization of $name failed. ".var_dump($tmp[$name],true));
+                            } else
+                                $value = $tmp[$name];
+                                
                             $this->data[$name] = $value;
                         }
                     break;
