@@ -30,37 +30,39 @@ Doctrine::autoload('Doctrine_Access');
  */
 abstract class Doctrine_Hydrate extends Doctrine_Access {
     /**
-     * @var array $fetchmodes               an array containing all fetchmodes
+     * @var array $fetchmodes                   an array containing all fetchmodes
      */
     protected $fetchModes  = array();
     /**
-     * @var array $tables                   an array containing all the tables used in the query
+     * @var array $tables                       an array containing all the tables used in the query
      */
     protected $tables      = array();
     /**
-     * @var array $collections              an array containing all collections this parser has created/will create
+     * @var array $collections                  an array containing all collections this parser has created/will create
      */
     protected $collections = array();
     /**
-     * @var array $joins                    an array containing all table joins
+     * @var array $joins                        an array containing all table joins
      */
     protected $joins       = array();
     /**
-     * @var array $data                     fetched data
+     * @var array $data                         fetched data
      */
     protected $data        = array();
     /**
-     * @var Doctrine_Connection $connection       Doctrine_Connection object
+     * @var Doctrine_Connection $connection     Doctrine_Connection object
      */
     protected $connection;
     /**
-     * @var Doctrine_View $view             Doctrine_View object
+     * @var Doctrine_View $view                 Doctrine_View object
      */
     protected $view;
     
 
     protected $inheritanceApplied = false;
-
+    /**
+     * @var boolean $aggregate
+     */
     protected $aggregate  = false;
     /**
      * @var array $tableAliases
@@ -245,7 +247,13 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         else
             $query = $this->view->getSelectSql();
 
+        if($this->isLimitSubqueryUsed())
+            $params = array_merge($params, $params);
 
+        $stmt  = $this->connection->execute($query,$params);
+        
+        if($this->aggregate) 
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         switch(count($this->tables)):
             case 0:
@@ -256,8 +264,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
                 $name  = $this->tables[$keys[0]]->getComponentName();
 
-
-                $stmt  = $this->connection->execute($query,$params);
 
                 while($data = $stmt->fetch(PDO::FETCH_ASSOC)):
 
@@ -280,20 +286,18 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             default:
                 $keys  = array_keys($this->tables);
                 $root  = $keys[0];
-                
-                if($this->isLimitSubqueryUsed())
-                    $params = array_merge($params, $params);
-                
-
-                
-                $stmt  = $this->connection->execute($query,$params);
 
                 $previd = array();
 
                 $coll        = $this->getCollection($root);
                 $prev[$root] = $coll;
 
+                
+                if($this->aggregate) 
+                    $return = Doctrine::FETCH_ARRAY;
+
                 $array = $this->parseData($stmt);
+
 
                 if($return == Doctrine::FETCH_VHOLDER) {
                     return $this->hydrateHolders($array);

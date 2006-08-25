@@ -93,7 +93,13 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($coll->count(), 1);
     }
-
+    
+    
+    public function testDateTimeType() {
+        $date = new DateTest();
+                                           	
+                                       	
+    }
     public function testEnumType() {
         $enum = new EnumTest();
         $enum->status = "open";

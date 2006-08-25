@@ -24,16 +24,37 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
 
     }
-    /**
-    public function testQueryPart() {
-        $this->query->from[] = "User.Phonenumber";
-        $this->query->from[] = "User.Email";
+    public function testSelectingAggregateValues() {
+        $q = new Doctrine_Query();
+        $q->from("User(COUNT(1), MAX(name))");
+        $array = $q->execute();
+        $this->assertTrue(is_array($array));
+        $this->assertEqual($array, array(array('COUNT(1)' => '8', 'MAX(entity.name)' => 'zYne')));
+        $this->assertEqual($q->getQuery(), "SELECT COUNT(1), MAX(entity.name) FROM entity WHERE (entity.type = 0)");
 
-        $users = $this->query->execute();
+        $q = new Doctrine_Query();
+        $q->from("Phonenumber(COUNT(1))");
+        
+        $array = $q->execute();
+        $this->assertTrue(is_array($array));
+        $this->assertEqual($array, array(array('COUNT(1)' => '15')));
+        $this->assertEqual($q->getQuery(), "SELECT COUNT(1) FROM phonenumber");
 
-        $this->assertEqual($users->count(), 8);
+        $q = new Doctrine_Query();
+        $q->from("User.Phonenumber(COUNT(id))");
+        $array = $q->execute();
+        $this->assertTrue(is_array($array));
+
+        $this->assertEqual($array[0]['COUNT(phonenumber.id)'], 14);
+        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id, COUNT(phonenumber.id) FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0)");
+
+        $q = new Doctrine_Query();
+        $q->from("User(MAX(id)).Email(MIN(address))");
+        $array = $q->execute();
+        $this->assertTrue(is_array($array));
+
+
     }
-    */
 
     public function testMultipleFetching() {
         $count = $this->dbh->count();

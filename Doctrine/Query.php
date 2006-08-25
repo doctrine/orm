@@ -532,7 +532,19 @@ class Doctrine_Query extends Doctrine_Hydrate {
         }
         return $term;
     }
-
+    /**
+     * sqlExplode
+     *
+     * explodes a string into array using custom brackets and
+     * quote delimeters
+     *
+     * @param string $str
+     * @param string $d         the delimeter which explodes the string
+     * @param string $e1        the first bracket, usually '('
+     * @param string $e2        the second bracket, usually ')'
+     *
+     * @return array
+     */
     public static function sqlExplode($str,$d = " ",$e1 = '(',$e2 = ')') {
         $str = explode("$d",$str);
         $i = 0;
@@ -724,7 +736,7 @@ class Doctrine_Query extends Doctrine_Hydrate {
      * @param string $currPath
      * @return void
      */
-    final public function parseFields($fullName, $tableName, $exploded, $currPath) {
+    final public function parseFields($fullName, $tableName, array $exploded, $currPath) {
         $table = $this->tables[$tableName];
 
         $fields = array();
@@ -732,20 +744,71 @@ class Doctrine_Query extends Doctrine_Hydrate {
         if(strpos($fullName, "-") === false) {
             $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
 
-            if(isset($exploded[1]))
-                $fields = explode(",",substr($exploded[1],0,-1));
+            if(isset($exploded[1])) {
+                if(count($exploded) > 2) {
+                    $fields = $this->parseAggregateValues($fullName, $tableName, $exploded, $currPath);
+                } elseif(count($exploded) == 2) {
+                    $fields = explode(",",substr($exploded[1],0,-1));
+                }
+            }
+        } else {
+            if(isset($exploded[1])) {
+                $fetchmode = $this->parseFetchMode($exploded[1]);
+            } else
+                $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
 
-            } else {
-                if(isset($exploded[1])) {
-                    $fetchmode = $this->parseFetchMode($exploded[1]);
-                } else
-                    $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
+            if(isset($exploded[2])) {
+                if(substr_count($exploded[2], ")") > 1) {
 
-                if(isset($exploded[2]))
+                } else {
                     $fields = explode(",",substr($exploded[2],0,-1));
+                }
             }
 
+        }
+        if( ! $this->aggregate)
         $this->loadFields($table, $fetchmode, $fields, $currPath);
+    }
+    public function parseAggregateFunction($func,$reference) {
+        $pos = strpos($func,"(");
+
+        if($pos !== false) {
+            $funcs  = array();
+
+            $name   = substr($func, 0, $pos);
+            $func   = substr($func, ($pos + 1), -1);
+            $params = Doctrine_Query::bracketExplode($func, ",", "(", ")");
+
+            foreach($params as $k => $param) {
+                $params[$k] = $this->parseAggregateFunction($param,$reference);
+            }
+
+            $funcs = $name."(".implode(", ", $params).")";
+
+            return $funcs;
+
+        } else {
+            if( ! is_numeric($func)) {
+
+                $func = $this->getTableAlias($reference).".".$func;
+
+                return $func;
+            } else {
+                return $func;
+            }
+        }
+    }
+    final public function parseAggregateValues($fullName, $tableName, array $exploded, $currPath) {
+        $this->aggregate = true;
+        $pos    = strpos($fullName,"(");
+        $name   = substr($fullName, 0, $pos);
+        $string = substr($fullName, ($pos + 1), -1);
+
+        $exploded     = Doctrine_Query::bracketExplode($string, ',');
+        foreach($exploded as $k => $value) {
+            $exploded[$k] = $this->parseAggregateFunction($value, $currPath);
+            $this->parts["select"][] = $exploded[$k];
+        }
     }
 }
 ?>

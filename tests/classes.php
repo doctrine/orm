@@ -386,7 +386,11 @@ class Validator_Test extends Doctrine_Record {
         $this->hasColumn("myemail2", "string", 100, "email|notblank");
     }
 }
-
+class DateTest extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("date", "date", 20);                                    	
+    }
+}
  
 
 class Tag extends Doctrine_Record {
