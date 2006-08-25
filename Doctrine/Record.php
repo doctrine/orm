@@ -270,7 +270,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case "object":
 
                         if($tmp[$name] !== self::$null) {
-                            $value = unserialize($tmp[$name]);
+                            if( ! is_array($tmp[$name] && ! is_object($tmp[$name]))
+                                $value = unserialize($tmp[$name]);
+                            
                             if($value === false)
                                 throw new Doctrine_Exception("Unserialization of $name failed. ".var_dump($tmp[$name],true));
 
@@ -1242,6 +1244,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     final public function hasColumn($name, $type, $length = 20, $options = "") {
         $this->table->setColumn($name, $type, $length, $options);
+    }
+    /**
+     * countRelated
+     */
+    public function countRelated($name) {
+        $rel   = $this->table->getForeignKey($name);
+        $componentName = $rel->getTable()->getTableName();
+
+        return $rel->getCountFor($this);
     }
     /**
      * merge
