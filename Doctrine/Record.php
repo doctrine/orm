@@ -1262,12 +1262,17 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * countRelated
+     *
+     * @return integer
      */
     public function countRelated($name) {
-        $rel   = $this->table->getForeignKey($name);
-        $componentName = $rel->getTable()->getTableName();
-
-        return $rel->getCountFor($this);
+        $rel            = $this->table->getForeignKey($name);
+        $componentName  = $rel->getTable()->getComponentName();
+        $alias          = $rel->getTable()->getAlias(get_class($this));
+        $query          = new Doctrine_Query();
+        $query->from($componentName. '(' . 'COUNT(1)' . ')')->where($componentName. '.' .$alias. '.' . $this->getTable()->getIdentifier(). ' = ?');
+        $array = $query->execute(array($this->getIncremented()));
+        return $array[0]['COUNT(1)'];
     }
     /**
      * merge

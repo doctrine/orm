@@ -97,6 +97,9 @@ class Phonenumber extends Doctrine_Record {
         $this->hasColumn("phonenumber","string",20);
         $this->hasColumn("entity_id","integer");
     }
+    public function setUp() {
+        $this->hasOne("Entity", "Phonenumber.entity_id");                        	
+    }
 }
 
 class Element extends Doctrine_Record {

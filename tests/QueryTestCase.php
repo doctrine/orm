@@ -25,6 +25,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
     }
     public function testSelectingAggregateValues() {
+
         $q = new Doctrine_Query();
         $q->from("User(COUNT(1), MAX(name))");
         $array = $q->execute();
@@ -34,7 +35,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $q = new Doctrine_Query();
         $q->from("Phonenumber(COUNT(1))");
-        
+
         $array = $q->execute();
         $this->assertTrue(is_array($array));
         $this->assertEqual($array, array(array('COUNT(1)' => '15')));
@@ -52,9 +53,19 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $q->from("User(MAX(id)).Email(MIN(address))");
         $array = $q->execute();
         $this->assertTrue(is_array($array));
+        $this->assertEqual($array[0]['MAX(entity.id)'], 11);
+        $this->assertEqual($array[0]['MIN(email.address)'], 'arnold@example.com');
 
+        $q = new Doctrine_Query();
+        $q->from("User(MAX(id)).Email(MIN(address)), User.Phonenumber(COUNT(1))");
+        $array = $q->execute();
+        $this->assertTrue(is_array($array));
 
+        $this->assertEqual($array[0]['MAX(entity.id)'], 11);
+        $this->assertEqual($array[0]['MIN(email.address)'], 'arnold@example.com');
+        $this->assertEqual($array[0]['COUNT(1)'], 14);
     }
+
 
     public function testMultipleFetching() {
         $count = $this->dbh->count();
@@ -1213,6 +1224,5 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
-
 }
 ?>

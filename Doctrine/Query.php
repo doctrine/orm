@@ -713,7 +713,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 if( ! isset($this->tables[$tableName])) {
                     $this->tables[$tableName] = $table;
 
-                    if($loadFields && ! $this->aggregate) {
+                    if($loadFields) {
                         $this->parseFields($fullname, $tableName, $e2, $currPath);
                     }
                 }
@@ -767,7 +767,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         }
         if( ! $this->aggregate)
-        $this->loadFields($table, $fetchmode, $fields, $currPath);
+            $this->loadFields($table, $fetchmode, $fields, $currPath);
     }
     public function parseAggregateFunction($func,$reference) {
         $pos = strpos($func,"(");

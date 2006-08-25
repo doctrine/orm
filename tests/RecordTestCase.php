@@ -93,6 +93,22 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($coll->count(), 1);
     }
+    public function testCountRelated() {
+        $user = $this->connection->getTable('Entity')->find(5);
+        $c = $user->countRelated('Phonenumber');
+
+        $this->assertEqual($c, 3);
+        
+        $user = $this->connection->getTable('Entity')->find(7);
+        $c = $user->countRelated('Phonenumber');
+
+        $this->assertEqual($c, 1);
+
+        $user = $this->connection->getTable('Entity')->find(8);
+        $c = $user->countRelated('Phonenumber');
+
+        $this->assertEqual($c, 3);
+    }
     public function testUpdatingWithNullValue() {
         $user = $this->connection->getTable('User')->find(5);
         $user->name = null;
