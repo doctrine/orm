@@ -93,11 +93,25 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($coll->count(), 1);
     }
-    
+    public function testUpdatingWithNullValue() {
+        $user = $this->connection->getTable('User')->find(5);
+        $user->name = null;
+        $this->assertEqual($user->name, null);
+
+        $user->save();
+
+        $this->assertEqual($user->name, null);
+        
+        $this->connection->clear();
+
+        $user = $this->connection->getTable('User')->find(5);
+        $this->assertEqual($user->name, null);
+
+    }
     
     public function testDateTimeType() {
         $date = new DateTest();
-                                           	
+
                                        	
     }
     public function testEnumType() {

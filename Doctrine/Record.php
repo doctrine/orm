@@ -277,7 +277,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                                     throw new Doctrine_Exception("Unserialization of $name failed. ".var_dump($tmp[$name],true));
                             } else
                                 $value = $tmp[$name];
-                                
+
                             $this->data[$name] = $value;
                         }
                     break;
@@ -586,6 +586,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param mixed $value
      */
     final public function internalSet($name, $value) {
+        if($value === null)
+            $value = self::$null;
+
         $this->data[$name] = $value;
     }
     /**
@@ -618,6 +621,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if($this->state == Doctrine_Record::STATE_TCLEAN)
                 $this->state = Doctrine_Record::STATE_TDIRTY;
 
+            if($value === null)
+                $value = self::$null;
+
             $this->data[$name] = $value;
             $this->modified[]  = $name;
         }
@@ -646,6 +652,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $old = $this->get($name);
 
             if($old !== $value) {
+                if($value === null)
+                    $value = self::$null;
+
                 $this->data[$name] = $value;
                 $this->modified[]  = $name;
                 switch($this->state):
@@ -796,8 +805,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if($this->data[$v] instanceof Doctrine_Record) {
                 $this->data[$v] = $this->data[$v]->getIncremented();
             }
+    
+            if($this->data[$v] === self::$null)
+                $a[$v] = null;
+            else
+                $a[$v] = $this->data[$v];
 
-            $a[$v] = $this->data[$v];
         }
 
         foreach($this->table->getInheritanceMap() as $k => $v) {
