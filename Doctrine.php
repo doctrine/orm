@@ -368,24 +368,14 @@ final class Doctrine {
                 throw new Doctrine_Exception("Couldn't compile $file. File $file does not exists.");
 
             self::autoload($class);
-            $refl  = new ReflectionClass($class);
-            $lines = file($file);
+            $refl  = new ReflectionClass ( $class );
+            $lines = file( $file );
 
-            $start = $refl->getStartLine() - 1;
-            $end   = $refl->getEndLine() - 2;
+            $ret = array_merge($ret,
+			         array_slice($lines,
+						$refl -> getStartLine() - 1,
+						$refl -> getEndLine()   - 2));
 
-            $i = 0;
-            while($i < count($lines)) {
-                $i++;
-
-                if($i < $start)
-                    continue;
-
-                $ret[] = $lines[$i];
-
-                if($i > $end)
-                    break;
-            }
         }
 
 
