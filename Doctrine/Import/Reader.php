@@ -30,11 +30,11 @@
 
 
 /**
- * class Doctrine_Schema
- * Holds information on one to many databases
+ * class Doctrine_Import_Reader
+ * Is responsible of reading a database definitions from a source and costructing a
+ * database schema
  */
-class Doctrine_Schema extends Doctrine_Schema_Object
-            implements Countable, IteratorAggregate
+abstract class Doctrine_Import_Reader
 {
 
     /** Aggregations: */
@@ -43,43 +43,18 @@ class Doctrine_Schema extends Doctrine_Schema_Object
 
      /*** Attributes: ***/
 
-    /**
-     * Holds any number of databases contained in the schema
-     * @access private
-     */
-    private $childs;
-
 
     /**
      *
-     * @param Doctrine_Schema_Database database      * @return 
+     * @return Doctrine_Schema
+     * @abstract
      * @access public
      */
-    public function addDatabase( $database ) {
-        
-    } // end of member function addDatabase
-
-    /**
-     *
-     * @return 
-     * @access public
-     */
-    public function __toString( ) {
-        
-    } // end of member function __toString
-
-    /**
-     *
-     * @return bool
-     * @access public
-     */
-    public function isValid( ) {
-        
-    } // end of member function isValid
+    abstract public function read( );
 
 
 
 
 
-} // end of Doctrine_Schema
-
+} // end of Doctrine_Import_Reader
+?>

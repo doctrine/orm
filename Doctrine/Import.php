@@ -30,11 +30,12 @@
 
 
 /**
- * class Doctrine_Schema
- * Holds information on one to many databases
+ * class Doctrine_Import
+ * Main responsible of performing import operation. Delegates database schema
+ * reading to a reader object and passes the result to a builder object which
+ * builds a Doctrine data model.
  */
-class Doctrine_Schema extends Doctrine_Schema_Object
-            implements Countable, IteratorAggregate
+class Doctrine_Import
 {
 
     /** Aggregations: */
@@ -44,42 +45,46 @@ class Doctrine_Schema extends Doctrine_Schema_Object
      /*** Attributes: ***/
 
     /**
-     * Holds any number of databases contained in the schema
      * @access private
      */
-    private $childs;
-
+    private $reader;
 
     /**
-     *
-     * @param Doctrine_Schema_Database database      * @return 
-     * @access public
+     * @access private
      */
-    public function addDatabase( $database ) {
-        
-    } // end of member function addDatabase
+    private $builder;
+
 
     /**
      *
      * @return 
      * @access public
      */
-    public function __toString( ) {
+    public function import( ) {
         
-    } // end of member function __toString
+    } // end of member function import
 
     /**
      *
-     * @return bool
+     * @param Doctrine_Import_Reader reader      * @return 
      * @access public
      */
-    public function isValid( ) {
+    public function setReader( $reader ) {
         
-    } // end of member function isValid
+    } // end of member function setReader
+
+    /**
+     *
+     * @param Doctrine_Import_Builder builder      * @return 
+     * @access public
+     */
+    public function setBuilder( $builder ) {
+        
+    } // end of member function setBuilder
 
 
 
 
 
-} // end of Doctrine_Schema
-
+} // end of Doctrine_Import
+?>

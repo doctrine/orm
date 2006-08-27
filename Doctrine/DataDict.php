@@ -109,6 +109,23 @@ class Doctrine_DataDict {
                 throw new Doctrine_Exception("Unknown column type $type");
         endswitch;
     }
+    
+    /**
+     * Converts native database column type to doctrine data type     
+     * 
+     * @param string $column            column type
+     * @param integer $length           column length
+     * @param string $dbType            Database driver name as returned by PDO::getAttribute(PDO::ATTR_DRIVER_NAME)
+     * @param string $dbVersion         Database server version as return by PDO::getAttribute(PDO::ATTR_SERVER_VERSION)
+     * @return array of doctrine column type and column length. In future may also return a validator name.
+     * @throws Doctrine_Exception on unknown column type
+     * @author Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
+     */
+    public static function getDoctrineType($colType,$colLength, $dbType = null, $dbVersion = null) 
+    {
+    	return array($colType, $colLength); /* @todo FIXME i am incomplete*/
+    }    
+    
     /**
      * checks for valid class name (uses camel case and underscores)
      *
@@ -121,4 +138,4 @@ class Doctrine_DataDict {
         return true;
     }
 }
-?>
+

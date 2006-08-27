@@ -128,4 +128,4 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object
 
 
 } // end of Doctrine_Schema_Database
-?>
+

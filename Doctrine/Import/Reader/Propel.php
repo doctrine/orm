@@ -30,11 +30,9 @@
 
 
 /**
- * class Doctrine_Schema
- * Holds information on one to many databases
+ * class Doctrine_Import_Reader_Xml_Propel
  */
-class Doctrine_Schema extends Doctrine_Schema_Object
-            implements Countable, IteratorAggregate
+class Doctrine_Import_Reader_Xml_Propel extends Doctrine_Import_Reader
 {
 
     /** Aggregations: */
@@ -44,42 +42,23 @@ class Doctrine_Schema extends Doctrine_Schema_Object
      /*** Attributes: ***/
 
     /**
-     * Holds any number of databases contained in the schema
      * @access private
      */
-    private $childs;
+    private $xml;
 
 
     /**
      *
-     * @param Doctrine_Schema_Database database      * @return 
+     * @param string xml      * @return 
      * @access public
      */
-    public function addDatabase( $database ) {
+    public function setXml( $xml ) {
         
-    } // end of member function addDatabase
-
-    /**
-     *
-     * @return 
-     * @access public
-     */
-    public function __toString( ) {
-        
-    } // end of member function __toString
-
-    /**
-     *
-     * @return bool
-     * @access public
-     */
-    public function isValid( ) {
-        
-    } // end of member function isValid
+    } // end of member function setXml
 
 
 
 
 
-} // end of Doctrine_Schema
-
+} // end of Doctrine_Import_Reader_Xml_Propel
+?>

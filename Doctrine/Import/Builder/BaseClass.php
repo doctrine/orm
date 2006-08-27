@@ -30,11 +30,10 @@
 
 
 /**
- * class Doctrine_Schema
- * Holds information on one to many databases
+ * class Doctrine_Import_Builder_BaseClass
+ * Builds a Doctrine_Record base class definition based on a schema.
  */
-class Doctrine_Schema extends Doctrine_Schema_Object
-            implements Countable, IteratorAggregate
+class Doctrine_Import_Builder_BaseClass extends Doctrine_Import_Builder
 {
 
     /** Aggregations: */
@@ -43,43 +42,42 @@ class Doctrine_Schema extends Doctrine_Schema_Object
 
      /*** Attributes: ***/
 
-    /**
-     * Holds any number of databases contained in the schema
-     * @access private
-     */
-    private $childs;
+    private $path = '';
+    private $suffix = '.php';
 
 
     /**
      *
-     * @param Doctrine_Schema_Database database      * @return 
-     * @access public
-     */
-    public function addDatabase( $database ) {
-        
-    } // end of member function addDatabase
-
-    /**
-     *
+     * @param string path      
      * @return 
      * @access public
      */
-    public function __toString( ) {
-        
-    } // end of member function __toString
+    public function setOutputPath( $path ) {
+        $this->path = $path;
+    } // end of member function setOuputPath
 
     /**
      *
-     * @return bool
+     * @param string path      
+     * @return 
      * @access public
      */
-    public function isValid( ) {
-        
-    } // end of member function isValid
+    public function setFileSuffix( $suffix ) {
+        $this->suffix = $suffix;
+    } // end of member function setOuputPath
 
 
+    /**
+     *
+     * @param Doctrine_Schema schema      
+     * @return 
+     * @access public
+     * @throws Doctrine_Import_Exception
+     */
+    public function build(Doctrine_Schema $schema )
+    {
+    	/* @todo FIXME i am incomplete*/
+    }
 
-
-
-} // end of Doctrine_Schema
+} // end of Doctrine_Import_Builder_BaseClass
 
