@@ -205,9 +205,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                         }
                 endswitch;
 
-                 if(Doctrine_DataDict::isValidClassname($class->getName()) && $this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
-                    $dict      = new Doctrine_DataDict($this->getConnection()->getDBH());
-                    $dict->createTable($this->tableName, $this->columns);
+                 if($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
+                    if(Doctrine_DataDict::isValidClassname($class->getName())) {
+                        $dict      = new Doctrine_DataDict($this->getConnection()->getDBH());
+                        $dict->createTable($this->tableName, $this->columns);
+                    }
                 }
 
             }

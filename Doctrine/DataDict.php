@@ -134,7 +134,7 @@ class Doctrine_DataDict {
      */
     public static function isValidClassname($classname) {
         if(preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname))
-            throw new Doctrine_Exception("Class name is not valid. use camel case and underscores (i.e My_PerfectClass).");
+            throw new Doctrine_Exception("Class name is not valid. Use camel case and underscores (i.e My_PerfectClass).");
         return true;
     }
 }
