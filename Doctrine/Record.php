@@ -1263,6 +1263,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * countRelated
      *
+     * @param string $name      the name of the related component
      * @return integer
      */
     public function countRelated($name) {

@@ -1,3 +1,4 @@
-The installation of doctrine is very easy. Just extract doctrine.*.zip into your www folder.
+The installation of doctrine is very easy. Just get the latest revision of Doctrine from
+http://doctrine.pengus.net/svn/trunk. 
 <br \><br \>
-In the beginning of your every script you can put:
+You need a SVN(Subversion) client for downloading Doctrine.

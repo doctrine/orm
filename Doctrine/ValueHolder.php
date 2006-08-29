@@ -45,7 +45,7 @@ class Doctrine_ValueHolder extends Doctrine_Access implements Countable {
 
     public function get($name) {
         if( ! isset($this->data[$name]))
-            throw new InvalidKeyException("Unknown property $name.");
+            throw new Doctrine_Exception("Unknown property $name.");
 
         return $this->data[$name];
     }

@@ -1,5 +1,5 @@
 <?php
-require_once("path-to-doctrine/Doctrine.class.php");
+require_once("path-to-doctrine/Doctrine.php");
 
 // autoloading objects
 
@@ -7,7 +7,8 @@ function __autoload($class) {
     Doctrine::autoload($class);
 }
 
-// loading all components
+// registering an autoload function, useful when multiple
+// frameworks are using __autoload()
 
-Doctrine::loadAll();
+spl_autoload_register(array('Doctrine', 'autoload'));
 ?>

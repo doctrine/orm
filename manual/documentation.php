@@ -275,6 +275,10 @@ $menu = array("Getting started" =>
                                         "OffsetIterator")
                         */
                     ),
+           "DQL (Doctrine Query Language)" => 
+                            array(
+                            
+                                ),
            "Transactions" => array(
                         "Introduction",
                         "Unit of work",
