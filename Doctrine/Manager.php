@@ -79,10 +79,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         if( ! $init) {
             $init = true;
             $attributes = array(
-                        Doctrine::ATTR_CACHE_DIR        => "%ROOT%".DIRECTORY_SEPARATOR."cachedir",
                         Doctrine::ATTR_FETCHMODE        => Doctrine::FETCH_IMMEDIATE,
-                        Doctrine::ATTR_CACHE_TTL        => 100,
-                        Doctrine::ATTR_CACHE_SIZE       => 100,
                         Doctrine::ATTR_CACHE            => Doctrine::CACHE_NONE,
                         Doctrine::ATTR_BATCH_SIZE       => 5,
                         Doctrine::ATTR_COLL_LIMIT       => 5,
@@ -91,7 +88,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_PK_TYPE          => Doctrine::INCREMENT_KEY,
                         Doctrine::ATTR_LOCKMODE         => 1,
                         Doctrine::ATTR_VLD              => false,
-                        Doctrine::ATTR_CREATE_TABLES    => true
+                        Doctrine::ATTR_CREATE_TABLES    => true,
+                        Doctrine::ATTR_QUERY_LIMIT      => Doctrine::LIMIT_RECORDS
                         );
             foreach($attributes as $attribute => $value) {
                 $old = $this->getAttribute($attribute);

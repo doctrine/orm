@@ -189,6 +189,20 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 3);
     }
+    public function testLimitAttribute() {
+        $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_ROWS);
+        
+        $this->connection->clear();
+        $q = new Doctrine_Query();
+        $q->from("User")->where("User.Group.id = ?")->orderby("User.id DESC")->limit(5);
+        $users = $q->execute(array(3));
+
+        $this->assertEqual($users->count(), 3);
+        
+        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id WHERE entity2.id = ? AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL)) ORDER BY entity.id DESC LIMIT 5");
+
+        $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_RECORDS);
+    }
     public function testLimitWithNormalManyToMany() {
         $coll = new Doctrine_Collection($this->connection->getTable("Photo"));
         $tag = new Tag();

@@ -149,6 +149,25 @@ final class Doctrine {
      * collection limit attribute
      */
     const ATTR_COLL_LIMIT       = 16;
+    /**
+     * query limit
+     */
+    const ATTR_QUERY_LIMIT      = 17;
+    
+    
+    /**
+     * LIMIT CONSTANTS
+     */
+    
+    /**
+     * constant for row limiting
+     */
+    const LIMIT_ROWS       = 1;
+    /**
+     * constant for record limiting
+     */
+    const LIMIT_RECORDS    = 2;
+
 
 
 
@@ -312,10 +331,10 @@ final class Doctrine {
         }
     }
     /**
-     * method for making a single file of most used doctrine components
+     * method for making a single file of most used doctrine runtime components
      *
      * including the compiled file instead of multiple files (in worst
-     * cases dozens of files) can improve performance by order of magnitude
+     * cases dozens of files) can improve performance by an order of magnitude
      *
      * @throws Doctrine_Exception
      * @return void

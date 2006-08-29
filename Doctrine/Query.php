@@ -263,8 +263,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         $needsSubQuery = false;
         $subquery = '';
+        $k  = array_keys($this->tables);
+        $table = $this->tables[$k[0]];
 
-        if( ! empty($this->parts['limit']) && $this->needsSubquery) {
+        if( ! empty($this->parts['limit']) && $this->needsSubquery && $table->getAttribute(Doctrine::ATTR_QUERY_LIMIT) == Doctrine::LIMIT_RECORDS) {
             $needsSubQuery = true;
             $this->limitSubqueryUsed = true;
         }
@@ -277,8 +279,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             $a[] = $tname;
         }
         $q .= implode(", ",$a);
-        $k  = array_keys($this->tables);
-        $table = $this->tables[$k[0]];
 
         if($needsSubQuery)
             $subquery = 'SELECT DISTINCT '.$table->getTableName().".".$table->getIdentifier().
@@ -317,15 +317,16 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             $subquery .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
         }
 
-        $modifyLimit = false;
+        $modifyLimit = true;
         if( ! empty($this->parts["limit"]) || ! empty($this->parts["offset"])) {
+
             if($needsSubQuery) {
                 $subquery = $this->connection->modifyLimitQuery($subquery,$this->parts["limit"],$this->parts["offset"]);
     
                 $field    = $table->getTableName().'.'.$table->getIdentifier();
                 array_unshift($this->parts['where'], $field.' IN ('.$subquery.')');
-            } else
-                $modifyLimit = true;
+                $modifyLimit = false;
+            }   
         }
 
         $q .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';

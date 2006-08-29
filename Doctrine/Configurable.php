@@ -120,7 +120,8 @@ abstract class Doctrine_Configurable {
 
             break;
             case Doctrine::ATTR_VLD:
-            
+            case Doctrine::ATTR_QUERY_LIMIT:
+
             break;
             case Doctrine::ATTR_CACHE:
                 if($value != Doctrine::CACHE_SQLITE && $value != Doctrine::CACHE_NONE)
@@ -154,7 +155,7 @@ abstract class Doctrine_Configurable {
     final public function getAttribute($attribute) {
         $attribute = (int) $attribute;
 
-        if($attribute < 1 || $attribute > 16)
+        if($attribute < 1 || $attribute > 17)
             throw new InvalidKeyException();
 
         if( ! isset($this->attributes[$attribute])) {
