@@ -7,7 +7,7 @@ $query->parseQuery("SELECT {entity.*}, {phonenumber.*}
                    ON phonenumber.entity_id = entity.id");
 
 $query->addComponent("entity", "Entity");
-$query->addComponent("phonenumber", "Phonenumber");
+$query->addComponent("phonenumber", "Entity.Phonenumber");
 
 $entities = $query->execute();
 ?>
