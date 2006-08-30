@@ -11,6 +11,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      */
     public function __construct(Doctrine_Manager $manager,PDO $pdo) {
         $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+        $this->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_ROWS);
         parent::__construct($manager,$pdo);
     }
     /**
