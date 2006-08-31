@@ -293,7 +293,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 $prev[$root] = $coll;
 
                 
-                if($this->aggregate) 
+                if($this->aggregate)
                     $return = Doctrine::FETCH_ARRAY;
 
                 $array = $this->parseData($stmt);
@@ -341,7 +341,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                             $tmp     = explode(".", $path);
                             $alias   = end($tmp);
                             unset($tmp);
-                            $fk      = $this->tables[$pointer]->getForeignKey($alias);
+                            $fk      = $this->tables[$pointer]->getRelation($alias);
 
                             if( ! isset($prev[$pointer]) )
                                 continue;
@@ -389,7 +389,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                 $tmp     = explode(".", $path);
                                 $alias   = end($tmp);
                                 unset($tmp);
-                                $fk      = $this->tables[$pointer]->getForeignKey($alias);
+                                $fk      = $this->tables[$pointer]->getRelation($alias);
                                 $last    = $prev[$pointer]->getLast();
 
                                 switch($fk->getType()):

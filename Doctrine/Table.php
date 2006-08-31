@@ -363,7 +363,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         $name  = $this->getComponentName();
         foreach($this->bound as $k=>$a) {
             try {
-            $fk = $this->getForeignKey($k);
+            $fk = $this->getRelation($k);
             switch($fk->getType()):
                 case Doctrine_Relation::ONE_COMPOSITE:
                 case Doctrine_Relation::MANY_COMPOSITE:
@@ -540,7 +540,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $name              component name of which a foreign key object is bound
      * @return Doctrine_Relation
      */
-    final public function getForeignKey($name) {
+    final public function getRelation($name) {
         $original = $name;
 
         if(isset($this->relations[$name]))
@@ -624,10 +624,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return array
      */
-    final public function getForeignKeys() {
+    final public function getRelations() {
         $a = array();
         foreach($this->bound as $k=>$v) {
-            $this->getForeignKey($k);
+            $this->getRelation($k);
         }
 
         return $this->relations;

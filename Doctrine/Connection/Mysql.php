@@ -13,7 +13,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
         $this->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_ROWS);
         parent::__construct($manager,$pdo);
-    }
+    }    
     /**
      * deletes all data access object from the collection
      * @param Doctrine_Collection $coll
@@ -24,7 +24,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         $a   = $coll->getTable()->getCompositePaths();
         $a   = array_merge(array($coll->getTable()->getComponentName()),$a);
 
-        $graph = new Doctrine_DQL_Parser($this);
+        $graph = new Doctrine_Query();
         foreach($coll as $k=>$record) {
             switch($record->getState()):
                 case Doctrine_Record::STATE_DIRTY:
@@ -44,7 +44,6 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         return $ids;
     }
     */
-
     /**
      * returns maximum identifier values
      *

@@ -158,14 +158,21 @@ class Doctrine_Validator {
                 $err[$key] = Doctrine_Validator::ERR_LENGTH;
                 continue;
             }
+            if( ! is_array($column[2]))
+                $e = explode("|",$column[2]);
+            else
+                $e = $column[2];
 
-            $e = explode("|",$column[2]);
 
             foreach($e as $k => $arg) {
                 if(empty($arg) || $arg == "primary" || $arg == "protected" || $arg == "autoincrement")
                     continue;
 
-                $args = explode(":",$arg);
+                if( ! is_integer($k)) {
+                    $args = $arg;
+                } else
+                    $args = explode(":",$arg);
+                
                 if( ! isset($args[1])) 
                     $args[1] = '';
 

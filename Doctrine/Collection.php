@@ -540,7 +540,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             return $query;
         }
 
-        $rel     = $this->table->getForeignKey($name);
+        $rel     = $this->table->getRelation($name);
         $table   = $rel->getTable();
         $foreign = $rel->getForeign();
         $local   = $rel->getLocal();
@@ -570,7 +570,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @return void
      */
     public function populateRelated($name, Doctrine_Collection $coll) {
-        $rel     = $this->table->getForeignKey($name);
+        $rel     = $this->table->getRelation($name);
         $table   = $rel->getTable();
         $foreign = $rel->getForeign();
         $local   = $rel->getLocal();

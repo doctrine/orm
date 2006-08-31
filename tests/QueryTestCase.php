@@ -874,14 +874,14 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         $board = new Forum_Board();
         $table = $board->getTable();
-        $fk    = $table->getForeignKey("Threads");
+        $fk    = $table->getRelation("Threads");
 
         $this->assertEqual($table->getComponentName(), "Forum_Board");
         $this->assertTrue($fk instanceof Doctrine_ForeignKey);
         $this->assertEqual($fk->getTable()->getComponentName(), "Forum_Thread");
 
         $entry = new Forum_Entry();
-        $this->assertTrue($entry->getTable()->getForeignKey("Thread") instanceof Doctrine_LocalKey);
+        $this->assertTrue($entry->getTable()->getRelation("Thread") instanceof Doctrine_LocalKey);
 
         $board->name = "Doctrine Forum";
 

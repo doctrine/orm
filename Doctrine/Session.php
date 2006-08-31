@@ -270,7 +270,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 //print "$k -- adding <b>$nm</b>...<br \>";
             }
 
-            $rels = $table->getForeignKeys();
+            $rels = $table->getRelations();
             
             // group relations
             
@@ -715,7 +715,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
     final public function saveRelated(Doctrine_Record $record) {
         $saveLater = array();
         foreach($record->getReferences() as $k=>$v) {
-            $fk = $record->getTable()->getForeignKey($k);
+            $fk = $record->getTable()->getRelation($k);
             if($fk instanceof Doctrine_ForeignKey ||
                $fk instanceof Doctrine_LocalKey) {
                 switch($fk->getType()):
@@ -849,7 +849,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
      * @return void
      */
     final public function deleteComposites(Doctrine_Record $record) {
-        foreach($record->getTable()->getForeignKeys() as $fk) {
+        foreach($record->getTable()->getRelations() as $fk) {
             switch($fk->getType()):
                 case Doctrine_Relation::ONE_COMPOSITE:
                 case Doctrine_Relation::MANY_COMPOSITE:

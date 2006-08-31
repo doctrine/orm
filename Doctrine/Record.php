@@ -670,7 +670,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         } else {
             // if not found, throws InvalidKeyException
 
-            $fk = $this->table->getForeignKey($name);
+            $fk = $this->table->getRelation($name);
 
             // one-to-many or one-to-one relation
             if($fk instanceof Doctrine_ForeignKey ||
@@ -869,7 +869,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function saveAssociations() {
-        foreach($this->table->getForeignKeys() as $fk):
+        foreach($this->table->getRelations() as $fk):
             $table   = $fk->getTable();
             $name    = $table->getComponentName();
             $alias   = $this->table->getAlias($name);
@@ -1094,7 +1094,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     final public function loadReference($name) {
 
-        $fk      = $this->table->getForeignKey($name);
+        $fk      = $this->table->getRelation($name);
         $table   = $fk->getTable();
 
         $local   = $fk->getLocal();
@@ -1267,7 +1267,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return integer
      */
     public function countRelated($name) {
-        $rel            = $this->table->getForeignKey($name);
+        $rel            = $this->table->getRelation($name);
         $componentName  = $rel->getTable()->getComponentName();
         $alias          = $rel->getTable()->getAlias(get_class($this));
         $query          = new Doctrine_Query();

@@ -326,7 +326,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $field    = $table->getTableName().'.'.$table->getIdentifier();
                 array_unshift($this->parts['where'], $field.' IN ('.$subquery.')');
                 $modifyLimit = false;
-            }   
+            }
         }
 
         $q .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';
@@ -649,7 +649,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                         $tname = $table->getTableName();
 
 
-                    $fk       = $table->getForeignKey($name);
+                    $fk       = $table->getRelation($name);
                     $name     = $fk->getTable()->getComponentName();
                     $original = $fk->getTable()->getTableName();
 

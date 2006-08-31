@@ -9,14 +9,14 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         $table = $this->connection->getTable("User");
     }
     public function testGetForeignKey() {
-        $fk = $this->objTable->getForeignKey("Group");
+        $fk = $this->objTable->getRelation("Group");
         $this->assertTrue($fk instanceof Doctrine_Association);
         $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
         $this->assertTrue($fk->getType() == Doctrine_Relation::MANY_AGGREGATE);
         $this->assertTrue($fk->getLocal() == "user_id");
         $this->assertTrue($fk->getForeign() == "group_id");
 
-        $fk = $this->objTable->getForeignKey("Email");
+        $fk = $this->objTable->getRelation("Email");
         $this->assertTrue($fk instanceof Doctrine_LocalKey);
         $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
         $this->assertTrue($fk->getType() == Doctrine_Relation::ONE_COMPOSITE);
@@ -24,7 +24,7 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($fk->getForeign() == $fk->getTable()->getIdentifier());
 
 
-        $fk = $this->objTable->getForeignKey("Phonenumber");
+        $fk = $this->objTable->getRelation("Phonenumber");
         $this->assertTrue($fk instanceof Doctrine_ForeignKey);
         $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
         $this->assertTrue($fk->getType() == Doctrine_Relation::MANY_COMPOSITE);

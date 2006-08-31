@@ -369,7 +369,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
     public function testTreeStructure() {
         $e = new Element();
 
-        $fk = $e->getTable()->getForeignKey("Child");
+        $fk = $e->getTable()->getRelation("Child");
         $this->assertTrue($fk instanceof Doctrine_ForeignKey);
         $this->assertEqual($fk->getType(), Doctrine_Relation::MANY_AGGREGATE);
         $this->assertEqual($fk->getForeign(), "parent_id");
@@ -438,7 +438,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($e2->message, "user error2");
         
 
-        $fk = $e->getTable()->getForeignKey("Description");
+        $fk = $e->getTable()->getRelation("Description");
         $this->assertTrue($fk instanceof Doctrine_ForeignKey);
         $this->assertEqual($fk->getLocal(),"file_md5");
         $this->assertEqual($fk->getForeign(),"file_md5");
@@ -756,7 +756,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         // ACCESSING ASSOCIATION OBJECT PROPERTIES
 
         $user = new User();
-        $this->assertTrue($user->getTable()->getForeignKey("Groupuser") instanceof Doctrine_ForeignKey);
+        $this->assertTrue($user->getTable()->getRelation("Groupuser") instanceof Doctrine_ForeignKey);
         $this->assertTrue($user->Groupuser instanceof Doctrine_Collection);
         $this->assertTrue($user->Groupuser[0] instanceof Groupuser);
         
