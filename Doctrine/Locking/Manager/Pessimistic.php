@@ -37,10 +37,10 @@ class Doctrine_Locking_Manager_Pessimistic
         if($this->_dataSource->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true)
         {
             $columns = array();
-            $columns['object_type']        = array('string', 50, 'notnull|primary');
-            $columns['object_key']         = array('string', 250, 'notnull|primary');
-            $columns['user_ident']         = array('string', 50, 'notnull');
-            $columns['timestamp_obtained'] = array('integer', 10, 'notnull');
+            $columns['object_type']        = array('string', 50, array('notnull','primary'));
+            $columns['object_key']         = array('string', 250, array('notnull','primary'));
+            $columns['user_ident']         = array('string', 50, array('notnull'));
+            $columns['timestamp_obtained'] = array('integer', 10, array('notnull'));
             
             $dataDict = new Doctrine_DataDict($this->_dataSource->getDBH());
             $dataDict->createTable($this->_lockTable, $columns);

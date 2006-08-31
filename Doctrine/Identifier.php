@@ -1,10 +1,6 @@
 <?php
 class Doctrine_Identifier {
     /**
-     * constant for unique identifier
-     */
-    const UNIQUE         = 0;
-    /**
      * constant for auto_increment identifier
      */
     const AUTO_INCREMENT = 1;

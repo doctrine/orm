@@ -1,4 +1,23 @@
 <?php
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.com>.
+ */
 require_once("Exception/Find.class.php");
 require_once("Exception/Mapping.class.php");
 require_once("Exception/PrimaryKey.class.php");
@@ -158,7 +177,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                 switch(count($this->primaryKeys)):
                     case 0:
-                        $this->columns = array_merge(array("id" => array("integer",11,"autoincrement|primary")), $this->columns);
+                        $this->columns = array_merge(array("id" => array("integer",11, array("autoincrement", "primary"))), $this->columns);
                         $this->primaryKeys[] = "id";
                         $this->identifier = "id";
                         $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
@@ -171,10 +190,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                         } else {
                             foreach($this->primaryKeys as $pk) {
-                                $o = $this->columns[$pk][2];
-                                $e = explode("|",$o);
-                                $found = false;
+                                $e = $this->columns[$pk][2];
 
+                                $found = false;
 
                                 foreach($e as $option) {
                                     if($found)
@@ -183,10 +201,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                                     $e2 = explode(":",$option);
 
                                     switch(strtolower($e2[0])):
-                                        case "unique":
-                                            $this->identifierType = Doctrine_Identifier::UNIQUE;
-                                            $found = true;
-                                        break;
                                         case "autoincrement":
                                             $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
                                             $found = true;
@@ -261,11 +275,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param mixed $options
      * @return void
      */
-    final public function setColumn($name, $type, $length, $options = "") {
+    final public function setColumn($name, $type, $length, $options = array()) {
+        if(is_string($options)) 
+            $options = explode('|', $options);
+
         $this->columns[$name] = array($type,$length,$options);
 
-        $e = explode("|",$options);
-        if(in_array("primary",$e)) {
+        if(in_array("primary",$options)) {
             $this->primaryKeys[] = $name;
         }
     }
@@ -525,7 +541,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $name              component name of which a foreign key object is bound
      * @return boolean
      */
-    final public function hasForeignKey($name) {
+    final public function hasRelation($name) {
         if(isset($this->bound[$name]))
             return true;
 
@@ -565,7 +581,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                     $relation = new Doctrine_LocalKey($table,$foreign,$local,$type, $alias);
                 } else
-                    throw new Doctrine_Mapping_Exception("Only one-to-one relations are possible when local reference key is used.");
+                    throw new Doctrine_Table_Exception("Only one-to-one relations are possible when local reference key is used.");
 
             } elseif($component == $name || ($component == $alias && $name == $this->name)) {
                 if( ! isset($local))
@@ -579,7 +595,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 // only aggregate relations allowed
 
                 if($type != Doctrine_Relation::MANY_AGGREGATE)
-                    throw new Doctrine_Mapping_Exception("Only aggregate relations are allowed for many-to-many relations");
+                    throw new Doctrine_Table_Exception("Only aggregate relations are allowed for many-to-many relations");
 
                 $classes = array_merge($this->parents, array($this->name));
 
@@ -597,7 +613,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 $fields = explode("-",$e2[1]);
 
                 if($e2[0] != $component)
-                    throw new Doctrine_Mapping_Exception($e2[0]." doesn't match ".$component);
+                    throw new Doctrine_Table_Exception($e2[0]." doesn't match ".$component);
 
                 $associationTable = $this->connection->getTable($e2[0]);
 
@@ -617,7 +633,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $this->relations[$alias] = $relation;
             return $this->relations[$alias];
         }
-        throw new InvalidKeyException('Unknown relation '.$original);
+        throw new Doctrine_Table_Exception('Unknown relation '.$original);
     }
     /**
      * returns an array containing all foreign key objects
@@ -795,7 +811,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $this->data = $this->connection->execute($query,$params)->fetch(PDO::FETCH_ASSOC);
 
             if($this->data === false)
-                throw new Doctrine_Find_Exception();
+                return false;
         }
         return $this->getRecord();
     }

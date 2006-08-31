@@ -32,7 +32,10 @@ class Doctrine_DataDict {
      */
     public function createTable($tablename, array $columns) {
         foreach($columns as $name => $args) {
-            $r[] = $name." ".$this->getADOType($args[0],$args[1])." ".str_replace("|"," ",$args[2]);
+            if( ! is_array($args[2]))
+                $args[2] = array();
+                
+            $r[] = $name." ".$this->getADOType($args[0],$args[1])." ".implode(' ',$args[2]);
         }
 
 
