@@ -227,12 +227,66 @@ final class Doctrine {
     const FETCH_VHOLDER         = 1;
     /**
      * FETCH RECORD
+     *
+     * Specifies that the fetch method shall return Doctrine_Record 
+     * objects as the elements of the result set.
+     *
+     * This is the default fetchmode.
      */
     const FETCH_RECORD          = 2;
     /**
-     * FETCH ARRAY
+     * FETCH ARRAY                      
      */
+
     const FETCH_ARRAY           = 3;
+    /**
+     * FETCH COLUMN
+     * Specifies that the fetch method shall return only a single 
+     * requested column from the next row in the result set.
+     *
+     */
+    const FETCH_COLUMN          = 4;
+    /**
+     * FETCH ASSOC
+     *
+     * Specifies that the fetch method shall return each row as an
+     * array indexed by column name as returned in the corresponding
+     * result set. If the result set contains multiple columns with
+     * the same name, PDO::FETCH_ASSOC returns only a single value per column name.
+     *
+     */
+    const FETCH_ASSOC           = 5;
+    /**
+     * FETCH NAMED
+     *
+     * Specifies that the fetch method shall return each row as an array indexed
+     * by column name as returned in the corresponding result set. If the result set
+     * contains multiple columns with the same name, PDO::FETCH_NAMED returns an
+     * array of values per column name.
+     *
+     */
+    const FETCH_NAMED           = 6;
+    /**
+     * FETCH NUM
+     *
+     * Specifies that the fetch method shall return each row as an array indexed by
+     * column number as returned in the corresponding result set, starting at column 0.
+     */
+    const FETCH_NUM             = 7;
+    /**
+     * FETCH BOTH
+     *
+     * Specifies that the fetch method shall return each row as an array indexed by both
+     * column name and number as returned in the corresponding result set, starting at column 0.
+     */
+    const FETCH_BOTH            = 8;
+    /**
+     * FETCH OBJ
+     *
+     * Specifies that the fetch method shall return each row as an object with property names 
+     * that correspond to the column names returned in the result set.
+     */
+    const FETCH_OBJ             = 9;
 
 
     /**

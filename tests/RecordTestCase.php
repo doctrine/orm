@@ -44,7 +44,12 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_TDIRTY);
         $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_TDIRTY);
 
+        $count = count($this->dbh);
+
         $e->save();
+
+        $this->assertEqual(($count + 13), $this->dbh->count());
+        $this->assertEqual($e->getState(), Doctrine_Record::STATE_CLEAN);
 
         $this->assertTrue($e->Entity[0] instanceof Entity);
         $this->assertTrue($e->Entity[1] instanceof Entity);
@@ -61,9 +66,12 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
         
+        $this->assertTrue(is_numeric($e->id));
 
         $e = $e->getTable()->find($e->id);
-        
+
+        $this->assertTrue($e instanceof Entity);
+
         $this->assertTrue($e->Entity[0] instanceof Entity);
         $this->assertTrue($e->Entity[1] instanceof Entity);
 
