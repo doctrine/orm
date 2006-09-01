@@ -170,18 +170,14 @@ class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($coll[2]->getState(), Doctrine_Record::STATE_PROXY);
 
 
-        $generator = new Doctrine_IndexGenerator($this->objTable->getIdentifier());
-        $coll->setGenerator($generator);
-        $generator = $coll->getGenerator();
-        
+
+        $coll->setKeyColumn('id');
         $user = $this->connection->getTable("User")->find(4);
-        $this->assertEqual($generator->getIndex($user), 4);
 
     }
     public function testGenerator() {
-        $generator = new Doctrine_IndexGenerator("name");
         $coll = new Doctrine_Collection($this->objTable);
-        $coll->setGenerator($generator);
+        $coll->setKeyColumn('name');
 
         $user = new User();
         $user->name = "name";
@@ -196,6 +192,53 @@ class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
             $this->assertTrue(gettype($k), "string");
         }
 
+    }
+    public function testFetchCollectionWithIdAsIndex() {
+        $user = new User();
+        $user->setAttribute(Doctrine::ATTR_COLL_KEY, 'id');
+        
+        $users = $user->getTable()->findAll();
+        $this->assertFalse($users->contains(0));
+        $this->assertEqual($users->count(), 8);
+        
+        $this->assertEqual($users[0]->getState(), Doctrine_Record::STATE_TCLEAN); 
+        $this->assertEqual($users[4]->getState(), Doctrine_Record::STATE_CLEAN);
+    }
+    public function testFetchCollectionWithNameAsIndex() {
+        $user = new User();
+        $user->setAttribute(Doctrine::ATTR_COLL_KEY, 'name');
+        
+        $users = $user->getTable()->findAll();
+        $this->assertFalse($users->contains(0));
+        $this->assertEqual($users->count(), 8);
+        
+        $this->assertEqual($users[0]->getState(), Doctrine_Record::STATE_TCLEAN); 
+        $this->assertEqual($users['zYne']->getState(), Doctrine_Record::STATE_CLEAN);
+    }
+    public function testFetchMultipleCollections() {
+        $this->connection->clear();
+        
+        $user = new User();
+        $user->setAttribute(Doctrine::ATTR_COLL_KEY, 'id');
+        $phonenumber = new Phonenumber();
+        $phonenumber->setAttribute(Doctrine::ATTR_COLL_KEY, 'id');
+
+
+        $q = new Doctrine_Query();
+        $users = $q->from('User.Phonenumber')->execute();
+        $this->assertFalse($users->contains(0));
+        $this->assertEqual($users->count(), 8);
+
+        $this->assertEqual($users[0]->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($users[2]->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($users[3]->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($users[4]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($users[4]->name, 'zYne');
+
+        $this->assertEqual($users[4]->Phonenumber[0]->exists(), false);
+        $this->assertEqual($users[4]->Phonenumber[0]->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($users[4]->Phonenumber[1]->exists(), false);
+        $this->assertEqual($users[4]->Phonenumber[2]->getState(), Doctrine_Record::STATE_CLEAN);
     }
 }
 ?>

@@ -57,9 +57,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     protected $expanded = array();
     /**
-     * @var mixed $generator
+     * @var string $keyColumn
      */
-    protected $generator;
+    protected $keyColumn;
     /**
      * @var Doctrine_Null $null             used for extremely fast SQL null value testing
      */
@@ -80,7 +80,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         $name = $table->getAttribute(Doctrine::ATTR_COLL_KEY);
         if($name !== null) {
-            $this->generator = new Doctrine_IndexGenerator($name);
+            $this->keyColumn = $name;
         }
     }
     /**
@@ -137,7 +137,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         $name = $this->table->getAttribute(Doctrine::ATTR_COLL_KEY);
         if($name !== null) {
-            $this->generator = new Doctrine_IndexGenerator($name);
+            $this->keyColumn = $name;
         }
     }
     /**
@@ -155,17 +155,21 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return $this->expandable;
     }
     /**
-     * @param Doctrine_IndexGenerator $generator
+     * setKeyColumn
+     *
+     * @param string $column
      * @return void
      */
-    public function setGenerator($generator) {
-        $this->generator = $generator;
+    public function setKeyColumn($column) {
+        $this->keyColumn = $column;
     }
     /**
-     * @return Doctrine_IndexGenerator
+     * getKeyColumn
+     *
+     * @return string
      */
-    public function getGenerator() {
-        return $this->generator;
+    public function getKeyColumn() {
+        return $this->column;
     }
     /**
      * @return array
@@ -450,9 +454,12 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             return true;
         }
 
-        if(isset($this->generator)) {
-            $key = $this->generator->getIndex($record);
-            $this->data[$key] = $record;
+        if(isset($this->keyColumn)) {
+            $value = $record->get($this->keyColumn);
+            if($value === null)
+                throw new Doctrine_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
+
+            $this->data[$value] = $record;
         } else
             $this->data[] = $record;
 
@@ -480,9 +487,12 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             return true;
         }
 
-        if(isset($this->generator)) {
-            $key = $this->generator->getIndex($record);
-            $this->data[$key] = $record;
+        if(isset($this->keyColumn)) {
+            $value = $record->get($this->keyColumn);
+            if($value === null)
+                throw new Doctrine_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
+
+            $this->data[$value] = $record;
         } else
             $this->data[] = $record;
 
@@ -510,11 +520,14 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         } elseif($this instanceof Doctrine_Collection_Batch) {
             $this->data = $query->getData($name);
 
-            if(isset($this->generator)) {
+            if(isset($this->keyColumn)) {
                 foreach($this->data as $k => $v) {
-                    $record = $this->get($k);
-                    $i = $this->generator->getIndex($record);
-                    $this->data[$i] = $record;
+
+                    $value = $record->get($this->keyColumn);
+                    if($value === null)
+                        throw new Doctrine_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
+
+                    $this->data[$value] = $record;
                     unset($this->data[$k]);
                 }
             }

@@ -56,9 +56,6 @@ abstract class Doctrine_Configurable {
                     $dir   = dirname(__FILE__);
                     $value = $dir.substr($value,6);
                 }
-
-                if(! is_dir($value) && ! file_exists($value))
-                    mkdir($value,0777);
             break;
             case Doctrine::ATTR_CACHE_TTL:
                 if($value < 1)
