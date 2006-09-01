@@ -138,6 +138,7 @@ $menu = array("Getting started" =>
                                          "Saving the collection",
                                          "Deleting collection",
                                          //"Fetching strategies",
+                                         "Key mapping",
                                          "Loading related records",
                                          "Collection expanding",
                                          ),
@@ -366,12 +367,12 @@ $menu = array("Getting started" =>
                                 if( ! file_exists("docs/$title - $k - $v2.php")) {
                                     $missing[0]++;
                                     $str .= " [ <font color='red'>doc</font> ] ";
-                                    //touch("docs/$title - $k - $v2.php");
+                                    touch("docs/$title - $k - $v2.php");
                                 }
                                 if( ! file_exists("codes/$title - $k - $v2.php")) {
                                     $missing[1]++;
                                     $str .= " [ <font color='red'>code</font> ] ";
-                                    //touch("codes/$title - $k - $v2.php");
+                                    touch("codes/$title - $k - $v2.php");
 
                                 }
 
@@ -448,27 +449,28 @@ $menu = array("Getting started" =>
                     if(isset($ex[1])) {
                         $name = implode(" - ", $stack);
 
-                        print "<b class='title'>".$paths[$curr]."</b><hr>";
+                        print "<a name='$path'><b class='title'>".$paths[$curr]."</b></a><hr>";
 
                         $n = $numbers;
 
                         $o = $paths[$n[0]];
-                        $s  = implode(".", array($n[0], $n[1]));
-                        $o2 = $paths[$s];
+                        $numpath  = implode(".", array($n[0], $n[1]));
+                        $o2 = $paths[$numpath];
 
                         $value = $menu[$o];
-                        if( ! is_array($value)) 
+                        if( ! is_array($value))
                             exit;
-                            
+
 
                         if(in_array($o2, $value)) {
                             render_block($name);
-                        } else {     
+                        } else {
                             $value = $menu[$o][$o2];
 
                             if(is_array($value)) {
                                 foreach($value as $k => $title) {
-                                    print "<br \><b class='title'>".$title."</b><hr style='height: 1px' \>";
+                                    $numpath2 = $numpath . '.' . ($k + 1);
+                                    print "<br \><a name='".$numpath2."'><b class='title'>".$title."</b></a><hr style='height: 1px' \>";
 
                                     $s = $name." - ".$title;
 
