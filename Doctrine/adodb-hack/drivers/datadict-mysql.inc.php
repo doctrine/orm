@@ -178,5 +178,142 @@ class ADODB2_mysql extends ADODB_DataDict {
 		
 		return $sql;
 	}
+	/**
+	 * @param ttype can either be 'VIEW' or 'TABLE' or false. 
+	 * 		If false, both views and tables are returned.
+	 *		"VIEW" returns only views
+	 *		"TABLE" returns only tables
+	 * @param showSchema returns the schema/user with the table name, eg. USER.TABLE
+	 * @param mask  is the input mask - only supported by oci8 and postgresql
+	 *
+	 * @return  array of tables for current database.
+	 */ 
+	function &MetaTables($ttype=false,$showSchema=false,$mask=false) 
+	{	
+		$save = $this->metaTablesSQL;
+		if ($showSchema && is_string($showSchema)) {
+			$this->metaTablesSQL .= " from $showSchema";
+		}
+		
+		if ($mask) {
+			$mask = $this->connection->qstr($mask);
+			$this->metaTablesSQL .= " like $mask";
+		}
+		$ret =& $this->_MetaTables($ttype,$showSchema);
+		
+		$this->metaTablesSQL = $save;
+		return $ret;
+	}
+
+	function &_MetaTables($ttype=false,$showSchema=false,$mask=false) 
+	{
+		$false = false;
+		if ($mask) {
+			return $false;
+		}
+		if ($this->metaTablesSQL) {
+
+			$rs = $this->connection->query($this->metaTablesSQL);
+
+			$arr =& $rs->fetchAll(PDO::FETCH_NUM);
+			$arr2 = array();
+
+			if ($hast = ($ttype && isset($arr[0][1]))) {
+				$showt = strncmp($ttype,'T',1);
+			}
+			
+			for ($i=0; $i < sizeof($arr); $i++) {
+				if ($hast) {
+					if ($showt == 0) {
+						if (strncmp($arr[$i][1],'T',1) == 0) $arr2[] = trim($arr[$i][0]);
+					} else {
+						if (strncmp($arr[$i][1],'V',1) == 0) $arr2[] = trim($arr[$i][0]);
+					}
+				} else
+					$arr2[] = trim($arr[$i][0]);
+			}
+			$rs->closeCursor();
+			return $arr2;
+		}
+		return $false;
+	}
+
+	/**
+	 * List columns in a database as an array of ADOFieldObjects. 
+	 * See top of file for definition of object.
+	 *
+	 * @param table	table name to query
+	 * @param upper	uppercase table name (required by some databases)
+	 * @schema is optional database schema to use - not supported by all databases.
+	 *
+	 * @return  array of ADOFieldObjects for current table.
+	 */
+ 	function MetaColumns($table) 
+	{
+		$this->_findschema($table,$schema);
+		if ($schema) {
+			$dbName = $this->database;
+			$this->connection->SelectDB($schema);
+		}
+
+		$stmt = $this->connection->query(sprintf($this->metaColumnsSQL,$table));
+		
+		if ($schema) {
+			$this->connection->SelectDB($dbName);
+		}
+
+		$retarr = array();
+		while ($rs = $stmt->fetch(PDO::FETCH_NUM)){
+		                                          	print_r($rs);
+			$fld = new ADOFieldObject();
+			$fld->name = $rs[0];
+			$type = $rs[1];
+			
+			// split type into type(length):
+			$fld->scale = null;
+			if (preg_match("/^(.+)\((\d+),(\d+)/", $type, $query_array)) {
+				$fld->type = $query_array[1];
+				$fld->max_length = is_numeric($query_array[2]) ? $query_array[2] : -1;
+				$fld->scale = is_numeric($query_array[3]) ? $query_array[3] : -1;
+			} elseif (preg_match("/^(.+)\((\d+)/", $type, $query_array)) {
+				$fld->type = $query_array[1];
+				$fld->max_length = is_numeric($query_array[2]) ? $query_array[2] : -1;
+			} elseif (preg_match("/^(enum)\((.*)\)$/i", $type, $query_array)) {
+				$fld->type = $query_array[1];
+				$arr = explode(",",$query_array[2]);
+				$fld->enums = $arr;
+				$zlen = max(array_map("strlen",$arr)) - 2; // PHP >= 4.0.6
+				$fld->max_length = ($zlen > 0) ? $zlen : 1;
+			} else {
+				$fld->type = $type;
+				$fld->max_length = -1;
+			}
+			$fld->not_null = ($rs[2] != 'YES');
+			$fld->primary_key = ($rs[3] == 'PRI');
+			$fld->auto_increment = (strpos($rs[5], 'auto_increment') !== false);
+			$fld->binary = (strpos($type,'blob') !== false);
+			$fld->unsigned = (strpos($type,'unsigned') !== false);
+				
+			if (!$fld->binary) {
+				$d = $rs[4];
+				if ($d != '' && $d != 'NULL') {
+					$fld->has_default = true;
+					$fld->default_value = $d;
+				} else {
+					$fld->has_default = false;
+				}
+			}
+			
+			if ($save == ADODB_FETCH_NUM) {
+				$retarr[] = $fld;
+			} else {
+				$retarr[strtoupper($fld->name)] = $fld;
+			}
+
+		}
+		
+			$stmt->closeCursor();
+			return $retarr;	
+	}
 }
 ?>
