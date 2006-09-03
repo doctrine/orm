@@ -50,4 +50,4 @@ class Doctrine_Tree_NestedSet extends Doctrine_Record {
     
     public function addNode() { }
 }
-?>
+

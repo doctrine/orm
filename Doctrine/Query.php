@@ -812,4 +812,4 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
     }
 }
-?>
+

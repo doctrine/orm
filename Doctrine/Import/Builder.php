@@ -57,4 +57,4 @@ abstract class Doctrine_Import_Builder
 
 
 } // end of Doctrine_Import_Builder
-?>
+

@@ -18,4 +18,4 @@ class Doctrine_Validator_Date {
         return checkdate($e[1], $e[0], $e[2]);
     }
 }
-?>
+

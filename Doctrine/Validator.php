@@ -275,4 +275,4 @@ class Doctrine_Validator {
         endswitch;
     }
 }
-?>
+

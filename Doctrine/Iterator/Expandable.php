@@ -22,4 +22,4 @@ class Doctrine_Iterator_Expandable extends Doctrine_Iterator {
         }
     }
 }
-?>
+

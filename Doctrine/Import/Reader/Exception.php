@@ -47,4 +47,4 @@ class Doctrine_Import_Reader_Exception
 
 
 } // end of Doctrine_Import_Reader_Exception
-?>
+

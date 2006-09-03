@@ -8,4 +8,4 @@ class Doctrine_Find_Exception extends Doctrine_Exception {
         parent::__construct("Couldn't find Data Access Object.",Doctrine::ERR_FIND);
     }
 }
-?>
+

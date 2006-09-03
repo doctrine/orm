@@ -64,4 +64,3 @@ class ADODB2_ibase extends ADODB_DataDict {
 }
 
 
-?>

@@ -1001,4 +1001,4 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         return Doctrine_Lib::getTableAsString($this);
     }
 }
-?>
+

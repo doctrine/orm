@@ -8,4 +8,4 @@ class Doctrine_PrimaryKey_Exception extends Doctrine_Exception {
         parent::__construct("No primary key column found. Each data set must have primary key column.", Doctrine::ERR_NO_PK);
     }
 }
-?>
+

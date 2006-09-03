@@ -940,4 +940,4 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         return Doctrine_Lib::getSessionAsString($this);
     }
 }
-?>
+

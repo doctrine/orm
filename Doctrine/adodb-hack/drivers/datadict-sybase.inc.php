@@ -225,4 +225,3 @@ CREATE TABLE
 		return $sql;
 	}
 }
-?>

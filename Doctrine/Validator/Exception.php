@@ -30,4 +30,4 @@ class Doctrine_Validator_Exception extends Doctrine_Exception {
         return $string.parent::__toString();
     }
 }
-?>
+

@@ -368,4 +368,4 @@ CREATE [ UNIQUE ] INDEX index_name ON table
 		return $ftype;
 	}
 }
-?>
+

@@ -239,4 +239,4 @@ class Doctrine_Locking_Manager_Pessimistic
 }
 
 
-?>
+

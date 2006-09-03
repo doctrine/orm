@@ -38,4 +38,4 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part {
         return ( ! empty($this->parts))?implode(", ", $this->parts):'';
     }
 }
-?>
+

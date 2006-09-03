@@ -149,4 +149,4 @@ class Doctrine_EventListener_Debugger extends Doctrine_EventListener {
         $this->debug[] = new Doctrine_DebugMessage($collection,self::EVENT_PRECOLLDELETE);
     }
 }
-?>
+

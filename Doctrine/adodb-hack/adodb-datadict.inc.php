@@ -1070,4 +1070,4 @@ class ADODB_DataDict {
 	}
 }
 
-?>
+

@@ -257,4 +257,4 @@ class Doctrine_Cache_File implements Countable {
 
     }
 }
-?>
+

@@ -47,4 +47,4 @@ class ADOFieldObject {
 	var $type="";
 }
 
-?>
+

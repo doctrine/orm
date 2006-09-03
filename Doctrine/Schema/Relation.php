@@ -122,4 +122,4 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object
 
 
 } // end of Doctrine_Schema_Relation
-?>
+

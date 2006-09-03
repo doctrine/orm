@@ -55,4 +55,4 @@ class Doctrine_Validator_Email {
         return true;
     }
 }
-?>
+

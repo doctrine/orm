@@ -225,4 +225,4 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
     }
 
 }
-?>
+

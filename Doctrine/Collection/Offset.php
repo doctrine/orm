@@ -28,4 +28,4 @@ class Doctrine_Collection_Offset extends Doctrine_Collection {
         return new Doctrine_Iterator_Expandable($this);
     }
 }
-?>
+

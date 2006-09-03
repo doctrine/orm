@@ -11,4 +11,4 @@ class Doctrine_Filter {
         return $this->name;
     }
 }
-?>
+

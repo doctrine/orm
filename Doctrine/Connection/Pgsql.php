@@ -15,4 +15,4 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
         return $data[0];
     }
 }
-?>
+

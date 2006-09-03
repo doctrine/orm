@@ -56,4 +56,4 @@ class Doctrine_Association extends Doctrine_Relation {
         return $dql;
     }
 }
-?>
+

@@ -122,4 +122,4 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
         return $data[0];
     }
 }
-?>
+

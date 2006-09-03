@@ -29,4 +29,4 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
         return $data[0];
     }
 }
-?>
+

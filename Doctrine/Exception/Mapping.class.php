@@ -8,4 +8,4 @@ class Doctrine_Mapping_Exception extends Doctrine_Exception {
         parent::__construct($message,Doctrine::ERR_MAPPING);
     }
 }
-?>
+

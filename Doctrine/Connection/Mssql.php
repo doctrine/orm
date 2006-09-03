@@ -69,4 +69,4 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
         return $query;
     }
 }
-?>
+

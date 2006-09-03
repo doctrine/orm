@@ -42,4 +42,4 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part {
         return "(".$r.")";
     }
 }
-?>
+

@@ -14,4 +14,4 @@ class Doctrine_Validator_HtmlColor {
         return true;
     }
 }
-?>
+

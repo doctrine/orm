@@ -77,4 +77,4 @@ class Doctrine_Form implements Iterator {
         return true;
     }
 }
-?>
+

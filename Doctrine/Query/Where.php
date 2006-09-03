@@ -39,4 +39,4 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
         return ( ! empty($this->parts))?implode(" AND ", $this->parts):'';
     }
 }
-?>
+

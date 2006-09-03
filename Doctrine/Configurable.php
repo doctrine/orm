@@ -192,4 +192,4 @@ abstract class Doctrine_Configurable {
         return $this->parent;
     }
 }
-?>
+

@@ -20,4 +20,4 @@ class Doctrine_Validator_Enum {
         return true;
     }
 }
-?>
+

@@ -15,4 +15,4 @@ class Doctrine_Validator_Unique {
         return ( ! is_array($stmt->fetch()));
     }
 }
-?>
+

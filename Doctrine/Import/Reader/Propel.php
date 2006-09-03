@@ -61,4 +61,4 @@ class Doctrine_Import_Reader_Xml_Propel extends Doctrine_Import_Reader
 
 
 } // end of Doctrine_Import_Reader_Xml_Propel
-?>
+

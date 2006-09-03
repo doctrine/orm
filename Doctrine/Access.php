@@ -97,4 +97,4 @@ abstract class Doctrine_Access implements ArrayAccess {
         return $this->remove($offset);
     }
 }
-?>
+

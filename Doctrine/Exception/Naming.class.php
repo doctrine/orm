@@ -9,4 +9,4 @@ class Doctrine_Naming_Exception extends Doctrine_Exception {
                              must be in format [Name]Table.", Doctrine::ERR_NAMING);
     }
 }
-?>
+

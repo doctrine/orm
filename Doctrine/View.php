@@ -108,4 +108,4 @@ class Doctrine_View {
         return sprintf(self::SELECT, $this->name);
     }
 }
-?>
+

@@ -111,4 +111,4 @@ class Doctrine_Repository implements Countable, IteratorAggregate {
         $this->table->findAll();
     }
 }
-?>
+

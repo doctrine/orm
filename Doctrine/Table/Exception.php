@@ -11,4 +11,4 @@ class Doctrine_Table_Exception extends Doctrine_Exception {
                             to get on instance of a Doctrine_Table.",Doctrine::ERR_TABLE_INSTANCE);
     }
 }
-?>
+

@@ -184,4 +184,4 @@ class Doctrine_Statement extends Doctrine_Access {
         return $array;
     }
 }
-?>
+

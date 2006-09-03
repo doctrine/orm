@@ -41,4 +41,4 @@ class Doctrine_Tree_PathModel extends Doctrine_Record {
     public function addNode() { }
 
 }
-?>
+

@@ -40,4 +40,4 @@ abstract class Doctrine_Tree extends Doctrine_Record {
     
     abstract public function addNode();
 }
-?>
+

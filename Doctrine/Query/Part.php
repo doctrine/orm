@@ -37,4 +37,4 @@ abstract class Doctrine_Query_Part extends Doctrine_Access {
 }
 
 
-?>
+

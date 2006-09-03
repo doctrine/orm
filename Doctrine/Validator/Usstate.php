@@ -69,4 +69,4 @@ class ValidatorUSState {
         return isset(self::$states[$value]);
 	}
 }
-?>
+

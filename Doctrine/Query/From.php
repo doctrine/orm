@@ -23,4 +23,4 @@ class Doctrine_Query_From extends Doctrine_Query_Part {
         return ( ! empty($this->parts))?implode(", ", $this->parts):'';
     }
 }
-?>
+

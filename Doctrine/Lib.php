@@ -187,4 +187,4 @@ class Doctrine_Lib {
         return implode("\n",$r);
     }
 }
-?>
+

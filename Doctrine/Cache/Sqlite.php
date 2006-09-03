@@ -262,4 +262,4 @@ class Doctrine_Cache_Sqlite {
         $this->autoClean();
     }
 }
-?>
+

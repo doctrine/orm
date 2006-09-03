@@ -15,4 +15,4 @@ class Doctrine_Collection_Lazy extends Doctrine_Collection_Batch {
         parent::setBatchSize(1);
     }
 }
-?>
+

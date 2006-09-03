@@ -28,4 +28,4 @@ class Doctrine_Iterator_Normal extends Doctrine_Iterator {
         return ($this->index < $this->count);
     }
 }
-?>
+

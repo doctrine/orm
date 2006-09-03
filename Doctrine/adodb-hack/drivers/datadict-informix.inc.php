@@ -77,4 +77,3 @@ class ADODB2_informix extends ADODB_DataDict {
 	
 }
 
-?>

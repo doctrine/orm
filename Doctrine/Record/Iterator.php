@@ -39,4 +39,4 @@ class Doctrine_Record_Iterator extends ArrayIterator {
             return $value;
     }
 }
-?>
+

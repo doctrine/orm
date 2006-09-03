@@ -51,4 +51,4 @@ class Doctrine_EvenListener_Chain extends Doctrine_Access {
         }
     }
 }
-?>
+

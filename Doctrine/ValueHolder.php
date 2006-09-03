@@ -61,4 +61,4 @@ class Doctrine_ValueHolder extends Doctrine_Access implements Countable {
         throw new Doctrine_Exception("Method 'save' not availible on Doctrine_ValueHolder.");
     }
 }
-?>
+

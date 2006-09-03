@@ -10,4 +10,4 @@ class Doctrine_Connection_Exception extends Doctrine_Exception {
                              Doctrine_Manager::getInstance()->openConnection() to open a new connection.",Doctrine::ERR_NO_SESSIONS);
     }
 }
-?>
+

@@ -10,4 +10,4 @@ class Doctrine_Validator_Required {
         return ($value === null);
     }
 }
-?>
+

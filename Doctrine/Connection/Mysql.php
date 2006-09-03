@@ -156,4 +156,4 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
     */
 
 }
-?>
+

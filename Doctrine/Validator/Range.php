@@ -18,4 +18,4 @@ class Doctrine_Validator_Range {
         return true;
     }
 }
-?>
+

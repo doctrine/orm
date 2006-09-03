@@ -46,4 +46,4 @@ class Doctrine_DBStatement extends PDOStatement {
         return $result;
     }
 }
-?>
+

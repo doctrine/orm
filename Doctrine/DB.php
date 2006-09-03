@@ -134,4 +134,4 @@ class Doctrine_DB extends PDO implements Countable, IteratorAggregate {
     }
 
 }
-?>
+

@@ -16,4 +16,4 @@ class Doctrine_Collection_Immediate extends Doctrine_Collection {
         parent::__construct($table);
     }
 }
-?>
+

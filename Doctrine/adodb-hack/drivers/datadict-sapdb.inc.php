@@ -118,4 +118,3 @@ class ADODB2_sapdb extends ADODB_DataDict {
 	}	
 }
 
-?>

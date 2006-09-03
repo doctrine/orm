@@ -11,4 +11,4 @@ class Doctrine_Validator_Notblank {
         return (trim($value) != ""); 
     }
 }
-?>
+

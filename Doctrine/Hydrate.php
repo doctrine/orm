@@ -541,4 +541,4 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         return $this->tables[$name];
     }
 }
-?>
+

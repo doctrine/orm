@@ -131,4 +131,4 @@ class Doctrine_Schema_Column extends Doctrine_Schema_Object
 
 
 } // end of Doctrine_Schema_Column
-?>
+

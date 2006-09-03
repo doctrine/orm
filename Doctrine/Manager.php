@@ -294,4 +294,4 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         return implode("\n",$r);
     }
 }
-?>
+

@@ -18,4 +18,4 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
         return $data[0];
     }
 }
-?>
+

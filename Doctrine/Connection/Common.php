@@ -22,4 +22,4 @@ class Doctrine_Connection_Common extends Doctrine_Connection {
         return $query;
     }
 }
-?>
+

@@ -68,4 +68,4 @@ class Doctrine_Cache implements iDoctrine_Cache {
     }
 
 }
-?>
+

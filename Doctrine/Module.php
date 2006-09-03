@@ -57,4 +57,4 @@ class Doctrine_Module implements IteratorAggregate, Countable {
         return count($this->components);
     }
 }
-?>
+

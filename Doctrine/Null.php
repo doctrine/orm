@@ -6,4 +6,4 @@
  * used for extra fast null value testing with isset() rather than array_key_exists()
  */
 class Doctrine_Null { }
-?>
+

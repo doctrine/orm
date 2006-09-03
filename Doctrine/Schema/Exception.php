@@ -47,4 +47,4 @@ class Doctrine_Schema_Exception extends Exception
 
 
 } // end of Doctrine_Schema_Exception
-?>
+

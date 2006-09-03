@@ -160,4 +160,4 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
         return new Doctrine_Iterator_Expandable($this);
     }
 }
-?>
+
