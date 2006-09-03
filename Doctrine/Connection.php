@@ -832,8 +832,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
 
         $strfields = join(", ", array_keys($array));
-        $strvalues = substr(str_repeat("?, ",count($array)),0,-2);
-
+        $strvalues = substr(str_repeat("?, ",count($array)),0,-2); 
         $sql  = "INSERT INTO ".$record->getTable()->getTableName()." (".$strfields.") VALUES (".$strvalues.")";
 
         $stmt = $this->dbh->prepare($sql);

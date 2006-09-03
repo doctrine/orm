@@ -2,10 +2,12 @@
 require_once("UnitTestCase.php");
 
 class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
+
     public function prepareTables() {
         $this->tables[] = "enumTest";
         parent::prepareTables();
     }
+    
 
     public function testReferences2() {
         $user = new User();
@@ -137,13 +139,40 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $date = new DateTest();
 
                                        	
-    }
+    }   
+
     public function testEnumType() {
+
         $enum = new EnumTest();
         $enum->status = "open";
         $this->assertEqual($enum->status, "open");
         $enum->save();
         $this->assertEqual($enum->status, "open");
+        $enum->refresh();
+        $this->assertEqual($enum->status, "open");
+
+        $enum->status = "closed";
+
+        $this->assertEqual($enum->status, "closed");
+
+        $enum->save();
+        $this->assertEqual($enum->status, "closed");
+
+        $enum->refresh();
+        $this->assertEqual($enum->status, "closed");
+    }
+
+    public function testEnumTypeWithCaseConversion() {
+        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+
+        $enum = new EnumTest();
+
+        $enum->status = "open";
+        $this->assertEqual($enum->status, "open");
+
+        $enum->save();
+        $this->assertEqual($enum->status, "open");
+
         $enum->refresh();
         $this->assertEqual($enum->status, "open");      
         
@@ -157,7 +186,19 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $enum->refresh();
         $this->assertEqual($enum->status, "closed");
     }
-
+    public function testFailingRefresh() {
+        $enum = $this->connection->getTable('EnumTest')->find(1);
+        
+        $this->dbh->query('DELETE FROM enum_test WHERE id = 1');
+        
+        $f = false;
+        try {
+            $enum->refresh();
+        } catch(Doctrine_Record_Exception $e) {
+            $f = true;
+        }
+        $this->assertTrue($f);
+    }
     public function testSerialize() {
         $user = $this->connection->getTable("User")->find(4);
         $str = serialize($user);

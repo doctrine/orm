@@ -1,6 +1,58 @@
 <?php
 require_once("UnitTestCase.php");
 class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
+    public function prepareTables() {
+        $this->tables[] = "FieldNameTest";
+        parent::prepareTables();
+    }
+    public function testFieldConversion() {
+        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+
+        $user = $this->connection->getTable('User')->find(5);
+
+        $this->assertTrue($user instanceof User);
+
+        $t = new FieldNameTest();
+        
+        $t->someColumn = 'abc';
+        $t->someEnum = 'php';
+        $t->someInt = 1;
+        $t->someArray = array();
+        $obj = new StdClass();
+        $t->someObject = $obj;
+
+        $this->assertEqual($t->someColumn, 'abc');
+        $this->assertEqual($t->someEnum, 'php');
+        $this->assertEqual($t->someInt, 1);
+        $this->assertEqual($t->someArray, array());
+        $this->assertEqual($t->someObject, $obj);
+
+        $t->save();
+
+        $this->assertEqual($t->someColumn, 'abc');
+        $this->assertEqual($t->someEnum, 'php');
+        $this->assertEqual($t->someInt, 1);
+        $this->assertEqual($t->someArray, array());
+        $this->assertEqual($t->someObject, $obj);
+        
+        $t->refresh();
+        
+        $this->assertEqual($t->someColumn, 'abc');
+        $this->assertEqual($t->someEnum, 'php');
+        $this->assertEqual($t->someInt, 1);
+        $this->assertEqual($t->someArray, array());
+        $this->assertEqual($t->someObject, $obj);
+        
+        $this->connection->clear();
+        
+        $t = $this->connection->getTable('FieldNameTest')->find(1);
+        
+        $this->assertEqual($t->someColumn, 'abc');
+        $this->assertEqual($t->someEnum, 'php');
+        $this->assertEqual($t->someInt, 1);
+        $this->assertEqual($t->someArray, array());
+        $this->assertEqual($t->someObject, $obj);
+    }
     public function testBind() {
         $table = $this->connection->getTable("User");
     }
@@ -70,8 +122,8 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(), 8);
         $this->assertTrue($users instanceof Doctrine_Collection);
     }
-    public function testFindBySql() {
-        $users = $this->objTable->findBySql("name LIKE '%Arnold%'");
+    public function testFindByDql() {
+        $users = $this->objTable->findByDql("name LIKE '%Arnold%'");
         $this->assertEqual($users->count(), 1);
         $this->assertTrue($users instanceof Doctrine_Collection);
     }

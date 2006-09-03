@@ -63,7 +63,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     private $query;
     /**
-     * @var Doctrine_Connection $connection                   Doctrine_Connection object that created this table
+     * @var Doctrine_Connection $connection             Doctrine_Connection object that created this table
      */
     private $connection;
     /**
@@ -125,6 +125,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @var array $enum                                 enum value arrays
      */
     private $enum               = array();
+
 
 
 
@@ -231,6 +232,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             throw new Doctrine_Exception("Class '$name' has no table definition.");
         }
 
+
         $record->setUp();
 
         // save parents
@@ -285,6 +287,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $this->primaryKeys[] = $name;
         }
     }
+
     /**
      * @return mixed
      */
@@ -772,6 +775,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return Doctrine_Record
      */
     public function getRecord() {
+        $this->data = array_change_key_case($this->data, CASE_LOWER);
+
         $key = $this->getIdentifier();
 
         if( ! is_array($key))

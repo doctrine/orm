@@ -313,7 +313,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                     foreach($data as $key => $row) {
                         if(empty($row))
                             continue;
-                        
 
                         $ids  = $this->tables[$key]->getIdentifier();
                         
@@ -517,8 +516,11 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             foreach($data as $key => $value):
                 $e = explode("__",$key);
 
-                $field     = array_pop($e);
-                $component = implode("__",$e);
+                $field     = strtolower( array_pop($e) );
+
+                $component = strtolower( implode("__",$e) );
+
+
                 $data[$component][$field] = $value;
 
                 unset($data[$key]);

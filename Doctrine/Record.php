@@ -250,7 +250,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return integer
      */
     private function cleanData() {
-        $tmp  = $this->data;
+        $tmp = $this->data;
 
         $this->data = array();
 
@@ -259,7 +259,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach($this->table->getColumnNames() as $name) {
             $type = $this->table->getTypeOf($name);
 
-            if( ! isset($tmp[$name])) {
+            $lower = strtolower($name);
+
+            if( ! isset($tmp[$lower])) {
                 //if($type == 'array') {
                 //    $this->data[$name] = array();
                 //} else
@@ -269,23 +271,23 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case "array":
                     case "object":
 
-                        if($tmp[$name] !== self::$null) {
-                            if(is_string($tmp[$name])) {
-                                $value = unserialize($tmp[$name]);
+                        if($tmp[$lower] !== self::$null) {
+                            if(is_string($tmp[$lower])) {
+                                $value = unserialize($tmp[$lower]);
 
                                 if($value === false)
-                                    throw new Doctrine_Record_Exception("Unserialization of $name failed. ".var_dump($tmp[$name],true));
+                                    throw new Doctrine_Record_Exception("Unserialization of $name failed. ".var_dump($tmp[$lower],true));
                             } else
-                                $value = $tmp[$name];
+                                $value = $tmp[$lower];
 
                             $this->data[$name] = $value;
                         }
                     break;
                     case "enum":
-                        $this->data[$name] = $this->table->enumValue($name, $tmp[$name]);
+                        $this->data[$name] = $this->table->enumValue($name, $tmp[$lower]);
                     break;
                     default:
-                        $this->data[$name] = $tmp[$name];
+                        $this->data[$name] = $tmp[$lower];
                 endswitch;
                 $count++;
             }
@@ -468,6 +470,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $query          = $this->table->getQuery()." WHERE ".implode(" = ? AND ",$this->table->getPrimaryKeys())." = ?";
         $this->data     = $this->table->getConnection()->execute($query,$id)->fetch(PDO::FETCH_ASSOC);
 
+        if( ! $this->data)
+            throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist anymore');
+            
+        $this->data     = array_change_key_case($this->data, CASE_LOWER);
+
         $this->modified = array();
         $this->cleanData();
 
@@ -594,6 +601,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * rawSet
      * doctrine uses this function internally, not recommended for developers
+     *
+     * rawSet() works in very same same way as set() with an exception that 
+     * 1. it cannot be used for setting references
+     * 2. it cannot load uninitialized fields
      *
      * @param mixed $name               name of the property or reference
      * @param mixed $value              value of the property or reference

@@ -17,6 +17,18 @@ class Entity extends Doctrine_Record {
         $this->hasColumn("email_id","integer");
     }
 }
+class FieldNameTest extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("someColumn", "string", 200);
+        $this->hasColumn("someEnum", "enum", 4);
+        $this->hasColumn("someArray", "array", 100);
+        $this->hasColumn("someObject", "array", 200);
+        $this->hasColumn("someInt", "integer");
+
+        
+        $this->setEnumValues("someEnum", array('php', 'java', 'python'));
+    }
+}
 class EntityReference extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("entity1","integer");
