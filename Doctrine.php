@@ -386,7 +386,6 @@ final class Doctrine {
     }
     /**
      * method for making a single file of most used doctrine runtime components
-     *
      * including the compiled file instead of multiple files (in worst
      * cases dozens of files) can improve performance by an order of magnitude
      *
@@ -449,28 +448,35 @@ final class Doctrine {
             $end   = $refl -> getEndLine();
 
             $ret = array_merge($ret,
-			         array_slice($lines,
-						$start,
-						($end - $start)));
-
+                               array_slice($lines,
+                               $start,
+                              ($end - $start)));
 
         }
 
         $file = self::$path.DIRECTORY_SEPARATOR.'Doctrine.compiled.php';
+        if (!is_writable($file))
+            throw new Doctrine_Exception("Couldn't write compiled data. $file is not writable");
 
-        $fp = fopen($file, 'w+');
-        fwrite($fp, "<?php
-".implode('', $ret)."
-class InvalidKeyException extends Exception { }
-class DQLException extends Exception { }
-?>");
+        // first write the 'compiled' data to a text file, so
+        // that we can use php_strip_whitespace (which only works on files)
+        $fp = fopen($file, 'w');
+        if ($fp === false)
+            throw new Doctrine_Exception("Couldn't write compiled data. Failed to open $file");
+        fwrite($fp, "<?php ".implode('', $ret).
+                    "\nclass InvalidKeyException extends Exception { }".
+                    "\nclass DQLException extends Exception { }"
+              );
         fclose($fp);
-        $stripped = php_strip_whitespace( $file );
 
-        $fp = fopen($file, 'w+');
+        $stripped = php_strip_whitespace( $file );
+        $fp = fopen($file, 'w');
+        if ($fp === false)
+            throw new Doctrine_Exception("Couldn't write compiled data. Failed to open $file");
         fwrite($fp, $stripped);
         fclose($fp);
     }
+
     /**
      * simple autoload function
      * returns true if the class was loaded, otherwise false
