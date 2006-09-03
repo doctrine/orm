@@ -62,7 +62,7 @@ $test->addTestCase(new Doctrine_Filter_TestCase());
 
 $test->addTestCase(new Doctrine_ValueHolder_TestCase());
 
-$test->addTestCase(new Doctrine_ValidatorTestCase());  
+$test->addTestCase(new Doctrine_ValidatorTestCase());
 
 $test->addTestCase(new Doctrine_QueryTestCase());
 

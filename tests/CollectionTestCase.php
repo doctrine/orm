@@ -1,5 +1,34 @@
 <?php
 class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
+    public function testLoadRelatedForNormalAssociation() {
+        $resource = new Doctrine_Collection('Resource');
+        $resource[0]->name = 'resource 1';
+        $resource[0]->Type[0]->type = 'type 1';
+        $resource[0]->Type[1]->type = 'type 2';
+        $resource[1]->name = 'resource 2';
+        $resource[1]->Type[0]->type = 'type 3';
+        $resource[1]->Type[1]->type = 'type 4';
+
+        $resource->save();
+        
+        $this->connection->clear();
+
+        $resources = $this->connection->query('FROM Resource');
+
+        $count = $this->dbh->count();
+        $resources->loadRelated('Type');
+
+        $this->assertEqual(($count + 1), $this->dbh->count());
+        $this->assertEqual($resources[0]->name, 'resource 1');
+        $this->assertEqual($resource[0]->Type[0]->type, 'type 1');
+        $this->assertEqual($resource[0]->Type[1]->type, 'type 2');
+        $this->assertEqual(($count + 1), $this->dbh->count());
+
+        $this->assertEqual($resource[1]->name, 'resource 2');
+        $this->assertEqual($resource[1]->Type[0]->type, 'type 3');
+        $this->assertEqual($resource[1]->Type[1]->type, 'type 4');
+        $this->assertEqual(($count + 1), $this->dbh->count());
+    }
     public function testAdd() {
         $coll = new Doctrine_Collection($this->objTable);
         $coll->add(new User());

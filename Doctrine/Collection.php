@@ -288,12 +288,12 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             } elseif($this->relation instanceof Doctrine_Association) {
 
                 $asf     = $this->relation->getAssociationFactory();
-                $query   = "SELECT ".$foreign." FROM ".$asf->getTableName()." WHERE ".$local."=".$this->getIncremented();
+                $query   = 'SELECT '.$foreign." FROM ".$asf->getTableName()." WHERE ".$local."=".$this->getIncremented();
 
                 $table = $fk->getTable();
                 $graph   = new Doctrine_Query($table->getConnection());
 
-                $q       = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$table->getIdentifier()." IN ($query)";
+                $q       = 'FROM ' . $table->getComponentName() . ' WHERE ' . $table->getComponentName() . '.' . $table->getIdentifier()." IN ($query)";
 
             }
         }
