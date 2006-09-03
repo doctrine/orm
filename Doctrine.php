@@ -405,6 +405,7 @@ final class Doctrine {
                          "Iterator",
                          "Exception",
                          "Access",
+                         "Null",
                          "Record",
                          "Record_Iterator",
                          "Collection",
@@ -444,20 +445,30 @@ final class Doctrine {
             $refl  = new ReflectionClass ( $class );
             $lines = file( $file );
 
+            $start = $refl -> getStartLine() - 1;
+            $end   = $refl -> getEndLine();
+
             $ret = array_merge($ret,
 			         array_slice($lines,
-						$refl -> getStartLine() - 1,
-						$refl -> getEndLine()   - 2));
+						$start,
+						($end - $start)));
+						print $refl->getEndLine()."<br \>";
 
         }
 
+        $file = self::$path.DIRECTORY_SEPARATOR.'Doctrine.compiled.php';
 
-        $fp = fopen(self::$path.DIRECTORY_SEPARATOR.'Doctrine.compiled.php', 'w+');
+        $fp = fopen($file, 'w+');
         fwrite($fp, "<?php
 ".implode('', $ret)."
 class InvalidKeyException extends Exception { }
 class DQLException extends Exception { }
 ?>");
+        fclose($fp);
+        $stripped = php_strip_whitespace( $file );
+        //print $stripped;
+        $fp = fopen($file, 'w+');
+        fwrite($fp, $stripped);
         fclose($fp);
     }
     /**
