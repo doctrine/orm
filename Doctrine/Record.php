@@ -19,8 +19,6 @@
  * <http://www.phpdoctrine.com>.
  */
 
-require_once("Access.php");
-
 /**
  * Doctrine_Record
  * All record classes should inherit this super class

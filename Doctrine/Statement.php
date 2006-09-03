@@ -1,5 +1,4 @@
 <?php
-require_once("Access.php");
 /**
  * Doctrine_Statement
  *

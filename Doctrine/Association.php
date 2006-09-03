@@ -1,5 +1,4 @@
 <?php
-require_once("Relation.php");
 /**
  * Doctrine_Association    this class takes care of association mapping
  *                         (= many-to-many relationships, where the relationship is handled with an additional relational table

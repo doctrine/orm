@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-require_once("Hydrate.php");
+
 /**
  * Doctrine_Query
  *

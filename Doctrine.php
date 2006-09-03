@@ -463,9 +463,10 @@ final class Doctrine {
         $fp = fopen($file, 'w');
         if ($fp === false)
             throw new Doctrine_Exception("Couldn't write compiled data. Failed to open $file");
-        fwrite($fp, "<?php ".implode('', $ret).
-                    "\nclass InvalidKeyException extends Exception { }".
-                    "\nclass DQLException extends Exception { }"
+        fwrite($fp, "<?php".
+                    " class InvalidKeyException extends Exception { }".
+                    " class DQLException extends Exception { }".
+                    implode('', $ret)
               );
         fclose($fp);
 

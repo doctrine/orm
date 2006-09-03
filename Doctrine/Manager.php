@@ -18,8 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-require_once("Configurable.php");
-require_once("EventListener.php");
+
 /**
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com

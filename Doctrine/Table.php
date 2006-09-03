@@ -18,10 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-require_once("Exception/Find.class.php");
-require_once("Exception/Mapping.class.php");
-require_once("Exception/PrimaryKey.class.php");
-require_once("Configurable.php");
+
 /**
  * Doctrine_Table   represents a database table
  *                  each Doctrine_Table holds the information of foreignKeys and associations
