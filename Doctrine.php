@@ -452,7 +452,7 @@ final class Doctrine {
 			         array_slice($lines,
 						$start,
 						($end - $start)));
-						print $refl->getEndLine()."<br \>";
+
 
         }
 
@@ -466,7 +466,7 @@ class DQLException extends Exception { }
 ?>");
         fclose($fp);
         $stripped = php_strip_whitespace( $file );
-        //print $stripped;
+
         $fp = fopen($file, 'w+');
         fwrite($fp, $stripped);
         fclose($fp);
