@@ -72,7 +72,9 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
     public function testValidate2() {
         $test = new ValidatorTest();
         $test->mymixed = "message";
-
+        $test->myrange = 1;
+        $test->myregexp = '123a';
+        
         $validator = new Doctrine_Validator();
         $validator->validateRecord($test);
 
@@ -85,6 +87,8 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($stack['mystring'], Doctrine_Validator::ERR_NOTNULL);
         $this->assertEqual($stack['myemail2'], Doctrine_Validator::ERR_NOTBLANK);
+        $this->assertEqual($stack['myrange'], Doctrine_Validator::ERR_RANGE);
+        $this->assertEqual($stack['myregexp'], Doctrine_Validator::ERR_REGEXP);
         $test->mystring = 'str';
 
 

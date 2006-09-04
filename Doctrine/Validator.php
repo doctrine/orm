@@ -67,7 +67,10 @@ class Doctrine_Validator {
      * constant for range validation error
      */
     const ERR_RANGE     = 8;
-
+    /**
+     * constant for regexp validation error
+     */
+    const ERR_REGEXP    = 9;
 
 
     
@@ -119,8 +122,8 @@ class Doctrine_Validator {
      * @return void
      */
     public function validateRecord(Doctrine_Record $record) {
-        $columns  = $record->getTable()->getColumns();
-        $name     = $record->getTable()->getComponentName();
+        $columns   = $record->getTable()->getColumns();
+        $component = $record->getTable()->getComponentName();
 
         switch($record->getState()):
             case Doctrine_Record::STATE_TDIRTY:
@@ -165,21 +168,23 @@ class Doctrine_Validator {
 
 
             foreach($e as $k => $arg) {
-                if(empty($arg) || $arg == "primary" || $arg == "protected" || $arg == "autoincrement")
+                if(is_string($k)) {
+                    $name = $k;
+                    $args = $arg;
+                } else {
+                    $args = explode(":",$arg);
+                    $name = array_shift($args);
+                    if( ! isset($args[0]))
+                        $args[0] = '';
+                }
+
+                if(empty($name) || $name == "primary" || $name == "protected" || $name == "autoincrement")
                     continue;
 
-                if( ! is_integer($k)) {
-                    $args = $arg;
-                } else
-                    $args = explode(":",$arg);
-                
-                if( ! isset($args[1])) 
-                    $args[1] = '';
+                $validator = self::getValidator($name);
+                if( ! $validator->validate($record, $key, $value, $args)) {
 
-                $validator = self::getValidator($args[0]);
-                if( ! $validator->validate($record, $key, $value, $args[1])) {
-
-                    $constant = 'Doctrine_Validator::ERR_'.strtoupper($args[0]);
+                    $constant = 'Doctrine_Validator::ERR_'.strtoupper($name);
 
                     if(defined($constant))
                         $err[$key] = constant($constant);
@@ -197,7 +202,7 @@ class Doctrine_Validator {
         }
 
         if( ! empty($err)) {
-            $this->stack[$name][] = $err;
+            $this->stack[$component][] = $err;
             return false;
         }
         
