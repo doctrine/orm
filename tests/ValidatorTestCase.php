@@ -1,7 +1,7 @@
 <?php
 class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
     public function prepareTables() {
-        $this->tables[] = "Validator_Test";
+        $this->tables[] = "ValidatorTest";
         parent::prepareTables();
     }
     public function testIsValidType() {
@@ -70,7 +70,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
     }
 
     public function testValidate2() {
-        $test = new Validator_Test();
+        $test = new ValidatorTest();
         $test->mymixed = "message";
 
         $validator = new Doctrine_Validator();
@@ -79,8 +79,9 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $stack = $validator->getErrorStack();
 
         $this->assertTrue(is_array($stack));
+        $this->assertTrue(isset($stack['ValidatorTest'][0]));
+        $stack = $stack['ValidatorTest'][0];
 
-        $stack = $stack['Validator_Test'][0];
 
         $this->assertEqual($stack['mystring'], Doctrine_Validator::ERR_NOTNULL);
         $this->assertEqual($stack['myemail2'], Doctrine_Validator::ERR_NOTBLANK);
@@ -136,7 +137,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $this->assertFalse($validator->validate($email,"address","example@e..",null));
 
         $this->assertFalse($validator->validate($email,"address","example@e..",null));
-        
+
 
     }
     public function testSave() {

@@ -805,7 +805,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 case 'object':
                     $a[$v] = serialize($this->data[$v]);
                 break;;
-                case 'enum'
+                case 'enum':
                     $a[$v] = $this->table->enumIndex($v,$this->data[$v]);
                 break;
                 default:
