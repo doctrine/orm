@@ -39,6 +39,15 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param boolean $limitSubqueryUsed
      */
     private $limitSubqueryUsed = false;
+    /**
+     * create
+     * returns a new Doctrine_Query object
+     *
+     * @return Doctrine_Query
+     */
+    public static function create() {
+        return new Doctrine_Query();
+    }
 	/**
  	 * count
      *
