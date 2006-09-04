@@ -800,26 +800,24 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach($array as $k => $v) {
             $type = $this->table->getTypeOf($v);
 
-            if($type == 'array' ||
-               $type == 'object') {
+            switch($type) {
+                case 'array':
+                case 'object':
+                    $a[$v] = serialize($this->data[$v]);
+                break;;
+                case 'enum'
+                    $a[$v] = $this->table->enumIndex($v,$this->data[$v]);
+                break;
+                default:
+                    if($this->data[$v] instanceof Doctrine_Record)
+                        $this->data[$v] = $this->data[$v]->getIncremented();
 
-                $a[$v] = serialize($this->data[$v]);
-                continue;
-
-            } elseif($type == 'enum') {
-                $a[$v] = $this->table->enumIndex($v,$this->data[$v]);
-                continue;
-            }
-
-            if($this->data[$v] instanceof Doctrine_Record) {
-                $this->data[$v] = $this->data[$v]->getIncremented();
-            }
     
-            if($this->data[$v] === self::$null)
-                $a[$v] = null;
-            else
-                $a[$v] = $this->data[$v];
-
+                    if($this->data[$v] === self::$null)
+                        $a[$v] = null;
+                    else
+                        $a[$v] = $this->data[$v];
+            }
         }
 
         foreach($this->table->getInheritanceMap() as $k => $v) {
