@@ -470,7 +470,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         if( ! $this->data)
             throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist anymore');
-            
+
         $this->data     = array_change_key_case($this->data, CASE_LOWER);
 
         $this->modified = array();
@@ -600,7 +600,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * rawSet
      * doctrine uses this function internally, not recommended for developers
      *
-     * rawSet() works in very same same way as set() with an exception that 
+     * rawSet() works in very same same way as set() with an exception that
      * 1. it cannot be used for setting references
      * 2. it cannot load uninitialized fields
      *
@@ -812,7 +812,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     if($this->data[$v] instanceof Doctrine_Record)
                         $this->data[$v] = $this->data[$v]->getIncremented();
 
-    
+
                     if($this->data[$v] === self::$null)
                         $a[$v] = null;
                     else
@@ -849,7 +849,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return boolean
      */
     public function exists() {
-        return ($this->state !== Doctrine_Record::STATE_TCLEAN && 
+        return ($this->state !== Doctrine_Record::STATE_TCLEAN &&
                 $this->state !== Doctrine_Record::STATE_TDIRTY);
     }
     /**
@@ -860,7 +860,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function hasRelation($name) {
         if(isset($this->data[$name]) || isset($this->id[$name]))
             return true;
-        return $this->table->hasForeignKey($name);
+        return $this->table->hasRelation($name);
     }
     /**
      * getIterator
