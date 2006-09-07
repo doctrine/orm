@@ -845,6 +845,24 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $this->count();
     }
     /**
+     * toArray
+     * returns record as an array
+     * 
+     * @return array
+     */
+    public function toArray() {
+        $a = array();
+
+        foreach($this as $column => $value) {
+            $a[$column] = $value;
+        }
+        if($this->table->getIdentifierType() == Doctrine_Identifier::AUTO_INCREMENT) {
+            $i      = $this->table->getIdentifier();
+            $a[$i]  = $this->getIncremented();
+        }
+        return $a;
+    }
+    /**
      * checks if record has data
      * @return boolean
      */
