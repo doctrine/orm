@@ -7,7 +7,49 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "enumTest";
         parent::prepareTables();
     }
-    
+    public function testToArray() {
+        $user = new User();
+        
+        $a = $user->toArray();
+
+        $this->assertTrue(is_array($a));
+        $this->assertTrue(array_key_exists('name', $a));
+        $this->assertEqual($a['name'], null);
+        $this->assertTrue(array_key_exists('id', $a));
+        $this->assertEqual($a['id'], null);
+        
+        $user->name = 'Someone';
+
+        $user->save();
+
+        $a = $user->toArray();
+
+        $this->assertTrue(is_array($a));
+        $this->assertTrue(array_key_exists('name', $a));
+        $this->assertEqual($a['name'], 'Someone');
+        $this->assertTrue(array_key_exists('id', $a));
+        $this->assertEqual($a['id'], 12);
+        
+        $user->refresh();
+
+        $a = $user->toArray();
+
+        $this->assertTrue(is_array($a));
+        $this->assertTrue(array_key_exists('name', $a));
+        $this->assertEqual($a['name'], 'Someone');
+        $this->assertTrue(array_key_exists('id', $a));
+        $this->assertEqual($a['id'], 12);
+        $this->connection->clear();
+        $user = $user->getTable()->find($user->id);
+
+        $a = $user->toArray();
+
+        $this->assertTrue(is_array($a));
+        $this->assertTrue(array_key_exists('name', $a));
+        $this->assertEqual($a['name'], 'Someone');
+        $this->assertTrue(array_key_exists('id', $a));
+        $this->assertEqual($a['id'], 12);
+    }
 
     public function testReferences2() {
         $user = new User();
