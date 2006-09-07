@@ -57,11 +57,11 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     protected $expanded = array();
     /**
-     * @var string $keyColumn
+     * @var string $keyColumn               the name of the column that is used for collection key mapping
      */
     protected $keyColumn;
     /**
-     * @var Doctrine_Null $null             used for extremely fast SQL null value testing
+     * @var Doctrine_Null $null             used for extremely fast null value testing
      */
     protected static $null;
 
@@ -85,15 +85,40 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
     /**
      * initNullObject
+     * initializes the null object for this collection
+     *
+     * @return void
      */
     public static function initNullObject(Doctrine_Null $null) {
         self::$null = $null;
     }
     /**
+     * getTable
+     * returns the table this collection belongs to
+     *
      * @return object Doctrine_Table
      */
     public function getTable() {
         return $this->table;
+    }
+    /**
+     * setAggregateValue
+     *
+     * @param string $name
+     * @param string $value
+     * @return void
+     */
+    public function setAggregateValue($name, $value) {
+        $this->aggregateValues[$name] = $value;
+    }
+    /**
+     * getAggregateValue
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getAggregateValue() {
+        return $this->aggregateValues[$name];
     }
     /**
      * this method is automatically called when this Doctrine_Collection is serialized
@@ -141,6 +166,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
     }
     /**
+     * isExpanded
+     *
      * whether or not an offset batch has been expanded
      * @return boolean
      */
@@ -148,6 +175,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return isset($this->expanded[$offset]);
     }
     /**
+     * isExpandable
+     *
      * whether or not this collection is expandable
      * @return boolean
      */
@@ -165,6 +194,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
     /**
      * getKeyColumn
+     * returns the name of the key column
      *
      * @return string
      */
@@ -172,6 +202,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return $this->column;
     }
     /**
+     * returns all the records as an array
+     *
      * @return array
      */
     public function getData() {
@@ -184,18 +216,27 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $this->data[] = $data;
     }
     /**
+     * getFirst
+     * returns the first record in the collection
+     *
      * @return mixed
      */
     public function getFirst() {
         return reset($this->data);
     }
     /**
+     * getLast
+     * returns the last record in the collection
+     *
      * @return mixed
      */
     public function getLast() {
         return end($this->data);
     }
     /**
+     * setReference
+     * sets a reference pointer
+     *
      * @return void
      */
     public function setReference(Doctrine_Record $record,Doctrine_Relation $relation) {
@@ -221,12 +262,17 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
     }
     /**
+     * getReference
+     *
      * @return mixed
      */
     public function getReference() {
         return $this->reference;
     }
     /**
+     * expand
+     * expands the collection
+     *
      * @return boolean
      */
     public function expand($key) {
@@ -343,6 +389,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return $coll;
     }
     /**
+     * remove
+     * removes a specified collection element
+     *
+     * @param mixed $key
      * @return boolean
      */
     public function remove($key) {
@@ -357,6 +407,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return $removed;
     }
     /**
+     * contains
+     * whether or not this collection contains a specified element
+     *
      * @param mixed $key
      * @return boolean
      */
@@ -415,8 +468,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * count
      * this class implements interface countable
+     * returns the number of records in this collection
      *
-     * @return integer                              number of records in this collection
+     * @return integer
      */
     public function count() {
         return count($this->data);
