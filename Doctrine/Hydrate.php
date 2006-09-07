@@ -105,6 +105,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
     abstract public function getQuery();
     /**
      * limitSubqueryUsed
+     *
+     * @return boolean
      */
     public function isLimitSubqueryUsed() {
         return false;
@@ -153,6 +155,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         $this->tableAliases     = array();
     }
     /**
+     * getConnection
+     *
      * @return Doctrine_Connection
      */
     public function getConnection() {
@@ -251,7 +255,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             $params = array_merge($params, $params);
 
         $stmt  = $this->connection->execute($query,$params);
-        
+
         if($this->aggregate) 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -292,7 +296,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 $coll        = $this->getCollection($root);
                 $prev[$root] = $coll;
 
-                
+
                 if($this->aggregate)
                     $return = Doctrine::FETCH_ARRAY;
 
