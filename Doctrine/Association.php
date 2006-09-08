@@ -45,13 +45,16 @@ class Doctrine_Association extends Doctrine_Relation {
                   " WHERE ".$this->local.
                   " IN (".substr(str_repeat("?, ", $count),0,-2).")";
 
-        $dql    = "FROM ".$this->table->getComponentName();
-        
-        if($context != 'record')
-            $dql .= ":".$this->associationTable->getComponentName();
-
-        $dql   .= " WHERE ".$this->table->getComponentName().".".$this->table->getIdentifier().
-                  " IN ($sub)";
+        switch($context):
+            case "record":
+                $dql  = "FROM ".$this->table->getComponentName();
+                $dql .= ":".$this->associationTable->getComponentName();
+                $dql .= " WHERE ".$this->table->getComponentName().".".$this->table->getIdentifier()." IN ($sub)";
+            break;
+            case "collection":
+                $dql  = "FROM ".$this->associationTable->getComponentName().".".$this->table->getComponentName();
+                $dql .= " WHERE ".$this->associationTable->getComponentName().".".$this->local." IN ($sub)";
+        endswitch;
 
         return $dql;
     }
