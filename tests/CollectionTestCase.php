@@ -1,49 +1,5 @@
 <?php
 class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
-    public function testLoadRelatedForNormalAssociation() {
-        $resource = new Doctrine_Collection('Resource');
-        $resource[0]->name = 'resource 1';
-        $resource[0]->Type[0]->type = 'type 1';
-        $resource[0]->Type[1]->type = 'type 2';
-        $resource[1]->name = 'resource 2';
-        $resource[1]->Type[0]->type = 'type 3';
-        $resource[1]->Type[1]->type = 'type 4';
-
-        $resource->save();
-        
-        $this->connection->clear();
-
-        $resources = $this->connection->query('FROM Resource');
-
-        $count = $this->dbh->count();
-        $resources->loadRelated('Type');
-
-        $this->assertEqual(($count + 1), $this->dbh->count());
-        $this->assertEqual($resources[0]->name, 'resource 1');
-        $this->assertEqual($resource[0]->Type[0]->type, 'type 1');
-        $this->assertEqual($resource[0]->Type[1]->type, 'type 2');
-        $this->assertEqual(($count + 1), $this->dbh->count());
-
-        $this->assertEqual($resource[1]->name, 'resource 2');
-        $this->assertEqual($resource[1]->Type[0]->type, 'type 3');
-        $this->assertEqual($resource[1]->Type[1]->type, 'type 4');
-        $this->assertEqual(($count + 1), $this->dbh->count());
-    }
-    public function testAdd() {
-        $coll = new Doctrine_Collection($this->objTable);
-        $coll->add(new User());
-        $this->assertEqual($coll->count(),1);
-        $coll->add(new User());
-        $this->assertTrue($coll->count(),2);
-
-        $this->assertEqual($coll->getKeys(), array(0,1));
-
-        $coll[2] = new User();
-
-        $this->assertTrue($coll->count(),3);
-        $this->assertEqual($coll->getKeys(), array(0,1,2));
-    }
-
     public function testLoadRelatedForAssociation() {
         $coll = $this->connection->query("FROM User");
 
@@ -98,6 +54,53 @@ class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
 
         $this->connection->clear();
     }
+
+    public function testLoadRelatedForNormalAssociation() {
+        $resource = new Doctrine_Collection('Resource');
+        $resource[0]->name = 'resource 1';
+        $resource[0]->Type[0]->type = 'type 1';
+        $resource[0]->Type[1]->type = 'type 2';
+        $resource[1]->name = 'resource 2';
+        $resource[1]->Type[0]->type = 'type 3';
+        $resource[1]->Type[1]->type = 'type 4';
+
+        $resource->save();
+        
+        $this->connection->clear();
+
+        $resources = $this->connection->query('FROM Resource');
+
+        $count = $this->dbh->count();
+        $resources->loadRelated('Type');
+
+        $this->assertEqual(($count + 1), $this->dbh->count());
+        $this->assertEqual($resources[0]->name, 'resource 1');
+        $this->assertEqual($resource[0]->Type[0]->type, 'type 1');
+        $this->assertEqual($resource[0]->Type[1]->type, 'type 2');
+        $this->assertEqual(($count + 1), $this->dbh->count());
+
+        $this->assertEqual($resource[1]->name, 'resource 2');
+        $this->assertEqual($resource[1]->Type[0]->type, 'type 3');
+        $this->assertEqual($resource[1]->Type[1]->type, 'type 4');
+        $this->assertEqual(($count + 1), $this->dbh->count());
+    }
+
+    public function testAdd() {
+        $coll = new Doctrine_Collection($this->objTable);
+        $coll->add(new User());
+        $this->assertEqual($coll->count(),1);
+        $coll->add(new User());
+        $this->assertTrue($coll->count(),2);
+
+        $this->assertEqual($coll->getKeys(), array(0,1));
+
+        $coll[2] = new User();
+
+        $this->assertTrue($coll->count(),3);
+        $this->assertEqual($coll->getKeys(), array(0,1,2));
+    }
+
+
     public function testLoadRelated() {
         $coll = $this->connection->query("FROM User(id)");
 
@@ -269,5 +272,6 @@ class Doctrine_CollectionTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[4]->Phonenumber[1]->exists(), false);
         $this->assertEqual($users[4]->Phonenumber[2]->getState(), Doctrine_Record::STATE_CLEAN);
     }
+
 }
 ?>

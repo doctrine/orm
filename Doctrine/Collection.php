@@ -624,10 +624,11 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     $list[] = $value;
             endforeach;
         }
-        $rel     = $this->table->getRelation($name);
+        $this->table->getRelation($name);
         $dql     = $rel->getRelationDql(count($list), 'collection');
 
         $coll    = $query->query($dql, $list);
+
         $this->populateRelated($name, $coll);
     }
     /**
@@ -671,6 +672,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         } elseif($rel instanceof Doctrine_Association) {
             $identifier = $this->table->getIdentifier();
             $asf        = $rel->getAssociationFactory();
+            $name       = $table->getComponentName();
 
             foreach($this->data as $key => $record) {
                 if($record->getState() == Doctrine_Record::STATE_TCLEAN ||
@@ -680,6 +682,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 $sub = new Doctrine_Collection($table);
                 foreach($coll as $k => $related) {
                     if($related->get($local) == $record[$identifier]) {
+
                         $sub->add($related->get($name));
                     }
                 }

@@ -52,7 +52,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     private $identifier;
     /**
-     * @var integer $identifierType
+     * @see Doctrine_Identifier constants
+     * @var integer $identifierType                     the type of identifier this table uses
      */
     private $identifierType;
     /**
@@ -623,6 +624,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                     $relation = new Doctrine_Association($table,$associationTable,$fields[0],$fields[1], $type, $alias);
                 } else {
+
+                    // auto initialize a new one-to-one relationship for association table
+                    $associationTable->bind($this->getComponentName(), $associationTable->getComponentName().'.'.$e2[1], Doctrine_Relation::ONE_AGGREGATE, 'id');
+                    $associationTable->bind($table->getComponentName(), $associationTable->getComponentName().'.'.$foreign, Doctrine_Relation::ONE_AGGREGATE, 'id');
+
                     // NORMAL MANY-TO-MANY RELATIONSHIP
                     $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$e2[1],Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
 
@@ -633,7 +639,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $this->relations[$alias] = $relation;
             return $this->relations[$alias];
         }
-        throw new Doctrine_Table_Exception('Unknown relation '.$original);
+        throw new Doctrine_Table_Exception($this->name . " doesn't have a relation to " . $original);
     }
     /**
      * returns an array containing all foreign key objects

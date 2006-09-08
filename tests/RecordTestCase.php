@@ -7,57 +7,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "enumTest";
         parent::prepareTables();
     }
-    public function testToArray() {
-        $user = new User();
-        
-        $a = $user->toArray();
-
-        $this->assertTrue(is_array($a));
-        $this->assertTrue(array_key_exists('name', $a));
-        $this->assertEqual($a['name'], null);
-        $this->assertTrue(array_key_exists('id', $a));
-        $this->assertEqual($a['id'], null);
-        
-        $user->name = 'Someone';
-
-        $user->save();
-
-        $a = $user->toArray();
-
-        $this->assertTrue(is_array($a));
-        $this->assertTrue(array_key_exists('name', $a));
-        $this->assertEqual($a['name'], 'Someone');
-        $this->assertTrue(array_key_exists('id', $a));
-        $this->assertEqual($a['id'], 12);
-        
-        $user->refresh();
-
-        $a = $user->toArray();
-
-        $this->assertTrue(is_array($a));
-        $this->assertTrue(array_key_exists('name', $a));
-        $this->assertEqual($a['name'], 'Someone');
-        $this->assertTrue(array_key_exists('id', $a));
-        $this->assertEqual($a['id'], 12);
-        $this->connection->clear();
-        $user = $user->getTable()->find($user->id);
-
-        $a = $user->toArray();
-
-        $this->assertTrue(is_array($a));
-        $this->assertTrue(array_key_exists('name', $a));
-        $this->assertEqual($a['name'], 'Someone');
-        $this->assertTrue(array_key_exists('id', $a));
-        $this->assertEqual($a['id'], 12);
-    }
-
-    public function testReferences2() {
-        $user = new User();
-        $user->Phonenumber[0]->phonenumber = '123 123';
-        $this->assertEqual($user->Phonenumber[0]->entity_id, $user);
-    }
-
-    public function testJoinTableSelfReferencing() {
+    public function testJoinTableSelfReferencingInsertingData() {
         $e = new Entity();
         $e->name = "Entity test";
         $this->assertTrue($e->Entity[0] instanceof Entity);
@@ -109,15 +59,44 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
-        
+
         $this->assertTrue(is_numeric($e->id));
 
+        $result = $this->dbh->query("SELECT * FROM entity_reference")->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->assertEqual(count($result), 6);
+
+        $q = "SELECT entity.id AS entity__id,
+                entity.name AS entity__name,
+                entity.loginname AS entity__loginname,
+                entity.password AS entity__password, 
+                entity.type AS entity__type,
+                entity.created AS entity__created,
+                entity.updated AS entity__updated,
+                entity.email_id AS entity__email_id, 
+                entity_reference.entity1 AS entity_reference__entity1, 
+                entity_reference.entity2 AS entity_reference__entity2 
+                FROM entity 
+                INNER JOIN entity_reference 
+                ON entity.id = entity_reference.entity1 
+                WHERE entity.id IN (SELECT entity2 FROM entity_reference WHERE entity1 IN (?))";
+        $stmt = $this->dbh->prepare($q);
+
+        $stmt->execute(array(18));
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->connection->clear();
+
         $e = $e->getTable()->find($e->id);
+
+        $count = count($this->dbh);
 
         $this->assertTrue($e instanceof Entity);
 
         $this->assertTrue($e->Entity[0] instanceof Entity);
         $this->assertTrue($e->Entity[1] instanceof Entity);
+        
+        $this->assertEqual(count($this->dbh), ($count + 1));
 
         $this->assertEqual($e->Entity[0]->name, "Friend 1");
         $this->assertEqual($e->Entity[1]->name, "Friend 2");
@@ -125,8 +104,12 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($e->Entity[0]->Entity[0]->name, "Friend 1 1");
         $this->assertEqual($e->Entity[0]->Entity[1]->name, "Friend 1 2");
 
+        $this->assertEqual(count($this->dbh), ($count + 2));
+
         $this->assertEqual($e->Entity[1]->Entity[0]->name, "Friend 2 1");
         $this->assertEqual($e->Entity[1]->Entity[1]->name, "Friend 2 2");
+
+        $this->assertEqual(count($this->dbh), ($count + 3));
 
         $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
@@ -145,6 +128,58 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($coll->count(), 1);
     }
+/**
+    public function testToArray() {
+        $user = new User();
+        
+        $a = $user->toArray();
+
+        $this->assertTrue(is_array($a));
+        $this->assertTrue(array_key_exists('name', $a));
+        $this->assertEqual($a['name'], null);
+        $this->assertTrue(array_key_exists('id', $a));
+        $this->assertEqual($a['id'], null);
+        
+        $user->name = 'Someone';
+
+        $user->save();
+
+        $a = $user->toArray();
+
+        $this->assertTrue(is_array($a));
+        $this->assertTrue(array_key_exists('name', $a));
+        $this->assertEqual($a['name'], 'Someone');
+        $this->assertTrue(array_key_exists('id', $a));
+        $this->assertTrue(is_numeric($a['id']));
+        
+        $user->refresh();
+
+        $a = $user->toArray();
+
+        $this->assertTrue(is_array($a));
+        $this->assertTrue(array_key_exists('name', $a));
+        $this->assertEqual($a['name'], 'Someone');
+        $this->assertTrue(array_key_exists('id', $a));
+        $this->assertTrue(is_numeric($a['id']));
+        $this->connection->clear();
+        $user = $user->getTable()->find($user->id);
+
+        $a = $user->toArray();
+
+        $this->assertTrue(is_array($a));
+        $this->assertTrue(array_key_exists('name', $a));
+        $this->assertEqual($a['name'], 'Someone');
+        $this->assertTrue(array_key_exists('id', $a));
+        $this->assertTrue(is_numeric($a['id']));
+    }
+
+    public function testReferences2() {
+        $user = new User();
+        $user->Phonenumber[0]->phonenumber = '123 123';
+        $this->assertEqual($user->Phonenumber[0]->entity_id, $user);
+    }
+
+
     public function testCountRelated() {
         $user = $this->connection->getTable('Entity')->find(5);
         $c = $user->countRelated('Phonenumber');
@@ -888,6 +923,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user = $this->connection->getTable("User")->find(4);
         $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
-
+ */
 }
 ?>

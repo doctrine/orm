@@ -331,7 +331,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
             if($needsSubQuery) {
                 $subquery = $this->connection->modifyLimitQuery($subquery,$this->parts["limit"],$this->parts["offset"]);
-    
+                $dbh      = $this->connection->getDBH();
+
+                // mysql doesn't support LIMIT in subqueries
+                if($dbh->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') { }
+                    //$dbh->query();
+
                 $field    = $table->getTableName().'.'.$table->getIdentifier();
                 array_unshift($this->parts['where'], $field.' IN ('.$subquery.')');
                 $modifyLimit = false;
@@ -804,6 +809,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
                 return $func;
             } else {
+
                 return $func;
             }
         }
@@ -816,7 +822,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         $exploded     = Doctrine_Query::bracketExplode($string, ',');
         foreach($exploded as $k => $value) {
-            $exploded[$k] = $this->parseAggregateFunction($value, $currPath);
+            $func         = $this->parseAggregateFunction($value, $currPath);
+            $exploded[$k] = $func;
+
             $this->parts["select"][] = $exploded[$k];
         }
     }
