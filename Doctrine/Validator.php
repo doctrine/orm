@@ -225,6 +225,27 @@ class Doctrine_Validator {
         return $this->stack;
     }
     /**
+     * converts a doctrine type to native php type
+     *
+     * @param $doctrineType
+     * @return string
+     */
+    public function phpType($doctrineType) {
+        switch($doctrineType) {
+            case 'enum':
+                return 'integer';
+            case 'blob':
+            case 'clob':
+            case 'mbstring':
+            case 'timestamp':
+            case 'date':
+                return 'string';
+            break;
+            default:
+                return $doctrineType;
+        }
+    }
+    /**
      * returns whether or not the given variable is
      * valid type
      *
@@ -237,10 +258,7 @@ class Doctrine_Validator {
             return true;
 
         $looseType = self::gettype($var);
-        if($type == 'enum')
-            $type = 'integer';
-        elseif($type == 'date' || $type == 'clob')
-            $type = 'string';
+        $type      = self::phpType($type); 
 
         switch($looseType):
             case 'float':
