@@ -622,7 +622,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                     // SELF-REFERENCING THROUGH JOIN TABLE
                     $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$fields[0],Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
 
-                    $relation = new Doctrine_Association($table,$associationTable,$fields[0],$fields[1], $type, $alias);
+                    $relation = new Doctrine_Association_Self($table,$associationTable,$fields[0],$fields[1], $type, $alias);
                 } else {
 
                     // auto initialize a new one-to-one relationship for association table

@@ -712,8 +712,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                         if( ! $loadFields) {
                             $this->subqueryAliases[] = $assocTableName;
                         }
-                        $this->parts["join"][$tname][$assocTableName] = $join.$assocTableName." ON ".$tname.".id = ".$assocTableName.".".$fk->getLocal();
-                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString." ON ".$tname2.".id = ".$assocTableName.".".$fk->getForeign();
+                        $this->parts["join"][$tname][$assocTableName] = $join.$assocTableName." ON ".$tname.".".$table->getIdentifier()." = ".$assocTableName.".".$fk->getLocal();
+                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString." ON ".$tname2.".".$table->getIdentifier()." = ".$assocTableName.".".$fk->getForeign();
                     }
 
                     $this->joins[$tname2] = $prevTable;

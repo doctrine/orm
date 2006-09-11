@@ -64,6 +64,14 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($array[0]['MAX(entity.id)'], 11);
         $this->assertEqual($array[0]['MIN(email.address)'], 'arnold@example.com');
         $this->assertEqual($array[0]['COUNT(1)'], 14);
+                /**
+        $q = new Doctrine_Query();
+        $q->from("User.Phonenumber(COUNT(id))")->groupby("User.id");
+        $coll = $q->execute();
+        print Doctrine_Lib::formatSql($q->getQuery());
+        print_r($coll);
+        $this->assertEqual(count($coll), 8);
+          */
     }
 
 
@@ -1224,5 +1232,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
+
 }
 ?>

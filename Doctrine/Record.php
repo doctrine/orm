@@ -1201,6 +1201,37 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             $id      = $this->get($local);
                             $coll    = $graph->query($query,array($id));
                             $coll->setReference($this, $fk);
+                        } elseif($fk instanceof Doctrine_Association_Self) {
+                            $id      = $this->getIncremented();
+
+                            $q = new Doctrine_RawSql();
+
+                            $assocTable = $fk->getAssociationFactory()->getTableName();
+                            $tableName  = $this->getTable()->getTableName();
+                            $identifier = $this->getTable()->getIdentifier();
+
+                            $sub     = "SELECT ".$fk->getForeign().
+                                           " FROM ".$assocTable.
+                                           " WHERE ".$fk->getLocal().
+                                           " = ?";
+
+                            $sub2   = "SELECT ".$fk->getLocal().
+                                          " FROM ".$assocTable.
+                                          " WHERE ".$fk->getForeign().
+                                          " = ?";
+
+                            $q->select('{'.$tableName.'.*}, {'.$assocTable.'.*}')
+                                ->from($tableName.' INNER JOIN '.$assocTable.' ON '.
+                                         $tableName.'.'.$identifier.' = '.$assocTable.'.'.$fk->getLocal().' OR '.
+                                         $tableName.'.'.$identifier.' = '.$assocTable.'.'.$fk->getForeign()
+                                         )
+                                ->where($tableName.'.'.$identifier.' IN ('.$sub.') OR '.
+                                          $tableName.'.'.$identifier.' IN ('.$sub2.')'
+                                         );
+                            $q->addComponent($tableName, $this->table->getComponentName());
+                            $q->addComponent($assocTable, $this->table->getComponentName().'.'.$fk->getAssociationFactory()->getComponentName());
+
+                            $coll    = $q->execute(array($id, $id));
                         } elseif($fk instanceof Doctrine_Association) {
                             $id      = $this->getIncremented();
                             $coll    = $graph->query($query, array($id));

@@ -123,8 +123,6 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * @return string
      */
     public function getQuery() {
-
-
         foreach($this->fields as $field) {
             $e = explode(".", $field);
             if( ! isset($e[1]))
