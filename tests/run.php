@@ -42,7 +42,7 @@ $test->addTestCase(new Doctrine_ConnectionTestCase());
 
 $test->addTestCase(new Doctrine_ManagerTestCase());
 
-$test->addTestCase(new Doctrine_AccessTestCase());
+$test->addTestCase(new Doctrine_AccessTestCase());   
 
 $test->addTestCase(new Doctrine_BatchIteratorTestCase());
 

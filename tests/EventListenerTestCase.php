@@ -30,15 +30,16 @@ class Doctrine_EventListenerTestCase extends Doctrine_UnitTestCase {
         $e->password = "123";
 
 
-        $this->assertEqual($e->get('name'), 'SOMETHING');         
+        $this->assertEqual($e->get('name'), 'SOMETHING');
         // test repeated calls
         $this->assertEqual($e->get('name'), 'SOMETHING');
-
+        $this->assertEqual($e->id, null);
         $this->assertEqual($e->rawGet('name'), 'something');
         $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
 
         $e->save();
 
+        $this->assertEqual($e->id, 1);
         $this->assertEqual($e->name, 'SOMETHING');
         $this->assertEqual($e->rawGet('name'), 'something');
         $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
@@ -47,6 +48,7 @@ class Doctrine_EventListenerTestCase extends Doctrine_UnitTestCase {
 
         $e->refresh();
 
+        $this->assertEqual($e->id, 1);
         $this->assertEqual($e->name, 'SOMETHING');
         $this->assertEqual($e->rawGet('name'), 'something');
         $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
@@ -55,6 +57,7 @@ class Doctrine_EventListenerTestCase extends Doctrine_UnitTestCase {
 
         $e = $e->getTable()->find($e->id);
 
+        $this->assertEqual($e->id, 1);
         $this->assertEqual($e->name, 'SOMETHING');
         $this->assertEqual($e->rawGet('name'), 'something');
         $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');

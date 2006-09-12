@@ -67,14 +67,13 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual(count($result), 6);
 
-/**
-        $stmt = $this->dbh->prepare($q);
+        //$stmt = $this->dbh->prepare($q);
 
-        $stmt->execute(array(18));
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        //$stmt->execute(array(18));
+        //$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        print_r($result);
-   */
+        //print_r($result);
+
         $this->connection->clear();
 
         $e = $e->getTable()->find($e->id);
@@ -120,7 +119,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($coll->count(), 1);
     }
-
 
 
     public function testToArray() {
@@ -256,6 +254,8 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $enum->refresh();
         $this->assertEqual($enum->status, "closed");
+        
+        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
     }
     public function testFailingRefresh() {
         $enum = $this->connection->getTable('EnumTest')->find(1);
@@ -269,7 +269,8 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
             $f = true;
         }
         $this->assertTrue($f);
-    }
+    }  
+
     public function testSerialize() {
         $user = $this->connection->getTable("User")->find(4);
         $str = serialize($user);
@@ -356,7 +357,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $coll = $this->connection->query("FROM EntityReference-b WHERE EntityReference.entity2 = 5");
         $this->assertEqual($coll->count(), 1);
     }
-
 
     public function testManyToManyTreeStructure() {
 
@@ -898,6 +898,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->Groupuser[1]->added, $t2);
     }
 
+
     public function testCount() {
         $user = $this->connection->getTable("User")->find(4);
 
@@ -917,6 +918,5 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user = $this->connection->getTable("User")->find(4);
         $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
-
 }
 ?>

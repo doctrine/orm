@@ -52,6 +52,8 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($t->someInt, 1);
         $this->assertEqual($t->someArray, array());
         $this->assertEqual($t->someObject, $obj);
+        
+        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
     }
     public function testBind() {
         $table = $this->connection->getTable("User");

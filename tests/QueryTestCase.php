@@ -24,6 +24,68 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
 
     }
+    public function testManyToManyFetchingWithColumnAggregationInheritance() {
+
+        $query = new Doctrine_Query($this->connection);
+
+        $query->from('User-l:Group-l');
+
+        $users = $query->execute();
+        $this->assertEqual($users->count(), 1);
+        $this->assertEqual($users[0]->Group->count(), 1);
+
+        $query->from('User-l.Group-l');
+
+        $users = $query->execute();
+        $this->assertEqual($users->count(), 8);
+        $this->assertEqual($users[0]->Group->count(), 0);
+        $this->assertEqual($users[1]->Group->count(), 1);
+        $this->assertEqual($users[2]->Group->count(), 0);
+
+        $this->assertEqual($users[0]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($users[1]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($users[2]->getState(), Doctrine_Record::STATE_PROXY);
+
+        $this->assertEqual($users[0]->getModified(), array());
+        $this->assertEqual($users[1]->getModified(), array());
+        $this->assertEqual($users[2]->getModified(), array());
+        $this->assertEqual($users[6]->getModified(), array());
+
+        $this->assertEqual($users[0]->type, 0);
+        $this->assertEqual($users[1]->type, 0);
+        $this->assertEqual($users[2]->type, 0);
+
+        $this->connection->flush();
+
+        $users = $query->query("FROM User-b WHERE User.Group.name = 'Action Actors'");
+
+        $this->assertEqual(trim($query->getQuery()),
+        "SELECT entity.id AS entity__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id WHERE entity2.name = 'Action Actors' AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
+        $this->assertTrue($users instanceof Doctrine_Collection);
+        $this->assertEqual($users->count(),1);
+
+        $this->assertEqual(count($this->dbh->query($query->getQuery())->fetchAll()),1);
+
+        $users = $query->query("FROM User-b WHERE User.Group.Phonenumber.phonenumber LIKE '123 123'");
+
+        $this->assertEqual(trim($query->getQuery()),
+        "SELECT entity.id AS entity__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id LEFT JOIN phonenumber ON entity2.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '123 123' AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
+        $this->assertTrue($users instanceof Doctrine_Collection);
+        $this->assertEqual($users->count(),1);
+
+        $query = new Doctrine_Query();
+        $users = $query->query("FROM User.Group WHERE User.Group.name = 'Action Actors'");
+        $this->assertEqual($users->count(), 1);
+        $count = $this->dbh->count();
+
+        $this->assertTrue($users instanceof Doctrine_Collection);
+        $this->assertEqual(get_class($users[0]), 'User');
+        $this->assertEqual($users[0]->Group->count(), 1);
+        $this->assertEqual($count, $this->dbh->count());
+        $this->assertEqual($users[0]->Group[0]->name, 'Action Actors');
+        $this->assertEqual($count, $this->dbh->count());
+    }
+
     public function testSelectingAggregateValues() {
 
         $q = new Doctrine_Query();
@@ -64,14 +126,14 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($array[0]['MAX(entity.id)'], 11);
         $this->assertEqual($array[0]['MIN(email.address)'], 'arnold@example.com');
         $this->assertEqual($array[0]['COUNT(1)'], 14);
-                /**
-        $q = new Doctrine_Query();
-        $q->from("User.Phonenumber(COUNT(id))")->groupby("User.id");
-        $coll = $q->execute();
-        print Doctrine_Lib::formatSql($q->getQuery());
-        print_r($coll);
-        $this->assertEqual(count($coll), 8);
-          */
+
+        //$q = new Doctrine_Query();
+        //$q->from("User.Phonenumber(COUNT(id))")->groupby("User.id");
+        //$coll = $q->execute();
+        //print Doctrine_Lib::formatSql($q->getQuery());
+        //print_r($coll);
+        //$this->assertEqual(count($coll), 8);
+
     }
 
 
@@ -359,65 +421,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[2]->id, 10);
     }
 
-    public function testManyToManyFetchingWithColumnAggregationInheritance() {
-        $query = new Doctrine_Query($this->connection);
 
-        $query->from('User-l:Group-l');
-
-        $users = $query->execute();
-        $this->assertEqual($users->count(), 1);
-        $this->assertEqual($users[0]->Group->count(), 1);
-
-        $query->from('User-l.Group-l');
-
-        $users = $query->execute();
-        $this->assertEqual($users->count(), 8);
-        $this->assertEqual($users[0]->Group->count(), 0);
-        $this->assertEqual($users[1]->Group->count(), 1);
-        $this->assertEqual($users[2]->Group->count(), 0);
-
-        $this->assertEqual($users[0]->getState(), Doctrine_Record::STATE_PROXY);
-        $this->assertEqual($users[1]->getState(), Doctrine_Record::STATE_PROXY);
-        $this->assertEqual($users[2]->getState(), Doctrine_Record::STATE_PROXY);
-
-        $this->assertEqual($users[0]->getModified(), array());
-        $this->assertEqual($users[1]->getModified(), array());
-        $this->assertEqual($users[2]->getModified(), array());
-        $this->assertEqual($users[6]->getModified(), array());
-
-        $this->assertEqual($users[0]->type, 0);
-        $this->assertEqual($users[1]->type, 0);
-        $this->assertEqual($users[2]->type, 0);
-
-        $this->connection->flush();
-
-        $users = $query->query("FROM User-b WHERE User.Group.name = 'Action Actors'");
-
-        $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id WHERE entity2.name = 'Action Actors' AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
-        $this->assertTrue($users instanceof Doctrine_Collection);
-        $this->assertEqual($users->count(),1);
-
-        $this->assertEqual(count($this->dbh->query($query->getQuery())->fetchAll()),1);
-
-        $users = $query->query("FROM User-b WHERE User.Group.Phonenumber.phonenumber LIKE '123 123'");
-
-        $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id LEFT JOIN phonenumber ON entity2.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '123 123' AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
-        $this->assertTrue($users instanceof Doctrine_Collection);
-        $this->assertEqual($users->count(),1);
-
-        $users = $query->query("FROM User.Group WHERE User.Group.name = 'Action Actors'");
-        $this->assertEqual($users->count(), 1);
-        $count = $this->dbh->count();
-
-        $this->assertTrue($users instanceof Doctrine_Collection);
-        $this->assertEqual(get_class($users[0]), 'User');
-        $this->assertEqual($users[0]->Group->count(), 1);
-        $this->assertEqual($count, $this->dbh->count());
-        $this->assertEqual($users[0]->Group[0]->name, 'Action Actors');
-        $this->assertEqual($count, $this->dbh->count());
-    }
 
     public function testNestedManyToManyRelations() {
         $task = new Task();

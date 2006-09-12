@@ -551,8 +551,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 // delegate the loading operation to collections in which this record resides
                 foreach($this->collections as $collection) {
                     $collection->load($this);
+
                 }
             } else {
+
                 $this->refresh();
             }
             $this->state = Doctrine_Record::STATE_CLEAN;
@@ -575,33 +577,36 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $value    = self::$null;
 
+
         if(isset($this->data[$name])) {
 
             // check if the property is null (= it is the Doctrine_Null object located in self::$null)
             if($this->data[$name] === self::$null) {
-
                 $this->load();
-
-                if($this->data[$name] === self::$null)
-                    $value = null;
-
-            } else
+            }
+            
+            if($this->data[$name] === self::$null)
+                $value = null;
+            else
                 $value = $this->data[$name];
+
         }
 
-        if(isset($this->id[$name]))
-            $value = $this->id[$name];
-
-        if($name === $this->table->getIdentifier())
-            $value = null;
 
         if($value !== self::$null) {
-            if($invoke) {
+            if($invoke && $name !== $this->table->getIdentifier()) {
 
                 return $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onGetProperty($this, $name, $value);
             } else
                 return $value;
         }
+
+
+        if(isset($this->id[$name]))
+            return $this->id[$name];
+
+        if($name === $this->table->getIdentifier())
+            return null;
 
         if( ! isset($this->references[$name]))
             $this->loadReference($name);
