@@ -533,53 +533,78 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if( ! isset($this->data[$name]))
             throw new InvalidKeyException();
 
-        if($this->data[$name] == self::$null)
+        if($this->data[$name] === self::$null)
             return null;
 
         return $this->data[$name];
     }
     /**
+     * load
+     * loads all the unitialized properties from the database
+     *
+     * @return boolean
+     */
+    public function load() {
+        // only load the data from database if the Doctrine_Record is in proxy state
+        if($this->state == Doctrine_Record::STATE_PROXY) {
+            if( ! empty($this->collections)) {
+                // delegate the loading operation to collections in which this record resides
+                foreach($this->collections as $collection) {
+                    $collection->load($this);
+                }
+            } else {
+                $this->refresh();
+            }
+            $this->state = Doctrine_Record::STATE_CLEAN;
+
+            return true;
+        }
+        return false;
+    }
+    /**
      * get
      * returns a value of a property or a related component
      *
-     * @param $name                     name of the property or related component
-     * @throws InvalidKeyException
+     * @param mixed $name                       name of the property or related component
+     * @param boolean $invoke                   whether or not to invoke the onGetProperty listener
+     * @throws Doctrine_Exception
      * @return mixed
      */
-    public function get($name) {
+    public function get($name, $invoke = true) {
+        $listener = $this->table->getAttribute(Doctrine::ATTR_LISTENER);
+
+        $value    = self::$null;
+
         if(isset($this->data[$name])) {
 
             // check if the property is null (= it is the Doctrine_Null object located in self::$null)
             if($this->data[$name] === self::$null) {
 
-                // only load the data from database if the Doctrine_Record is in proxy state
-                if($this->state == Doctrine_Record::STATE_PROXY) {
-                    if( ! empty($this->collections)) {
-                        // delegate the loading operation to collections in which this record resides
-                        foreach($this->collections as $collection) {
-                            $collection->load($this);
-                        }
-                    } else {
-                        $this->refresh();
-                    }
-                    $this->state = Doctrine_Record::STATE_CLEAN;
-                }
+                $this->load();
 
                 if($this->data[$name] === self::$null)
-                    return null;
-            }
-            return $this->data[$name];
+                    $value = null;
+
+            } else
+                $value = $this->data[$name];
         }
 
         if(isset($this->id[$name]))
-            return $this->id[$name];
+            $value = $this->id[$name];
 
         if($name === $this->table->getIdentifier())
-            return null;
+            $value = null;
 
+        if($value !== self::$null) {
+            if($invoke) {
+
+                return $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onGetProperty($this, $name, $value);
+            } else
+                return $value;
+        }
 
         if( ! isset($this->references[$name]))
-                $this->loadReference($name);
+            $this->loadReference($name);
 
 
         return $this->references[$name];
@@ -658,9 +683,13 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     $value = $id;
             }
 
-            $old = $this->get($name);
+            $old = $this->get($name, false);
 
             if($old !== $value) {
+                
+                // invoke the onPreSetProperty listener
+                $value = $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onPreSetProperty($this, $name, $value);
+
                 if($value === null)
                     $value = self::$null;
 

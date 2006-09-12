@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * interface for event listening, forces all classes that extend 
  * Doctrine_EventListener to have the same method arguments as their parent
@@ -16,6 +16,9 @@ interface Doctrine_EventListener_Interface {
 
     public function onSave(Doctrine_Record $record);
     public function onPreSave(Doctrine_Record $record);
+
+    public function onGetProperty(Doctrine_Record $record, $property, $value);
+    public function onPreSetProperty(Doctrine_Record $record, $property, $value);
 
     public function onInsert(Doctrine_Record $record);
     public function onPreInsert(Doctrine_Record $record);
