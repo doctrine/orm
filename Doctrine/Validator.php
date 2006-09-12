@@ -230,7 +230,7 @@ class Doctrine_Validator {
      * @param $doctrineType
      * @return string
      */
-    public function phpType($doctrineType) {
+    public static function phpType($doctrineType) {
         switch($doctrineType) {
             case 'enum':
                 return 'integer';
