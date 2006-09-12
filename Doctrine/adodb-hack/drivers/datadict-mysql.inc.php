@@ -108,7 +108,7 @@ class ADODB2_mysql extends ADODB_DataDict {
 	}
 	
 	// return string must begin with space
-	function _CreateSuffix($fname,$ftype,$fnotnull,$fdefault,$fautoinc,$fconstraint,$funsigned)
+	function _CreateSuffix($fname,$ftype,$fnotnull,$fdefault,$fautoinc,$fconstraint,$funsigned = null)
 	{	
 		$suffix = '';
 		if ($funsigned) $suffix .= ' UNSIGNED';
