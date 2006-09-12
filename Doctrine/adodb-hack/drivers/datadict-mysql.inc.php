@@ -248,7 +248,7 @@ class ADODB2_mysql extends ADODB_DataDict {
 	 *
 	 * @return  array of ADOFieldObjects for current table.
 	 */
- 	function MetaColumns($table) 
+ 	function MetaColumns($table, $upper = true, $schema = false) 
 	{
 		$this->_findschema($table,$schema);
 		if ($schema) {

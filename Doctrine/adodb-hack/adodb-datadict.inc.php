@@ -212,7 +212,7 @@ class ADODB_DataDict {
 	 * @return  array of tables for current database.
 	 */ 
 
-	function MetaTables()
+	function &MetaTables($ttype=false,$showSchema=false,$mask=false) 
 	{
 		global $ADODB_FETCH_MODE;
 
