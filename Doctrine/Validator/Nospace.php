@@ -1,5 +1,5 @@
 <?php
-class Doctrine_Validator_NoSpace {
+class Doctrine_Validator_Nospace {
     /**
      * @param Doctrine_Record $record
      * @param string $key
@@ -8,10 +8,7 @@ class Doctrine_Validator_NoSpace {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value, $args) {
-        if(trim($value) === '')
-            return false;
-
-        return true;
+        return ($value === null || ! preg_match('/\s\t\r\n/',$value));
     }
 }
 
