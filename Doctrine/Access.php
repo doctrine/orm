@@ -60,11 +60,27 @@ abstract class Doctrine_Access implements ArrayAccess {
         return $this->get($name);
     }
     /**
+     * __isset()
+     * 
+     * @param string $name
+     */
+    public function __isset($name) {
+        return $this->contains($name);
+    }
+    /**
+     * __unset()
+     * 
+     * @param string $name
+     */
+    public function __unset($name) {
+        return $this->remove($name);                               	
+    }
+    /**
      * @param mixed $offset
      * @return boolean -- whether or not the data has a field $offset
      */
     public function offsetExists($offset) {
-        return (bool) isset($this->data[$offset]);
+        return $this->contains($offset);
     }
     /**
      * offsetGet -- an alias of get()

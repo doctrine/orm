@@ -751,12 +751,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
     }
     /**
-     * __isset
+     * contains
      *
      * @param string $name
      * @return boolean
      */
-    public function __isset($name) {
+    public function contains($name) {
         if(isset($this->data[$name]))
             return true;
 
