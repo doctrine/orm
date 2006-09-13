@@ -5,6 +5,31 @@ class Doctrine_AccessTestCase extends Doctrine_UnitTestCase {
         $this->tables = array("Entity", "User"); 
         parent::prepareTables();
     }
+    public function testUnset() {
+
+        
+
+    }
+    public function testIsset() {
+        $user = new User();
+        
+        $this->assertTrue(isset($user->name));  
+        $this->assertFalse(isset($user->unknown));
+        
+        $this->assertTrue(isset($user['name']));
+        $this->assertFalse(isset($user['unknown']));
+        
+        $coll = new Doctrine_Collection('User');
+        
+        $this->assertFalse(isset($coll[0]));
+        // test repeated call
+        $this->assertFalse(isset($coll[0]));
+        $coll[0];
+        
+        $this->assertTrue(isset($coll[0]));
+        // test repeated call
+        $this->assertTrue(isset($coll[0]));
+    }
     public function testOffsetMethods() {
         $user = new User();
         $this->assertEqual($user["name"],null);

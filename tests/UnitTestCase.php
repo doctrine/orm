@@ -84,7 +84,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     }
     public function prepareTables() {
         foreach($this->tables as $name) {
-            $query = "DROP TABLE ".strtolower($name);
+            $query = "DROP TABLE ".Doctrine::tableize($name);
             try {
                 $this->dbh->query($query);
             } catch(PDOException $e) {

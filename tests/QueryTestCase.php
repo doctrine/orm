@@ -10,6 +10,11 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "ORM_TestItem";
         $this->tables[] = "Log_Status";
         $this->tables[] = "Log_Entry";
+        $this->tables[] = "EnumTest";
+        
+        $this->tables[] = "Task";
+        $this->tables[] = "Resource";
+        $this->tables[] = "ResourceType";
 
         try {
             $this->dbh->query("DROP TABLE test_items");
@@ -22,8 +27,39 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
         }
         parent::prepareTables();
-
+        $this->connection->clear();
     }
+
+    public function testEnumConversion() {
+        $e[0] = new EnumTest();
+        $e[0]->status = 'open';
+
+        $e[1] = new EnumTest();
+        $e[1]->status = 'verified';
+
+        $this->connection->flush();
+        $this->assertEqual($e[0]->id, 1);
+        $this->assertEqual($e[1]->id, 2);
+
+        $q = new Doctrine_Query;
+        
+        $coll = $q->from('EnumTest')
+                ->where("EnumTest.status = 'open'")
+                ->execute();
+        
+        $this->assertEqual($q->getQuery(), 'SELECT enum_test.id AS enum_test__id, enum_test.status AS enum_test__status FROM enum_test WHERE enum_test.status = 0');
+        $this->assertEqual($coll->count(), 1);
+        
+        $q = new Doctrine_Query;
+        
+        $coll = $q->from('EnumTest')
+                ->where("EnumTest.status = 'verified'")
+                ->execute();
+        
+        $this->assertEqual($q->getQuery(), 'SELECT enum_test.id AS enum_test__id, enum_test.status AS enum_test__status FROM enum_test WHERE enum_test.status = 1');
+        $this->assertEqual($coll->count(), 1);
+    }
+
     public function testManyToManyFetchingWithColumnAggregationInheritance() {
 
         $query = new Doctrine_Query($this->connection);

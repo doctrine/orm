@@ -903,8 +903,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * enumIndex
      */
     final public function enumIndex($field, $value) {
-        $v = array_search($value, $this->enum[$field]);
-        return $v;
+        if( ! isset($this->enum[$field])) 
+            $values = array();
+        else
+            $values = $this->enum[$field];
+
+        return array_search($value, $values);
     }
     /**
      * @return integer

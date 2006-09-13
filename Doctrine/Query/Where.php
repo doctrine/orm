@@ -30,7 +30,21 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
 
 
             $table     = $this->query->load($reference, false);
-            $where     = $this->query->getTableAlias($reference).".".$field." ".$operator." ".$value;
+            switch($operator) {
+                case '=':
+                    $alias     = $this->query->getTableAlias($reference);
+                    $table     = $this->query->getTable($alias);
+                    $enumIndex = $table->enumIndex($field, trim($value,"'"));
+
+                    if($enumIndex !== false)
+                        $value = $enumIndex;
+
+                    $where     = $alias.'.'.$field.' '.$operator.' '.$value;
+                break;
+                default:
+
+                    $where     = $this->query->getTableAlias($reference).'.'.$field.' '.$operator.' '.$value;
+            }
         }
         return $where;
     }
