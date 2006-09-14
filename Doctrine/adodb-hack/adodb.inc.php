@@ -42,9 +42,9 @@ function NewDataDictionary(PDO $conn) {
 	return $dict;
 }
 class ADOFieldObject {
-	var $name = '';
-	var $max_length=0;
-	var $type="";
+	public $name = '';
+	public $max_length=0;
+	public $type="";
 }
 
 
