@@ -29,6 +29,38 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
         $this->connection->clear();
     }
+    public function testUnknownFunction() {
+        $q = new Doctrine_Query();
+        $f = false;
+        try {
+            $q->from('User')->where('User.name.someunknownfunc()');
+        } catch(Doctrine_Query_Exception $e) {
+            $f = true;
+        }
+        $this->assertTrue($f);
+    }
+    public function testDqlContainsFunction() {
+        $q = new Doctrine_Query();
+        $this->connection->clear();
+
+        $q->from('User')->where('User.Phonenumber.phonenumber.contains(?)');
+        $this->assertEqual(count($q->getTableStack()), 2);
+        $this->assertEqual(count($q->getRelationStack()), 1);
+
+        //print Doctrine_Lib::formatSql($q->getQuery());
+        
+        $coll = $q->execute(array('123 123'));
+
+        $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber = ?) AND (entity.type = 0)');
+    
+        $this->assertEqual($coll->count(), 3);
+        $this->assertEqual($coll[0]->name, 'zYne');
+        $this->assertEqual($coll[0]->Phonenumber->count(), 1);
+        $this->assertEqual($coll[1]->Phonenumber->count(), 3);
+        $this->assertEqual($coll[2]->Phonenumber->count(), 1);
+
+
+    }
 
     public function testEnumConversion() {
         $e[0] = new EnumTest();

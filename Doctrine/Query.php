@@ -39,6 +39,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param boolean $limitSubqueryUsed
      */
     private $limitSubqueryUsed = false;
+    
+    private $tableStack;
+    
+    private $relationStack     = array();
     /**
      * create
      * returns a new Doctrine_Query object
@@ -47,6 +51,14 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     public static function create() {
         return new Doctrine_Query();
+    }
+    
+    public function getTableStack() {
+        return $this->tableStack;
+    }
+    
+    public function getRelationStack() {
+        return $this->relationStack;
     }
 	/**
  	 * count
@@ -626,7 +638,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $e = preg_split("/[.:]/",$path);
         $index = 0;
         $currPath = '';
-
+        $this->tableStack = array();
         foreach($e as $key => $fullname) {
             try {
                 $copy  = $e;
@@ -723,7 +735,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     $this->tableAliases[$currPath] = $tname2;
 
                     $tableName = $tname2;
+                    
+                    $this->relationStack[] = $fk;
                 }
+                $this->tableStack[] = $table;
 
                 if( ! isset($this->tables[$tableName])) {
                     $this->tables[$tableName] = $table;
