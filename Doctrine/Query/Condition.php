@@ -1,5 +1,5 @@
 <?php
-require_once("Part.php");
+Doctrine::autoload("Doctrine_Query_Part");
 
 abstract class Doctrine_Query_Condition extends Doctrine_Query_Part {
     /**
@@ -13,7 +13,7 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part {
     final public function parse($str) {
         $tmp = trim($str);
 
-        $parts = Doctrine_Query::bracketExplode($str," && ","(",")");
+        $parts = Doctrine_Query::bracketExplode($str, array(' \&\& ', ' AND '), "(", ")");
         if(count($parts) > 1) {
             $ret = array();
             foreach($parts as $part) {
@@ -23,7 +23,7 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part {
             $r = implode(" AND ",$ret);
         } else {
 
-            $parts = Doctrine_Query::bracketExplode($str," || ","(",")");
+            $parts = Doctrine_Query::bracketExplode($str, array(' \|\| ', ' OR '), "(", ")");
             if(count($parts) > 1) {
                 $ret = array();
                 foreach($parts as $part) {

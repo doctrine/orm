@@ -541,11 +541,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      *
      */
     public static function bracketExplode($str,$d,$e1 = '(',$e2 = ')') {
-        if(is_array($d))
+        if(is_array($d)) {
+            $a = preg_split('/('.implode('|', $d).')/', $str);
+            $d = stripslashes($d[0]);
+        } else
             $a = explode("$d",$str);
-        else
-            $a = explode("$d",$str);
-            
+
         $i = 0;
         $term = array();
         foreach($a as $key=>$val) {
@@ -803,6 +804,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         if( ! $this->aggregate)
             $this->loadFields($table, $fetchmode, $fields, $currPath);
     }
+    /**
+     * parseAggregateFunction
+     * 
+     * @param string $func
+     * @param string $reference
+     * @return string
+     */
     public function parseAggregateFunction($func,$reference) {
         $pos = strpos($func,"(");
 
@@ -833,7 +841,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             }
         }
     }
-    final public function parseAggregateValues($fullName, $tableName, array $exploded, $currPath) {
+    public function parseAggregateValues($fullName, $tableName, array $exploded, $currPath) {
         $this->aggregate = true;
         $pos    = strpos($fullName,"(");
         $name   = substr($fullName, 0, $pos);
