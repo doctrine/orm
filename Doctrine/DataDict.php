@@ -34,15 +34,10 @@ class Doctrine_DataDict {
         foreach($columns as $name => $args) {
             if( ! is_array($args[2]))
                 $args[2] = array();
-            
-            $constraints = array();
 
-            foreach($args[2] as $k => $v) {
-                if(is_string($k))
-                    $constraints[] = $k;
-                else
-                    $constraints[] = $v;
-            }
+            unset($args[2]['default']);
+
+            $constraints = array_keys($args[2]);
 
             $r[] = $name." ".$this->getADOType($args[0],$args[1])." ".implode(' ', $constraints);
         }

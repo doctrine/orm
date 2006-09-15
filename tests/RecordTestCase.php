@@ -5,7 +5,80 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
     public function prepareTables() {
         $this->tables[] = "enumTest";
+        $this->tables[] = "fieldNameTest";
         parent::prepareTables();
+    }
+
+    public function testEnumType() {
+
+        $enum = new EnumTest();
+        $enum->status = "open";
+        $this->assertEqual($enum->status, "open");
+        $enum->save();
+        $this->assertEqual($enum->status, "open");
+        $enum->refresh();
+        $this->assertEqual($enum->status, "open");
+
+        $enum->status = "closed";
+
+        $this->assertEqual($enum->status, "closed");
+
+        $enum->save();
+        $this->assertEqual($enum->status, "closed");
+        $this->assertTrue(is_numeric($enum->id));
+        $enum->refresh();
+        $this->assertEqual($enum->status, "closed");
+    }
+
+    public function testEnumTypeWithCaseConversion() {
+        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+
+        $enum = new EnumTest();
+
+        $enum->status = "open";
+        $this->assertEqual($enum->status, "open");
+
+        $enum->save();
+        $this->assertEqual($enum->status, "open");
+
+        $enum->refresh();
+        $this->assertEqual($enum->status, "open");      
+        
+        $enum->status = "closed";
+
+        $this->assertEqual($enum->status, "closed");
+
+        $enum->save();
+        $this->assertEqual($enum->status, "closed");
+
+        $enum->refresh();
+        $this->assertEqual($enum->status, "closed");
+        
+        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
+    }
+
+    public function testFailingRefresh() {
+        $enum = $this->connection->getTable('EnumTest')->find(1);
+
+        $this->dbh->query('DELETE FROM enum_test WHERE id = 1');
+
+        $f = false;
+        try {
+            $enum->refresh();
+        } catch(Doctrine_Record_Exception $e) {
+            $f = true;
+        }
+        $this->assertTrue($f);
+    }
+    public function testDefaultValues() {
+
+        $test = new FieldNameTest;
+        
+        $this->assertEqual($test->someColumn, 'some string');
+        $this->assertEqual($test->someEnum, 'php');
+        $this->assertEqual($test->someArray, array());
+        $this->assertTrue(is_object($test->someObject));
+        $this->assertEqual($test->someInt, 11);
     }
 
     public function testJoinTableSelfReferencingInsertingData() {
@@ -210,66 +283,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
                                        	
     }   
 
-    public function testEnumType() {
-
-        $enum = new EnumTest();
-        $enum->status = "open";
-        $this->assertEqual($enum->status, "open");
-        $enum->save();
-        $this->assertEqual($enum->status, "open");
-        $enum->refresh();
-        $this->assertEqual($enum->status, "open");
-
-        $enum->status = "closed";
-
-        $this->assertEqual($enum->status, "closed");
-
-        $enum->save();
-        $this->assertEqual($enum->status, "closed");
-
-        $enum->refresh();
-        $this->assertEqual($enum->status, "closed");
-    }
-
-    public function testEnumTypeWithCaseConversion() {
-        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
-
-        $enum = new EnumTest();
-
-        $enum->status = "open";
-        $this->assertEqual($enum->status, "open");
-
-        $enum->save();
-        $this->assertEqual($enum->status, "open");
-
-        $enum->refresh();
-        $this->assertEqual($enum->status, "open");      
-        
-        $enum->status = "closed";
-
-        $this->assertEqual($enum->status, "closed");
-
-        $enum->save();
-        $this->assertEqual($enum->status, "closed");
-
-        $enum->refresh();
-        $this->assertEqual($enum->status, "closed");
-        
-        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
-    }
-    public function testFailingRefresh() {
-        $enum = $this->connection->getTable('EnumTest')->find(1);
-        
-        $this->dbh->query('DELETE FROM enum_test WHERE id = 1');
-        
-        $f = false;
-        try {
-            $enum->refresh();
-        } catch(Doctrine_Record_Exception $e) {
-            $f = true;
-        }
-        $this->assertTrue($f);
-    }  
 
     public function testSerialize() {
         $user = $this->connection->getTable("User")->find(4);
@@ -918,5 +931,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user = $this->connection->getTable("User")->find(4);
         $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
+
 }
 ?>

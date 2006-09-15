@@ -188,6 +188,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 else
                     $this->state = Doctrine_Record::STATE_TCLEAN;
 
+                // set the default values for this record
+                $this->setDefaultValues();
+
                 // listen the onCreate event
                 $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onCreate($this);
 
@@ -232,6 +235,27 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function getOID() {
         return $this->oid;
+    }
+    /**
+     * setDefaultValues
+     * sets the default values
+     *
+     * @param boolean $overwrite        whether or not to overwrite the already set values
+     * @return boolean
+     */
+    public function setDefaultValues($overwrite = false) {
+        if( ! $this->table->hasDefaultValues())
+            return false;
+            
+        foreach($this->data as $column => $value) {
+            $default = $this->table->getDefaultValueOf($column);
+
+            if($default === null)
+                $default = self::$null;
+
+            if($value === self::$null || $overwrite)
+                $this->data[$column] = $default;
+        }
     }
     /**
      * cleanData
@@ -466,7 +490,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $id = array_values($id);
 
         $query          = $this->table->getQuery()." WHERE ".implode(" = ? AND ",$this->table->getPrimaryKeys())." = ?";
-        $this->data     = $this->table->getConnection()->execute($query,$id)->fetch(PDO::FETCH_ASSOC);
+        $stmt           = $this->table->getConnection()->execute($query,$id);
+
+        $this->data     = $stmt->fetch(PDO::FETCH_ASSOC);
+
 
         if( ! $this->data)
             throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist anymore');

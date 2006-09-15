@@ -63,7 +63,7 @@ class ADODB2_sqlite extends ADODB_DataDict {
 		return $suffix;
 	}
 
-	function _TableSQL($tabname,$lines,$pkey,$tableoptions)
+	function _TableSQL($tabname, $lines,$pkey,$tableoptions)
 	{
 		$sql = array();
 

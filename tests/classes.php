@@ -19,11 +19,11 @@ class Entity extends Doctrine_Record {
 }
 class FieldNameTest extends Doctrine_Record {
     public function setTableDefinition() {
-        $this->hasColumn("someColumn", "string", 200);
-        $this->hasColumn("someEnum", "enum", 4);
-        $this->hasColumn("someArray", "array", 100);
-        $this->hasColumn("someObject", "array", 200);
-        $this->hasColumn("someInt", "integer");
+        $this->hasColumn("someColumn", "string", 200, array('default' => 'some string'));
+        $this->hasColumn("someEnum", "enum", 4, array('default' => 'php'));
+        $this->hasColumn("someArray", "array", 100, array('default' => array()));
+        $this->hasColumn("someObject", "object", 200, array('default' => new stdClass));
+        $this->hasColumn("someInt", "integer", 20, array('default' => 11));
 
         
         $this->setEnumValues("someEnum", array('php', 'java', 'python'));

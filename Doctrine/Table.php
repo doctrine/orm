@@ -123,6 +123,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @var array $enum                                 enum value arrays
      */
     private $enum               = array();
+    /**
+     * @var boolean $hasDefaultValues                   whether or not this table has default values
+     */
+    private $hasDefaultValues;
 
 
 
@@ -176,7 +180,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                 switch(count($this->primaryKeys)):
                     case 0:
-                        $this->columns = array_merge(array("id" => array("integer",11, array("autoincrement", "primary"))), $this->columns);
+                        $this->columns = array_merge(array("id" => array("integer",11, array("autoincrement" => true, "primary" => true))), $this->columns);
                         $this->primaryKeys[] = "id";
                         $this->identifier = "id";
                         $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
@@ -193,7 +197,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                                 $found = false;
 
-                                foreach($e as $option) {
+                                foreach($e as $option => $value) {
                                     if($found)
                                         break;
 
@@ -279,13 +283,50 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         if(is_string($options)) 
             $options = explode('|', $options);
 
+        foreach($options as $k => $option) {
+            if(is_numeric($k)) {
+                if( ! empty($option))
+                    $options[$option] = true;
+
+                unset($options[$k]);
+            }
+        }
+
         $this->columns[$name] = array($type,$length,$options);
 
-        if(in_array("primary",$options)) {
+        if(isset($options['primary'])) {
             $this->primaryKeys[] = $name;
         }
+        if(isset($options['default'])) {
+            $this->hasDefaultValues = true;
+        }
     }
+    /**
+     * hasDefaultValues
+     * returns true if this table has default values, otherwise false
+     *
+     * @return boolean
+     */
+    public function hasDefaultValues() {
+        return $this->hasDefaultValues;
+    }
+    /**
+     * getDefaultValueOf
+     * returns the default value(if any) for given column
+     *
+     * @param string $column
+     * @return mixed
+     */
+    public function getDefaultValueOf($column) {
+        if( ! isset($this->columns[$column]))
+            throw new Doctrine_Table_Exception("Couldn't get default value. Column ".$column." doesn't exist.");
 
+        if(isset($this->columns[$column][2]['default'])) {
+
+            return $this->columns[$column][2]['default'];
+        } else
+            return null;
+    }
     /**
      * @return mixed
      */

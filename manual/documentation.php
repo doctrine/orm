@@ -96,6 +96,7 @@ $menu = array("Getting started" =>
                                         "Introduction",
                                         "Data types and lengths",
                                         "Constraints and validators",
+                                        "Default values",
                                         "Enum emulation"
                                         ),
                         "Record identifiers" => array(
