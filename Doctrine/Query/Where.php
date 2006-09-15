@@ -48,10 +48,11 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
                 $stack      = $this->query->getTableStack();
 
                 switch($func) {
-                    case 'contains':  
-                    
-                    case 'similarTo': 
-                    case 'isLike':   
+                    case 'contains':
+                        $operator = ' = ';
+                    case 'regexp':
+                        $operator = ' RLIKE ';
+                    case 'like':
                         if(empty($relation))
                             throw new Doctrine_Query_Exception('DQL function contains can only be used for fields of related components');
 

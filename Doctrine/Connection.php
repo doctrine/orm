@@ -127,6 +127,15 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->dbh;
     }
     /**
+     * returns the regular expression operator 
+     * (implemented by the connection drivers)
+     *
+     * @return string
+     */
+    public function getRegexpOperator() {
+        throw new Doctrine_Connection_Exception('Regular expression operator is not supported by this database driver.');                                    	
+    }
+    /**
      * query
      * queries the database with Doctrine Query Language
      *

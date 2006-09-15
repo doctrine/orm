@@ -15,9 +15,19 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         parent::__construct($manager,$pdo);
     }    
     /**
+     * returns the regular expression operator 
+     * (implemented by the connection drivers)
+     *
+     * @return string
+     */
+    public function getRegexpOperator() {
+        return 'RLIKE';
+    }
+    /**
      * deletes all data access object from the collection
      * @param Doctrine_Collection $coll
      */
+
      /**
     public function deleteCollection(Doctrine_Collection $coll) {
 

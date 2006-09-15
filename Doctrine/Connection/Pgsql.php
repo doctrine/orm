@@ -14,5 +14,14 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return $data[0];
     }
+    /**
+     * returns the regular expression operator 
+     * (implemented by the connection drivers)
+     *
+     * @return string
+     */
+    public function getRegexpOperator() {
+        return 'SIMILAR TO';
+    }
 }
 
