@@ -33,14 +33,17 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
             $pos       = strpos($field, "(");
 
             if($pos !== false) {
-                $func  = substr($field, 0, $pos);
-                $value = substr($field, ($pos + 1), -1);
-                $field = array_pop($a);
-                $reference = implode(".",$a);
-                $table     = $this->query->load($reference, false);
+                $func   = substr($field, 0, $pos);
+                $value  = substr($field, ($pos + 1), -1);
+
+                $values = Doctrine_Query::sqlExplode($value, ',');
+
+                $field      = array_pop($a);
+                $reference  = implode(".",$a);
+                $table      = $this->query->load($reference, false);
                 array_pop($a);
                 $reference2 = implode('.', $a);
-                $alias     = $this->query->getTableAlias($reference2);
+                $alias      = $this->query->getTableAlias($reference2);
 
                 $stack      = $this->query->getRelationStack();
                 $relation   = end($stack);
@@ -49,16 +52,20 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
 
                 switch($func) {
                     case 'contains':
-                        $operator = ' = ';
                     case 'regexp':
-                        $operator = ' RLIKE ';
                     case 'like':
-                        if(empty($relation))
-                            throw new Doctrine_Query_Exception('DQL function contains can only be used for fields of related components');
+                        $operator = $this->getOperator($func);
 
-                        $where = $alias.'.'.$relation->getLocal().
+                        if(empty($relation))
+                            throw new Doctrine_Query_Exception('DQL functions contains/regexp/like can only be used for fields of related components');
+                        
+                        $where = array();
+                        foreach($values as $value) {
+                            $where[] = $alias.'.'.$relation->getLocal().
                               ' IN (SELECT '.$relation->getForeign().
-                              ' FROM '.$relation->getTable()->getTableName().' WHERE '.$field.' = '.$value.')';
+                              ' FROM '.$relation->getTable()->getTableName().' WHERE '.$field.$operator.$value.')';
+                        }
+                        $where = implode(' AND ', $where);
                     break;
                     default:
                         throw new Doctrine_Query_Exception('Unknown DQL function: '.$func);
@@ -82,9 +89,23 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
                         $where      = $this->query->getTableAlias($reference).'.'.$field.' '.$operator.' '.$value;
                 }
             }
-        } else 
-            throw new Doctrine_Query_Exception('Unknown component path. The correct format should be component1.component2 ... componentN.field');
+        } 
         return $where;
+    }
+
+    public function getOperator($func) {
+        switch($func) {
+            case 'contains':
+                $operator = ' = ';
+            break;
+            case 'regexp':
+                $operator = $this->query->getConnection()->getRegexpOperator();
+            break;
+            case 'like':
+                $operator = ' LIKE ';
+            break;
+        }
+        return $operator;
     }
 
     public function __toString() {

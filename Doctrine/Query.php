@@ -541,10 +541,14 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      *
      */
     public static function bracketExplode($str,$d,$e1 = '(',$e2 = ')') {
-        $str = explode("$d",$str);
+        if(is_array($d))
+            $a = explode("$d",$str);
+        else
+            $a = explode("$d",$str);
+            
         $i = 0;
         $term = array();
-        foreach($str as $key=>$val) {
+        foreach($a as $key=>$val) {
             if (empty($term[$i])) {
                 $term[$i] = trim($val);
                 $s1 = substr_count($term[$i],"$e1");

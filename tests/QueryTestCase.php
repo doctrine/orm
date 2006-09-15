@@ -39,6 +39,16 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         }
         $this->assertTrue($f);
     }
+    public function testBadFunctionLogic() {
+        $q = new Doctrine_Query();
+        $f = false;
+        try {
+            $q->from('User')->where('User.name.contains(?)');
+        } catch(Doctrine_Query_Exception $e) {
+            $f = true;
+        }
+        $this->assertTrue($f);
+    }
     public function testDqlContainsFunction() {
         $q = new Doctrine_Query();
         $this->connection->clear();
@@ -47,21 +57,54 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(count($q->getTableStack()), 2);
         $this->assertEqual(count($q->getRelationStack()), 1);
 
-        //print Doctrine_Lib::formatSql($q->getQuery());
-        
         $coll = $q->execute(array('123 123'));
 
         $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber = ?) AND (entity.type = 0)');
-    
+
         $this->assertEqual($coll->count(), 3);
         $this->assertEqual($coll[0]->name, 'zYne');
         $this->assertEqual($coll[0]->Phonenumber->count(), 1);
         $this->assertEqual($coll[1]->Phonenumber->count(), 3);
         $this->assertEqual($coll[2]->Phonenumber->count(), 1);
-
-
     }
+    public function testDqlFunctionWithMultipleParams() {
+        $q = new Doctrine_Query();
+        $this->connection->clear();
 
+        $q->from('User')->where('User.Phonenumber.phonenumber.like(?,?)');
+        $this->assertEqual(count($q->getTableStack()), 2);
+        $this->assertEqual(count($q->getRelationStack()), 1);
+
+        $coll = $q->execute(array('%123%', '%5%'));
+
+        $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber LIKE ?) AND entity.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber LIKE ?) AND (entity.type = 0)');
+
+        $this->assertEqual($coll->count(), 3);
+        $this->assertEqual($coll[0]->name, 'Arnold Schwarzenegger');
+        $this->assertEqual($coll[0]->Phonenumber->count(), 3);
+        $this->assertEqual($coll[1]->Phonenumber->count(), 3);
+        $this->assertEqual($coll[2]->Phonenumber->count(), 3);
+    }
+    public function testDqlLikeFunction() {
+        $q = new Doctrine_Query();
+        $this->connection->clear();
+
+        $q->from('User')->where('User.Phonenumber.phonenumber.like(?)');
+        $this->assertEqual(count($q->getTableStack()), 2);
+        $this->assertEqual(count($q->getRelationStack()), 1);
+
+        $coll = $q->execute(array('123%'));
+
+        $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber LIKE ?) AND (entity.type = 0)');
+
+        $this->assertEqual($coll->count(), 5);
+        $this->assertEqual($coll[0]->name, 'zYne');
+        $this->assertEqual($coll[0]->Phonenumber->count(), 1);
+        $this->assertEqual($coll[1]->Phonenumber->count(), 3);
+        $this->assertEqual($coll[2]->Phonenumber->count(), 1);
+        $this->assertEqual($coll[3]->Phonenumber->count(), 3);
+        $this->assertEqual($coll[4]->Phonenumber->count(), 3);
+    }
     public function testEnumConversion() {
         $e[0] = new EnumTest();
         $e[0]->status = 'open';
