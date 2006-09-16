@@ -94,11 +94,12 @@ $menu = array("Getting started" =>
                         "Starting new project",
                         "Setting table definition" => array(
                                         "Introduction",
+                                         "Field(Column) naming",
                                         "Data types and lengths",
                                         "Constraints and validators",
                                         "Default values",
                                         "Enum emulation",
-                                        "Field(Column) naming"
+
                                         ),
                         "Record identifiers" => array(
                                         "Introduction",
