@@ -279,7 +279,24 @@ $menu = array("Getting started" =>
                         */
                     ),
            "DQL (Doctrine Query Language)" => 
-                            array(
+                            array('Syntax' =>
+                                  array(
+                                        'FROM',
+                                        'WHERE',
+                                        'GROUP BY',
+                                        'HAVING',
+                                        'ORDER BY',
+                                        'LIMIT and OFFSET',
+                                        ),
+
+                                  'Functions' => array(
+                                        'Contains',
+                                        'Regexp',
+                                        'Like'),
+                                  'Operators' => array(
+                                      'Logical operators')
+
+
                             
                                 ),
            "Transactions" => array(
