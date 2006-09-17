@@ -80,7 +80,7 @@ class Doctrine_Locking_Manager_Pessimistic
     public function getLock(Doctrine_Record $record, $userIdent)
     {
         $objectType = $record->getTable()->getComponentName();
-        $key        = $record->getID();
+        $key        = $record->obtainIdentifier();
         
         $gotLock = false;
         
@@ -154,7 +154,7 @@ class Doctrine_Locking_Manager_Pessimistic
     public function releaseLock(Doctrine_Record $record, $userIdent)
     {
         $objectType = $record->getTable()->getComponentName();
-        $key        = $record->getID();
+        $key        = $record->obtainIdentifier();
         
         if(is_array($key))
         {

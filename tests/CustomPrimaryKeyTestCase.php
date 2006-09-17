@@ -12,15 +12,15 @@ class Doctrine_CustomPrimaryKeyTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($c instanceof Doctrine_Record);
 
         $c->name = "custom pk test";
-        $this->assertEqual($c->getID(), array());
+        $this->assertEqual($c->obtainIdentifier(), array());
         
         $c->save();
-        $this->assertEqual($c->getID(), array("uid" => 1));
+        $this->assertEqual($c->obtainIdentifier(), array("uid" => 1));
         $this->connection->clear();
         
         $c = $this->connection->getTable('CustomPK')->find(1);
     
-        $this->assertEqual($c->getID(), array("uid" => 1));
+        $this->assertEqual($c->obtainIdentifier(), array("uid" => 1));
     }
 }
 ?>

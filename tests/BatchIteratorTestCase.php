@@ -40,12 +40,12 @@ class Doctrine_BatchIteratorTestCase extends Doctrine_UnitTestCase {
 
         $user->save();
         
-        $user = $user->getTable()->find($user->getID());
+        $user = $user->getTable()->find($user->obtainIdentifier());
         $this->assertEqual($user->name, "tester");
         $this->assertEqual($user->Address[0]->address, "street 1");
         $this->assertEqual($user->Address[1]->address, "street 2");
         
-        $user = $user->getTable()->find($user->getID());
+        $user = $user->getTable()->find($user->obtainIdentifier());
         $a = array();
         foreach($user->Address as $address) {
             $a[] = $address->address;

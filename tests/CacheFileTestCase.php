@@ -12,7 +12,7 @@ class Doctrine_Cache_FileTestCase extends Doctrine_UnitTestCase {
 
         $record = $this->cache->fetch(4);
         $this->assertTrue($record instanceof Doctrine_Record);
-        $this->assertTrue($record->getID() == $this->old->getID());
+        $this->assertTrue($record->obtainIdentifier() == $this->old->obtainIdentifier());
         
         $this->assertTrue($this->cache->getTable() == $this->objTable);
     }

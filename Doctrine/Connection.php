@@ -576,10 +576,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                             $id = $table->getMaxIdentifier();
                     }
     
-                    $record->setID($id);
+                    $record->assignIdentifier($id);
                     $id++;
                 } else
-                    $record->setID(true);
+                    $record->assignIdentifier(true);
 
                 // listen the onInsert event
                 $table->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
@@ -652,7 +652,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             $ids    = array();
             foreach($deletes as $k => $record) {
                 $ids[] = $record->getIncremented();
-                $record->setID(false);
+                $record->assignIdentifier(false);
             }
             if($record instanceof Doctrine_Record) {
                 $table  = $record->getTable();
@@ -794,7 +794,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
 
         $params   = array_values($array);
-        $id       = $record->getID();
+        $id       = $record->obtainIdentifier();
 
 
         if( ! is_array($id))
@@ -809,7 +809,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $stmt = $this->dbh->prepare($sql);
         $stmt->execute($params);
 
-        $record->setID(true);
+        $record->assignIdentifier(true);
 
         return true;
     }

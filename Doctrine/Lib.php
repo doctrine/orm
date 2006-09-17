@@ -59,7 +59,7 @@ class Doctrine_Lib {
     public static function getRecordAsString(Doctrine_Record $record) {
         $r[] = "<pre>";
         $r[] = "Component  : ".$record->getTable()->getComponentName();
-        $r[] = "ID         : ".$record->getID();
+        $r[] = "ID         : ".$record->obtainIdentifier();
         $r[] = "References : ".count($record->getReferences());
         $r[] = "State      : ".Doctrine_Lib::getRecordStateAsString($record->getState());
         $r[] = "OID        : ".$record->getOID();
@@ -181,7 +181,7 @@ class Doctrine_Lib {
         $r[] = get_class($collection);
 
         foreach($collection as $key => $record) {
-            $r[] = "Key : ".$key." ID : ".$record->getID();
+            $r[] = "Key : ".$key." ID : ".$record->obtainIdentifier();
         }
         $r[] = "</pre>";
         return implode("\n",$r);

@@ -109,7 +109,7 @@ class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
         $u1->name = "Jean Reno";
         $u1->save();
 
-        $id = $u1->getID();
+        $id = $u1->obtainIdentifier();
         $u1->delete();
 
     }

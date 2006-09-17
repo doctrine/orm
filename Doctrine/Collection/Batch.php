@@ -57,11 +57,11 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
         if(empty($this->data))
             return false;
 
-        $id  = $record->getID();
+        $id  = $record->obtainIdentifier();
         $identifier = $this->table->getIdentifier();
         foreach($this->data as $key => $v) {
             if(is_object($v)) {
-                if($v->getID() == $id)
+                if($v->obtainIdentifier() == $id)
                     break;
 
             } elseif(is_array($v[$identifier])) {

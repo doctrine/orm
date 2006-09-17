@@ -26,7 +26,7 @@ class Doctrine_Cache_SqliteTestCase extends Doctrine_UnitTestCase {
         foreach($this->old as $name => $value) {
             $this->assertEqual($record->get($name), $value);
         }
-        $this->assertEqual($record->getID(), $this->old->getID());
+        $this->assertEqual($record->obtainIdentifier(), $this->old->obtainIdentifier());
 
     }
     public function testFetchMultiple() {

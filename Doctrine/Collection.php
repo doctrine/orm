@@ -298,7 +298,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 if( ! isset($this->reference))
                     return false;
 
-                $id = $this->reference->getID();
+                $id = $this->reference->obtainIdentifier();
 
                 if(empty($id))
                     return false;

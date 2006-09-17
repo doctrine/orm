@@ -479,7 +479,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return boolean
      */
     final public function refresh() {
-        $id = $this->getID();
+        $id = $this->obtainIdentifier();
         if( ! is_array($id))
             $id = array($id);
 
@@ -1000,7 +1000,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
                 switch($fk->getType()):
                     case Doctrine_Relation::ONE_COMPOSITE:
-                        if(isset($this->originals[$alias]) && $this->originals[$alias]->getID() != $this->references[$alias]->getID())
+                        if(isset($this->originals[$alias]) && $this->originals[$alias]->obtainIdentifier() != $this->references[$alias]->obtainIdentifier())
                             $this->originals[$alias]->delete();
 
                     break;
@@ -1055,7 +1055,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param integer $id
      * @return void
      */
-    final public function setID($id = false) {
+    final public function assignIdentifier($id = false) {
         if($id === false) {
             $this->id       = array();
             $this->cleanData();
@@ -1078,7 +1078,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return array
      */
-    final public function getID() {
+    final public function obtainIdentifier() {
         return $this->id;
     }
     /**

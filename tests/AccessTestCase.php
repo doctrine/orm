@@ -39,7 +39,7 @@ class Doctrine_AccessTestCase extends Doctrine_UnitTestCase {
 
         $user->save();
 
-        $user = $this->connection->getTable("User")->find($user->getID());
+        $user = $this->connection->getTable("User")->find($user->obtainIdentifier());
         $this->assertEqual($user->name,"Jack");
 
         $user["name"] = "Jack";
@@ -57,7 +57,7 @@ class Doctrine_AccessTestCase extends Doctrine_UnitTestCase {
         
         $user->save();
 
-        $user = $this->connection->getTable("User")->find($user->getID());
+        $user = $this->connection->getTable("User")->find($user->obtainIdentifier());
         $this->assertEqual($user->name,"Jack");
 
         $user->name = "Jack";
@@ -74,7 +74,7 @@ class Doctrine_AccessTestCase extends Doctrine_UnitTestCase {
 
         $user->save();
 
-        $user = $this->connection->getTable("User")->find($user->getID());
+        $user = $this->connection->getTable("User")->find($user->obtainIdentifier());
 
         $this->assertEqual($user->get("name"),"Jack");
 
