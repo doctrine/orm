@@ -43,6 +43,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     private $tableStack;
     
     private $relationStack     = array();
+    
+    private $distinct;
     /**
      * create
      * returns a new Doctrine_Query object
@@ -59,6 +61,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     
     public function getRelationStack() {
         return $this->relationStack;
+    }
+    
+    public function isDistinct($distinct = null) {
+        if(isset($distinct))
+            $this->isDistinct = (bool) $distinct;
+
+        return $this->isDistinct;
     }
 	/**
  	 * count
@@ -293,7 +302,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
 
         // build the basic query
-        $q = "SELECT ".implode(", ",$this->parts["select"]).
+        
+        $str = '';
+        if($this->isDistinct())
+            $str = 'DISTINCT ';
+
+        $q = "SELECT ".$str.implode(", ",$this->parts["select"]).
              " FROM ";
 
         foreach($this->parts["from"] as $tname => $bool) {
