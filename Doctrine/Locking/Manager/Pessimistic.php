@@ -33,13 +33,14 @@ class Doctrine_Locking_Manager_Pessimistic
     /**
      * The datasource that is used by the locking manager
      *
-     * @var PDO object
+     * @var Doctrine_Connection object
      */
     private $_dataSource;
     /**
      * The database table name for the lock tracking
      */
     private $_lockTable = 'doctrine_lock_tracking';
+
 
     /**
      * Constructs a new locking manager object
