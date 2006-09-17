@@ -44,7 +44,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     
     private $relationStack     = array();
     
-    private $distinct;
+    private $isDistinct        = false;
     /**
      * create
      * returns a new Doctrine_Query object
@@ -79,10 +79,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 		$join  = $this->join;
 		$where = $this->where;
 		$having = $this->having;
-		
-		$q = "SELECT COUNT(1) FROM ".$table->getTableName()." ";
+
+		$q = "SELECT COUNT(DISTINCT ".$table->getTableName().'.'.$table->getIdentifier().") FROM ".$table->getTableName()." ";
 		foreach($join as $j) {
-			$q .= implode(" ",$j);
+            $q .= implode(" ",$j);
 		}
         $string = $this->applyInheritance();
 
