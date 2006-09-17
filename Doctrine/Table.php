@@ -291,7 +291,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 unset($options[$k]);
             }
         }
-
+        $name = strtolower($name);
         $this->columns[$name] = array($type,$length,$options);
 
         if(isset($options['primary'])) {
@@ -318,6 +318,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return mixed
      */
     public function getDefaultValueOf($column) {
+        $column = strtolower($column);
         if( ! isset($this->columns[$column]))
             throw new Doctrine_Table_Exception("Couldn't get default value. Column ".$column." doesn't exist.");
 
@@ -680,7 +681,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $this->relations[$alias] = $relation;
             return $this->relations[$alias];
         }
-        throw new Doctrine_Table_Exception($this->name . " doesn't have a relation to " . $original);
+        try {
+            throw new Doctrine_Table_Exception($this->name . " doesn't have a relation to " . $original);
+        } catch(Exception $e) {
+            print $e;
+        }
     }
     /**
      * returns an array containing all foreign key objects
@@ -922,7 +927,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return void
      */
     final public function setEnumValues($field, array $values) {
-        $this->enum[$field] = $values;
+        $this->enum[strtolower($field)] = $values;
     }
     /**
      * @param string $field
@@ -936,12 +941,20 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     }
     /**
      * enumValue
+     *
+     * @param string $field
+     * @param integer $index
+     * @return mixed
      */
     final public function enumValue($field, $index) {
         return isset($this->enum[$field][$index])?$this->enum[$field][$index]:$index;
     }
     /**
      * enumIndex
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return mixed
      */
     final public function enumIndex($field, $value) {
         if( ! isset($this->enum[$field])) 

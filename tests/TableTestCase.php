@@ -5,12 +5,9 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "FieldNameTest";
         parent::prepareTables();
     }
+
     public function testFieldConversion() {
         $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
-
-        $user = $this->connection->getTable('User')->find(5);
-
-        $this->assertTrue($user instanceof User);
 
         $t = new FieldNameTest();
         
@@ -34,7 +31,7 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($t->someInt, 1);
         $this->assertEqual($t->someArray, array());
         $this->assertEqual($t->someObject, $obj);
-        
+
         $t->refresh();
         
         $this->assertEqual($t->someColumn, 'abc');
@@ -55,6 +52,7 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         
         $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
     }
+
     public function testBind() {
         $table = $this->connection->getTable("User");
     }
@@ -150,5 +148,6 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
     public function testApplyInheritance() {
         $this->assertEqual($this->objTable->applyInheritance("id = 3"), "id = 3 AND type = ?");
     }
+
 }
 ?>

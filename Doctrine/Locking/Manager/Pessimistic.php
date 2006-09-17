@@ -57,8 +57,8 @@ class Doctrine_Locking_Manager_Pessimistic
         if($this->_dataSource->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true)
         {
             $columns = array();
-            $columns['object_type']        = array('string',  50, array('notnull' => true, 'primary'));
-            $columns['object_key']         = array('string', 250, array('notnull' => true, 'primary'));
+            $columns['object_type']        = array('string',  50, array('notnull' => true, 'primary' => true));
+            $columns['object_key']         = array('string', 250, array('notnull' => true, 'primary' => true));
             $columns['user_ident']         = array('string',  50, array('notnull' => true));
             $columns['timestamp_obtained'] = array('integer', 10, array('notnull' => true));
             

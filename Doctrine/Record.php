@@ -253,8 +253,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if($default === null)
                 $default = self::$null;
 
-            if($value === self::$null || $overwrite)
+            if($value === self::$null || $overwrite) {
                 $this->data[$column] = $default;
+                $this->modified[]    = $column;
+                $this->state = Doctrine_Record::STATE_TDIRTY;
+            }
         }
     }
     /**
@@ -281,35 +284,31 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach($this->table->getColumnNames() as $name) {
             $type = $this->table->getTypeOf($name);
 
-            $lower = strtolower($name);
-
-            if( ! isset($tmp[$lower])) {
-                //if($type == 'array') {
-                //    $this->data[$name] = array();
-                //} else
-                    $this->data[$name] = self::$null;
+            if( ! isset($tmp[$name])) {
+                $this->data[$name] = self::$null;
             } else {
                 switch($type):
                     case "array":
                     case "object":
 
-                        if($tmp[$lower] !== self::$null) {
-                            if(is_string($tmp[$lower])) {
-                                $value = unserialize($tmp[$lower]);
+                        if($tmp[$name] !== self::$null) {
+                            if(is_string($tmp[$name])) {
+                                $value = unserialize($tmp[$name]);
 
                                 if($value === false)
                                     throw new Doctrine_Record_Exception("Unserialization of $name failed. ".var_dump($tmp[$lower],true));
                             } else
-                                $value = $tmp[$lower];
+                                $value = $tmp[$name];
 
                             $this->data[$name] = $value;
                         }
                     break;
                     case "enum":
-                        $this->data[$name] = $this->table->enumValue($name, $tmp[$lower]);
+
+                        $this->data[$name] = $this->table->enumValue($name, $tmp[$name]);
                     break;
                     default:
-                        $this->data[$name] = $tmp[$lower];
+                        $this->data[$name] = $tmp[$name];
                 endswitch;
                 $count++;
             }
@@ -601,36 +600,34 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function get($name, $invoke = true) {
         $listener = $this->table->getAttribute(Doctrine::ATTR_LISTENER);
-
         $value    = self::$null;
+        $lower    = strtolower($name);
 
-
-        if(isset($this->data[$name])) {
+        if(isset($this->data[$lower])) {
 
             // check if the property is null (= it is the Doctrine_Null object located in self::$null)
-            if($this->data[$name] === self::$null) {
+            if($this->data[$lower] === self::$null) {
                 $this->load();
             }
             
-            if($this->data[$name] === self::$null)
+            if($this->data[$lower] === self::$null)
                 $value = null;
             else
-                $value = $this->data[$name];
+                $value = $this->data[$lower];
 
         }
 
 
         if($value !== self::$null) {
             if($invoke && $name !== $this->table->getIdentifier()) {
-
                 return $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onGetProperty($this, $name, $value);
             } else
                 return $value;
         }
 
 
-        if(isset($this->id[$name]))
-            return $this->id[$name];
+        if(isset($this->id[$lower]))
+            return $this->id[$lower];
 
         if($name === $this->table->getIdentifier())
             return null;
@@ -706,7 +703,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     public function set($name,$value) {
-        if(isset($this->data[$name])) {
+        $lower = strtolower($name);
+
+        if(isset($this->data[$lower])) {
 
             if($value instanceof Doctrine_Record) {
                 $id = $value->getIncremented();
@@ -715,7 +714,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     $value = $id;
             }
 
-            $old = $this->get($name, false);
+            $old = $this->get($lower, false);
 
             if($old !== $value) {
                 
@@ -725,8 +724,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 if($value === null)
                     $value = self::$null;
 
-                $this->data[$name] = $value;
-                $this->modified[]  = $name;
+                $this->data[$lower] = $value;
+                $this->modified[]   = $lower;
                 switch($this->state):
                     case Doctrine_Record::STATE_CLEAN:
                     case Doctrine_Record::STATE_PROXY:
