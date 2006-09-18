@@ -22,16 +22,21 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part {
                 $reference = implode(".",$a);
                 $name      = end($a);
 
+
                 $this->query->load($reference, false);
                 $alias     = $this->query->getTableAlias($reference);
+                
+
                 $tname     = $this->query->getTable($alias)->getTableName();
 
-                $r = $tname.".".$field;
-                if(isset($e[1])) 
+                $r = $alias.".".$field;
+
+                if(isset($e[1]))
                     $r .= " ".$e[1];
             }
             $ret[] = $r;
         }
+
         return implode(", ", $ret);
     }
     public function __toString() {
