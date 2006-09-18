@@ -133,8 +133,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
     /**
      * the constructor
-     * @throws Doctrine_ManagerException        if there are no opened connections
-     * @throws Doctrine_TableException          if there is already an instance of this table
+     * @throws Doctrine_Connection_Exception    if there are no opened connections
+     * @throws Doctrine_Table_Exception         if there is already an instance of this table
      * @return void
      */
     public function __construct($name) {
@@ -156,7 +156,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         // get parent classes
 
         do {
-            if($class == "Doctrine_Record") break;
+            if($class == "Doctrine_Record") 
+                break;
 
            	$name  = $class;
             $names[] = $name;
@@ -172,6 +173,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $this->columnCount = count($this->columns);
 
             if(isset($this->columns)) {
+                                      	
+                // get the declaring class of setTableDefinition method
                 $method    = new ReflectionMethod($this->name,"setTableDefinition");
                 $class     = $method->getDeclaringClass();
 
@@ -626,7 +629,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 } else
                     throw new Doctrine_Table_Exception("Only one-to-one relations are possible when local reference key is used.");
 
-            } elseif($component == $name || ($component == $alias && $name == $this->name)) {
+            } elseif($component == $name || ($component == $alias && ($name == $this->name || in_array($name,$this->parents))) {
                 if( ! isset($local))
                     $local = $this->identifier;
 
@@ -668,8 +671,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 } else {
 
                     // auto initialize a new one-to-one relationship for association table
-                    $associationTable->bind($this->getComponentName(), $associationTable->getComponentName().'.'.$e2[1], Doctrine_Relation::ONE_AGGREGATE, 'id');
-                    $associationTable->bind($table->getComponentName(), $associationTable->getComponentName().'.'.$foreign, Doctrine_Relation::ONE_AGGREGATE, 'id');
+                    $associationTable->bind($this->getComponentName(),  $associationTable->getComponentName(). '.' .$e2[1], Doctrine_Relation::ONE_AGGREGATE, 'id');
+                    $associationTable->bind($table->getComponentName(), $associationTable->getComponentName(). '.' .$foreign, Doctrine_Relation::ONE_AGGREGATE, 'id');
 
                     // NORMAL MANY-TO-MANY RELATIONSHIP
                     $this->relations[$e2[0]] = new Doctrine_ForeignKey($associationTable,$local,$e2[1],Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
