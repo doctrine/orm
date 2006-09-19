@@ -357,7 +357,7 @@ $menu = array("Getting started" =>
     <tr>
         <td width=50>
         <td>
-        <td width=800 align="left" valign="top">
+        <td align="left" valign="top">
             <table width="100%" cellspacing=1 cellpadding=1>
             <tr>
                 <td colspan=2 bgcolor="white">
@@ -366,7 +366,7 @@ $menu = array("Getting started" =>
                 </td>
             </tr>
             <tr>
-                <td bgcolor="white" valign="top" width="570">
+                <td bgcolor="white" valign="top">
                 <?php
                 if( ! isset($_REQUEST["index"])) {
                 $i = 1;
@@ -516,7 +516,7 @@ $menu = array("Getting started" =>
                     }
                     }
                 ?>
-                <td bgcolor="white" align="left" valign="top">
+                <td bgcolor="white" align="left" valign="top" width=300>
                 <?php
                     $i = 1;
                     print "<dd>-- <b><a href=documentation.php>index</a></b><br>\n";
