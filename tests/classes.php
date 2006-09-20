@@ -409,7 +409,11 @@ class DateTest extends Doctrine_Record {
         $this->hasColumn("date", "date", 20);                                    	
     }
 }
- 
+class GzipTest extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("gzip", "gzip", 100000);
+    }
+}
 
 class Tag extends Doctrine_Record {
     public function setUp() {

@@ -239,6 +239,7 @@ class Doctrine_Validator {
             case 'mbstring':
             case 'timestamp':
             case 'date':
+            case 'gzip':
                 return 'string';
             break;
             default:

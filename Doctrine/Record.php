@@ -274,7 +274,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return integer
      */
-    private function cleanData() {
+    private function cleanData($debug = false) {
         $tmp = $this->data;
 
         $this->data = array();
@@ -303,8 +303,19 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             $this->data[$name] = $value;
                         }
                     break;
-                    case "enum":
+                    case "gzip":
 
+                        if($tmp[$name] !== self::$null) {
+                            $value = gzuncompress($tmp[$name]);
+                            
+
+                            if($value === false)
+                                throw new Doctrine_Record_Exception("Uncompressing of $name failed.");
+
+                            $this->data[$name] = $value;
+                        }
+                    break;
+                    case "enum":
                         $this->data[$name] = $this->table->enumValue($name, $tmp[$name]);
                     break;
                     default:
@@ -313,6 +324,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $count++;
             }
         }
+
 
         return $count;
     }
@@ -500,7 +512,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->data     = array_change_key_case($this->data, CASE_LOWER);
 
         $this->modified = array();
-        $this->cleanData();
+        $this->cleanData(true);
 
         $this->prepareIdentifiers();
 
@@ -864,7 +876,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 case 'array':
                 case 'object':
                     $a[$v] = serialize($this->data[$v]);
-                break;;
+                break;
+                case 'gzip':
+                    $a[$v] = gzcompress($this->data[$v],5);
+                break;
                 case 'enum':
                     $a[$v] = $this->table->enumIndex($v,$this->data[$v]);
                 break;

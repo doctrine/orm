@@ -6,7 +6,30 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
     public function prepareTables() {
         $this->tables[] = "enumTest";
         $this->tables[] = "fieldNameTest";
+        $this->tables[] = "GzipTest";
         parent::prepareTables();
+    }
+    public function testGzipType() {
+        $gzip = new GzipTest();
+        $gzip->gzip = "compressed";
+
+        $this->assertEqual($gzip->gzip, "compressed");
+        $gzip->save();
+        $this->assertEqual($gzip->gzip, "compressed");
+        $gzip->refresh();
+        $this->assertEqual($gzip->gzip, "compressed");
+
+        $this->connection->clear();
+        $gzip = $gzip->getTable()->find($gzip->id);
+        $this->assertEqual($gzip->gzip, "compressed");
+        
+        $gzip->gzip = "compressed 2";
+
+        $this->assertEqual($gzip->gzip, "compressed 2");
+        $gzip->save();
+        $this->assertEqual($gzip->gzip, "compressed 2");
+        $gzip->refresh();
+        $this->assertEqual($gzip->gzip, "compressed 2");
     }
 
     public function testEnumType() {

@@ -68,6 +68,7 @@ class Doctrine_DataDict {
             case "array":
             case "object":
             case "string":
+            case "gzip":
                 if($length <= 255)
                     return "C($length)";
                 elseif($length <= 4000)
