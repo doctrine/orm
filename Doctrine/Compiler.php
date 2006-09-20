@@ -65,6 +65,15 @@ class Doctrine_Compiler {
                          "DBStatement");
 
     /**
+     * getRuntimeClasses
+     * returns an array containing all runtime classes of Doctrine framework
+     *
+     * @return array
+     */
+    public static function getRuntimeClasses() {
+        return self::$classes;
+    }
+    /**
      * method for making a single file of most used doctrine runtime components
      * including the compiled file instead of multiple files (in worst
      * cases dozens of files) can improve performance by an order of magnitude

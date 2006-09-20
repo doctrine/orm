@@ -286,6 +286,7 @@ final class Doctrine {
      */
     private static $path;
     /**
+     * getPath
      * returns the doctrine root
      *
      * @return string
@@ -297,51 +298,16 @@ final class Doctrine {
         return self::$path;
     }
     /**
+     * loadAll
      * loads all runtime classes
      *
      * @return void
      */
     public static function loadAll() {
-        if(! self::$path)
-            self::$path = dirname(__FILE__);
+        $classes = Doctrine_Compiler::getRuntimeClasses();
 
-        $path = self::$path.DIRECTORY_SEPARATOR."Doctrine";
-        $dir = dir($path);
-        $a   = array();
-        while (false !== ($entry = $dir->read())) {
-            switch($entry):
-                case ".":
-                case "..":
-                break;
-                case "Cache":
-                case "Record":
-                case "Collection":
-                case "Table":
-                case "Validator":
-                case "Exception":
-                case "EventListener":
-                case "Session":
-                case "DQL":
-                case "Sensei":
-                case "Iterator":
-                case "View":
-                case "Query":
-                    $a[]  = $path.DIRECTORY_SEPARATOR.$entry;
-                break;
-                default:
-                    if(is_file($path.DIRECTORY_SEPARATOR.$entry) && substr($entry,-4) == ".php") {
-                        require_once($path.DIRECTORY_SEPARATOR.$entry);
-                    }
-            endswitch;
-        }
-        foreach($a as $dirname) {
-            $dir = dir($dirname);
-            $path = $dirname.DIRECTORY_SEPARATOR;
-            while (false !== ($entry = $dir->read())) {
-                if(is_file($path.$entry) && substr($entry,-4) == ".php") {
-                    require_once($path.$entry);
-                }
-            }
+        foreach($classes as $class) {
+            Doctrine::autoload($class);
         }
     }
     /**
@@ -354,7 +320,7 @@ final class Doctrine {
      */
     public static function compile() {
         Doctrine_Compiler::compile();
-    }                      
+    }
     /**
      * simple autoload function
      * returns true if the class was loaded, otherwise false
