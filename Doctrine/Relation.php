@@ -85,32 +85,48 @@ class Doctrine_Relation {
         $this->alias    = $alias;
     }
     /**
-     * @return string                   the relation alias
+     * getAlias
+     * returns the relation alias
+     *
+     * @return string
      */
     final public function getAlias() {
         return $this->alias;
     }
     /**
-     * @return integer                  the relation type, either 0 or 1
+     * getType
+     * returns the relation type, either 0 or 1
+     *
+     * @see Doctrine_Relation MANY_* and ONE_* constants
+     * @return integer
      */
     final public function getType() {
         return $this->type;
     }
     /**
-     * @return object Doctrine_Table    foreign factory object
+     * getTable
+     * returns the foreign table object
+     *
+     * @return object Doctrine_Table
      */
     final public function getTable() {
         return $this->table;
     }
     /**
-     * @return string                   the name of the local column
+     * getLocal
+     * returns the name of the local column
+     *
+     * @return string
      */
     final public function getLocal() {
         return $this->local;
     }
     /**
-     * @return string                   the name of the foreignkey column where
-     *                                  the localkey column is pointing at
+     * getForeign
+     * returns the name of the foreignkey column where
+     * the localkey column is pointing at
+     *
+     * @return string
      */
     final public function getForeign() {
         return $this->foreign;
@@ -141,7 +157,7 @@ class Doctrine_Relation {
      * We iterate through the old collection and get the records
      * that do not exists in the new collection (Doctrine_Records that need to be deleted).
      */
-    final public static function getDeleteOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
+    public static function getDeleteOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
         $r = array();
 
         foreach($old as $k => $record) {
@@ -179,7 +195,7 @@ class Doctrine_Relation {
      * We iterate through the old collection and get the records
      * that exists only in the new collection (Doctrine_Records that need to be added).
      */
-    final public static function getInsertOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
+    public static function getInsertOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
         $r = array();
 
         foreach($new as $k => $record) {
