@@ -73,16 +73,16 @@ class Doctrine_Lib {
      */
     public static function getConnectionStateAsString($state) {
         switch($state):
-            case Doctrine_Transaction::STATE_OPEN:
+            case Doctrine_Connection_Transaction::STATE_OPEN:
                 return "open";
             break;
-            case Doctrine_Transaction::STATE_CLOSED:
+            case Doctrine_Connection_Transaction::STATE_CLOSED:
                 return "closed";
             break;
-            case Doctrine_Transaction::STATE_BUSY:
+            case Doctrine_Connection_Transaction::STATE_BUSY:
                 return "busy";
             break;
-            case Doctrine_Transaction::STATE_ACTIVE:
+            case Doctrine_Connection_Transaction::STATE_ACTIVE:
                 return "active";
             break;
         endswitch;

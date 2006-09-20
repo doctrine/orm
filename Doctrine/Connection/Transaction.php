@@ -20,27 +20,27 @@
  */
 
 /**
- * Doctrine_Transaction
+ * Doctrine_Connection_Transaction
  *
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_Transaction implements Countable, IteratorAggregate {
+class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
     /**
-     * Doctrine_Transaction is in open state when it is opened and there are no active transactions
+     * Doctrine_Connection_Transaction is in open state when it is opened and there are no active transactions
      */
     const STATE_OPEN        = 0;
     /**
-     * Doctrine_Transaction is in closed state when it is closed
+     * Doctrine_Connection_Transaction is in closed state when it is closed
      */
     const STATE_CLOSED      = 1;
     /**
-     * Doctrine_Transaction is in active state when it has one active transaction
+     * Doctrine_Connection_Transaction is in active state when it has one active transaction
      */
     const STATE_ACTIVE      = 2;
     /**
-     * Doctrine_Transaction is in busy state when it has multiple active transactions
+     * Doctrine_Connection_Transaction is in busy state when it has multiple active transactions
      */
     const STATE_BUSY        = 3;
     /**
@@ -48,7 +48,7 @@ class Doctrine_Transaction implements Countable, IteratorAggregate {
      */
     private $connection;
     /**
-     * @see Doctrine_Transaction::STATE_* constants
+     * @see Doctrine_Connection_Transaction::STATE_* constants
      * @var boolean $state                  the current state of the connection
      */
     private $state              = 0;
@@ -81,13 +81,13 @@ class Doctrine_Transaction implements Countable, IteratorAggregate {
      * @param Doctrine_Connection $conn
      */
     public function __construct(Doctrine_Connection $conn) {
-        $this->conn = $conn;
-        $this->state = Doctrine_Transaction::STATE_OPEN;
+        $this->conn  = $conn;
+        $this->state = Doctrine_Connection_Transaction::STATE_OPEN;
     }
     /**
      * returns the state of this connection
      *
-     * @see Doctrine_Transaction::STATE_* constants
+     * @see Doctrine_Connection_Transaction::STATE_* constants
      * @return integer          the connection state
      */
     public function getState() {
@@ -118,9 +118,9 @@ class Doctrine_Transaction implements Countable, IteratorAggregate {
 
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this->conn);
             }
-            $this->state  = Doctrine_Transaction::STATE_ACTIVE;
+            $this->state  = Doctrine_Connection_Transaction::STATE_ACTIVE;
         } else {
-            $this->state = Doctrine_Transaction::STATE_BUSY;
+            $this->state = Doctrine_Connection_Transaction::STATE_BUSY;
         }
         $this->transaction_level++;
     }
@@ -174,12 +174,12 @@ class Doctrine_Transaction implements Countable, IteratorAggregate {
             $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this->conn);
 
             $this->delete = array();
-            $this->state  = Doctrine_Transaction::STATE_OPEN;
+            $this->state  = Doctrine_Connection_Transaction::STATE_OPEN;
     
             $this->validator = null;
     
         } elseif($this->transaction_level == 1)
-            $this->state = Doctrine_Transaction::STATE_ACTIVE;
+            $this->state = Doctrine_Connection_Transaction::STATE_ACTIVE;
     }
     /**
      * rollback
@@ -195,7 +195,7 @@ class Doctrine_Transaction implements Countable, IteratorAggregate {
 
         $this->transaction_level = 0;
         $this->conn->getDBH()->rollback();
-        $this->state = Doctrine_Transaction::STATE_OPEN;
+        $this->state = Doctrine_Connection_Transaction::STATE_OPEN;
 
         $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionRollback($this->conn);
     }

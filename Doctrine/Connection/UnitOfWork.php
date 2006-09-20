@@ -26,7 +26,7 @@
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_UnitOfWork implements IteratorAggregate, Countable {
+class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
     /**
      * @var Doctrine_Connection $conn       the connection object
      */

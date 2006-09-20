@@ -53,8 +53,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function __construct(Doctrine_Manager $manager,PDO $pdo) {
         $this->dbh   = $pdo;
 
-        $this->transaction  = new Doctrine_Transaction($this);
-        $this->unitOfWork   = new Doctrine_UnitOfWork($this);
+        $this->transaction  = new Doctrine_Connection_Transaction($this);
+        $this->unitOfWork   = new Doctrine_Connection_UnitOfWork($this);
 
         $this->setParent($manager);
 
@@ -71,7 +71,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return Doctrine_UnitOfWork
      */
     public function getUnitOfWork() {
-        return $this->unitOfWork;                                	
+        return $this->unitOfWork;
     }
     /**
      * getTransaction
