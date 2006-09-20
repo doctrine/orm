@@ -79,7 +79,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $init = true;
             $attributes = array(
                         Doctrine::ATTR_FETCHMODE        => Doctrine::FETCH_IMMEDIATE,
-                        Doctrine::ATTR_CACHE            => Doctrine::CACHE_NONE,
                         Doctrine::ATTR_BATCH_SIZE       => 5,
                         Doctrine::ATTR_COLL_LIMIT       => 5,
                         Doctrine::ATTR_LISTENER         => new Doctrine_EventListener_Empty(),

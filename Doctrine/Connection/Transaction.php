@@ -300,8 +300,6 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
                 $params  = substr(str_repeat("?, ",count($ids)),0,-2);
                 $query   = "DELETE FROM ".$record->getTable()->getTableName()." WHERE ".$table->getIdentifier()." IN(".$params.")";
                 $this->conn->execute($query,$ids);
-
-                $record->getTable()->getCache()->deleteMultiple($ids);
             }
         }
         $this->delete = array();

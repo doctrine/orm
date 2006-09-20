@@ -168,24 +168,6 @@ final class Doctrine {
      */
     const LIMIT_RECORDS    = 2;
 
-
-
-
-    /**
-     * CACHE CONSTANTS
-     */
-
-    /**
-     * sqlite cache constant
-     */
-    const CACHE_SQLITE          = 0;
-    /**
-     * constant for disabling the caching
-     */
-    const CACHE_NONE            = 1;
-
-
-
     /**
      * FETCHMODE CONSTANTS
      */

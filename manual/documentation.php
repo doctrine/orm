@@ -94,19 +94,47 @@ $menu = array("Getting started" =>
                         "Starting new project",
                         "Setting table definition" => array(
                                         "Introduction",
-                                         "Field(Column) naming",
+                                        "Field(Column) naming",
                                         "Data types and lengths",
                                         "Constraints and validators",
                                         "Default values",
                                         "Enum emulation",
 
                                         ),
+                        "Data types" => array(
+                                        "Boolean",
+                                        "Integer",
+                                        "Float",
+                                        "String",
+                                        "Array",
+                                        "Object",
+                                        "Blob",
+                                        "Clob",
+                                        "Timestamp",
+                                        "Date",
+                                        "Enum",
+                                        "Gzip",
+                        ),
                         "Record identifiers" => array(
                                         "Introduction",
                                         "Autoincremented",
                                         "Natural",
                                         "Composite",
                                         "Sequential")
+                        ),
+           "Schema reference" =>
+                        array(
+                        "Data types" => array(
+                                        "PHP based types" =>
+                                    array(
+                                        "Boolean",
+                                        "Integer",
+                                        "Float",
+                                        "String",
+                                        "Array",
+                                        "Object",
+                                    ),
+                                    ),
                         ),
            "Basic Components" =>
                         array(
@@ -387,12 +415,12 @@ $menu = array("Getting started" =>
                                 if( ! file_exists("docs/$title - $k - $v2.php")) {
                                     $missing[0]++;
                                     $str .= " [ <font color='red'>doc</font> ] ";
-                                    touch("docs/$title - $k - $v2.php");
+                                    //touch("docs/$title - $k - $v2.php");
                                 }
                                 if( ! file_exists("codes/$title - $k - $v2.php")) {
                                     $missing[1]++;
                                     $str .= " [ <font color='red'>code</font> ] ";
-                                    touch("codes/$title - $k - $v2.php");
+                                    //touch("codes/$title - $k - $v2.php");
 
                                 }
 

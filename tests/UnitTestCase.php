@@ -36,7 +36,6 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $name = get_class($this);
 
         $this->manager   = Doctrine_Manager::getInstance();
-        $this->manager->setAttribute(Doctrine::ATTR_CACHE, Doctrine::CACHE_NONE);
         $this->manager->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_IMMEDIATE);
         
 
@@ -95,7 +94,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         foreach($this->tables as $name) {
             $name = ucwords($name);
             $table = $this->connection->getTable($name);
-            $table->getCache()->deleteAll();
+
             $table->clear(); 
         }
 

@@ -249,24 +249,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         // check if an instance of this table is already initialized
         if( ! $this->connection->addTable($this))
             throw new Doctrine_Table_Exception();
-
-        $this->initComponents();
-    }
-    /**
-     * initializes components this table uses
-     *
-     * @return void
-     */
-    final public function initComponents() {
+            
         $this->repository = new Doctrine_Repository($this);
-        switch($this->getAttribute(Doctrine::ATTR_CACHE)):
-            case Doctrine::CACHE_SQLITE:
-                $this->cache       = new Doctrine_Cache_Sqlite($this);
-            break;
-            case Doctrine::CACHE_NONE:
-                $this->cache       = new Doctrine_Cache($this);
-            break;
-        endswitch;
     }
     /**
      * @return Doctrine_Repository
