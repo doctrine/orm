@@ -9,7 +9,7 @@ class Doctrine_ViewTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($view->getName(), 'MyView');
         $this->assertEqual($view->getQuery(), $query);
         $this->assertEqual($view, $query->getView());
-        $this->assertTrue($view->getDBH() instanceof PDO);
+        $this->assertTrue($view->getConnection() instanceof Doctrine_Connection);
 
         $success = true;
 

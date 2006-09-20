@@ -1,8 +1,32 @@
 <?php
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.com>.
+ */
 /**
  * Doctrine_View
  *
  * this class represents a database view
+ *
+ * @author      Konsta Vesterinen
+ * @package     Doctrine ORM
+ * @url         www.phpdoctrine.com
+ * @license     LGPL
  */
 class Doctrine_View {
     /**
@@ -20,17 +44,17 @@ class Doctrine_View {
 
 
     /**
-     * @var string $name
+     * @var string $name                the name of the view
      */
     protected $name;
     /**
-     * @var Doctrine_Query $query
+     * @var Doctrine_Query $query       the DQL query object this view is hooked into
      */
     protected $query;
     /**
-     * @var PDO $dbh
+     * @var Doctrine_Connection $conn   the connection object
      */
-    protected $dbh;
+    protected $conn;
 
     /**
      * constructor
@@ -41,11 +65,11 @@ class Doctrine_View {
         $this->name  = $viewName;
         $this->query = $query;
         $this->query->setView($this);
-        $this->dbh   = $query->getConnection()->getDBH();
+        $this->conn   = $query->getConnection();
     }
     /**
-     * simple get method for getting 
-     * the associated query object
+     * getQuery
+     * returns the associated query object
      *
      * @return Doctrine_Query
      */
@@ -53,6 +77,7 @@ class Doctrine_View {
         return $this->query;
     }
     /**
+     * getName
      * returns the name of this view
      *
      * @return string
@@ -61,47 +86,57 @@ class Doctrine_View {
         return $this->name;
     }
     /**
-     * returns the database handler
+     * getConnection
+     * returns the connection object
      *
-     * @return PDO
+     * @return Doctrine_Connection
      */
-    public function getDBH() {
-        return $this->dbh;
+    public function getConnection() {
+        return $this->conn;
     }
     /**
+     * create
      * creates this view
      *
+     * @throws Doctrine_View_Exception
      * @return void
      */
     public function create() {
         $sql = sprintf(self::CREATE, $this->name, $this->query->getQuery());
         try {
-            $this->dbh->query($sql);
+            $this->conn->getDBH()->query($sql);
         } catch(Exception $e) {
             throw new Doctrine_View_Exception($e->__toString());
         }
     }
     /**
-     * drops this view
+     * drop
+     * drops this view from the database
      *
+     * @throws Doctrine_View_Exception
      * @return void
      */
     public function drop() {
         try {
-            $this->dbh->query(sprintf(self::DROP, $this->name));
+            $this->conn->getDBH()->query(sprintf(self::DROP, $this->name));
         } catch(Exception $e) {
             throw new Doctrine_View_Exception($e->__toString());
         }
     }
     /**
+     * execute
      * executes the view
-     * 
+     * returns a collection of Doctrine_Record objects
+     *
      * @return Doctrine_Collection
      */
     public function execute() {
         return $this->query->execute();
     }
     /**
+     * getSelectSql
+     * returns the select sql for this view
+     *
      * @return string
      */
     public function getSelectSql() {
