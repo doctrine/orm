@@ -14,10 +14,12 @@ class Doctrine_Validator_Email {
         if(empty($value)) 
             return true;
 
-        $parts = explode("@", $value);
-        if(isset($parts[1]) && function_exists("checkdnsrr")) {
-            if( ! checkdnsrr($parts[1], "MX"))
-                return false;
+        if(isset($args[0])) {
+            $parts = explode("@", $value);
+            if(isset($parts[1]) && function_exists("checkdnsrr")) {
+                if( ! checkdnsrr($parts[1], "MX"))
+                    return false;
+            }
         }
 
         $qtext = '[^\\x0d\\x22\\x5c\\x80-\\xff]';
