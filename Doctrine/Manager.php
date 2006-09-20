@@ -82,8 +82,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_BATCH_SIZE       => 5,
                         Doctrine::ATTR_COLL_LIMIT       => 5,
                         Doctrine::ATTR_LISTENER         => new Doctrine_EventListener_Empty(),
-                        Doctrine::ATTR_PK_COLUMNS       => array("id"),
-                        Doctrine::ATTR_PK_TYPE          => Doctrine::INCREMENT_KEY,
                         Doctrine::ATTR_LOCKMODE         => 1,
                         Doctrine::ATTR_VLD              => false,
                         Doctrine::ATTR_CREATE_TABLES    => true,

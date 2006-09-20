@@ -118,14 +118,6 @@ final class Doctrine {
      */
     const ATTR_BATCH_SIZE       = 8;
     /**
-     * primary key columns attribute
-     */
-    const ATTR_PK_COLUMNS       = 9;
-    /**
-     * primary key type attribute
-     */
-    const ATTR_PK_TYPE          = 10;
-    /**
      * locking attribute
      */
     const ATTR_LOCKMODE         = 11;
@@ -283,20 +275,6 @@ final class Doctrine {
      * mode for pessimistic locking
      */
     const LOCK_PESSIMISTIC      = 1;
-
-    /**
-     * PRIMARY KEY TYPE CONSTANTS
-     */
-
-    /**
-     * auto-incremented/(sequence updated) primary key
-     */
-    const INCREMENT_KEY         = 0;
-    /**
-     * unique key
-     */
-    const UNIQUE_KEY            = 1;
-
     /**
      * constructor
      */

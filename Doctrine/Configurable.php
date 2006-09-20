@@ -76,15 +76,6 @@ abstract class Doctrine_Configurable {
             case Doctrine::ATTR_LISTENER:
                 $this->setEventListener($value);
             break;
-            case Doctrine::ATTR_PK_COLUMNS:
-                if( ! is_array($value)) 
-                    throw new Doctrine_Exception("The value of Doctrine::ATTR_PK_COLUMNS attribute must be an array");
-            break;
-            case Doctrine::ATTR_PK_TYPE:
-                if($value != Doctrine::INCREMENT_KEY && $value != Doctrine::UNIQUE_KEY)
-                    throw new Doctrine_Exception("The value of Doctrine::ATTR_PK_TYPE attribute must be either Doctrine::INCREMENT_KEY or Doctrine::UNIQUE_KEY");
-
-            break;
             case Doctrine::ATTR_LOCKMODE:
                 if($this instanceof Doctrine_Connection) {
                     if($this->getTransaction()->getState() != Doctrine_Connection_Transaction::STATE_OPEN)
