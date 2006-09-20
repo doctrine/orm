@@ -32,7 +32,12 @@ require_once("ImportTestCase.php");
 error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
-/**
+
+
+
+
+$test->addTestCase(new Doctrine_ConnectionTestCase());
+
 $test->addTestCase(new Doctrine_RecordTestCase());
 
 $test->addTestCase(new Doctrine_AccessTestCase());
@@ -41,13 +46,13 @@ $test->addTestCase(new Doctrine_EventListenerTestCase());
 
 $test->addTestCase(new Doctrine_TableTestCase());
 
-$test->addTestCase(new Doctrine_ConnectionTestCase());
-
 $test->addTestCase(new Doctrine_ManagerTestCase());
 
 $test->addTestCase(new Doctrine_BatchIteratorTestCase());
 
 $test->addTestCase(new Doctrine_ConfigurableTestCase());
+
+$test->addTestCase(new Doctrine_ValidatorTestCase());
 
 $test->addTestCase(new Doctrine_Collection_OffsetTestCase());
 
@@ -71,12 +76,10 @@ $test->addTestCase(new Doctrine_SchemaTestCase());
 
 $test->addTestCase(new Doctrine_ImportTestCase());
 
-$test->addTestCase(new Doctrine_ValidatorTestCase());
-
 $test->addTestCase(new Doctrine_CollectionTestCase());
 
 $test->addTestCase(new Doctrine_QueryTestCase());
-  */
+
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 
 

@@ -511,7 +511,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if(isset($this->keyColumn)) {
             $value = $record->get($this->keyColumn);
             if($value === null)
-                throw new Doctrine_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
+                throw new Doctrine_Collection_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
 
             $this->data[$value] = $record;
         } else
@@ -544,7 +544,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if(isset($this->keyColumn)) {
             $value = $record->get($this->keyColumn);
             if($value === null)
-                throw new Doctrine_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
+                throw new Doctrine_Collection_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
 
             $this->data[$value] = $record;
         } else
@@ -579,7 +579,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
                     $value = $record->get($this->keyColumn);
                     if($value === null)
-                        throw new Doctrine_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
+                        throw new Doctrine_Collection_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
 
                     $this->data[$value] = $record;
                     unset($this->data[$k]);
@@ -591,6 +591,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * loadRelated
      *
      * @param mixed $name
+     * @return boolean
      */
     public function loadRelated($name = null) {
         $query   = new Doctrine_Query($this->table->getConnection());

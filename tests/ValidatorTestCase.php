@@ -4,6 +4,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "ValidatorTest";
         parent::prepareTables();
     }
+
     public function testIsValidType() {
         $var = "123";
         $this->assertTrue(Doctrine_Validator::isValidType($var,"string"));
@@ -144,6 +145,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
 
 
     }
+
     public function testSave() {
         $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
         $user = $this->connection->getTable("User")->find(4);

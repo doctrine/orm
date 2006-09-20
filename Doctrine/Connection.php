@@ -28,62 +28,18 @@
  */
 abstract class Doctrine_Connection extends Doctrine_Configurable implements Countable, IteratorAggregate {
     /**
-     * Doctrine_Connection is in open state when it is opened and there are no active transactions
-     */
-    const STATE_OPEN        = 0;
-    /**
-     * Doctrine_Connection is in closed state when it is closed
-     */
-    const STATE_CLOSED      = 1;
-    /**
-     * Doctrine_Connection is in active state when it has one active transaction
-     */
-    const STATE_ACTIVE      = 2;
-    /**
-     * Doctrine_Connection is in busy state when it has multiple active transactions
-     */
-    const STATE_BUSY        = 3;
-    /**
-     * @var $dbh                            the database handle
+     * @var $dbh                            the database handler
      */
     private $dbh;
     /**
-     * @see Doctrine_Connection::STATE_* constants
-     * @var boolean $state                  the current state of the connection
+     * @var Doctrine_Transaction $tx        the transaction object
      */
-    private $state              = 0;
-    /**
-     * @var integer $transaction_level      the nesting level of transactions, used by transaction methods
-     */
-    private $transaction_level  = 0;
+    private $tx;
     /**
      * @var array $tables                   an array containing all the initialized Doctrine_Table objects
      *                                      keys representing Doctrine_Table component names and values as Doctrine_Table objects
      */
     protected $tables           = array();
-    /**
-     * @var Doctrine_Validator $validator   transaction validator
-     */
-    protected $validator;
-    /**
-     * @var array $update                   two dimensional pending update list, the records in
-     *                                      this list will be updated when transaction is committed
-     */
-    protected $update           = array();
-    /**
-     * @var array $insert                   two dimensional pending insert list, the records in
-     *                                      this list will be inserted when transaction is committed
-     */
-    protected $insert           = array();
-    /**
-     * @var array $delete                   two dimensional pending delete list, the records in
-     *                                      this list will be deleted when transaction is committed
-     */
-    protected $delete           = array();
-
-
-
-
     /**
      * the constructor
      *
@@ -92,7 +48,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function __construct(Doctrine_Manager $manager,PDO $pdo) {
         $this->dbh   = $pdo;
-        $this->state = Doctrine_Connection::STATE_OPEN;
+
+        $this->tx    = new Doctrine_Transaction($this);
 
         $this->setParent($manager);
 
@@ -102,13 +59,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
     }
     /**
-     * returns the state of this connection
+     * getTransaction
      *
-     * @see Doctrine_Connection::STATE_* constants
-     * @return integer          the connection state
+     * returns the current transaction object
+     *
+     * @return Doctrine_Transaction
      */
-    public function getState() {
-        return $this->state;
+    public function getTransaction() {
+        return $this->tx;
     }
     /**
      * returns the manager that created this connection
@@ -439,7 +397,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return integer
      */
     public function getTransactionLevel() {
-        return $this->transaction_level;
+        return $this->tx->getTransactionLevel();
     }
     /**
      * beginTransaction
@@ -447,18 +405,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return void
      */
     public function beginTransaction() {
-        if($this->transaction_level == 0) {
-
-            if($this->getAttribute(Doctrine::ATTR_LOCKMODE) == Doctrine::LOCK_PESSIMISTIC) {
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this);
-                $this->dbh->beginTransaction();
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this);
-            }
-            $this->state  = Doctrine_Connection::STATE_ACTIVE;
-        } else {
-            $this->state = Doctrine_Connection::STATE_BUSY;
-        }
-        $this->transaction_level++;
+        $this->tx->beginTransaction();
     }
     /**
      * commits the current transaction
@@ -468,53 +415,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return void
      */
     public function commit() {
-
-        $this->transaction_level--;
-    
-        if($this->transaction_level == 0) {
-
-    
-            if($this->getAttribute(Doctrine::ATTR_LOCKMODE) == Doctrine::LOCK_OPTIMISTIC) {
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this);
-    
-                $this->dbh->beginTransaction();
-    
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this);
-            }
-    
-            if($this->getAttribute(Doctrine::ATTR_VLD))
-                $this->validator = new Doctrine_Validator();
-
-            try {
-                
-                $this->bulkInsert();
-                $this->bulkUpdate();
-                $this->bulkDelete();
-
-                if($this->getAttribute(Doctrine::ATTR_VLD)) {
-                    if($this->validator->hasErrors()) {
-                        $this->rollback();
-                        throw new Doctrine_Validator_Exception($this->validator);
-                    }
-                }
-
-                $this->dbh->commit();
-
-            } catch(PDOException $e) {
-                $this->rollback();
-
-                throw new Doctrine_Exception($e->__toString());
-            }
-
-            $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this);
-
-            $this->delete = array();
-            $this->state  = Doctrine_Connection::STATE_OPEN;
-    
-            $this->validator = null;
-    
-        } elseif($this->transaction_level == 1)
-            $this->state = Doctrine_Connection::STATE_ACTIVE;
+        $this->tx->commit();
     }
     /**
      * rollback
@@ -526,69 +427,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return void
      */
     public function rollback() {
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionRollback($this);
-
-        $this->transaction_level = 0;
-        $this->dbh->rollback();
-        $this->state = Doctrine_Connection::STATE_OPEN;
-
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionRollback($this);
-    }
-    /**
-     * bulkInsert
-     * inserts all the objects in the pending insert list into database
-     * @return void
-     */
-    public function bulkInsert() {
-        if(empty($this->insert))
-            return false;
-
-        foreach($this->insert as $name => $inserts) {
-            if( ! isset($inserts[0]))
-                continue;
-
-            $record    = $inserts[0];
-            $table     = $record->getTable();
-            $seq       = $table->getSequenceName();
-
-            $increment = false;
-            $keys      = $table->getPrimaryKeys();
-            $id        = null;
-
-            if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
-                $increment = true;
-            }
-
-            foreach($inserts as $k => $record) {
-                $table->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
-                // listen the onPreInsert event
-                $table->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
-
-
-                $this->insert($record);
-                if($increment) {
-                    if($k == 0) {
-                        // record uses auto_increment column
-
-                        $id = $this->dbh->lastInsertID();
-
-                        if( ! $id)
-                            $id = $table->getMaxIdentifier();
-                    }
-    
-                    $record->assignIdentifier($id);
-                    $id++;
-                } else
-                    $record->assignIdentifier(true);
-
-                // listen the onInsert event
-                $table->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
-
-                $table->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
-            }
-        }
-        $this->insert = array();
-        return true;
+        $this->tx->rollback();
     }
     /**
      * returns maximum identifier values
@@ -615,56 +454,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             }
         }
         return $values;
-    }
-    /**
-     * bulkUpdate
-     * updates all objects in the pending update list
-     *
-     * @return void
-     */
-    public function bulkUpdate() {
-        foreach($this->update as $name => $updates) {
-            $ids = array();
-
-            foreach($updates as $k => $record) {
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
-                // listen the onPreUpdate event
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreUpdate($record);
-
-                $this->update($record);
-                // listen the onUpdate event
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onUpdate($record);
-
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
-            }
-        }
-        $this->update = array();
-    }
-    /**
-     * bulkDelete
-     * deletes all records from the pending delete list
-     *
-     * @return void
-     */
-    public function bulkDelete() {
-        foreach($this->delete as $name => $deletes) {
-            $record = false;
-            $ids    = array();
-            foreach($deletes as $k => $record) {
-                $ids[] = $record->getIncremented();
-                $record->assignIdentifier(false);
-            }
-            if($record instanceof Doctrine_Record) {
-                $table  = $record->getTable();
-
-                $params  = substr(str_repeat("?, ",count($ids)),0,-2);
-                $query   = "DELETE FROM ".$record->getTable()->getTableName()." WHERE ".$table->getIdentifier()." IN(".$params.")";
-                $this->execute($query,$ids);
-
-                $record->getTable()->getCache()->deleteMultiple($ids);
-            }
-        }
-        $this->delete = array();
     }
     /**
      * saves a collection
@@ -703,11 +492,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function save(Doctrine_Record $record) {
         switch($record->getState()):
             case Doctrine_Record::STATE_TDIRTY:
-                $this->addInsert($record);
+                $this->tx->addInsert($record);
             break;
             case Doctrine_Record::STATE_DIRTY:
             case Doctrine_Record::STATE_PROXY:
-                $this->addUpdate($record);
+                $this->tx->addUpdate($record);
             break;
             case Doctrine_Record::STATE_CLEAN:
             case Doctrine_Record::STATE_TCLEAN:
@@ -760,96 +549,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $saveLater;
     }
     /**
-     * updates the given record
-     *
-     * @param Doctrine_Record $record
-     * @return boolean
-     */
-    private function update(Doctrine_Record $record) {
-        $array = $record->getPrepared();
-
-        if(empty($array))
-            return false;
-
-        $set   = array();
-        foreach($array as $name => $value):
-                $set[] = $name." = ?";
-
-                if($value instanceof Doctrine_Record) {
-                    switch($value->getState()):
-                        case Doctrine_Record::STATE_TCLEAN:
-                        case Doctrine_Record::STATE_TDIRTY:
-                            $record->save();
-                        default:
-                            $array[$name] = $value->getIncremented();
-                            $record->set($name, $value->getIncremented());
-                    endswitch;
-                }
-        endforeach;
-
-        if(isset($this->validator)) {
-            if( ! $this->validator->validateRecord($record)) {
-                return false;
-            }
-        }
-
-        $params   = array_values($array);
-        $id       = $record->obtainIdentifier();
-
-
-        if( ! is_array($id))
-            $id = array($id);
-
-        $id     = array_values($id);
-        $params = array_merge($params, $id);
-
-
-        $sql  = "UPDATE ".$record->getTable()->getTableName()." SET ".implode(", ",$set)." WHERE ".implode(" = ? AND ",$record->getTable()->getPrimaryKeys())." = ?";
-
-        $stmt = $this->dbh->prepare($sql);
-        $stmt->execute($params);
-
-        $record->assignIdentifier(true);
-
-        return true;
-    }
-    /**
-     * inserts a record into database
-     *
-     * @param Doctrine_Record $record
-     * @return boolean
-     */
-    private function insert(Doctrine_Record $record) {
-        $array = $record->getPrepared();
-
-        if(empty($array))
-            return false;
-
-        $seq = $record->getTable()->getSequenceName();
-
-        if( ! empty($seq)) {
-            $id             = $this->getNextID($seq);
-            $name           = $record->getTable()->getIdentifier();
-            $array[$name]   = $id;
-        }
-
-        if(isset($this->validator)) {
-            if( ! $this->validator->validateRecord($record)) {
-                return false;
-            }
-        }
-
-        $strfields = join(", ", array_keys($array));
-        $strvalues = substr(str_repeat("?, ",count($array)),0,-2); 
-        $sql  = "INSERT INTO ".$record->getTable()->getTableName()." (".$strfields.") VALUES (".$strvalues.")";
-
-        $stmt = $this->dbh->prepare($sql);
-
-        $stmt->execute(array_values($array));
-
-        return true;
-    }
-    /**
      * deletes all related composites
      * this method is always called internally when a record is deleted
      *
@@ -867,6 +566,82 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
     }
     /**
+     * saveAssociations
+     * save the associations of many-to-many relations
+     * this method also deletes associations that do not exist anymore
+     * @return void
+     */
+    final public function saveAssociations(Doctrine_Record $record) {
+        foreach($record->getTable()->table->getRelations() as $rel):
+            $table   = $rel->getTable();
+            $name    = $table->getComponentName();
+            $alias   = $this->table->getAlias($name);
+
+            if($rel instanceof Doctrine_Association) {
+                switch($rel->getType()):
+                    case Doctrine_Relation::MANY_COMPOSITE:
+                    break;
+                    case Doctrine_Relation::MANY_AGGREGATE:
+                        $asf     = $rel->getAssociationFactory();
+
+                        if($record->hasReference($alias)) {
+
+                            $new = $record->getReference($alias);
+
+                            if( ! $this->hasOriginalsFor($alias)) {
+                                $record->loadReference($alias);
+                            }
+
+                            $r = Doctrine_Relation::getDeleteOperations($this->originals[$alias],$new);
+
+                            foreach($r as $record) {
+                                $query = "DELETE FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." = ?"
+                                                                            ." AND ".$fk->getLocal()." = ?";
+                                $this->table->getConnection()->execute($query, array($record->getIncremented(),$this->getIncremented()));
+                            }
+
+                            $r = Doctrine_Relation::getInsertOperations($this->originals[$alias],$new);
+                            foreach($r as $record) {
+                                $reldao = $asf->create();
+                                $reldao->set($fk->getForeign(),$record);
+                                $reldao->set($fk->getLocal(),$this);
+                                $reldao->save();
+
+                            }
+                            $this->originals[$alias] = clone $this->references[$alias];
+                        }
+                    break;
+                endswitch;
+            } elseif($fk instanceof Doctrine_ForeignKey ||
+                     $fk instanceof Doctrine_LocalKey) {
+
+                switch($fk->getType()):
+                    case Doctrine_Relation::ONE_COMPOSITE:
+                        if(isset($this->originals[$alias]) && $this->originals[$alias]->obtainIdentifier() != $this->references[$alias]->obtainIdentifier())
+                            $this->originals[$alias]->delete();
+
+                    break;
+                    case Doctrine_Relation::MANY_COMPOSITE:
+                        if(isset($this->references[$alias])) {
+                            $new = $this->references[$alias];
+
+                            if( ! isset($this->originals[$alias]))
+                                $this->loadReference($alias);
+
+                            $r = Doctrine_Relation::getDeleteOperations($this->originals[$alias], $new);
+
+                            foreach($r as $record) {
+                                $record->delete();
+                            }
+
+                            $this->originals[$alias] = clone $this->references[$alias];
+                        }
+                    break;
+                endswitch;
+            }
+        endforeach;
+    }
+    /**
      * deletes this data access object and all the related composites
      * this operation is isolated by a transaction
      * 
@@ -882,7 +657,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $this->beginTransaction();
 
                 $this->deleteComposites($record);
-                $this->addDelete($record);
+                $this->tx->addDelete($record);
 
                 $this->commit();
                 return true;
@@ -891,55 +666,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 return false;
         endswitch;    
     }
-    /**
-     * adds record into pending insert list
-     * @param Doctrine_Record $record
-     */
-    public function addInsert(Doctrine_Record $record) {
-        $name = $record->getTable()->getComponentName();
-        $this->insert[$name][] = $record;
-    }
-    /**
-     * adds record into penging update list
-     * @param Doctrine_Record $record
-     */
-    public function addUpdate(Doctrine_Record $record) {
-        $name = $record->getTable()->getComponentName();
-        $this->update[$name][] = $record;
-    }
-    /**
-     * adds record into pending delete list
-     * @param Doctrine_Record $record
-     */
-    public function addDelete(Doctrine_Record $record) {
-        $name = $record->getTable()->getComponentName();
-        $this->delete[$name][] = $record;
-    }
-    /**
-     * returns the pending insert list
-     *
-     * @return array
-     */
-    public function getInserts() {
-        return $this->insert;
-    }
-    /**
-     * returns the pending update list
-     *
-     * @return array
-     */
-    public function getUpdates() {
-        return $this->update;
-    }
-    /**
-     * returns the pending delete list
-     *
-     * @return array
-     */
-    public function getDeletes() {
-        return $this->delete;
-    }
-
     /**
      * returns a string representation of this object
      * @return string

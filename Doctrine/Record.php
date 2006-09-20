@@ -1113,6 +1113,17 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return isset($this->references[$name]);
     }
     /**
+     * obtainReference
+     * 
+     * @param string $name
+     */
+    public function obtainReference($name) {
+        if(isset($this->references[$name]))
+            return $this->references[$name];
+    
+        throw new Doctrine_Record_Exception("Unknown reference $name");
+    }
+    /**
      * initalizes a one-to-one relation
      *
      * @param Doctrine_Record $record

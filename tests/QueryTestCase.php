@@ -30,7 +30,7 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->connection->clear();
     }
 
-    /**
+
     public function testBracktExplode() {
         $str   = "item OR item || item";
         $parts = Doctrine_Query::bracketExplode($str, array(' \|\| ', ' OR '), "(", ")");
@@ -1274,6 +1274,6 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         //$this->assertTrue(isset($values['max']));
 
     }
-    */
+
 }
 ?>
