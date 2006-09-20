@@ -204,6 +204,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return count($this->tables);
     }
     /**
+     * addTable
+     * adds a Doctrine_Table object into connection registry
+     *
      * @param $objTable             a Doctrine_Table object to be added into registry
      * @return boolean
      */
@@ -217,6 +220,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return true;
     }
     /**
+     * create
      * creates a record
      *
      * create                       creates a record
@@ -240,7 +244,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
     /**
      * saveAll                      
-     * saves all the records from all tables
+     * persists all the records from all tables
      *
      * @return void
      */
@@ -274,6 +278,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
     }
     /**
+     * evictTables
+     * evicts all tables
+     *
      * @return void
      */
     public function evictTables() {
@@ -424,16 +431,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                         $foreign = $fk->getForeign();
 
                         if($record->getTable()->hasPrimaryKey($fk->getLocal())) {
-                            switch($record->getState()):
-                                case Doctrine_Record::STATE_TDIRTY:
-                                case Doctrine_Record::STATE_TCLEAN:
-                                    $saveLater[$k] = $fk;
-                                break;
-                                case Doctrine_Record::STATE_CLEAN:
-                                case Doctrine_Record::STATE_DIRTY:
-                                    $v->save();    
-                                break;
-                            endswitch;
+                            if( ! $record->exists())
+                                $saveLater[$k] = $fk;
+                            else
+                                $v->save();
                         } else {
                             // ONE-TO-ONE relationship
                             $obj = $record->get($fk->getTable()->getComponentName());
@@ -552,21 +553,16 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return boolean      true on success, false on failure
      */
     final public function delete(Doctrine_Record $record) {
-        switch($record->getState()):
-            case Doctrine_Record::STATE_PROXY:
-            case Doctrine_Record::STATE_CLEAN:
-            case Doctrine_Record::STATE_DIRTY:
-                $this->beginTransaction();
+        if( ! $record->exists())
+            return false;
+            
+        $this->beginTransaction();
 
-                $this->deleteComposites($record);
-                $this->transaction->addDelete($record);
+        $this->deleteComposites($record);
+        $this->transaction->addDelete($record);
 
-                $this->commit();
-                return true;
-            break;
-            default:
-                return false;
-        endswitch;    
+        $this->commit();
+        return true;
     }
     /**
      * returns a string representation of this object

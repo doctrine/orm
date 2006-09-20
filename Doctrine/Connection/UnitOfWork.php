@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Transaction
+ * Doctrine_Connection_UnitOfWork
  *
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
