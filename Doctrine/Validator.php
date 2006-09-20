@@ -107,10 +107,10 @@ class Doctrine_Validator {
             $class = "Doctrine_Validator_".ucwords(strtolower($name));
             if(class_exists($class)) {
                 self::$validators[$name] = new $class;
-            } elseif(class_exists($name."Validator")) {
-                self::$validators[$name] = new $name."Validator";
-            } else 
-                throw new Doctrine_Exception("Validator named '$name' not availible.");
+            } else {
+			    throw new Doctrine_Exception("Validator named '$name' not availible.");
+			} 
+            
         }
         return self::$validators[$name];
     }

@@ -1,5 +1,5 @@
 <?php
-class ValidatorUSState {
+class Doctrine_Validator_Usstate {
     private static $states = array (
 			    "AK" =>	true,
 				"AL" => true,
