@@ -154,6 +154,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
             $listener->onSaveCascade($record);
         }
     }
+
     public function onPreSaveCascade(Doctrine_Record $record) { 
         foreach($this->listeners as $listener) {
             $listener->onPreSaveCascade($record);
@@ -165,6 +166,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
             $listener->onDeleteCascade($record);
         }
     }
+
     public function onPreDeleteCascade(Doctrine_Record $record) { 
         foreach($this->listeners as $listener) {
             $listener->onPreDeleteCascade($record);
