@@ -238,43 +238,30 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
             $listener->onPreDelete($record);
         }
     }
-
+    /**
+     * onEvict
+     * an event invoked after Doctrine_Record is evicted from record repository
+     *
+     * @param Doctrine_Record $record
+     * @return void
+     */
     public function onEvict(Doctrine_Record $record) { 
         foreach($this->listeners as $listener) {
             $listener->onEvict($record);
         }
     }
-
+    /**
+     * onPreEvict
+     * an event invoked before Doctrine_Record is evicted from record repository
+     *
+     * @param Doctrine_Record $record
+     * @return void
+     */
     public function onPreEvict(Doctrine_Record $record) { 
         foreach($this->listeners as $listener) {
             $listener->onPreEvict($record);
         }
     }
-
-    public function onSaveCascade(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
-            $listener->onSaveCascade($record);
-        }
-    }
-
-    public function onPreSaveCascade(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
-            $listener->onPreSaveCascade($record);
-        }
-    }
-
-    public function onDeleteCascade(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
-            $listener->onDeleteCascade($record);
-        }
-    }
-
-    public function onPreDeleteCascade(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
-            $listener->onPreDeleteCascade($record);
-        }
-    }
-
     public function onClose(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
             $listener->onClose($connection);

@@ -28,8 +28,6 @@ Doctrine::autoload('Doctrine_EventListener_Interface');
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
  * @license     LGPL
- * @version     1.0 alpha
- *
  */
 abstract class Doctrine_EventListener implements Doctrine_EventListener_Interface {
 
@@ -64,12 +62,6 @@ abstract class Doctrine_EventListener implements Doctrine_EventListener_Interfac
 
     public function onEvict(Doctrine_Record $record) { }
     public function onPreEvict(Doctrine_Record $record) { }
-
-    public function onSaveCascade(Doctrine_Record $record) { }
-    public function onPreSaveCascade(Doctrine_Record $record) { }
-
-    public function onDeleteCascade(Doctrine_Record $record) { }
-    public function onPreDeleteCascade(Doctrine_Record $record) { }
 
     public function onClose(Doctrine_Connection $connection) { }
     public function onPreClose(Doctrine_Connection $connection) { }
