@@ -12,7 +12,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
      * @param Doctrine_EventListener $listener
      * @return void
      */
-    public function addListener(Doctrine_EventListener $listener) {
+    public function add(Doctrine_EventListener $listener) {
         $this->listeners[] = $listener;
     }
     /**
@@ -22,7 +22,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
      * @param mixed $key
      * @return mixed
      */
-    public function getListener($key) {
+    public function get($key) {
         if( ! isset($this->listeners[$key]))
             return null;
 
@@ -35,7 +35,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
      * @param Doctrine_EventListener $listener
      * @return void
      */
-    public function setListener($key, Doctrine_EventListener $listener) {
+    public function set($key, Doctrine_EventListener $listener) {
         $this->listeners[$key] = $listener;
     }
 
