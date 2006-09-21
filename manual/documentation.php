@@ -94,6 +94,7 @@ $menu = array("Getting started" =>
                         "Starting new project",
                         "Setting table definition" => array(
                                         "Introduction",
+                                        "Table and class naming",
                                         "Field(Column) naming",
                                         "Data types and lengths",
                                         "Constraints and validators",
@@ -138,7 +139,7 @@ $menu = array("Getting started" =>
                         ),
            "Basic Components" =>
                         array(
-                        "Manager" 
+                        "Manager"
                                 => array("Introduction",
                                          "Opening a new connection",
                                          "Managing connections"),
@@ -155,7 +156,7 @@ $menu = array("Getting started" =>
                                          "Callbacks"),
                         "Connection"
                                 => array("Introduction",
-                                         "Availible drivers",
+                                         "Available drivers",
                                          "Getting a table object",
                                          "Flushing the connection",
                                          "Querying the database",
@@ -307,7 +308,7 @@ $menu = array("Getting started" =>
                                         "OffsetIterator")
                         */
                     ),
-           "DQL (Doctrine Query Language)" => 
+           "DQL (Doctrine Query Language)" =>
                             array('Syntax' =>
                                   array(
                                         'FROM',
@@ -326,7 +327,7 @@ $menu = array("Getting started" =>
                                       'Logical operators')
 
 
-                            
+
                                 ),
            "Transactions" => array(
                         "Introduction",
@@ -468,7 +469,7 @@ $menu = array("Getting started" =>
                     foreach($tmp as $path => $title) {
                         if($break)
                             break;
-                    
+
                         if($path == $_REQUEST["index"]) {
                             $break = true;
                         } else {
