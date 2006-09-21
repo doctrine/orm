@@ -1,9 +1,37 @@
 <?php
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.com>.
+ */
 Doctrine::autoload('Doctrine_Access');
-
-class Doctrine_EventListener_Chain extends Doctrine_Access {
+/**
+ * Doctrine_EventListener_Chain
+ * this class represents a chain of different listeners, 
+ * useful for having multiple listeners listening the events at the same time
+ *
+ * @author      Konsta Vesterinen
+ * @package     Doctrine ORM
+ * @url         www.phpdoctrine.com
+ * @license     LGPL
+ */
+class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_EventListener_Interface {
     /**
-     * @var array $listeners
+     * @var array $listeners        an array containing all listeners
      */
     private $listeners = array();
     /**
@@ -167,7 +195,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
      * @param Doctrine_Record $record
      * @param string $property
      * @param mixed $value
-     * @return void
+     * @return mixed
      */
     public function onGetProperty(Doctrine_Record $record, $property, $value) {
         foreach($this->listeners as $listener) {
@@ -182,7 +210,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
      * @param Doctrine_Record $record
      * @param string $property
      * @param mixed $value
-     * @return void
+     * @return mixed
      */
     public function onSetProperty(Doctrine_Record $record, $property, $value) {
         foreach($this->listeners as $listener) {
@@ -262,66 +290,133 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
             $listener->onPreEvict($record);
         }
     }
-    public function onClose(Doctrine_Connection $connection) { 
+    /**
+     * onClose
+     * an event invoked after Doctrine_Connection is closed
+     *
+     * @param Doctrine_Connection $connection
+     * @return void
+     */
+    public function onClose(Doctrine_Connection $connection) {
         foreach($this->listeners as $listener) {
             $listener->onClose($connection);
         }
     }
-
+    /**
+     * onClose
+     * an event invoked before Doctrine_Connection is closed
+     *
+     * @param Doctrine_Connection $connection
+     * @return void
+     */
     public function onPreClose(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
             $listener->onPreClose($connection);
         }
     }
-
+    /**
+     * onOpen
+     * an event invoked after Doctrine_Connection is opened
+     *
+     * @param Doctrine_Connection $connection
+     * @return void
+     */
     public function onOpen(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
             $listener->onOpen($connection);
         }
     }
-
+    /**
+     * onTransactionCommit
+     * an event invoked after a Doctrine_Connection transaction is committed
+     *
+     * @param Doctrine_Connection $connection
+     * @return void
+     */
     public function onTransactionCommit(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
             $listener->onTransactionCommit($connection);
         }
     }
-
+    /**
+     * onPreTransactionCommit
+     * an event invoked before a Doctrine_Connection transaction is committed
+     *
+     * @param Doctrine_Connection $connection
+     * @return void
+     */
     public function onPreTransactionCommit(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
             $listener->onPreTransactionCommit($connection);
         }
     }
-
+    /**
+     * onTransactionRollback
+     * an event invoked after a Doctrine_Connection transaction is being rolled back
+     *
+     * @param Doctrine_Connection $connection
+     * @return void
+     */
     public function onTransactionRollback(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
             $listener->onTransactionRollback($connection);
         }
     }
-
+    /**
+     * onPreTransactionRollback
+     * an event invoked before a Doctrine_Connection transaction is being rolled back
+     *
+     * @param Doctrine_Connection $connection
+     * @return void
+     */
     public function onPreTransactionRollback(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
             $listener->onPreTransactionRollback($connection);
         }
     }
-
+    /**
+     * onTransactionBegin
+     * an event invoked after a Doctrine_Connection transaction has been started
+     *
+     * @param Doctrine_Connection $connection
+     * @return void
+     */
     public function onTransactionBegin(Doctrine_Connection $connection) {
         foreach($this->listeners as $listener) {
             $listener->onTransactionBegin($connection);
         }
     }
-
+    /**
+     * onTransactionBegin
+     * an event invoked before a Doctrine_Connection transaction is being started
+     *
+     * @param Doctrine_Connection $connection
+     * @return void
+     */
     public function onPreTransactionBegin(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
             $listener->onPreTransactionBegin($connection);
         }
     }
-
+    /**
+     * onCollectionDelete
+     * an event invoked after a Doctrine_Collection is being deleted
+     *
+     * @param Doctrine_Collection $collection
+     * @return void
+     */
     public function onCollectionDelete(Doctrine_Collection $collection) { 
         foreach($this->listeners as $listener) {
             $listener->onCollectionDelete($record);
         }
     }
-
+    /**
+     * onCollectionDelete
+     * an event invoked after a Doctrine_Collection is being deleted
+     *
+     * @param Doctrine_Collection $collection
+     * @return void
+     */
     public function onPreCollectionDelete(Doctrine_Collection $collection) { 
         foreach($this->listeners as $listener) {
             $listener->onPreCollectionDelete($collection);
