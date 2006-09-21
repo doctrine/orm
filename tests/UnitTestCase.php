@@ -12,7 +12,6 @@ function __autoload($class) {
 }
 require_once("classes.php");
 
-ini_set('include_path',ucwords($_SERVER["DOCUMENT_ROOT"]));
 require_once("simpletest/unit_tester.php");
 require_once("simpletest/reporter.php");
 
