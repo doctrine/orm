@@ -18,7 +18,7 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      * @param Doctrine_Connection|null $connection
      */
     public function __construct($connection = null) {
-        if( ! ($connection instanceof Doctrine_Session)) 
+        if( ! ($connection instanceof Doctrine_Connection)) 
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
 
         $this->session = $connection;
