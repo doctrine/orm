@@ -12,7 +12,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
      * @param Doctrine_EventListener $listener
      * @return void
      */
-    public function add(Doctrine_EventListener $listener) {
+    public function addListener(Doctrine_EventListener $listener) {
         $this->listeners[] = $listener;
     }
     /**
@@ -22,7 +22,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
      * @param mixed $key
      * @return mixed
      */
-    public function get($key) {
+    public function getListener($key) {
         if( ! isset($this->listeners[$key]))
             return null;
 
@@ -35,7 +35,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
      * @param Doctrine_EventListener $listener
      * @return void
      */
-    public function set($key, Doctrine_EventListener $listener) {
+    public function setListener($key, Doctrine_EventListener $listener) {
         $this->listeners[$key] = $listener;
     }
 
@@ -97,13 +97,15 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
 
     public function onGetProperty(Doctrine_Record $record, $property, $value) {
         foreach($this->listeners as $listener) {
-            $listener->onGetProperty($record, $property, $value);
+            $value = $listener->onGetProperty($record, $property, $value);
         }
+        return $value;
     }
     public function onSetProperty(Doctrine_Record $record, $property, $value) {
         foreach($this->listeners as $listener) {
-            $listener->onSetProperty($record, $property, $value);
+            $value = $listener->onSetProperty($record, $property, $value);
         }
+        return $value;
     }
 
     public function onInsert(Doctrine_Record $record) { 
