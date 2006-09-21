@@ -38,12 +38,10 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
     public function set($key, Doctrine_EventListener $listener) {
         $this->listeners[$key] = $listener;
     }
-    
-    
-    
+
     public function onLoad(Doctrine_Record $record) { 
         foreach($this->listeners as $listener) {
-            $listener->onLoad($record);                                       	
+            $listener->onLoad($record);
         }
     }
     public function onPreLoad(Doctrine_Record $record) { 
@@ -99,12 +97,12 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
 
     public function onGetProperty(Doctrine_Record $record, $property, $value) {
         foreach($this->listeners as $listener) {
-            $listener->onGetProperty($record);
+            $listener->onGetProperty($record, $property, $value);
         }
     }
     public function onSetProperty(Doctrine_Record $record, $property, $value) {
         foreach($this->listeners as $listener) {
-            $listener->onSetProperty($record);
+            $listener->onSetProperty($record, $property, $value);
         }
     }
 
@@ -165,62 +163,63 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
 
     public function onClose(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
-            $listener->onClose($record);
+            $listener->onClose($connection);
         }
     }
     public function onPreClose(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
-            $listener->onPreClose($record);
+            $listener->onPreClose($connection);
         }
     }
 
     public function onOpen(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
-            $listener->onOpen($record);
+            $listener->onOpen($connection);
         }
     }
 
     public function onTransactionCommit(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
-            $listener->onTransactionCommit($record);
+            $listener->onTransactionCommit($connection);
         }
     }
     public function onPreTransactionCommit(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
-            $listener->onPreTransactionCommit($record);
+            $listener->onPreTransactionCommit($connection);
         }
     }
 
     public function onTransactionRollback(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
-            $listener->onTransactionRollback($record);
+            $listener->onTransactionRollback($connection);
         }
     }
     public function onPreTransactionRollback(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
-            $listener->onPreTransactionRollback($record);
+            $listener->onPreTransactionRollback($connection);
         }
     }
 
     public function onTransactionBegin(Doctrine_Connection $connection) {
         foreach($this->listeners as $listener) {
-            $listener->onTransactionBegin($record);
+            $listener->onTransactionBegin($connection);
         }
     }
     public function onPreTransactionBegin(Doctrine_Connection $connection) { 
         foreach($this->listeners as $listener) {
-            $listener->onPreTransactionBegin($record);
+            $listener->onPreTransactionBegin($connection);
         }
     }
-    
+
     public function onCollectionDelete(Doctrine_Collection $collection) { 
         foreach($this->listeners as $listener) {
             $listener->onCollectionDelete($record);
         }
     }
+
     public function onPreCollectionDelete(Doctrine_Collection $collection) { 
         foreach($this->listeners as $listener) {
-            $listener->onPreCollectionDelete($record);
+            $listener->onPreCollectionDelete($collection);
         }
     }
 }
