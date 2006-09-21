@@ -731,7 +731,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if($old !== $value) {
                 
                 // invoke the onPreSetProperty listener
-                $value = $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onPreSetProperty($this, $name, $value);
+                $value = $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onSetProperty($this, $name, $value);
 
                 if($value === null)
                     $value = self::$null;

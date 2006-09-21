@@ -64,7 +64,7 @@ class Doctrine_EventListener_AccessorInvoker extends Doctrine_EventListener {
      * @param mixed $value
      * @return mixed
      */
-    public function onPreSetProperty(Doctrine_Record $record, $property, $value) {
+    public function onSetProperty(Doctrine_Record $record, $property, $value) {
         $method = 'set' . ucwords($property);
 
         if (method_exists($record, $method) && ! $this->lockSetCall) {

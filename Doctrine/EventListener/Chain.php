@@ -38,16 +38,189 @@ class Doctrine_EventListener_Chain extends Doctrine_Access {
     public function set($key, Doctrine_EventListener $listener) {
         $this->listeners[$key] = $listener;
     }
-    /**
-     * this method should only be called internally by
-     * doctrine, since it doesn't do any method existence checking
-     *
-     * @param method $method
-     * @param array $args
-     */
-    public function __call($method, $args) {
+    
+    
+    
+    public function onLoad(Doctrine_Record $record) { 
         foreach($this->listeners as $listener) {
-            $listener->$method($args[0]);
+            $listener->onLoad($record);                                       	
+        }
+    }
+    public function onPreLoad(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreLoad($record);
+        }
+    }
+
+    public function onSleep(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onSleep($record);
+        }
+    }
+
+    public function onWakeUp(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onWakeUp($record);
+        }
+    }
+
+    public function onUpdate(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onUpdate($record);
+        }
+    }
+    public function onPreUpdate(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreUpdate($record);
+        }
+    }
+
+    public function onCreate(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onCreate($record);
+        }
+    }
+    public function onPreCreate(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreCreate($record);
+        }
+    }
+
+    public function onSave(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onSave($record);
+        }
+    }
+    public function onPreSave(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreSave($record);
+        }
+    }
+
+    public function onGetProperty(Doctrine_Record $record, $property, $value) {
+        foreach($this->listeners as $listener) {
+            $listener->onGetProperty($record);
+        }
+    }
+    public function onSetProperty(Doctrine_Record $record, $property, $value) {
+        foreach($this->listeners as $listener) {
+            $listener->onSetProperty($record);
+        }
+    }
+
+    public function onInsert(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onInsert($record);
+        }
+    }
+    public function onPreInsert(Doctrine_Record $record) {
+        foreach($this->listeners as $listener) {
+            $listener->onPreInsert($record);
+        }
+    }
+
+    public function onDelete(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onDelete($record);
+        }
+    }
+    public function onPreDelete(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreDelete($record);
+        }
+    }
+
+    public function onEvict(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onEvict($record);
+        }
+    }
+    public function onPreEvict(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreEvict($record);
+        }
+    }
+
+    public function onSaveCascade(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onSaveCascade($record);
+        }
+    }
+    public function onPreSaveCascade(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreSaveCascade($record);
+        }
+    }
+
+    public function onDeleteCascade(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onDeleteCascade($record);
+        }
+    }
+    public function onPreDeleteCascade(Doctrine_Record $record) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreDeleteCascade($record);
+        }
+    }
+
+    public function onClose(Doctrine_Connection $connection) { 
+        foreach($this->listeners as $listener) {
+            $listener->onClose($record);
+        }
+    }
+    public function onPreClose(Doctrine_Connection $connection) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreClose($record);
+        }
+    }
+
+    public function onOpen(Doctrine_Connection $connection) { 
+        foreach($this->listeners as $listener) {
+            $listener->onOpen($record);
+        }
+    }
+
+    public function onTransactionCommit(Doctrine_Connection $connection) { 
+        foreach($this->listeners as $listener) {
+            $listener->onTransactionCommit($record);
+        }
+    }
+    public function onPreTransactionCommit(Doctrine_Connection $connection) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreTransactionCommit($record);
+        }
+    }
+
+    public function onTransactionRollback(Doctrine_Connection $connection) { 
+        foreach($this->listeners as $listener) {
+            $listener->onTransactionRollback($record);
+        }
+    }
+    public function onPreTransactionRollback(Doctrine_Connection $connection) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreTransactionRollback($record);
+        }
+    }
+
+    public function onTransactionBegin(Doctrine_Connection $connection) {
+        foreach($this->listeners as $listener) {
+            $listener->onTransactionBegin($record);
+        }
+    }
+    public function onPreTransactionBegin(Doctrine_Connection $connection) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreTransactionBegin($record);
+        }
+    }
+    
+    public function onCollectionDelete(Doctrine_Collection $collection) { 
+        foreach($this->listeners as $listener) {
+            $listener->onCollectionDelete($record);
+        }
+    }
+    public function onPreCollectionDelete(Doctrine_Collection $collection) { 
+        foreach($this->listeners as $listener) {
+            $listener->onPreCollectionDelete($record);
         }
     }
 }

@@ -52,7 +52,7 @@ abstract class Doctrine_EventListener implements Doctrine_EventListener_Interfac
     public function onGetProperty(Doctrine_Record $record, $property, $value) {
         return $value;
     }
-    public function onPreSetProperty(Doctrine_Record $record, $property, $value) {
+    public function onSetProperty(Doctrine_Record $record, $property, $value) {
         return $value;
     }
 
