@@ -28,6 +28,7 @@ require_once("QueryReferenceModelTestCase.php");
 require_once("DBTestCase.php");
 require_once("SchemaTestCase.php");
 require_once("ImportTestCase.php");
+require_once("BooleanTestCase.php");
 
 error_reporting(E_ALL);
 
@@ -82,6 +83,7 @@ $test->addTestCase(new Doctrine_QueryTestCase());
 
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 
+$test->addTestCase(new Doctrine_BooleanTestCase());
 
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());

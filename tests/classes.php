@@ -438,4 +438,10 @@ class Phototag extends Doctrine_Record {
         $this->hasColumn("tag_id", "integer");
     }
 }
+
+class BooleanTest extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('is_working', 'boolean');
+    }
+}
 ?>
