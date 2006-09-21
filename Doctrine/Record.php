@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Access');
 /**
  * Doctrine_Record
  * All record classes should inherit this super class
@@ -225,10 +225,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * setUp
-     * implemented by child classes
+     * this method is used for setting up relations and attributes
+     * it should be implemented by child classes
+     *
+     * @return void
      */
     public function setUp() { }
     /**
+     * getOID
      * return the object identifier
      *
      * @return integer

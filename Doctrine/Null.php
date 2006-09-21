@@ -26,7 +26,6 @@
  * 
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
- * @license     LGPL  
+ * @license     LGPL
  */
-class Doctrine_Null { }
-
+final class Doctrine_Null { }
