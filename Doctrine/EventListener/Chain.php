@@ -1,7 +1,7 @@
 <?php
 Doctrine::autoload('Doctrine_Access');
 
-class Doctrine_EvenListener_Chain extends Doctrine_Access {
+class Doctrine_EventListener_Chain extends Doctrine_Access {
     /**
      * @var array $listeners
      */
