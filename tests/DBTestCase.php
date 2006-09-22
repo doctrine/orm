@@ -50,14 +50,24 @@ class Doctrine_DB_TestCase extends Doctrine_UnitTestCase {
             $this->pass();
         }
     }
+    public function testGetConnectionPdoLikeDSN() {
+        $conn = Doctrine_DB2::getConnection('mysql:host=localhost;dbname=test', 'root', 'password');
+        $this->assertEqual($conn->getDSN(), 'mysql:host=localhost;dbname=test');
+        $this->assertEqual($conn->getUsername(), 'root');
+        $this->assertEqual($conn->getPassword(), 'password');
 
-    public function testGetConnection() {
+
+        $conn = Doctrine_DB2::getConnection('sqlite::memory:');
+
+        $this->assertEqual($conn->getDSN(), 'sqlite::memory:');
+        $this->assertEqual($conn->getUsername(), null);
+        $this->assertEqual($conn->getPassword(), null);
+    }
+    public function testGetConnectionWithPearLikeDSN() {
         $conn = Doctrine_DB2::getConnection('mysql://zYne:password@localhost/test');
         $this->assertEqual($conn->getDSN(), 'mysql:host=localhost;dbname=test');
         $this->assertEqual($conn->getUsername(), 'zYne');
         $this->assertEqual($conn->getPassword(), 'password');
-        
-
 
         $conn = Doctrine_DB2::getConnection('sqlite://:memory:');
         
@@ -65,6 +75,6 @@ class Doctrine_DB_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($conn->getUsername(), null);
         $this->assertEqual($conn->getPassword(), null);
     }
-    
+
 }
 ?>

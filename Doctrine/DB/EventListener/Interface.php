@@ -25,7 +25,7 @@
  * @license     LGPL
  * @package     Doctrine
  */
-interface Doctrine_DB_EventListener {     
+interface Doctrine_DB_EventListener_Interface {     
     public function onPreQuery(Doctrine_DB $dbh, array $args);
     public function onQuery(Doctrine_DB $dbh, array $args);
 
