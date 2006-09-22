@@ -25,10 +25,11 @@ require_once("FilterTestCase.php");
 require_once("ValueHolderTestCase.php");
 require_once("QueryLimitTestCase.php");
 require_once("QueryReferenceModelTestCase.php");
-require_once("DBTestCase.php");
+//require_once("DBTestCase.php");
 require_once("SchemaTestCase.php");
 require_once("ImportTestCase.php");
 require_once("BooleanTestCase.php");
+require_once("EnumTestCase.php");
 
 error_reporting(E_ALL);
 
@@ -85,6 +86,7 @@ $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 
 $test->addTestCase(new Doctrine_BooleanTestCase());
 
+$test->addTestCase(new Doctrine_EnumTestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
