@@ -19,10 +19,28 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * Doctrine_DB_Exception
+ * Doctrine_DB_EventListener
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB_Exception extends Doctrine_Exception { }
+interface Doctrine_DB_EventListener {     
+    public function onPreQuery(Doctrine_DB $dbh, array $args);
+    public function onQuery(Doctrine_DB $dbh, array $args);
+
+    public function onPrePrepare(Doctrine_DB $dbh, array $args);
+    public function onPrepare(Doctrine_DB $dbh, array $args);
+
+    public function onPreCommit(Doctrine_DB $dbh);
+    public function onCommit(Doctrine_DB $dbh);
+
+    public function onPreRollBack(Doctrine_DB $dbh);
+    public function onRollBack(Doctrine_DB $dbh);
+
+    public function onPreBeginTransaction(Doctrine_DB $dbh);
+    public function onBeginTransaction(Doctrine_DB $dbh);
+
+    public function onPreExecute(Doctrine_DB_Statement $stmt, array $params);
+    public function onExecute(Doctrine_DB_Statement $stmt, array $params);
+}
