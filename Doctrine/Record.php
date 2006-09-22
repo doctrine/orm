@@ -826,12 +826,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return void
      */
-    final public function save() {
-        $this->table->getConnection()->beginTransaction();
+    final public function save(Doctrine_Connection $conn = null) {
+        if ($conn == null) {
+            $conn = $this->table->getConnection();
+        }
+        $conn->beginTransaction();
 
-        $saveLater = $this->table->getConnection()->saveRelated($this);
+        $saveLater = $conn->saveRelated($this);
 
-        $this->table->getConnection()->save($this);
+       $conn->save($this);
 
         foreach($saveLater as $fk) {
             $table   = $fk->getTable();
@@ -847,7 +850,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->saveAssociations();
 
-        $this->table->getConnection()->commit();
+        $conn->commit();
     }
     /**
      * returns an array of modified fields and associated values
@@ -1060,8 +1063,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return boolean      true on success, false on failure
      */
-    public function delete() {
-        return $this->table->getConnection()->delete($this);
+    public function delete(Doctrine_Connection $conn = null) {
+        if ($conn == null) {
+            $conn = $this->table->getConnection();
+        }
+        return $conn->delete($this);
     }
     /**
      * returns a copy of this object

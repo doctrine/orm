@@ -172,10 +172,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $class = $name."Table";
 
         if(class_exists($class) && in_array("Doctrine_Table", class_parents($class))) {
-            return new $class($name);
+            return new $class($name, $this);
         } else {
 
-            return new Doctrine_Table($name);
+            return new Doctrine_Table($name, $this);
         }
     }
     /**

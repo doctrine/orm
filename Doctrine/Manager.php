@@ -33,6 +33,10 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     private $connections   = array();
     /**
+     * @var array $dataSourceNames an array containing all available data source names
+     */
+    private $dataSourceNames = array();
+    /**
      * @var integer $index          the incremented index
      */
     private $index      = 0;
@@ -194,12 +198,27 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return object Doctrine_Connection
      * @throws InvalidKeyException
      */
-    public function getConnection($index) {
-        if( ! isset($this->connections[$index]))
-            throw new InvalidKeyException();
-
-        $this->currIndex = $index;
-        return $this->connections[$index];
+    public function getConnection($name) {   
+        if (!isset($this->connections[$name])) {
+            if (isset($this->dataSourceNames[$name])) {
+                $conn = Doctrine_DB::getConnection($this->dataSourceNames[$name]); // Establishes the connection
+                $this->openConnection($conn, $name);
+            } else {
+                throw new Doctrine_Manager_Exception("Unknown connection: $name");
+            }
+        }
+        $this->currIndex = $name;
+        return $this->connections[$name];
+    }
+    
+    /**
+     * Adds the dsn of a connection to the list of available data source names.
+     *
+     * @param string $dsn
+     * @param string $name
+     */
+    public function addDSN($dsn, $name) {
+        $this->dataSourceNames[$name] = $dsn;
     }
     public function getSession($index) { return $this->getConnection($index); }
 

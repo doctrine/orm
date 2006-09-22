@@ -137,8 +137,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @throws Doctrine_Table_Exception         if there is already an instance of this table
      * @return void
      */
-    public function __construct($name) {
-        $this->connection = Doctrine_Manager::getInstance()->getCurrentConnection();
+    public function __construct($name, Doctrine_Connection $conn) {
+        $this->connection = $conn;
 
         $this->setParent($this->connection);
 
