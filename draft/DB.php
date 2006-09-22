@@ -27,7 +27,7 @@
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB implements Countable, IteratorAggregate {
+class Doctrine_DB2 implements Countable, IteratorAggregate {
     /**
      * default DSN
      */
@@ -126,7 +126,7 @@ class Doctrine_DB implements Countable, IteratorAggregate {
         $md5 = md5($dsn);
 
         if(isset($username)) {
-            self::$instances[$md5] = new Doctrine_DB($dsn, $username, $password);
+            self::$instances[$md5] = new self($dsn, $username, $password);
         }
 
         if( ! isset(self::$instances[$md5])) {
@@ -135,13 +135,9 @@ class Doctrine_DB implements Countable, IteratorAggregate {
             } else {
                 $a = self::parseDSN($dsn);
             }
-            $e = array();
+            extract($a);
 
-            $dsn      = $a["phptype"].":host=".$a["hostspec"].";dbname=".$a["database"];
-            $username = isset($a["username"])?$a['username']:null;
-            $password = isset($a["password"])?$a['password']:null;
-
-            self::$instances[$md5] = new Doctrine_DB($dsn,$username,$password);
+            self::$instances[$md5] = new self($dsn, $user, $pass);
         }
         return self::$instances[$md5];
     }
@@ -285,7 +281,7 @@ class Doctrine_DB implements Countable, IteratorAggregate {
      * returns an array of available PDO drivers
      */
     public static function getAvailableDrivers() {
-        return PDO::getAvailibleDrivers();
+        return PDO::getAvailableDrivers();
     }
     /**
      * setAttribute
@@ -339,185 +335,59 @@ class Doctrine_DB implements Countable, IteratorAggregate {
     }
     /**
      * parseDSN
-     * Parse a data source name.
      *
-     * Additional keys can be added by appending a URI query string to the
-     * end of the DSN.
-     *
-     * The format of the supplied DSN is in its fullest form:
-     * <code>
-     *  phptype(dbsyntax)://username:password@protocol+hostspec/database?option=8&another=true
-     * </code>
-     *
-     * Most variations are allowed:
-     * <code>
-     *  phptype://username:password@protocol+hostspec:110//usr/db_file.db?mode=0644
-     *  phptype://username:password@hostspec/database_name
-     *  phptype://username:password@hostspec
-     *  phptype://username@hostspec
-     *  phptype://hostspec/database
-     *  phptype://hostspec
-     *  phptype(dbsyntax)
-     *  phptype
-     * </code>
-     *
-     * @param   string  Data Source Name to be parsed
-     *
-     * @return  array   an associative array with the following keys:
-     *  + phptype:  Database backend used in PHP (mysql, odbc etc.)
-     *  + dbsyntax: Database used with regards to SQL syntax etc.
-     *  + protocol: Communication protocol to use (tcp, unix etc.)
-     *  + hostspec: Host specification (hostname[:port])
-     *  + database: Database to use on the DBMS server
-     *  + username: User name for login
-     *  + password: Password for login
-     *
-     * @access  public
-     * @author  Tomas V.V.Cox <cox@idecnet.com>
-     */
-    public static function parseDSN($dsn) {
-        // Find phptype and dbsyntax
-        if (($pos = strpos($dsn, '://')) !== false) {
-            $str = substr($dsn, 0, $pos);
-            $dsn = substr($dsn, $pos + 3);
-        } else {
-            $str = $dsn;
-            $dsn = null;
-        }
-
-        // Get phptype and dbsyntax
-        // $str => phptype(dbsyntax)
-        if (preg_match('|^(.+?)\((.*?)\)$|', $str, $arr)) {
-            $parsed['phptype']  = $arr[1];
-            $parsed['dbsyntax'] = !$arr[2] ? $arr[1] : $arr[2];
-        } else {
-            $parsed['phptype']  = $str;
-            $parsed['dbsyntax'] = $str;
-        }
-
-        if (!count($dsn)) {
-            return $parsed;
-        }
-
-        // Get (if found): username and password
-        // $dsn => username:password@protocol+hostspec/database
-        if (($at = strrpos($dsn,'@')) !== false) {
-            $str = substr($dsn, 0, $at);
-            $dsn = substr($dsn, $at + 1);
-            if (($pos = strpos($str, ':')) !== false) {
-                $parsed['username'] = rawurldecode(substr($str, 0, $pos));
-                $parsed['password'] = rawurldecode(substr($str, $pos + 1));
-            } else {
-                $parsed['username'] = rawurldecode($str);
-            }
-        }
-
-        // Find protocol and hostspec
-
-        // $dsn => proto(proto_opts)/database
-        if (preg_match('|^([^(]+)\((.*?)\)/?(.*?)$|', $dsn, $match)) {
-            $proto       = $match[1];
-            $proto_opts  = $match[2] ? $match[2] : false;
-            $dsn         = $match[3];
-
-        // $dsn => protocol+hostspec/database (old format)
-        } else {
-            if (strpos($dsn, '+') !== false) {
-                list($proto, $dsn) = explode('+', $dsn, 2);
-            }
-            if (strpos($dsn, '/') !== false) {
-                list($proto_opts, $dsn) = explode('/', $dsn, 2);
-            } else {
-                $proto_opts = $dsn;
-                $dsn = null;
-            }
-        }
-
-        // process the different protocol options
-        $parsed['protocol'] = (!empty($proto)) ? $proto : 'tcp';
-        $proto_opts = rawurldecode($proto_opts);
-        if (strpos($proto_opts, ':') !== false) {
-            list($proto_opts, $parsed['port']) = explode(':', $proto_opts);
-        }
-        if ($parsed['protocol'] == 'tcp') {
-            $parsed['hostspec'] = $proto_opts;
-        } elseif ($parsed['protocol'] == 'unix') {
-            $parsed['socket'] = $proto_opts;
-        }
-
-        // Get dabase if any
-        // $dsn => database
-        if ($dsn) {
-            // /database
-            if (($pos = strpos($dsn, '?')) === false) {
-                $parsed['database'] = $dsn;
-            // /database?param1=value1&param2=value2
-            } else {
-                $parsed['database'] = substr($dsn, 0, $pos);
-                $dsn = substr($dsn, $pos + 1);
-                if (strpos($dsn, '&') !== false) {
-                    $opts = explode('&', $dsn);
-                } else { // database?param1=value1
-                    $opts = array($dsn);
-                }
-                foreach ($opts as $opt) {
-                    list($key, $value) = explode('=', $opt);
-                    if (!isset($parsed[$key])) {
-                        // don't allow params overwrite
-                        $parsed[$key] = rawurldecode($value);
-                    }
-                }
-            }
-        }
-
-        return $parsed;
-    }
-    
-    /**
-     * Here is my version of parseDSN. It is a bit leaner than the one above, but you can choose either one.
-     * This one relies on the built in functionality more than replicating it in userland code so it should
-     * be more efficient. Not completely compatible with the parser above, but it is easy to add in 
-     * the phptype/dbsyntax and protocol/hostspec parts if need be.
-     *
-     * @author Elliot Anderson <elliot.a@gmail.com>
-     * 
      * @param 	string	$dsn
      * @return 	array 	Parsed contents of DSN
      */
-    function parseDSNnew ( $dsn )
-	{
-		$parts	= parse_url ( $dsn );
-		$parsed	= array ( );
-		
-		if ( count ( $parts ) == 0 ) return false;
-			
-		if ( isset ( $parts ['scheme'] ) )
-			$parsed ['phptype']  = 
-			$parsed ['dbsyntax'] = $parts ['scheme'];
-		
-		if ( isset ( $parts ['host'] ) )
-		{
-			if ( strpos ( $parts ['host'], '+' ) )
-			{
-				$tmp = explode ( '+', $parts ['host'] );
-				
-				$parsed ['protocol'] = $tmp [ 0 ];
-				$parsed ['hostspec'] = $tmp [ 1 ];
-			} 
-			else
-			{
-				$parsed ['hostspec'] = $parts ['host'];
-			}
-		}
-		
-		if ( isset ( $parts ['path'] ) ) $parsed ['database'] = substr ( $parts ['path'], 1 );
-		
-		if ( isset ( $parts ['user'] ) ) $parsed ['username'] = $parts ['user'];
-		if ( isset ( $parts ['pass'] ) ) $parsed ['password'] = $parts ['pass'];
-		
-		if ( isset ( $parts ['query'] ) ) parse_str ( $parts ['query'], $parsed ['options'] );
-		
-		return $parsed;
+    function parseDSN($dsn) {
+		$parts = @parse_url($dsn);
+                             
+        $names = array('scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
+        
+        foreach($names as $name) {
+            if( ! isset($parts[$name]))
+                $parts[$name] = null;
+        }
+
+		if(count($parts) == 0 || ! isset($parts['scheme']))
+		  throw new Doctrine_DB_Exception('Empty data source name');
+
+        $drivers = self::getAvailableDrivers();
+        
+        if( ! in_array($parts['scheme'], $drivers)) 
+            throw new Doctrine_DB_Exception('Driver '.$parts['scheme'].' not availible or extension not loaded');
+
+        switch($parts['scheme']) {
+            case 'sqlite':
+                if(isset($parts['host']) && $parts['host'] == ':memory') {
+                    $parts['database'] = ':memory:';
+                    $parts['dsn']      = 'sqlite::memory:';
+                }
+
+            break;
+            case 'mysql':
+            case 'informix':
+            case 'oci8':
+            case 'mssql':
+            case 'firebird':
+            case 'pgsql':
+            case 'odbc':
+                if( ! isset($parts['path']) || $parts['path'] == '/')
+                    throw new Doctrine_DB_Exception('No database availible in data source name');
+
+         		if(isset($parts['path']))
+                    $parts['database'] = substr($parts['path'], 1);
+                
+                if( ! isset($parts['host'])) 
+                    throw new Doctrine_DB_Exception('No hostname set in data source name');
+
+                $parts['dsn'] = $parts["scheme"].":host=".$parts["host"].";dbname=".$parts["database"];
+            break;
+            default: 
+                throw new Doctrine_DB_Exception('Unknown driver '.$parts['scheme']);
+        } 
+
+		return $parts;
 	}
 }
 
