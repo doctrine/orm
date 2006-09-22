@@ -60,9 +60,15 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @var string $password        database password
      */
     protected $password;
-    /** 
+    /**
      * @var PDO $dbh                the database handler
      */
+    protected $dbh;
+    /**
+     * @var Doctrine_DB_EventListener_Interface $listener   listener for listening events
+     */
+    protected $listener;
+
 
     /**
      * constructor
@@ -75,6 +81,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
         $this->dsn      = $dsn;
         $this->username = $username;
         $this->password = $password;
+        $this->listener = new Doctrine_DB_EventListener();
     }
     /**
      * getDSN
@@ -117,27 +124,27 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
     /**
      * getConnection
      *
-     * @param string $dsn           PEAR::DB like DSN
-     * format:                      schema://user:password@address/dbname
+     * @param string $dsn               PEAR::DB like DSN or PDO like DSN
+     * format for PEAR::DB like DSN:    schema://user:password@address/dbname
      *
      * @return
      */
     public static function getConnection($dsn = null, $username = null, $password = null) {
         $md5 = md5($dsn);
 
-        if(isset($username)) {
-            self::$instances[$md5] = new self($dsn, $username, $password);
-        }
-
         if( ! isset(self::$instances[$md5])) {
-            if( ! isset($dsn)) {
-                $a = self::parseDSN(self::DSN);
+            if(isset($username)) {
+                self::$instances[$md5] = new self($dsn, $username, $password);
             } else {
-                $a = self::parseDSN($dsn);
-            }
-            extract($a);
+                if( ! isset($dsn))
+                    $a = self::parseDSN(self::DSN);
+                else
+                    $a = self::parseDSN($dsn);
 
-            self::$instances[$md5] = new self($dsn, $user, $pass);
+                extract($a);
+    
+                self::$instances[$md5] = new self($dsn, $user, $pass);
+            }
         }
         return self::$instances[$md5];
     }
@@ -157,9 +164,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      *
      * @return integer
      */
-    public function errorCode() { 
-        $this->connect();
-        
+    public function errorCode() {
         return $this->dbh->errorCode();
     }
     /**
@@ -169,19 +174,21 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return array
      */
     public function errorInfo() {
-        $this->connect();
-
         return $this->dbh->errorInfo();
     }
     /**
-     *
+     * prepare
      *
      * @param string $statement
      */
-    public function prepare ($statement) {
-        $this->connect();
-        $this->queries[] = $query;
-        return $this->dbh->prepare($statement);
+    public function prepare($statement) {
+        $this->listener->onPrePrepare($this, $statement);
+
+        $stmt = $this->dbh->prepare($statement);
+        
+        $this->listener->onPrepare($this,$statement);
+        
+        return $stmt;
     }
     /**
      * query
@@ -190,14 +197,13 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return Doctrine_DB_Statement|boolean
      */
     public function query($statement, $fetchMode = null, $arg = null, $arg2 = null) {
-        $this->connect();
-        
-        $this->queries[] = $query;
-        $time = microtime();
+        $args = func_get_args();
 
-        $stmt = $this->dbh->query($query, $fetchMode, $arg, $arg2);
+        $this->listener->onPreQuery($this, $args);
 
-        $this->exectimes[] = (microtime() - $time);
+        $stmt = $this->dbh->query($statement, $fetchMode, $arg, $arg2);
+
+        $this->listener->onQuery($this, $args);
 
         return $stmt;
     }
@@ -210,7 +216,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      */
     public function quote($input) {
         $this->connect();
-        
+
         return $this->dbh->quote($input);
     }
     /**
@@ -221,9 +227,13 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return integer
      */
     public function exec($statement) {
-        $this->connect();
-        
-        return $this->dbh->exec($statement);
+        $this->listener->onPreExec($this, $statement);
+
+        $rows = $this->dbh->exec($statement);
+
+        $this->listener->onExec($this, $statement);
+
+        return $rows;
     }
     /**
      * lastInsertId
@@ -241,9 +251,13 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return boolean
      */
     public function beginTransaction() {
-        $this->connect();
+        $this->listener->onPreBeginTransaction($this);
 
-        return $this->dbh->beginTransaction();
+        $return = $this->dbh->beginTransaction();
+
+        $this->listener->onBeginTransaction($this);
+    
+        return $return;
     }
     /**
      * commits a transaction
@@ -251,9 +265,13 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return boolean
      */
     public function commit() {
-        $this->connect();
-        
-        return $this->dbh->commit();
+        $this->listener->onPreCommit($this);
+
+        $return = $this->dbh->commit();
+
+        $this->listener->onCommit($this);
+
+        return $return;
     }
     /**
      * rollBack
@@ -297,26 +315,6 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
         $this->dbh->setAttribute($attribute, $value);
     }
     /**
-     * @param string $time          exectime of the last executed query
-     * @return void
-     */
-    public function addExecTime($time) {
-        $this->exectimes[] = $time;
-    }
-    
-    public function getExecTimes() {
-        return $this->exectimes;
-    }
-    /**
-     * getQueries
-     * returns an array of executed queries
-     *
-     * @return array
-     */
-    public function getQueries() {
-        return $this->queries;
-    }
-    /**
      * getIterator
      *
      * @return ArrayIterator
@@ -354,7 +352,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
 
         $drivers = self::getAvailableDrivers();
         
-        if( ! in_array($parts['scheme'], $drivers)) 
+        if( ! in_array($parts['scheme'], $drivers))
             throw new Doctrine_DB_Exception('Driver '.$parts['scheme'].' not availible or extension not loaded');
 
         switch($parts['scheme']) {
