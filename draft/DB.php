@@ -472,5 +472,52 @@ class Doctrine_DB implements Countable, IteratorAggregate {
 
         return $parsed;
     }
+    
+    /**
+     * Here is my version of parseDSN. It is a bit leaner than the one above, but you can choose either one.
+     * This one relies on the built in functionality more than replicating it in userland code so it should
+     * be more efficient. Not completely compatible with the parser above, but it is easy to add in 
+     * the phptype/dbsyntax and protocol/hostspec parts if need be.
+     *
+     * @author Elliot Anderson <elliot.a@gmail.com>
+     * 
+     * @param 	string	$dsn
+     * @return 	array 	Parsed contents of DSN
+     */
+    function parseDSNnew ( $dsn )
+	{
+		$parts	= parse_url ( $dsn );
+		$parsed	= array ( );
+		
+		if ( count ( $parts ) == 0 ) return false;
+			
+		if ( isset ( $parts ['scheme'] ) )
+			$parsed ['phptype']  = 
+			$parsed ['dbsyntax'] = $parts ['scheme'];
+		
+		if ( isset ( $parts ['host'] ) )
+		{
+			if ( strpos ( $parts ['host'], '+' ) )
+			{
+				$tmp = explode ( '+', $parts ['host'] );
+				
+				$parsed ['protocol'] = $tmp [ 0 ];
+				$parsed ['hostspec'] = $tmp [ 1 ];
+			} 
+			else
+			{
+				$parsed ['hostspec'] = $parts ['host'];
+			}
+		}
+		
+		if ( isset ( $parts ['path'] ) ) $parsed ['database'] = substr ( $parts ['path'], 1 );
+		
+		if ( isset ( $parts ['user'] ) ) $parsed ['username'] = $parts ['user'];
+		if ( isset ( $parts ['pass'] ) ) $parsed ['password'] = $parts ['pass'];
+		
+		if ( isset ( $parts ['query'] ) ) parse_str ( $parts ['query'], $parsed ['options'] );
+		
+		return $parsed;
+	}
 }
 
