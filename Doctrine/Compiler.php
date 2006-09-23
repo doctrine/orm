@@ -41,9 +41,12 @@ class Doctrine_Compiler {
                          "Exception",
                          "Access",
                          "Null",
+                         "Identifier",
+                         "Repository",
                          "Record",
                          "Record_Iterator",
                          "Collection",
+                         "Collection_Immediate",
                          "Validator",
                          "Hydrate",
                          "Query",
@@ -57,12 +60,16 @@ class Doctrine_Compiler {
                          "RawSql",
                          "EventListener_Interface",
                          "EventListener",
+                         "EventListener_Empty",
                          "Relation",
                          "ForeignKey",
                          "LocalKey",
                          "Association",
                          "DB",
-                         "DBStatement");
+                         "DBStatement",
+                         "Connection",
+                         "Connection_UnitOfWork",
+                         "Connection_Transaction");
 
     /**
      * getRuntimeClasses
@@ -81,7 +88,7 @@ class Doctrine_Compiler {
      * @throws Doctrine_Exception
      * @return void
      */
-    public static function compile() {
+    public static function compile($target = null) {
         $path = Doctrine::getPath();
 
         $classes = self::$classes;
@@ -93,11 +100,13 @@ class Doctrine_Compiler {
                 $class = 'Doctrine_'.$class;
 
             $file  = $path.DIRECTORY_SEPARATOR.str_replace("_",DIRECTORY_SEPARATOR,$class).".php";
+            
+            echo "Adding $file" . PHP_EOL;
 
             if( ! file_exists($file))
                 throw new Doctrine_Exception("Couldn't compile $file. File $file does not exists.");
 
-            self::autoload($class);
+            Doctrine::autoload($class);
             $refl  = new ReflectionClass ( $class );
             $lines = file( $file );
 
@@ -111,15 +120,17 @@ class Doctrine_Compiler {
 
         }
 
-        $file = $path.DIRECTORY_SEPARATOR.'Doctrine.compiled.php';
-        if (!is_writable($file))
-            throw new Doctrine_Exception("Couldn't write compiled data. $file is not writable");
+        if ($target == null) {
+            $target = $path.DIRECTORY_SEPARATOR.'Doctrine.compiled.php';
+        }            
 
         // first write the 'compiled' data to a text file, so
         // that we can use php_strip_whitespace (which only works on files)
-        $fp = fopen($file, 'w');
+        $fp = @fopen($target, 'w');
+        
         if ($fp === false)
-            throw new Doctrine_Exception("Couldn't write compiled data. Failed to open $file");
+            throw new Doctrine_Exception("Couldn't write compiled data. Failed to open $target");
+            
         fwrite($fp, "<?php".
                     " class InvalidKeyException extends Exception { }".
                     " class DQLException extends Exception { }".
@@ -127,8 +138,8 @@ class Doctrine_Compiler {
               );
         fclose($fp);
 
-        $stripped = php_strip_whitespace( $file );
-        $fp = fopen($file, 'w');
+        $stripped = php_strip_whitespace($target);
+        $fp = @fopen($target, 'w');
         if ($fp === false)
             throw new Doctrine_Exception("Couldn't write compiled data. Failed to open $file");
         fwrite($fp, $stripped);
