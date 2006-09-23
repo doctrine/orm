@@ -25,7 +25,7 @@ require_once("FilterTestCase.php");
 require_once("ValueHolderTestCase.php");
 require_once("QueryLimitTestCase.php");
 require_once("QueryReferenceModelTestCase.php");
-//require_once("DBTestCase.php");
+require_once("DBTestCase.php");
 require_once("SchemaTestCase.php");
 require_once("ImportTestCase.php");
 require_once("BooleanTestCase.php");
@@ -37,7 +37,7 @@ error_reporting(E_ALL);
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
 
-//$test->addTestCase(new Doctrine_DB_TestCase());
+$test->addTestCase(new Doctrine_DB_TestCase());
 
 $test->addTestCase(new Doctrine_ConnectionTestCase());
 

@@ -381,6 +381,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                             $record = $this->tables[$name]->getRecord();
 
                             if($name == $root) {
+
                                 // add record into root collection
                                 $coll->add($record);
                                 unset($previd);
@@ -400,8 +401,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                     case Doctrine_Relation::ONE_AGGREGATE:
 
                                         // one-to-one relation
-
-                                        $last->internalSet($fk->getLocal(), $record->getIncremented());
+                                        $last->rawSet($fk->getLocal(), $record->getIncremented());    
 
                                         $last->initSingleReference($record, $fk);
 

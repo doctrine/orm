@@ -23,32 +23,42 @@ class Doctrine_RelationAccessTestCase extends Doctrine_UnitTestCase {
         $this->tables = array("File_Owner", "Data_File"); 
         parent::prepareTables();
     }
+    public function testOneToOneAggregateRelationFetching() {
+        $coll = $this->connection->query("FROM File_Owner.Data_File WHERE File_Owner.name = 'owner1'");
+        $this->assertTrue(count($coll) == 1);
+        $this->assertTrue($coll[0] instanceof Doctrine_Record);
 
+        $this->assertEqual($coll[0]->id, 1);
+    }
     public function testAccessOneToOneFromForeignSide() {
+
 	    $check = $this->connection->query("FROM File_Owner WHERE File_Owner.name = 'owner1'");
         $owner1 = $this->connection->query("FROM File_Owner.Data_File WHERE File_Owner.name = 'owner1'");
 		$owner2 = $this->connection->query("FROM File_Owner.Data_File WHERE File_Owner.name = 'owner2'");
 		$this->assertTrue(count($check) == 1);
-		$this->assertTrue(count($owner1) == 1);
+
 		$this->assertTrue(count($owner2) == 1);
 
 		$check = $check[0];
 		$owner1 = $owner1[0];
 		$owner2 = $owner2[0];
-		
+		$this->assertEqual($owner1->name, 'owner1');
+        $this->assertEqual($owner1->id, 1);
+
 		$check2 = $this->connection->query("FROM File_Owner WHERE File_Owner.id = ".$owner1->get('id'));
 		$this->assertEqual(1, count($check2));
 		$check2 = $check2[0];
 		$this->assertEqual('owner1', $check2->get('name'));
-		
+
         $this->assertTrue(isset($owner1->Data_File));
 		$this->assertFalse(isset($owner2->Data_File));
         $this->assertEqual(1, $check->get('id'));
         $this->assertEqual(1, $owner1->get('id'));
 		$this->assertEqual($owner1->get('id'), $check->get('id'));
 		$this->assertEqual(2, $owner2->get('id'));
+
     }
-	
+
 	public function testAccessOneToOneFromLocalSide() {
 	    $check = $this->connection->query("FROM Data_File WHERE Data_File.filename = 'file4'");
         $file1 = $this->connection->query("FROM Data_File.File_Owner WHERE Data_File.filename = 'file4'");
@@ -74,5 +84,6 @@ class Doctrine_RelationAccessTestCase extends Doctrine_UnitTestCase {
 		$this->assertEqual(1, $file2->get('id'));
 
     }
+
 }
 ?>
