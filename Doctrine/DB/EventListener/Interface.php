@@ -25,21 +25,24 @@
  * @license     LGPL
  * @package     Doctrine
  */
-interface Doctrine_DB_EventListener_Interface {     
-    public function onPreQuery(Doctrine_DB $dbh, array $args);
-    public function onQuery(Doctrine_DB $dbh, array $args);
+interface Doctrine_DB_EventListener_Interface {
+    public function onPreQuery(Doctrine_DB2 $dbh, array $args);
+    public function onQuery(Doctrine_DB2 $dbh, array $args);
 
-    public function onPrePrepare(Doctrine_DB $dbh, array $args);
-    public function onPrepare(Doctrine_DB $dbh, array $args);
+    public function onPrePrepare(Doctrine_DB2 $dbh, array $args);
+    public function onPrepare(Doctrine_DB2 $dbh, array $args);
 
-    public function onPreCommit(Doctrine_DB $dbh);
-    public function onCommit(Doctrine_DB $dbh);
+    public function onPreExec(Doctrine_DB2 $dbh, array $args);
+    public function onExec(Doctrine_DB2 $dbh, array $args);
 
-    public function onPreRollBack(Doctrine_DB $dbh);
-    public function onRollBack(Doctrine_DB $dbh);
+    public function onPreCommit(Doctrine_DB2 $dbh);
+    public function onCommit(Doctrine_DB2 $dbh);
 
-    public function onPreBeginTransaction(Doctrine_DB $dbh);
-    public function onBeginTransaction(Doctrine_DB $dbh);
+    public function onPreRollBack(Doctrine_DB2 $dbh);
+    public function onRollBack(Doctrine_DB2 $dbh);
+
+    public function onPreBeginTransaction(Doctrine_DB2 $dbh);
+    public function onBeginTransaction(Doctrine_DB2 $dbh);
 
     public function onPreExecute(Doctrine_DB_Statement $stmt, array $params);
     public function onExecute(Doctrine_DB_Statement $stmt, array $params);
