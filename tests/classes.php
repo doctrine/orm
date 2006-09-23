@@ -444,4 +444,21 @@ class BooleanTest extends Doctrine_Record {
         $this->hasColumn('is_working', 'boolean');
     }
 }
+class Data_File extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("filename", "string");
+        $this->hasColumn("file_owner_id", "integer");
+    }
+    public function setUp() {
+        $this->hasOne("File_Owner", "Data_File.file_owner_id");
+    }
+}
+class File_Owner extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 255);
+    }
+	public function setUp() {
+        $this->hasOne("Data_File", "Data_File.file_owner_id");
+    }
+}
 ?>

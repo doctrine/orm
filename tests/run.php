@@ -30,6 +30,7 @@ require_once("SchemaTestCase.php");
 require_once("ImportTestCase.php");
 require_once("BooleanTestCase.php");
 require_once("EnumTestCase.php");
+require_once("RelationAccessTestCase.php");
 
 error_reporting(E_ALL);
 
@@ -87,6 +88,8 @@ $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 $test->addTestCase(new Doctrine_BooleanTestCase());
 
 $test->addTestCase(new Doctrine_EnumTestCase());
+
+$test->addTestCase(new Doctrine_RelationAccessTestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
