@@ -183,7 +183,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                 switch(count($this->primaryKeys)):
                     case 0:
-                        $this->columns = array_merge(array("id" => array("integer",11, array("autoincrement" => true, "primary" => true))), $this->columns);
+                        $this->columns = array_merge(array("id" => array("integer", 20, array("autoincrement" => true, "primary" => true))), $this->columns);
                         $this->primaryKeys[] = "id";
                         $this->identifier = "id";
                         $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
@@ -860,7 +860,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     }
     /**
      * getTableDescription
-     * @return Doctrine_Table_Description
+     * @return array
      */
     final public function getTableDescription() {
         return $this->columns;

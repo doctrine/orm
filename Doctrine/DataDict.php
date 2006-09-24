@@ -110,11 +110,8 @@ class Doctrine_DataDict {
                     return "I2";
                 elseif($length < 10)
                     return "I4";
-                elseif($length <= 20)
-                    return "I8";
                 else
-                    throw new Doctrine_Exception("Too long integer (max length is 20).");
-
+                    return "I8"; 
             break;
             default:
                 throw new Doctrine_Exception("Unknown column type $type");

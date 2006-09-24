@@ -1409,7 +1409,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param mixed $options
      * @return void
      */
-    final public function hasColumn($name, $type, $length = 20, $options = "") {
+    final public function hasColumn($name, $type, $length = 2147483647, $options = "") {
         $this->table->setColumn($name, $type, $length, $options);
     }
     /**
