@@ -95,9 +95,25 @@ $test->addTestCase(new Doctrine_EnumTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
+class MyReporter extends HtmlReporter {
+  public function paintHeader() {}
+  public function paintFooter()
+  {
+    $colour = ($this->getFailCount() + $this->getExceptionCount() > 0 ? "red" : "green");
+    print "<div style=\"";
+    print "padding: 8px; margin-top: 1em; background-color: $colour; color: white;";
+    print "\">";
+    print $this->getTestCaseProgress() . "/" . $this->getTestCaseCount();
+    print " test cases complete:\n";
+    print "<strong>" . $this->getPassCount() . "</strong> passes, ";
+    print "<strong>" . $this->getFailCount() . "</strong> fails and ";
+    print "<strong>" . $this->getExceptionCount() . "</strong> exceptions.";
+    print "</div>\n";
+  }
+}
 
-print "<pre>";
-$test->run(new HtmlReporter());
+$test->run(new MyReporter());
+$output = ob_get_clean();
 /**
 $cache = Doctrine_Manager::getInstance()->getCurrentConnection()->getCacheHandler();
 if(isset($cache)) {
@@ -110,7 +126,42 @@ if(isset($cache)) {
 
 }
 */
+?>
+<html>
+<head>
 
+  <title>Doctrine Unit Tests</title>
+  <style>
+.fail { color: red; } pre { background-color: lightgray; }
+  </style>
+</head>
+
+<body>
+
+<h1>Doctrine Unit Tests</h1>
+<h3>DSN Settings</h3>
+<form method="post">
+<table>
+<tr>
+  <th>DSN</th>
+  <td><input type="text" name="dsn" /></td>
+</tr>
+<tr>
+  <th>Username</th>
+  <td><input type="text" name="username" /></td>
+</tr>
+<tr>
+  <th>Password</th>
+  <td><input type="text" name="password" /></td>
+</tr>
+</form>
+<h3>Tests</h3>
+<pre>
+<?php echo $output; ?>
+</pre>
+<h3>Queries</h3>
+<pre>
+<?php
 $dbh = Doctrine_Manager::getInstance()->getCurrentConnection()->getDBH();
 $a   = $dbh->getQueries();
 
@@ -119,5 +170,8 @@ print "Executed queries: ".count($a)."\n";
 foreach($a as $query) {
     print $query."\n";
 }
-ob_end_flush();
 ?>
+</pre>
+</body>
+</html>
+
