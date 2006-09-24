@@ -196,9 +196,19 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
         }
         return self::$instances[$md5];
     }
-    
-    public static function driverName() {
-                                            	
+    /** 
+     * driverName
+     * converts a driver name like (oracle) to appropriate PDO 
+     * driver name (oci8 in the case of oracle)
+     *
+     * @param string $name
+     * @return string
+     */
+    public static function driverName($name) {
+        if(isset(self::$driverMap[$name]))
+            return self::$driverMap[$name];
+
+        return $name;
     }
     /**
      * parseDSN
@@ -207,6 +217,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return 	array 	Parsed contents of DSN
      */
     function parseDSN($dsn) {
+        // silence any warnings
 		$parts = @parse_url($dsn);
                              
         $names = array('scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
@@ -220,9 +231,8 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
 		  throw new Doctrine_DB_Exception('Empty data source name');
 
         $drivers = self::getAvailableDrivers();
-        
-        if(isset(self::$driverMap[$parts['scheme']]))
-            $parts['scheme'] = self::$driverMap[$parts['scheme']];
+
+        $parts['scheme'] = self::driverName($parts['scheme']);
 
         if( ! in_array($parts['scheme'], $drivers))
             throw new Doctrine_DB_Exception('Driver '.$parts['scheme'].' not availible or extension not loaded');
