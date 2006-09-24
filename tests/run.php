@@ -1,6 +1,7 @@
 <?php
 ob_start();
 
+
 require_once("ConfigurableTestCase.php");
 require_once("ManagerTestCase.php");
 require_once("ConnectionTestCase.php");
@@ -37,7 +38,7 @@ error_reporting(E_ALL);
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
 
-//$test->addTestCase(new Doctrine_DB_TestCase());
+$test->addTestCase(new Doctrine_DB_TestCase());
 
 $test->addTestCase(new Doctrine_ConnectionTestCase());
 
@@ -81,15 +82,15 @@ $test->addTestCase(new Doctrine_ImportTestCase());
 
 $test->addTestCase(new Doctrine_CollectionTestCase());
 
-$test->addTestCase(new Doctrine_QueryTestCase());
-
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 
 $test->addTestCase(new Doctrine_BooleanTestCase());
 
+$test->addTestCase(new Doctrine_QueryTestCase());
+
 $test->addTestCase(new Doctrine_EnumTestCase());
 
-$test->addTestCase(new Doctrine_RelationAccessTestCase());
+//$test->addTestCase(new Doctrine_RelationAccessTestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());

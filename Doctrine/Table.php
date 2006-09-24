@@ -423,7 +423,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                     }
                 break;
             endswitch;
-            } catch(InvalidKeyException $e) {
+            } catch(Doctrine_Table_Exception $e) {
 
             }
         }
@@ -445,7 +445,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     final public function getBound($name) {
         if( ! isset($this->bound[$name]))
-            throw new InvalidKeyException('Unknown bound '.$name);
+            throw new Doctrine_Table_Exception('Unknown bound '.$name);
 
         return $this->bound[$name];
     }
@@ -461,7 +461,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 return $this->bound[$k];
             }
         }
-        throw new InvalidKeyException('Unknown bound '.$name);
+        throw new Doctrine_Table_Exception('Unknown bound '.$name);
     }
     /**
      * returns the alias for given component name
@@ -485,7 +485,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         if($name = array_search($this->boundAliases,$alias))
             return $name;
 
-        throw new InvalidKeyException('Unknown alias '.$alias);
+        throw new Doctrine_Table_Exception('Unknown alias '.$alias);
     }
     /**
      * unbinds all relations
@@ -527,7 +527,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     final public function bind($name,$field,$type,$localKey) {
         if(isset($this->relations[$name]))
-            throw new InvalidKeyException('Relation already set for '.$name);
+            throw new Doctrine_Table_Exception('Relation already set for '.$name);
 
         $e          = explode(" as ",$name);
         $name       = $e[0];
@@ -635,7 +635,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                     try {
                         $bound = $table->getBoundForName($class);
                         break;
-                    } catch(InvalidKeyException $exc) { }
+                    } catch(Doctrine_Table_Exception $exc) { }
 
                 }
                 if( ! isset($local))
