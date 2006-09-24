@@ -84,6 +84,9 @@ class Doctrine_DataDict {
             case "clob":
                 return "XL";
             break;
+            case "blob":
+                return "B";
+            break;
             case "date":
                 return "D";
             break;
