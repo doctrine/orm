@@ -453,6 +453,12 @@ class Data_File extends Doctrine_Record {
         $this->hasOne("File_Owner", "Data_File.file_owner_id");
     }
 }
+class NotNullTest extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 100, "notnull");
+        $this->hasColumn("type", "integer", 11);                                     	
+    }
+}
 class File_Owner extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("name", "string", 255);

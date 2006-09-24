@@ -150,34 +150,31 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
                 $this->validator = new Doctrine_Validator();
 
             try {
-                
+
                 $this->bulkInsert();
                 $this->bulkUpdate();
                 $this->bulkDelete();
 
-                if($this->conn->getAttribute(Doctrine::ATTR_VLD)) {
-
-                    if($this->validator->hasErrors()) {
-                        $this->rollback();
-                        throw new Doctrine_Validator_Exception($this->validator);
-                    }
-                }
-
-                $this->conn->getDBH()->commit();
-
-            } catch(PDOException $e) {
+            } catch(Exception $e) {
                 $this->rollback();
 
                 throw new Doctrine_Exception($e->__toString());
             }
-
+            
+            if($this->conn->getAttribute(Doctrine::ATTR_VLD)) {
+                if($this->validator->hasErrors()) {
+                    $this->rollback();
+                    throw new Doctrine_Validator_Exception($this->validator);
+                }
+            }
+            
+            $this->conn->getDBH()->commit();   
+            
             $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this->conn);
 
-            $this->delete = array();
-            $this->state  = Doctrine_Connection_Transaction::STATE_OPEN;
-    
+            $this->state     = Doctrine_Connection_Transaction::STATE_OPEN;
             $this->validator = null;
-    
+
         } elseif($this->transaction_level == 1)
             $this->state = Doctrine_Connection_Transaction::STATE_ACTIVE;
     }
@@ -192,6 +189,10 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
      */
     public function rollback() {
         $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionRollback($this->conn);
+        
+        $this->delete = array();
+        $this->insert = array();
+        $this->update = array();
 
         $this->transaction_level = 0;
         $this->conn->getDBH()->rollback();
@@ -295,12 +296,18 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
                 $record->assignIdentifier(false);
             }
             if($record instanceof Doctrine_Record) {
+
                 $table  = $record->getTable();
+
+                $table->getListener()->onPreDelete($record);
 
                 $params  = substr(str_repeat("?, ",count($ids)),0,-2);
                 $query   = "DELETE FROM ".$record->getTable()->getTableName()." WHERE ".$table->getIdentifier()." IN(".$params.")";
                 $this->conn->execute($query,$ids);
+
+                $table->getListener()->onDelete($record);
             }
+
         }
         $this->delete = array();
     }

@@ -9,6 +9,20 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "GzipTest";
         parent::prepareTables();
     }
+    public function testNotNullConstraint() {
+        $null = new NotNullTest();
+
+        $null->name = null;
+
+        $null->type = 1;
+        try {
+            $null->save();
+            $this->fail();
+        } catch(Doctrine_Exception $e) {
+            $this->pass();
+        }
+
+    }
     public function testGzipType() {
         $gzip = new GzipTest();
         $gzip->gzip = "compressed";

@@ -1,6 +1,6 @@
 <?php
 require_once("UnitTestCase.php");
-class EventListenerClainTest extends Doctrine_Record {
+class EventListenerChainTest extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("name", "string", 100);
     }
@@ -23,7 +23,7 @@ class Doctrine_EventListener_TestB extends Doctrine_EventListener {
   }
 }
 
-class Doctrine_EventListenerChainTestCase extends Doctrine_UnitTestCase {
+class Doctrine_EventListener_Chain_TestCase extends Doctrine_UnitTestCase {
     public function testEvents() {
         $connection = $this->manager->openConnection(Doctrine_DB::getConn("sqlite::memory:"));
         $debug = $this->listener->getMessages();

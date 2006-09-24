@@ -831,7 +831,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
         if(isset($this->identityMap[$id]))
             $record = $this->identityMap[$id];
-        else {
+        else {      
             $record = new $this->name($this);
             $this->identityMap[$id] = $record;
         }

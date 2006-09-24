@@ -167,11 +167,13 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 // listen the onPreCreate event
                 $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onPreCreate($this);
             } else {
+
                 // listen the onPreLoad event
                 $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onPreLoad($this);
             }
             // get the data array
             $this->data = $this->table->getData();
+
 
             // get the column count
             $count = count($this->data);
