@@ -36,7 +36,7 @@ class ADODB2_sqlite extends ADODB_DataDict {
 		case 'D': return 'DATE';
 		case 'T': return 'DATE';
 		
-		case 'L': return 'REAL';
+		case 'L': return 'INTEGER';
 		case 'I': return 'INTEGER';
 		case 'I1': return 'INTEGER';
 		case 'I2': return 'INTEGER';
