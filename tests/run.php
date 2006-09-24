@@ -14,7 +14,7 @@ require_once("AccessTestCase.php");
 require_once("ValidatorTestCase.php");
 require_once("CollectionTestCase.php");
 require_once("PessimisticLockingTestCase.php");
-
+require_once("EventListenerChainTestCase.php");
 require_once("CacheSqliteTestCase.php");
 require_once("CollectionOffsetTestCase.php");
 require_once("QueryTestCase.php");
@@ -90,8 +90,9 @@ $test->addTestCase(new Doctrine_QueryTestCase());
 
 $test->addTestCase(new Doctrine_EnumTestCase());
 
-//$test->addTestCase(new Doctrine_RelationAccessTestCase());
+$test->addTestCase(new Doctrine_RelationAccessTestCase());
 
+$test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
