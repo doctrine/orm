@@ -29,7 +29,7 @@ Doctrine::autoload('Doctrine_EventListener_Interface');
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-abstract class Doctrine_EventListener implements Doctrine_EventListener_Interface {
+class Doctrine_EventListener implements Doctrine_EventListener_Interface {
 
     public function onLoad(Doctrine_Record $record) { }
     public function onPreLoad(Doctrine_Record $record) { }
@@ -79,4 +79,4 @@ abstract class Doctrine_EventListener implements Doctrine_EventListener_Interfac
     
     public function onCollectionDelete(Doctrine_Collection $collection) { }
     public function onPreCollectionDelete(Doctrine_Collection $collection) { }
-}   
+}

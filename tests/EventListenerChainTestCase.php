@@ -24,28 +24,22 @@ class Doctrine_EventListener_TestB extends Doctrine_EventListener {
 }
 
 class Doctrine_EventListener_Chain_TestCase extends Doctrine_UnitTestCase {
-    public function testEvents() {
-        $connection = $this->manager->openConnection(Doctrine_DB::getConn("sqlite::memory:"));
-        $debug = $this->listener->getMessages();
-        $last = end($debug);
-        $this->assertTrue($last->getObject() instanceof Doctrine_Connection);
-        $this->assertTrue($last->getCode() == Doctrine_EventListener_Debugger::EVENT_OPEN);
-    }
+
     public function testAccessorInvokerChain() {
-        $e = new EventListenerTest;
+        $e = new EventListenerChainTest;
         $e->name = "something";
 
 
-        $this->assertEqual($e->get('name'), 'SOMETHING');
+        $this->assertEqual($e->get('name'), 'somethingTestATestB');
         // test repeated calls
-        $this->assertEqual($e->get('name'), 'SOMETHING');
+        $this->assertEqual($e->get('name'), 'somethingTestATestB');
         $this->assertEqual($e->id, null);
         $this->assertEqual($e->rawGet('name'), 'something');
 
         $e->save();
 
         $this->assertEqual($e->id, 1);
-        $this->assertEqual($e->name, 'SOMETHING');
+        $this->assertEqual($e->name, 'somethingTestATestB');
         $this->assertEqual($e->rawGet('name'), 'something');
 
         $this->connection->clear();
@@ -53,7 +47,7 @@ class Doctrine_EventListener_Chain_TestCase extends Doctrine_UnitTestCase {
         $e->refresh();
 
         $this->assertEqual($e->id, 1);
-        $this->assertEqual($e->name, 'SOMETHING');
+        $this->assertEqual($e->name, 'somethingTestATestB');
         $this->assertEqual($e->rawGet('name'), 'something');
 
         $this->connection->clear();
@@ -61,7 +55,7 @@ class Doctrine_EventListener_Chain_TestCase extends Doctrine_UnitTestCase {
         $e = $e->getTable()->find($e->id);
 
         $this->assertEqual($e->id, 1);
-        $this->assertEqual($e->name, 'SOMETHING');
+        $this->assertEqual($e->name, 'somethingTestATestB');
         $this->assertEqual($e->rawGet('name'), 'something');
     }
     public function prepareData() { }

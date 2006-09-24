@@ -195,7 +195,11 @@ class Doctrine_EventListenerTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->logger->pop(), 'onPreDelete');
         $this->assertEqual($this->logger->pop(), 'onTransactionBegin');
         $this->assertEqual($this->logger->pop(), 'onPreTransactionBegin');
+    
+        $this->connection->setListener(new Doctrine_EventListener());
     }
+
+
 
     public function prepareData() { }
     public function prepareTables() {

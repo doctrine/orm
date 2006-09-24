@@ -690,21 +690,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($user->getModified(), array());
         $this->assertEqual($user->name, "Jack Daniels");
-        
-        $debug = $this->listener->getMessages();
-        $p = array_pop($debug);
-        $this->assertTrue($p->getObject() instanceof Doctrine_Connection);
-        $this->assertTrue($p->getCode() == Doctrine_EventListener_Debugger::EVENT_COMMIT);
-        
-        $p = array_pop($debug);
-        $this->assertTrue($p->getObject() instanceof Doctrine_Record);
-        $this->assertTrue($p->getCode() == Doctrine_EventListener_Debugger::EVENT_SAVE);
-
-        $p = array_pop($debug);
-        $this->assertTrue($p->getObject() instanceof Doctrine_Record);
-        $this->assertTrue($p->getCode() == Doctrine_EventListener_Debugger::EVENT_UPDATE);
-
-
     }
     public function testCopy() {
         $user = $this->connection->getTable("User")->find(4);
