@@ -37,7 +37,7 @@ error_reporting(E_ALL);
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
 
-$test->addTestCase(new Doctrine_DB_TestCase());
+//$test->addTestCase(new Doctrine_DB_TestCase());
 
 $test->addTestCase(new Doctrine_ConnectionTestCase());
 
