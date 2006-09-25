@@ -97,27 +97,40 @@ $test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
 class MyReporter extends HtmlReporter {
-  public function paintHeader() {}
-  public function paintFooter()
-  {
-    $colour = ($this->getFailCount() + $this->getExceptionCount() > 0 ? "red" : "green");
-    print "<div style=\"";
-    print "padding: 8px; margin-top: 1em; background-color: $colour; color: white;";
-    print "\">";
-    print $this->getTestCaseProgress() . "/" . $this->getTestCaseCount();
-    print " test cases complete:\n";
-    print "<strong>" . $this->getPassCount() . "</strong> passes, ";
-    print "<strong>" . $this->getFailCount() . "</strong> fails and ";
-    print "<strong>" . $this->getExceptionCount() . "</strong> exceptions.";
-    print "</div>\n";
-  }
+    public function paintHeader() {}
+    public function paintFooter()
+    {
+        $colour = ($this->getFailCount() + $this->getExceptionCount() > 0 ? "red" : "green");
+        print "<div style=\"";
+        print "padding: 8px; margin-top: 1em; background-color: $colour; color: white;";
+        print "\">";
+        print $this->getTestCaseProgress() . "/" . $this->getTestCaseCount();
+        print " test cases complete:\n";
+        print "<strong>" . $this->getPassCount() . "</strong> passes, ";
+        print "<strong>" . $this->getFailCount() . "</strong> fails and ";
+        print "<strong>" . $this->getExceptionCount() . "</strong> exceptions.";
+        print "</div>\n";
+    }
 }
 
 if (TextReporter::inCli()) {
+    if ($argc == 4)
+    {
+        $dsn = $argv[1];
+        $username = $argv[2];
+        $password = $argv[3];
+    }
     exit ($test->run(new TextReporter()) ? 0 : 1);
+} else {
+    if (isset($_POST))
+    {
+        $dsn = $_POST['dsn'];
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+    }
+    $test->run(new MyReporter());
+    $output = ob_get_clean();
 }
-$test->run(new MyReporter());
-$output = ob_get_clean();
 /**
 $cache = Doctrine_Manager::getInstance()->getCurrentConnection()->getCacheHandler();
 if(isset($cache)) {
@@ -158,6 +171,11 @@ if(isset($cache)) {
   <th>Password</th>
   <td><input type="text" name="password" /></td>
 </tr>
+<tr>
+  <td>&nbsp;</td>
+  <td><input type="submit" name="submit" /></td>
+</tr>
+</table>
 </form>
 <h3>Tests</h3>
 <pre>
