@@ -78,21 +78,41 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return array
      */
     public function listTableColumns($table) { 
-        $sql = "DESCRIBE $table";
+        $sql = "SELECT a.attnum, a.attname AS field, t.typname AS type, format_type(a.atttypid, a.atttypmod) AS complete_type, "
+             . "a.attnotnull AS isnotnull, "
+             . "( SELECT 't' "
+             . "FROM pg_index "
+             . "WHERE c.oid = pg_index.indrelid "
+             . "AND pg_index.indkey[0] = a.attnum "
+             . "AND pg_index.indisprimary = 't') AS pri, "
+             . "(SELECT pg_attrdef.adsrc "
+             . "FROM pg_attrdef "
+             . "WHERE c.oid = pg_attrdef.adrelid "
+             . "AND pg_attrdef.adnum=a.attnum) AS default "
+             . "FROM pg_attribute a, pg_class c, pg_type t "
+             . "WHERE c.relname = '" . $table . "' "
+             . "AND a.attnum > 0 "
+             . "AND a.attrelid = c.oid "
+             . "AND a.atttypid = t.oid "
+             . "ORDER BY a.attnum ";
         $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        $description = array();
+        $columns     = array();
         foreach ($result as $key => $val) {
+            if ($val['type'] === 'varchar') {
+                // need to add length to the type so we are compatible with
+                // Zend_Db_Adapter_Pdo_Pgsql!
+                $length = preg_replace('~.*\(([0-9]*)\).*~', '$1', $val['complete_type']);
+                $val['type'] .= '(' . $length . ')';
+            }
             $description = array(
                 'name'    => $val['field'],
                 'type'    => $val['type'],
-                'primary' => (strtolower($val['key']) == 'pri'),
+                'notnull' => ($val['isnotnull'] == ''),
                 'default' => $val['default'],
-                'notnull' => (bool) ($val['null'] != 'YES'),
+                'primary' => ($val['pri'] == 't'),
             );
             $columns[$val['field']] = new Doctrine_Schema_Column($description);
         }
-
-
         return $columns;
     }
     /**
@@ -111,7 +131,18 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return array
      */
     public function listTables($database = null) {
-        $sql = "SHOW TABLES";
+        $sql = "SELECT c.relname AS table_name "
+             . "FROM pg_class c, pg_user u "
+             . "WHERE c.relowner = u.usesysid AND c.relkind = 'r' "
+             . "AND NOT EXISTS (SELECT 1 FROM pg_views WHERE viewname = c.relname) "
+             . "AND c.relname !~ '^(pg_|sql_)' "
+             . "UNION "
+             . "SELECT c.relname AS table_name "
+             . "FROM pg_class c "
+             . "WHERE c.relkind = 'r' "
+             . "AND NOT EXISTS (SELECT 1 FROM pg_views WHERE viewname = c.relname) "
+             . "AND NOT EXISTS (SELECT 1 FROM pg_user WHERE usesysid = c.relowner) "
+             . "AND c.relname !~ '^pg_'";
         
         return $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
