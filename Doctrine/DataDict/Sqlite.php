@@ -27,7 +27,7 @@
  * @version     $Id$
  */
  
-class Doctrine_DataDict_Sqlite {
+class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
     /**
      * lists all databases
      *
@@ -78,7 +78,23 @@ class Doctrine_DataDict_Sqlite {
      * @return array
      */
     public function listTableColumns($table) { 
-    
+
+        $sql = "PRAGMA table_info($table)";
+        $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+        $description = array();
+        $columns     = array();
+        foreach ($result as $key => $val) {
+            $description = array(
+                    'name'    => $val['name'],
+                    'type'    => $val['type'],
+                    'notnull' => (bool) $val['notnull'],
+                    'default' => $val['dflt_value'],
+                    'primary' => (bool) $val['pk'],
+                    );
+            $columns[$val['name']] = new Doctrine_Schema_Column($description);
+        }
+        return $columns;
     }
     /**
      * lists table constraints
@@ -90,13 +106,17 @@ class Doctrine_DataDict_Sqlite {
     
     }
     /**
-     * lists table constraints
+     * lists tables
      *
      * @param string|null $database
      * @return array
      */
     public function listTables($database = null) {
-
+        $sql = "SELECT name FROM sqlite_master WHERE type='table' "
+                . "UNION ALL SELECT name FROM sqlite_temp_master "
+                . "WHERE type='table' ORDER BY name";
+        
+        return $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
     /**
      * lists table triggers

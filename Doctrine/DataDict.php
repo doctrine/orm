@@ -28,7 +28,7 @@
  */
 class Doctrine_DataDict {
 
-    private $dbh;
+    protected $dbh;
 
     public function __construct(PDO $dbh) {
         $file = Doctrine::getPath().DIRECTORY_SEPARATOR."Doctrine".DIRECTORY_SEPARATOR."adodb-hack".DIRECTORY_SEPARATOR."adodb.inc.php";

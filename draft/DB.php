@@ -361,6 +361,13 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
         return $rows;
     }
     /**
+     * fetchAll
+     */
+    public function fetchAssoc($statement, $params = array()) {
+        if( ! $params)
+        $this->query($statement);
+    }
+    /**
      * lastInsertId
      *
      *

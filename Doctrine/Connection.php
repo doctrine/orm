@@ -94,11 +94,19 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /**
      * returns the database handler of which this connection uses
      *
-     * @return object PDO       the database handler
+     * @return PDO              the database handler
      */
     public function getDBH() {
         return $this->dbh;
     }
+    /**
+     * returns a datadict object
+     *
+     * @return Doctrine_DataDict
+     */
+    public function getDataDict() {
+                                  	
+    }                              	
     /**
      * returns the regular expression operator 
      * (implemented by the connection drivers)

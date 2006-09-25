@@ -33,102 +33,43 @@
  * class Doctrine_Schema_Column
  * Holds information on a database table field
  */
-class Doctrine_Schema_Column extends Doctrine_Schema_Object
-            implements IteratorAggregate
-{
-
-    /** Aggregations: */
-
-    /** Compositions: */
-    var $m_Vector = array();
-
-     /*** Attributes: ***/
-
+class Doctrine_Schema_Column extends Doctrine_Schema_Object implements IteratorAggregate {
     /**
-     * Column name
-     * @access public
+     * column definitions
+     * @var array $definition
      */
-    public $name;
-
-    /**
-     * Column type e.g. varchar, char, int etc.
-     * @access public
-     */
-    public $type;
-
-    /**
-     * Field max length
-     * @access public
-     */
-    public $length;
-
-    /**
-     * Is an autoincrement column
-     * @access public
-     */
-    public $autoincrement;
-
-    /**
-     * Default field value
-     * @access public
-     */
-    public $default;
-
-    /**
-     * Is not null
-     * @access public
-     */
-    public $notNull;
-
-    /**
-     * Column comment
-     * @access public
-     */
-    public $description;
-
-    /**
-     * Column level check constraint
-     * @access public
-     */
-    public $check;
-
-    /**
-     * Character encoding e.g. ISO-8859-1 or UTF-8 etc.
-     * @access public
-     */
-    public $charset;
+    private $definition = array('name'    => '',
+                                'type'    => '',
+                                'unique'  => false,
+                                'primary' => false,
+                                'notnull' => false,
+                                'default' => null,
+                                );
 
 
-    /**
-     *
-     * @return 
-     * @access public
-     */
-    public function __toString( ) {
-        
-    } // end of member function __toString
-
-    /**
-     *
-     * @return 
-     * @access public
-     */
-    public function __clone( ) {
-        
-    } // end of member function __clone
-
-    /**
-     *
-     * @return bool
-     * @access public
-     */
-    public function isValid( ) {
-        
-    } // end of member function isValid
-
-
-
-
-
+    public function __construct(array $definition) {
+        foreach($this->definition as $key => $val) {
+            if(isset($definition[$key]))
+                $this->definition[$key] = $definition[$key];
+        }
+    }
+    public function getName() {
+        return $this->definition['name'];                          	
+    }
+    public function getType() {
+        return $this->definition['type'];
+    }
+    public function isUnique() {
+        return $this->definition['unique'];
+    }
+    public function isPrimaryKey() {
+        return $this->definition['primary'];
+    }
+    public function defaultValue() {
+        return $this->definition['default'];
+    }
+    public function isNotNull() {
+        return $this->definition['notnull'];
+    }
 } // end of Doctrine_Schema_Column
 
