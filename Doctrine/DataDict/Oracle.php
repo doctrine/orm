@@ -77,31 +77,17 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableColumns($table) { 
-        $sql     = "exec sp_columns @table_name = " . $this->quoteIdentifier($table);
+    public function listTableColumns($table) {
+        $sql = "DESCRIBE $table";
         $result  = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         $columns = array();
-
         foreach ($result as $key => $val) {
-            if (strstr($val['type_name'], ' ')) {
-                list($type, $identity) = explode(' ', $val['type_name']);
-            } else {
-                $type = $val['type_name'];
-                $identity = '';
-            }
-
-            if ($type == 'varchar') {
-                $type .= '('.$val['length'].')';
-            }
-
-            $description  = array(
-                'name'    => $val['column_name'],
-                'type'    => $type,
-                'notnull' => (bool) ($val['is_nullable'] === 'NO'),
-                'default' => $val['column_def'],
-                'primary' => (strtolower($identity) == 'identity'),
+            $description = array(
+                'name'    => $val['Field'],
+                'notnull' => (bool) ($val['Null'] === ''),
+                'type'    => $val['Type'],
             );
-            $columns[$val['column_name']] = new Doctrine_Schema_Column($description);
+            $columns[$val['Field']] = new Doctrine_Schema_Column($description);
         }
 
         return $columns;
@@ -122,9 +108,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
      * @return array
      */
     public function listTables($database = null) {
-        $sql = "SELECT name FROM sysobjects WHERE type = 'U' ORDER BY name";
-
-        return $this->dbh->fetchCol($sql);
+		return $this->dbh->fetchCol('SELECT table_name FROM all_tables ORDER BY table_name');
     }
     /**
      * lists table triggers
