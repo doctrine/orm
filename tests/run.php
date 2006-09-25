@@ -113,6 +113,9 @@ class MyReporter extends HtmlReporter {
   }
 }
 
+if (TextReporter::inCli()) {
+    exit ($test->run(new TextReporter()) ? 0 : 1);
+}
 $test->run(new MyReporter());
 $output = ob_get_clean();
 /**
