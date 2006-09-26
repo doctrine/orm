@@ -13,11 +13,11 @@ class Doctrine_EnumTestCase extends Doctrine_UnitTestCase {
         $test->save();
 
         $query = new Doctrine_Query($this->connection);
-        $ret = $query->query('FROM EnumTest WHERE EnumTest.status =  ?', array('open'));
+        $ret = $query->query('FROM EnumTest WHERE EnumTest.status = ?', array('open'));
         $this->assertEqual(count($ret), 1);
 
         $query = new Doctrine_Query($this->connection);
-        $ret = $query->query('FROM EnumTest WHERE EnumTest.status = "open"');
+        $ret = $query->query('FROM EnumTest WHERE EnumTest.status = open');
         $this->assertEqual(count($ret), 1);
 
 
