@@ -45,6 +45,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     protected $tables           = array();
     /**
+     * @var Doctrine_DataDict $dataDict
+     */
+    private $dataDict;
+    /**
      * the constructor
      *
      * @param Doctrine_Manager $manager     the manager object
@@ -105,8 +109,33 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return Doctrine_DataDict
      */
     public function getDataDict() {
-                                  	
-    }                              	
+        if(isset($this->dataDict))
+            return $this->dataDict;
+
+        $driver = $this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME);
+        switch($driver) {
+            case "mysql":
+                $this->dataDict = new Doctrine_DataDict_Mysql($this);
+            break;
+            case "sqlite":
+            case "sqlite2":
+                $this->dataDict = new Doctrine_DataDict_Sqlite($this);
+            break;
+            case "pgsql":
+                $this->dataDict = new Doctrine_DataDict_Pgsql($this);
+            break;
+            case "oci":
+            case "oci8":
+                $this->dataDict = new Doctrine_DataDict_Oracle($this);
+            break;
+            case "mssql":
+                $this->dataDict = new Doctrine_DataDict_Mssql($this);
+            break;
+            default:
+                throw new Doctrine_Connection_Exception("No datadict driver availible for ".$driver);
+        }
+        return $this->dataDict;
+    }
     /**
      * returns the regular expression operator 
      * (implemented by the connection drivers)
