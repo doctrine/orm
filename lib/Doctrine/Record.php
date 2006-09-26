@@ -324,6 +324,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case "enum":
                         $this->data[$name] = $this->table->enumValue($name, $tmp[$name]);
                     break;
+                    case "boolean":
+                    case "integer":
+                        if($tmp[$name] !== self::$null)
+                            settype($tmp[$name], $type);
                     default:
                         $this->data[$name] = $tmp[$name];
                 endswitch;
@@ -888,6 +892,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 break;
                 case 'gzip':
                     $a[$v] = gzcompress($this->data[$v],5);
+                break;
+                case 'boolean':
+                    $a[$v] = (int) $this->data[$v];
                 break;
                 case 'enum':
                     $a[$v] = $this->table->enumIndex($v,$this->data[$v]);

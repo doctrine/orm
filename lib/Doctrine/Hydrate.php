@@ -236,6 +236,17 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         return array();
     }
     /**
+     * convertBoolean
+     * converts boolean to integers
+     *
+     * @param mixed $item
+     * @return void
+     */
+    public static function convertBoolean(&$item) {
+        if(is_bool($item))
+            $item = (int) $item;
+    }
+    /**
      * execute
      * executes the dql query and populates all collections
      *
@@ -245,6 +256,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD) {
         $this->data = array();
         $this->collections = array();
+        
+        array_walk($params, array(__CLASS__, 'convertBoolean'));
         
         if( ! $this->view)
             $query = $this->getQuery();

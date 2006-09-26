@@ -13,8 +13,7 @@ Following data types are availible in doctrine:
     <li /><b> object </b>
         <ul> The same as type 'object' in php. Automatically serialized when saved into database and unserialized when retrieved from database.</ul>
     <li /><b> enum </b>
-        <ul> Unified 'enum' type. Automatically converts the string values into index numbers and vice versa. The possible values for the column 
-        can be specified with Doctrine_Record::setEnumValues(columnName, array values).</ul>
+        <ul> </ul>
     <li /><b> timestamp </b>
         <dd /> Database 'timestamp' type
     <li /><b> clob</b>

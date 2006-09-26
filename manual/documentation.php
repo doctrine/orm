@@ -102,6 +102,16 @@ $menu = array("Getting started" =>
                                         "Enum emulation",
 
                                         ),
+
+                        "Record identifiers" => array(
+                                        "Introduction",
+                                        "Autoincremented",
+                                        "Natural",
+                                        "Composite",
+                                        "Sequential")
+                        ),
+           "Schema reference" =>
+                        array(
                         "Data types" => array(
                                         "Boolean",
                                         "Integer",
@@ -116,26 +126,7 @@ $menu = array("Getting started" =>
                                         "Enum",
                                         "Gzip",
                         ),
-                        "Record identifiers" => array(
-                                        "Introduction",
-                                        "Autoincremented",
-                                        "Natural",
-                                        "Composite",
-                                        "Sequential")
-                        ),
-           "Schema reference" =>
-                        array(
-                        "Data types" => array(
-                                        "PHP based types" =>
-                                    array(
-                                        "Boolean",
-                                        "Integer",
-                                        "Float",
-                                        "String",
-                                        "Array",
-                                        "Object",
-                                    ),
-                                    ),
+
                         ),
            "Basic Components" =>
                         array(
@@ -153,6 +144,7 @@ $menu = array("Getting started" =>
                                          "Getting record state",
                                          "Getting object copy",
                                          "Serializing",
+                                         "Existence checking",
                                          "Callbacks"),
                         "Connection"
                                 => array("Introduction",
@@ -199,6 +191,10 @@ $menu = array("Getting started" =>
                                          "Using SQL",
                                          "Adding components",
                                          "Method overloading"),
+                        "DB"     => array(
+                                         "Introduction",
+                                         "Connecting to a database",
+                                         "Using event listeners"),
                                          /**
                         "Statement - <font color='red'>UNDER CONSTRUCTION</font>" => array("Introduction",
                                              "Setting parameters",
@@ -263,6 +259,8 @@ $menu = array("Getting started" =>
                                       "List of events",
                                       "Listening events",
                                       "Chaining",
+                                      "AccessorInvoker",
+                                      "Creating a logger",
                                       ),
                       "Validators" => array(
                                       "Intruduction",
@@ -275,15 +273,6 @@ $menu = array("Getting started" =>
                                       "Managing views",
                                       "Using views"
                                       ),
-                      /**
-                      "Hook"        => array(
-                                      "Introduction",
-                                      "Parameter hooking",
-                                      "Paging",
-                                      "Setting conditions",
-                                      "Sorting"
-                                      ),
-                      */
                       "Cache"       => array(
                                       "Introduction",
                                       "Query cache"),

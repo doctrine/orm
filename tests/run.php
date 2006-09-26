@@ -32,11 +32,10 @@ require_once("ImportTestCase.php");
 require_once("BooleanTestCase.php");
 require_once("EnumTestCase.php");
 require_once("RelationAccessTestCase.php");
-
+require_once("DataDictSqliteTestCase.php");
 error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
-
 
 $test->addTestCase(new Doctrine_DB_TestCase());
 
@@ -76,9 +75,9 @@ $test->addTestCase(new Doctrine_RawSql_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 
-$test->addTestCase(new Doctrine_SchemaTestCase());
+//$test->addTestCase(new Doctrine_SchemaTestCase());
 
-$test->addTestCase(new Doctrine_ImportTestCase());
+//$test->addTestCase(new Doctrine_ImportTestCase());
 
 $test->addTestCase(new Doctrine_CollectionTestCase());
 
@@ -93,6 +92,9 @@ $test->addTestCase(new Doctrine_EnumTestCase());
 $test->addTestCase(new Doctrine_RelationAccessTestCase());
 
 $test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
+
+$test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
+
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
@@ -124,9 +126,9 @@ if (TextReporter::inCli()) {
 } else {
     if (isset($_POST))
     {
-        $dsn = $_POST['dsn'];
-        $username = $_POST['username'];
-        $password = $_POST['password'];
+        $dsn        = isset($_POST['dsn'])?$_POST['dsn']:null;
+        $username   = isset($_POST['username'])?$_POST['username']:null;
+        $password   = isset($_POST['password'])?$_POST['password']:null;
     }
     $test->run(new MyReporter());
     $output = ob_get_clean();

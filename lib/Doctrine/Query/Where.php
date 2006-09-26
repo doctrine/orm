@@ -75,13 +75,18 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
                 $enumIndex = $table->enumIndex($field, trim($value,"'"));
                 $alias     = $this->query->getTableAlias($reference);
                 $table     = $this->query->getTable($alias);
+                
+                if(trim($value) == 'true')
+                    $value = 1;
+                elseif(trim($value) == 'false')
+                    $value = 0;
 
                 switch($operator) {
                     case '<':
                     case '>':
                     case '=':
                         if($enumIndex !== false)
-                            $value  = $enumIndex;
+                            $value  = $enumIndex;   
 
                         $where      = $alias.'.'.$field.' '.$operator.' '.$value;
                     break;
