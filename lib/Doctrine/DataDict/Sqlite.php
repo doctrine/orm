@@ -115,8 +115,16 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
         $sql = "SELECT name FROM sqlite_master WHERE type='table' "
                 . "UNION ALL SELECT name FROM sqlite_temp_master "
                 . "WHERE type='table' ORDER BY name";
+
+        $tables = array();
+        $stmt   = $this->dbh->query($sql);
         
-        return $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $data   = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        foreach($data as $table) {
+            $tables[] = new Doctrine_Schema_Table(array('name' => $table));
+        }
+        return $tables;
     }
     /**
      * lists table triggers

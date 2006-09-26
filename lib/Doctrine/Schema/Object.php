@@ -37,8 +37,18 @@ abstract class Doctrine_Schema_Object implements IteratorAggregate, Countable {
 
     protected $children   = array();
 
-    protected $definition = array();
+    protected $definition = array('name' => '');
 
+    public function __construct(array $definition) {
+        foreach($this->definition as $key => $val) {
+            if(isset($definition[$key])) 
+                $this->definition[$key] = $definition[$key];
+        }
+    }
+    
+    public function getName() {
+        return $this->definition['name'];                          	
+    }
     /**
      *
      * @return int
