@@ -38,14 +38,13 @@ class Doctrine_Schema_Column extends Doctrine_Schema_Object implements IteratorA
      * column definitions
      * @var array $definition
      */
-    private $definition = array('name'    => '',
-                                'type'    => '',
-                                'unique'  => false,
-                                'primary' => false,
-                                'notnull' => false,
-                                'default' => null,
-                                );
-
+    protected $definition = array('name'    => '',
+                                  'type'    => '',
+                                  'unique'  => false,
+                                  'primary' => false,
+                                  'notnull' => false,
+                                  'default' => null,
+                                  );
 
     public function __construct(array $definition) {
         foreach($this->definition as $key => $val) {
@@ -71,5 +70,4 @@ class Doctrine_Schema_Column extends Doctrine_Schema_Object implements IteratorA
     public function isNotNull() {
         return $this->definition['notnull'];
     }
-} // end of Doctrine_Schema_Column
-
+}

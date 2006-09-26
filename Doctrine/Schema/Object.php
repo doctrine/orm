@@ -33,69 +33,35 @@
  * class Doctrine_Schema_Object
  * Catches any non-property call from child classes and throws an exception.
  */
-abstract class Doctrine_Schema_Object
-            implements IteratorAggregate, Countable
-{
+abstract class Doctrine_Schema_Object implements IteratorAggregate, Countable {
 
-    /** Aggregations: */
+    protected $children   = array();
 
-    /** Compositions: */
-
-     /*** Attributes: ***/
-
-
-    /**
-     *
-     * @param string _property      
-     * @param mixed _value      
-     * @return 
-     * @access public
-     */
-    public function __set( $_property,  $_value ) 
-    {
-        throw new Doctrine_Schema_Exception('Assignment of non-property');
-    } // end of member function __set
-
-    /**
-     *
-     * @param string _property      
-     * @return 
-     * @access public
-     */
-    public function __get( $_property ) 
-    {
-        throw new Doctrine_Schema_Exception('Access of non-property');        
-    } // end of member function __get
-
-
+    protected $definition = array();
 
     /**
      *
      * @return int
      * @access public
      */
-    public function count( )
-    {
-        if(!empty($this->childs))
-        {
+    public function count() {
+        if( ! empty($this->childs))
             return count($this->childs);
-        }
-        return 0;
+
+        return count($this->definition);
     }
 
     /**
+     * getIterator
      *
-     * @return 
+     * @return ArrayIterator
      * @access public
      */
-    public function getIterator( )
-    {
-        if(!empty($this->childs))
-        {
+    public function getIterator() {
+        if( ! empty($this->childs))
             return new ArrayIterator($this->childs);
-        }
-        return new ArrayIterator();       
-    }
 
-} // end of Doctrine_Schema_Object
+        return new ArrayIterator($this->definition);
+    }
+}
 

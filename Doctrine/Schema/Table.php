@@ -37,14 +37,6 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object
             implements Countable, Countable, IteratorAggregate
 {
 
-    /** Aggregations: */
-
-    /** Compositions: */
-    var $m_Vector = array();
-    var $m_;
-
-     /*** Attributes: ***/
-
     /**
      * Unique key fields
      * @access public
@@ -85,32 +77,6 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object
      * @access public
      */
     public $description;
-
-    /**
-     * Columns of the table
-     * @access private
-     */
-    private $childs;
-
-
-    /**
-     *
-     * @return 
-     * @access public
-     */
-    public function __toString( ) {
-        
-    } // end of member function __toString
-
-    /**
-     *
-     * @return 
-     * @access public
-     */
-    public function __clone( ) {
-        
-    } // end of member function __clone
-
     /**
      *
      * @return bool
@@ -118,20 +84,35 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object
      */
     public function isValid( ) {
         
-    } // end of member function isValid
-
+    }
+    /**
+     * returns an array of Doctrine_Schema_Column objects
+     *
+     * @return array
+     */
+    public function getColumns() {
+        return $this->children;
+    }
+    /**
+     * @return Doctrine_Schema_Column|false
+     */
+    public function getColumn($name) {
+        if( ! isset($this->children[$name]))
+            return false;
+            
+        return $this->children[$name];
+    }
     /**
      *
-     * @param Doctrine_Schema_Column column      * @return Doctrine_Schema_Column
+     * @param Doctrine_Schema_Column column
+     * @return Doctrine_Schema_Table
      * @access public
      */
-    public function addColumn( $column = null ) {
-        
-    } // end of member function addColumn
+    public function addColumn(Doctrine_Schema_Column $column) {
+        $name = $column->getName();
+        $this->children[$name] = $column;
 
+        return $this;
+    }
 
-
-
-
-} // end of Doctrine_Schema_Table
-
+}
