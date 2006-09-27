@@ -52,5 +52,39 @@ class Doctrine_Association_Self extends Doctrine_Association {
 
         return $dql;
     }
+    
+
+    public function fetchRelatedFor(Doctrine_Record $record) {
+        $id      = $record->getIncremented();
+
+        $q = new Doctrine_RawSql();
+
+        $assocTable = $this->getAssociationFactory()->getTableName();
+        $tableName  = $record->getTable()->getTableName();
+        $identifier = $record->getTable()->getIdentifier();
+
+        $sub     = "SELECT ".$this->getForeign().
+                   " FROM ".$assocTable.
+                   " WHERE ".$this->getLocal().
+                   " = ?";
+
+        $sub2   = "SELECT ".$this->getLocal().
+                  " FROM ".$assocTable.
+                  " WHERE ".$this->getForeign().
+                  " = ?";
+
+        $q->select('{'.$tableName.'.*}, {'.$assocTable.'.*}')
+          ->from($tableName.' INNER JOIN '.$assocTable.' ON '.
+                 $tableName.'.'.$identifier.' = '.$assocTable.'.'.$this->getLocal().' OR '.
+                 $tableName.'.'.$identifier.' = '.$assocTable.'.'.$this->getForeign()
+                 )
+          ->where($tableName.'.'.$identifier.' IN ('.$sub.') OR '.
+                  $tableName.'.'.$identifier.' IN ('.$sub2.')'
+                );
+        $q->addComponent($tableName,  $record->getTable()->getComponentName());
+        $q->addComponent($assocTable, $record->getTable()->getComponentName(). '.' . $this->getAssociationFactory()->getComponentName());
+    
+        return $q->execute(array($id, $id));
+    }
 }
 ?>
