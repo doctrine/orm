@@ -39,6 +39,6 @@ class Doctrine_DB_Statement extends PDOStatement {
         
         $this->dbh->getListener()->onExecute($this, $params);
         
-        return $ret;
+        return $this;
     }
 }

@@ -37,14 +37,6 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      */
     protected static $instances   = array();
     /**
-     * @var array $queries          all the executed queries
-     */
-    protected $queries            = array();
-    /**
-     * @var array $exectimes        execution times of the executed queries
-     */
-    protected $exectimes          = array();
-    /**
      * @var array $isConnected      whether or not a connection has been established
      */
     protected $isConnected        = false;
@@ -104,12 +96,16 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
     }
     /**
      * getUsername
+     *
+     * @return string
      */
     public function getUsername() {
         return $this->username;
     }
     /**
      * getPassword
+     *
+     * @return string
      */
     public function getPassword() {
         return $this->password;
@@ -165,7 +161,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
         $this->dbh = new PDO($this->dsn,$this->username,$this->password);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array("Doctrine_DB_Statement", array($this)));
-        
+        $this->isConnected = true;
         return true;
     }
 
@@ -303,6 +299,8 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @param string $statement
      */
     public function prepare($statement) {
+        $this->connect();
+
         $args = func_get_args();
 
         $this->listener->onPrePrepare($this, $args);
@@ -319,14 +317,17 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @param string $statement
      * @return Doctrine_DB_Statement|boolean
      */
-    public function query($statement, $fetchMode = null, $arg = null, $arg2 = null) {
-        $args = func_get_args();
+    public function query($statement, array $params = array()) {
+        $this->connect();
 
-        $this->listener->onPreQuery($this, $args);
+        $this->listener->onPreQuery($this, $params);
+        
+        if( ! empty($params)) 
+            $stmt = $this->dbh->query($statement)->execute($params);
+        else
+            $stmt = $this->dbh->query($statement);
 
-        $stmt = $this->dbh->query($statement, $fetchMode, $arg, $arg2);
-
-        $this->listener->onQuery($this, $args);
+        $this->listener->onQuery($this, $params);
 
         return $stmt;
     }
@@ -350,6 +351,8 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return integer
      */
     public function exec($statement) {
+        $this->connect();
+
         $args = func_get_args();
 
         $this->listener->onPreExec($this, $args);
@@ -362,15 +365,37 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
     }
     /**
      * fetchAll
+     *
+     * @return array
      */
-    public function fetchAssoc($statement, $params = array()) {
-        if( ! $params)
-        $this->query($statement);
+    public function fetchAll($statement, array $params = array()) {
+        return $this->query($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function fetchOne($statement, array $params = array()) {
+        return current($this->query($statement, $params)->fetch(PDO::FETCH_NUM));
+    }
+    
+    public function fetchRow($statement, array $params = array()) {
+        return $this->query($statement, $params)->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public function fetchArray($statement, array $params = array()) {
+        return $this->query($statement, $params)->fetch(PDO::FETCH_NUM);
+    }
+    public function fetchColumn($statement, array $params = array()) {
+        return $this->query($statement, $params)->fetchAll(PDO::FETCH_COLUMN);
+    }
+    public function fetchAssoc($statement, array $params = array()) {
+        return $this->query($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function fetchBoth($statement, array $params = array()) { 
+        return $this->query($statement, $params)->fetchAll(PDO::FETCH_BOTH);
     }
     /**
      * lastInsertId
      *
-     *
+     * @return integer
      */
     public function lastInsertId() {
         $this->connect();

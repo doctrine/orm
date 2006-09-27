@@ -22,6 +22,100 @@ class Doctrine_DB_TestCase extends Doctrine_UnitTestCase {
     public function prepareTables() { }
     public function init() { }
 
+    public function testFetchAll() {
+        $dbh = Doctrine_DB2::getConnection('sqlite::memory:');
+        $dbh->connect();
+
+
+        $dbh->query('CREATE TABLE entity (id INTEGER, name TEXT)');
+
+        $dbh->query("INSERT INTO entity (id, name) VALUES (1, 'zYne')");
+        $dbh->query("INSERT INTO entity (id, name) VALUES (2, 'John')");
+
+        $a = $dbh->fetchAll('SELECT * FROM entity');
+
+
+        $this->assertEqual($a, array (
+                            0 =>
+                            array (
+                              'id' => '1',
+                              'name' => 'zYne',
+                            ),
+                            1 =>
+                            array (
+                              'id' => '2',
+                              'name' => 'John',
+                            ),
+                          ));
+    }
+    public function testFetchOne() {
+        $dbh = Doctrine_DB2::getConnection('sqlite::memory:');
+
+        $c = $dbh->fetchOne('SELECT COUNT(1) FROM entity');
+        
+        $this->assertEqual($c, 2);
+        
+        $c = $dbh->fetchOne('SELECT COUNT(1) FROM entity WHERE id = ?', array(1));
+        
+        $this->assertEqual($c, 1);
+    }
+    
+    public function testFetchAssoc() {
+
+    }
+    public function testFetchColumn() {
+        $dbh = Doctrine_DB2::getConnection('sqlite::memory:');
+
+        $a = $dbh->fetchColumn('SELECT * FROM entity');
+
+        $this->assertEqual($a, array (
+                              0 => '1',
+                              1 => '2',
+                            ));
+
+        $a = $dbh->fetchColumn('SELECT * FROM entity WHERE id = ?', array(1));
+
+        $this->assertEqual($a, array (
+                              0 => '1',
+                            ));
+    }
+    public function testFetchArray() {
+        $dbh = Doctrine_DB2::getConnection('sqlite::memory:');
+
+        $a = $dbh->fetchArray('SELECT * FROM entity');
+
+        $this->assertEqual($a, array (
+                              0 => '1',
+                              1 => 'zYne',
+                            ));
+
+        $a = $dbh->fetchArray('SELECT * FROM entity WHERE id = ?', array(1));
+
+        $this->assertEqual($a, array (
+                              0 => '1',
+                              1 => 'zYne',
+                            ));
+    }
+    public function testFetchRow() {
+        $dbh = Doctrine_DB2::getConnection('sqlite::memory:');
+
+        $c = $dbh->fetchRow('SELECT * FROM entity');
+
+        $this->assertEqual($c, array (
+                              'id' => '1',
+                              'name' => 'zYne',
+                            ));
+                            
+        $c = $dbh->fetchRow('SELECT * FROM entity WHERE id = ?', array(1));
+        
+        $this->assertEqual($c, array (
+                              'id' => '1',
+                              'name' => 'zYne',
+                            ));
+    }
+    public function testFetchPairs() {
+                                   	
+    }
     public function testAddValidEventListener() {
         $dbh = Doctrine_DB2::getConnection('sqlite::memory:');
         
@@ -77,14 +171,7 @@ class Doctrine_DB_TestCase extends Doctrine_UnitTestCase {
         $dbh = Doctrine_DB2::getConnection('sqlite::memory:');
         $dbh->connect();
         $dbh->setListener(new Doctrine_DB_TestLogger());
-
-        $dbh->query('CREATE TABLE entity (id INT)');
-
         $listener = $dbh->getListener();
-        $this->assertEqual($listener->pop(), 'onQuery');
-        $this->assertEqual($listener->pop(), 'onPreQuery');
-
-
         $stmt = $dbh->prepare('INSERT INTO entity (id) VALUES(?)');
 
         $this->assertEqual($listener->pop(), 'onPrepare');
