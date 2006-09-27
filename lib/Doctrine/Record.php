@@ -1188,8 +1188,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function addReference(Doctrine_Record $record, Doctrine_Relation $connector, $key = null) {
         $alias = $connector->getAlias();
 
-        $this->references[$alias]->internalAdd($record, $key);
-        $this->originals[$alias]->internalAdd($record, $key);
+        $this->references[$alias]->add($record, $key);
+        $this->originals[$alias]->add($record, $key);
     }
     /**
      * getReferences

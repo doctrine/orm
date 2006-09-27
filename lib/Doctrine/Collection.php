@@ -493,38 +493,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $key                          optional key for the record
      * @return boolean
      */
-    public function internalAdd(Doctrine_Record $record,$key = null) {
-        if(in_array($record,$this->data))
-            return false;
-        
-        if(isset($this->reference_field))
-            $record->set($this->reference_field, $this->reference, false);
-
-        if(isset($key)) {
-            if(isset($this->data[$key]))
-                return false;
-
-            $this->data[$key] = $record;
-            return true;
-        }
-
-        if(isset($this->keyColumn)) {
-            $value = $record->get($this->keyColumn);
-            if($value === null)
-                throw new Doctrine_Collection_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
-
-            $this->data[$value] = $record;
-        } else
-            $this->data[] = $record;
-
-        return true;
-    }
-    /**
-     * adds a record to collection
-     * @param Doctrine_Record $record              record to be added
-     * @param string $key                          optional key for the record
-     * @return boolean
-     */
     public function add(Doctrine_Record $record,$key = null) {
         if(isset($this->reference_field))
             $record->set($this->reference_field, $this->reference, false);
