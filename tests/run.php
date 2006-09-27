@@ -37,9 +37,10 @@ error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
-$test->addTestCase(new Doctrine_DB_TestCase());
-/**
+
 $test->addTestCase(new Doctrine_ConnectionTestCase());
+
+$test->addTestCase(new Doctrine_DB_TestCase());
 
 $test->addTestCase(new Doctrine_RecordTestCase());
 
@@ -74,16 +75,14 @@ $test->addTestCase(new Doctrine_ValueHolder_TestCase());
 $test->addTestCase(new Doctrine_RawSql_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
-*/
+
 //$test->addTestCase(new Doctrine_SchemaTestCase());
 
 //$test->addTestCase(new Doctrine_ImportTestCase());
-/**
+
 $test->addTestCase(new Doctrine_CollectionTestCase());
 
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
-
-$test->addTestCase(new Doctrine_BooleanTestCase());
 
 $test->addTestCase(new Doctrine_QueryTestCase());
 
@@ -94,7 +93,8 @@ $test->addTestCase(new Doctrine_RelationAccessTestCase());
 $test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
 
 $test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
-*/
+
+$test->addTestCase(new Doctrine_BooleanTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 

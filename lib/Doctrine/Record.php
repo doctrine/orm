@@ -138,9 +138,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
     /**
      * constructor
-     * @param Doctrine_Table $table         a Doctrine_Table object
+     * @param Doctrine_Table|null $table       a Doctrine_Table object or null, 
+     *                                         if null the table object is retrieved from current connection
+     *
      * @throws Doctrine_Connection_Exception   if object is created using the new operator and there are no
-     *                                      open connections
+     *                                         open connections
+     * @throws Doctrine_Record_Exception       if the cleanData operation fails somehow
      */
     public function __construct($table = null) {
         if(isset($table) && $table instanceof Doctrine_Table) {
@@ -235,7 +238,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function setUp() { }
     /**
      * getOID
-     * return the object identifier
+     * returns the object identifier
      *
      * @return integer
      */
@@ -244,7 +247,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * setDefaultValues
-     * sets the default values
+     * sets the default values for records internal data
      *
      * @param boolean $overwrite        whether or not to overwrite the already set values
      * @return boolean
@@ -268,7 +271,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * cleanData
-     * modifies data array
+     * this method does several things to records internal data
+     *
+     * 1. It unserializes array and object typed columns
+     * 2. Uncompresses gzip typed columns
+     * 3. Gets the appropriate enum values for enum typed columns
+     * 4. Initializes special null object pointer for null values (for fast column existence checking purposes)
+     *
+     *
      * example:
      *
      * $data = array("name"=>"John","lastname"=> null, "id" => 1,"unknown" => "unknown");
@@ -276,7 +286,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * $data after operation:
      * $data = array("name"=>"John","lastname" => Object(Doctrine_Null));
      *
-     * here column 'id' is removed since its auto-incremented primary key (protected)
+     * here column 'id' is removed since its auto-incremented primary key (read-only)
+     *
+     * @throws Doctrine_Record_Exception        if unserialization of array/object typed column fails or 
+     *                                          if uncompression of gzip typed column fails
      *
      * @return integer
      */
@@ -302,7 +315,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                                 $value = unserialize($tmp[$name]);
 
                                 if($value === false)
-                                    throw new Doctrine_Record_Exception("Unserialization of $name failed. ".var_dump($tmp[$lower],true));
+                                    throw new Doctrine_Record_Exception("Unserialization of $name failed. ".var_dump(substr($tmp[$lower],0,30)."...",true));
                             } else
                                 $value = $tmp[$name];
 
@@ -324,10 +337,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case "enum":
                         $this->data[$name] = $this->table->enumValue($name, $tmp[$name]);
                     break;
-                    case "boolean":
-                    case "integer":
-                        if($tmp[$name] !== self::$null)
-                            settype($tmp[$name], $type);
                     default:
                         $this->data[$name] = $tmp[$name];
                 endswitch;
@@ -338,7 +347,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         return $count;
     }
-    /**
+    /**       
+     * prepareIdentifiers
      * prepares identifiers for later use
      *
      * @param boolean $exists               whether or not this record exists in persistent data store
@@ -379,6 +389,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         endswitch;
     }
     /**
+     * serialize
      * this method is automatically called when this Doctrine_Record is serialized
      *
      * @return array
@@ -418,6 +429,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * unseralize
      * this method is automatically called everytime a Doctrine_Record object is unserialized
      *
+     * @param string $serialized                Doctrine_Record as serialized string
+     * @throws Doctrine_Record_Exception        if the cleanData operation fails somehow
      * @return void
      */
     public function unserialize($serialized) {
@@ -454,14 +467,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
     /**
      * addCollection
+     *
      * @param Doctrine_Collection $collection
      * @param mixed $key
      */
     final public function addCollection(Doctrine_Collection $collection,$key = null) {
         if($key !== null) {
-            if(isset($this->collections[$key]))
-                throw InvalidKeyException();
-
             $this->collections[$key] = $collection;
         } else {
             $this->collections[] = $collection;
@@ -498,6 +509,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * refresh
      * refresh internal data from the database
      *
+     * @throws Doctrine_Record_Exception        When the refresh operation fails (when the database row 
+     *                                          this record represents does not exist anymore)
      * @return boolean
      */
     final public function refresh() {
@@ -536,7 +549,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * factoryRefresh
      * refreshes the data from outer source (Doctrine_Table)
      *
-     * @throws Doctrine_Exception
+     * @throws Doctrine_Record_Exception        When the primary key of this record doesn't match the primary key fetched from a collection
      * @return void
      */
     final public function factoryRefresh() {
@@ -556,15 +569,19 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
     }
     /**
-     * return the factory that created this data access object
+     * getTable
+     * returns the table object for this record
+     *
      * @return object Doctrine_Table        a Doctrine_Table object
      */
     final public function getTable() {
         return $this->table;
     }
     /**
+     * getData
      * return all the internal data
-     * @return array                    an array containing all the properties
+     *
+     * @return array                        an array containing all the properties
      */
     final public function getData() {
         return $this->data;
@@ -617,7 +634,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @param mixed $name                       name of the property or related component
      * @param boolean $invoke                   whether or not to invoke the onGetProperty listener
-     * @throws Doctrine_Exception
+     * @throws Doctrine_Record_Exception        if trying to get a value of unknown property / related component
      * @return mixed
      */
     public function get($name, $invoke = true) {
@@ -654,9 +671,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if($name === $this->table->getIdentifier())
             return null;
 
-        if( ! isset($this->references[$name]))
-            $this->loadReference($name);
+                $rel = $this->table->getRelation($name);
 
+        try {
+            if( ! isset($this->references[$name]))
+                $this->loadReference($name);
+        } catch(Doctrine_Table_Exception $e) {
+            throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
+        }
 
         return $this->references[$name];
     }
@@ -684,6 +706,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param mixed $value              value of the property or reference
      */
     final public function rawSet($name,$value) {
+        $name = strtolower($name);
+
         if($value instanceof Doctrine_Record)
             $id = $value->getIncremented();
 
@@ -718,11 +742,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * set
      * method for altering properties and Doctrine_Record references
      *
-     * @param mixed $name               name of the property or reference
-     * @param mixed $value              value of the property or reference
-     * @throws InvalidKeyException
-     * @throws InvalidTypeException
-     * @return void
+     * @param mixed $name                   name of the property or reference
+     * @param mixed $value                  value of the property or reference
+     * @throws Doctrine_Record_Exception    if trying to set a value for unknown property / related component
+     * @return Doctrine_Record
      */
     public function set($name,$value) {
         $lower = strtolower($name);
@@ -759,21 +782,22 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 endswitch;
             }
         } else {
-            // if not found, throws InvalidKeyException
-
-            $fk = $this->table->getRelation($name);
-
+            try {
+                $rel = $this->table->getRelation($name);
+            } catch(Doctrine_Table_Exception $e) {
+                throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
+            }
             // one-to-many or one-to-one relation
-            if($fk instanceof Doctrine_ForeignKey ||
-               $fk instanceof Doctrine_LocalKey) {
-                switch($fk->getType()):
+            if($rel instanceof Doctrine_ForeignKey ||
+               $rel instanceof Doctrine_LocalKey) {
+                switch($rel->getType()):
                     case Doctrine_Relation::MANY_COMPOSITE:
                     case Doctrine_Relation::MANY_AGGREGATE:
                         // one-to-many relation found
                         if( ! ($value instanceof Doctrine_Collection))
                             throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
 
-                        $value->setReference($this,$fk);
+                        $value->setReference($this,$rel);
                     break;
                     case Doctrine_Relation::ONE_COMPOSITE:
                     case Doctrine_Relation::ONE_AGGREGATE:
@@ -781,15 +805,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                         if( ! ($value instanceof Doctrine_Record))
                             throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record when setting one-to-one references.");
 
-                        if($fk->getLocal() == $this->table->getIdentifier()) {
-                            $this->references[$name]->set($fk->getForeign(),$this);
+                        if($rel->getLocal() == $this->table->getIdentifier()) {
+                            $this->references[$name]->set($rel->getForeign(),$this);
                         } else {
-                            $this->set($fk->getLocal(),$value);
+                            $this->set($rel->getLocal(),$value);
                         }
                     break;
                 endswitch;
 
-            } elseif($fk instanceof Doctrine_Association) {
+            } elseif($rel instanceof Doctrine_Association) {
                 // join table relation found
                 if( ! ($value instanceof Doctrine_Collection))
                     throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
@@ -980,8 +1004,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * saveAssociations
+     *
      * save the associations of many-to-many relations
      * this method also deletes associations that do not exist anymore
+     *
      * @return void
      */
     final public function saveAssociations() {
@@ -1057,6 +1083,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * getOriginals
+     * returns an original collection of related component
+     *
+     * @return Doctrine_Collection
      */
     final public function getOriginals($name) {
         if( ! isset($this->originals[$name]))
@@ -1079,13 +1108,17 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $conn->delete($this);
     }
     /**
+     * copy
      * returns a copy of this object
-     * @return DAO
+     *
+     * @return Doctrine_Record
      */
     public function copy() {
         return $this->table->create($this->data);
     }
     /**
+     * assignIdentifier
+     *
      * @param integer $id
      * @return void
      */
@@ -1150,6 +1183,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * obtainReference
      * 
      * @param string $name
+     * @throws Doctrine_Record_Exception        if trying to get an unknown related component
      */
     public function obtainReference($name) {
         if(isset($this->references[$name]))
@@ -1218,7 +1252,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * loadReference
      * loads a related component
      *
-     * @throws InvalidKeyException
+     * @throws Doctrine_Table_Exception             if trying to load an unknown related component
      * @param string $name
      * @return void
      */
