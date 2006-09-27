@@ -1,5 +1,5 @@
 <?php
-require_once("../Doctrine.php");
+require_once dirname(__FILE__).'/../lib/Doctrine.php';
 
 //Doctrine::compile();
 
