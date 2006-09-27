@@ -95,6 +95,7 @@ $test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
 $test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
 
 $test->addTestCase(new Doctrine_BooleanTestCase());
+
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 

@@ -252,9 +252,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
             foreach($this->getNormalIterator() as $record) {
                 if($value !== null) {
-                    $record->rawSet($this->reference_field, $value);
+                    $record->set($this->reference_field, $value, false);
                 } else {
-                    $record->rawSet($this->reference_field, $this->reference);
+                    $record->set($this->reference_field, $this->reference, false);
                 }
             }
         } elseif($relation instanceof Doctrine_Association) {
@@ -360,7 +360,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if( ! isset($offset)) {
             foreach($coll as $record) {
                 if(isset($this->reference_field))
-                    $record->rawSet($this->reference_field,$this->reference);
+                    $record->set($this->reference_field,$this->reference, false);
 
                 $this->reference->addReference($record, $this->relation);
             }
@@ -431,10 +431,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 $value = $this->reference->get($this->relation->getLocal());
 
                 if($value !== null) {
-                    $this->data[$key]->rawSet($this->reference_field, $value);
+                    $this->data[$key]->set($this->reference_field, $value, false);
                 } else {
 
-                    $this->data[$key]->rawSet($this->reference_field, $this->reference);
+                    $this->data[$key]->set($this->reference_field, $this->reference, false);
                 }
             }
         }
@@ -483,7 +483,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function set($key,Doctrine_Record $record) {
         if(isset($this->reference_field))
-            $record->rawSet($this->reference_field,$this->reference);
+            $record->set($this->reference_field, $this->reference, false);
 
         $this->data[$key] = $record;
     }
@@ -498,7 +498,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             return false;
         
         if(isset($this->reference_field))
-            $record->internalSet($this->reference_field,$this->reference);
+            $record->set($this->reference_field, $this->reference, false);
 
         if(isset($key)) {
             if(isset($this->data[$key]))
@@ -527,7 +527,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function add(Doctrine_Record $record,$key = null) {
         if(isset($this->reference_field))
-            $record->rawSet($this->reference_field,$this->reference);
+            $record->set($this->reference_field, $this->reference, false);
 
         if(in_array($record,$this->data)) {
             return false;

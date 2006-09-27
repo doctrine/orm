@@ -414,7 +414,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                     case Doctrine_Relation::ONE_AGGREGATE:
 
                                         // one-to-one relation
-                                        $last->rawSet($fk->getLocal(), $record->getIncremented());    
+                                        if($fk instanceof Doctrine_LocalKey)
+                                            $last->set($fk->getLocal(), $record->getIncremented(), false);
 
                                         $last->initSingleReference($record, $fk);
 

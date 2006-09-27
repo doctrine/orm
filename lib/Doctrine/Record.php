@@ -682,72 +682,22 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         return $this->references[$name];
     }
-    /**
-     * internalSet
-     *
-     * @param mixed $name
-     * @param mixed $value
-     */
-    final public function internalSet($name, $value) {
-        if($value === null)
-            $value = self::$null;
-
-        $this->data[$name] = $value;
-    }
-    /**
-     * rawSet
-     * doctrine uses this function internally, not recommended for developers
-     *
-     * rawSet() works in very same same way as set() with an exception that
-     * 1. it cannot be used for setting references
-     * 2. it cannot load uninitialized fields
-     *
-     * @param mixed $name               name of the property or reference
-     * @param mixed $value              value of the property or reference
-     */
-    final public function rawSet($name,$value) {
-        $name = strtolower($name);
-
-        if($value instanceof Doctrine_Record)
-            $id = $value->getIncremented();
-
-        if(isset($id))
-            $value = $id;
-
-        if(isset($this->data[$name])) {
-            if($this->data[$name] === self::$null) {
-                if($this->data[$name] !== $value) {
-                    switch($this->state):
-                        case Doctrine_Record::STATE_CLEAN:
-                            $this->state = Doctrine_Record::STATE_DIRTY;
-                        break;
-                        case Doctrine_Record::STATE_TCLEAN:
-                            $this->state = Doctrine_Record::STATE_TDIRTY;
-                    endswitch;
-                }
-            }
-
-            if($this->state == Doctrine_Record::STATE_TCLEAN)
-                $this->state = Doctrine_Record::STATE_TDIRTY;
-
-            if($value === null)
-                $value = self::$null;
-
-            $this->data[$name] = $value;
-            $this->modified[]  = $name;
-        }
-    }
 
     /**
      * set
      * method for altering properties and Doctrine_Record references
+     * if the load parameter is set to false this method will not try to load uninitialized record data
      *
      * @param mixed $name                   name of the property or reference
      * @param mixed $value                  value of the property or reference
+     * @param boolean $load                 whether or not to refresh / load the uninitialized record data
+     *
      * @throws Doctrine_Record_Exception    if trying to set a value for unknown property / related component
+     * @throws Doctrine_Record_Exception    if trying to set a value of wrong type for related component
+     *
      * @return Doctrine_Record
      */
-    public function set($name,$value) {
+    public function set($name, $value, $load = true) {
         $lower = strtolower($name);
 
         if(isset($this->data[$lower])) {
@@ -759,7 +709,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     $value = $id;
             }
 
-            $old = $this->get($lower, false);
+            if($load)
+                $old = $this->get($lower, false);
+            else
+                $old = $this->data[$lower];
 
             if($old !== $value) {
                 
@@ -773,7 +726,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->modified[]   = $lower;
                 switch($this->state):
                     case Doctrine_Record::STATE_CLEAN:
-                    case Doctrine_Record::STATE_PROXY:
                         $this->state = Doctrine_Record::STATE_DIRTY;
                     break;
                     case Doctrine_Record::STATE_TCLEAN:
@@ -947,7 +899,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $a;
     }
     /**
+     * count
      * this class implements countable interface
+     *
      * @return integer                      the number of columns
      */
     public function count() {
@@ -955,13 +909,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * alias for count()
+     * 
+     * @return integer
      */
     public function getColumnCount() {
         return $this->count();
     }
     /**
      * toArray
-     * returns record as an array
+     * returns the record as an array
      * 
      * @return array
      */
@@ -978,7 +934,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $a;
     }
     /**
-     * checks if record has data
+     * exists
+     * returns true if this record is persistent, otherwise false
+     *
      * @return boolean
      */
     public function exists() {
@@ -1475,13 +1433,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * merges this record with an array of values
      *
      * @param array $values
+     * @return void
      */
     public function merge(array $values) {
         foreach($this->table->getColumnNames() as $value) {
             try {
                 if(isset($values[$value]))
                     $this->set($value, $values[$value]);
-            } catch(Exception $e) { }
+            } catch(Exception $e) { 
+                // silence all exceptions
+            }
         }
     }
     /**
