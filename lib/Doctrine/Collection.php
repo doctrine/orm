@@ -96,7 +96,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * getTable
      * returns the table this collection belongs to
      *
-     * @return object Doctrine_Table
+     * @return Doctrine_Table
      */
     public function getTable() {
         return $this->table;

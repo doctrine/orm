@@ -741,6 +741,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             } catch(Doctrine_Table_Exception $e) {
                 throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
             }
+
+
             // one-to-many or one-to-one relation
             if($rel instanceof Doctrine_ForeignKey ||
                $rel instanceof Doctrine_LocalKey) {
@@ -760,7 +762,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                             throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record when setting one-to-one references.");
 
                         if($rel->getLocal() == $this->table->getIdentifier()) {
-                            $this->references[$name]->set($rel->getForeign(),$this);
+                            $value->set($rel->getForeign(), $this, false);
                         } else {
                             $this->set($rel->getLocal(),$value);
                         }
@@ -1150,18 +1152,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             return $this->references[$name];
     
         throw new Doctrine_Record_Exception("Unknown reference $name");
-    }
-    /**
-     * initalizes a one-to-one relation
-     *
-     * @param Doctrine_Record $record
-     * @param Doctrine_Relation $connector
-     * @return void
-     */
-    public function initSingleReference(Doctrine_Record $record, Doctrine_Relation $connector) {
-        $alias = $connector->getAlias();
-
-        $this->references[$alias] = $record;
     }
     /**
      * initalizes a one-to-many / many-to-many relation

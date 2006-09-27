@@ -417,7 +417,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                         if($fk instanceof Doctrine_LocalKey)
                                             $last->set($fk->getLocal(), $record->getIncremented(), false);
 
-                                        $last->initSingleReference($record, $fk);
+                                        $last->set($fk->getAlias(), $record);
 
                                         $prev[$name] = $record;
                                     break;
@@ -428,6 +428,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                         if( ! $last->hasReference($alias)) {
                                             $prev[$name] = $this->getCollection($name);
                                             $last->initReference($prev[$name], $fk);
+
+                                            //$last->set($fk->getAlias(), $this->getCollection($name));
                                         } else {
                                             // previous entry found from identityMap
                                             $prev[$name] = $last->get($alias);
