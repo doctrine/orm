@@ -349,19 +349,14 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
                             $last    = $prev[$pointer]->getLast();
 
-                            switch($fk->getType()):
-                                case Doctrine_Relation::ONE_COMPOSITE:
-                                case Doctrine_Relation::ONE_AGGREGATE:
-                                
-                                break;
-                                default:
-                                    if($last instanceof Doctrine_Record) {
-                                        if( ! $last->hasReference($alias)) {
-                                            $prev[$name] = $this->getCollection($name);
-                                            $last->initReference($prev[$name],$fk);
-                                        }
+                            if( ! $fk->isOneToOne()) {
+                                if($last instanceof Doctrine_Record) {
+                                    if( ! $last->hasReference($alias)) {
+                                        $prev[$name] = $this->getCollection($name);
+                                        $last->initReference($prev[$name],$fk);
                                     }
-                            endswitch;
+                                }
+                            }
 
                             continue;
                         }

@@ -131,6 +131,16 @@ class Doctrine_Relation {
     final public function getForeign() {
         return $this->foreign;
     }
+    /**
+     * isOneToOne
+     * returns whether or not this relation is a one-to-one relation
+     *
+     * @return boolean
+     */
+    final public function isOneToOne() {
+        return ($this->type == Doctrine_Relation::ONE_AGGREGATE ||
+                $this->type == Doctrine_Relation::ONE_COMPOSITE);
+    }
     /** 
      * getRelationDql
      *

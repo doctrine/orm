@@ -453,13 +453,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->cleanData();
 
-        $exists = true;
-
-        if($this->state == Doctrine_Record::STATE_TDIRTY ||
-           $this->state == Doctrine_Record::STATE_TCLEAN)
-            $exists = false;
-
-        $this->prepareIdentifiers($exists);
+        $this->prepareIdentifiers($this->exists());
 
         $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onWakeUp($this);
     }
@@ -1158,16 +1152,24 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @param Doctrine_Collection $coll
      * @param Doctrine_Relation $connector
-     * @return void
+     * @return boolean
      */
     public function initReference(Doctrine_Collection $coll, Doctrine_Relation $connector) {
         $alias = $connector->getAlias();
 
-        if( ! ($connector instanceof Doctrine_Association))
-            $coll->setReference($this, $connector);
+        if(isset($this->references[$alias]))
+            return false;
 
-        $this->references[$alias] = $coll;
-        $this->originals[$alias]  = clone $coll;
+        if( ! $connector->isOneToOne()) {
+            if( ! ($connector instanceof Doctrine_Association))
+                $coll->setReference($this, $connector);
+
+            $this->references[$alias] = $coll;
+            $this->originals[$alias]  = clone $coll;
+
+            return true;
+        }
+        return false;
     }
     /**
      * addReference
@@ -1216,91 +1218,78 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $graph   = $table->getQueryObject();
         $type    = $fk->getType();
 
-        switch($this->getState()):
-            case Doctrine_Record::STATE_TDIRTY:
-            case Doctrine_Record::STATE_TCLEAN:
+        if( ! $this->exists()) {
+            if($fk->isOneToOne()) {
+                // ONE-TO-ONE
+                $this->references[$name] = $table->create();
 
-                if($type == Doctrine_Relation::ONE_COMPOSITE ||
-                   $type == Doctrine_Relation::ONE_AGGREGATE) {
-
-                    // ONE-TO-ONE
-                    $this->references[$name] = $table->create();
-
-                    if($fk instanceof Doctrine_ForeignKey) {
-                        $this->references[$name]->set($fk->getForeign(),$this);
-                    } else {
-                        $this->set($fk->getLocal(),$this->references[$name]);
-                    }
+                if($fk instanceof Doctrine_ForeignKey) {
+                    $this->references[$name]->set($fk->getForeign(),$this);
                 } else {
-                    $this->references[$name] = new Doctrine_Collection($table);
-                    if($fk instanceof Doctrine_ForeignKey) {
-                        // ONE-TO-MANY
-                        $this->references[$name]->setReference($this,$fk);
-                    }
-                    $this->originals[$name]  = new Doctrine_Collection($table);
+                    $this->set($fk->getLocal(),$this->references[$name]);
                 }
-            break;
-            case Doctrine_Record::STATE_DIRTY:
-            case Doctrine_Record::STATE_CLEAN:
-            case Doctrine_Record::STATE_PROXY:
+            } else {
+                $this->references[$name] = new Doctrine_Collection($table);
+                if($fk instanceof Doctrine_ForeignKey) {
+                    // ONE-TO-MANY
+                    $this->references[$name]->setReference($this,$fk);
+                }
+                $this->originals[$name]  = new Doctrine_Collection($table);
+            }
+        } else {
+            if($fk->isOneToOne()) {
+                // ONE-TO-ONE
+                $id      = $this->get($local);
 
-                 switch($fk->getType()):
-                    case Doctrine_Relation::ONE_COMPOSITE:
-                    case Doctrine_Relation::ONE_AGGREGATE:
+                if($fk instanceof Doctrine_LocalKey) {
 
-                        // ONE-TO-ONE
-                        $id      = $this->get($local);
+                    if(empty($id)) {
+                        $this->references[$name] = $table->create();
+                        $this->set($fk->getLocal(),$this->references[$name]);
+                    } else {
 
-                        if($fk instanceof Doctrine_LocalKey) {
+                        $record = $table->find($id);
 
-                            if(empty($id)) {
-                                $this->references[$name] = $table->create();
-                                $this->set($fk->getLocal(),$this->references[$name]);
-                            } else {
-
-                                $record = $table->find($id);
-
-                                if($record !== false)
-                                    $this->references[$name] = $record;
-                                else
-                                    $this->references[$name] = $table->create();
+                        if($record !== false)
+                            $this->references[$name] = $record;
+                        else
+                            $this->references[$name] = $table->create();
 
                                     //$this->set($fk->getLocal(),$this->references[$name]);
 
-                            }
+                    }
 
-                        } elseif ($fk instanceof Doctrine_ForeignKey) {
+                } elseif ($fk instanceof Doctrine_ForeignKey) {
 
-                            if(empty($id)) {
-                                $this->references[$name] = $table->create();
-                                $this->references[$name]->set($fk->getForeign(), $this);
-                            } else {
-                                $dql  = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$fk->getForeign()." = ?";
-                                $coll = $graph->query($dql, array($id));
-                                $this->references[$name] = $coll[0];
-                                $this->references[$name]->set($fk->getForeign(), $this);
-                            }
-                        }
-                    break;
-                    default:
-                        $query   = $fk->getRelationDql(1);
+                    if(empty($id)) {
+                        $this->references[$name] = $table->create();
+                        $this->references[$name]->set($fk->getForeign(), $this);
+                    } else {
+                        $dql  = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$fk->getForeign()." = ?";
+                        $coll = $graph->query($dql, array($id));
+                        $this->references[$name] = $coll[0];
+                        $this->references[$name]->set($fk->getForeign(), $this);
+                    }
+                }
+            } else {
 
-                        // ONE-TO-MANY
-                        if($fk instanceof Doctrine_ForeignKey) {
-                            $id      = $this->get($local);
-                            $coll    = $graph->query($query,array($id));
-                            $coll->setReference($this, $fk);
-                        } elseif($fk instanceof Doctrine_Association_Self) {
-                            $coll    = $fk->fetchRelatedFor($this);
-                        } elseif($fk instanceof Doctrine_Association) {
-                            $id      = $this->getIncremented();
-                            $coll    = $graph->query($query, array($id));
-                        }
-                        $this->references[$name] = $coll;
-                        $this->originals[$name]  = clone $coll;
-                 endswitch;
-            break;
-        endswitch;
+                $query   = $fk->getRelationDql(1);
+
+                // ONE-TO-MANY
+                if($fk instanceof Doctrine_ForeignKey) {
+                    $id      = $this->get($local);
+                    $coll    = $graph->query($query,array($id));
+                    $coll->setReference($this, $fk);
+                } elseif($fk instanceof Doctrine_Association_Self) {
+                    $coll    = $fk->fetchRelatedFor($this);
+                } elseif($fk instanceof Doctrine_Association) {
+                    $id      = $this->getIncremented();
+                    $coll    = $graph->query($query, array($id));
+                }
+                $this->references[$name] = $coll;
+                $this->originals[$name]  = clone $coll;
+            }
+        }
     }
     /**
      * filterRelated
