@@ -115,12 +115,21 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return Doctrine_Manager
      */
-    final public static function getInstance() {
+    public static function getInstance() {
         static $instance;
         if( ! isset($instance))
             $instance = new self();
 
         return $instance;
+    }
+    /**
+     * connection
+     * a short cut for Doctrine_Manager::getInstance()->openConnection($dbh);
+     *
+     * @return Doctrine_Connection
+     */
+    public static function connection(PDO $dbh) {
+        return Doctrine_Manager::getInstance()->openConnection($dbh);
     }
     /**
      * install

@@ -391,7 +391,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                 if($fk->isOneToOne()) {
 
                                         // one-to-one relation
-                                        if($fk instanceof Doctrine_LocalKey)
+                                        if($fk instanceof Doctrine_Relation_LocalKey)
                                             $last->set($fk->getLocal(), $record->getIncremented(), false);
 
                                         $last->set($fk->getAlias(), $record);

@@ -732,12 +732,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                         $this->needsSubquery = true;
                     }
 
-                    if($fk instanceof Doctrine_ForeignKey ||
-                       $fk instanceof Doctrine_LocalKey) {
+                    if($fk instanceof Doctrine_Relation_ForeignKey ||
+                       $fk instanceof Doctrine_Relation_LocalKey) {
 
                         $this->parts["join"][$tname][$tname2]         = $join.$aliasString." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
 
-                    } elseif($fk instanceof Doctrine_Association) {
+                    } elseif($fk instanceof Doctrine_Relation_Association) {
                         $asf = $fk->getAssociationFactory();
 
                         $assocTableName = $asf->getTableName();

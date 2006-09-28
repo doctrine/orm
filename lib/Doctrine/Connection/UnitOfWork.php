@@ -68,7 +68,7 @@ class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
             // group relations
             
             foreach($rels as $key => $rel) {
-                if($rel instanceof Doctrine_ForeignKey) {
+                if($rel instanceof Doctrine_Relation_ForeignKey) {
                     unset($rels[$key]);
                     array_unshift($rels, $rel);
                 }
@@ -83,7 +83,7 @@ class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
                 if($name === $nm)
                     continue;
 
-                if($rel instanceof Doctrine_ForeignKey) {
+                if($rel instanceof Doctrine_Relation_ForeignKey) {
                     if($index2 !== false) {
                         if($index2 >= $index)
                             continue;
@@ -95,7 +95,7 @@ class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
                         $tree[] = $name;
                     }
 
-                } elseif($rel instanceof Doctrine_LocalKey) {
+                } elseif($rel instanceof Doctrine_Relation_LocalKey) {
                     if($index2 !== false) {
                         if($index2 <= $index)
                             continue;
@@ -106,7 +106,7 @@ class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
                         array_unshift($tree,$name);
                         $index++;
                     }
-                } elseif($rel instanceof Doctrine_Association) {
+                } elseif($rel instanceof Doctrine_Relation_Association) {
                     $t = $rel->getAssociationFactory();
                     $n = $t->getComponentName();
                     

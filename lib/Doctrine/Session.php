@@ -274,7 +274,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
             // group relations
             
             foreach($rels as $key => $rel) {
-                if($rel instanceof Doctrine_ForeignKey) {
+                if($rel instanceof Doctrine_Relation_ForeignKey) {
                     unset($rels[$key]);
                     array_unshift($rels, $rel);
                 }
@@ -289,7 +289,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                 if($name === $nm)
                     continue;
 
-                if($rel instanceof Doctrine_ForeignKey) {
+                if($rel instanceof Doctrine_Relation_ForeignKey) {
                     if($index2 !== false) {
                         if($index2 >= $index)
                             continue;
@@ -305,7 +305,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                         //print "$k -- adding $nm :$name...<br>";
                     }
 
-                } elseif($rel instanceof Doctrine_LocalKey) {
+                } elseif($rel instanceof Doctrine_Relation_LocalKey) {
                     if($index2 !== false) {
                         if($index2 <= $index)
                             continue;
@@ -322,7 +322,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
 
                         //print "$k -- pushing <b>$name</b> into 0...<br \>";
                     }
-                } elseif($rel instanceof Doctrine_Association) {
+                } elseif($rel instanceof Doctrine_Relation_Association) {
                     $t = $rel->getAssociationFactory();
                     $n = $t->getComponentName();
                     
@@ -715,8 +715,8 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
         $saveLater = array();
         foreach($record->getReferences() as $k=>$v) {
             $fk = $record->getTable()->getRelation($k);
-            if($fk instanceof Doctrine_ForeignKey ||
-               $fk instanceof Doctrine_LocalKey) {
+            if($fk instanceof Doctrine_Relation_ForeignKey ||
+               $fk instanceof Doctrine_Relation_LocalKey) {
                 switch($fk->getType()):
                     case Doctrine_Relation::ONE_COMPOSITE:
                     case Doctrine_Relation::MANY_COMPOSITE:
@@ -744,7 +744,7 @@ abstract class Doctrine_Session extends Doctrine_Configurable implements Countab
                         }
                     break;
                 endswitch;
-            } elseif($fk instanceof Doctrine_Association) {
+            } elseif($fk instanceof Doctrine_Relation_Association) {
                 $v->save();
             }
         }

@@ -20,8 +20,8 @@
  */
 
 /**
- * Doctrine
- * the base class of Doctrine framework
+ * Doctrine_Compiler
+ * This class can be used for compiling the entire Doctrine framework into a single file
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen
@@ -104,7 +104,7 @@ class Doctrine_Compiler {
             echo "Adding $file" . PHP_EOL;
 
             if( ! file_exists($file))
-                throw new Doctrine_Exception("Couldn't compile $file. File $file does not exists.");
+                throw new Doctrine_Compiler_Exception("Couldn't compile $file. File $file does not exists.");
 
             Doctrine::autoload($class);
             $refl  = new ReflectionClass ( $class );
@@ -129,11 +129,10 @@ class Doctrine_Compiler {
         $fp = @fopen($target, 'w');
         
         if ($fp === false)
-            throw new Doctrine_Exception("Couldn't write compiled data. Failed to open $target");
+            throw new Doctrine_Compiler_Exception("Couldn't write compiled data. Failed to open $target");
             
         fwrite($fp, "<?php".
                     " class InvalidKeyException extends Exception { }".
-                    " class DQLException extends Exception { }".
                     implode('', $ret)
               );
         fclose($fp);
@@ -141,7 +140,7 @@ class Doctrine_Compiler {
         $stripped = php_strip_whitespace($target);
         $fp = @fopen($target, 'w');
         if ($fp === false)
-            throw new Doctrine_Exception("Couldn't write compiled data. Failed to open $file");
+            throw new Doctrine_Compiler_Exception("Couldn't write compiled data. Failed to open $file");
         fwrite($fp, $stripped);
         fclose($fp);
     }

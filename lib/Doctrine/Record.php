@@ -742,8 +742,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $rel = $this->table->getRelation($name);
 
         // one-to-many or one-to-one relation
-        if($rel instanceof Doctrine_ForeignKey ||
-           $rel instanceof Doctrine_LocalKey) {
+        if($rel instanceof Doctrine_Relation_ForeignKey ||
+           $rel instanceof Doctrine_Relation_LocalKey) {
             switch($rel->getType()) {
                 case Doctrine_Relation::MANY_COMPOSITE:
                 case Doctrine_Relation::MANY_AGGREGATE:
@@ -767,7 +767,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 break;
             }
 
-        } elseif($rel instanceof Doctrine_Association) {
+        } elseif($rel instanceof Doctrine_Relation_Association) {
             // join table relation found
             if( ! ($value instanceof Doctrine_Collection))
                 throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
@@ -979,11 +979,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $name    = $table->getComponentName();
             $alias   = $this->table->getAlias($name);
 
-            if($fk instanceof Doctrine_Association) {
+            if($fk instanceof Doctrine_Relation_Association) {
                 switch($fk->getType()):
-                    case Doctrine_Relation::MANY_COMPOSITE:
-
-                    break;
                     case Doctrine_Relation::MANY_AGGREGATE:
                         $asf     = $fk->getAssociationFactory();
 
@@ -1015,8 +1012,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                         }
                     break;
                 endswitch;
-            } elseif($fk instanceof Doctrine_ForeignKey ||
-                     $fk instanceof Doctrine_LocalKey) {
+            } elseif($fk instanceof Doctrine_Relation_ForeignKey ||
+                     $fk instanceof Doctrine_Relation_LocalKey) {
 
                 switch($fk->getType()):
                     case Doctrine_Relation::ONE_COMPOSITE:
@@ -1168,7 +1165,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             return false;
 
         if( ! $connector->isOneToOne()) {
-            if( ! ($connector instanceof Doctrine_Association))
+            if( ! ($connector instanceof Doctrine_Relation_Association))
                 $coll->setReference($this, $connector);
 
             $this->references[$alias] = $coll;
@@ -1216,7 +1213,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function loadReference($name) {
-
         $fk      = $this->table->getRelation($name);
 
         if($fk->isOneToOne()) {

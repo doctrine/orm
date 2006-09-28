@@ -459,8 +459,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $saveLater = array();
         foreach($record->getReferences() as $k=>$v) {
             $fk = $record->getTable()->getRelation($k);
-            if($fk instanceof Doctrine_ForeignKey ||
-               $fk instanceof Doctrine_LocalKey) {
+            if($fk instanceof Doctrine_Relation_ForeignKey ||
+               $fk instanceof Doctrine_Relation_LocalKey) {
                 switch($fk->getType()):
                     case Doctrine_Relation::ONE_COMPOSITE:
                     case Doctrine_Relation::MANY_COMPOSITE:
@@ -482,7 +482,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                         }
                     break;
                 endswitch;
-            } elseif($fk instanceof Doctrine_Association) {
+            } elseif($fk instanceof Doctrine_Relation_Association) {
                 $v->save();
             }
         }
@@ -517,7 +517,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             $name    = $table->getComponentName();
             $alias   = $this->table->getAlias($name);
 
-            if($rel instanceof Doctrine_Association) {
+            if($rel instanceof Doctrine_Relation_Association) {
                 switch($rel->getType()):
                     case Doctrine_Relation::MANY_COMPOSITE:
                     break;
@@ -552,8 +552,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                         }
                     break;
                 endswitch;
-            } elseif($fk instanceof Doctrine_ForeignKey ||
-                     $fk instanceof Doctrine_LocalKey) {
+            } elseif($fk instanceof Doctrine_Relation_ForeignKey ||
+                     $fk instanceof Doctrine_Relation_LocalKey) {
 
                 switch($fk->getType()):
                     case Doctrine_Relation::ONE_COMPOSITE:

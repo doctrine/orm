@@ -18,40 +18,8 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-/**
- * Doctrine_Relation_Association    this class takes care of association mapping
- *                         (= many-to-many relationships, where the relationship is handled with an additional relational table
- *                         which holds 2 foreign keys)
- *
- *
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
- */
-class Doctrine_Relation_Association extends Doctrine_Relation {
-    /**
-     * @var Doctrine_Table $associationTable
-     */
-    protected $associationTable;
-    /**
-     * the constructor
-     * @param Doctrine_Table $table                 foreign factory object
-     * @param Doctrine_Table $associationTable      factory which handles the association
-     * @param string $local                         local field name
-     * @param string $foreign                       foreign field name
-     * @param integer $type                         type of relation
-     * @see Doctrine_Table constants
-     */
-    public function __construct(Doctrine_Table $table, Doctrine_Table $associationTable, $local, $foreign, $type, $alias) {
-        parent::__construct($table, $local, $foreign, $type, $alias);
-        $this->associationTable = $associationTable;
-    }
-    /**
-     * @return Doctrine_Table
-     */
-    public function getAssociationFactory() {
-        return $this->associationTable;
-    }
+ 
+class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association {
     /**
      * getRelationDql
      *
@@ -64,11 +32,17 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
                 $sub    = "SELECT ".$this->foreign.
                           " FROM ".$this->associationTable->getTableName().
                           " WHERE ".$this->local.
-                          " IN (".substr(str_repeat("?, ", $count),0,-2).")";
+                          " = ?";
+                $sub2   = "SELECT ".$this->local.
+                          " FROM ".$this->associationTable->getTableName().
+                          " WHERE ".$this->foreign.
+                          " = ?";
+
 
                 $dql  = "FROM ".$this->table->getComponentName();
                 $dql .= ".".$this->associationTable->getComponentName();
                 $dql .= " WHERE ".$this->table->getComponentName().".".$this->table->getIdentifier()." IN ($sub)";
+                $dql .= " || ".$this->table->getComponentName().".".$this->table->getIdentifier()." IN ($sub2)";
             break;
             case "collection":
                 $sub  = substr(str_repeat("?, ", $count),0,-2);
@@ -78,22 +52,39 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
 
         return $dql;
     }
-    /**
-     * fetchRelatedFor
-     *
-     * fetches a component related to given record
-     *
-     * @param Doctrine_Record $record
-     * @return Doctrine_Record|Doctrine_Collection
-     */
+    
+
     public function fetchRelatedFor(Doctrine_Record $record) {
         $id      = $record->getIncremented();
-        if(empty($id))
-            $coll = new Doctrine_Collection($this->table);
-        else
-            $coll = Doctrine_Query::create()->parseQuery($this->getRelationDql(1))->execute(array($id));
+
+        $q = new Doctrine_RawSql();
+
+        $assocTable = $this->getAssociationFactory()->getTableName();
+        $tableName  = $record->getTable()->getTableName();
+        $identifier = $record->getTable()->getIdentifier();
+
+        $sub     = "SELECT ".$this->getForeign().
+                   " FROM ".$assocTable.
+                   " WHERE ".$this->getLocal().
+                   " = ?";
+
+        $sub2   = "SELECT ".$this->getLocal().
+                  " FROM ".$assocTable.
+                  " WHERE ".$this->getForeign().
+                  " = ?";
+
+        $q->select('{'.$tableName.'.*}, {'.$assocTable.'.*}')
+          ->from($tableName.' INNER JOIN '.$assocTable.' ON '.
+                 $tableName.'.'.$identifier.' = '.$assocTable.'.'.$this->getLocal().' OR '.
+                 $tableName.'.'.$identifier.' = '.$assocTable.'.'.$this->getForeign()
+                 )
+          ->where($tableName.'.'.$identifier.' IN ('.$sub.') OR '.
+                  $tableName.'.'.$identifier.' IN ('.$sub2.')'
+                );
+        $q->addComponent($tableName,  $record->getTable()->getComponentName());
+        $q->addComponent($assocTable, $record->getTable()->getComponentName(). '.' . $this->getAssociationFactory()->getComponentName());
     
-        return $coll;
+        return $q->execute(array($id, $id));
     }
 }
-
+?>

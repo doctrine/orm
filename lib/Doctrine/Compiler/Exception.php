@@ -18,36 +18,12 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Relation');
+
 /**
- * Doctrine_Relation_LocalKey
- * This class represents a local key relation
+ * Doctrine_Compiler_Exception
  *
+ * @package     Doctrine
  * @author      Konsta Vesterinen
  * @license     LGPL
- * @package     Doctrine
  */
-class Doctrine_Relation_LocalKey extends Doctrine_Relation {
-    /**
-     * fetchRelatedFor
-     *
-     * fetches a component related to given record
-     *
-     * @param Doctrine_Record $record
-     * @return Doctrine_Record|Doctrine_Collection
-     */
-    public function fetchRelatedFor(Doctrine_Record $record) {
-        $id      = $record->get($this->local);
-
-        if(empty($id))
-            $related = $this->table->create();
-        else {
-            if( ! ($related = $this->table->find($id)))
-                $related = $this->table->create();
-        }
-
-        $record->set($this->local, $related, false);
-        
-        return $related;
-    }
-}
+class Doctrine_Compiler_Exception extends Doctrine_Exception { }

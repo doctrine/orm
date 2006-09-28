@@ -243,8 +243,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $this->reference       = $record;
         $this->relation        = $relation;
 
-        if($relation instanceof Doctrine_ForeignKey ||
-           $relation instanceof Doctrine_LocalKey) {
+        if($relation instanceof Doctrine_Relation_ForeignKey ||
+           $relation instanceof Doctrine_Relation_LocalKey) {
 
             $this->reference_field = $relation->getForeign();
 
@@ -257,7 +257,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     $record->set($this->reference_field, $this->reference, false);
                 }
             }
-        } elseif($relation instanceof Doctrine_Association) {
+        } elseif($relation instanceof Doctrine_Relation_Association) {
 
         }
     }
@@ -315,7 +315,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         endswitch;
 
         if(isset($this->relation)) {
-            if($this->relation instanceof Doctrine_ForeignKey) {
+            if($this->relation instanceof Doctrine_Relation_ForeignKey) {
                 $params[] = $this->reference->getIncremented();
                 $where[] = $this->reference_field." = ?";
 
@@ -331,7 +331,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 }
 
 
-            } elseif($this->relation instanceof Doctrine_Association) {
+            } elseif($this->relation instanceof Doctrine_Relation_Association) {
 
                 $asf     = $this->relation->getAssociationFactory();
                 $query   = 'SELECT '.$foreign." FROM ".$asf->getTableName()." WHERE ".$local."=".$this->getIncremented();
@@ -582,7 +582,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $local   = $rel->getLocal();
 
         $list = array();
-        if($rel instanceof Doctrine_LocalKey || $rel instanceof Doctrine_ForeignKey) {
+        if($rel instanceof Doctrine_Relation_LocalKey || $rel instanceof Doctrine_Relation_ForeignKey) {
             foreach($this->data as $record):
                 $list[] = $record[$local];
             endforeach;
@@ -613,7 +613,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $foreign = $rel->getForeign();
         $local   = $rel->getLocal();
 
-        if($rel instanceof Doctrine_LocalKey) {
+        if($rel instanceof Doctrine_Relation_LocalKey) {
             foreach($this->data as $key => $record) {
                 foreach($coll as $k => $related) {
                     if($related[$foreign] == $record[$local]) {
@@ -621,7 +621,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     }
                 }
             }
-        } elseif($rel instanceof Doctrine_ForeignKey) {
+        } elseif($rel instanceof Doctrine_Relation_ForeignKey) {
             foreach($this->data as $key => $record) {
                 if($record->getState() == Doctrine_Record::STATE_TCLEAN ||
                    $record->getState() == Doctrine_Record::STATE_TDIRTY)
@@ -638,7 +638,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
                 $this->data[$key]->setRelated($name, $sub);
             }
-        } elseif($rel instanceof Doctrine_Association) {
+        } elseif($rel instanceof Doctrine_Relation_Association) {
             $identifier = $this->table->getIdentifier();
             $asf        = $rel->getAssociationFactory();
             $name       = $table->getComponentName();
