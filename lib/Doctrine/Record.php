@@ -731,46 +731,50 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
         } else {
             try {
-                $rel = $this->table->getRelation($name);
+                $this->coreSetRelated($name, $value);
             } catch(Doctrine_Table_Exception $e) {
                 throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
             }
+        }
+    }
+    
+    public function coreSetRelated($name, $value) {
+        $rel = $this->table->getRelation($name);
 
+        // one-to-many or one-to-one relation
+        if($rel instanceof Doctrine_ForeignKey ||
+           $rel instanceof Doctrine_LocalKey) {
+            switch($rel->getType()) {
+                case Doctrine_Relation::MANY_COMPOSITE:
+                case Doctrine_Relation::MANY_AGGREGATE:
+                    // one-to-many relation found
+                    if( ! ($value instanceof Doctrine_Collection))
+                        throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
 
-            // one-to-many or one-to-one relation
-            if($rel instanceof Doctrine_ForeignKey ||
-               $rel instanceof Doctrine_LocalKey) {
-                switch($rel->getType()):
-                    case Doctrine_Relation::MANY_COMPOSITE:
-                    case Doctrine_Relation::MANY_AGGREGATE:
-                        // one-to-many relation found
-                        if( ! ($value instanceof Doctrine_Collection))
-                            throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
+                    $value->setReference($this,$rel);
+                break;
+                case Doctrine_Relation::ONE_COMPOSITE:
+                case Doctrine_Relation::ONE_AGGREGATE:
+                    // one-to-one relation found
+                    if( ! ($value instanceof Doctrine_Record))
+                        throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record when setting one-to-one references.");
 
-                        $value->setReference($this,$rel);
-                    break;
-                    case Doctrine_Relation::ONE_COMPOSITE:
-                    case Doctrine_Relation::ONE_AGGREGATE:
-                        // one-to-one relation found
-                        if( ! ($value instanceof Doctrine_Record))
-                            throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record when setting one-to-one references.");
-
-                        if($rel->getLocal() == $this->table->getIdentifier()) {
-                            $value->set($rel->getForeign(), $this, false);
-                        } else {
-                            $this->set($rel->getLocal(),$value);
-                        }
-                    break;
-                endswitch;
-
-            } elseif($rel instanceof Doctrine_Association) {
-                // join table relation found
-                if( ! ($value instanceof Doctrine_Collection))
-                    throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
+                    if($rel->getLocal() == $this->table->getIdentifier()) {
+                        $value->set($rel->getForeign(), $this, false);
+                    } else {
+                        $this->set($rel->getLocal(),$value);
+                    }
+                break;
             }
 
-            $this->references[$name] = $value;
+        } elseif($rel instanceof Doctrine_Association) {
+            // join table relation found
+            if( ! ($value instanceof Doctrine_Collection))
+                throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
+        
         }
+
+        $this->references[$name] = $value;
     }
     /**
      * contains
@@ -780,6 +784,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function contains($name) {
         if(isset($this->data[$name]))
+            return true;
+
+        if(isset($this->id[$name])) 
             return true;
 
         if(isset($this->references[$name]))
@@ -1211,70 +1218,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     final public function loadReference($name) {
 
         $fk      = $this->table->getRelation($name);
-        $table   = $fk->getTable();
 
-        $local   = $fk->getLocal();
-        $foreign = $fk->getForeign();
-        $graph   = $table->getQueryObject();
-        $type    = $fk->getType();
-
-        if( ! $this->exists()) {
-            if($fk->isOneToOne()) {
-                // ONE-TO-ONE
-                $this->references[$name] = $table->create();
-
-                if($fk instanceof Doctrine_ForeignKey) {
-                    $this->references[$name]->set($fk->getForeign(),$this);
-                } else {
-                    $this->set($fk->getLocal(),$this->references[$name]);
-                }
-            } else {
-                $this->references[$name] = new Doctrine_Collection($table);
-                if($fk instanceof Doctrine_ForeignKey) {
-                    // ONE-TO-MANY
-                    $this->references[$name]->setReference($this,$fk);
-                }
-                $this->originals[$name]  = new Doctrine_Collection($table);
-            }
+        if($fk->isOneToOne()) {
+            $this->references[$name] = $fk->fetchRelatedFor($this);
         } else {
-            if($fk->isOneToOne()) {
-                // ONE-TO-ONE
-                $id      = $this->get($local);
+            $coll = $fk->fetchRelatedFor($this);
 
-                if($fk instanceof Doctrine_LocalKey) {
-                    $this->references[$name] = $fk->fetch($id);
-                    $this->set($fk->getLocal(), $this->references[$name], false);
-
-                } elseif ($fk instanceof Doctrine_ForeignKey) {
-
-                    if(empty($id)) {
-                        $this->references[$name] = $table->create();
-                    } else {
-                        $dql  = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$fk->getForeign()." = ?";
-                        $coll = $graph->query($dql, array($id));
-                        $this->references[$name] = $coll[0];
-                    }
-                    
-                    $this->references[$name]->set($fk->getForeign(), $this);
-                }
-            } else {
-
-                $query   = $fk->getRelationDql(1);
-
-                // ONE-TO-MANY
-                if($fk instanceof Doctrine_ForeignKey) {
-                    $id      = $this->get($local);
-                    $coll    = $graph->query($query,array($id));
-                    $coll->setReference($this, $fk);
-                } elseif($fk instanceof Doctrine_Association_Self) {
-                    $coll    = $fk->fetchRelatedFor($this);
-                } elseif($fk instanceof Doctrine_Association) {
-                    $id      = $this->getIncremented();
-                    $coll    = $graph->query($query, array($id));
-                }
-                $this->references[$name] = $coll;
-                $this->originals[$name]  = clone $coll;
-            }
+            $this->references[$name] = $coll;
+            $this->originals[$name]  = clone $coll;
         }
     }
     /**

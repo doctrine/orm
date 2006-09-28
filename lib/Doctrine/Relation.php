@@ -26,7 +26,7 @@
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_Relation {
+abstract class Doctrine_Relation {
     /**
      * RELATION CONSTANTS
      */
@@ -166,6 +166,10 @@ class Doctrine_Relation {
      *
      * We iterate through the old collection and get the records
      * that do not exists in the new collection (Doctrine_Records that need to be deleted).
+     *
+     * @param Doctrine_Collection $old
+     * @param Doctrine_Collection $new
+     * @return array
      */
     public static function getDeleteOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
         $r = array();
@@ -204,6 +208,10 @@ class Doctrine_Relation {
      *
      * We iterate through the old collection and get the records
      * that exists only in the new collection (Doctrine_Records that need to be added).
+     *
+     * @param Doctrine_Collection $old
+     * @param Doctrine_Collection $new
+     * @return array
      */
     public static function getInsertOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
         $r = array();
@@ -228,6 +236,15 @@ class Doctrine_Relation {
 
         return $r;
     }
+    /**
+     * fetchRelatedFor
+     *
+     * fetches a component related to given record
+     *
+     * @param Doctrine_Record $record
+     * @return Doctrine_Record|Doctrine_Collection
+     */
+    abstract public function fetchRelatedFor(Doctrine_Record $record);
     /**
      * __toString
      *

@@ -28,13 +28,26 @@ Doctrine::autoload('Doctrine_Relation');
  * @package     Doctrine
  */
 class Doctrine_LocalKey extends Doctrine_Relation { 
-    public function fetch($id = null) {
-        if(empty($id))
-            return $this->table->create();
-        else {
-            $record = $this->table->find($id);
+    /**
+     * fetchRelatedFor
+     *
+     * fetches a component related to given record
+     *
+     * @param Doctrine_Record $record
+     * @return Doctrine_Record|Doctrine_Collection
+     */
+    public function fetchRelatedFor(Doctrine_Record $record) {
+        $id      = $record->get($this->local);
 
-            return ($record !== false) ? $record : $this->table->create();
+        if(empty($id))
+            $related = $this->table->create();
+        else {
+            if( ! ($related = $this->table->find($id)))
+                $related = $this->table->create();
         }
+
+        $record->set($this->local, $related, false);
+        
+        return $related;
     }
 }

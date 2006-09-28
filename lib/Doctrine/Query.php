@@ -417,7 +417,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * parsers for each part
      *
      * @param string $query         DQL query
-     * @return void
+     * @return Doctrine_Query
      */
     public function parseQuery($query) {
         $this->clear();
@@ -483,6 +483,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 break;
             endswitch;
         }
+        
+        return $this;
     }
     /**
      * DQL ORDER BY PARSER

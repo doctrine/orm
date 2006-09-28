@@ -78,5 +78,22 @@ class Doctrine_Association extends Doctrine_Relation {
 
         return $dql;
     }
+    /**
+     * fetchRelatedFor
+     *
+     * fetches a component related to given record
+     *
+     * @param Doctrine_Record $record
+     * @return Doctrine_Record|Doctrine_Collection
+     */
+    public function fetchRelatedFor(Doctrine_Record $record) {
+        $id      = $record->getIncremented();
+        if(empty($id))
+            $coll = new Doctrine_Collection($this->table);
+        else
+            $coll = Doctrine_Query::create()->parseQuery($this->getRelationDql(1))->execute(array($id));
+    
+        return $coll;
+    }
 }
 
