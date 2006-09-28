@@ -85,7 +85,7 @@ class Doctrine_Compiler {
      * including the compiled file instead of multiple files (in worst
      * cases dozens of files) can improve performance by an order of magnitude
      *
-     * @throws Doctrine_Exception
+     * @throws Doctrine_Compiler_Exception      if something went wrong during the compile operation
      * @return void
      */
     public static function compile($target = null) {
