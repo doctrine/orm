@@ -331,25 +331,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                         if(empty($row))
                             continue;
 
-                        $ids  = $this->tables[$key]->getIdentifier();
-                        
-                        $emptyID = false;
-                        if(is_array($ids)) {
-                            foreach($ids as $id) {
-                                if($row[$id] == null) {
-                                    $emptyID = true;
-                                    break;
-                                }
-                            }
-                        } else {
-                            if( ! isset($row[$ids]))
-                                $emptyID = true;
-                        }
-
-
+                        $ids     = $this->tables[$key]->getIdentifier();
                         $name    = $key;
 
-                        if($emptyID) {
+                        if($this->isIdentifiable($row, $ids)) {
 
 
                             $pointer = $this->joins[$name];
@@ -480,6 +465,26 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             }
         }
         return $coll;
+    }
+    /**
+     * hasEmptyIdentifier
+     *
+     * @param array $row
+     * @param mixed $ids
+     * @return boolean
+     */
+    public function isIdentifiable(array $row, $ids) {
+        $emptyID = false;
+        if(is_array($ids)) {
+            foreach($ids as $id) {
+                if($row[$id] == null)
+                    return true;
+            }
+        } else {
+            if( ! isset($row[$ids]))
+                return true;
+        }
+        return false;
     }
     /**
      * applyInheritance
