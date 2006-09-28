@@ -9,6 +9,17 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "GzipTest";
         parent::prepareTables();
     }
+    public function testIssetForPrimaryKey() {
+        $this->assertTrue(isset($this->users[0]->id));
+        $this->assertTrue(isset($this->users[0]['id']));
+        $this->assertTrue($this->users[0]->contains('id'));
+        
+        $user = new User();
+
+        $this->assertFalse(isset($user->id));
+        $this->assertFalse(isset($user['id']));
+        $this->assertFalse($user->contains('id'));
+    }
     public function testNotNullConstraint() {
         $null = new NotNullTest();
 
@@ -46,67 +57,6 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($gzip->gzip, "compressed 2");
     }
 
-    public function testEnumType() {
-
-        $enum = new EnumTest();
-        $enum->status = "open";
-        $this->assertEqual($enum->status, "open");
-        $enum->save();
-        $this->assertEqual($enum->status, "open");
-        $enum->refresh();
-        $this->assertEqual($enum->status, "open");
-
-        $enum->status = "closed";
-
-        $this->assertEqual($enum->status, "closed");
-
-        $enum->save();
-        $this->assertEqual($enum->status, "closed");
-        $this->assertTrue(is_numeric($enum->id));
-        $enum->refresh();
-        $this->assertEqual($enum->status, "closed");
-    }
-
-    public function testEnumTypeWithCaseConversion() {
-        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
-
-        $enum = new EnumTest();
-
-        $enum->status = "open";
-        $this->assertEqual($enum->status, "open");
-
-        $enum->save();
-        $this->assertEqual($enum->status, "open");
-
-        $enum->refresh();
-        $this->assertEqual($enum->status, "open");      
-        
-        $enum->status = "closed";
-
-        $this->assertEqual($enum->status, "closed");
-
-        $enum->save();
-        $this->assertEqual($enum->status, "closed");
-
-        $enum->refresh();
-        $this->assertEqual($enum->status, "closed");
-        
-        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
-    }
-
-    public function testFailingRefresh() {
-        $enum = $this->connection->getTable('EnumTest')->find(1);
-
-        $this->dbh->query('DELETE FROM enum_test WHERE id = 1');
-
-        $f = false;
-        try {
-            $enum->refresh();
-        } catch(Doctrine_Record_Exception $e) {
-            $f = true;
-        }
-        $this->assertTrue($f);
-    }
     public function testDefaultValues() {
 
         $test = new FieldNameTest;
@@ -540,7 +490,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $e = new Element();
 
         $fk = $e->getTable()->getRelation("Child");
-        $this->assertTrue($fk instanceof Doctrine_ForeignKey);
+        $this->assertTrue($fk instanceof Doctrine_Relation_ForeignKey);
         $this->assertEqual($fk->getType(), Doctrine_Relation::MANY_AGGREGATE);
         $this->assertEqual($fk->getForeign(), "parent_id");
         $this->assertEqual($fk->getLocal(), "id");
@@ -609,7 +559,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         
 
         $fk = $e->getTable()->getRelation("Description");
-        $this->assertTrue($fk instanceof Doctrine_ForeignKey);
+        $this->assertTrue($fk instanceof Doctrine_Relation_ForeignKey);
         $this->assertEqual($fk->getLocal(),"file_md5");
         $this->assertEqual($fk->getForeign(),"file_md5");
         $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
@@ -911,7 +861,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         // ACCESSING ASSOCIATION OBJECT PROPERTIES
 
         $user = new User();
-        $this->assertTrue($user->getTable()->getRelation("Groupuser") instanceof Doctrine_ForeignKey);
+        $this->assertTrue($user->getTable()->getRelation("Groupuser") instanceof Doctrine_Relation_ForeignKey);
         $this->assertTrue($user->Groupuser instanceof Doctrine_Collection);
         $this->assertTrue($user->Groupuser[0] instanceof Groupuser);
         

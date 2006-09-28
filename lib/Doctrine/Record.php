@@ -783,10 +783,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return boolean
      */
     public function contains($name) {
-        if(isset($this->data[$name]))
+        $lower = strtolower($name);
+
+        if(isset($this->data[$lower]))
             return true;
 
-        if(isset($this->id[$name])) 
+        if(isset($this->id[$lower]))
             return true;
 
         if(isset($this->references[$name]))

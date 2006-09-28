@@ -41,11 +41,15 @@ class Doctrine_Repository implements Countable, IteratorAggregate {
     private $registry = array();
     /**
      * constructor
+     *
+     * @param Doctrine_Table $table
      */
     public function __construct(Doctrine_Table $table) {
         $this->table = $table;
     }
-    /** 
+    /**
+     * getTable
+     *
      * @return object Doctrine_Table
      */
     public function getTable() {
@@ -53,7 +57,9 @@ class Doctrine_Repository implements Countable, IteratorAggregate {
     }
     /**
      * add
+     *
      * @param Doctrine_Record $record       record to be added into registry
+     * @return boolean
      */
     public function add(Doctrine_Record $record) {
         $oid = $record->getOID();
