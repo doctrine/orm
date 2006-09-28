@@ -388,10 +388,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                 unset($tmp);
                                 $fk      = $this->tables[$pointer]->getRelation($alias);
                                 $last    = $prev[$pointer]->getLast();
-
-                                switch($fk->getType()):
-                                    case Doctrine_Relation::ONE_COMPOSITE:
-                                    case Doctrine_Relation::ONE_AGGREGATE:
+                                if($fk->isOneToOne()) {
 
                                         // one-to-one relation
                                         if($fk instanceof Doctrine_LocalKey)
@@ -400,9 +397,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                         $last->set($fk->getAlias(), $record);
 
                                         $prev[$name] = $record;
-                                    break;
-                                    default:
-
+                                } else {
                                         // one-to-many relation or many-to-many relation
 
                                         if( ! $last->hasReference($alias)) {
@@ -416,7 +411,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                         }
 
                                         $last->addReference($record, $fk);
-                                endswitch;
+                                }
                             }
                         }
 
@@ -462,7 +457,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         return $coll;
     }
     /**
-     * hasEmptyIdentifier
+     * isIdentifiable
+     * returns whether or not a given data row is identifiable (it contains 
+     * all id fields specified in the second argument)
      *
      * @param array $row
      * @param mixed $ids

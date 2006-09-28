@@ -1242,34 +1242,20 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $id      = $this->get($local);
 
                 if($fk instanceof Doctrine_LocalKey) {
-
-                    if(empty($id)) {
-                        $this->references[$name] = $table->create();
-                        $this->set($fk->getLocal(),$this->references[$name]);
-                    } else {
-
-                        $record = $table->find($id);
-
-                        if($record !== false)
-                            $this->references[$name] = $record;
-                        else
-                            $this->references[$name] = $table->create();
-
-                                    //$this->set($fk->getLocal(),$this->references[$name]);
-
-                    }
+                    $this->references[$name] = $fk->fetch($id);
+                    $this->set($fk->getLocal(), $this->references[$name], false);
 
                 } elseif ($fk instanceof Doctrine_ForeignKey) {
 
                     if(empty($id)) {
                         $this->references[$name] = $table->create();
-                        $this->references[$name]->set($fk->getForeign(), $this);
                     } else {
                         $dql  = "FROM ".$table->getComponentName()." WHERE ".$table->getComponentName().".".$fk->getForeign()." = ?";
                         $coll = $graph->query($dql, array($id));
                         $this->references[$name] = $coll[0];
-                        $this->references[$name]->set($fk->getForeign(), $this);
                     }
+                    
+                    $this->references[$name]->set($fk->getForeign(), $this);
                 }
             } else {
 
