@@ -311,6 +311,25 @@ final class Doctrine {
         }
     }
     /**
+     * import
+     * method for importing existing schema to Doctrine_Record classes
+     *
+     * @param string $directory
+     */
+    public static function import($directory) {
+
+    }
+    /**
+     * export
+     * method for exporting Doctrine_Record classes to a schema
+     *
+     * @param string $directory
+     */
+    public static function export($directory) {
+                                              	
+    }                                          	
+    /**
+     * compile
      * method for making a single file of most used doctrine runtime components
      * including the compiled file instead of multiple files (in worst
      * cases dozens of files) can improve performance by an order of magnitude
