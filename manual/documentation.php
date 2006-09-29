@@ -298,7 +298,10 @@ $menu = array("Getting started" =>
                         */
                     ),
            "DQL (Doctrine Query Language)" =>
-                            array('Syntax' =>
+
+                            array('Introduction', 
+                                  'Syntax' =>
+
                                   array(
                                         'FROM',
                                         'WHERE',
