@@ -144,7 +144,7 @@ $menu = array("Getting started" =>
                                          "Getting record state",
                                          "Getting object copy",
                                          "Serializing",
-                                         "Existence checking",
+                                         "Checking Existence",
                                          "Callbacks"),
                         "Connection"
                                 => array("Introduction",
@@ -194,7 +194,8 @@ $menu = array("Getting started" =>
                         "DB"     => array(
                                          "Introduction",
                                          "Connecting to a database",
-                                         "Using event listeners"),
+                                         "Using event listeners",
+                                         "Chaining listeners"),
                                          /**
                         "Statement - <font color='red'>UNDER CONSTRUCTION</font>" => array("Introduction",
                                              "Setting parameters",
