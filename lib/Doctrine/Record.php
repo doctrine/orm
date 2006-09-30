@@ -811,14 +811,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function save(Doctrine_Connection $conn = null) {
-        if ($conn == null) {
+        if ($conn === null) {
             $conn = $this->table->getConnection();
         }
         $conn->beginTransaction();
 
         $saveLater = $conn->saveRelated($this);
 
-       $conn->save($this);
+        $conn->save($this);
 
         foreach($saveLater as $fk) {
             $table   = $fk->getTable();
@@ -890,7 +890,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
 
         foreach($this->table->getInheritanceMap() as $k => $v) {
-            $old = $this->get($k);
+            $old = $this->get($k, false);
 
             if((string) $old !== (string) $v || $old === null) {
                 $a[$k] = $v;

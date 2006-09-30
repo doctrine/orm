@@ -5,6 +5,7 @@ ob_start();
 require_once("ConfigurableTestCase.php");
 require_once("ManagerTestCase.php");
 require_once("ConnectionTestCase.php");
+require_once("ConnectionTransactionTestCase.php");
 require_once("TableTestCase.php");
 require_once("EventListenerTestCase.php");
 require_once("BatchIteratorTestCase.php");
@@ -33,20 +34,22 @@ require_once("BooleanTestCase.php");
 require_once("EnumTestCase.php");
 require_once("RelationAccessTestCase.php");
 require_once("DataDictSqliteTestCase.php");
+
 error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
+$test->addTestCase(new Doctrine_EventListenerTestCase());
+
+$test->addTestCase(new Doctrine_RecordTestCase());
+
+$test->addTestCase(new Doctrine_Connection_Transaction_TestCase());
 
 $test->addTestCase(new Doctrine_ConnectionTestCase());
 
 $test->addTestCase(new Doctrine_DB_TestCase());
 
-$test->addTestCase(new Doctrine_RecordTestCase());
-
 $test->addTestCase(new Doctrine_AccessTestCase());
-
-$test->addTestCase(new Doctrine_EventListenerTestCase());
 
 $test->addTestCase(new Doctrine_TableTestCase());
 
@@ -84,17 +87,17 @@ $test->addTestCase(new Doctrine_CollectionTestCase());
 
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 
-$test->addTestCase(new Doctrine_QueryTestCase());
-
 $test->addTestCase(new Doctrine_EnumTestCase());
 
 $test->addTestCase(new Doctrine_RelationAccessTestCase());
 
-$test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
-
 $test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
 
 $test->addTestCase(new Doctrine_BooleanTestCase());
+
+$test->addTestCase(new Doctrine_QueryTestCase());
+
+$test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());

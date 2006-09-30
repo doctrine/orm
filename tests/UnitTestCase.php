@@ -66,6 +66,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->dbh     = $this->connection->getDBH();
             $this->listener = $this->manager->getAttribute(Doctrine::ATTR_LISTENER);
 
+            $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         } else {
             //$this->dbh     = Doctrine_DB::getConnection();
             $this->dbh      = Doctrine_DB::getConn("sqlite::memory:");
@@ -74,6 +75,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->listener = new Doctrine_EventListener_Debugger();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
+        $this->connection->setListener(new Doctrine_EventListener());
         $this->query = new Doctrine_Query($this->connection);
         $this->prepareTables();
         $this->prepareData();

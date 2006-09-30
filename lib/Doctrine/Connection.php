@@ -137,6 +137,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->dataDict;
     }
     /**
+     * getRegexpOperator
      * returns the regular expression operator 
      * (implemented by the connection drivers)
      *
@@ -436,52 +437,54 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return void
      */
     public function save(Doctrine_Record $record) {
+        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
+
+
         switch($record->getState()):
             case Doctrine_Record::STATE_TDIRTY:
-                $this->transaction->addInsert($record);
+                $this->transaction->insert($record);
             break;
             case Doctrine_Record::STATE_DIRTY:
             case Doctrine_Record::STATE_PROXY:
-                $this->transaction->addUpdate($record);
+                $this->transaction->update($record);
             break;
             case Doctrine_Record::STATE_CLEAN:
             case Doctrine_Record::STATE_TCLEAN:
                 // do nothing
             break;
         endswitch;
+
+        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
     }
     /**
      * saves all related records to $record
      *
      * @param Doctrine_Record $record
      */
-    final public function saveRelated(Doctrine_Record $record) {
+    public function saveRelated(Doctrine_Record $record) {
         $saveLater = array();
         foreach($record->getReferences() as $k=>$v) {
             $fk = $record->getTable()->getRelation($k);
             if($fk instanceof Doctrine_Relation_ForeignKey ||
                $fk instanceof Doctrine_Relation_LocalKey) {
-                switch($fk->getType()):
-                    case Doctrine_Relation::ONE_COMPOSITE:
-                    case Doctrine_Relation::MANY_COMPOSITE:
-                        $local = $fk->getLocal();
-                        $foreign = $fk->getForeign();
+                if($fk->isComposite()) {
+                    $local = $fk->getLocal();
+                    $foreign = $fk->getForeign();
 
-                        if($record->getTable()->hasPrimaryKey($fk->getLocal())) {
-                            if( ! $record->exists())
-                                $saveLater[$k] = $fk;
-                            else
-                                $v->save();
-                        } else {
-                            // ONE-TO-ONE relationship
-                            $obj = $record->get($fk->getTable()->getComponentName());
+                    if($record->getTable()->hasPrimaryKey($fk->getLocal())) {
+                        if( ! $record->exists())
+                            $saveLater[$k] = $fk;
+                        else
+                            $v->save();
+                    } else {
+                        // ONE-TO-ONE relationship
+                        $obj = $record->get($fk->getTable()->getComponentName());
 
-                            if($obj->getState() != Doctrine_Record::STATE_TCLEAN)
-                                $obj->save();
+                        if($obj->getState() != Doctrine_Record::STATE_TCLEAN)
+                            $obj->save();
 
-                        }
-                    break;
-                endswitch;
+                    }
+                }
             } elseif($fk instanceof Doctrine_Relation_Association) {
                 $v->save();
             }
@@ -499,7 +502,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             switch($fk->getType()):
                 case Doctrine_Relation::ONE_COMPOSITE:
                 case Doctrine_Relation::MANY_COMPOSITE:
-                    $obj = $record->get($record->getTable()->getAlias($fk->getTable()->getComponentName()));
+                    $obj = $record->get($fk->getAlias());
                     $obj->delete();
                 break;
             endswitch;
@@ -592,11 +595,16 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     final public function delete(Doctrine_Record $record) {
         if( ! $record->exists())
             return false;
-            
+
         $this->beginTransaction();
 
+        $record->getTable()->getListener()->onPreDelete($record);
+
         $this->deleteComposites($record);
+
         $this->transaction->addDelete($record);
+
+        $record->getTable()->getListener()->onDelete($record);
 
         $this->commit();
         return true;

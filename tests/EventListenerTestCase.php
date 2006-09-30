@@ -165,24 +165,28 @@ class Doctrine_EventListenerTestCase extends Doctrine_UnitTestCase {
         $this->logger->clear();
         
         $e->save();
-        
+
         $this->assertEqual($this->logger->pop(), 'onTransactionCommit');
+        $this->assertEqual($this->logger->pop(), 'onPreTransactionCommit');
         $this->assertEqual($this->logger->pop(), 'onSave');
         $this->assertEqual($this->logger->pop(), 'onInsert');
         $this->assertEqual($this->logger->pop(), 'onPreInsert');
         $this->assertEqual($this->logger->pop(), 'onPreSave');
+
         $this->assertEqual($this->logger->pop(), 'onTransactionBegin');
         $this->assertEqual($this->logger->pop(), 'onPreTransactionBegin');
 
         $e->name = "test 1";
 
         $e->save();
-        
+
         $this->assertEqual($this->logger->pop(), 'onTransactionCommit');
+        $this->assertEqual($this->logger->pop(), 'onPreTransactionCommit');
         $this->assertEqual($this->logger->pop(), 'onSave');
         $this->assertEqual($this->logger->pop(), 'onUpdate');
         $this->assertEqual($this->logger->pop(), 'onPreUpdate');
         $this->assertEqual($this->logger->pop(), 'onPreSave');
+
         $this->assertEqual($this->logger->pop(), 'onTransactionBegin');
         $this->assertEqual($this->logger->pop(), 'onPreTransactionBegin');
 
@@ -191,7 +195,9 @@ class Doctrine_EventListenerTestCase extends Doctrine_UnitTestCase {
         $e->delete();
 
         $this->assertEqual($this->logger->pop(), 'onTransactionCommit');
+        $this->assertEqual($this->logger->pop(), 'onPreTransactionCommit');
         $this->assertEqual($this->logger->pop(), 'onDelete');
+
         $this->assertEqual($this->logger->pop(), 'onPreDelete');
         $this->assertEqual($this->logger->pop(), 'onTransactionBegin');
         $this->assertEqual($this->logger->pop(), 'onPreTransactionBegin');

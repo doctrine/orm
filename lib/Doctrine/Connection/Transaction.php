@@ -46,7 +46,7 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
     /**
      * @var Doctrine_Connection $conn       the connection object
      */
-    private $connection;
+    private $conn;
     /**
      * @see Doctrine_Connection_Transaction::STATE_* constants
      * @var boolean $state                  the current state of the connection
@@ -110,6 +110,8 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
      */
     public function beginTransaction() {
         if($this->transaction_level == 0) {
+            if($this->conn->getAttribute(Doctrine::ATTR_VLD))
+                $this->validator = new Doctrine_Validator();
 
             if($this->conn->getAttribute(Doctrine::ATTR_LOCKMODE) == Doctrine::LOCK_PESSIMISTIC) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this->conn);
@@ -129,6 +131,8 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
      * if lockmode is short this method starts a transaction
      * and commits it instantly
      *
+     * @throws Doctrine_Connection_Transaction_Exception    if the transaction fails at PDO level
+     * @throws Doctrine_Validator_Exception                 if the transaction fails due to record validations
      * @return void
      */
     public function commit() {
@@ -136,7 +140,7 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
         $this->transaction_level--;
     
         if($this->transaction_level == 0) {
-
+            $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionCommit($this->conn);
 
             if($this->conn->getAttribute(Doctrine::ATTR_LOCKMODE) == Doctrine::LOCK_OPTIMISTIC) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this->conn);
@@ -145,14 +149,8 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
 
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this->conn);
             }
-    
-            if($this->conn->getAttribute(Doctrine::ATTR_VLD))
-                $this->validator = new Doctrine_Validator();
 
             try {
-
-                $this->bulkInsert();
-                $this->bulkUpdate();
                 $this->bulkDelete();
 
             } catch(Exception $e) {
@@ -201,87 +199,6 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
         $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionRollback($this->conn);
     }
     /**
-     * bulkInsert
-     * inserts all the objects in the pending insert list into database
-     *
-     * @return void
-     */
-    public function bulkInsert() {
-        if(empty($this->insert))
-            return false;
-
-        foreach($this->insert as $name => $inserts) {
-            if( ! isset($inserts[0]))
-                continue;
-
-            $record    = $inserts[0];
-            $table     = $record->getTable();
-            $seq       = $table->getSequenceName();
-
-            $increment = false;
-            $keys      = $table->getPrimaryKeys();
-            $id        = null;
-
-            if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
-                $increment = true;
-            }
-
-            foreach($inserts as $k => $record) {
-                $table->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
-                // listen the onPreInsert event
-                $table->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
-
-
-                $this->insert($record);
-                if($increment) {
-                    if($k == 0) {
-                        // record uses auto_increment column
-
-                        $id = $this->conn->getDBH()->lastInsertID();
-
-                        if( ! $id)
-                            $id = $table->getMaxIdentifier();
-                    }
-    
-                    $record->assignIdentifier($id);
-                    $id++;
-                } else
-                    $record->assignIdentifier(true);
-
-                // listen the onInsert event
-                $table->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
-
-                $table->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
-            }
-        }
-        $this->insert = array();
-        return true;
-    }
-    /**
-     * bulkUpdate
-     * updates all objects in the pending update list
-     *
-     * @return void
-     */
-    public function bulkUpdate() {
-        foreach($this->update as $name => $updates) {
-            $ids = array();
-
-            foreach($updates as $k => $record) {
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
-                // listen the onPreUpdate event
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreUpdate($record);
-
-                $this->update($record);
-                // listen the onUpdate event
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onUpdate($record);
-
-                $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
-            }
-        }
-        $this->update = array();
-    }
-    /**
      * bulkDelete
      * deletes all records from the pending delete list
      *
@@ -296,16 +213,9 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
                 $record->assignIdentifier(false);
             }
             if($record instanceof Doctrine_Record) {
-
-                $table  = $record->getTable();
-
-                $table->getListener()->onPreDelete($record);
-
                 $params  = substr(str_repeat("?, ",count($ids)),0,-2);
-                $query   = "DELETE FROM ".$record->getTable()->getTableName()." WHERE ".$table->getIdentifier()." IN(".$params.")";
+                $query   = "DELETE FROM ".$record->getTable()->getTableName()." WHERE ".$record->getTable()->getIdentifier()." IN(".$params.")";
                 $this->conn->execute($query,$ids);
-
-                $table->getListener()->onDelete($record);
             }
 
         }
@@ -318,6 +228,8 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
      * @return boolean
      */
     public function update(Doctrine_Record $record) {
+        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreUpdate($record);
+
         $array = $record->getPrepared();
 
         if(empty($array))
@@ -363,6 +275,8 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
 
         $record->assignIdentifier(true);
 
+        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onUpdate($record);
+
         return true;
     }
     /**
@@ -372,10 +286,19 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
      * @return boolean
      */
     public function insert(Doctrine_Record $record) {
+         // listen the onPreInsert event
+        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
+        
         $array = $record->getPrepared();
 
         if(empty($array))
             return false;
+
+        $table     = $record->getTable();
+        $keys      = $table->getPrimaryKeys();
+
+
+            
 
         $seq = $record->getTable()->getSequenceName();
 
@@ -398,6 +321,20 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
         $stmt = $this->conn->getDBH()->prepare($sql);
 
         $stmt->execute(array_values($array));
+        
+
+        if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
+            $id = $this->conn->getDBH()->lastInsertID();
+
+            if( ! $id)
+                $id = $table->getMaxIdentifier();
+            
+            $record->assignIdentifier($id);
+        } else
+            $record->assignIdentifier(true);
+
+        // listen the onInsert event
+        $table->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
 
         return true;
     }

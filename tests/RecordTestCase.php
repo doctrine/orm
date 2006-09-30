@@ -9,17 +9,19 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "GzipTest";
         parent::prepareTables();
     }
+
     public function testIssetForPrimaryKey() {
         $this->assertTrue(isset($this->users[0]->id));
         $this->assertTrue(isset($this->users[0]['id']));
         $this->assertTrue($this->users[0]->contains('id'));
-        
+
         $user = new User();
 
         $this->assertFalse(isset($user->id));
         $this->assertFalse(isset($user['id']));
         $this->assertFalse($user->contains('id'));
     }
+
     public function testNotNullConstraint() {
         $null = new NotNullTest();
 
@@ -31,9 +33,11 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
             $this->fail();
         } catch(Doctrine_Exception $e) {
             $this->pass();
+            $this->connection->rollback();
         }
 
     }
+
     public function testGzipType() {
         $gzip = new GzipTest();
         $gzip->gzip = "compressed";
@@ -263,7 +267,7 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->name, null);
 
     }
-    
+
     public function testDateTimeType() {
         $date = new DateTest();
 
@@ -617,17 +621,12 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user = new User();
         $user->name = "John Locke";
         $user->save();
-        
+
         $this->assertTrue($user->getModified() == array());
         $this->assertTrue($user->getState() == Doctrine_Record::STATE_CLEAN);
 
-        $debug = $this->listener->getMessages();
-        $p = array_pop($debug);
-        $this->assertTrue($p->getObject() instanceof Doctrine_Connection);
-        $this->assertTrue($p->getCode() == Doctrine_EventListener_Debugger::EVENT_COMMIT);
-
         $user->delete();
-        $this->assertTrue($user->getState() == Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($user->getState(), Doctrine_Record::STATE_TCLEAN);
     }
 
     public function testUpdate() {
@@ -662,13 +661,12 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user->Phonenumber = $coll;
         $this->assertEqual($user->Phonenumber->count(), 0);
         $user->save();
-        
+
         $user->getTable()->clear();
 
         $user = $this->objTable->find(5);
 
         $this->assertEqual($user->Phonenumber->count(), 0);
-
         $this->assertEqual(get_class($user->Phonenumber), "Doctrine_Collection_Immediate");
 
         $user->Phonenumber[0]->phonenumber;

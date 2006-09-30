@@ -132,6 +132,16 @@ abstract class Doctrine_Relation {
         return $this->foreign;
     }
     /**
+     * isComposite
+     * returns whether or not this relation is a composite relation
+     *
+     * @return boolean
+     */
+    final public function isComposite() {
+        return ($this->type == Doctrine_Relation::ONE_COMPOSITE ||
+                $this->type == Doctrine_Relation::MANY_COMPOSITE);
+    }
+    /**
      * isOneToOne
      * returns whether or not this relation is a one-to-one relation
      *
