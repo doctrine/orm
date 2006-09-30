@@ -667,7 +667,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @return Doctrine_Iterator_Normal
      */
     public function getNormalIterator() {
-        return new Doctrine_Iterator_Normal($this);
+        return new Doctrine_Collection_Iterator_Normal($this);
     }
     /**
      * save

@@ -176,7 +176,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
      * @return Doctrine_Iterator
      */
     public function getIterator() {
-        return new Doctrine_Iterator_Expandable($this);
+        return new Doctrine_Collection_Iterator_Expandable($this);
     }
 }
 

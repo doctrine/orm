@@ -22,10 +22,10 @@ class Doctrine_Collection_Offset extends Doctrine_Collection {
         return $this->limit;
     }
     /**
-     * @return Doctrine_Iterator_Offset
+     * @return Doctrine_Collection_Iterator_Expandable
      */
     public function getIterator() {
-        return new Doctrine_Iterator_Expandable($this);
+        return new Doctrine_Collection_Iterator_Expandable($this);
     }
 }
 
