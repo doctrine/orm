@@ -467,4 +467,43 @@ class File_Owner extends Doctrine_Record {
         $this->hasOne("Data_File", "Data_File.file_owner_id");
     }
 }
+class MyUser extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string");
+    }
+    public function setUp() {
+		$this->hasMany("MyOneThing", "MyOneThing.user_id");
+		$this->hasMany("MyOtherThing", "MyOtherThing.user_id");
+    }
+}
+class MyOneThing extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string");
+        $this->hasColumn("user_id", "integer");
+    }
+    public function setUp() {
+		$this->hasMany("MyUserOneThing", "MyUserOneThing.one_thing_id");
+    }
+}
+class MyOtherThing extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string");
+        $this->hasColumn("user_id", "integer");
+    }
+    public function setUp() {
+		$this->hasMany("MyUserOtherThing", "MyUserOtherThing.other_thing_id");
+    }
+}
+class MyUserOneThing extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("user_id", "integer");
+        $this->hasColumn("one_thing_id", "integer");
+    }
+}
+class MyUserOtherThing extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("user_id", "integer");
+        $this->hasColumn("other_thing_id", "integer");
+    }
+}
 ?>
