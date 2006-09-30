@@ -1,5 +1,5 @@
 <?php
-/*
+/* 
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -18,28 +18,12 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Exception');
 /**
- * Doctrine_Export
+ * Doctrine_RawSql_Exception
  *
- * @package     Doctrine
- * @author      Konsta Vesterinen
+ * @package     Doctrine ORM
+ * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_Export {
-    public function export() { 
-        $parent = new ReflectionClass('Doctrine_Record');
-        $conn   = Doctrine_Manager::getInstance()->getCurrentConnection();
-        $old    = $conn->getAttribute(Doctrine::ATTR_CREATE_TABLES);
-
-        $conn->setAttribute(Doctrine::ATTR_CREATE_TABLES, true);
-        
-        foreach(get_declared_classes() as $name) {
-            $class = new ReflectionClass($name);
-
-            if($class->isSubclassOf($parent) && ! $class->isAbstract())
-                $obj = new $class();
-        }
-        $conn->setAttribute(Doctrine::ATTR_CREATE_TABLES, $old);
-    }
-}
+class Doctrine_RawSql_Exception extends Doctrine_Exception { }

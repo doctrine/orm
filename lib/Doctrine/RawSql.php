@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Hydrate');
 /**
  * Doctrine_RawSql
  *
@@ -41,7 +41,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      */
     public function __call($name, $args) {
         if( ! isset($this->parts[$name]))
-            throw new Doctrine_Exception("Unknown overload method");
+            throw new Doctrine_RawSql_Exception("Unknown overload method $name. Availible overload methods are ".implode(" ",array_keys($this->parts)));
 
         if($name == 'select') {
             preg_match_all('/{([^}{]*)}/U', $args[0], $m);
@@ -57,8 +57,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * get
      */
     public function get($name) {
-        if( ! isset($this->parts[$name])) 
-            throw new Doctrine_Exception('Unknown query part '.$name);
+        if( ! isset($this->parts[$name]))
+            throw new Doctrine_RawSql_Exception('Unknown query part '.$name);
             
         return $this->parts[$name];
     }
@@ -126,13 +126,13 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
         foreach($this->fields as $field) {
             $e = explode(".", $field);
             if( ! isset($e[1]))
-                throw new Doctrine_Exception("All selected fields in Sql query must be in format tableAlias.fieldName");
+                throw new Doctrine_RawSql_Exception("All selected fields in Sql query must be in format tableAlias.fieldName");
 
             if( ! isset($this->tables[$e[0]])) {
                 try {
                     $this->addComponent($e[0], ucwords($e[0]));
                 } catch(Doctrine_Exception $exception) {
-                    throw new Doctrine_Exception("The associated component for table alias $e[0] couldn't be found.");
+                    throw new Doctrine_RawSql_Exception("The associated component for table alias $e[0] couldn't be found.");
                 }
             }
 

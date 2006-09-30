@@ -83,7 +83,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     private $identityMap        = array();
     /**
-     * @var Doctrine_Repository $repository             record repository
+     * @var Doctrine_Table_Repository $repository       record repository
      */
     private $repository;
 
@@ -250,10 +250,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         if( ! $this->connection->addTable($this))
             throw new Doctrine_Table_Exception();
             
-        $this->repository = new Doctrine_Repository($this);
+        $this->repository = new Doctrine_Table_Repository($this);
     }
     /**
-     * @return Doctrine_Repository
+     * getRepository
+     *
+     * @return Doctrine_Table_Repository
      */
     public function getRepository() {
         return $this->repository;

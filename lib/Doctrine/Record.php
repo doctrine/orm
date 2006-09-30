@@ -744,33 +744,28 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         // one-to-many or one-to-one relation
         if($rel instanceof Doctrine_Relation_ForeignKey ||
            $rel instanceof Doctrine_Relation_LocalKey) {
-            switch($rel->getType()) {
-                case Doctrine_Relation::MANY_COMPOSITE:
-                case Doctrine_Relation::MANY_AGGREGATE:
-                    // one-to-many relation found
-                    if( ! ($value instanceof Doctrine_Collection))
-                        throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
+            if( ! $rel->isOneToOne()) {
+                // one-to-many relation found
+                if( ! ($value instanceof Doctrine_Collection))
+                    throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
 
-                    $value->setReference($this,$rel);
-                break;
-                case Doctrine_Relation::ONE_COMPOSITE:
-                case Doctrine_Relation::ONE_AGGREGATE:
-                    // one-to-one relation found
-                    if( ! ($value instanceof Doctrine_Record))
-                        throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record when setting one-to-one references.");
+                $value->setReference($this,$rel);
+            } else {
+                // one-to-one relation found
+                if( ! ($value instanceof Doctrine_Record))
+                    throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record when setting one-to-one references.");
 
-                    if($rel->getLocal() == $this->table->getIdentifier()) {
-                        $value->set($rel->getForeign(), $this, false);
-                    } else {
-                        $this->set($rel->getLocal(),$value);
-                    }
-                break;
+                if($rel instanceof Doctrine_Relation_LocalKey) {
+                    $this->set($rel->getLocal(), $value, false);
+                } else {
+                    $value->set($rel->getForeign(), $this, false);
+                }
             }
 
         } elseif($rel instanceof Doctrine_Relation_Association) {
             // join table relation found
             if( ! ($value instanceof Doctrine_Collection))
-                throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
+                throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting many-to-many references.");
         
         }
 
@@ -1176,6 +1171,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             return true;
         }
         return false;
+    }
+    
+    public function lazyInitRelated(Doctrine_Collection $coll, Doctrine_Relation $connector) {
+                                      	
     }
     /**
      * addReference

@@ -132,24 +132,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         return Doctrine_Manager::getInstance()->openConnection($dbh);
     }
     /**
-     * install
-     * 
-     * @return void
-     */
-    final public function install() {
-        $parent = new ReflectionClass('Doctrine_Record');
-        $old    = $this->getAttribute(Doctrine::ATTR_CREATE_TABLES);
-
-        $this->attributes[Doctrine::ATTR_CREATE_TABLES] = true;
-        foreach(get_declared_classes() as $name) {
-            $class = new ReflectionClass($name);
-
-            if($class->isSubclassOf($parent))
-                $obj = new $class();
-        }
-        $this->attributes[Doctrine::ATTR_CREATE_TABLES] = $old;
-    }
-    /**
      * openConnection
      * opens a new connection and saves it to Doctrine_Manager->connections
      *

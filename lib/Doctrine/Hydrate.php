@@ -382,18 +382,15 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                             } else {
 
                                 $pointer = $this->joins[$name];
+
                                 $path    = array_search($name, $this->tableAliases);
                                 $tmp     = explode(".", $path);
                                 $alias   = end($tmp);
                                 unset($tmp);
                                 $fk      = $this->tables[$pointer]->getRelation($alias);
+
                                 $last    = $prev[$pointer]->getLast();
                                 if($fk->isOneToOne()) {
-
-                                        // one-to-one relation
-                                        if($fk instanceof Doctrine_Relation_LocalKey)
-                                            $last->set($fk->getLocal(), $record->getIncremented(), false);
-
                                         $last->set($fk->getAlias(), $record);
 
                                         $prev[$name] = $record;
@@ -404,9 +401,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                             $prev[$name] = $this->getCollection($name);
                                             $last->initReference($prev[$name], $fk);
 
-                                            //$last->set($fk->getAlias(), $this->getCollection($name));
                                         } else {
-                                            // previous entry found from identityMap
+                                            // previous entry found from memory
                                             $prev[$name] = $last->get($alias);
                                         }
 
@@ -422,6 +418,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 return $coll;
         endswitch;
     }
+
+
     /**
      * hydrateHolders
      *
