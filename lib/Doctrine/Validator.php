@@ -178,7 +178,10 @@ class Doctrine_Validator {
                         $args[0] = '';
                 }
 
-                if(empty($name) || $name == "primary" || $name == "protected" || $name == "autoincrement")
+                if(empty($name) || $name == 'primary' ||
+                                   $name == 'protected' ||
+                                   $name == 'autoincrement' ||
+                                   $name == 'default')
                     continue;
 
                 $validator = self::getValidator($name);
