@@ -277,6 +277,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             case 0:
                 throw new Doctrine_Exception("No tables selected");
             break;
+
             case 1:
                 $keys  = array_keys($this->tables);
 
@@ -297,11 +298,13 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                     endforeach;
                     $this->data[$name][] = $data;
                 endwhile;
-                
+
 
                 return $this->getCollection($keys[0]);
             break;
+
             default:
+
                 $keys  = array_keys($this->tables);
                 $root  = $keys[0];
 
@@ -335,28 +338,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
                         if($this->isIdentifiable($row, $ids)) {
 
-
-                            $pointer = $this->joins[$name];
-                            $path    = array_search($name, $this->tableAliases);
-                            $tmp     = explode(".", $path);
-                            $alias   = end($tmp);
-                            unset($tmp);
-                            $fk      = $this->tables[$pointer]->getRelation($alias);
-
-                            if( ! isset($prev[$pointer]) )
-                                continue;
-
-                            $last    = $prev[$pointer]->getLast();
-
-                            if( ! $fk->isOneToOne()) {
-                                if($last instanceof Doctrine_Record) {
-                                    if( ! $last->hasReference($alias)) {
-                                        $prev[$name] = $this->getCollection($name);
-                                        $last->initReference($prev[$name],$fk);
-                                    }
-                                }
-                            }
-
+                            $prev = $this->initRelated($prev, $name);
                             continue;
                         }
 
@@ -380,38 +362,12 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                 unset($previd);
 
                             } else {
-
-                                $pointer = $this->joins[$name];
-
-                                $path    = array_search($name, $this->tableAliases);
-                                $tmp     = explode(".", $path);
-                                $alias   = end($tmp);
-                                unset($tmp);
-                                $fk      = $this->tables[$pointer]->getRelation($alias);
-
-                                $last    = $prev[$pointer]->getLast();
-                                if($fk->isOneToOne()) {
-                                        $last->set($fk->getAlias(), $record);
-
-                                        $prev[$name] = $record;
-                                } else {
-                                        // one-to-many relation or many-to-many relation
-
-                                        if( ! $last->hasReference($alias)) {
-                                            $prev[$name] = $this->getCollection($name);
-                                            $last->initReference($prev[$name], $fk);
-
-                                        } else {
-                                            // previous entry found from memory
-                                            $prev[$name] = $last->get($alias);
-                                        }
-
-                                        $last->addReference($record, $fk);
-                                }
+                                $prev = $this->addRelated($prev, $name, $record);
                             }
-                            
-                            // following statement is needed to ensure that mappings are being done properly when
-                            // the result set doesn't contain the rows in 'right order' the
+
+                            // following statement is needed to ensure that mappings 
+                            // are being done properly when the result set doesn't 
+                            // contain the rows in 'right order'
 
                             if($prev[$name] !== $record)
                                 $prev[$name] = $record;
@@ -424,7 +380,71 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 return $coll;
         endswitch;
     }
+    /** 
+     * initRelation
+     *
+     * @param array $prev
+     * @param string $name
+     * @return array
+     */
+    public function initRelated(array $prev, $name) {
+        $pointer = $this->joins[$name];
+        $path    = array_search($name, $this->tableAliases);
+        $tmp     = explode(".", $path);
+        $alias   = end($tmp);
 
+        $fk      = $this->tables[$pointer]->getRelation($alias);
+
+        if( ! isset($prev[$pointer]) )
+            return $prev;
+
+        if( ! $fk->isOneToOne()) {
+            if($prev[$pointer]->getLast() instanceof Doctrine_Record) {
+                if( ! $prev[$pointer]->getLast()->hasReference($alias)) {
+                    $prev[$name] = $this->getCollection($name);
+                    $prev[$pointer]->getLast()->initReference($prev[$name],$fk);
+                }
+            }
+        }
+
+        return $prev;
+    }
+    /**
+     * addRelated
+     *
+     * @param array $prev
+     * @param string $name
+     * @return array
+     */
+    public function addRelated(array $prev, $name, Doctrine_Record $record) {
+        $pointer = $this->joins[$name];
+
+        $path    = array_search($name, $this->tableAliases);
+        $tmp     = explode(".", $path);
+        $alias   = end($tmp);
+
+        $fk      = $this->tables[$pointer]->getRelation($alias);
+
+        if($fk->isOneToOne()) {
+            $prev[$pointer]->getLast()->set($fk->getAlias(), $record);
+
+            $prev[$name] = $record;
+        } else {
+            // one-to-many relation or many-to-many relation
+
+            if( ! $prev[$pointer]->getLast()->hasReference($alias)) {
+                $prev[$name] = $this->getCollection($name);
+                $prev[$pointer]->getLast()->initReference($prev[$name], $fk);
+
+            } else {
+                // previous entry found from memory
+                $prev[$name] = $prev[$pointer]->getLast()->get($alias);
+            }
+
+            $prev[$pointer]->getLast()->addReference($record, $fk);
+        }
+        return $prev;
+    }
     /**
      * isIdentifiable
      * returns whether or not a given data row is identifiable (it contains 
