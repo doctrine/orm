@@ -165,11 +165,18 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * addWhere
      *
      * @param string $where
+     * @param mixed $params
      */
-    public function addWhere($where) {
+    public function addWhere($where, $params = array()) {
         $class  = "Doctrine_Query_Where";
         $parser = new $class($this);
         $this->parts['where'][] = $parser->parse($where);
+
+        if(is_array($params)) {
+            $this->params = array_merge($this->params, $params);
+        } else {
+            $this->params[] = $params;
+        }
     }
     /**
      * sets a query part

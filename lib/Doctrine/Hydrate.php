@@ -50,6 +50,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @var array $data                         fetched data
      */
     protected $data        = array();
+    
+    protected $params      = array();
     /**
      * @var Doctrine_Connection $connection     Doctrine_Connection object
      */
@@ -244,6 +246,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      */
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD) {
         $this->collections = array();
+        
+        $params = array_merge($this->params, $params);
         
         array_walk($params, array(__CLASS__, 'convertBoolean'));
         
