@@ -585,10 +585,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         return false;
     }
     /**
+     * getRelation
+     *
      * @param string $name              component name of which a foreign key object is bound
      * @return Doctrine_Relation
      */
-    final public function getRelation($name) {
+    final public function getRelation($name, $recursive = true) {
         $original = $name;
 
         if(isset($this->relations[$name]))
@@ -672,10 +674,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $this->relations[$alias] = $relation;
             return $this->relations[$alias];
         }
-        try {
-            throw new Doctrine_Table_Exception($this->name . " doesn't have a relation to " . $original);
-        } catch(Exception $e) {
-            print $e;
+        // load all relations
+        $this->getRelations();
+        
+        if($recursive) {
+            return $this->getRelation($original, false);
+        } else {
+            throw new Doctrine_Table_Exception($this->name . " doesn't have a relation to " . $original);     
         }
     }
     /**

@@ -33,12 +33,15 @@ require_once("ImportTestCase.php");
 require_once("BooleanTestCase.php");
 require_once("EnumTestCase.php");
 require_once("RelationAccessTestCase.php");
+require_once("RelationTestCase.php");
 require_once("DataDictSqliteTestCase.php");
 
 error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
+$test->addTestCase(new Doctrine_Relation_TestCase());
+/**
 $test->addTestCase(new Doctrine_EventListenerTestCase());
 
 $test->addTestCase(new Doctrine_RecordTestCase());
@@ -98,7 +101,7 @@ $test->addTestCase(new Doctrine_BooleanTestCase());
 $test->addTestCase(new Doctrine_QueryTestCase());
 
 $test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
-
+*/
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
