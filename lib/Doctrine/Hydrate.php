@@ -222,19 +222,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 throw new Doctrine_Exception("Unknown fetchmode");
         endswitch;
 
-        $coll->populate($this);
         return $coll;
-    }
-    /**
-     * getData
-     * @param $key                      the component name
-     * @return array                    the data row for the specified component
-     */
-    final public function getData($key) {
-        if(isset($this->data[$key]) && is_array($this->data[$key]))
-            return $this->data[$key];
-
-        return array();
     }
     /**
      * convertBoolean
@@ -255,7 +243,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @return Doctrine_Collection            the root collection
      */
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD) {
-        $this->data = array();
         $this->collections = array();
         
         array_walk($params, array(__CLASS__, 'convertBoolean'));

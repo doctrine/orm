@@ -521,41 +521,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return true;
     }
     /**
-     * populate
-     *
-     * @param Doctrine_Query $query
-     * @param integer $key
-     */
-    public function populate(Doctrine_Hydrate $query) {
-        $name = $this->table->getComponentName();
-
-        if($this instanceof Doctrine_Collection_Immediate ||
-           $this instanceof Doctrine_Collection_Offset) {
-
-            $data = $query->getData($name);
-            if(is_array($data)) {
-                foreach($data as $k=>$v):
-                    $this->table->setData($v);
-                    $this->add($this->table->getRecord());
-                endforeach;
-            }
-        } elseif($this instanceof Doctrine_Collection_Batch) {
-            $this->data = $query->getData($name);
-
-            if(isset($this->keyColumn)) {
-                foreach($this->data as $k => $v) {
-
-                    $value = $record->get($this->keyColumn);
-                    if($value === null)
-                        throw new Doctrine_Collection_Exception("Couldn't create collection index. Record field '".$this->keyColumn."' was null.");
-
-                    $this->data[$value] = $record;
-                    unset($this->data[$k]);
-                }
-            }
-        }
-    }
-    /**
      * loadRelated
      *
      * @param mixed $name
