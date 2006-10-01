@@ -44,7 +44,7 @@ function render($title,$t,$e) {
 }
 
 function render_block($name) {
-    $h = new PHP_Highlight;
+
     if(file_exists("docs/$name.php")) {
         $c = file_get_contents("docs/$name.php");
         if(substr($c,0,5) == "<?php") {
@@ -56,7 +56,12 @@ function render_block($name) {
     if(file_exists("codes/$name.php")) {
         $c = file_get_contents("codes/$name.php");
         $c = trim($c);
-        if( ! empty($c)) {
+        renderCode($c);
+    }
+}
+function renderCode($c = null) {
+    if( ! empty($c)) {
+        $h = new PHP_Highlight;
         $h->loadString($c);
 
         print "<table width=500 border=1 class='dashed' cellpadding=0 cellspacing=0>";
@@ -65,7 +70,6 @@ function render_block($name) {
         print $h->toHtml();
         print "</td></tr>";
         print "</table>";
-        }
     }
 }
 function array2path($array, $path = '') {
@@ -110,6 +114,7 @@ $menu = array("Getting started" =>
                                         "Composite",
                                         "Sequential")
                         ),
+           /**
            "Schema reference" =>
                         array(
                         "Data types" => array(
@@ -128,6 +133,7 @@ $menu = array("Getting started" =>
                         ),
 
                         ),
+           */
            "Basic Components" =>
                         array(
                         "Manager"
@@ -368,7 +374,42 @@ $menu = array("Getting started" =>
                               "INSERT",
                               "UPDATE"),
                 ),
-            "Real world examples" => array("User management system","Forum application","Album lister")
+            "Real world examples" => array("User management system","Forum application","Album lister"),
+            
+            "Coding standards" => array(
+                            "Overview" => 
+                                array(
+                                    "Scope",
+                                    "Goals"
+                                    ),
+                            "PHP File Formatting" => array(
+                                    "General",
+                                    "Indentation",
+                                    "Maximum line length",
+                                    "Line termination"
+                                    ),
+
+                            "Naming Conventions" => array(
+                                    "Classes",
+                                    "Interfaces",
+                                    "Filenames",
+                                    "Functions and methods",
+                                    "Variables",
+                                    "Constants",
+                                    "Record columns",
+                                    ),
+
+
+                            "Coding Style" => array(
+                                    "PHP code demarcation",
+                                    "Strings",
+                                    "Arrays",
+                                    "Classes",
+                                    "Functions and methods",
+                                    "Control statements",
+                                    "Inline documentation"
+                                    ),
+                                )
             );
 
 
@@ -409,12 +450,12 @@ $menu = array("Getting started" =>
                                 if( ! file_exists("docs/$title - $k - $v2.php")) {
                                     $missing[0]++;
                                     $str .= " [ <font color='red'>doc</font> ] ";
-                                    //touch("docs/$title - $k - $v2.php");
+                                    touch("docs/$title - $k - $v2.php");
                                 }
                                 if( ! file_exists("codes/$title - $k - $v2.php")) {
                                     $missing[1]++;
                                     $str .= " [ <font color='red'>code</font> ] ";
-                                    //touch("codes/$title - $k - $v2.php");
+                                    touch("codes/$title - $k - $v2.php");
 
                                 }
 
@@ -427,12 +468,12 @@ $menu = array("Getting started" =>
                             if( ! file_exists("docs/$title - $t.php")) {
                                 $missing[0]++;
                                 $str .= " [ <font color='red'>doc</font> ] ";
-                                //touch("docs/$title - $t.php");
+                                touch("docs/$title - $t.php");
                             }
                             if( ! file_exists("codes/$title - $t.php")) {
                                 $missing[1]++;
                                 $str .= " [ <font color='red'>code</font> ] ";
-                                //touch("codes/$title - $t.php");
+                                touch("codes/$title - $t.php");
                             }
                             print "<dd>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i#$e\">".$t."</a>$str<br>\n";
                         }
