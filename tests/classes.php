@@ -522,4 +522,22 @@ class MyUserOtherThing extends Doctrine_Record {
         $this->hasColumn("other_thing_id", "integer");
     }
 }
+class CategoryWithPosition extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("position", "integer");
+        $this->hasColumn("name", "string", 255);
+    }
+    public function setUp() {
+        $this->ownsMany("BoardWithPosition as Boards", "BoardWithPosition.category_id");   
+    }   
+}
+class BoardWithPosition extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("position", "integer");
+        $this->hasColumn("category_id", "integer");
+    }
+    public function setUp() {
+        $this->hasOne("CategoryWithPosition as Category", "BoardWithPosition.category_id");
+    }
+}
 ?>
