@@ -9,5 +9,5 @@ Underscores are only permitted in place of the path separator, eg. the filename 
 </ul>
 <ul>
 <li \>If a class name is comprised of more than one word, the first letter of each new word must be capitalized. Successive capitalized letters 
-are not allowed, e.g. a class "Zend_PDF" is not allowed while "Zend_Pdf" is acceptable.
+are not allowed, e.g. a class "XML_Reader" is not allowed while "Xml_Reader" is acceptable.
 </ul>
