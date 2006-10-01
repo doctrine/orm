@@ -49,6 +49,7 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(count($user->Album[1]->Song), 2);
 
     }
+
     public function testMultipleOneToManyFetching() {
         $this->connection->clear();
 
@@ -141,5 +142,11 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[1]->Book[1]->name, 'Candide');
         $this->assertEqual($users[1]->Book[1]->Author[0]->name, 'Someone');
         $this->assertEqual($users[1]->Book[0]->Author[1]->name, 'Voltaire');
+    }
+
+    public function testMultipleOneToManyFetchingWithOrderBy() {
+        $query = new Doctrine_Query();
+
+        $users = $query->query("FROM User.Album.Song WHERE User.id IN (4,5) ORDER BY User.Album.Song.title DESC");
     }
 }

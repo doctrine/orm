@@ -38,7 +38,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      */
     protected $tables      = array();
     /**
-     * @var array $collections                  an array containing all collections this parser has created/will create
+     * @var array $collections                  an array containing all collections 
+     *                                          this hydrater has created/will create
      */
     protected $collections = array();
     /**
@@ -315,10 +316,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
                 $array = $this->parseData($stmt);
 
-                
-                if($return == Doctrine::FETCH_VHOLDER) {
-                    return $this->hydrateHolders($array);
-                } elseif($return == Doctrine::FETCH_ARRAY)
+
+                if($return == Doctrine::FETCH_ARRAY)
                     return $array;
                 
 
@@ -373,6 +372,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                             // initialize a new record
                             $record = $this->tables[$name]->getRecord();
 
+
                             if($name == $root) {
 
                                 // add record into root collection
@@ -409,6 +409,12 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                         $last->addReference($record, $fk);
                                 }
                             }
+                            
+                            // following statement is needed to ensure that mappings are being done properly when
+                            // the result set doesn't contain the rows in 'right order' the
+
+                            if($prev[$name] !== $record)
+                                $prev[$name] = $record;
                         }
 
                         $previd[$name] = $row;
@@ -419,41 +425,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         endswitch;
     }
 
-
-    /**
-     * hydrateHolders
-     *
-     * @param array $array
-     */
-    public function hydrateHolders(array $array) {
-        $keys  = array_keys($this->tables);
-        $root  = $keys[0];
-        $coll  = new Doctrine_ValueHolder($this->tables[$root]);
-
-        foreach($keys as $key) {
-            $prev[$key] = array();
-        }
-
-        foreach($array as $data) {
-            foreach($data as $alias => $row) {
-                if(isset($prev[$alias]) && $row !== $prev[$alias]) {
-                    $holder       = new Doctrine_ValueHolder($this->tables[$alias]);
-                    $holder->data = $row;
-
-                    if($alias === $root) {
-                        $coll->data[] = $holder;
-                    } else {
-                        $pointer   = $this->joins[$alias];
-                        $component = $this->tables[$alias]->getComponentName();
-                        $last[$pointer]->data[$component][] = $holder;
-                    }
-                    $last[$alias] = $holder;
-                }
-                $prev[$alias] = $row;
-            }
-        }
-        return $coll;
-    }
     /**
      * isIdentifiable
      * returns whether or not a given data row is identifiable (it contains 

@@ -24,7 +24,6 @@ require_once("ViewTestCase.php");
 require_once("RawSqlTestCase.php");
 require_once("CustomPrimaryKeyTestCase.php");
 require_once("FilterTestCase.php");
-require_once("ValueHolderTestCase.php");
 require_once("QueryLimitTestCase.php");
 require_once("QueryMultiJoinTestCase.php");
 require_once("QueryReferenceModelTestCase.php");
@@ -42,9 +41,9 @@ error_reporting(E_ALL);
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
-$test->addTestCase(new Doctrine_Relation_TestCase());
-
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
+
+$test->addTestCase(new Doctrine_Relation_TestCase());
 
 $test->addTestCase(new Doctrine_EventListenerTestCase());
 
@@ -80,8 +79,6 @@ $test->addTestCase(new Doctrine_CustomPrimaryKeyTestCase());
 
 $test->addTestCase(new Doctrine_Filter_TestCase());
 
-$test->addTestCase(new Doctrine_ValueHolder_TestCase());
-
 $test->addTestCase(new Doctrine_RawSql_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
@@ -96,8 +93,6 @@ $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 
 $test->addTestCase(new Doctrine_EnumTestCase());
 
-$test->addTestCase(new Doctrine_RelationAccessTestCase());
-
 $test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
 
 $test->addTestCase(new Doctrine_BooleanTestCase());
@@ -105,6 +100,8 @@ $test->addTestCase(new Doctrine_BooleanTestCase());
 $test->addTestCase(new Doctrine_QueryTestCase());
 
 $test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
+
+$test->addTestCase(new Doctrine_RelationAccessTestCase());
 
 $test->addTestCase(new Doctrine_CustomResultSetOrderTestCase());
 

@@ -90,21 +90,6 @@ class Doctrine_CustomResultSetOrderTestCase extends Doctrine_UnitTestCase {
             }
             
         }
-    }    
-
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ?>
