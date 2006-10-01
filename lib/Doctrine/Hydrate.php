@@ -273,112 +273,82 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         if($this->aggregate) 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        switch(count($this->tables)):
-            case 0:
-                throw new Doctrine_Exception("No tables selected");
-            break;
+        if(count($this->tables) == 0)
+            throw new Doctrine_Exception("No tables selected");
 
-            case 1:
-                $keys  = array_keys($this->tables);
+        $keys  = array_keys($this->tables);
+        $root  = $keys[0];
 
-                $name  = $this->tables[$keys[0]]->getComponentName();
+        $previd = array();
 
-
-                while($data = $stmt->fetch(PDO::FETCH_ASSOC)):
-
-                    foreach($data as $key => $value):
-                        $e = explode("__",$key);
-                        if(count($e) > 1) {
-
-                            $data[end($e)] = $value;
-                        } else {
-                            $data[$e[0]] = $value;
-                        }
-                        unset($data[$key]);
-                    endforeach;
-                    $this->data[$name][] = $data;
-                endwhile;
+        $coll        = $this->getCollection($root);
+        $prev[$root] = $coll;
 
 
-                return $this->getCollection($keys[0]);
-            break;
+        if($this->aggregate)
+            $return = Doctrine::FETCH_ARRAY;
 
-            default:
-
-                $keys  = array_keys($this->tables);
-                $root  = $keys[0];
-
-                $previd = array();
-
-                $coll        = $this->getCollection($root);
-                $prev[$root] = $coll;
+        $array = $this->parseData($stmt);
 
 
-                if($this->aggregate)
-                    $return = Doctrine::FETCH_ARRAY;
-
-                $array = $this->parseData($stmt);
-
-
-                if($return == Doctrine::FETCH_ARRAY)
-                    return $array;
+        if($return == Doctrine::FETCH_ARRAY)
+            return $array;
                 
 
 
-                foreach($array as $data) {
-                    /**
-                     * remove duplicated data rows and map data into objects
-                     */
-                    foreach($data as $key => $row) {
-                        if(empty($row))
-                            continue;
+        foreach($array as $data) {
+            /**
+             * remove duplicated data rows and map data into objects
+             */
+            foreach($data as $key => $row) {
+                if(empty($row))
+                    continue;
 
-                        $ids     = $this->tables[$key]->getIdentifier();
-                        $name    = $key;
+                $ids     = $this->tables[$key]->getIdentifier();
+                $name    = $key;
 
-                        if($this->isIdentifiable($row, $ids)) {
+                if($this->isIdentifiable($row, $ids)) {
 
-                            $prev = $this->initRelated($prev, $name);
-                            continue;
-                        }
-
-
-                        if( ! isset($previd[$name]))
-                            $previd[$name] = array();
-
-                        if($previd[$name] !== $row) {
-                            // set internal data
-
-                            $this->tables[$name]->setData($row);
-
-                            // initialize a new record
-                            $record = $this->tables[$name]->getRecord();
-
-
-                            if($name == $root) {
-
-                                // add record into root collection
-                                $coll->add($record);
-                                unset($previd);
-
-                            } else {
-                                $prev = $this->addRelated($prev, $name, $record);
-                            }
-
-                            // following statement is needed to ensure that mappings 
-                            // are being done properly when the result set doesn't 
-                            // contain the rows in 'right order'
-
-                            if($prev[$name] !== $record)
-                                $prev[$name] = $record;
-                        }
-
-                        $previd[$name] = $row;
-                    }
+                    $prev = $this->initRelated($prev, $name);
+                    continue;
                 }
 
-                return $coll;
-        endswitch;
+
+                if( ! isset($previd[$name]))
+                            $previd[$name] = array();
+
+                if($previd[$name] !== $row) {
+                        // set internal data
+
+                        $this->tables[$name]->setData($row);
+
+                        // initialize a new record
+                        $record = $this->tables[$name]->getRecord();
+
+
+                    if($name == $root) {
+
+                        // add record into root collection
+                        $coll->add($record);
+                        unset($previd);
+
+                    } else {
+                        $prev = $this->addRelated($prev, $name, $record);
+                    }
+    
+                    // following statement is needed to ensure that mappings
+                    // are being done properly when the result set doesn't
+                    // contain the rows in 'right order'
+    
+                    if($prev[$name] !== $record)
+                        $prev[$name] = $record;
+                }
+
+                $previd[$name] = $row;
+            }
+        }
+
+        return $coll;
     }
     /** 
      * initRelation
