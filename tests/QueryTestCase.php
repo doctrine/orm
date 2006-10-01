@@ -1117,46 +1117,8 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
 
     }
 
-    public function testAlbumManager() {
 
-        $query = new Doctrine_Query($this->connection);
-
-        $this->graph = $query;
-
-        $user = $this->objTable->find(5);
-
-
-        $album = $this->connection->create("Album");
-        $album->Song[0];
-
-        $user->Album[0]->name = "Damage Done";
-        $user->Album[1]->name = "Haven";
-
-        $user->Album[0]->Song[0]->title = "Damage Done";
-
-
-        $user->Album[0]->Song[1]->title = "The Treason Wall";
-        $user->Album[0]->Song[2]->title = "Monochromatic Stains";
-        $this->assertEqual(count($user->Album[0]->Song), 3);
-
-
-        $user->Album[1]->Song[0]->title = "Not Built To Last";
-        $user->Album[1]->Song[1]->title = "The Wonders At Your Feet";
-        $user->Album[1]->Song[2]->title = "Feast Of Burden";
-        $user->Album[1]->Song[3]->title = "Fabric";
-        $this->assertEqual(count($user->Album[1]->Song), 4);
-
-        $user->save();
-
-        $user = $this->objTable->find(5);
-
-        $this->assertEqual(count($user->Album[0]->Song), 3);
-        $this->assertEqual(count($user->Album[1]->Song), 4);
-
-        $users = $query->query("FROM User WHERE User.Album.name like '%Damage%'");
-    }
-
-    function testQuery() {
+    function testFetchingWithCollectionExpanding() {
         // DYNAMIC COLLECTION EXPANDING
         $query = new Doctrine_Query($this->connection);
 

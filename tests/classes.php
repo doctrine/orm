@@ -93,6 +93,7 @@ class User extends Entity {
         parent::setUp();
         $this->hasMany("Address","Entityaddress.address_id");
         $this->ownsMany("Album","Album.user_id");
+        $this->ownsMany("Book", "Book.user_id");
         $this->hasMany("Group","Groupuser.group_id");
         $this->setInheritanceMap(array("type"=>0));
     }
@@ -127,6 +128,21 @@ class Element extends Doctrine_Record {
 class Email extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("address","string",150,"email|unique");
+    }
+}
+class Book extends Doctrine_Record {
+    public function setUp() {
+        $this->ownsMany("Author","Author.book_id");
+    }
+    public function setTableDefinition() {
+        $this->hasColumn("user_id","integer");
+        $this->hasColumn("name","string",20);
+    }
+}
+class Author extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("book_id","integer");
+        $this->hasColumn("name","string",20);
     }
 }
 class Album extends Doctrine_Record {

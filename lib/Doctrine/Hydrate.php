@@ -315,7 +315,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
                 $array = $this->parseData($stmt);
 
-
+                
                 if($return == Doctrine::FETCH_VHOLDER) {
                     return $this->hydrateHolders($array);
                 } elseif($return == Doctrine::FETCH_ARRAY)

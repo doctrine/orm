@@ -26,6 +26,7 @@ require_once("CustomPrimaryKeyTestCase.php");
 require_once("FilterTestCase.php");
 require_once("ValueHolderTestCase.php");
 require_once("QueryLimitTestCase.php");
+require_once("QueryMultiJoinTestCase.php");
 require_once("QueryReferenceModelTestCase.php");
 require_once("DBTestCase.php");
 require_once("SchemaTestCase.php");
@@ -41,7 +42,9 @@ error_reporting(E_ALL);
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
 $test->addTestCase(new Doctrine_Relation_TestCase());
-/**
+
+$test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
+
 $test->addTestCase(new Doctrine_EventListenerTestCase());
 
 $test->addTestCase(new Doctrine_RecordTestCase());
@@ -101,7 +104,7 @@ $test->addTestCase(new Doctrine_BooleanTestCase());
 $test->addTestCase(new Doctrine_QueryTestCase());
 
 $test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
-*/
+
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
