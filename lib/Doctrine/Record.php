@@ -862,6 +862,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         foreach($array as $k => $v) {
             $type = $this->table->getTypeOf($v);
+            
+            if($this->data[$v] === self::$null) {
+                $a[$v] = null;
+                continue;
+            }
 
             switch($type) {
                 case 'array':
@@ -881,11 +886,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     if($this->data[$v] instanceof Doctrine_Record)
                         $this->data[$v] = $this->data[$v]->getIncremented();
 
-
-                    if($this->data[$v] === self::$null)
-                        $a[$v] = null;
-                    else
-                        $a[$v] = $this->data[$v];
+                    $a[$v] = $this->data[$v];
             }
         }
 

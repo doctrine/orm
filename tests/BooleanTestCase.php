@@ -5,28 +5,6 @@ class Doctrine_BooleanTestCase extends Doctrine_UnitTestCase {
         $this->tables = array("BooleanTest");
         parent::prepareTables();
     }
-
-    public function testSetNull() {
-        $test = new BooleanTest();
-        $this->is_working = null;
-
-        $this->assertEqual($this->is_working, null);
-        $this->assertEqual($test->getState(), Doctrine_Record::STATE_TDIRTY);
-        $test->save();
-
-        $test->refresh();
-        $this->assertEqual($test->is_working, null);
-        
-        $test = new BooleanTest();
-        $this->is_working_notnull = null;
-
-        $this->assertEqual($this->is_working_notnull, false);
-        $this->assertEqual($test->getState(), Doctrine_Record::STATE_TDIRTY);
-        $test->save();
-
-        $test->refresh();
-        $this->assertEqual($test->is_working_notnull, false);
-    }
    
     public function testSetFalse() {
         $test = new BooleanTest();
@@ -82,6 +60,28 @@ class Doctrine_BooleanTestCase extends Doctrine_UnitTestCase {
         $ret = $query->query('FROM BooleanTest WHERE BooleanTest.is_working = true');
         Doctrine_Lib::formatSql($query->getQuery());
         $this->assertEqual(count($ret), 1);
+    }
+
+    public function testSavingNullValue() {
+        $test = new BooleanTest();
+        $this->is_working = null;
+
+        $this->assertEqual($this->is_working, null);
+        $this->assertEqual($test->getState(), Doctrine_Record::STATE_TDIRTY);
+        $test->save();
+
+        $test->refresh();
+        $this->assertEqual($test->is_working, null);
+        
+        $test = new BooleanTest();
+        $this->is_working_notnull = null;
+
+        $this->assertEqual($this->is_working_notnull, false);
+        $this->assertEqual($test->getState(), Doctrine_Record::STATE_TDIRTY);
+        $test->save();
+
+        $test->refresh();
+        $this->assertEqual($test->is_working_notnull, false);
     }
 
 }
