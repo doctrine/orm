@@ -32,6 +32,12 @@ class Doctrine_Validator_Email {
         $sub_domain = "($domain_ref|$domain_literal)"; 
         $word = "($atom|$quoted_string)";
         $domain = "$sub_domain(\\x2e$sub_domain)+";
+        /*
+          following psudocode to allow strict checking - ask pookey about this if you're puzzled
+          
+          if ($this->getValidationOption('strict_checking') == true)
+              $domain = "$sub_domain(\\x2e$sub_domain)*";
+        */
         $local_part = "$word(\\x2e$word)*";
         $addr_spec = "$local_part\\x40$domain";
 
