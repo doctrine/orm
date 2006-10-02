@@ -40,12 +40,10 @@ class Doctrine_Compiler {
                          "Manager",
                          "Table",
                          "Table_Exception",
-                         "Iterator",
                          "Exception",
 
                          "Null",
                          "Identifier",
-                         "Repository",
                          "Record",
                          "Record_Exception",
                          "Record_Iterator",

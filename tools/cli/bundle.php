@@ -15,6 +15,8 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $doctrineBaseDir);
 require_once 'Doctrine.php';
 require_once 'Doctrine/Compiler.php';
 
+spl_autoload_register(array('Doctrine', 'autoload'));
+
 echo "Bundling classes ..." . PHP_EOL;
 
 Doctrine_Compiler::compile($targetDir);
