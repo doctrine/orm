@@ -6,7 +6,7 @@ class Doctrine_EnumTestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
     }
 
-    public function testSet() {
+    public function testParameterConversion() {
         $test = new EnumTest();
         $test->status = 'open';
         $this->assertEqual($test->status, 'open');

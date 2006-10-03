@@ -31,6 +31,7 @@ require_once("QueryMultiJoinTestCase.php");
 require_once("QueryReferenceModelTestCase.php");
 require_once("QueryWhereTestCase.php");
 require_once("QueryConditionTestCase.php");
+require_once("QueryComponentAliasTestCase.php");
 
 require_once("DBTestCase.php");
 require_once("SchemaTestCase.php");
@@ -96,11 +97,7 @@ $test->addTestCase(new Doctrine_CollectionTestCase());
 
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 
-$test->addTestCase(new Doctrine_EnumTestCase());
-
 $test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
-
-$test->addTestCase(new Doctrine_BooleanTestCase());
 
 $test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
 
@@ -113,6 +110,12 @@ $test->addTestCase(new Doctrine_QueryTestCase());
 $test->addTestCase(new Doctrine_Query_Where_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Condition_TestCase());
+
+$test->addTestCase(new Doctrine_BooleanTestCase());
+
+$test->addTestCase(new Doctrine_EnumTestCase());
+
+$test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());

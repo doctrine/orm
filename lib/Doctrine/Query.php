@@ -663,13 +663,32 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @return Doctrine_Table
      */
     final public function load($path, $loadFields = true) {
-        $e = preg_split("/[.:]/",$path);
+        $tmp            = explode(' ',$path);
+        $componentAlias = (count($tmp) > 1) ? end($tmp) : false;
+
+        $e = preg_split("/[.:]/", $tmp[0], -1);
+
+
+        if(isset($this->compAliases[$e[0]])) {
+            $end      = substr($tmp[0], strlen($e[0]));
+            $path     = $this->compAliases[$e[0]] . $end;
+            $e        = preg_split("/[.:]/", $path, -1);
+        } else
+            $path     = $tmp[0];
+
+        if($componentAlias !== false) {
+            $this->compAliases[$componentAlias] = $path;
+        }
+
         $index = 0;
         $currPath = '';
         $this->tableStack = array();
+
         foreach($e as $key => $fullname) {
             try {
                 $copy  = $e;
+
+
 
                 $e2    = preg_split("/[-(]/",$fullname);
                 $name  = $e2[0];
@@ -679,14 +698,16 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 if($key == 0) {
                     $currPath = substr($currPath,1);
 
+
+
                     $table = $this->connection->getTable($name);
 
                     $tname = $table->getTableName();
 
                     if( ! isset($this->tableAliases[$currPath]))
                         $this->tableIndexes[$tname] = 1;
-                    
-                    $this->parts["from"][$tname] = true;
+
+                    $this->parts["from"][$tname]   = true;
 
                     $this->tableAliases[$currPath] = $tname;
                     
@@ -864,6 +885,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             }
         }
     }
+    /**
+     * parseAggregateValues
+     */
     public function parseAggregateValues($fullName, $tableName, array $exploded, $currPath) {
         $this->aggregate = true;
         $pos    = strpos($fullName,"(");

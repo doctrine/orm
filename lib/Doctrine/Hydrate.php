@@ -50,7 +50,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @var array $data                         fetched data
      */
     protected $data        = array();
-    
+    /**
+     * @var array $params                       query input parameters
+     */
     protected $params      = array();
     /**
      * @var Doctrine_Connection $connection     Doctrine_Connection object
@@ -60,13 +62,18 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @var Doctrine_View $view                 Doctrine_View object
      */
     protected $view;
-    
-
+    /**
+     * @var boolean $inheritanceApplied
+     */
     protected $inheritanceApplied = false;
     /**
      * @var boolean $aggregate
      */
     protected $aggregate  = false;
+    /**
+     * @var array $compAliases
+     */
+    protected $compAliases  = array();
     /**
      * @var array $tableAliases
      */
@@ -100,7 +107,14 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
         $this->connection = $connection;
     }
-    /** 
+    /**
+     * getComponentAliases
+     */
+    public function getComponentAliases() {
+        return $this->compAliases;                                      	
+    }
+
+    /**
      * getQuery
      *
      * @return string
