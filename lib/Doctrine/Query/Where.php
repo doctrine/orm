@@ -9,12 +9,11 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
      * @param string $where
      * @return string
      */
-    final public function load($where) {
+    public function load($where) {
 
-        $e = explode(" ",$where);
+        $e = Doctrine_Query::sqlExplode($where);
         $r = array_shift($e);
         $a = explode(".",$r);
-
 
         if(count($a) > 1) {
             $field     = array_pop($a);
@@ -34,7 +33,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
 
             if($pos !== false) {
                 $func   = substr($field, 0, $pos);
-                $value  = substr($field, ($pos + 1), -1);
+                $value  = trim(substr($field, ($pos + 1), -1));
 
                 $values = Doctrine_Query::sqlExplode($value, ',');
 
@@ -75,18 +74,24 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
                 $enumIndex = $table->enumIndex($field, trim($value,"'"));
                 $alias     = $this->query->getTableAlias($reference);
                 $table     = $this->query->getTable($alias);
-                
-                if(trim($value) == 'true')
+
+
+                if($value == 'true')
                     $value = 1;
-                elseif(trim($value) == 'false')
+                elseif($value == 'false')
                     $value = 0;
+                elseif(substr($value,0,5) == '(FROM') {
+                    $sub   = Doctrine_Query::bracketTrim($value);
+                    $q     = new Doctrine_Query();
+                    $value = '(' . $q->parseQuery($sub)->getQuery() . ')';
+                }
 
                 switch($operator) {
                     case '<':
                     case '>':
                     case '=':
                         if($enumIndex !== false)
-                            $value  = $enumIndex;   
+                            $value  = $enumIndex;
 
                         $where      = $alias.'.'.$field.' '.$operator.' '.$value;
                     break;

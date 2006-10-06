@@ -145,6 +145,10 @@ final class Doctrine {
      * query limit
      */
     const ATTR_QUERY_LIMIT      = 17;
+    /**
+     * accessor invoking attribute
+     */
+    const ATTR_ACCESSORS        = 18;
     
     
     /**
@@ -213,54 +217,24 @@ final class Doctrine {
      */
 
     const FETCH_ARRAY           = 3;
+
+
     /**
-     * FETCH COLUMN
-     * Specifies that the fetch method shall return only a single 
-     * requested column from the next row in the result set.
-     *
+     * ACCESSOR CONSTANTS
      */
-    const FETCH_COLUMN          = 4;
+    
     /**
-     * FETCH ASSOC
-     *
-     * Specifies that the fetch method shall return each row as an
-     * array indexed by column name as returned in the corresponding
-     * result set. If the result set contains multiple columns with
-     * the same name, PDO::FETCH_ASSOC returns only a single value per column name.
-     *
+     * constant for get accessors
      */
-    const FETCH_ASSOC           = 5;
+    const ACCESSOR_GET          = 1;
     /**
-     * FETCH NAMED
-     *
-     * Specifies that the fetch method shall return each row as an array indexed
-     * by column name as returned in the corresponding result set. If the result set
-     * contains multiple columns with the same name, PDO::FETCH_NAMED returns an
-     * array of values per column name.
-     *
+     * constant for set accessors
      */
-    const FETCH_NAMED           = 6;
+    const ACCESSOR_SET          = 2;
     /**
-     * FETCH NUM
-     *
-     * Specifies that the fetch method shall return each row as an array indexed by
-     * column number as returned in the corresponding result set, starting at column 0.
+     * constant for both accessors get and set
      */
-    const FETCH_NUM             = 7;
-    /**
-     * FETCH BOTH
-     *
-     * Specifies that the fetch method shall return each row as an array indexed by both
-     * column name and number as returned in the corresponding result set, starting at column 0.
-     */
-    const FETCH_BOTH            = 8;
-    /**
-     * FETCH OBJ
-     *
-     * Specifies that the fetch method shall return each row as an object with property names 
-     * that correspond to the column names returned in the result set.
-     */
-    const FETCH_OBJ             = 9;
+    const ACCESSOR_BOTH         = 4;
 
 
     /**

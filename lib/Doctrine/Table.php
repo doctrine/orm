@@ -946,6 +946,40 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         return isset($this->enum[$field][$index])?$this->enum[$field][$index]:$index;
     }
     /**
+     * invokeSet
+     *
+     * @param mixed $value
+     */
+    public function invokeSet(Doctrine_Record $record, $name, $value) {
+        if( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) | Doctrine::ACCESSOR_SET))
+            return $value;
+
+        $method = 'set' . $name;
+
+        if(method_exists($record, $method)) {
+            return $record->$method($value);
+        }
+
+        return $value;
+    }
+    /**
+     * invokeGet
+     *
+     * @param mixed $value
+     */
+    public function invokeGet(Doctrine_Record $record, $name, $value) {
+        if( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) | Doctrine::ACCESSOR_GET))
+            return $value;
+
+        $method = 'get' . $name;
+
+        if(method_exists($record, $method)) {
+            return $record->$method($value);
+        }
+
+        return $value;
+    }
+    /**
      * enumIndex
      *
      * @param string $field
@@ -961,7 +995,20 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         return array_search($value, $values);
     }
     /**
-     * @return integer
+     * getDefinitionOf
+     *
+     * @return string       ValueWrapper class name on success, false on failure
+     */
+    public function getValueWrapperOf($column) {
+        if(isset($this->columns[$column][2]['wrapper']))
+            return $this->columns[$column][2]['wrapper'];
+        
+        return false;
+    }
+    /**
+     * getColumnCount
+     *
+     * @return integer      the number of columns in this table
      */
     final public function getColumnCount() {
         return $this->columnCount;

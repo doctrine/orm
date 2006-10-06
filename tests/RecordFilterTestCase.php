@@ -1,0 +1,63 @@
+<?php
+class RecordFilterTest extends Doctrine_Record {
+    public function setTableDefinition() {
+
+        $this->setAttribute(Doctrine::ATTR_ACCESSORS, Doctrine::ACCESSOR_BOTH);
+
+        $this->hasColumn("name", "string", 200);
+        $this->hasColumn("password", "string", 32);
+    }
+    public function setPassword($password) {
+        return md5($password);
+    }
+    public function getName($name) {
+        return strtoupper($name);
+    }
+}
+
+
+class Doctrine_Record_Filter_TestCase extends Doctrine_UnitTestCase {
+    public function prepareData() { }
+    public function prepareTables() { }
+
+    public function testValueWrapper() {
+        $e = new RecordFilterTest;
+        $e->name = "something";
+        $e->password = "123";
+
+
+        $this->assertEqual($e->get('name'), 'SOMETHING');
+        // test repeated calls
+        $this->assertEqual($e->get('name'), 'SOMETHING');
+        $this->assertEqual($e->id, null);
+        $this->assertEqual($e->rawGet('name'), 'something');
+        $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
+
+        $e->save();
+
+        $this->assertEqual($e->id, 1);
+        $this->assertEqual($e->name, 'SOMETHING');
+        $this->assertEqual($e->rawGet('name'), 'something');
+        $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
+
+        $this->connection->clear();
+
+        $e->refresh();
+
+        $this->assertEqual($e->id, 1);
+        $this->assertEqual($e->name, 'SOMETHING');
+        $this->assertEqual($e->rawGet('name'), 'something');
+        $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
+
+        $this->connection->clear();
+
+        $e = $e->getTable()->find($e->id);
+
+        $this->assertEqual($e->id, 1);
+        $this->assertEqual($e->name, 'SOMETHING');
+        $this->assertEqual($e->rawGet('name'), 'something');
+        $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
+
+    }
+}
+?>

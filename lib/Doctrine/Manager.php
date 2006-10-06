@@ -55,6 +55,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
     /**
      * constructor
+     *
+     * this is private constructor (use getInstance to get an instance of this class)
      */
     private function __construct() {
         $this->root = dirname(__FILE__);
@@ -137,6 +139,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @param PDO $pdo                      PDO database driver
      * @param string $name                  name of the connection, if empty numeric key is used
+     * @throws Doctrine_Manager_Exception   if trying to bind a connection with an existing name
      * @return Doctrine_Connection
      */
     public function openConnection(PDO $pdo, $name = null) {
@@ -146,7 +149,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         if($name !== null) {
             $name = (string) $name;
             if(isset($this->connections[$name]))
-                throw new Doctrine_Exception("Connection with $name already exists!");
+                throw new Doctrine_Manager_Exception("Connection with $name already exists!");
         
         } else {
             $name = $this->index;
@@ -187,7 +190,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * getConnection
      * @param integer $index
      * @return object Doctrine_Connection
-     * @throws InvalidKeyException
+     * @throws Doctrine_Manager_Exception   if trying to get a non-existent connection
      */
     public function getConnection($name) {   
         if (!isset($this->connections[$name])) {
@@ -211,8 +214,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function addDSN($dsn, $name) {
         $this->dataSourceNames[$name] = $dsn;
     }
-    public function getSession($index) { return $this->getConnection($index); }
-
     /**
      * closes the connection
      *
@@ -223,7 +224,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         $connection->close();
         unset($connection);
     }
-    public function closeSession(Doctrine_Connection $connection) { $this->closeConnection($connection); }
     /**
      * getConnections
      * returns all opened connections
@@ -231,9 +231,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return array
      */
     public function getConnections() {
-        return $this->connections;
-    }
-    public function getSessions() {
         return $this->connections;
     }
     /**
@@ -250,9 +247,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             throw new InvalidKeyException();
         
         $this->currIndex = $key;
-    }
-    public function setCurrentSession($key) {
-        $this->setCurrentConnection($key);
     }
     /**
      * count
@@ -286,7 +280,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
         return $this->connections[$i];
     }
-    public function getCurrentSession() { return $this->getCurrentConnection(); }
     /**
      * __toString
      * returns a string representation of this object

@@ -585,13 +585,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * returns the value of a property, if the property is not yet loaded
      * this method does NOT load it
      *
-     * @param $name                     name of the property
+     * @param $name                         name of the property
+     * @throws Doctrine_Record_Exception    if trying to get an unknown property
      * @return mixed
      */
 
     public function rawGet($name) {
         if( ! isset($this->data[$name]))
-            throw new InvalidKeyException();
+            throw new Doctrine_Record_Exception('Unknown property '. $name);
 
         if($this->data[$name] === self::$null)
             return null;
@@ -644,7 +645,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if($this->data[$lower] === self::$null) {
                 $this->load();
             }
-            
+
             if($this->data[$lower] === self::$null)
                 $value = null;
             else
@@ -654,10 +655,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
 
         if($value !== self::$null) {
-            if($invoke && $name !== $this->table->getIdentifier()) {
+
+            $value = $this->table->invokeGet($this, $name, $value);
+
+            if($invoke && $name !== $this->table->getIdentifier())
                 return $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onGetProperty($this, $name, $value);
-            } else
+            else
                 return $value;
+
+            return $value;
         }
 
 
@@ -667,7 +673,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if($name === $this->table->getIdentifier())
             return null;
 
-                $rel = $this->table->getRelation($name);
+        $rel = $this->table->getRelation($name);
 
         try {
             if( ! isset($this->references[$name]))
@@ -711,10 +717,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $old = $this->data[$lower];
 
             if($old !== $value) {
-                
-                // invoke the onPreSetProperty listener
-                $value = $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onSetProperty($this, $name, $value);
 
+                $value = $this->table->invokeSet($this, $name, $value);
+                
+                $value = $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onSetProperty($this, $name, $value);
+                
                 if($value === null)
                     $value = self::$null;
 

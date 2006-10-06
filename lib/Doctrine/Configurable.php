@@ -93,6 +93,13 @@ abstract class Doctrine_Configurable {
             case Doctrine::ATTR_CREATE_TABLES:
                 $value = (bool) $value;
             break;
+            case Doctrine::ATTR_ACCESSORS:
+                $accessors = array('none','get','set','both');
+
+               // if( ! in_array($value,$accessors))
+               //     throw new Doctrine_Exception();
+
+            break;
             case Doctrine::ATTR_COLL_LIMIT:
                 if($value < 1) {
                     throw new Doctrine_Exception("Collection limit should be a value greater than or equal to 1.");
@@ -166,7 +173,7 @@ abstract class Doctrine_Configurable {
     public function setListener($listener) {
         if( ! ($listener instanceof Doctrine_EventListener_Interface) &&
             ! ($listener instanceof Doctrine_Overloadable))
-            throw new Doctrine_DB_Exception("Couldn't set eventlistener. EventListeners should implement either Doctrine_EventListener_Interface or Doctrine_Overloadable");
+            throw new Doctrine_Exception("Couldn't set eventlistener. EventListeners should implement either Doctrine_EventListener_Interface or Doctrine_Overloadable");
 
         $this->attributes[Doctrine::ATTR_LISTENER] = $listener;
 
@@ -181,7 +188,7 @@ abstract class Doctrine_Configurable {
     public function getAttribute($attribute) {
         $attribute = (int) $attribute;
 
-        if($attribute < 1 || $attribute > 17)
+        if($attribute < 1 || $attribute > 18)
             throw new InvalidKeyException();
 
         if( ! isset($this->attributes[$attribute])) {

@@ -17,3 +17,31 @@ When compared to using raw SQL, DQL has several benefits: <br \>
     </ul>
 
 If the power of DQL isn't enough, you should consider using the rawSql API for object population.
+
+Standard DQL query consists of the following parts:
+    <ul>
+    <li \> a FROM clause, which provides declarations that designate the domain to which the expressions
+specified in the other clauses of the query apply.
+    </ul>
+    <ul>
+    <li \> an optional WHERE clause, which may be used to restrict the results that are returned by the
+query.
+    </ul>
+    <ul>
+    <li \> an optional GROUP BY clause, which allows query results to be aggregated in terms of
+groups.
+    </ul>
+    <ul>
+    <li \> an optional HAVING clause, which allows filtering over aggregated groups.
+    </ul>
+    <ul>
+    <li \> an optional ORDER BY clause, which may be used to order the results that are returned by the
+query.
+    </ul>
+<br \>
+In BNF syntax, a select statement is defined as:
+          select_statement :: = select_clause from_clause [where_clause] [groupby_clause]
+                                [having_clause] [orderby_clause]
+<br \>
+A select statement must always have a SELECT and a FROM clause. The square brackets [] indicate
+that the other clauses are optional.

@@ -1,5 +1,5 @@
 <?php
-require_once("Part.php");
+Doctrine::autoload("Doctrine_Query_Part");
 
 class Doctrine_Query_From extends Doctrine_Query_Part {
 

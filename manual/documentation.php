@@ -306,18 +306,37 @@ $menu = array("Getting started" =>
                     ),
            "DQL (Doctrine Query Language)" =>
 
-                            array('Introduction', 
-                                  'Syntax' =>
+                            array('Introduction',
+                                  'FROM clause',
+                                  'WHERE clause',
+                                  'Conditional expressions' =>
+                                        array('Literals',
+                                              'Identification variables',
+                                              'Path expressions',
+                                              'Input parameters',
+                                              'Contidional expression composition',
+                                              'Operators and operator precedence',
+                                              'Between expressions',
+                                              'In expressions',
+                                              'Like Expressions',
+                                              'Null Comparison Expressions',
+                                              'Empty Collection Comparison Expressions',
+                                              'Collection Member Expressions',
+                                              'Exists Expressions',
+                                              'All or Any Expressions',
+                                              'Subqueries'),
+                                  'Functional Expressions' =>
+                                        array('String functions',
+                                              'Arithmetic functions',
+                                              'Datetime functions',
+                                              'Collection functions'),
 
-                                  array(
-                                        'FROM',
-                                        'WHERE',
-                                        'GROUP BY',
-                                        'HAVING',
-                                        'ORDER BY',
-                                        'LIMIT and OFFSET',
-                                        ),
-
+                                  'GROUP BY, HAVING clauses',
+                                  'ORDER BY clause',
+                                  'LIMIT and OFFSET clauses',
+                                  'Examples',
+                                  'BNF'),
+                                   /**
                                   'Functions' => array(
                                         'Contains',
                                         'Regexp',
@@ -326,8 +345,8 @@ $menu = array("Getting started" =>
                                       'Logical operators')
 
 
+                                   */
 
-                                ),
            "Transactions" => array(
                         "Introduction",
                         "Unit of work",

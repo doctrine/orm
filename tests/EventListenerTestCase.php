@@ -39,51 +39,16 @@ class Doctrine_EventListener_TestLogger implements Doctrine_Overloadable, Counta
 class Doctrine_EventListenerTestCase extends Doctrine_UnitTestCase {
     private $logger;
 
-    public function testAccessorInvoker() {
-        $e = new EventListenerTest;
-        $e->name = "something";
-        $e->password = "123";
 
-
-        $this->assertEqual($e->get('name'), 'SOMETHING');
-        // test repeated calls
-        $this->assertEqual($e->get('name'), 'SOMETHING');
-        $this->assertEqual($e->id, null);
-        $this->assertEqual($e->rawGet('name'), 'something');
-        $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
-
-        $e->save();
-
-        $this->assertEqual($e->id, 1);
-        $this->assertEqual($e->name, 'SOMETHING');
-        $this->assertEqual($e->rawGet('name'), 'something');
-        $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
-
-        $this->connection->clear();
-
-        $e->refresh();
-
-        $this->assertEqual($e->id, 1);
-        $this->assertEqual($e->name, 'SOMETHING');
-        $this->assertEqual($e->rawGet('name'), 'something');
-        $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
-
-        $this->connection->clear();
-
-        $e = $e->getTable()->find($e->id);
-
-        $this->assertEqual($e->id, 1);
-        $this->assertEqual($e->name, 'SOMETHING');
-        $this->assertEqual($e->rawGet('name'), 'something');
-        $this->assertEqual($e->password, '202cb962ac59075b964b07152d234b70');
-
-    }
     public function testSetListener() {
         $this->logger = new Doctrine_EventListener_TestLogger();
     
         $e = new EventListenerTest;
         
         $e->getTable()->setListener($this->logger);
+
+        $e->name = 'listener';
+        $e->save();
 
         $this->assertEqual($e->getTable()->getListener(), $this->logger);
     }
@@ -93,6 +58,7 @@ class Doctrine_EventListenerTestCase extends Doctrine_UnitTestCase {
         $this->connection->clear();
 
         $e = $this->connection->getTable('EventListenerTest')->find(1);
+
 
         $this->assertEqual($e->getTable()->getListener(), $this->logger);
 

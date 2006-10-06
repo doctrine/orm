@@ -10,7 +10,10 @@ require_once("TableTestCase.php");
 require_once("EventListenerTestCase.php");
 require_once("BatchIteratorTestCase.php");
 require_once("CacheFileTestCase.php");
+
 require_once("RecordTestCase.php");
+require_once("RecordFilterTestCase.php");
+
 require_once("AccessTestCase.php");
 require_once("ValidatorTestCase.php");
 require_once("CollectionTestCase.php");
@@ -32,6 +35,7 @@ require_once("QueryReferenceModelTestCase.php");
 require_once("QueryWhereTestCase.php");
 require_once("QueryConditionTestCase.php");
 require_once("QueryComponentAliasTestCase.php");
+require_once("QuerySubqueryTestCase.php");
 
 require_once("DBTestCase.php");
 require_once("SchemaTestCase.php");
@@ -117,6 +121,9 @@ $test->addTestCase(new Doctrine_EnumTestCase());
 
 $test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());
 
+$test->addTestCase(new Doctrine_Query_Subquery_TestCase());
+
+$test->addTestCase(new Doctrine_Record_Filter_TestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 
