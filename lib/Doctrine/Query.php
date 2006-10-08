@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -601,7 +601,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @return array
      */
     public static function sqlExplode($str,$d = " ",$e1 = '(',$e2 = ')') {
-        $str = explode("$d",$str);
+        if(is_array($d)) {
+            $str = preg_split('/('.implode('|', $d).')/', $str);
+            $d = stripslashes($d[0]);
+        } else
+            $str = explode("$d",$str);
+
         $i = 0;
         $term = array();
         foreach($str as $key => $val) {
