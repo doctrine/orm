@@ -834,7 +834,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $saveLater = $conn->saveRelated($this);
 
-        if( ! $this->isValid()) {
+        $this->isValid();
+        
+        if($this->errorStack->count() > 0) {
             $conn->getTransaction()->addInvalid($this);
         } else {
             $conn->save($this);

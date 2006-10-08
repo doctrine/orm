@@ -26,7 +26,7 @@ Doctrine::autoload('Doctrine_Access');
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_Validator_ErrorStack extends Doctrine_Access {
+class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable, IteratorAggregate {
     
     private $errors = array();
 
@@ -42,8 +42,15 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access {
         
         return null;
     }
-    
+
     public function set($name, $value) {
-        $this->errors[$name] = $value;                                   	
+        $this->errors[$name] = $value;
+    }
+    
+    public function getIterator() {
+        return new ArrayIterator($this->errors);
+    }
+    public function count() {
+        return count($this->errors);
     }
 }
