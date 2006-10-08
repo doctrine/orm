@@ -26,62 +26,15 @@
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_Validator {
-    /**
-     * ERROR CONSTANTS
-     */
-
-    /**
-     * constant for length validation error
-     */
-    const ERR_LENGTH    = 0;
-    /**
-     * constant for type validation error
-     */
-    const ERR_TYPE      = 1;
-    /**
-     * constant for general validation error
-     */
-    const ERR_VALID     = 2;
-    /**
-     * constant for unique validation error
-     */
-    const ERR_UNIQUE    = 3;
-    /**
-     * constant for blank validation error
-     */
-    const ERR_NOTBLANK  = 4;
-    /**
-     * constant for date validation error
-     */
-    const ERR_DATE      = 5;
-    /**
-     * constant for null validation error
-     */
-    const ERR_NOTNULL   = 6;
-    /**
-     * constant for enum validation error
-     */
-    const ERR_ENUM      = 7;
-    /**
-     * constant for range validation error
-     */
-    const ERR_RANGE     = 8;
-    /**
-     * constant for regexp validation error
-     */
-    const ERR_REGEXP    = 9;
-
-
-    
+class Doctrine_Validator {    
     /**
      * @var array $stack                error stack
      */
-    private $stack      = array();
+    private $stack              = array();
     /**
      * @var array $validators           an array of validator objects
      */
-    private static $validators = array();
+    private static $validators  = array();
     /**
      * @var Doctrine_Null $null         a Doctrine_Null object used for extremely fast
      *                                  null value testing
@@ -140,6 +93,8 @@ class Doctrine_Validator {
         foreach($data as $key => $value) {
             if($value === self::$null)
                 $value = null;
+            elseif($value instanceof Doctrine_Record) 
+                $value = $value->getIncremented();
 
             $column = $columns[$key];
             
@@ -147,7 +102,7 @@ class Doctrine_Validator {
                 $value = $record->getTable()->enumIndex($key, $value);
 
                 if($value === false) {
-                    $err[$key] = Doctrine_Validator::ERR_ENUM;
+                    $err[$key] = 'enum';
                     continue;
                 }
             }
@@ -158,9 +113,10 @@ class Doctrine_Validator {
                 $length = strlen($value);
 
             if($length > $column[1]) {
-                $err[$key] = Doctrine_Validator::ERR_LENGTH;
+                $err[$key] = 'length';
                 continue;
             }
+
             if( ! is_array($column[2]))
                 $e = explode("|",$column[2]);
             else
@@ -187,25 +143,23 @@ class Doctrine_Validator {
                 $validator = self::getValidator($name);
                 if( ! $validator->validate($record, $key, $value, $args)) {
 
-                    $constant = 'Doctrine_Validator::ERR_'.strtoupper($name);
 
-                    if(defined($constant))
-                        $err[$key] = constant($constant);
-                    else
-                        $err[$key] = Doctrine_Validator::ERR_VALID;
+                    $err[$key] = $name;
+                        
+                    //$err[$key] = 'not valid';
 
                     // errors found quit validation looping for this column
                     break;
                 }
             }
             if( ! self::isValidType($value, $column[0])) {
-                $err[$key] = Doctrine_Validator::ERR_TYPE;
+                $err[$key] = 'type';
                 continue;
             }
         }
 
         if( ! empty($err)) {
-            $this->stack[$component][] = $err;
+            $this->stack = $err;
             return false;
         }
         

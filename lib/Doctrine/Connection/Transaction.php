@@ -61,6 +61,10 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
      */
     private $validator;
     /**
+     * @var array $invalid                  an array containing all invalid records within this transaction
+     */
+    protected $invalid          = array();
+    /**
      * @var array $update                   two dimensional pending update list, the records in
      *                                      this list will be updated when transaction is committed
      */
@@ -159,11 +163,13 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
                 throw new Doctrine_Exception($e->__toString());
             }
             
-            if($this->conn->getAttribute(Doctrine::ATTR_VLD)) {
-                if($this->validator->hasErrors()) {
-                    $this->rollback();
-                    throw new Doctrine_Validator_Exception($this->validator);
-                }
+            if(count($this->invalid) > 0) {
+                $this->rollback();
+                
+                $tmp = $this->invalid;
+                $this->invalid = array();
+                
+                throw new Doctrine_Validator_Exception($tmp);
             }
             
             $this->conn->getDBH()->commit();   
@@ -172,6 +178,7 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
 
             $this->state     = Doctrine_Connection_Transaction::STATE_OPEN;
             $this->validator = null;
+            $this->invalid   = array();
 
         } elseif($this->transaction_level == 1)
             $this->state = Doctrine_Connection_Transaction::STATE_ACTIVE;
@@ -361,6 +368,21 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
     public function addDelete(Doctrine_Record $record) {
         $name = $record->getTable()->getComponentName();
         $this->delete[$name][] = $record;
+    } 
+    /**
+     * addInvalid
+     * adds record into invalid records list
+     *
+     * @param Doctrine_Record $record
+     * @return boolean        false if record already existed in invalid records list, 
+     *                        otherwise true
+     */
+    public function addInvalid(Doctrine_Record $record) {
+        if(in_array($record, $this->invalid))
+            return false;
+
+        $this->invalid[] = $record;
+        return true;
     }
     /**
      * returns the pending insert list
@@ -387,6 +409,12 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
         return $this->delete;
     }
     public function getIterator() { }
-
-    public function count() { }
+    /**
+     * an alias for getTransactionLevel
+     *
+     * @return integer          returns the nesting level of this transaction
+     */
+    public function count() {
+        return $this->transaction_level;
+    }
 }

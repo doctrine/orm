@@ -82,14 +82,11 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $stack = $validator->getErrorStack();
 
         $this->assertTrue(is_array($stack));
-        $this->assertTrue(isset($stack['ValidatorTest'][0]));
-        $stack = $stack['ValidatorTest'][0];
 
-
-        $this->assertEqual($stack['mystring'], Doctrine_Validator::ERR_NOTNULL);
-        $this->assertEqual($stack['myemail2'], Doctrine_Validator::ERR_NOTBLANK);
-        $this->assertEqual($stack['myrange'], Doctrine_Validator::ERR_RANGE);
-        $this->assertEqual($stack['myregexp'], Doctrine_Validator::ERR_REGEXP);
+        $this->assertEqual($stack['mystring'], 'notnull');
+        $this->assertEqual($stack['myemail2'], 'notblank');
+        $this->assertEqual($stack['myrange'],  'range');
+        $this->assertEqual($stack['myregexp'], 'regexp');
         $test->mystring = 'str';
 
 
@@ -113,22 +110,29 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
 
         $validator = new Doctrine_Validator();
         $validator->validateRecord($user);
-        $validator->validateRecord($email);
+
 
         $stack = $validator->getErrorStack();
 
         $this->assertTrue(is_array($stack));
-        $this->assertEqual($stack["User"][0]["loginname"], Doctrine_Validator::ERR_LENGTH);
-        $this->assertEqual($stack["User"][0]["password"], Doctrine_Validator::ERR_LENGTH);
-        $this->assertEqual($stack["User"][0]["created"], Doctrine_Validator::ERR_TYPE);
+        $this->assertEqual($stack["loginname"], 'length');
+        $this->assertEqual($stack["password"],  'length');
+        $this->assertEqual($stack["created"],   'type');
+        
 
-        $this->assertEqual($stack["Email"][0]["address"], Doctrine_Validator::ERR_VALID);
+        $validator->validateRecord($email);
+        $stack = $validator->getErrorStack();
+        $this->assertEqual($stack["address"], 'email');
         $email->address = "arnold@example.com";
 
         $validator->validateRecord($email);
         $stack = $validator->getErrorStack();
-        $this->assertEqual($stack["Email"][1]["address"], Doctrine_Validator::ERR_UNIQUE);
 
+        $this->assertEqual($stack["address"], 'unique');
+
+        $email->isValid();
+        
+        $this->assertTrue($email->getErrorStack() instanceof Doctrine_Validator_ErrorStack);
     }
 
     public function testIsValidEmail() {
@@ -156,7 +160,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
             $user->name = "this is an example of too long name not very good example but an example nevertheless";
             $user->save();
         } catch(Doctrine_Validator_Exception $e) {
-            $this->assertEqual($e->getErrorStack(),array("User" => array(array("name" => 0))));
+            $this->assertEqual($e->count(), 1);
         }
 
         try {
@@ -164,12 +168,19 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
             $user->Email->address = "jackdaniels@drinkmore.info...";
             $user->name = "this is an example of too long user name not very good example but an example nevertheles";
             $user->save();
+            $this->fail();
         } catch(Doctrine_Validator_Exception $e) {
-            $a = $e->getErrorStack();
+            $this->pass();
+            $a = $e->getInvalidRecords();
         }
+
         $this->assertTrue(is_array($a));
-        $this->assertEqual($a["Email"][0]["address"], Doctrine_Validator::ERR_VALID);
-        $this->assertEqual($a["User"][0]["name"], Doctrine_Validator::ERR_LENGTH);
+        
+        $emailStack = $a[array_search($user->Email, $a)]->getErrorStack();
+        $userStack  = $a[array_search($user, $a)]->getErrorStack();
+
+        $this->assertEqual($emailStack["address"], 'email');
+        $this->assertEqual($userStack["name"], 'length');
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
     }
 

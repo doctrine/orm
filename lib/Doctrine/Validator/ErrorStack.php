@@ -18,45 +18,32 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Exception');
+Doctrine::autoload('Doctrine_Access');
 /**
- * Doctrine_Validator_Exception
+ * Doctrine_Validator_ErrorStack
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_Validator_Exception extends Doctrine_Exception implements Countable, IteratorAggregate {
-    /**
-     * @var array $invalid
-     */
-    private $invalid = array();
-    /**
-     * @param Doctrine_Validator $validator
-     */
-    public function __construct(array $invalid) {
-        $this->invalid = $invalid;
+class Doctrine_Validator_ErrorStack extends Doctrine_Access {
+    
+    private $errors = array();
+
+    public function merge($stack) {
+        if(is_array($stack)) {
+            $this->errors = array_merge($this->errors, $stack);
+        }
     }
     
-    public function getInvalidRecords() {
-        return $this->invalid;
-    }
-
-    public function getIterator() {
-        return new ArrayIterator($this->invalid);
+    public function get($name) {
+        if(isset($this->errors[$name]))
+            return $this->errors[$name];
+        
+        return null;
     }
     
-    public function count() {
-        return count($this->invalid);
-    }
-    /**
-     * __toString
-     *
-     * @return string
-     */
-    public function __toString() {
-
-        return parent::__toString();
+    public function set($name, $value) {
+        $this->errors[$name] = $value;                                   	
     }
 }
-

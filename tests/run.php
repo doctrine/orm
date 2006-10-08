@@ -48,8 +48,11 @@ require_once("DataDictSqliteTestCase.php");
 require_once("CustomResultSetOrderTestCase.php");
 
 error_reporting(E_ALL);
+print "<pre>";
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
+
+$test->addTestCase(new Doctrine_ValidatorTestCase());
 
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 
@@ -74,8 +77,6 @@ $test->addTestCase(new Doctrine_ManagerTestCase());
 $test->addTestCase(new Doctrine_BatchIteratorTestCase());
 
 $test->addTestCase(new Doctrine_ConfigurableTestCase());
-
-$test->addTestCase(new Doctrine_ValidatorTestCase());
 
 $test->addTestCase(new Doctrine_Collection_OffsetTestCase());
 
@@ -124,6 +125,7 @@ $test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());
 $test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 
 $test->addTestCase(new Doctrine_Record_Filter_TestCase());
+
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 

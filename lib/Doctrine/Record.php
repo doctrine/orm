@@ -65,26 +65,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * a Doctrine_Record turns into deleted state when it is deleted
      */
     const STATE_DELETED     = 6;
-
-    /**
-     * CALLBACK CONSTANTS
-     */
-
-    /**
-     * RAW CALLBACK
-     *
-     * when using a raw callback and the property if a record is changed using this callback the
-     * record state remains untouched
-     */
-    const CALLBACK_RAW       = 1;
-    /**
-     * STATE-WISE CALLBACK
-     *
-     * state-wise callback means that when callback is used and the property is changed the
-     * record state is also updated
-     */
-    const CALLBACK_STATEWISE = 2;
-
     /**
      * @var object Doctrine_Table $table    the factory that created this data access object
      */
@@ -119,9 +99,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private $originals      = array();
     /**
-     * @var array $filters
+     * @var Doctrine_Validator_ErrorStack   error stack object
      */
-    private $filters        = array();
+    private $errorStack;
     /**
      * @var integer $index                  this index is used for creating object identifiers
      */
@@ -155,7 +135,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
 
         // Check if the current connection has the records table in its registry
-        // If not this is record is only used for creating table definition and setting up
+        // If not this record is only used for creating table definition and setting up
         // relations.
 
         if($this->table->getConnection()->hasTable($this->table->getComponentName())) {
@@ -210,6 +190,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
             }
 
+            $this->errorStack = new Doctrine_Validator_ErrorStack();
+
             $repository = $this->table->getRepository();
             $repository->add($this);
         }
@@ -218,6 +200,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * initNullObject
      *
      * @param Doctrine_Null $null
+     * @return void
      */
     public static function initNullObject(Doctrine_Null $null) {
         self::$null = $null;
@@ -246,10 +229,36 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $this->oid;
     }
     /**
+     * isValid
+     *
+     * @return boolean                          whether or not this record passes all column validations
+     */
+    public function isValid() {
+        if( ! $this->table->getAttribute(Doctrine::ATTR_VLD))
+            return true;
+
+        $validator = new Doctrine_Validator();
+
+        if($validator->validateRecord($this))
+           return true;
+           
+        $this->errorStack->merge($validator->getErrorStack());
+        
+        return false;
+    }
+    /**
+     * getErrorStack
+     *
+     * @return Doctrine_Validator_ErrorStack    returns the errorStack associated with this record
+     */
+    public function getErrorStack() {
+        return $this->errorStack;
+    }
+    /**
      * setDefaultValues
      * sets the default values for records internal data
      *
-     * @param boolean $overwrite        whether or not to overwrite the already set values
+     * @param boolean $overwrite                whether or not to overwrite the already set values
      * @return boolean
      */
     public function setDefaultValues($overwrite = false) {
@@ -721,7 +730,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $value = $this->table->invokeSet($this, $name, $value);
                 
                 $value = $this->table->getAttribute(Doctrine::ATTR_LISTENER)->onSetProperty($this, $name, $value);
-                
+
                 if($value === null)
                     $value = self::$null;
 
@@ -825,7 +834,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $saveLater = $conn->saveRelated($this);
 
-        $conn->save($this);
+        if( ! $this->isValid()) {
+            $conn->getTransaction()->addInvalid($this);
+        } else {
+            $conn->save($this);
+        }
 
         foreach($saveLater as $fk) {
             $table   = $fk->getTable();
@@ -1104,6 +1117,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $this->state     = Doctrine_Record::STATE_CLEAN;
             $this->modified  = array();
         }
+    }
+    /**
+     * assignOriginals
+     *
+     * @param string $alias
+     * @param Doctrine_Collection $coll
+     * @return void
+     */
+    public function assignOriginals($alias, Doctrine_Collection $coll) {
+        $this->originals[$alias] = $coll;
     }
     /**
      * returns the primary keys of this object

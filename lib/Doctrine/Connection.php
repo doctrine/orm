@@ -535,18 +535,18 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                                 $record->loadReference($alias);
                             }
 
-                            $r = Doctrine_Relation::getDeleteOperations($this->originals[$alias],$new);
+                            $operations = Doctrine_Relation::getDeleteOperations($this->originals[$alias],$new);
 
-                            foreach($r as $record) {
+                            foreach($operations as $r) {
                                 $query = "DELETE FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." = ?"
                                                                             ." AND ".$fk->getLocal()." = ?";
-                                $this->table->getConnection()->execute($query, array($record->getIncremented(),$this->getIncremented()));
+                                $this->table->getConnection()->execute($query, array($r->getIncremented(),$record->getIncremented()));
                             }
 
-                            $r = Doctrine_Relation::getInsertOperations($this->originals[$alias],$new);
-                            foreach($r as $record) {
+                            $operations = Doctrine_Relation::getInsertOperations($this->originals[$alias],$new);
+                            foreach($operations as $r) {
                                 $reldao = $asf->create();
-                                $reldao->set($fk->getForeign(),$record);
+                                $reldao->set($fk->getForeign(),$r);
                                 $reldao->set($fk->getLocal(),$this);
                                 $reldao->save();
 
@@ -569,15 +569,15 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                             $new = $this->references[$alias];
 
                             if( ! isset($this->originals[$alias]))
-                                $this->loadReference($alias);
+                                $record->loadReference($alias);
 
-                            $r = Doctrine_Relation::getDeleteOperations($this->originals[$alias], $new);
+                            $operations = Doctrine_Relation::getDeleteOperations($this->originals[$alias], $new);
 
-                            foreach($r as $record) {
-                                $record->delete();
+                            foreach($operations as $r) {
+                                $r->delete();
                             }
 
-                            $this->originals[$alias] = clone $this->references[$alias];
+                            $record->assignOriginals($alias, clone $this->references[$alias]);
                         }
                     break;
                 endswitch;
