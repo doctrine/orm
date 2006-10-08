@@ -994,7 +994,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function saveAssociations() {
-        foreach($this->table->getRelations() as $fk):
+        foreach($this->table->getRelations() as $fk) {
             $table   = $fk->getTable();
             $name    = $table->getComponentName();
             $alias   = $this->table->getAlias($name);
@@ -1035,13 +1035,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             } elseif($fk instanceof Doctrine_Relation_ForeignKey ||
                      $fk instanceof Doctrine_Relation_LocalKey) {
 
-                switch($fk->getType()):
-                    case Doctrine_Relation::ONE_COMPOSITE:
+                if($fk->isOneToOne()) {
                         if(isset($this->originals[$alias]) && $this->originals[$alias]->obtainIdentifier() != $this->references[$alias]->obtainIdentifier())
                             $this->originals[$alias]->delete();
 
-                    break;
-                    case Doctrine_Relation::MANY_COMPOSITE:
+                } else {
                         if(isset($this->references[$alias])) {
                             $new = $this->references[$alias];
 
@@ -1056,10 +1054,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
                             $this->originals[$alias] = clone $this->references[$alias];
                         }
-                    break;
-                endswitch;
+                }
             }
-        endforeach;
+        }
     }
     /**
      * getOriginals
