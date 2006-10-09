@@ -66,9 +66,18 @@ class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($users[2]->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($count + 3, count($this->dbh));
     }
+    public function testMultilineParsing() {
+        $dql = "
+           FROM User u
+           WHERE User.id = ?
+        ";
 
+        $q     = new Doctrine_Query();
+        
+        $q->parseQuery($dql);
 
-
+        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity WHERE entity.id = ? AND (entity.type = 0)");
+    }
     public function testUnknownFunction() {
         $q = new Doctrine_Query();
         $f = false;

@@ -423,17 +423,22 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * first splits the query in parts and then uses individual
      * parsers for each part
      *
-     * @param string $query         DQL query
+     * @param string $query                 DQL query
+     * @throws Doctrine_Query_Exception     if some generic parsing error occurs
      * @return Doctrine_Query
      */
     public function parseQuery($query) {
         $this->clear();
+        
+        $query = trim($query);
+        $query = str_replace("\n"," ",$query);
+        $query = str_replace("\r"," ",$query);
+
         $e = self::sqlExplode($query," ","(",")");
 
-
-        $parts = array();
-        foreach($e as $k=>$part):
-            switch(strtolower($part)):
+        foreach($e as $k=>$part) {
+            $part = trim($part);
+            switch(strtolower($part)) {
                 case "select":
                 case "from":
                 case "where":
@@ -449,24 +454,26 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     if(isset($e[$i]) && strtolower($e[$i]) === "by") {
                         $p = $part;
                         $parts[$part] = array();
-                    } else 
+                    } else
                         $parts[$p][] = $part;
                 break;
                 case "by":
                     continue;
                 default:
+                    if( ! isset($p))
+                        throw new Doctrine_Query_Exception("Couldn't parse query.");
+
                     $parts[$p][] = $part;
-            endswitch;
-        endforeach;
+            }
+        }
 
         foreach($parts as $k => $part) {
             $part = implode(" ",$part);
-            switch(strtoupper($k)):
+            switch(strtoupper($k)) {
                 case "SELECT":
                     $this->parseSelect($part);
                 break;
                 case "FROM":
-
                     $class  = "Doctrine_Query_".ucwords(strtolower($k));
                     $parser = new $class($this);
                     $parser->parse($part);
@@ -488,7 +495,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 case "OFFSET":
                     $this->parts["offset"] = trim($part);
                 break;
-            endswitch;
+            }
         }
         
         return $this;
