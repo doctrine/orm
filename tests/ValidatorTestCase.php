@@ -1,10 +1,18 @@
 <?php
+/**
+ * TestCase for Doctrine's validation component.
+ * 
+ * @todo More tests to cover the full interface of Doctrine_Validator_ErrorStack.
+ */
 class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
     public function prepareTables() {
         $this->tables[] = "ValidatorTest";
         parent::prepareTables();
     }
 
+    /**
+     * Tests correct type detection.
+     */
     public function testIsValidType() {
         $var = "123";
         $this->assertTrue(Doctrine_Validator::isValidType($var,"string"));
@@ -70,6 +78,9 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(Doctrine_Validator::isValidType($var,"object"));
     }
 
+    /**
+     * Tests Doctrine_Validator::validateRecord()
+     */
     public function testValidate2() {
         $test = new ValidatorTest();
         $test->mymixed = "message";
@@ -79,22 +90,23 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $validator = new Doctrine_Validator();
         $validator->validateRecord($test);
 
-        $stack = $validator->getErrorStack();
+        $stack = $test->getErrorStack();
 
-        $this->assertTrue(is_array($stack));
+        $this->assertTrue($stack instanceof Doctrine_Validator_ErrorStack);
 
-        $this->assertEqual($stack['mystring'], 'notnull');
-        $this->assertEqual($stack['myemail2'], 'notblank');
-        $this->assertEqual($stack['myrange'],  'range');
-        $this->assertEqual($stack['myregexp'], 'regexp');
+        $this->assertTrue(in_array(array('type' => 'notnull'), $stack['mystring']));
+        $this->assertTrue(in_array(array('type' => 'notblank'), $stack['myemail2']));
+        $this->assertTrue(in_array(array('type' => 'range'), $stack['myrange']));
+        $this->assertTrue(in_array(array('type' => 'regexp'), $stack['myregexp']));
         $test->mystring = 'str';
 
 
         $test->save();
     }
-    public function testEmailValidation() {
-    }
 
+    /**
+     * Tests Doctrine_Validator::validateRecord()
+     */
     public function testValidate() {
         $user = $this->connection->getTable("User")->find(4); 
 
@@ -112,29 +124,27 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $validator->validateRecord($user);
 
 
-        $stack = $validator->getErrorStack();
+        $stack = $user->getErrorStack();
 
-        $this->assertTrue(is_array($stack));
-        $this->assertEqual($stack["loginname"], 'length');
-        $this->assertEqual($stack["password"],  'length');
-        $this->assertEqual($stack["created"],   'type');
-        
+        $this->assertTrue($stack instanceof Doctrine_Validator_ErrorStack);
+        $this->assertTrue(in_array(array('type' => 'length'), $stack['loginname']));
+        $this->assertTrue(in_array(array('type' => 'length'), $stack['password']));
+        $this->assertTrue(in_array(array('type' => 'type'), $stack['created']));
 
         $validator->validateRecord($email);
-        $stack = $validator->getErrorStack();
-        $this->assertEqual($stack["address"], 'email');
+        $stack = $email->getErrorStack();
+        $this->assertTrue(in_array(array('type' => 'email'), $stack['address']));
         $email->address = "arnold@example.com";
 
         $validator->validateRecord($email);
-        $stack = $validator->getErrorStack();
+        $stack = $email->getErrorStack();
 
-        $this->assertEqual($stack["address"], 'unique');
-
-        $email->isValid();
-        
-        $this->assertTrue($email->getErrorStack() instanceof Doctrine_Validator_ErrorStack);
+        $this->assertTrue(in_array(array('type' => 'unique'), $stack['address']));
     }
 
+    /**
+     * Tests the Email validator. (Doctrine_Validator_Email)
+     */
     public function testIsValidEmail() {
 
         $validator = new Doctrine_Validator_Email();
@@ -153,6 +163,9 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
 
     }
 
+    /**
+     * Tests saving records with invalid attributes.
+     */
     public function testSave() {
         $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
         $user = $this->connection->getTable("User")->find(4);
@@ -161,6 +174,10 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
             $user->save();
         } catch(Doctrine_Validator_Exception $e) {
             $this->assertEqual($e->count(), 1);
+            $invalidRecords = $e->getInvalidRecords();
+            $this->assertEqual(count($invalidRecords), 1);
+            $stack = $invalidRecords[0]->getErrorStack();
+            $this->assertTrue(in_array(array('type' => 'length'), $stack['name']));
         }
 
         try {
@@ -179,10 +196,32 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $emailStack = $a[array_search($user->Email, $a)]->getErrorStack();
         $userStack  = $a[array_search($user, $a)]->getErrorStack();
 
-        $this->assertEqual($emailStack["address"], 'email');
-        $this->assertEqual($userStack["name"], 'length');
+        $this->assertTrue(in_array(array('type' => 'email'), $emailStack['address']));
+        $this->assertTrue(in_array(array('type' => 'length'), $userStack['name']));
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
     }
 
+    /**
+     * Tests whether custom validation through template methods works correctly
+     * in descendants of Doctrine_Record.
+     */
+    public function testCustomValidation() {
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
+        $user = $this->connection->getTable("User")->find(4);
+         try {
+            $user->name = "I'm not The Saint";
+            $user->save();
+        } catch(Doctrine_Validator_Exception $e) {
+            $this->assertEqual($e->count(), 1);
+            $invalidRecords = $e->getInvalidRecords();
+            $this->assertEqual(count($invalidRecords), 1);
+            
+            $stack = $invalidRecords[0]->getErrorStack();
+            
+            $this->assertEqual($stack->count(), 1);
+            $this->assertTrue(in_array(array('type' => 'notTheSaint'), $stack['name']));
+        }
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
+    }
 }
 ?>

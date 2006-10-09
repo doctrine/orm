@@ -101,7 +101,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * @var Doctrine_Validator_ErrorStack   error stack object
      */
-    private $errorStack;
+    protected $errorStack;
     /**
      * @var integer $index                  this index is used for creating object identifiers
      */
@@ -238,14 +238,20 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             return true;
 
         $validator = new Doctrine_Validator();
-
-        if($validator->validateRecord($this))
-           return true;
-           
-        $this->errorStack->merge($validator->getErrorStack());
+        // Run validators
+        $validator->validateRecord($this);
+        // Run custom validation
+        $this->validate();
         
-        return false;
+        return $this->errorStack->count() == 0 ? true : false;
+        //$this->errorStack->merge($validator->getErrorStack());
     }
+    /**
+     * Emtpy template method to provide concrete Record classes with the possibility
+     * to hook into the validation procedure, doing any custom / specialized
+     * validations that are neccessary.
+     */
+    protected function validate() {}
     /**
      * getErrorStack
      *
@@ -644,6 +650,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return mixed
      */
     public function get($name, $invoke = true) {
+        
         $listener = $this->table->getAttribute(Doctrine::ATTR_LISTENER);
         $value    = self::$null;
         $lower    = strtolower($name);
@@ -834,12 +841,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $saveLater = $conn->saveRelated($this);
 
-        $this->isValid();
-        
-        if($this->errorStack->count() > 0) {
-            $conn->getTransaction()->addInvalid($this);
-        } else {
+        if ($this->isValid()) {
             $conn->save($this);
+        } else {
+            $conn->getTransaction()->addInvalid($this);
         }
 
         foreach($saveLater as $fk) {

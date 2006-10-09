@@ -97,6 +97,13 @@ class User extends Entity {
         $this->hasMany("Group","Groupuser.group_id");
         $this->setInheritanceMap(array("type"=>0));
     }
+    /** Custom validation */
+    public function validate() {
+        // Allow only one name!
+        if ($this->name !== 'The Saint') {
+            $this->errorStack->add('name', 'notTheSaint');
+        }
+    }
 }
 class Groupuser extends Doctrine_Record {
     public function setTableDefinition() {
@@ -541,4 +548,5 @@ class BoardWithPosition extends Doctrine_Record {
         $this->hasOne("CategoryWithPosition as Category", "BoardWithPosition.category_id");
     }
 }
+
 ?>

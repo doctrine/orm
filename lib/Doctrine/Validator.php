@@ -28,10 +28,6 @@
  */
 class Doctrine_Validator {    
     /**
-     * @var array $stack                error stack
-     */
-    private $stack              = array();
-    /**
      * @var array $validators           an array of validator objects
      */
     private static $validators  = array();
@@ -78,6 +74,8 @@ class Doctrine_Validator {
         $columns   = $record->getTable()->getColumns();
         $component = $record->getTable()->getComponentName();
 
+        $errorStack = $record->getErrorStack();
+        
         switch($record->getState()):
             case Doctrine_Record::STATE_TDIRTY:
             case Doctrine_Record::STATE_TCLEAN:
@@ -102,7 +100,7 @@ class Doctrine_Validator {
                 $value = $record->getTable()->enumIndex($key, $value);
 
                 if($value === false) {
-                    $err[$key] = 'enum';
+                    $errorStack->add($key, 'enum');
                     continue;
                 }
             }
@@ -113,7 +111,7 @@ class Doctrine_Validator {
                 $length = strlen($value);
 
             if($length > $column[1]) {
-                $err[$key] = 'length';
+                $errorStack->add($key, 'length');
                 continue;
             }
 
@@ -144,7 +142,7 @@ class Doctrine_Validator {
                 if( ! $validator->validate($record, $key, $value, $args)) {
 
 
-                    $err[$key] = $name;
+                    $errorStack->add($key, $name);
                         
                     //$err[$key] = 'not valid';
 
@@ -153,17 +151,10 @@ class Doctrine_Validator {
                 }
             }
             if( ! self::isValidType($value, $column[0])) {
-                $err[$key] = 'type';
+                $errorStack->add($key, 'type');
                 continue;
             }
         }
-
-        if( ! empty($err)) {
-            $this->stack = $err;
-            return false;
-        }
-        
-        return true;
     }
     /**
      * whether or not this validator has errors
@@ -172,14 +163,6 @@ class Doctrine_Validator {
      */
     public function hasErrors() {
         return (count($this->stack) > 0);
-    }
-    /**
-     * returns the error stack
-     *
-     * @return array
-     */
-    public function getErrorStack() {
-        return $this->stack;
     }
     /**
      * converts a doctrine type to native php type
