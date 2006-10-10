@@ -270,9 +270,9 @@ $menu = array("Getting started" =>
                                       "Creating a logger",
                                       ),
                       "Validators" => array(
-                                      "Intruduction",
-                                      "Validating transactions",
-                                      "Analyzing the ErrorStack",
+                                      "Introduction",
+                                      "More Validation",
+                                      "Valid or Not Valid",
                                       "List of predefined validators"
                                       ),
                       "View"        => array(

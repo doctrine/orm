@@ -27,7 +27,7 @@
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_Validator_ErrorStack implements ArrayAccess, Countable, IteratorAggregate {
+class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable, IteratorAggregate {
     
     /**
      * The errors of the error stack.
@@ -49,8 +49,8 @@ class Doctrine_Validator_ErrorStack implements ArrayAccess, Countable, IteratorA
      * @param string $invalidFieldName
      * @param string $errorType
      */
-    public function add($invalidFieldName, $errorType = 'general') {
-        $this->errors[$invalidFieldName][] = array('type' => $errorType);
+    public function add($invalidFieldName, $errorCode = 'general') {
+        $this->errors[$invalidFieldName][] = $errorCode;
     }
     
     /**
@@ -70,65 +70,34 @@ class Doctrine_Validator_ErrorStack implements ArrayAccess, Countable, IteratorA
      * @param unknown_type $name
      * @return unknown
      */
-    public function get($name) {
-        return $this[$name];
-    }
-    
-    /** ArrayAccess implementation */
-    
-    /**
-     * Gets all errors that occured for the specified field.
-     *
-     * @param string $offset
-     * @return The array containing the errors or NULL if no errors were found.
-     */
-    public function offsetGet($offset) {
-        return isset($this->errors[$offset]) ? $this->errors[$offset] : null;
+    public function get($fieldName) {
+        return isset($this->errors[$fieldName]) ? $this->errors[$fieldName] : null;
     }
     
     /**
      * Enter description here...
      *
-     * @param string $offset
-     * @param mixed $value
-     * @throws Doctrine_Validator_ErrorStack_Exception  Always thrown since this operation is not allowed. 
+     * @param unknown_type $name
      */
-    public function offsetSet($offset, $value) {
-        throw new Doctrine_Validator_ErrorStack_Exception("Errors can only be added through
-                Doctrine_Validator_ErrorStack::add()");
+    public function set($fieldName, $errorCode) {
+        $this->add($fieldName, $errorCode);
     }
     
     /**
      * Enter description here...
      *
-     * @param unknown_type $offset
+     * @return unknown
      */
-    public function offsetExists($offset) {
-        return isset($this->errors[$offset]);
+    public function contains($fieldName) {
+        return array_key_exists($fieldName, $this->errors);
     }
     
     /**
-     * Enter description here...
-     *
-     * @param unknown_type $offset
-     * @throws Doctrine_Validator_ErrorStack_Exception  Always thrown since this operation is not allowed. 
+     * Removes all errors from the stack.
      */
-    public function offsetUnset($offset) {
-        throw new Doctrine_Validator_ErrorStack_Exception("Errors can only be removed
-                through Doctrine_Validator_ErrorStack::remove()");
+    public function clear() {
+        $this->errors = array();
     }
-    
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $stack
-     */
-    /*
-    public function merge($stack) {
-        if(is_array($stack)) {
-            $this->errors = array_merge($this->errors, $stack);
-        }
-    }*/
     
     
     /** IteratorAggregate implementation */

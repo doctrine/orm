@@ -94,10 +94,10 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
 
         $this->assertTrue($stack instanceof Doctrine_Validator_ErrorStack);
 
-        $this->assertTrue(in_array(array('type' => 'notnull'), $stack['mystring']));
-        $this->assertTrue(in_array(array('type' => 'notblank'), $stack['myemail2']));
-        $this->assertTrue(in_array(array('type' => 'range'), $stack['myrange']));
-        $this->assertTrue(in_array(array('type' => 'regexp'), $stack['myregexp']));
+        $this->assertTrue(in_array('notnull', $stack['mystring']));
+        $this->assertTrue(in_array('notblank', $stack['myemail2']));
+        $this->assertTrue(in_array('range', $stack['myrange']));
+        $this->assertTrue(in_array('regexp', $stack['myregexp']));
         $test->mystring = 'str';
 
 
@@ -127,19 +127,19 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $stack = $user->getErrorStack();
 
         $this->assertTrue($stack instanceof Doctrine_Validator_ErrorStack);
-        $this->assertTrue(in_array(array('type' => 'length'), $stack['loginname']));
-        $this->assertTrue(in_array(array('type' => 'length'), $stack['password']));
-        $this->assertTrue(in_array(array('type' => 'type'), $stack['created']));
+        $this->assertTrue(in_array('length', $stack['loginname']));
+        $this->assertTrue(in_array('length', $stack['password']));
+        $this->assertTrue(in_array('type', $stack['created']));
 
         $validator->validateRecord($email);
         $stack = $email->getErrorStack();
-        $this->assertTrue(in_array(array('type' => 'email'), $stack['address']));
+        $this->assertTrue(in_array('email', $stack['address']));
         $email->address = "arnold@example.com";
 
         $validator->validateRecord($email);
         $stack = $email->getErrorStack();
 
-        $this->assertTrue(in_array(array('type' => 'unique'), $stack['address']));
+        $this->assertTrue(in_array('unique', $stack['address']));
     }
 
     /**
@@ -177,7 +177,7 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
             $invalidRecords = $e->getInvalidRecords();
             $this->assertEqual(count($invalidRecords), 1);
             $stack = $invalidRecords[0]->getErrorStack();
-            $this->assertTrue(in_array(array('type' => 'length'), $stack['name']));
+            $this->assertTrue(in_array('length', $stack['name']));
         }
 
         try {
@@ -196,8 +196,8 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
         $emailStack = $a[array_search($user->Email, $a)]->getErrorStack();
         $userStack  = $a[array_search($user, $a)]->getErrorStack();
 
-        $this->assertTrue(in_array(array('type' => 'email'), $emailStack['address']));
-        $this->assertTrue(in_array(array('type' => 'length'), $userStack['name']));
+        $this->assertTrue(in_array('email', $emailStack['address']));
+        $this->assertTrue(in_array('length', $userStack['name']));
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
     }
 
@@ -219,8 +219,16 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
             $stack = $invalidRecords[0]->getErrorStack();
             
             $this->assertEqual($stack->count(), 1);
-            $this->assertTrue(in_array(array('type' => 'notTheSaint'), $stack['name']));
+            $this->assertTrue(in_array('notTheSaint', $stack['name']));
         }
+        
+        try {
+            $user->name = "The Saint";
+            $user->save();
+        } catch(Doctrine_Validator_Exception $e) {
+            $this->fail();
+        }
+        
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
     }
 }

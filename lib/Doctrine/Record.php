@@ -236,11 +236,13 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function isValid() {
         if( ! $this->table->getAttribute(Doctrine::ATTR_VLD))
             return true;
-
+        
+        // Clear the stack from any previous errors.
+        $this->errorStack->clear();
+        
+        // Run validation process  
         $validator = new Doctrine_Validator();
-        // Run validators
         $validator->validateRecord($this);
-        // Run custom validation
         $this->validate();
         
         return $this->errorStack->count() == 0 ? true : false;
