@@ -18,8 +18,8 @@ class Email extends Doctrine_Record {
     }
     protected function validate() {
         if ($this->address !== 'the-only-allowed-mail@address.com') {
-            // syntax: add(<fieldName>, <error identifier>)
-            $this->errorStack->add('address', 'myCustomValidationTypeError');
+            // syntax: add(<fieldName>, <error code>)
+            $this->errorStack->add('address', 'myCustomErrorCode');
         }
     }
 }  
