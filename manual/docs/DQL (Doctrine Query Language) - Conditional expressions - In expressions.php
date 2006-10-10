@@ -1,12 +1,14 @@
 Syntax:
 <div class='sql'>
 <pre>
-<i>operand</i> IN (<i>subquery</i>|<i>valuelist</i>)
+<i>operand</i> IN (<i>subquery</i>|<i>value list</i>)
 </pre>
 </div>
 An IN conditional expression returns true if the <i>operand</i> is found from result of the <i>subquery</i>
-or if its in the specificied comma separated <i>valuelist</i>, hence the IN expression is always false if the result of the subquery
+or if its in the specificied comma separated <i>value list</i>, hence the IN expression is always false if the result of the subquery
 is empty.
+
+When <i>value list</i> is being used there must be at least one element in that list.
 
 <div class='sql'>
 <pre>
