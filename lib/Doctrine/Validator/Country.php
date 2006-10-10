@@ -258,7 +258,7 @@ class Doctrine_Validator_Country {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value, $args) {
-        $value = srttolower($value);
+        $value = strtolower($value);
         return isset(self::$countries[$value]);
 	}
 
