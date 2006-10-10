@@ -204,7 +204,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param string $path
      * @return string
      */
-    final public function getTableAlias($path) {
+    final public function getTableAlias($path) { 
+        if(isset($this->compAliases[$path]))
+            $path = $this->compAliases[$path];
+
         if( ! isset($this->tableAliases[$path]))
             return false;
 

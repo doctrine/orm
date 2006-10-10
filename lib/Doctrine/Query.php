@@ -650,14 +650,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
         return $term;
     }
-
     /**
      * generateAlias
      *
      * @param string $tableName
      * @return string
      */
-    final public function generateAlias($tableName) {
+    public function generateAlias($tableName) {
         if(isset($this->tableIndexes[$tableName])) {
             return $tableName.++$this->tableIndexes[$tableName];
         } else {
@@ -688,9 +687,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         } else
             $path     = $tmp[0];
 
-        if($componentAlias !== false) {
-            $this->compAliases[$componentAlias] = $path;
-        }
+
 
         $index = 0;
         $currPath = '';
@@ -816,6 +813,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 throw new Doctrine_Query_Exception($e->__toString());
             }
         }
+
+        if($componentAlias !== false) {
+            $this->compAliases[$componentAlias] = $currPath;
+        }
+
         return $table;
     }
     /**

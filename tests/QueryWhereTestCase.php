@@ -5,6 +5,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase {
         $this->tables = array('entity');
         parent::prepareTables();
     }
+
     public function testDirectParameterSetting() {
         $this->connection->clear();
 
@@ -30,6 +31,18 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase {
 
         $q->from('User(id)')->addWhere('User.id IN (?, ?)',array(1,2));
 
+        $users = $q->execute();
+
+        $this->assertEqual($users->count(), 2);
+        $this->assertEqual($users[0]->name, 'someone');
+        $this->assertEqual($users[1]->name, 'someone.2');
+    }
+    public function testComponentAliases() {
+        $q = new Doctrine_Query();
+
+        $q = new Doctrine_Query();
+
+        $q->from('User(id) u')->addWhere('u.id IN (?, ?)',array(1,2));
         $users = $q->execute();
 
         $this->assertEqual($users->count(), 2);
