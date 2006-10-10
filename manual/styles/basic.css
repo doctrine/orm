@@ -17,6 +17,10 @@ td.small {
 font-family: Verdana, Arial, Helvetica;
 font-size: 13 px;
 }
+div.sql {
+background: #E8E8E8;
+
+}
 dd {
     line-height: 1.5em;
 }
