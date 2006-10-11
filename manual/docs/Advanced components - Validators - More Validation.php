@@ -14,10 +14,15 @@ a predefined validator you have three options:<br />
 <br />
 The first two options are advisable if it is likely that the validation is of general use
 and is potentially applicable in many situations. In that case it is a good idea to implement
-a new validator. However if the validation is special it is better to use hooks provided by Doctrine.
-One of these hooks is the validate() method. If you need a special validation in your active record
-you can simply override validate() in your active record class (a descendant of Doctrine_Record).
-Within this method you can use all the power of PHP to validate your fields. When a field
+a new validator. However if the validation is special it is better to use hooks provided by Doctrine:<br />
+<br />
+- validate() (Executed every time the record gets validated)<br />
+- validateOnInsert() (Executed when the record is new and gets validated)<br />
+- validateOnUpdate() (Executed when the record is not new and gets validated)<br />
+<br />
+If you need a special validation in your active record
+you can simply override one of these methods in your active record class (a descendant of Doctrine_Record).
+Within thess methods you can use all the power of PHP to validate your fields. When a field
 doesnt pass your validation you can then add errors to the record's error stack.
 The following code snippet shows an example of how to define validators together with custom
 validation:<br />

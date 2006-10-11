@@ -4,6 +4,8 @@ try {
     $user->Email->address = "drink@@notvalid..";
     $user->save();
 } catch(Doctrine_Validator_Exception $e) {
+    // Note: you could also use $e->getInvalidRecords(). The direct way
+    // used here is just more simple when you know the records you're dealing with.
     $userErrors = $user->getErrorStack();
     $emailErrors = $user->Email->getErrorStack();
     

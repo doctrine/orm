@@ -9,7 +9,7 @@ class Entity extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn("id","integer",20,"autoincrement|primary");
         $this->hasColumn("name","string",50);
-        $this->hasColumn("loginname","string",20,"unique");
+        $this->hasColumn("loginname","string",20, array("unique"));
         $this->hasColumn("password","string",16);
         $this->hasColumn("type","integer",1);
         $this->hasColumn("created","integer",11);
@@ -102,6 +102,16 @@ class User extends Entity {
         // Allow only one name!
         if ($this->name !== 'The Saint') {
             $this->errorStack->add('name', 'notTheSaint');
+        }
+    }
+    public function validateOnInsert() {
+        if ($this->password !== 'Top Secret') {
+            $this->errorStack->add('password', 'pwNotTopSecret');
+        }
+    }
+    public function validateOnUpdate() {
+        if ($this->loginname !== 'Nobody') {
+            $this->errorStack->add('loginname', 'notNobody');
         }
     }
 }
@@ -421,7 +431,7 @@ class ValidatorTest extends Doctrine_Record {
         $this->hasColumn("myobject", "object", 1000);
         $this->hasColumn("myinteger", "integer", 11);
         $this->hasColumn("myrange", "integer", 11, array('range' => array(4,123)));
-        $this->hasColumn("myregexp", "string", 5, array('regexp' => '^[0-9]+$'));
+        $this->hasColumn("myregexp", "string", 5, array('regexp' => '/^[0-9]+$/'));
 
         $this->hasColumn("myemail", "string", 100, "email");
         $this->hasColumn("myemail2", "string", 100, "email|notblank");

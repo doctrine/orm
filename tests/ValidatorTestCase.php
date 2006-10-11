@@ -202,14 +202,17 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
     }
 
     /**
-     * Tests whether custom validation through template methods works correctly
+     * Tests whether the validate() callback works correctly
      * in descendants of Doctrine_Record.
      */
-    public function testCustomValidation() {
+    public function testValidationHooks() {
         $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
-        $user = $this->connection->getTable("User")->find(4);
+        
+        // Tests validate() and validateOnInsert()
+        $user = new User();
          try {
             $user->name = "I'm not The Saint";
+            $user->password = "1234";
             $user->save();
         } catch(Doctrine_Validator_Exception $e) {
             $this->assertEqual($e->count(), 1);
@@ -217,16 +220,49 @@ class Doctrine_ValidatorTestCase extends Doctrine_UnitTestCase {
             $this->assertEqual(count($invalidRecords), 1);
             
             $stack = $invalidRecords[0]->getErrorStack();
-            
-            $this->assertEqual($stack->count(), 1);
-            $this->assertTrue(in_array('notTheSaint', $stack['name']));
+
+            $this->assertEqual($stack->count(), 2);
+            $this->assertTrue(in_array('notTheSaint', $stack['name']));  // validate() hook constraint
+            $this->assertTrue(in_array('pwNotTopSecret', $stack['password'])); // validateOnInsert() hook constraint
         }
         
+        // Tests validateOnUpdate()
+        $user = $this->connection->getTable("User")->find(4);
         try {
-            $user->name = "The Saint";
+            $user->name = "The Saint";  // Set correct name
+            $user->password = "Top Secret"; // Set correct password
+            $user->loginname = "Somebody"; // Wrong login name!
             $user->save();
-        } catch(Doctrine_Validator_Exception $e) {
             $this->fail();
+        } catch(Doctrine_Validator_Exception $e) {
+            $invalidRecords = $e->getInvalidRecords();
+            $this->assertEqual(count($invalidRecords), 1);
+            
+            $stack = $invalidRecords[0]->getErrorStack();
+            
+            $this->assertEqual($stack->count(), 1);
+            $this->assertTrue(in_array('notNobody', $stack['loginname']));  // validateOnUpdate() hook constraint
+        }
+        
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
+    }
+    
+    /**
+     * Tests whether the validateOnInsert() callback works correctly
+     * in descendants of Doctrine_Record.
+     */
+    public function testHookValidateOnInsert() {
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
+        
+        $user = new User();
+        $user->password = "1234";
+        
+        try {
+            $user->save();
+            $this->fail();
+        } catch (Doctrine_Validator_Exception $ex) {
+            $errors = $user->getErrorStack();
+            $this->assertTrue(in_array('pwNotTopSecret', $errors['password']));
         }
         
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);

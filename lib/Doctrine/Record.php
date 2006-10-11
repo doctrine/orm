@@ -244,6 +244,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $validator = new Doctrine_Validator();
         $validator->validateRecord($this);
         $this->validate();
+        if ($this->state == self::STATE_TDIRTY || $this->state == self::STATE_TCLEAN) {
+            $this->validateOnInsert();
+        } else {
+            $this->validateOnUpdate();
+        }
         
         return $this->errorStack->count() == 0 ? true : false;
         //$this->errorStack->merge($validator->getErrorStack());
@@ -254,6 +259,18 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * validations that are neccessary.
      */
     protected function validate() {}
+    /**
+     * Empty tempalte method to provide concrete Record classes with the possibility
+     * to hook into the validation procedure only when the record is going to be
+     * updated.
+     */
+    protected function validateOnUpdate() {}
+    /**
+     * Empty tempalte method to provide concrete Record classes with the possibility
+     * to hook into the validation procedure only when the record is going to be
+     * inserted into the data store the first time.
+     */
+    protected function validateOnInsert() {}
     /**
      * getErrorStack
      *
@@ -840,7 +857,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $conn = $this->table->getConnection();
         }
         $conn->beginTransaction();
-
+        
         $saveLater = $conn->saveRelated($this);
 
         if ($this->isValid()) {
