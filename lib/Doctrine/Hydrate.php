@@ -109,11 +109,54 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
     }
     /**
      * getComponentAliases
+     *
+     * @return array
      */
     public function getComponentAliases() {
-        return $this->compAliases;                                      	
+        return $this->compAliases;
     }
+    /**
+     * getTableAliases
+     *
+     * @return array
+     */
+    public function getTableAliases() {
+        return $this->tableAliases;
+    }
+    /**
+     * getTableIndexes
+     *
+     * @return array
+     */
+    public function getTableIndexes() {
+        return $this->tableIndexes;
+    }
+    /**
+     * copyAliases
+     *
+     * @return void
+     */
+    public function copyAliases(Doctrine_Hydrate $query) {
+        $this->compAliases  = $query->getComponentAliases();
+        $this->tableAliases = $query->getTableAliases();
+        $this->tableIndexes = $query->getTableIndexes();
+        
+        return $this;
+    }
+    /**
+     * createSubquery
+     * 
+     * @return Doctrine_Hydrate
+     */
+    public function createSubquery() {
+        $class = get_class($this);
+        $obj   = new $class();
+        
+        // copy the aliases to the subquery
+        $obj->copyAliases($this);
 
+        return $obj;
+    }
     /**
      * getQuery
      *
@@ -204,7 +247,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param string $path
      * @return string
      */
-    final public function getTableAlias($path) { 
+    final public function getTableAlias($path) {
         if(isset($this->compAliases[$path]))
             $path = $this->compAliases[$path];
 
@@ -523,6 +566,12 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      */
     public function getTable($name) {
         return $this->tables[$name];
+    }
+    /**
+     * @return string                   returns a string representation of this object
+     */
+    public function __toString() {
+        return Doctrine_Lib::formatSql($this->getQuery());
     }
 }
 

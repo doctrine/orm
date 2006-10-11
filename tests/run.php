@@ -110,21 +110,23 @@ $test->addTestCase(new Doctrine_RelationAccessTestCase());
 
 $test->addTestCase(new Doctrine_CustomResultSetOrderTestCase());
 
-$test->addTestCase(new Doctrine_QueryTestCase());
-
-$test->addTestCase(new Doctrine_Query_Where_TestCase());
-
-$test->addTestCase(new Doctrine_Query_Condition_TestCase());
-
 $test->addTestCase(new Doctrine_BooleanTestCase());
 
 $test->addTestCase(new Doctrine_EnumTestCase());
+
+$test->addTestCase(new Doctrine_Record_Filter_TestCase());
+
+$test->addTestCase(new Doctrine_Query_Condition_TestCase());
 
 $test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 
-$test->addTestCase(new Doctrine_Record_Filter_TestCase());
+$test->addTestCase(new Doctrine_QueryTestCase());
+
+$test->addTestCase(new Doctrine_Query_Where_TestCase());
+
+
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());

@@ -10,9 +10,19 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
      * @return string
      */
     public function load($where) {
+        $where = trim($where);
 
-        $e = Doctrine_Query::sqlExplode($where);
-        
+        $e     = Doctrine_Query::sqlExplode($where);
+
+        if(count($e) > 1) {
+            $tmp   = $e[0].' '.$e[1];
+
+            if(substr($tmp, 0, 6) == 'EXISTS')
+                return $this->parseExists($where, true);
+            elseif(substr($where, 0, 10) == 'NOT EXISTS')
+                return $this->parseExists($where, false);
+        }
+
         if(count($e) < 3) {
             $e = Doctrine_Query::sqlExplode($where, array('=', '<', '>', '!='));
         }
@@ -84,9 +94,24 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
                 elseif($value == 'false')
                     $value = 0;
                 elseif(substr($value,0,5) == '(FROM') {
+                    // subquery
                     $sub   = Doctrine_Query::bracketTrim($value);
                     $q     = new Doctrine_Query();
                     $value = '(' . $q->parseQuery($sub)->getQuery() . ')';
+                } else {
+                    // check that value isn't a string
+                    if(strpos($value, '\'') === false) {
+                        $a = explode('.', $value);
+
+                        if(count($a) > 1) {
+                            // either a float or a component..
+    
+                            if( ! is_numeric($a[0])) {
+                                // a component found
+                                $value = $this->query->getTableAlias($a[0]). '.' . $a[1];
+                            }
+                        }
+                    }
                 }
 
                 switch($operator) {
@@ -95,16 +120,25 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
                     case '=':
                         if($enumIndex !== false)
                             $value  = $enumIndex;
-
-                        $where      = $alias.'.'.$field.' '.$operator.' '.$value;
-                    break;
                     default:
-                        $where      = $this->query->getTableAlias($reference).'.'.$field.' '.$operator.' '.$value;
+                        $where      = $alias.'.'.$field.' '.$operator.' '.$value;
                 }
             }
         }
-
         return $where;
+    }
+
+    public function parseExists($where, $negation) {
+        $operator = ($negation) ? 'EXISTS' : 'NOT EXISTS';
+
+        $pos = strpos($where, '(');
+        
+        if($pos == false)
+            throw new Doctrine_Query_Exception("Unknown expression, expected '('");
+
+        $sub = Doctrine_Query::bracketTrim(substr($where, $pos));
+
+        return $operator . ' ('.$this->query->createSubquery()->parseQuery($sub, false)->getQuery() . ')';
     }
 
     public function getOperator($func) {

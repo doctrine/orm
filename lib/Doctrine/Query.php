@@ -424,11 +424,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * parsers for each part
      *
      * @param string $query                 DQL query
+     * @param boolean $clear                whether or not to clear the aliases
      * @throws Doctrine_Query_Exception     if some generic parsing error occurs
      * @return Doctrine_Query
      */
-    public function parseQuery($query) {
-        $this->clear();
+    public function parseQuery($query, $clear = true) {
+        if($clear)
+            $this->clear();
         
         $query = trim($query);
         $query = str_replace("\n"," ",$query);
