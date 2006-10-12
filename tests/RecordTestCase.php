@@ -21,7 +21,9 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertFalse(isset($user['id']));
         $this->assertFalse($user->contains('id'));
     }
-
+    public function testUnknownColumn() {
+                                        	
+    }                                    	
     public function testNotNullConstraint() {
         $null = new NotNullTest();
 
@@ -287,9 +289,9 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
     public function testCallback() {
         $user = new User();
         $user->name = " zYne ";
-        $user->trim('name');
+        $user->call('trim', 'name');
         $this->assertEqual($user->name, 'zYne');
-        $user->substr('name',0,1);
+        $user->call('substr', 'name', 0, 1);
         $this->assertEqual($user->name, 'z');
     }
 

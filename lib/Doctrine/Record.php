@@ -1385,23 +1385,63 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
         }
     }
+    public function setAttribute($attr, $value) {
+        $this->table->setAttribute($attr, $value);
+    }
+    public function setTableName($tableName) {
+        $this->table->setTableName($tableName);                                            	
+    }
+    public function setInheritanceMap($map) {
+        $this->table->setInheritanceMap($map);
+    }
+    public function setEnumValues($column, $values) {
+        $this->table->setEnumValues($column, $values);
+    }
     /**
-     * __call
-     * @param string $m
-     * @param array $a
+     * addListener
+     *
+     * @param Doctrine_DB_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_DB
      */
-    public function __call($m,$a) {
-        if(method_exists($this->table, $m))
-            return call_user_func_array(array($this->table, $m), $a);
+    public function addListener($listener, $name = null) {
+        $this->table->addListener($listener, $name = null);
+        return $this;
+    }
+    /**
+     * getListener
+     * 
+     * @return Doctrine_DB_EventListener_Interface|Doctrine_Overloadable
+     */
+    public function getListener() {
+        return $this->table->getListener();
+    }
+    /**
+     * setListener
+     *
+     * @param Doctrine_DB_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_DB
+     */
+    public function setListener($listener) {
+        $this->table->setListener($listener);
+        return $this;
+    }
+    /**
+     * call
+     *
+     * @param string|array $callback    valid callback
+     * @param string $column            column name
+     * @param mixed arg1 ... argN       optional callback arguments
+     * @return Doctrine_Record
+     */
+    public function call($callback, $column) {
+        $args = func_get_args();
+        array_shift($args);
 
-        if( ! function_exists($m))
-            throw new Doctrine_Record_Exception("unknown callback '$m'");
+        if(isset($args[0])) {
+            $column = $args[0];
+            $args[0] = $this->get($column);
 
-        if(isset($a[0])) {
-            $column = $a[0];
-            $a[0] = $this->get($column);
-
-            $newvalue = call_user_func_array($m, $a);
+            $newvalue = call_user_func_array($callback, $args);
 
             $this->data[$column] = $newvalue;
         }
