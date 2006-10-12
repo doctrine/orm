@@ -33,6 +33,7 @@ require_once("QueryLimitTestCase.php");
 require_once("QueryMultiJoinTestCase.php");
 require_once("QueryReferenceModelTestCase.php");
 require_once("QueryWhereTestCase.php");
+require_once("QueryFromTestCase.php");
 require_once("QueryConditionTestCase.php");
 require_once("QueryComponentAliasTestCase.php");
 require_once("QuerySubqueryTestCase.php");
@@ -125,6 +126,8 @@ $test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 $test->addTestCase(new Doctrine_QueryTestCase());
 
 $test->addTestCase(new Doctrine_Query_Where_TestCase());
+
+$test->addTestCase(new Doctrine_Query_From_TestCase());
 
 
 

@@ -11,11 +11,32 @@ class Doctrine_Query_From extends Doctrine_Query_Part {
      * @return void
      */
     final public function parse($str) {
-        foreach(Doctrine_Query::bracketExplode(trim($str),",", "(",")") as $reference) {
-            $reference = trim($reference);
-            $a         = explode(".",$reference);
-            $field     = array_pop($a);
-            $table     = $this->query->load($reference);
+        $str = trim($str);
+        $parts = Doctrine_Query::bracketExplode($str, 'JOIN');
+
+        $operator = false;
+        $last = '';
+
+        foreach($parts as $k => $part) {
+            $part = trim($part);
+            $e    = explode(" ", $part);
+
+            if(end($e) == 'INNER' || end($e) == 'LEFT')
+                $last = array_pop($e);
+
+            $part = implode(" ", $e);
+
+            foreach(Doctrine_Query::bracketExplode($part, ',') as $reference) {
+                $reference = trim($reference);
+                $e         = explode('.', $reference);
+
+                if($operator) {
+                    $reference = array_shift($e).$operator.implode('.', $e);
+                }
+                $table     = $this->query->load($reference);
+            }                                              
+            
+            $operator = ($last == 'INNER') ? ':' : '.';
         }
     }
 
