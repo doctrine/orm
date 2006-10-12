@@ -414,10 +414,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         $tmp     = explode(".", $path);
         $alias   = end($tmp);
 
-        $fk      = $this->tables[$pointer]->getRelation($alias);
-
         if( ! isset($prev[$pointer]) )
             return $prev;
+
+        $fk      = $this->tables[$pointer]->getRelation($alias);
 
         if( ! $fk->isOneToOne()) {
             if($prev[$pointer]->getLast() instanceof Doctrine_Record) {
