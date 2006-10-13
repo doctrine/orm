@@ -42,6 +42,7 @@ class Doctrine_RelationAccessTestCase extends Doctrine_UnitTestCase {
 		  $us[1]->MyOtherThing->add($o);
 		}
 		// UserOneThings
+		/* Doctrine assigns the foreign keys automatically
 		$one_id_gs = array(
 		            array(array(2,3,6,5,1), 1)
 					);
@@ -63,7 +64,7 @@ class Doctrine_RelationAccessTestCase extends Doctrine_UnitTestCase {
 				$uo->user_id = $oth_ids[1];
 			}
 		}
-		
+		*/
         $this->connection->flush();
         $this->connection->clear();
 	}
@@ -76,7 +77,7 @@ class Doctrine_RelationAccessTestCase extends Doctrine_UnitTestCase {
   							  "MyUserOtherThing"); 
         parent::prepareTables();
     }
-    /**
+    
     public function testOneToOneAggregateRelationFetching() {
         $coll = $this->connection->query("FROM File_Owner.Data_File WHERE File_Owner.name = 'owner1'");
         $this->assertTrue(count($coll) == 1);
@@ -138,7 +139,7 @@ class Doctrine_RelationAccessTestCase extends Doctrine_UnitTestCase {
 		$this->assertEqual(1, $file2->get('id'));
 
     }
-	*/
+	
 	public function testMultipleLeftJoinBranches() {
 	  $query = "FROM MyUserOtherThing";
 	  $other = $this->connection->query($query);

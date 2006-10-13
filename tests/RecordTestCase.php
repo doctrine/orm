@@ -623,7 +623,9 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $user = new User();
         $user->name = "John Locke";
         $user->save();
-
+        
+        $this->assertTrue(is_numeric($user->id) && $user->id > 0);
+        
         $this->assertTrue($user->getModified() == array());
         $this->assertTrue($user->getState() == Doctrine_Record::STATE_CLEAN);
 
