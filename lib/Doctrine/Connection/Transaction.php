@@ -57,10 +57,6 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
      */
     private $transaction_level  = 0;
     /**
-     * @var Doctrine_Validator $validator   transaction validator
-     */
-    private $validator;
-    /**
      * @var array $invalid                  an array containing all invalid records within this transaction
      */
     protected $invalid          = array();
@@ -114,8 +110,6 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
      */
     public function beginTransaction() {
         if($this->transaction_level == 0) {
-            if($this->conn->getAttribute(Doctrine::ATTR_VLD))
-                $this->validator = new Doctrine_Validator();
 
             if($this->conn->getAttribute(Doctrine::ATTR_LOCKMODE) == Doctrine::LOCK_PESSIMISTIC) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this->conn);
@@ -177,7 +171,6 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
             $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this->conn);
 
             $this->state     = Doctrine_Connection_Transaction::STATE_OPEN;
-            $this->validator = null;
             $this->invalid   = array();
 
         } elseif($this->transaction_level == 1)
@@ -258,12 +251,6 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
                 }
         endforeach;
 
-        if(isset($this->validator)) {
-            if( ! $this->validator->validateRecord($record)) {
-                return false;
-            }
-        }
-
         $params   = array_values($array);
         $id       = $record->obtainIdentifier();
 
@@ -313,12 +300,6 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
             $id             = $this->getNextID($seq);
             $name           = $record->getTable()->getIdentifier();
             $array[$name]   = $id;
-        }
-
-        if(isset($this->validator)) {
-            if( ! $this->validator->validateRecord($record)) {
-                return false;
-            }
         }
 
         $strfields = join(", ", array_keys($array));
