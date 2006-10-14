@@ -481,7 +481,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param Doctrine_Record $record
      * @return void
      */
-    public function set($key,Doctrine_Record $record) {
+    public function set($key, Doctrine_Record $record) {
         if(isset($this->reference_field))
             $record->set($this->reference_field, $this->reference, false);
 

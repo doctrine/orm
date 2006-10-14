@@ -321,11 +321,11 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
         $stmt  = $this->connection->execute($query,$params);
 
-        if($this->aggregate) 
+        if($this->aggregate)
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if(count($this->tables) == 0)
-            throw new Doctrine_Exception("No tables selected");
+            throw new Doctrine_Query_Exception("No components selected");
 
         $keys  = array_keys($this->tables);
         $root  = $keys[0];

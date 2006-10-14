@@ -15,7 +15,7 @@ class User extends Doctrine_Record {
         if ($this->name == 'God') {
             // Blasphemy! Stop that! ;-)
             // syntax: add(<fieldName>, <error code/identifier>)
-            $this->errorStack->add('name', 'forbiddenName');
+            $this->getErrorStack()->add('name', 'forbiddenName');
         }
     }
 }

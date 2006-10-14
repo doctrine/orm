@@ -101,17 +101,17 @@ class User extends Entity {
     public function validate() {
         // Allow only one name!
         if ($this->name !== 'The Saint') {
-            $this->errorStack->add('name', 'notTheSaint');
+            $this->getErrorStack()->add('name', 'notTheSaint');
         }
     }
     public function validateOnInsert() {
         if ($this->password !== 'Top Secret') {
-            $this->errorStack->add('password', 'pwNotTopSecret');
+            $this->getErrorStack()->add('password', 'pwNotTopSecret');
         }
     }
     public function validateOnUpdate() {
         if ($this->loginname !== 'Nobody') {
-            $this->errorStack->add('loginname', 'notNobody');
+            $this->getErrorStack()->add('loginname', 'notNobody');
         }
     }
 }
