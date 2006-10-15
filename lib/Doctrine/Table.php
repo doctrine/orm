@@ -755,8 +755,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
             if($this->data === false)
                 return false;
+            
+            return $this->getRecord();
         }
-        return $this->getRecord();
+        return false;
     }
     /**
      * applyInheritance
