@@ -12,15 +12,52 @@ class Doctrine_EnumTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($test->status, 'open');
         $test->save();
 
-        $query = new Doctrine_Query($this->connection);
-        $ret = $query->query('FROM EnumTest WHERE EnumTest.status = ?', array('open'));
-        $this->assertEqual(count($ret), 1);
+        try {
+            $query = new Doctrine_Query($this->connection);
+            $ret = $query->query('FROM EnumTest WHERE EnumTest.status = ?', array('open'));
+            $this->assertEqual(count($ret), 1);
+        } catch (Exception $e) {
+            $this->fail();
+        }
 
-        $query = new Doctrine_Query($this->connection);
-        $ret = $query->query('FROM EnumTest WHERE EnumTest.status = open');
-        $this->assertEqual(count($ret), 1);
-
+        try {
+            $query = new Doctrine_Query($this->connection);
+            $ret = $query->query('FROM EnumTest WHERE EnumTest.status = open');
+            $this->assertEqual(count($ret), 1);
+        } catch (Exception $e) {
+          $this->fail();
+        }
     }
+
+    public function testInAndNotIn() {
+        try {
+            $query = new Doctrine_Query($this->connection);
+            $ret = $query->query('FROM EnumTest WHERE EnumTest.status IN (open)');
+            $this->assertEqual(count($ret), 1);
+        } catch (Exception $e) {
+            $this->fail();
+        }
+
+        try {
+            $query = new Doctrine_Query($this->connection);
+            $ret = $query->query('FROM EnumTest WHERE EnumTest.status NOT IN (verified, closed)');
+            $this->assertEqual(count($ret), 1);
+        } catch (Exception $e) {
+            $this->fail();
+        }
+    }
+
+    public function testNotEqual()
+    {
+        try {
+            $query = new Doctrine_Query($this->connection);
+            $ret = $query->query('FROM EnumTest WHERE EnumTest.status != closed');
+            $this->assertEqual(count($ret), 1);
+        } catch (Exception $e) {
+            $this->fail();
+        }
+    }
+
     public function testEnumType() {
 
         $enum = new EnumTest();
