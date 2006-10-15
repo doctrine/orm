@@ -115,31 +115,28 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
             $record = $this->objTable->find('4');
             $this->assertTrue($record instanceof Doctrine_Record);
         } catch(Exception $e) {
-            $this->assertTrue($e instanceOf Doctrine_Find_Exception);
+            $this->assertTrue(false);
         }
 
         try {
             $record = $this->objTable->find(123);
-            // should have thrown exception...
-            $this->assertTrue(false);
+            $this->assertTrue($record === false);
         } catch(Exception $e) {
-            $this->assertTrue($e instanceOf Doctrine_Find_Exception);
+            $this->assertTrue(false);
         }
 
         try {
             $record = $this->objTable->find(null);
-            // should have thrown exception...
-            $this->assertTrue(false);
+            $this->assertTrue($record === false);
         } catch(Exception $e) {
-            $this->assertTrue($e instanceOf Doctrine_Find_Exception);
+            $this->assertTrue(false);
         }
 
         try {
             $record = $this->objTable->find(false);
-            // should have thrown exception...
-            $this->assertTrue(false);
+            $this->assertTrue($record === false);
         } catch(Exception $e) {
-            $this->assertTrue($e instanceOf Doctrine_Find_Exception);
+            $this->assertTrue(false);
         }
     }
     public function testFindAll() {
