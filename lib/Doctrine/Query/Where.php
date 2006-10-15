@@ -118,6 +118,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
                     case '<':
                     case '>':
                     case '=':
+                    case '!=':
                         if($enumIndex !== false)
                             $value  = $enumIndex;
                     default:
