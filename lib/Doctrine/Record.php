@@ -1118,7 +1118,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return Doctrine_Record
      */
     public function copy() {
-        return $this->_table->create($this->_data);
+        $ret = $this->_table->create($this->_data);
+        $modified = array();
+        foreach($this->_data as $key => $val)
+            if (!($val instanceof Doctrine_Null))
+                $ret->_modified[] = $key;
+        return $ret;
     }
     /**
      * assignIdentifier
