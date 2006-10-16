@@ -644,11 +644,19 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->getModified(), array());
         $this->assertEqual($user->name, "Jack Daniels");
     }
+
     public function testCopy() {
         $user = $this->connection->getTable("User")->find(4);
         $new = $user->copy();
+
         $this->assertTrue($new instanceof Doctrine_Record);
         $this->assertTrue($new->getState() == Doctrine_Record::STATE_TDIRTY);
+
+        $new->save();
+        $this->assertTrue(is_numeric($new->id) && $new->id > 0);
+        
+        $new->refresh();
+        $this->assertEqual($user->name, $new->name);
     }
 
     public function testReferences() {
