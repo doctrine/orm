@@ -69,21 +69,21 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         return $this->isDistinct;
     }
-	/**
- 	 * count
+    /**
+     * count
      *
-	 * @return integer
+     * @return integer
      */
-	public function count(Doctrine_Table $table, $params = array()) {
-		$this->remove('select');
-		$join  = $this->join;
-		$where = $this->where;
-		$having = $this->having;
+    public function count(Doctrine_Table $table, $params = array()) {
+        $this->remove('select');
+        $join  = $this->join;
+        $where = $this->where;
+        $having = $this->having;
 
-		$q = "SELECT COUNT(DISTINCT ".$table->getTableName().'.'.$table->getIdentifier().") FROM ".$table->getTableName()." ";
-		foreach($join as $j) {
-            $q .= implode(" ",$j);
-		}
+        $q = "SELECT COUNT(DISTINCT ".$table->getTableName().'.'.$table->getIdentifier().") FROM ".$table->getTableName()." ";
+        foreach($join as $j) {
+            $q .= " ".implode(" ",$j);
+        }
         $string = $this->applyInheritance();
 
         if( ! empty($where)) {
@@ -94,13 +94,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             if( ! empty($string))
                 $q .= " WHERE (".$string.")";
         }
-			
-		if( ! empty($having)) 
-			$q .= " HAVING ".implode(' AND ',$having);
 
-		$a = $this->getConnection()->execute($q, $params)->fetch(PDO::FETCH_NUM);
-		return $a[0];		
-	}
+        if( ! empty($having)) 
+            $q .= " HAVING ".implode(' AND ',$having);
+
+        $a = $this->getConnection()->execute($q, $params)->fetch(PDO::FETCH_NUM);
+        return $a[0];
+    }
     /**
      * loadFields      
      * loads fields for a given table and
