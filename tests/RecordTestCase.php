@@ -652,11 +652,33 @@ class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($new instanceof Doctrine_Record);
         $this->assertTrue($new->getState() == Doctrine_Record::STATE_TDIRTY);
 
+        $new = $user->copy();
         $new->save();
+        $this->assertEqual($user->name, $new->name);
         $this->assertTrue(is_numeric($new->id) && $new->id > 0);
-        
         $new->refresh();
         $this->assertEqual($user->name, $new->name);
+        $this->assertTrue(is_numeric($new->id) && $new->id > 0);
+    }
+
+    public function testCopyAndModify() {
+        $user = $this->connection->getTable("User")->find(4);
+        $new = $user->copy();
+
+        $this->assertTrue($new instanceof Doctrine_Record);
+        $this->assertTrue($new->getState() == Doctrine_Record::STATE_TDIRTY);
+
+        $new->loginname = 'jackd';
+
+        $this->assertEqual($user->name, $new->name);
+        $this->assertEqual($new->loginname, 'jackd');
+
+        $new->save();
+        $this->assertTrue(is_numeric($new->id) && $new->id > 0);
+
+        $new->refresh();
+        $this->assertEqual($user->name, $new->name);
+        $this->assertEqual($new->loginname, 'jackd');
     }
 
     public function testReferences() {
