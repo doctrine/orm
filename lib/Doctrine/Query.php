@@ -161,7 +161,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
 		$q = "SELECT COUNT(DISTINCT ".$table->getTableName().'.'.$table->getIdentifier().") FROM ".$table->getTableName()." ";
 		foreach($join as $j) {
-            $q .= implode(" ",$j);
+            $q .= ' '.implode(" ",$j);
 		}
         $string = $this->applyInheritance();
 
