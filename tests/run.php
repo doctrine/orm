@@ -49,6 +49,9 @@ require_once("RelationTestCase.php");
 require_once("DataDictSqliteTestCase.php");
 require_once("CustomResultSetOrderTestCase.php");
 
+// unsorted tests are here, these should be moved somewhere sensible
+require_once("UnsortedTestCase.php");
+
 error_reporting(E_ALL);
 print "<pre>";
 
@@ -132,6 +135,7 @@ $test->addTestCase(new Doctrine_Query_From_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Select_TestCase());
 
+$test->addTestCase(new Doctrine_UnsortedTestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());

@@ -68,7 +68,6 @@ class Group extends Entity {
         parent::setUp();
         $this->hasMany("User","Groupuser.user_id");
         $this->setInheritanceMap(array("type"=>1));
-
     }
 }
 class Error extends Doctrine_Record {
@@ -128,7 +127,7 @@ class Phonenumber extends Doctrine_Record {
         $this->hasColumn("entity_id","integer");
     }
     public function setUp() {
-        $this->hasOne("Entity", "Phonenumber.entity_id");                        	
+        $this->hasOne("Entity", "Phonenumber.entity_id");
     }
 }
 
@@ -556,6 +555,37 @@ class BoardWithPosition extends Doctrine_Record {
     }
     public function setUp() {
         $this->hasOne("CategoryWithPosition as Category", "BoardWithPosition.category_id");
+    }
+}
+class Package extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('description', 'string', 255);
+    }
+
+    public function setUp()
+    {
+        $this->ownsMany('PackageVersion as Version', 'PackageVersion.package_id');
+    }
+}
+class PackageVersion extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('package_id', 'integer');
+        $this->hasColumn('description', 'string', 255);
+    }
+    public function setUp()
+    {
+        $this->hasOne('Package', 'PackageVersion.package_id');
+        $this->hasMany('PackageVersionNotes as Note', 'PackageVersionNotes.package_version_id');
+    }
+}
+class PackageVersionNotes extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('package_version_id', 'integer');
+        $this->hasColumn('description', 'string', 255);
+    }
+    public function setUp()
+    {
+        $this->hasOne('PackageVersion', 'PackageVersionNotes.package_version_id');
     }
 }
 
