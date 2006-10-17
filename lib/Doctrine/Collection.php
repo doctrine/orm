@@ -64,6 +64,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @var Doctrine_Null $null             used for extremely fast null value testing
      */
     protected static $null;
+    
+    
+    protected $aggregateValues = array();
 
     /**
      * constructor
@@ -117,7 +120,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $name
      * @return mixed
      */
-    public function getAggregateValue() {
+    public function getAggregateValue($name) {
         return $this->aggregateValues[$name];
     }
     /**

@@ -37,6 +37,7 @@ require_once("QueryFromTestCase.php");
 require_once("QueryConditionTestCase.php");
 require_once("QueryComponentAliasTestCase.php");
 require_once("QuerySubqueryTestCase.php");
+require_once("QuerySelectTestCase.php");
 
 require_once("DBTestCase.php");
 require_once("SchemaTestCase.php");
@@ -52,11 +53,10 @@ error_reporting(E_ALL);
 print "<pre>";
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
- 
+
 $test->addTestCase(new Doctrine_RecordTestCase());
 
 $test->addTestCase(new Doctrine_ValidatorTestCase());
-
 
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 
@@ -130,6 +130,7 @@ $test->addTestCase(new Doctrine_Query_Where_TestCase());
 
 $test->addTestCase(new Doctrine_Query_From_TestCase());
 
+$test->addTestCase(new Doctrine_Query_Select_TestCase());
 
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());

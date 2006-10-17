@@ -86,11 +86,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @var Doctrine_Table_Repository $repository       record repository
      */
     private $repository;
-
-    /**
-     * @var Doctrine_Cache $cache                       second level cache
-     */
-    private $cache;
     /**
      * @var array $columns                              an array of column definitions
      */
@@ -733,8 +728,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * finds a record by its identifier
      *
      * @param $id                       database row id
-     * @throws Doctrine_Find_Exception
-     * @return Doctrine_Record          a record for given database identifier
+     * @return Doctrine_Record|false    a record for given database identifier
      */
     public function find($id) {
         if($id !== null) {

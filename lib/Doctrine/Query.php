@@ -45,6 +45,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     private $relationStack     = array();
     
     private $isDistinct        = false;
+    
+    private $pendingFields     = array();
+
     /**
      * create
      * returns a new Doctrine_Query object
@@ -69,21 +72,97 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         return $this->isDistinct;
     }
-    /**
-     * count
-     *
-     * @return integer
-     */
-    public function count(Doctrine_Table $table, $params = array()) {
-        $this->remove('select');
-        $join  = $this->join;
-        $where = $this->where;
-        $having = $this->having;
 
-        $q = "SELECT COUNT(DISTINCT ".$table->getTableName().'.'.$table->getIdentifier().") FROM ".$table->getTableName()." ";
-        foreach($join as $j) {
-            $q .= " ".implode(" ",$j);
+    public function processPendingFields($componentAlias) {
+        $tableAlias = $this->getTableAlias($componentAlias);
+        
+        $componentPath  = $this->compAliases[$componentAlias];
+
+        if( ! isset($this->components[$componentPath])) 
+            throw new Doctrine_Query_Exception('Unknown component path '.$componentPath);
+
+        $table      = $this->components[$componentPath];
+
+        if(isset($this->pendingFields[$componentAlias])) {
+            $fields = $this->pendingFields[$componentAlias];
+
+            if(in_array('*', $fields))
+                $fields = $table->getColumnNames();
+            else
+                $fields = array_unique(array_merge($table->getPrimaryKeys(), $fields));
         }
+        foreach($fields as $name) {
+            $this->parts["select"][] = $tableAlias . '.' .$name . ' AS ' . $tableAlias . '__' . $name;
+        }
+
+    }
+    public function parseSelect($dql) {
+        $refs = Doctrine_Query::bracketExplode($dql, ',');
+
+        foreach($refs as $reference) {
+            if(strpos($reference, '(') !== false) {
+                $this->parseAggregateFunction2($reference);
+            } else {
+
+                $e = explode('.', $reference);
+                if(count($e) > 2)
+                    $this->pendingFields[] = $reference;
+                else
+                    $this->pendingFields[$e[0]][] = $e[1];
+            }
+        }
+    }
+    public function parseAggregateFunction2($func) {
+        $pos  = strpos($func, '(');
+        $name = substr($func, 0, $pos);
+        switch($name) {
+            case 'MAX':
+            case 'MIN':
+            case 'COUNT':
+            case 'AVG':
+                $reference = substr($func, ($pos + 1), -1);
+
+                $e = explode('.', $reference);
+
+                $this->pendingAggregates[$e[0]][] = array($name, $e[1]);
+            break;
+            default:
+                throw new Doctrine_Query_Exception('Unknown aggregate function '.$name);
+        }
+    }
+    public function processPendingAggregates($componentAlias) {
+        $tableAlias = $this->getTableAlias($componentAlias);
+        
+        $componentPath  = $this->compAliases[$componentAlias];
+
+        if( ! isset($this->components[$componentPath]))
+            throw new Doctrine_Query_Exception('Unknown component path '.$componentPath);
+
+        $table      = $this->components[$componentPath];
+
+        foreach($this->pendingAggregates[$componentAlias] as $args) {
+            list($name, $arg) = $args;
+
+            $this->parts["select"][] = $name . '(' . $tableAlias . '.' . $arg . ') AS ' . $tableAlias . '__' . count($this->aggregateMap);
+
+            $this->aggregateMap[] = $table;
+        }
+    }
+	/**
+ 	 * count
+     *
+	 * @return integer
+     */
+	public function count(Doctrine_Table $table, $params = array()) {
+		$this->remove('select');
+		$join  = $this->join;
+		$where = $this->where;
+		$having = $this->having;
+
+		$q = "SELECT COUNT(DISTINCT ".$table->getTableName().'.'.$table->getIdentifier().") FROM ".$table->getTableName()." ";
+		foreach($join as $j) {
+            $q .= implode(" ",$j);
+		}
         $string = $this->applyInheritance();
 
         if( ! empty($where)) {
@@ -94,13 +173,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             if( ! empty($string))
                 $q .= " WHERE (".$string.")";
         }
+			
+		if( ! empty($having)) 
+			$q .= " HAVING ".implode(' AND ',$having);
 
-        if( ! empty($having)) 
-            $q .= " HAVING ".implode(' AND ',$having);
-
-        $a = $this->getConnection()->execute($q, $params)->fetch(PDO::FETCH_NUM);
-        return $a[0];
-    }
+		$a = $this->getConnection()->execute($q, $params)->fetch(PDO::FETCH_NUM);
+		return $a[0];		
+	}
     /**
      * loadFields      
      * loads fields for a given table and
@@ -203,7 +282,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     
                     $class = "Doctrine_Query_".ucwords($name);
                     $parser = new $class($this);
-                    
+
                     $parser->parse($args[0]);
                 break;
                 case "where":
@@ -697,10 +776,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         foreach($e as $key => $fullname) {
             try {
-                $copy  = $e;
-
-
-
                 $e2    = preg_split("/[-(]/",$fullname);
                 $name  = $e2[0];
 
@@ -751,7 +826,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     else
                         $aliasString = $original;
 
-                    switch($mark):
+                    switch($mark) {
                         case ":":
                             $join = 'INNER JOIN ';
                         break;
@@ -760,23 +835,17 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                         break;
                         default:
                             throw new Doctrine_Exception("Unknown operator '$mark'");
-                    endswitch;
+                    }
 
-                    if($fk->getType() == Doctrine_Relation::MANY_AGGREGATE ||
-                       $fk->getType() == Doctrine_Relation::MANY_COMPOSITE) {
+                    if( ! $fk->isOneToOne()) {
                         if( ! $loadFields) {
                             $this->subqueryAliases[] = $tname2;
                         }
                         
                         $this->needsSubquery = true;
                     }
-
-                    if($fk instanceof Doctrine_Relation_ForeignKey ||
-                       $fk instanceof Doctrine_Relation_LocalKey) {
-
-                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString." ON ".$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
-
-                    } elseif($fk instanceof Doctrine_Relation_Association) {
+                    
+                    if($fk instanceof Doctrine_Relation_Association) {
                         $asf = $fk->getAssociationFactory();
 
                         $assocTableName = $asf->getTableName();
@@ -784,8 +853,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                         if( ! $loadFields) {
                             $this->subqueryAliases[] = $assocTableName;
                         }
-                        $this->parts["join"][$tname][$assocTableName] = $join.$assocTableName." ON ".$tname.".".$table->getIdentifier()." = ".$assocTableName.".".$fk->getLocal();
-                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString." ON ".$tname2.".".$table->getIdentifier()." = ".$assocTableName.".".$fk->getForeign();
+                        $this->parts["join"][$tname][$assocTableName] = $join.$assocTableName .' ON '.$tname.".".$table->getIdentifier()." = ".$assocTableName.".".$fk->getLocal();
+                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString    .' ON '.$tname2.".".$table->getIdentifier()." = ".$assocTableName.".".$fk->getForeign();
+
+                    } else {
+                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString    .' ON '.$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
                     }
 
                     $this->joins[$tname2] = $prevTable;
@@ -798,13 +870,31 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     
                     $this->relationStack[] = $fk;
                 }
+                
+                $this->components[$currPath] = $table;
+
                 $this->tableStack[] = $table;
 
                 if( ! isset($this->tables[$tableName])) {
                     $this->tables[$tableName] = $table;
 
                     if($loadFields) {
-                        $this->parseFields($fullname, $tableName, $e2, $currPath);
+                        
+                        $skip = false;
+                        if($componentAlias) {
+                            $this->compAliases[$componentAlias] = $currPath;
+
+                            if(isset($this->pendingFields[$componentAlias])) {
+                                $this->processPendingFields($componentAlias);
+                                $skip = true;
+                            }
+                            if(isset($this->pendingAggregates[$componentAlias])) {
+                                $this->processPendingAggregates($componentAlias);
+                                $skip = true;
+                            }
+                        }
+                        if( ! $skip)
+                            $this->parseFields($fullname, $tableName, $e2, $currPath);
                     }
                 }
 
@@ -919,3 +1009,4 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
     }
 }
+

@@ -82,6 +82,12 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @var array $tableIndexes
      */
     protected $tableIndexes = array();
+    
+    protected $components   = array();
+    
+    protected $pendingAggregates = array();
+
+    protected $aggregateMap      = array();
     /**
      * @var array $parts            SQL query string parts
      */
@@ -142,6 +148,14 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         $this->tableIndexes = $query->getTableIndexes();
         
         return $this;
+    }
+    
+    public function getPathAlias($path) {
+        $s = array_search($path, $this->compAliases);
+        if($s === false)
+            return $path;
+    
+        return $s;
     }
     /**
      * createSubquery
@@ -264,6 +278,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      */
     private function getCollection($name) {
         $table = $this->tables[$name];
+        if( ! isset($this->fetchModes[$name]))
+            return new Doctrine_Collection($table);
+
         switch($this->fetchModes[$name]):
             case Doctrine::FETCH_BATCH:
                 $coll = new Doctrine_Collection_Batch($table);
@@ -344,7 +361,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
         if($return == Doctrine::FETCH_ARRAY)
             return $array;
-                
 
 
         foreach($array as $data) {
@@ -355,12 +371,30 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 if(empty($row))
                     continue;
 
+
                 $ids     = $this->tables[$key]->getIdentifier();
                 $name    = $key;
 
                 if($this->isIdentifiable($row, $ids)) {
 
                     $prev = $this->initRelated($prev, $name);
+                        // aggregate values have numeric keys
+                        
+                        if(isset($row[0])) {
+                            $path    = array_search($name, $this->tableAliases);
+                            $alias   = $this->getPathAlias($path);
+
+
+                            foreach($row as $index => $value) {
+                                $agg = false;
+
+                                if(isset($this->pendingAggregates[$alias][$index]))
+                                    $agg = $this->pendingAggregates[$alias][$index][0];
+
+                                $prev[$name]->setAggregateValue($agg, $value);
+                            }
+
+                        }
                     continue;
                 }
 
@@ -384,7 +418,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                         unset($previd);
 
                     } else {
-                        $prev = $this->addRelated($prev, $name, $record);
+
+                            $prev = $this->addRelated($prev, $name, $record);
                     }
     
                     // following statement is needed to ensure that mappings
@@ -476,7 +511,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @return boolean
      */
     public function isIdentifiable(array $row, $ids) {
-        $emptyID = false;
         if(is_array($ids)) {
             foreach($ids as $id) {
                 if($row[$id] == null)
@@ -544,9 +578,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 $e = explode("__",$key);
 
                 $field     = strtolower( array_pop($e) );
-
                 $component = strtolower( implode("__",$e) );
-
 
                 $data[$component][$field] = $value;
 
