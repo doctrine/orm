@@ -379,12 +379,12 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
                     $prev = $this->initRelated($prev, $name);
                         // aggregate values have numeric keys
-                        
+
                         if(isset($row[0])) {
                             $path    = array_search($name, $this->tableAliases);
                             $alias   = $this->getPathAlias($path);
-
-
+                            
+                            //print_r($this->pendingAggregates);
                             foreach($row as $index => $value) {
                                 $agg = false;
 
@@ -459,7 +459,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 if( ! $prev[$pointer]->getLast()->hasReference($alias)) {
                     $prev[$name] = $this->getCollection($name);
                     $prev[$pointer]->getLast()->initReference($prev[$name],$fk);
-                }
+                } else 
+                    $prev[$name] = $prev[$pointer]->getLast()->get($alias);
             }
         }
 

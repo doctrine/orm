@@ -23,7 +23,16 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($q->getQuery(), 'SELECT MAX(entity.id) AS entity__0, MIN(entity.name) AS entity__1, COUNT(phonenumber.id) AS phonenumber__2 FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0)');
     }
-
+    public function testUnknownAggregateFunction() {
+        $q = new Doctrine_Query();
+        
+        try {
+            $q->parseQuery('SELECT UNKNOWN(u.id) FROM User');
+            $this->fail();
+        } catch(Doctrine_Query_Exception $e) {
+            $this->pass();
+        }
+    }
     public function testAggregateFunctionValueHydration() {
         $q = new Doctrine_Query();
 
@@ -36,22 +45,55 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[2]->Phonenumber->getAggregateValue('COUNT'), 1);
         $this->assertEqual($users[3]->Phonenumber->getAggregateValue('COUNT'), 1);
         $this->assertEqual($users[4]->Phonenumber->getAggregateValue('COUNT'), 3);
-
     }
 
+    public function testAggregateFunctionValueHydrationWithAliases() {
+
+        $q = new Doctrine_Query();
+
+        $q->parseQuery('SELECT u.id, COUNT(p.id) count FROM User u, u.Phonenumber p GROUP BY u.id');
+
+        $users = $q->execute();
+        
+        $this->assertEqual($users[0]->Phonenumber->getAggregateValue('count'), 1);
+        $this->assertEqual($users[1]->Phonenumber->getAggregateValue('count'), 3);
+        $this->assertEqual($users[2]->Phonenumber->getAggregateValue('count'), 1);
+        $this->assertEqual($users[3]->Phonenumber->getAggregateValue('count'), 1);
+        $this->assertEqual($users[4]->Phonenumber->getAggregateValue('count'), 3);
+    }
+    public function testMultipleAggregateFunctionValueHydrationWithAliases() {
+
+        $q = new Doctrine_Query();
+
+        $q->parseQuery('SELECT u.id, COUNT(p.id) count, MAX(p.phonenumber) max FROM User u, u.Phonenumber p GROUP BY u.id');
+
+        $users = $q->execute();
+
+        $this->assertEqual($users[0]->Phonenumber->getAggregateValue('count'), 1);
+        $this->assertEqual($users[1]->Phonenumber->getAggregateValue('count'), 3);
+        $this->assertEqual($users[2]->Phonenumber->getAggregateValue('count'), 1);
+        $this->assertEqual($users[3]->Phonenumber->getAggregateValue('count'), 1);
+        $this->assertEqual($users[4]->Phonenumber->getAggregateValue('count'), 3);
+
+        $this->assertEqual($users[0]->Phonenumber->getAggregateValue('max'), '123 123');
+        $this->assertEqual($users[1]->Phonenumber->getAggregateValue('max'), '789 789');
+        $this->assertEqual($users[2]->Phonenumber->getAggregateValue('max'), '123 123');
+        $this->assertEqual($users[3]->Phonenumber->getAggregateValue('max'), '111 222 333');
+        $this->assertEqual($users[4]->Phonenumber->getAggregateValue('max'), '444 555');
+    }
     public function testSingleComponentWithAsterisk() {
         $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.* FROM User u');
 
-        $this->assertEqual($q->getQuery(),'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity WHERE (entity.type = 0)');
+        $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity WHERE (entity.type = 0)');
     }
     public function testSingleComponentWithMultipleColumns() {
         $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.name, u.type FROM User u'); 
         
-        $this->assertEqual($q->getQuery(),'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.type AS entity__type FROM entity WHERE (entity.type = 0)');
+        $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.type AS entity__type FROM entity WHERE (entity.type = 0)');
     }
     public function testMultipleComponentsWithAsterisk() {
         $q = new Doctrine_Query();

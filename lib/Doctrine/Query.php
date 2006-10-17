@@ -113,6 +113,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
     }
     public function parseAggregateFunction2($func) {
+        $e    = Doctrine_Query::bracketExplode($func, ' ');
+        $func = $e[0];
+
         $pos  = strpos($func, '(');
         $name = substr($func, 0, $pos);
         switch($name) {
@@ -122,9 +125,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             case 'AVG':
                 $reference = substr($func, ($pos + 1), -1);
 
-                $e = explode('.', $reference);
-
-                $this->pendingAggregates[$e[0]][] = array($name, $e[1]);
+                $parts = explode('.', $reference);
+                $alias = (isset($e[1])) ? $e[1] : $name;
+                $this->pendingAggregates[$parts[0]][] = array($alias, $parts[1]);
             break;
             default:
                 throw new Doctrine_Query_Exception('Unknown aggregate function '.$name);
