@@ -23,6 +23,17 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($q->getQuery(), 'SELECT MAX(entity.id) AS entity__0, MIN(entity.name) AS entity__1, COUNT(phonenumber.id) AS phonenumber__2 FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0)');
     }
+    public function testEmptySelectPart() {
+        $q = new Doctrine_Query();
+        
+        try {
+            $q->select();
+            
+            $this->fail();
+        } catch(Doctrine_Query_Exception $e) {
+            $this->pass();
+        }
+    }
     public function testUnknownAggregateFunction() {
         $q = new Doctrine_Query();
         

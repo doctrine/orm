@@ -27,6 +27,11 @@
  * @license     LGPL
  */
 class Doctrine_Query extends Doctrine_Hydrate implements Countable {
+    const SELECT = 0;
+    
+    const DELETE = 1;
+    
+    const UPDATE = 2;
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
      */
@@ -47,6 +52,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     private $isDistinct        = false;
     
     private $pendingFields     = array();
+
+    protected $type            = self::SELECT;
 
     /**
      * create
@@ -270,46 +277,65 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     public function __call($name, $args) {
         $name = strtolower($name);
         
-        if(isset($this->parts[$name])) {
-            $method = "parse".ucwords($name);
-            switch($name):
-                case "from":
-                    $this->parts['from']    = array();
-                    $this->parts['select']  = array();
-                    $this->parts['join']    = array();
-                    $this->joins            = array();
-                    $this->tables           = array();
-                    $this->fetchModes       = array();
-                    $this->tableIndexes     = array();
-                    $this->tableAliases     = array();
+        if($name == 'select')
+
+
+
+        $method = "parse".ucwords($name);
+
+        switch($name) {
+            case 'select':
+                $this->type = self::SELECT;
+                
+                if( ! isset($args[0])) 
+                    throw new Doctrine_Query_Exception('Empty select part');
+
+                $this->parseSelect($args[0]);
+            break;
+            case 'delete':
+                $this->type = self::DELETE;
+            break;
+            case 'update':
+                $this->type = self::UPDATE;
+            break;
+            case 'from':
+                $this->parts['from']    = array();
+                $this->parts['select']  = array();
+                $this->parts['join']    = array();
+                $this->joins            = array();
+                $this->tables           = array();
+                $this->fetchModes       = array();
+                $this->tableIndexes     = array();
+                $this->tableAliases     = array();
+
+                $class = "Doctrine_Query_".ucwords($name);
+                $parser = new $class($this);
+
+                $parser->parse($args[0]);
+            break;
+            case 'where':
+            case 'having':
+            case 'orderby':
+            case 'groupby':
+                $class = "Doctrine_Query_".ucwords($name);
+                $parser = new $class($this);
+
+                $this->parts[$name] = array($parser->parse($args[0]));
+            break;
+            case 'limit':
+            case 'offset':
+                if($args[0] == null)
+                    $args[0] = false;
+
+                $this->parts[$name] = $args[0];
+            break;
+            default:
+                $this->parts[$name] = array();
+                $this->$method($args[0]);
                     
-                    $class = "Doctrine_Query_".ucwords($name);
-                    $parser = new $class($this);
-
-                    $parser->parse($args[0]);
-                break;
-                case "where":
-                case "having": 
-                case "orderby":
-                case "groupby":
-                    $class = "Doctrine_Query_".ucwords($name);
-                    $parser = new $class($this);
-
-                    $this->parts[$name] = array($parser->parse($args[0]));
-                break;
-                case "limit":
-                case "offset":
-                    if($args[0] == null)
-                        $args[0] = false;
-
-                    $this->parts[$name] = $args[0];
-                break;
-                default:
-                    $this->parts[$name] = array();
-                    $this->$method($args[0]);
-            endswitch;
-        } else 
             throw new Doctrine_Query_Exception("Unknown overload method");
+        }
+
 
         return $this;
     }
@@ -371,6 +397,23 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     public function isLimitSubqueryUsed() {
         return $this->limitSubqueryUsed;
     }
+    
+    public function getQueryBase() {
+        switch($this->type) {
+            case self::DELETE:
+                $q = 'DELETE FROM ';
+            break;
+            case self::UPDATE:
+                $q = 'UPDATE ';
+            break;
+            case self::SELECT:
+                $distinct = ($this->isDistinct()) ? 'DISTINCT ' : '';
+
+                $q = 'SELECT '.$distinct.implode(', ', $this->parts['select']).' FROM ';
+            break;
+        }
+        return $q;
+    }
     /**
      * returns the built sql query
      *
@@ -391,13 +434,16 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
 
         // build the basic query
-        
+
         $str = '';
         if($this->isDistinct())
             $str = 'DISTINCT ';
 
+
+
         $q = "SELECT ".$str.implode(", ",$this->parts["select"]).
              " FROM ";
+        $q = $this->getQueryBase();
 
         foreach($this->parts["from"] as $tname => $bool) {
             $a[] = $tname;
@@ -523,17 +569,18 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         foreach($e as $k=>$part) {
             $part = trim($part);
             switch(strtolower($part)) {
-                case "select":
-                case "from":
-                case "where":
-                case "limit":
-                case "offset":
-                case "having":
+                case 'delete':
+                case 'select':
+                case 'from':
+                case 'where':
+                case 'limit':
+                case 'offset':
+                case 'having':
                     $p = $part;
                     $parts[$part] = array();
                 break;
-                case "order":
-                case "group":
+                case 'order':
+                case 'group':
                     $i = ($k + 1);
                     if(isset($e[$i]) && strtolower($e[$i]) === "by") {
                         $p = $part;
@@ -554,29 +601,36 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         foreach($parts as $k => $part) {
             $part = implode(" ",$part);
             switch(strtoupper($k)) {
-                case "SELECT":
+                case 'DELETE':
+                    $this->type = self::DELETE;
+                break;
+                case 'UPDATE':
+                    $this->type = self::UPDATE;
+                break;
+                case 'SELECT':
+                    $this->type = self::SELECT;
                     $this->parseSelect($part);
                 break;
-                case "FROM":
+                case 'FROM':
                     $class  = "Doctrine_Query_".ucwords(strtolower($k));
                     $parser = new $class($this);
                     $parser->parse($part);
                 break;
-                case "GROUP":
-                case "ORDER":
+                case 'GROUP':
+                case 'ORDER':
                     $k .= "by";
-                case "WHERE":
-                case "HAVING":
+                case 'WHERE':
+                case 'HAVING':
                     $class  = "Doctrine_Query_".ucwords(strtolower($k));
                     $parser = new $class($this);
 
                     $name = strtolower($k);
                     $this->parts[$name][] = $parser->parse($part);
                 break;
-                case "LIMIT":
+                case 'LIMIT':
                     $this->parts["limit"] = trim($part);
                 break;
-                case "OFFSET":
+                case 'OFFSET':
                     $this->parts["offset"] = trim($part);
                 break;
             }

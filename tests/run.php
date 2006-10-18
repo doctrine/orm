@@ -38,6 +38,7 @@ require_once("QueryConditionTestCase.php");
 require_once("QueryComponentAliasTestCase.php");
 require_once("QuerySubqueryTestCase.php");
 require_once("QuerySelectTestCase.php");
+require_once("QueryDeleteTestCase.php");
 
 require_once("DBTestCase.php");
 require_once("SchemaTestCase.php");
@@ -48,9 +49,6 @@ require_once("RelationAccessTestCase.php");
 require_once("RelationTestCase.php");
 require_once("DataDictSqliteTestCase.php");
 require_once("CustomResultSetOrderTestCase.php");
-
-// unsorted tests are here, these should be moved somewhere sensible
-require_once("UnsortedTestCase.php");
 
 error_reporting(E_ALL);
 print "<pre>";
@@ -127,7 +125,7 @@ $test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 
-$test->addTestCase(new Doctrine_QueryTestCase());
+$test->addTestCase(new Doctrine_Query_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Where_TestCase());
 
@@ -135,7 +133,8 @@ $test->addTestCase(new Doctrine_Query_From_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Select_TestCase());
 
-$test->addTestCase(new Doctrine_UnsortedTestCase());
+$test->addTestCase(new Doctrine_Query_Delete_TestCase());
+
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());

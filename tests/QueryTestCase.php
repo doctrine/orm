@@ -1,5 +1,5 @@
 <?php
-class Doctrine_QueryTestCase extends Doctrine_UnitTestCase {
+class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
     public function prepareTables() {
         $this->tables[] = "Forum_Category";
         $this->tables[] = "Forum_Entry";
