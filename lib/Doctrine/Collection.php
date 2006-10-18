@@ -500,8 +500,15 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if(isset($this->reference_field))
             $record->set($this->reference_field, $this->reference, false);
 
-        if(array_search($record, $this->data) !== false)
-            return false;
+        /**
+         * for some weird reason in_array cannot be used here (php bug ?)
+         * 
+         * if used it results in fatal error : [ nesting level too deep ]
+         */
+        foreach($this->data as $val) {
+            if($val === $record) 
+                return false;
+        }
 
         if(isset($key)) {
             if(isset($this->data[$key]))
