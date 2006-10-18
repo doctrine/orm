@@ -500,9 +500,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if(isset($this->reference_field))
             $record->set($this->reference_field, $this->reference, false);
 
-        if(in_array($record,$this->data)) {
+        if(array_search($record, $this->data) !== false)
             return false;
-        }
 
         if(isset($key)) {
             if(isset($this->data[$key]))

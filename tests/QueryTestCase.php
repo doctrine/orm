@@ -986,14 +986,9 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($query instanceof Doctrine_Query);
         $this->assertEqual($query->get("offset"), 5);
 
-        $query->offset = 7;
-        $this->assertEqual($query->get("offset"), 7);
-        
-        $query->limit = 10;
-        $this->assertEqual($query->limit, 10);
-        $this->assertTrue(strpos($query->getQuery(),"LIMIT"));
-
         $query->remove('limit')->remove('offset');
+
+        $this->assertFalse(strpos($query->getQuery(),"OFFSET"));
 
         $this->assertFalse(strpos($query->getQuery(),"LIMIT"));
 

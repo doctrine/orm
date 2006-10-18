@@ -1,5 +1,5 @@
 <?php
-class Doctrine_Collection_OffsetTestCase extends Doctrine_UnitTestCase {
+class Doctrine_Collection_Offset_TestCase extends Doctrine_UnitTestCase {
     public function testExpand() {
 
         $users = $this->connection->query("FROM User-o");

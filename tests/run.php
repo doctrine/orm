@@ -39,6 +39,7 @@ require_once("QueryComponentAliasTestCase.php");
 require_once("QuerySubqueryTestCase.php");
 require_once("QuerySelectTestCase.php");
 require_once("QueryDeleteTestCase.php");
+require_once("QueryUpdateTestCase.php");
 
 require_once("DBTestCase.php");
 require_once("SchemaTestCase.php");
@@ -81,7 +82,7 @@ $test->addTestCase(new Doctrine_BatchIteratorTestCase());
 
 $test->addTestCase(new Doctrine_ConfigurableTestCase());
 
-$test->addTestCase(new Doctrine_Collection_OffsetTestCase());
+//$test->addTestCase(new Doctrine_Collection_Offset_TestCase());
 
 $test->addTestCase(new Doctrine_PessimisticLockingTestCase());
 
@@ -134,6 +135,8 @@ $test->addTestCase(new Doctrine_Query_From_TestCase());
 $test->addTestCase(new Doctrine_Query_Select_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Delete_TestCase());
+
+$test->addTestCase(new Doctrine_Query_Update_TestCase());
 
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
