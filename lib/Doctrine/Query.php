@@ -27,10 +27,21 @@
  * @license     LGPL
  */
 class Doctrine_Query extends Doctrine_Hydrate implements Countable {
+    /**
+     * QUERY TYPE CONSTANTS
+     */
+
+    /**
+     * constant for SELECT queries
+     */
     const SELECT = 0;
-    
+    /**
+     * constant for DELETE queries
+     */
     const DELETE = 1;
-    
+    /**
+     * constant for UPDATE queries
+     */
     const UPDATE = 2;
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
@@ -52,7 +63,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     private $isDistinct        = false;
     
     private $pendingFields     = array();
-
+    /**
+     * @var integer $type                   the query type
+     *
+     * @see Doctrine_Query::* constants
+     */
     protected $type            = self::SELECT;
 
     /**
@@ -297,7 +312,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             break;
             case 'update':
                 $this->type = self::UPDATE;
-            break;
+                $name       = 'from';
             case 'from':
                 $this->parts['from']    = array();
                 $this->parts['select']  = array();
@@ -359,6 +374,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @return boolean
      */
     public function set($name, $value) {
+                                       	/**
 
         if(isset($this->parts[$name])) {
             $method = "parse".ucwords($name);
@@ -390,6 +406,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             return true;
         }
         return false;
+        */
+        $class = new Doctrine_Query_Set($this);
+        $class->parse($name, $value);
     }
     /**
      * @return boolean
@@ -451,8 +470,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $q .= implode(", ",$a);
 
         if($needsSubQuery)
-            $subquery = 'SELECT DISTINCT '.$table->getTableName().".".$table->getIdentifier().
-                        ' FROM '.$table->getTableName();
+            $subquery = 'SELECT DISTINCT ' . $table->getTableName() 
+                      . '.' . $table->getIdentifier()
+                      . ' FROM '.$table->getTableName();
+
 
         if( ! empty($this->parts['join'])) {
             foreach($this->parts['join'] as $part) {
@@ -570,7 +591,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             $part = trim($part);
             switch(strtolower($part)) {
                 case 'delete':
+                case 'update':
                 case 'select':
+                case 'set':
                 case 'from':
                 case 'where':
                 case 'limit':
@@ -604,15 +627,18 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 case 'DELETE':
                     $this->type = self::DELETE;
                 break;
-                case 'UPDATE':
-                    $this->type = self::UPDATE;
-                break;
+
                 case 'SELECT':
                     $this->type = self::SELECT;
                     $this->parseSelect($part);
                 break;
+                case 'UPDATE':
+                    $this->type = self::UPDATE;
+                    $k = 'FROM';
+
                 case 'FROM':
-                    $class  = "Doctrine_Query_".ucwords(strtolower($k));
+                case 'SET':
+                    $class  = 'Doctrine_Query_'.ucwords(strtolower($k));
                     $parser = new $class($this);
                     $parser->parse($part);
                 break;

@@ -96,10 +96,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     protected $_errorStack;
     /**
-     * @var array $collections              the collections this record is in
-     */
-    private $collections    = array();
-    /**
      * @var array $references               an array containing all the references
      */
     private $references     = array();
@@ -494,38 +490,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onWakeUp($this);
     }
-
-
-    /**
-     * addCollection
-     *
-     * @param Doctrine_Collection $collection
-     * @param mixed $key
-     */
-    final public function addCollection(Doctrine_Collection $collection,$key = null) {
-        if($key !== null) {
-            $this->collections[$key] = $collection;
-        } else {
-            $this->collections[] = $collection;
-        }
-    }
-    /**
-     * getCollection
-     * @param integer $key
-     * @return Doctrine_Collection
-     */
-    final public function getCollection($key) {
-        return $this->collections[$key];
-    }
-    /**
-     * hasCollections
-     * whether or not this record is part of a collection
-     *
-     * @return boolean
-     */
-    final public function hasCollections() {
-        return (! empty($this->collections));
-    }
     /**
      * getState
      * returns the current state of the object
@@ -646,16 +610,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function load() {
         // only load the data from database if the Doctrine_Record is in proxy state
         if($this->_state == Doctrine_Record::STATE_PROXY) {
-            if( ! empty($this->collections)) {
-                // delegate the loading operation to collections in which this record resides
-                foreach($this->collections as $collection) {
-                    $collection->load($this);
+            $this->refresh();
 
-                }
-            } else {
-
-                $this->refresh();
-            }
             $this->_state = Doctrine_Record::STATE_CLEAN;
 
             return true;
@@ -680,9 +636,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if(isset($this->_data[$lower])) {
 
             // check if the property is null (= it is the Doctrine_Null object located in self::$null)
-            if($this->_data[$lower] === self::$null) {
+            if($this->_data[$lower] === self::$null)
                 $this->load();
-            }
+            
 
             if($this->_data[$lower] === self::$null)
                 $value = null;
