@@ -304,9 +304,14 @@ $menu = array("Getting started" =>
                                         "OffsetIterator")
                         */
                     ),
+
            "DQL (Doctrine Query Language)" =>
 
-                            array('Introduction',
+                            array(
+                                  'Introduction',
+                                  'SELECT queries',
+                                  'UPDATE queries',
+                                  'DELETE queries',
                                   'FROM clause',
                                   'WHERE clause',
                                   'Conditional expressions' =>
@@ -323,7 +328,7 @@ $menu = array("Getting started" =>
                                               'Empty Collection Comparison Expressions',
                                               'Collection Member Expressions',
                                               'Exists Expressions',
-                                              'All or Any Expressions',
+                                              'All and Any Expressions',
                                               'Subqueries'),
                                   'Functional Expressions' =>
                                         array('String functions',
@@ -336,16 +341,6 @@ $menu = array("Getting started" =>
                                   'LIMIT and OFFSET clauses',
                                   'Examples',
                                   'BNF'),
-                                   /**
-                                  'Functions' => array(
-                                        'Contains',
-                                        'Regexp',
-                                        'Like'),
-                                  'Operators' => array(
-                                      'Logical operators')
-
-
-                                   */
 
            "Transactions" => array(
                         "Introduction",
