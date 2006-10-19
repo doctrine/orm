@@ -24,10 +24,104 @@
  * @url         http://www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen
+ * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @version     $Id$
  */
  
 class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
+    /**
+     * Obtain DBMS specific SQL code portion needed to declare an text type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param array $field  associative array with the name of the properties
+     *      of the field being declared as array indexes. Currently, the types
+     *      of supported field properties are as follows:
+     *
+     *      length
+     *          Integer value that determines the maximum length of the text
+     *          field. If this argument is missing the field should be
+     *          declared to have the longest length allowed by the DBMS.
+     *
+     *      default
+     *          Text value to be used as default for this field.
+     *
+     *      notnull
+     *          Boolean flag that indicates whether this field is constrained
+     *          to not be set to null.
+     * @return string  DBMS specific SQL code portion that should be used to
+     *      declare the specified field.
+     * @access public
+     */
+    public function getTypeDeclaration($field) {
+        switch ($field['type']) {
+            case 'array':
+            case 'object':
+            case 'string':
+                if (empty($field['length']) && array_key_exists('default', $field)) {
+                    $field['length'] = $this->dbh->varchar_max_length;
+                }
+                
+                $length = (! empty($field['length'])) ? $field['length'] : false;
+                $fixed  = (! empty($field['fixed'])) ? $field['fixed'] : false;
+
+                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR(255)')
+                    : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
+            case 'clob':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 255) {
+                        return 'TINYTEXT';
+                    } elseif ($length <= 65532) {
+                        return 'TEXT';
+                    } elseif ($length <= 16777215) {
+                        return 'MEDIUMTEXT';
+                    }
+                }
+                return 'LONGTEXT';
+            case 'blob':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 255) {
+                        return 'TINYBLOB';
+                    } elseif ($length <= 65532) {
+                        return 'BLOB';
+                    } elseif ($length <= 16777215) {
+                        return 'MEDIUMBLOB';
+                    }
+                }
+                return 'LONGBLOB';
+            case 'integer':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 1) {
+                        return 'TINYINT';
+                    } elseif ($length == 2) {
+                        return 'SMALLINT';
+                    } elseif ($length == 3) {
+                        return 'MEDIUMINT';
+                    } elseif ($length == 4) {
+                        return 'INT';
+                    } elseif ($length > 4) {
+                        return 'BIGINT';
+                    }
+                }
+                return 'INT';
+            case 'boolean':
+                return 'TINYINT(1)';
+            case 'date':
+                return 'DATE';
+            case 'time':
+                return 'TIME';
+            case 'timestamp':
+                return 'DATETIME';
+            case 'float':
+                return 'DOUBLE';
+            case 'decimal':
+                $length = !empty($field['length']) ? $field['length'] : 18;
+                return 'DECIMAL('.$length.','.$this->dbh->options['decimal_places'].')';
+        }
+        return '';
+    }
     /**
      * lists all databases
      *
@@ -111,7 +205,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return array
      */
     public function listTables($database = null) {
-        $sql = "SHOW TABLES";
+        $sql = 'SHOW TABLES';
         
         return $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }

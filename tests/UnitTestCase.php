@@ -7,6 +7,8 @@ require_once dirname(__FILE__).'/../lib/Doctrine.php';
 
 
 //Doctrine::loadAll();
+ini_set('include_path', $_SERVER['DOCUMENT_ROOT']);
+
 function __autoload($class) {
     Doctrine::autoload($class);
 }

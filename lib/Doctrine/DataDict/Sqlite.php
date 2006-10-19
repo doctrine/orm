@@ -79,7 +79,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
      */
     public function listTableColumns($table) { 
 
-        $sql = "PRAGMA table_info($table)";
+        $sql    = "PRAGMA table_info($table)";
         $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         $description = array();
@@ -112,9 +112,9 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
      * @return array
      */
     public function listTables($database = null) {
-        $sql = "SELECT name FROM sqlite_master WHERE type='table' "
-                . "UNION ALL SELECT name FROM sqlite_temp_master "
-                . "WHERE type='table' ORDER BY name";
+        $sql = "SELECT name FROM sqlite_master WHERE type = 'table' "
+             . "UNION ALL SELECT name FROM sqlite_temp_master "
+             . "WHERE type = 'table' ORDER BY name";
 
         $tables = array();
         $stmt   = $this->dbh->query($sql);

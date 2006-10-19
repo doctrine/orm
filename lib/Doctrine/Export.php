@@ -27,7 +27,15 @@
  * @license     LGPL
  */
 class Doctrine_Export {
-    public function export() { 
+    private $conn;
+    
+    private $dbh;
+
+    public function __construct($conn) {
+        $this->conn = $conn;
+        $this->dbh  = $conn->getDBH();
+    }
+    public function export() {
         $parent = new ReflectionClass('Doctrine_Record');
         $conn   = Doctrine_Manager::getInstance()->getCurrentConnection();
         $old    = $conn->getAttribute(Doctrine::ATTR_CREATE_TABLES);
