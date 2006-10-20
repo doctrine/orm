@@ -24,10 +24,206 @@
  * @url         http://www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen
+ * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @version     $Id$
  */
  
 class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
+    /**
+     * Obtain DBMS specific SQL code portion needed to declare an text type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param array $field  associative array with the name of the properties
+     *      of the field being declared as array indexes. Currently, the types
+     *      of supported field properties are as follows:
+     *
+     *      length
+     *          Integer value that determines the maximum length of the text
+     *          field. If this argument is missing the field should be
+     *          declared to have the longest length allowed by the DBMS.
+     *
+     *      default
+     *          Text value to be used as default for this field.
+     *
+     *      notnull
+     *          Boolean flag that indicates whether this field is constrained
+     *          to not be set to null.
+     * @return string  DBMS specific SQL code portion that should be used to
+     *      declare the specified field.
+     * @access public
+     */
+    function getTypeDeclaration($field) {
+        switch ($field['type']) {
+            case 'text':
+                $length = !empty($field['length'])
+                    ? $field['length'] : false;
+                $fixed = !empty($field['fixed']) ? $field['fixed'] : false;
+                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$db->options['default_text_field_length'].')')
+                    : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
+            case 'clob':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 255) {
+                        return 'TINYTEXT';
+                    } elseif ($length <= 65535) {
+                        return 'TEXT';
+                    } elseif ($length <= 16777215) {
+                        return 'MEDIUMTEXT';
+                    }
+                }
+                return 'LONGTEXT';
+            case 'blob':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 255) {
+                        return 'TINYBLOB';
+                    } elseif ($length <= 65535) {
+                        return 'BLOB';
+                    } elseif ($length <= 16777215) {
+                        return 'MEDIUMBLOB';
+                    }
+                }
+                return 'LONGBLOB';
+            case 'integer':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 2) {
+                        return 'SMALLINT';
+                    } elseif ($length == 3 || $length == 4) {
+                        return 'INTEGER';
+                    } elseif ($length > 4) {
+                        return 'BIGINT';
+                    }
+                }
+                return 'INTEGER';
+            case 'boolean':
+                return 'BOOLEAN';
+            case 'date':
+                return 'DATE';
+            case 'time':
+                return 'TIME';
+            case 'timestamp':
+                return 'DATETIME';
+            case 'float':
+                return 'DOUBLE'.($db->options['fixed_float'] ? '('.
+                    ($db->options['fixed_float']+2).','.$db->options['fixed_float'].')' : '');
+            case 'decimal':
+                $length = !empty($field['length']) ? $field['length'] : 18;
+                return 'DECIMAL('.$length.','.$db->options['decimal_places'].')';
+        }
+        return '';
+    }
+    /**
+     * Maps a native array description of a field to a MDB2 datatype and length
+     *
+     * @param array  $field native field description
+     * @return array containing the various possible types, length, sign, fixed
+     * @access public
+     */
+    function mapNativeDatatype($field) {
+        $db_type = strtolower($field['type']);
+        $length = !empty($field['length']) ? $field['length'] : null;
+        $unsigned = !empty($field['unsigned']) ? $field['unsigned'] : null;
+        $fixed = null;
+        $type = array();
+        switch ($db_type) {
+            case 'boolean':
+                $type[] = 'boolean';
+                break;
+            case 'tinyint':
+                $type[] = 'integer';
+                $type[] = 'boolean';
+                if (preg_match('/^(is|has)/', $field['name'])) {
+                    $type = array_reverse($type);
+                }
+                $unsigned = preg_match('/ unsigned/i', $field['type']);
+                $length = 1;
+                break;
+            case 'smallint':
+                $type[] = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $field['type']);
+                $length = 2;
+                break;
+            case 'mediumint':
+                $type[] = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $field['type']);
+                $length = 3;
+                break;
+            case 'int':
+            case 'integer':
+            case 'serial':
+                $type[] = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $field['type']);
+                $length = 4;
+                break;
+            case 'bigint':
+            case 'bigserial':
+                $type[] = 'integer';
+                $unsigned = preg_match('/ unsigned/i', $field['type']);
+                $length = 8;
+                break;
+            case 'clob':
+            case 'tinytext':
+            case 'mediumtext':
+            case 'longtext':
+            case 'text':
+            case 'varchar':
+            case 'varchar2':
+                $fixed = false;
+            case 'char':
+                $type[] = 'text';
+                if ($length == '1') {
+                    $type[] = 'boolean';
+                    if (preg_match('/^(is|has)/', $field['name'])) {
+                        $type = array_reverse($type);
+                    }
+                } elseif (strstr($db_type, 'text')) {
+                    $type[] = 'clob';
+                }
+                if ($fixed !== false) {
+                    $fixed = true;
+                }
+                break;
+            case 'date':
+                $type[] = 'date';
+                $length = null;
+                break;
+            case 'datetime':
+            case 'timestamp':
+                $type[] = 'timestamp';
+                $length = null;
+                break;
+            case 'time':
+                $type[] = 'time';
+                $length = null;
+                break;
+            case 'float':
+            case 'double':
+            case 'real':
+                $type[] = 'float';
+                break;
+            case 'decimal':
+            case 'numeric':
+                $type[] = 'decimal';
+                break;
+            case 'tinyblob':
+            case 'mediumblob':
+            case 'longblob':
+            case 'blob':
+                $type[] = 'blob';
+                $length = null;
+                break;
+            case 'year':
+                $type[] = 'integer';
+                $type[] = 'date';
+                $length = null;
+                break;
+            default:
+                throw new Doctrine_DataDict_Sqlite_Exception('unknown database attribute type: '.$db_type);
+        }
+
+        return array($type, $length, $unsigned, $fixed);
+    }
     /**
      * lists all databases
      *

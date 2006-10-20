@@ -29,6 +29,144 @@
  
 class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
     /**
+     * Obtain DBMS specific SQL code portion needed to declare an text type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param array $field  associative array with the name of the properties
+     *      of the field being declared as array indexes. Currently, the types
+     *      of supported field properties are as follows:
+     *
+     *      length
+     *          Integer value that determines the maximum length of the text
+     *          field. If this argument is missing the field should be
+     *          declared to have the longest length allowed by the DBMS.
+     *
+     *      default
+     *          Text value to be used as default for this field.
+     *
+     *      notnull
+     *          Boolean flag that indicates whether this field is constrained
+     *          to not be set to null.
+     * @return string  DBMS specific SQL code portion that should be used to
+     *      declare the specified field.
+     */
+    public function getTypeDeclaration(array $field) {
+        switch ($field['type']) {
+            case 'string':
+            case 'array':
+            case 'object':
+            case 'gzip':
+                $length = !empty($field['length'])
+                    ? $field['length'] : $db->options['default_text_field_length'];
+                $fixed = !empty($field['fixed']) ? $field['fixed'] : false;
+                return $fixed ? 'CHAR('.$length.')' : 'VARCHAR2('.$length.')';
+            case 'clob':
+                return 'CLOB';
+            case 'blob':
+                return 'BLOB';
+            case 'integer':
+                if (!empty($field['length'])) {
+                    return 'NUMBER('.$field['length'].')';
+                }
+                return 'INT';
+            case 'boolean':
+                return 'NUMBER(1)';
+            case 'date':
+            case 'time':
+            case 'timestamp':
+                return 'DATE';
+            case 'float':
+                return 'NUMBER';
+            case 'decimal':
+                return 'NUMBER(*,'.$db->options['decimal_places'].')';
+        }
+    }
+    /**
+     * Maps a native array description of a field to a MDB2 datatype and length
+     *
+     * @param array  $field native field description
+     * @return array containing the various possible types, length, sign, fixed
+     * @throws Doctrine_DataDict_Oracle_Exception
+     */
+    function mapNativeDatatype($field) {
+        $db_type = strtolower($field['type']);
+        $type = array();
+        $length = $unsigned = $fixed = null;
+        if (!empty($field['length'])) {
+            $length = $field['length'];
+        }
+        switch ($db_type) {
+            case 'integer':
+            case 'pls_integer':
+            case 'binary_integer':
+                $type[] = 'integer';
+                if ($length == '1') {
+                    $type[] = 'boolean';
+                    if (preg_match('/^(is|has)/', $field['name'])) {
+                        $type = array_reverse($type);
+                    }
+                }
+                break;
+            case 'varchar':
+            case 'varchar2':
+            case 'nvarchar2':
+                $fixed = false;
+            case 'char':
+            case 'nchar':
+                $type[] = 'text';
+                if ($length == '1') {
+                    $type[] = 'boolean';
+                    if (preg_match('/^(is|has)/', $field['name'])) {
+                        $type = array_reverse($type);
+                    }
+                }
+                if ($fixed !== false) {
+                    $fixed = true;
+                }
+                break;
+            case 'date':
+            case 'timestamp':
+                $type[] = 'timestamp';
+                $length = null;
+                break;
+            case 'float':
+                $type[] = 'float';
+                break;
+            case 'number':
+                if (!empty($field['scale'])) {
+                    $type[] = 'decimal';
+                } else {
+                    $type[] = 'integer';
+                    if ($length == '1') {
+                        $type[] = 'boolean';
+                        if (preg_match('/^(is|has)/', $field['name'])) {
+                            $type = array_reverse($type);
+                        }
+                    }
+                }
+                break;
+            case 'long':
+                $type[] = 'text';
+            case 'clob':
+            case 'nclob':
+                $type[] = 'clob';
+                break;
+            case 'blob':
+            case 'raw':
+            case 'long raw':
+            case 'bfile':
+                $type[] = 'blob';
+                $length = null;
+                break;
+            case 'rowid':
+            case 'urowid':
+            default:
+                throw new Doctrine_DataDict_Oracle_Exception('unknown database attribute type: '.$db_type);
+        }
+
+        return array($type, $length, $unsigned, $fixed);
+    }
+    /**
      * lists all databases
      *
      * @return array
