@@ -27,7 +27,7 @@
  * @version     $Id$
  */
  
-class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
+class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
