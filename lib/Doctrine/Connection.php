@@ -540,7 +540,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                         $this->table->getConnection()->execute($query, array($r->getIncremented(),$record->getIncremented()));
                     }
 
-                    $operations = Doctrine_Relation::getInsertOperations($this->originals[$alias],$new);
+                    $operations = Doctrine_Relation::getInsertOperations($record->obtainOriginals($alias),$new);
                     foreach($operations as $r) {
                         $reldao = $asf->create();
                         $reldao->set($fk->getForeign(),$r);
@@ -548,14 +548,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                         $reldao->save();
 
                     }
-                $this->originals[$alias] = clone $this->references[$alias];
+                    $record->assignOriginals($alias, clone $this->references[$alias]);
                 }
             } elseif($fk instanceof Doctrine_Relation_ForeignKey ||
                      $fk instanceof Doctrine_Relation_LocalKey) {
 
                 if($fk->isOneToOne()) {
-                    if(isset($this->originals[$alias]) && $this->originals[$alias]->obtainIdentifier() != $this->references[$alias]->obtainIdentifier())
-                            $this->originals[$alias]->delete();
+                    if($record->obtainOriginals($alias) && $record->obtainOriginals($alias)->obtainIdentifier() != $this->references[$alias]->obtainIdentifier())
+                            $record->obtainOriginals($alias)->delete();
                 } else {
                     if(isset($this->references[$alias])) {
                         $new = $this->references[$alias];

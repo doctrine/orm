@@ -56,13 +56,13 @@ print "<pre>";
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
+$test->addTestCase(new Doctrine_Relation_TestCase());
+
 $test->addTestCase(new Doctrine_RecordTestCase());
 
 $test->addTestCase(new Doctrine_ValidatorTestCase());
 
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
-
-$test->addTestCase(new Doctrine_Relation_TestCase());
 
 $test->addTestCase(new Doctrine_EventListenerTestCase());
 

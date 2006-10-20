@@ -89,7 +89,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     /**
      * @var array $columns                              an array of column definitions
      */
-    private $columns;
+    private $columns            = array();
     /**
      * @var array $bound                                bound relations
      */
@@ -103,8 +103,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *                                                  determining its state
      */
     private $columnCount;
-
-
     /**
      * @var array $inheritanceMap                       inheritanceMap is used for inheritance mapping, keys representing columns and values
      *                                                  the column values that should correspond to child classes
@@ -229,7 +227,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
             }
         } else {
-            throw new Doctrine_Exception("Class '$name' has no table definition.");
+            throw new Doctrine_Table_Exception("Class '$name' has no table definition.");
         }
 
 
@@ -589,7 +587,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         $original = $name;
 
         if(isset($this->relations[$name]))
-            return $this->relations[$name];
+            return $this->relations[$name]; 
 
         if(isset($this->bound[$name])) {
             $type       = $this->bound[$name][1];
@@ -612,8 +610,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 } else
                     throw new Doctrine_Table_Exception("Only one-to-one relations are possible when local reference key is used.");
 
-            } elseif($component == $name || 
-                    ($component == $alias && ($name == $this->name || in_array($name,$this->parents)))) {
+            } elseif($component == $name ||
+                    ($component == $alias)) {     //  && ($name == $this->name || in_array($name,$this->parents))
 
                 if( ! isset($local))
                     $local = $this->identifier;
@@ -666,9 +664,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 }
 
             }
+
             $this->relations[$alias] = $relation;
             return $this->relations[$alias];
         }
+
         // load all relations
         $this->getRelations();
         

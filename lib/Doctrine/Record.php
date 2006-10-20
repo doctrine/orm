@@ -434,7 +434,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $vars = get_object_vars($this);
 
         unset($vars['references']);
-        unset($vars['collections']);
         unset($vars['originals']);
         unset($vars['_table']);
 
@@ -638,7 +637,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             // check if the property is null (= it is the Doctrine_Null object located in self::$null)
             if($this->_data[$lower] === self::$null)
                 $this->load();
-            
+
 
             if($this->_data[$lower] === self::$null)
                 $value = null;
@@ -854,12 +853,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $a;
     }
     /**
+     * getPrepared
+     *
      * returns an array of modified fields and values with data preparation
      * adds column aggregation inheritance and converts Records into primary key values
      *
+     * @param array $array
      * @return array
      */
-    final public function getPrepared(array $array = array()) {
+    public function getPrepared(array $array = array()) {
         $a = array();
 
         if(empty($array))
@@ -968,6 +970,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function getIterator() {
         return new Doctrine_Record_Iterator($this);
     }
+
+    public function obtainOriginals($name) {
+        if(isset($this->originals[$name]))
+            return $this->originals[$name];
+    
+        return false;
+    }
+
     /**
      * saveAssociations
      *
