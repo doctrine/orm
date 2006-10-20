@@ -316,10 +316,8 @@ $menu = array("Getting started" =>
                                   'WHERE clause',
                                   'Conditional expressions' =>
                                         array('Literals',
-                                              'Identification variables',
-                                              'Path expressions',
                                               'Input parameters',
-                                              'Contidional expression composition',
+
                                               'Operators and operator precedence',
                                               'Between expressions',
                                               'In expressions',
@@ -507,24 +505,29 @@ $menu = array("Getting started" =>
 
                     $break = false;
                     $tmp   = $paths;
+
                     foreach($tmp as $path => $title) {
                         $e = explode(".", $path);
                         if(count($e) > 2) {
                             unset($tmp[$path]);
                         }
                     }
+
                     $prev = 1;
+                    
                     foreach($tmp as $path => $title) {
                         if($break)
                             break;
 
-                        if($path == $_REQUEST["index"]) {
+                        if($path === $_REQUEST["index"]) {
                             $break = true;
                         } else {
                             $prev = $path;
                         }
                     }
+
                     $index = $_REQUEST['index'];
+
                     print "<table width='100%'>";
                     print "<tr><td colspan=3 align='center'><b></td></tr>";
                     print "<tr><td colspan=3 align='center'><b class='title'>".$paths[$ex[0]]."</b></td></tr>";
@@ -576,8 +579,7 @@ $menu = array("Getting started" =>
                             }
                         }
                     } else {
-                        //if( ! isset($menu[$ex[0]]))
-                        //    exit;
+
                         $tmp = $paths[$ex[0]];
                         $i = 1;
                         foreach($menu[$tmp] as $title => $value) {
