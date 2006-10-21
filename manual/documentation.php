@@ -442,21 +442,25 @@ $menu = array("Getting started" =>
             </tr>
             <tr>
                 <td bgcolor="white" valign="top">
+
                 <?php
                 if( ! isset($_REQUEST["index"])) {
                 $i = 1;
                 $missing = array();
                 $missing[0] = 0;
                 $missing[1] = 0;
+                print "<dl>\n";
                 foreach($menu as $title => $titles) {
-                    print $i.". <a href=\"".$_SERVER['PHP_SELF']."?index=$i#$i\">".$title."</a><br>\n";
+                    print "<dt>" . $i . ". <a href=\"".$_SERVER['PHP_SELF']."?index=$i#$i\">".$title."</a></dt>\n";
+                    print "<dd><dl>";
                     $i2 = 1;
                     foreach($titles as $k => $t) {
                         $e = "$i.".$i2."";
                         if(is_array($t)) {
-                            print "<dd>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i.$i2#$e\">".$k."</a><br>\n";
+                            print "<dt>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i.$i2#$e\">".$k."</a><dt>\n";
 
                             $i3 = 1;
+                            print "<dd><dl>";
                             foreach($t as $k2 => $v2) {
                                 $str = "";
                                 if( ! file_exists("docs/$title - $k - $v2.php")) {
@@ -472,9 +476,11 @@ $menu = array("Getting started" =>
                                 }
 
                                 $e = implode(".",array($i,$i2,$i3));
-                                print "<dd><dd>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i.$i2#$e\">".$v2."</a>$str<br>\n";
+                                print "<dt>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i.$i2#$e\">".$v2."</a>$str</dt>\n";
                                 $i3++;
                             }
+                            print "</dl></dd>";
+
                         } else {
                             $str = "";
                             if( ! file_exists("docs/$title - $t.php")) {
@@ -487,12 +493,16 @@ $menu = array("Getting started" =>
                                 $str .= " [ <font color='red'>code</font> ] ";
                                 touch("codes/$title - $t.php");
                             }
-                            print "<dd>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i#$e\">".$t."</a>$str<br>\n";
+                            print "<dt>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i#$e\">".$t."</a>$str</dt>\n";
                         }
                         $i2++;
+
                     }
                     $i++;
+                    print "</dl></dd>";
                 }
+                print "</dl>\n";
+
                 } else {
                     $i = 1;
                     $ex = explode(".",$_REQUEST["index"]);
