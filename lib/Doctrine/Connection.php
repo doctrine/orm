@@ -137,6 +137,22 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->dataDict;
     }
     /**
+     * Set the transacton isolation level.
+     * (implemented by the connection drivers)
+     *
+     * @param   string  standard isolation level
+     *                  READ UNCOMMITTED (allows dirty reads)
+     *                  READ COMMITTED (prevents dirty reads)
+     *                  REPEATABLE READ (prevents nonrepeatable reads)
+     *                  SERIALIZABLE (prevents phantom reads)
+     * @throws Doctrine_Connection_Mysql_Exception      if using unknown isolation level
+     * @throws PDOException                             if something fails at the PDO level
+     * @return void
+     */
+    public function setTransactionIsolation($isolation) {
+        throw new Doctrine_Connection_Exception('Transaction isolation levels not supported by this database driver.');
+    }
+    /**
      * getRegexpOperator
      * returns the regular expression operator 
      * (implemented by the connection drivers)

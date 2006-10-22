@@ -32,7 +32,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
-     *
+     * 
      * @param array $field  associative array with the name of the properties
      *      of the field being declared as array indexes. Currently, the types
      *      of supported field properties are as follows:
@@ -109,48 +109,48 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
         // todo: unsigned handling seems to be missing
         $unsigned = $fixed = null;
         switch ($db_type) {
-        case 'bit':
-            $type[0] = 'boolean';
+            case 'bit':
+                $type[0] = 'boolean';
             break;
-        case 'int':
-            $type[0] = 'integer';
+            case 'int':
+                $type[0] = 'integer';
             break;
-        case 'datetime':
-            $type[0] = 'timestamp';
+            case 'datetime':
+                $type[0] = 'timestamp';
             break;
-        case 'float':
-        case 'real':
-        case 'numeric':
-            $type[0] = 'float';
+            case 'float':
+            case 'real':
+            case 'numeric':
+                $type[0] = 'float';
             break;
-        case 'decimal':
-        case 'money':
-            $type[0] = 'decimal';
+            case 'decimal':
+            case 'money':
+                $type[0] = 'decimal';
             break;
-        case 'text':
-        case 'varchar':
-            $fixed = false;
-        case 'char':
-            $type[0] = 'text';
-            if ($length == '1') {
-                $type[] = 'boolean';
-                if (preg_match('/^[is|has]/', $field['name'])) {
-                    $type = array_reverse($type);
+            case 'text':
+            case 'varchar':
+                $fixed = false;
+            case 'char':
+                $type[0] = 'text';
+                if ($length == '1') {
+                    $type[] = 'boolean';
+                    if (preg_match('/^[is|has]/', $field['name'])) {
+                        $type = array_reverse($type);
+                    }
+                } elseif (strstr($db_type, 'text')) {
+                    $type[] = 'clob';
                 }
-            } elseif (strstr($db_type, 'text')) {
-                $type[] = 'clob';
-            }
-            if ($fixed !== false) {
-                $fixed = true;
-            }
+                if ($fixed !== false) {
+                    $fixed = true;
+                }
             break;
-        case 'image':
-        case 'varbinary':
-            $type[] = 'blob';
-            $length = null;
+            case 'image':
+            case 'varbinary':
+                $type[] = 'blob';
+                $length = null;
             break;
-        default:
-            throw new Doctrine_DataDict_Mssql_Exception('mapNativeDatatype: unknown database attribute type: '.$db_type);
+            default:
+                throw new Doctrine_DataDict_Mssql_Exception('mapNativeDatatype: unknown database attribute type: '.$db_type);
         }
 
         return array($type, $length, $unsigned, $fixed);

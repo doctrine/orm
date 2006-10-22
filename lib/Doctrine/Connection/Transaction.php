@@ -154,7 +154,7 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
             } catch(Exception $e) {
                 $this->rollback();
 
-                throw new Doctrine_Exception($e->__toString());
+                throw new Doctrine_Connection_Transaction_Exception($e->__toString());
             }
             
             if(count($this->invalid) > 0) {

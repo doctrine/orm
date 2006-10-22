@@ -46,6 +46,33 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
         }
     }
     /**
+     * Set the transacton isolation level.
+     *
+     * @param   string  standard isolation level
+     *                  READ UNCOMMITTED (allows dirty reads)
+     *                  READ COMMITTED (prevents dirty reads)
+     *                  REPEATABLE READ (prevents nonrepeatable reads)
+     *                  SERIALIZABLE (prevents phantom reads)
+     * @return void
+     */
+    function setTransactionIsolation($isolation) {
+        switch ($isolation) {
+            case 'READ UNCOMMITTED':
+                $isolation = 0;
+                break;
+            case 'READ COMMITTED':
+            case 'REPEATABLE READ':
+            case 'SERIALIZABLE':
+                $isolation = 1;
+                break;
+            default:
+            throw new Doctrine_Connection_Sqlite_Exception('Isolation level ' . $isolation . 'is not supported.');
+        }
+
+        $query = "PRAGMA read_uncommitted=$isolation";
+        return $this->_doQuery($query, true);
+    }
+    /**
      * return string to call a function to get a substring inside an SQL statement
      *
      * @return string to call a function to get a substring
