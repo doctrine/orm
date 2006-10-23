@@ -86,6 +86,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
      *
      * @param array  $field native field description
      * @return array containing the various possible types, length, sign, fixed
+     * @author  Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
      * @throws Doctrine_DataDict_Oracle_Exception
      */
     function mapNativeDatatype($field) {

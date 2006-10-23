@@ -606,9 +606,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                     if( ! isset($local))
                         $local = $table->getIdentifier();
 
-                    $relation = new Doctrine_Relation_LocalKey($table,$foreign,$local,$type, $alias);
+                    $relation = new Doctrine_Relation_LocalKey($table, $foreign, $local, $type, $alias);
                 } else
-                    throw new Doctrine_Table_Exception("Only one-to-one relations are possible when local reference key is used.");
+                    $relation = new Doctrine_Relation_ForeignKey($table, $foreign, $local, $type, $alias);
+
 
             } elseif($component == $name ||
                     ($component == $alias)) {     //  && ($name == $this->name || in_array($name,$this->parents))

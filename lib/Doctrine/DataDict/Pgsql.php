@@ -48,10 +48,10 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      *
      *      notnull
      *          Boolean flag that indicates whether this field is constrained
-     *          to not be set to null.
+     *          to not be set to null.     
+     * @author  Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
-     * @access public
      */
     public function getTypeDeclaration(array $field) {
         switch ($field['type']) {
@@ -112,10 +112,10 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * Maps a native array description of a field to a MDB2 datatype and length
      *
      * @param array  $field native field description
+     * @author  Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
      * @return array containing the various possible types, length, sign, fixed
-     * @access public
      */
-    function mapNativeDatatype($field) {
+    public function mapNativeDatatype($field) {
         $db_type = preg_replace('/\d/','', strtolower($field['type']) );
         $length = $field['length'];
         if ($length == '-1' && !empty($field['atttypmod'])) {

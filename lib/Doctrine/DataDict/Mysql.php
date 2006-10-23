@@ -48,9 +48,9 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      *      notnull
      *          Boolean flag that indicates whether this field is constrained
      *          to not be set to null.
+     * @author Lukas Smith (PEAR MDB2 library)
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
-     * @access public
      */
     public function getTypeDeclaration($field) {
         switch ($field['type']) {
@@ -121,6 +121,155 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
                 return 'DECIMAL('.$length.','.$this->dbh->options['decimal_places'].')';
         }
         return '';
+    }
+    /**
+     * Maps a native array description of a field to a MDB2 datatype and length
+     *
+     * @param array  $field native field description
+     * @author Lukas Smith (PEAR MDB2 library)
+     * @return array containing the various possible types, length, sign, fixed
+     */
+    public function mapNativeDatatype($field) {
+        $db_type = strtolower($field['type']);
+        $db_type = strtok($db_type, '(), ');
+        if ($db_type == 'national') {
+            $db_type = strtok('(), ');
+        }
+        if (!empty($field['length'])) {
+            $length = $field['length'];
+            $decimal = '';
+        } else {
+            $length = strtok('(), ');
+            $decimal = strtok('(), ');
+        }
+        $type = array();
+        $unsigned = $fixed = null;
+        switch ($db_type) {
+        case 'tinyint':
+            $type[] = 'integer';
+            $type[] = 'boolean';
+            if (preg_match('/^(is|has)/', $field['name'])) {
+                $type = array_reverse($type);
+            }
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            $length = 1;
+            break;
+        case 'smallint':
+            $type[] = 'integer';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            $length = 2;
+            break;
+        case 'mediumint':
+            $type[] = 'integer';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            $length = 3;
+            break;
+        case 'int':
+        case 'integer':
+            $type[] = 'integer';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            $length = 4;
+            break;
+        case 'bigint':
+            $type[] = 'integer';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            $length = 8;
+            break;
+        case 'tinytext':
+        case 'mediumtext':
+        case 'longtext':
+        case 'text':
+        case 'text':
+        case 'varchar':
+            $fixed = false;
+        case 'string':
+        case 'char':
+            $type[] = 'text';
+            if ($length == '1') {
+                $type[] = 'boolean';
+                if (preg_match('/^(is|has)/', $field['name'])) {
+                    $type = array_reverse($type);
+                }
+            } elseif (strstr($db_type, 'text')) {
+                $type[] = 'clob';
+                if ($decimal == 'binary') {
+                    $type[] = 'blob';
+                }
+            }
+            if ($fixed !== false) {
+                $fixed = true;
+            }
+            break;
+        case 'enum':
+            $type[] = 'text';
+            preg_match_all('/\'.+\'/U', $field['type'], $matches);
+            $length = 0;
+            $fixed = false;
+            if (is_array($matches)) {
+                foreach ($matches[0] as $value) {
+                    $length = max($length, strlen($value)-2);
+                }
+                if ($length == '1' && count($matches[0]) == 2) {
+                    $type[] = 'boolean';
+                    if (preg_match('/^(is|has)/', $field['name'])) {
+                        $type = array_reverse($type);
+                    }
+                }
+            }
+            $type[] = 'integer';
+        case 'set':
+            $fixed = false;
+            $type[] = 'text';
+            $type[] = 'integer';
+            break;
+        case 'date':
+            $type[] = 'date';
+            $length = null;
+            break;
+        case 'datetime':
+        case 'timestamp':
+            $type[] = 'timestamp';
+            $length = null;
+            break;
+        case 'time':
+            $type[] = 'time';
+            $length = null;
+            break;
+        case 'float':
+        case 'double':
+        case 'real':
+            $type[] = 'float';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            break;
+        case 'unknown':
+        case 'decimal':
+        case 'numeric':
+            $type[] = 'decimal';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            break;
+        case 'tinyblob':
+        case 'mediumblob':
+        case 'longblob':
+        case 'blob':
+            $type[] = 'blob';
+            $length = null;
+            break;
+        case 'year':
+            $type[] = 'integer';
+            $type[] = 'date';
+            $length = null;
+            break;
+        default:
+            $db =& $this->getDBInstance();
+            if (PEAR::isError($db)) {
+                return $db;
+            }
+
+            return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                'unknown database attribute type: '.$db_type, __FUNCTION__);
+        }
+
+        return array($type, $length, $unsigned, $fixed);
     }
     /**
      * lists all databases

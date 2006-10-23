@@ -1,13 +1,21 @@
 <?php
 class RelationTest extends Doctrine_Record {
     public function setTableDefinition() {
-
+        $this->hasColumn("child_id", "integer");
     }
     public function setUp() {
         $this->ownsMany('OwnsOneToManyWithAlias as AliasO2M', 'AliasO2M.component_id');
         $this->hasMany('HasManyToManyWithAlias as AliasM2M', 'JoinTable.c1_id');
     }
 }
+class RelationTestChild extends RelationTest {
+    public function setUp() {
+        $this->hasOne('RelationTest as Parent', 'RelationTestChild.child_id');    
+
+        $this->ownsMany('RelationTestChild as Children', 'RelationTestChild.child_id');
+    }
+}
+
 class HasOneToOne extends Doctrine_Record {
 
 }
@@ -39,10 +47,36 @@ class HasManyToManyWithAlias extends Doctrine_Record {
 }
 class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
     public function prepareData() { }
-    public function prepareTables() { 
+    public function prepareTables() {
         $this->tables = array();
     }
+    public function testOneToManyTreeRelationWithConcreteInheritance() {
+        $component = new RelationTestChild();
+        
+        try {
+            $rel = $component->getTable()->getRelation('Children');
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
+        $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
+        
+        $this->assertTrue($component->Children instanceof Doctrine_Collection);
+        $this->assertTrue($component->Children[0] instanceof RelationTestChild);
+    }
 
+
+    public function testOneToOneTreeRelationWithConcreteInheritance() {
+        $component = new RelationTestChild();
+        
+        try {
+            $rel = $component->getTable()->getRelation('Parent');
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
+        $this->assertTrue($rel instanceof Doctrine_Relation_LocalKey);
+    }
     public function testOneToManyOwnsRelationWithAliases() {
         $this->manager->setAttribute(Doctrine::ATTR_CREATE_TABLES, false);  
         
@@ -67,10 +101,15 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
             $this->fail();
         }
         $this->assertTrue($rel instanceof Doctrine_Relation_Association);
+        
+        $this->assertTrue($component->AliasM2M instanceof Doctrine_Collection);
+
     }
+
+
     public function testManyToManyRelation() {
         $user = new User();
-        
+
         // test that join table relations can be initialized even before the association have been initialized
         try {
             $user->Groupuser;
@@ -97,5 +136,6 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($user->getTable()->getRelation('Phonenumber') instanceof Doctrine_Relation_ForeignKey);
         $this->manager->setAttribute(Doctrine::ATTR_CREATE_TABLES, true);
     }
+
 
 }

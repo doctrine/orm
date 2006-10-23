@@ -48,11 +48,11 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
      *      notnull
      *          Boolean flag that indicates whether this field is constrained
      *          to not be set to null.
+     * @author Lukas Smith (PEAR MDB2 library)
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
-     * @access public
      */
-    function getTypeDeclaration($field) {
+    public function getTypeDeclaration($field) {
         switch ($field['type']) {
             case 'text':
                 $length = !empty($field['length'])
@@ -117,10 +117,10 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
      * Maps a native array description of a field to a MDB2 datatype and length
      *
      * @param array  $field native field description
+     * @author Lukas Smith (PEAR MDB2 library)
      * @return array containing the various possible types, length, sign, fixed
-     * @access public
      */
-    function mapNativeDatatype($field) {
+    public function mapNativeDatatype($field) {
         $db_type = strtolower($field['type']);
         $length = !empty($field['length']) ? $field['length'] : null;
         $unsigned = !empty($field['unsigned']) ? $field['unsigned'] : null;
