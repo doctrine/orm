@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Import_Exception');
 /**
  * @package     Doctrine
  * @url         http://www.phpdoctrine.com
@@ -27,24 +27,7 @@
  * @version     $Id$
  */
 
-
-
 /**
  * class Doctrine_Import_Builder_Exception
  */
-class Doctrine_Import_Builder_Exception
-{
-
-    /** Aggregations: */
-
-    /** Compositions: */
-
-     /*** Attributes: ***/
-
-
-
-
-
-
-} // end of Doctrine_Import_Builder_Exception
-
+class Doctrine_Import_Builder_Exception extends Doctrine_Import_Exception { }

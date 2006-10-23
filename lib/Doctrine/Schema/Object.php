@@ -18,36 +18,54 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Access');
 /**
  * @package     Doctrine
  * @url         http://www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
+ * @author      Konsta Vesterinen
  * @version     $Id$
  */
-
-
 
 /**
  * class Doctrine_Schema_Object
  * Catches any non-property call from child classes and throws an exception.
  */
-abstract class Doctrine_Schema_Object implements IteratorAggregate, Countable {
+abstract class Doctrine_Schema_Object extends Doctrine_Access implements IteratorAggregate, Countable {
 
     protected $children   = array();
 
     protected $definition = array('name' => '');
 
-    public function __construct(array $definition) {
+    public function __construct(array $definition = array()) {
         foreach($this->definition as $key => $val) {
             if(isset($definition[$key])) 
                 $this->definition[$key] = $definition[$key];
         }
     }
+
+    public function get($name) {
+        if( ! array_key_exists($name, $this->definition))
+            throw new Doctrine_Schema_Exception('Unknown definition '. $name);
+
+        return $this->definition[$name];
+
+    }
+
+    public function set($name, $value) {
+        if( ! array_key_exists($name, $this->definition))
+            throw new Doctrine_Schema_Exception('Unknown definition '. $name);
+       
+        $this->definition[$name] = $value;
+    }
     
-    public function getName() {
-        return $this->definition['name'];                          	
+    public function contains($name) {
+        return array_key_exists($name, $this->definition);
+    }
+    
+    public function toArray() {
+        return $this->definition;
     }
     /**
      *
@@ -55,8 +73,8 @@ abstract class Doctrine_Schema_Object implements IteratorAggregate, Countable {
      * @access public
      */
     public function count() {
-        if( ! empty($this->childs))
-            return count($this->childs);
+        if( ! empty($this->children))
+            return count($this->children);
 
         return count($this->definition);
     }
@@ -68,8 +86,8 @@ abstract class Doctrine_Schema_Object implements IteratorAggregate, Countable {
      * @access public
      */
     public function getIterator() {
-        if( ! empty($this->childs))
-            return new ArrayIterator($this->childs);
+        if( ! empty($this->children))
+            return new ArrayIterator($this->children);
 
         return new ArrayIterator($this->definition);
     }

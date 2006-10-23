@@ -26,65 +26,21 @@
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  * @version     $Id$
  */
-
-
+    
 
 /**
  * class Doctrine_Schema_Database
  * Holds information on a database
  */
-class Doctrine_Schema_Database extends Doctrine_Schema_Object
-            implements Countable, IteratorAggregate
-{
+class Doctrine_Schema_Database extends Doctrine_Schema_Object {
+    
+    protected $definition = array('name'        => null,
+                                  'type'        => null,
+                                  'charset'     => null,
+                                  'description' => null,
+                                  'version'     => null,
+                                  'engine'      => null);
 
-    /** Aggregations: */
-
-    /** Compositions: */
-    var $m_;
-
-     /*** Attributes: ***/
-
-    /**
-     * Database name
-     * @access public
-     */
-    public $name;
-
-    /**
-     * Database driver type
-     * @access public
-     */
-    public $type;
-
-    /**
-     * Database server version
-     * @access public
-     */
-    public $version;
-
-    /**
-     * The underlaying engine in the database e.g. InnoDB or MyISAM in MySQL.
-     * @access public
-     */
-    public $engine;
-
-    /**
-     * Character encoding e.g. ISO-8859-1 or UTF-8 etc.
-     * @access public
-     */
-    public $charset;
-
-    /**
-     * Foreign key constraints in the database
-     * @access public
-     */
-    public $foreignKeyRelations;
-
-    /**
-     * Tables in the database
-     * @access private
-     */
-    private $childs;
 
 
     /**
@@ -94,8 +50,7 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object
      */
     public function __clone( ) {
         
-    } // end of member function __clone
-
+    }
     /**
      *
      * @return 
@@ -103,8 +58,7 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object
      */
     public function __toString( ) {
         
-    } // end of member function __toString
-
+    }
     /**
      *
      * @return bool
@@ -112,8 +66,7 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object
      */
     public function isValid( ) {
         
-    } // end of member function isValid
-
+    }
     /**
      *
      * @param Doctrine_Schema_Table table      * @return Doctrine_Schema_Table
@@ -121,11 +74,5 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object
      */
     public function addTable( $table = null ) {
         
-    } // end of member function addTable
-
-
-
-
-
-} // end of Doctrine_Schema_Database
-
+    }
+}

@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Exception');
 /**
  * @package     Doctrine
  * @url         http://www.phpdoctrine.com
@@ -32,19 +32,4 @@
 /**
  * class Doctrine_Schema_Exception
  */
-class Doctrine_Schema_Exception extends Exception
-{
-
-    /** Aggregations: */
-
-    /** Compositions: */
-
-     /*** Attributes: ***/
-
-
-
-
-
-
-} // end of Doctrine_Schema_Exception
-
+class Doctrine_Schema_Exception extends Exception { }

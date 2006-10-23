@@ -40,18 +40,15 @@ class Doctrine_Schema_Column extends Doctrine_Schema_Object implements IteratorA
      */
     protected $definition = array('name'    => '',
                                   'type'    => '',
+                                  'length'  => 0,
                                   'unique'  => false,
                                   'primary' => false,
                                   'notnull' => false,
-                                  'default' => null,
+                                  'default' => false,
+                                  'autoinc' => false
                                   );
 
-    public function __construct(array $definition) {
-        foreach($this->definition as $key => $val) {
-            if(isset($definition[$key]))
-                $this->definition[$key] = $definition[$key];
-        }
-    }
+
     public function getName() {
         return $this->definition['name'];                          	
     }

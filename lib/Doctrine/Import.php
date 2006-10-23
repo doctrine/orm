@@ -35,22 +35,13 @@
  * reading to a reader object and passes the result to a builder object which
  * builds a Doctrine data model.
  */
-class Doctrine_Import
-{
-
-    /** Aggregations: */
-
-    /** Compositions: */
-
-     /*** Attributes: ***/
-
+class Doctrine_Import {
     /**
-     * @access private
+     * @var Doctrine_Import_Reader $reader
      */
     private $reader;
-
     /**
-     * @access private
+     * @var Doctrine_Import_Builder $builder
      */
     private $builder;
 
@@ -62,29 +53,21 @@ class Doctrine_Import
      */
     public function import( ) {
         
-    } // end of member function import
-
+    }
     /**
      *
-     * @param Doctrine_Import_Reader reader      * @return 
-     * @access public
+     * @param Doctrine_Import_Reader reader      
+     * @return void
      */
-    public function setReader( $reader ) {
-        
-    } // end of member function setReader
-
+    public function setReader(Doctrine_Import_Reader $reader) {
+        $this->reader = $reader;
+    }
     /**
      *
-     * @param Doctrine_Import_Builder builder      * @return 
-     * @access public
+     * @param Doctrine_Import_Builder builder      
+     * @return void
      */
-    public function setBuilder( $builder ) {
-        
-    } // end of member function setBuilder
-
-
-
-
-
-} // end of Doctrine_Import
-
+    public function setBuilder(Doctrine_Import_Builder $builder) {
+        $this->builder = $builder;
+    }
+}

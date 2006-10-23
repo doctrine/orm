@@ -33,14 +33,7 @@
  * class Doctrine_Schema_Relation
  * Holds information on a foreign key relation.
  */
-class Doctrine_Schema_Relation extends Doctrine_Schema_Object
-{
-
-    /** Aggregations: */
-
-    /** Compositions: */
-
-     /*** Attributes: ***/
+class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
 
     /**
      * Columns that refer to another table
@@ -92,13 +85,14 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object
 
     /**
      *
-     * @param Doctrine_Schema_Column referringColumns      * @param Doctrine_Schema_Column referencedColumns      * @return 
+     * @param Doctrine_Schema_Column referringColumns      
+     * @param Doctrine_Schema_Column referencedColumns      
+     * @return
      * @access public
      */
     public function setRelationBetween( $referringColumns,  $referencedColumns ) {
         
-    } // end of member function setRelationBetween
-
+    }
     /**
      *
      * @return 
@@ -106,8 +100,7 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object
      */
     public function __toString( ) {
         
-    } // end of member function __toString
-
+    }
     /**
      *
      * @return bool
@@ -115,11 +108,5 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object
      */
     public function isValid( ) {
         
-    } // end of member function isValid
-
-
-
-
-
-} // end of Doctrine_Schema_Relation
-
+    }
+} 

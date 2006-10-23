@@ -9,7 +9,7 @@
 class Doctrine_SchemaTestCase extends Doctrine_UnitTestCase 
 { 
 
-	function testEverySchemaObjectIsThrowingExceptionOnNonPropertyAssignment()
+	public function testEverySchemaObjectIsThrowingExceptionOnNonPropertyAssignment()
     {
     	$isException = false;     
     	$obj = new Doctrine_Schema();
@@ -62,7 +62,7 @@ class Doctrine_SchemaTestCase extends Doctrine_UnitTestCase
         $this->assertTrue($isException);
     }
 
-    function testEverySchemaObjectIsThrowingExceptionOnNonPropertyAccess()
+	public function testEverySchemaObjectIsThrowingExceptionOnNonPropertyAccess()
     {
         $isException = false;     
         $obj = new Doctrine_Schema();
@@ -115,7 +115,7 @@ class Doctrine_SchemaTestCase extends Doctrine_UnitTestCase
         $this->assertTrue($isException);      
     }
 
-    function testSchemaDatabasePropertiesAreAssignableAndAccessible()
+    public function testSchemaDatabasePropertiesAreAssignableAndAccessible()
     {
         $obj = new Doctrine_Schema_Database();
         $vars = array(
@@ -135,7 +135,7 @@ class Doctrine_SchemaTestCase extends Doctrine_UnitTestCase
 
     }
 
-    function testSchemaTablePropertiesAreAssignableAndAccessible()
+    public function testSchemaTablePropertiesAreAssignableAndAccessible()
     {
         $obj = new Doctrine_Schema_Table();
         $vars = array(
@@ -152,19 +152,19 @@ class Doctrine_SchemaTestCase extends Doctrine_UnitTestCase
         }
     }
 
-    function testSchemaColumnPropertiesAreAssignableAndAccessible()
+    public function testSchemaColumnPropertiesAreAssignableAndAccessible()
     {
         $obj = new Doctrine_Schema_Column();
         $vars = array(
             'name'          => 'id', 
             'type'          => 'int', 
             'length'        => 10, 
-            'autoincrement' => true, 
+            'autoinc'       => true,
             'default'       => null, 
-            'notNull'       => true, 
-            'description'   => 'user id',
-            'check'         => 'id > 0',
-            'charset'       => 'UTF-8'            
+            'notnull'       => true,
+            // 'description'   => 'user id',
+            // 'check'         => 'id > 0',
+            // 'charset'       => 'UTF-8'
             );
 
         foreach ($vars as $key => $val)
@@ -174,12 +174,12 @@ class Doctrine_SchemaTestCase extends Doctrine_UnitTestCase
         }
     }
 
-    function testSchemaDatabaseIsCloneable()
+    public function testSchemaDatabaseIsCloneable()
     {
     }
 
     
-    function testSchemaIsTraversable()
+    public function testSchemaIsTraversable()
     {
     	/* @todo complete */
         

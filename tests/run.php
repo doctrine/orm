@@ -56,6 +56,11 @@ print "<pre>";
 
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
+
+$test->addTestCase(new Doctrine_Import_TestCase());
+
+$test->addTestCase(new Doctrine_SchemaTestCase());
+
 $test->addTestCase(new Doctrine_Relation_TestCase());
 
 $test->addTestCase(new Doctrine_RecordTestCase());
@@ -96,12 +101,6 @@ $test->addTestCase(new Doctrine_Filter_TestCase());
 
 $test->addTestCase(new Doctrine_RawSql_TestCase());
 
-$test->addTestCase(new Doctrine_Query_Limit_TestCase());
-
-//$test->addTestCase(new Doctrine_SchemaTestCase());
-
-//$test->addTestCase(new Doctrine_ImportTestCase());
-
 $test->addTestCase(new Doctrine_CollectionTestCase());
 
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
@@ -119,6 +118,8 @@ $test->addTestCase(new Doctrine_BooleanTestCase());
 $test->addTestCase(new Doctrine_EnumTestCase());
 
 $test->addTestCase(new Doctrine_Record_Filter_TestCase());
+                                                             
+$test->addTestCase(new Doctrine_Query_Limit_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Condition_TestCase());
 

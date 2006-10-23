@@ -33,16 +33,7 @@
  * class Doctrine_Schema
  * Holds information on one to many databases
  */
-class Doctrine_Schema extends Doctrine_Schema_Object
-            implements Countable, IteratorAggregate
-{
-
-    /** Aggregations: */
-
-    /** Compositions: */
-
-     /*** Attributes: ***/
-
+class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, IteratorAggregate {
     /**
      * Holds any number of databases contained in the schema
      * @access private
@@ -57,7 +48,7 @@ class Doctrine_Schema extends Doctrine_Schema_Object
      */
     public function addDatabase( $database ) {
         
-    } // end of member function addDatabase
+    }
 
     /**
      *
@@ -66,8 +57,7 @@ class Doctrine_Schema extends Doctrine_Schema_Object
      */
     public function __toString( ) {
         
-    } // end of member function __toString
-
+    }
     /**
      *
      * @return bool
@@ -75,11 +65,5 @@ class Doctrine_Schema extends Doctrine_Schema_Object
      */
     public function isValid( ) {
         
-    } // end of member function isValid
-
-
-
-
-
-} // end of Doctrine_Schema
-
+    }
+} 

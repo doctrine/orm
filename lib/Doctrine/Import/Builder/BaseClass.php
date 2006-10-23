@@ -33,51 +33,5 @@
  * class Doctrine_Import_Builder_BaseClass
  * Builds a Doctrine_Record base class definition based on a schema.
  */
-class Doctrine_Import_Builder_BaseClass extends Doctrine_Import_Builder
-{
-
-    /** Aggregations: */
-
-    /** Compositions: */
-
-     /*** Attributes: ***/
-
-    private $path = '';
-    private $suffix = '.php';
-
-
-    /**
-     *
-     * @param string path      
-     * @return 
-     * @access public
-     */
-    public function setOutputPath( $path ) {
-        $this->path = $path;
-    } // end of member function setOuputPath
-
-    /**
-     *
-     * @param string path      
-     * @return 
-     * @access public
-     */
-    public function setFileSuffix( $suffix ) {
-        $this->suffix = $suffix;
-    } // end of member function setOuputPath
-
-
-    /**
-     *
-     * @param Doctrine_Schema schema      
-     * @return 
-     * @access public
-     * @throws Doctrine_Import_Exception
-     */
-    public function build(Doctrine_Schema $schema )
-    {
-    	/* @todo FIXME i am incomplete*/
-    }
-
-} // end of Doctrine_Import_Builder_BaseClass
-
+class Doctrine_Import_Builder_BaseClass extends Doctrine_Import_Builder {
+}

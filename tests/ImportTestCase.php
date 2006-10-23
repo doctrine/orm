@@ -3,13 +3,13 @@
  * ImportTestCase.php - 24.8.2006 2.37.14
  * 
  * Note that some shortcuts maybe used here 
- * i.e. these tests depends that exporting is working 
+ * i.e. these tests depends that exporting is working
  *
  * @author Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  * @version $Id$
  * @package Doctrine
  */
-class Doctrine_ImportTestCase extends Doctrine_UnitTestCase 
+class Doctrine_Import_TestCase extends Doctrine_UnitTestCase
 {
     private $tmpdir;
     
@@ -25,17 +25,50 @@ class Doctrine_ImportTestCase extends Doctrine_UnitTestCase
         $reader = new Doctrine_Import_Reader_Db();
         $reader->setPdo($this->dbh);
         $this->schema = $reader->read();
+    }
+    
+    public function testBadImport() {
+        $builder = new Doctrine_Import_Builder();
+        
+        try { 
+            $builder->buildRecord(new Doctrine_Schema_Table());
 
-        //and building
-        $this->tmpdir = $this->getTempDir();
-        $this->suffix = '__Base';
+            $this->fail();
+        } catch(Doctrine_Import_Builder_Exception $e) {
+            $this->pass();
+        }
 
-        $builder = new Doctrine_Import_Builder_BaseClass();
-        $builder->setOutputPath($this->tmpdir);
-        $builder->setFileSuffix($this->suffix.'.php');
-        $builder->build($this->schema);
     }
 
+    public function testImportTable() {
+        $definition = array('name' => 'user');
+
+        $table = new Doctrine_Schema_Table($definition);
+        $def     = array('name' => 'name',
+                         'type' => 'string',
+                         'length' => 20);
+
+        $table->addColumn(new Doctrine_Schema_Column($def));
+        
+        $def     = array('name' => 'created',
+                         'type' => 'integer');
+
+        $table->addColumn(new Doctrine_Schema_Column($def));
+
+        $builder = new Doctrine_Import_Builder();
+
+        $builder->setTargetPath('tmp');
+        try {
+            $builder->buildRecord($table);
+
+            $this->pass();
+        } catch(Doctrine_Import_Builder_Exception $e) {
+            $this->fail();
+        }
+
+        unlink('tmp' . DIRECTORY_SEPARATOR . 'User.php');
+    }
+    /**
     public function testDatabaseConnectionIsReverseEngineeredToSchema()
     {
 
@@ -62,9 +95,9 @@ class Doctrine_ImportTestCase extends Doctrine_UnitTestCase
     {        
         $transArr = array();
         
-        /* From SQLite column types */
+
         $transArr['sqlite'] = array(
-            /* array(native type, native length, doctrine type, doctrine length), */
+            // array(native type, native length, doctrine type, doctrine length),
             array('int', 11, 'int', 11),
             //array('varchar', 255, 'string', 255),
         );
@@ -103,21 +136,16 @@ class Doctrine_ImportTestCase extends Doctrine_UnitTestCase
         }        
     }    
 
-    public function tearDown()
-    {
-    	@unlink($this->tmpdir);
-        @rmdir($this->tmpdir);
-    }
+          */
 
+     // Gets the system temporary directory name
+     // @return null on failure to resolve the system temp dir
 
-    /**
-     * Gets the system temporary directory name 
-     * @return null on failure to resolve the system temp dir
-     */
     private function getTempDir()
     {
+    	/**
         if(function_exists('sys_get_temp_dir')) {
-            $tempdir = sys_get_temp_dir();   
+            $tempdir = sys_get_temp_dir();
         } elseif (!empty($_ENV['TMP'])) {
             $tempdir = $_ENV['TMP'];
         } elseif (!empty($_ENV['TMPDIR'])) {
@@ -130,21 +158,22 @@ class Doctrine_ImportTestCase extends Doctrine_UnitTestCase
         }
 
         if (empty($tempdir)) { return null; }
-        
+
         $tempdir = rtrim($tempdir, '/');
         $tempdir .= DIRECTORY_SEPARATOR;
-        
+
         if (is_writable($tempdir) == false) {
                 return null;
         }
         $dir = tempnam($tempdir, 'doctrine_tests');
-        
+
         @unlink($dir);
         @rmdir($dir);
-        
+
         mkdir($dir);
         $dir .= DIRECTORY_SEPARATOR;
-        
-        return $dir;    
+
+        return $dir;
+        */
     }
 }

@@ -33,50 +33,13 @@
  * class Doctrine_Schema_Table
  * Holds information on a database table
  */
-class Doctrine_Schema_Table extends Doctrine_Schema_Object
-            implements Countable, Countable, IteratorAggregate
-{
+class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable, IteratorAggregate {
+    
+    protected $definition = array('name'        => '',
+                                  'check'       => '',
+                                  'charset'     => '',
+                                  'description' => '');
 
-    /**
-     * Unique key fields
-     * @access public
-     */
-    public $uniqueKeys;
-
-    /**
-     * Indexed columns
-     * @access public
-     */
-    public $indexes;
-
-    /**
-     * Table name
-     * @access public
-     */
-    public $name;
-
-    /**
-     * @access public
-     */
-    public $primaryKeys;
-
-    /**
-     * Check constraint definition
-     * @access public
-     */
-    public $check;
-
-    /**
-     * Character encoding e.g. ISO-8859-1 or UTF-8 etc.
-     * @access public
-     */
-    public $charset;
-
-    /**
-     * Description or comment given in the schema
-     * @access public
-     */
-    public $description;
     /**
      *
      * @return bool
@@ -109,7 +72,7 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object
      * @access public
      */
     public function addColumn(Doctrine_Schema_Column $column) {
-        $name = $column->getName();
+        $name = $column->get('name');
         $this->children[$name] = $column;
 
         return $this;

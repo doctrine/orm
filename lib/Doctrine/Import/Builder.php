@@ -33,28 +33,96 @@
  * class Doctrine_Import_Builder
  * Is responsible of building Doctrine structure based on a database schema.
  */
-abstract class Doctrine_Import_Builder
-{
+class Doctrine_Import_Builder {
+    
+    private $path = '';
+    
+    private $suffix = '.php';
 
-    /** Aggregations: */
+    private static $tpl;
 
-    /** Compositions: */
-
-     /*** Attributes: ***/
-
+    public function __construct() {
+        if( ! isset(self::$tpl))
+            self::$tpl = file_get_contents(Doctrine::getPath()
+                       . DIRECTORY_SEPARATOR . 'Doctrine'
+                       . DIRECTORY_SEPARATOR . 'Import'
+                       . DIRECTORY_SEPARATOR . 'Builder'
+                       . DIRECTORY_SEPARATOR . 'Record.tpl');
+    }
 
     /**
      *
-     * @param Doctrine_Schema schema      
+     * @param string path
      * @return 
-     * @abstract
      * @access public
      */
-    abstract public function build(Doctrine_Schema $schema );
+    public function setTargetPath($path) {
+        if( ! file_exists($path)) {
+            mkdir($path, 0777);
+        }
+
+        $this->path = $path;
+    }
+    public function getTargetPath() {
+        return $this->path;
+    }
+    /**
+     *
+     * @param string path
+     * @return
+     * @access public
+     */
+    public function setFileSuffix($suffix) {
+        $this->suffix = $suffix;
+    }
+    public function getFileSuffix() {
+        return $this->suffix;
+    }
+
+    public function buildRecord(Doctrine_Schema_Table $table) {
+        if (empty($this->path)) 
+            throw new Doctrine_Import_Builder_Exception('No build target directory set.');
+
+        if (is_writable($this->path) === false) 
+            throw new Doctrine_Import_Builder_Exception('Build target directory ' . $this->path . ' is not writable.');
+
+        $created   = date('l dS \of F Y h:i:s A');
+        $className = Doctrine::classify($table->get('name'));
+        $fileName  = $this->path . DIRECTORY_SEPARATOR . $className . $this->suffix;
+        $columns   = array();
+
+        $i = 0;
+        foreach($table as $name => $column) {
+
+            $columns[$i] = '        $this->hasColumn(\'' . $column['name'] . '\', \'' . $column['type'] . '\'';
+            if($column['length'])
+                $columns[$i] .= ', ' . $column['length'];
+
+            $columns[$i] .= ');';
+            
+            if($i < (count($table) - 1))
+                $columns[$i] .= '
+';
+            $i++;
+        }
+
+        $content   = sprintf(self::$tpl, $created, $className, implode('', $columns));
+
+        $bytes     = file_put_contents($fileName, $content);
 
 
+        if($bytes === false)
+            throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $fileName);
+    }
+    /**
+     *
+     * @param Doctrine_Schema_Object $schema
+     * @return
+     * @access public
+     * @throws Doctrine_Import_Exception
+     */
+    public function build(Doctrine_Schema_Object $schema) {
 
+    }
 
-
-} // end of Doctrine_Import_Builder
-
+}
