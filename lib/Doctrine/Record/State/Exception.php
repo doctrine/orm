@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Exception');
+Doctrine::autoload('Doctrine_Record_Exception');
 /**
  * Doctrine_Exception
  *
@@ -26,4 +26,4 @@ Doctrine::autoload('Doctrine_Exception');
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_Record_Exception extends Doctrine_Exception { }  
+class Doctrine_Record_State_Exception extends Doctrine_Record_Exception { }

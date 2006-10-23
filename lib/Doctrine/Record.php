@@ -500,6 +500,38 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $this->_state;
     }
     /**
+     * state
+     * returns / assigns the state of this record
+     *
+     * @param integer|string $state                 if set, this method tries to set the record state to $state
+     *
+     * @throws Doctrine_Record_State_Exception      if trying to set an unknown state
+     * @return null|integer
+     */
+    public function state($state = null) {
+        if($state == null) {
+            return $this->_state;
+        }
+        if(is_integer($state)) {
+            if($state >= 1 && $state <= 6)
+                $this->_state = $state;
+        } elseif(is_string($state)) {
+            $upper = strtoupper($state);
+            switch($upper) {
+                case 'DIRTY':
+                case 'CLEAN':
+                case 'TDIRTY':
+                case 'TCLEAN':
+                case 'PROXY':
+                case 'DELETED':
+                    $this->_state = constant('Doctrine_Record::STATE_' . $upper);
+                break;
+            }
+        }
+        
+        throw new Doctrine_Record_State_Exception('Unknown record state ' . $state);
+    }
+    /**
      * refresh
      * refresh internal data from the database
      *
