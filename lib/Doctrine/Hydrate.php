@@ -371,6 +371,13 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 if(empty($row))
                     continue;
 
+                foreach($this->tables as $k => $t) {
+                    if ( ! strcasecmp($key, $k))
+                        $key = $k;
+                }
+ 
+                if ( !isset($this->tables[$key]) )
+                    throw new Doctrine_Exception("No table named $key found.");
 
                 $ids     = $this->tables[$key]->getIdentifier();
                 $name    = $key;
