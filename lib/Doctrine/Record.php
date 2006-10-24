@@ -944,7 +944,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * count
      * this class implements countable interface
      *
-     * @return integer                      the number of columns
+     * @return integer          the number of columns in this record
      */
     public function count() {
         return count($this->_data);
@@ -952,9 +952,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * alias for count()
      * 
-     * @return integer
+     * @return integer          the number of columns in this record
      */
-    public function getColumnCount() {
+    public function columnCount() {
         return $this->count();
     }
     /**
@@ -1286,20 +1286,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
     }
     /**
-     * filterRelated
-     * lazy initializes a new filter instance for given related component
-     *
-     * @param $componentAlias        alias of the related component
-     * @return Doctrine_Filter
-     */
-    final public function filterRelated($componentAlias) {
-        if( ! isset($this->filters[$componentAlias])) {
-            $this->filters[$componentAlias] = new Doctrine_Filter($componentAlias);
-        }
-
-        return $this->filters[$componentAlias];
-    }
-    /**
      * binds One-to-One composite relation
      *
      * @param string $objTableName
@@ -1398,10 +1384,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->_table->setTableName($tableName);                                            	
     }
     public function setInheritanceMap($map) {
-        $this->_table->setInheritanceMap($map);
+        $this->_table->setOption('inheritanceMap', $map);
     }
     public function setEnumValues($column, $values) {
         $this->_table->setEnumValues($column, $values);
+    }
+    public function option($name, $value = null) {
+        if($value == null)
+            $this->_table->getOption($name);
+        else
+            $this->_table->setOption($name, $value);
     }
     /**
      * addListener

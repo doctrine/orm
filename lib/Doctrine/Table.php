@@ -65,19 +65,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     private $connection;
     /**
-     * @var string $name                                name of the component, for example component name of the GroupTable is 'Group'
+     * @var string $name
      */
     private $name;
-    /**
-     * @var string $tableName                           database table name, in most cases this is the same as component name but in some cases
-     *                                                  where one-table-multi-class inheritance is used this will be the name of the inherited table
-     */
-    private $tableName;
-    /**
-     * @var string $sequenceName                        Some databases need sequences instead of auto incrementation primary keys, you can set specific
-     *                                                  sequence for your table by calling setSequenceName()
-     */
-    private $sequenceName;
     /**
      * @var array $identityMap                          first level cache
      */
@@ -87,9 +77,22 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     private $repository;
     /**
-     * @var array $columns                              an array of column definitions
+     * @var array $columns                  an array of column definitions,
+     *                                      keys as column names and values as column definitions
+     *                                      
+     *                                      the value array has three values:
+     *                                      
+     *                                      the column type, eg. 'integer'
+     *                                      the column length, eg. 11
+     *                                      the column options/constraints/validators. eg array('notnull' => true)
+     *
+     *                                      so the full columns array might look something like the following:
+     *                                      array(
+     *                                             'name' => array('string', 20, array('notnull' => true, 'default' => 'someone')
+     *                                             'age'  => array('integer', 11,  array('notnull' => true))
+     *                                              )
      */
-    private $columns            = array();
+    protected $columns          = array();
     /**
      * @var array $bound                                bound relations
      */
@@ -104,22 +107,36 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     private $columnCount;
     /**
-     * @var array $inheritanceMap                       inheritanceMap is used for inheritance mapping, keys representing columns and values
-     *                                                  the column values that should correspond to child classes
-     */
-    private $inheritanceMap     = array();
-    /**
      * @var array $parents                              the parent classes of this component
      */
     private $parents            = array();
     /**
-     * @var array $enum                                 enum value arrays
-     */
-    private $enum               = array();
-    /**
      * @var boolean $hasDefaultValues                   whether or not this table has default values
      */
     private $hasDefaultValues;
+    /**
+     * @var array $options                              an array containing all options
+     *
+     *      -- name                                     name of the component, for example component name of the GroupTable is 'Group'
+     *
+     *      -- tableName                                database table name, in most cases this is the same as component name but in some cases
+     *                                                  where one-table-multi-class inheritance is used this will be the name of the inherited table
+     *
+     *      -- sequenceName                             Some databases need sequences instead of auto incrementation primary keys, 
+     *                                                  you can set specific sequence for your table by calling setOption('sequenceName', $seqName)
+     *                                                  where $seqName is the name of the desired sequence
+     *
+     *      -- enumMap                                  enum value arrays
+     *
+     *      -- inheritanceMap                           inheritanceMap is used for inheritance mapping, keys representing columns and values
+     *                                                  the column values that should correspond to child classes
+     */
+    protected $options          = array('name'           => null,
+                                        'tableName'      => null,
+                                        'sequenceName'   => null,
+                                        'inheritanceMap' => array(),
+                                        'enumMap'        => array(),
+                                        );
 
 
 
@@ -135,7 +152,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
         $this->setParent($this->connection);
 
-        $this->name = $name;
+        $this->options['name'] = $name;
 
         if( ! class_exists($name) || empty($name))
             throw new Doctrine_Exception("Couldn't find class $name");
@@ -168,11 +185,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             if(isset($this->columns)) {
                                       	
                 // get the declaring class of setTableDefinition method
-                $method    = new ReflectionMethod($this->name,"setTableDefinition");
+                $method    = new ReflectionMethod($this->options['name'],"setTableDefinition");
                 $class     = $method->getDeclaringClass();
 
-                if( ! isset($this->tableName))
-                    $this->tableName = Doctrine::tableize($class->getName());
+                if( ! isset($this->options['tableName']))
+                    $this->options['tableName'] = Doctrine::tableize($class->getName());
 
                 switch(count($this->primaryKeys)):
                     case 0:
@@ -221,7 +238,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                  if($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
                     if(Doctrine_DataDict::isValidClassname($class->getName())) {
                         $dict      = new Doctrine_DataDict($this->getConnection()->getDBH());
-                        $dict->createTable($this->tableName, $this->columns);
+                        $dict->createTable($this->options['tableName'], $this->columns);
                     }
                 }
 
@@ -252,6 +269,20 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     public function getRepository() {
         return $this->repository;
+    }
+    
+    public function setOption($name, $value) {
+        switch($name) {
+            case 'name':
+            case 'tableName':
+            break;
+            case 'enumMap':
+            case 'inheritanceMap':
+                if( ! is_array($value))
+                    throw new Doctrine_Table_Exception($name.' should be an array.');
+            break;
+        }
+        $this->options[$name] = $value;
     }
     /**
      * setColumn
@@ -361,13 +392,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return void
      */
     final public function setSequenceName($sequence) {
-        $this->sequenceName = $sequence;
+        $this->options['sequenceName'] = $sequence;
     }
     /**
      * @return string   sequence name
      */
     final public function getSequenceName() {
-        return $this->sequenceName;
+        return $this->options['sequenceName'];
     }
     /**
      * getParents
@@ -379,21 +410,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return boolean
      */
     final public function hasInheritanceMap() {
-        return (empty($this->inheritanceMap));
-    }
-    /**
-     * setInheritanceMap
-     * @param array $inheritanceMap
-     * @return void
-     */
-    final public function setInheritanceMap(array $inheritanceMap) {
-        $this->inheritanceMap = $inheritanceMap;
+        return (empty($this->options['inheritanceMap']));
     }
     /**
      * @return array        inheritance map (array keys as fields)
      */
     final public function getInheritanceMap() {
-        return $this->inheritanceMap;
+        return $this->options['inheritanceMap'];
     }
     /**
      * return all composite paths in the form [component1].[component2]. . .[componentN]
@@ -541,7 +564,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return string                   the component name
      */
     final public function getComponentName() {
-        return $this->name;
+        return $this->options['name'];
     }
     /**
      * @return Doctrine_Connection
@@ -598,7 +621,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
             $table      = $this->connection->getTable($name);
 
-            if($component == $this->name || in_array($component, $this->parents)) {
+            if($component == $this->options['name'] || in_array($component, $this->parents)) {
 
                 // ONE-TO-ONE
                 if($type == Doctrine_Relation::ONE_COMPOSITE ||
@@ -612,7 +635,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
 
             } elseif($component == $name ||
-                    ($component == $alias)) {     //  && ($name == $this->name || in_array($name,$this->parents))
+                    ($component == $alias)) {     //  && ($name == $this->options['name'] || in_array($name,$this->parents))
 
                 if( ! isset($local))
                     $local = $this->identifier;
@@ -627,7 +650,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 if($type != Doctrine_Relation::MANY_AGGREGATE)
                     throw new Doctrine_Table_Exception("Only aggregate relations are allowed for many-to-many relations");
 
-                $classes = array_merge($this->parents, array($this->name));
+                $classes = array_merge($this->parents, array($this->options['name']));
 
                 foreach(array_reverse($classes) as $class) {
                     try {
@@ -676,7 +699,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         if($recursive) {
             return $this->getRelation($original, false);
         } else {
-            throw new Doctrine_Table_Exception($this->name . " doesn't have a relation to " . $original);     
+            throw new Doctrine_Table_Exception($this->options['name'] . " doesn't have a relation to " . $original);     
         }
     }
     /**
@@ -699,7 +722,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return void
      */
     final public function setTableName($name) {
-        $this->tableName = $name;
+        $this->options['tableName'] = $name;
     }
 
     /**
@@ -708,7 +731,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return string
      */
     final public function getTableName() {
-        return $this->tableName;
+        return $this->options['tableName'];
     }
     /**
      * create
@@ -720,7 +743,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     public function create(array $array = array()) {
         $this->data         = $array;
         $this->isNewEntry   = true;
-        $record = new $this->name($this);
+        $record = new $this->options['name']($this);
         $this->isNewEntry   = false;
         $this->data         = array();
         return $record;
@@ -742,7 +765,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $query  = $this->applyInheritance($query);
 
 
-            $params = array_merge($id, array_values($this->inheritanceMap));
+            $params = array_merge($id, array_values($this->options['inheritanceMap']));
 
             $stmt  = $this->connection->execute($query,$params);
 
@@ -761,9 +784,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return string                   query where part with column aggregation inheritance added
      */
     final public function applyInheritance($where) {
-        if( ! empty($this->inheritanceMap)) {
+        if( ! empty($this->options['inheritanceMap'])) {
             $a = array();
-            foreach($this->inheritanceMap as $field => $value) {
+            foreach($this->options['inheritanceMap'] as $field => $value) {
                 $a[] = $field." = ?";
             }
             $i = implode(" AND ",$a);
@@ -779,7 +802,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     public function findAll() {
         $graph = new Doctrine_Query($this->connection);
-        $users = $graph->query("FROM ".$this->name);
+        $users = $graph->query("FROM ".$this->options['name']);
         return $users;
     }
     /**
@@ -793,7 +816,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     public function findBySql($dql, array $params = array()) {
         $q = new Doctrine_Query($this->connection);
-        $users = $q->query("FROM ".$this->name." WHERE ".$dql, $params);
+        $users = $q->query("FROM ".$this->options['name']." WHERE ".$dql, $params);
         return $users;
     }
 
@@ -836,7 +859,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         if(isset($this->identityMap[$id]))
             $record = $this->identityMap[$id];
         else {      
-            $record = new $this->name($this);
+            $record = new $this->options['name']($this);
             $this->identityMap[$id] = $record;
         }
         $this->data = array();
@@ -853,7 +876,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $query = "SELECT ".implode(", ",$this->primaryKeys)." FROM ".$this->getTableName()." WHERE ".implode(" = ? && ",$this->primaryKeys)." = ?";
             $query = $this->applyInheritance($query);
 
-            $params = array_merge(array($id), array_values($this->inheritanceMap));
+            $params = array_merge(array($id), array_values($this->options['inheritanceMap']));
 
             $this->data = $this->connection->execute($query,$params)->fetch(PDO::FETCH_ASSOC);
 
@@ -875,7 +898,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return integer
      */
     public function count() {
-        $a = $this->connection->getDBH()->query("SELECT COUNT(1) FROM ".$this->tableName)->fetch(PDO::FETCH_NUM);
+        $a = $this->connection->getDBH()->query("SELECT COUNT(1) FROM ".$this->options['tableName'])->fetch(PDO::FETCH_NUM);
         return current($a);
     }
     /**
@@ -920,15 +943,15 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return void
      */
     final public function setEnumValues($field, array $values) {
-        $this->enum[strtolower($field)] = $values;
+        $this->options['enumMap'][strtolower($field)] = $values;
     }
     /**
      * @param string $field
      * @return array
      */
     final public function getEnumValues($field) {
-        if(isset($this->enum[$field]))
-            return $this->enum[$field];
+        if(isset($this->options['enumMap'][$field]))
+            return $this->options['enumMap'][$field];
         else
             return array();
     }
@@ -940,7 +963,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return mixed
      */
     final public function enumValue($field, $index) {
-        return isset($this->enum[$field][$index])?$this->enum[$field][$index]:$index;
+        return isset($this->options['enumMap'][$field][$index]) ? $this->options['enumMap'][$field][$index] : $index;
     }
     /**
      * invokeSet
@@ -984,10 +1007,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return mixed
      */
     final public function enumIndex($field, $value) {
-        if( ! isset($this->enum[$field])) 
+        if( ! isset($this->options['enumMap'][$field])) 
             $values = array();
         else
-            $values = $this->enum[$field];
+            $values = $this->options['enumMap'][$field];
 
         return array_search($value, $values);
     }
