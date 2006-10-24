@@ -280,7 +280,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
 
         $description = array();
         $columns     = array();
-        foreach ($result as $key => $val) {
+        foreach($result as $key => $val) {
             $description = array(
                     'name'    => $val['name'],
                     'type'    => $val['type'],
@@ -299,7 +299,13 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
      * @return array
      */
     public function listTableIndexes($table) {
-    
+        $sql     =  'PRAGMA index_list(' . $table . ')';
+        $result  = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+        $indexes = array();
+        foreach($result as $key => $val) {
+
+        }
     }
     /**
      * lists tables

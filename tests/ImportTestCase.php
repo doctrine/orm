@@ -9,14 +9,16 @@
  * @version $Id$
  * @package Doctrine
  */
-class Doctrine_Import_TestCase extends Doctrine_UnitTestCase
-{
+class Doctrine_Import_TestCase extends Doctrine_UnitTestCase {
     private $tmpdir;
     
     private $suffix;
     
     private $schema;
        
+    public function prepareTables() { }
+    public function prepareData() { }
+
     public function setUp()
     {
     	parent::setUp();
@@ -41,17 +43,19 @@ class Doctrine_Import_TestCase extends Doctrine_UnitTestCase
     }
 
     public function testImportTable() {
-        $definition = array('name' => 'user');
+        $definition = array('name' => 'import_test');
 
         $table = new Doctrine_Schema_Table($definition);
         $def     = array('name' => 'name',
                          'type' => 'string',
-                         'length' => 20);
+                         'length' => 20,
+                         'default' => 'someone');
 
         $table->addColumn(new Doctrine_Schema_Column($def));
-        
+
         $def     = array('name' => 'created',
-                         'type' => 'integer');
+                         'type' => 'integer',
+                         'notnull' => true);
 
         $table->addColumn(new Doctrine_Schema_Column($def));
 
@@ -65,9 +69,50 @@ class Doctrine_Import_TestCase extends Doctrine_UnitTestCase
         } catch(Doctrine_Import_Builder_Exception $e) {
             $this->fail();
         }
-
-        unlink('tmp' . DIRECTORY_SEPARATOR . 'User.php');
+        $this->assertTrue(file_exists('tmp' . DIRECTORY_SEPARATOR . 'ImportTest.php'));
     }
+    public function testImportedComponent() {
+        require_once('tmp' . DIRECTORY_SEPARATOR . 'ImportTest.php');
+
+        $r = new ImportTest();
+        $columns = $r->getTable()->getColumns();
+
+        // id column is auto-created
+        
+        $this->assertEqual($columns['id'][0], 'integer');
+        $this->assertEqual($columns['id'][1], 20);
+
+        $this->assertEqual($columns['name'][0], 'string');
+        $this->assertEqual($columns['name'][1], 20);
+        
+        $this->assertEqual($columns['created'][0], 'integer');
+
+        unlink('tmp' . DIRECTORY_SEPARATOR . 'ImportTest.php');
+    }
+    public function testForeignKeySupport() {
+        $this->dbh->query('CREATE TABLE album (
+          id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+          title VARCHAR(100),
+          artist VARCHAR(100)
+        )');
+
+        $this->dbh->query('CREATE TABLE track (
+          id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+          album_id INTEGER,
+          dsk INTEGER,
+          posn INTEGER,
+          song VARCHAR(255),
+          FOREIGN KEY (album_id) REFERENCES album(id)
+        )');
+
+
+        $sql    = "PRAGMA table_info(track)";
+        $sql    = "PRAGMA foreign_key_list(track)";
+        $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        
+
+    }
+
     /**
     public function testDatabaseConnectionIsReverseEngineeredToSchema()
     {

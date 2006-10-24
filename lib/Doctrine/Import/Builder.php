@@ -79,6 +79,7 @@ class Doctrine_Import_Builder {
         return $this->suffix;
     }
 
+
     public function buildRecord(Doctrine_Schema_Table $table) {
         if (empty($this->path)) 
             throw new Doctrine_Import_Builder_Exception('No build target directory set.');
@@ -92,11 +93,26 @@ class Doctrine_Import_Builder {
         $columns   = array();
 
         $i = 0;
+
         foreach($table as $name => $column) {
 
             $columns[$i] = '        $this->hasColumn(\'' . $column['name'] . '\', \'' . $column['type'] . '\'';
             if($column['length'])
                 $columns[$i] .= ', ' . $column['length'];
+            else
+                $columns[$i] .= ', null';
+           
+            $a = array();
+            
+            if($column['default']) {
+                $a[] = '\'default\' => ' . var_export($column['default'], true);
+            }
+            if($column['notnull']) {
+                $a[] = '\'notnull\' => true';
+            }
+            if( ! empty($a))
+                $columns[$i] .= ', ' . 'array(' . implode(',
+', $a) . ')';
 
             $columns[$i] .= ');';
             

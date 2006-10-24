@@ -40,7 +40,7 @@ class Doctrine_Schema_Column extends Doctrine_Schema_Object implements IteratorA
      */
     protected $definition = array('name'    => '',
                                   'type'    => '',
-                                  'length'  => 0,
+                                  'length'  => null,
                                   'unique'  => false,
                                   'primary' => false,
                                   'notnull' => false,
