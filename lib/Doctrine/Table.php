@@ -963,6 +963,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return mixed
      */
     final public function enumValue($field, $index) {
+        if ($index instanceof Doctrine_Null)
+        {
+          return $index;
+        }
         return isset($this->options['enumMap'][$field][$index]) ? $this->options['enumMap'][$field][$index] : $index;
     }
     /**
