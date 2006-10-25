@@ -140,11 +140,6 @@ class Doctrine_Lib {
         $r[] = "<pre>";
         $r[] = "Component   : ".$table->getComponentName();
         $r[] = "Table       : ".$table->getTableName();
-        $r[] = "Repository  : ".$table->getRepository()->count()." objects";
-        if($table->getCache() instanceof Doctrine_Cache_File) {
-            $r[] = "Cache       : ".$table->getCache()->count()." objects";
-            $r[] = "Cache hits  : ".array_sum($table->getCache()->getStats())." hits";
-        }
         $r[] = "</pre>";
         return implode("\n",$r)."<br>";
     }

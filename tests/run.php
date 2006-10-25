@@ -2,63 +2,69 @@
 ob_start();
 
 
-require_once("ConfigurableTestCase.php");
-require_once("ManagerTestCase.php");
-require_once("ConnectionTestCase.php");
-require_once("ConnectionTransactionTestCase.php");
-require_once("TableTestCase.php");
-require_once("EventListenerTestCase.php");
-require_once("BatchIteratorTestCase.php");
-require_once("CacheFileTestCase.php");
+require_once('ConfigurableTestCase.php');
+require_once('ManagerTestCase.php');
+require_once('ConnectionTestCase.php');
+require_once('ConnectionTransactionTestCase.php');
+require_once('TableTestCase.php');
+require_once('EventListenerTestCase.php');
+require_once('BatchIteratorTestCase.php');
+require_once('CacheFileTestCase.php');
 
-require_once("RecordTestCase.php");
-require_once("RecordStateTestCase.php");
-require_once("RecordFilterTestCase.php");
+require_once('RecordTestCase.php');
+require_once('RecordStateTestCase.php');
+require_once('RecordFilterTestCase.php');
 
-require_once("AccessTestCase.php");
-require_once("ValidatorTestCase.php");
-require_once("CollectionTestCase.php");
-require_once("PessimisticLockingTestCase.php");
-require_once("EventListenerChainTestCase.php");
-require_once("CacheSqliteTestCase.php");
-require_once("CollectionOffsetTestCase.php");
+require_once('AccessTestCase.php');
+require_once('ValidatorTestCase.php');
+require_once('CollectionTestCase.php');
+require_once('PessimisticLockingTestCase.php');
+require_once('EventListenerChainTestCase.php');
+require_once('CacheSqliteTestCase.php');
+require_once('CollectionOffsetTestCase.php');
 
-require_once("CacheQuerySqliteTestCase.php");
-require_once("ViewTestCase.php");
-require_once("RawSqlTestCase.php");
-require_once("CustomPrimaryKeyTestCase.php");
-require_once("FilterTestCase.php");
+require_once('CacheQuerySqliteTestCase.php');
+require_once('ViewTestCase.php');
+require_once('RawSqlTestCase.php');
+require_once('CustomPrimaryKeyTestCase.php');
+require_once('FilterTestCase.php');
 
-require_once("QueryTestCase.php");
-require_once("QueryLimitTestCase.php");
-require_once("QueryMultiJoinTestCase.php");
-require_once("QueryReferenceModelTestCase.php");
-require_once("QueryWhereTestCase.php");
-require_once("QueryFromTestCase.php");
-require_once("QueryConditionTestCase.php");
-require_once("QueryComponentAliasTestCase.php");
-require_once("QuerySubqueryTestCase.php");
-require_once("QuerySelectTestCase.php");
-require_once("QueryDeleteTestCase.php");
-require_once("QueryUpdateTestCase.php");
+require_once('QueryTestCase.php');
+require_once('QueryLimitTestCase.php');
+require_once('QueryMultiJoinTestCase.php');
+require_once('QueryReferenceModelTestCase.php');
+require_once('QueryWhereTestCase.php');
+require_once('QueryFromTestCase.php');
+require_once('QueryConditionTestCase.php');
+require_once('QueryComponentAliasTestCase.php');
+require_once('QuerySubqueryTestCase.php');
+require_once('QuerySelectTestCase.php');
+require_once('QueryDeleteTestCase.php');
+require_once('QueryUpdateTestCase.php');
 
-require_once("DBTestCase.php");
-require_once("SchemaTestCase.php");
-require_once("ImportTestCase.php");
-require_once("BooleanTestCase.php");
-require_once("EnumTestCase.php");
-require_once("RelationAccessTestCase.php");
-require_once("RelationTestCase.php");
-require_once("DataDictSqliteTestCase.php");
-require_once("CustomResultSetOrderTestCase.php");
+require_once('RelationAccessTestCase.php');
+require_once('RelationTestCase.php');
+require_once('RelationManyToManyTestCase.php');
+
+
+require_once('DBTestCase.php');
+require_once('SchemaTestCase.php');
+require_once('ImportTestCase.php');
+require_once('BooleanTestCase.php');
+require_once('EnumTestCase.php');
+
+require_once('DataDictSqliteTestCase.php');
+require_once('CustomResultSetOrderTestCase.php');
 
 error_reporting(E_ALL);
-print "<pre>";
+print '<pre>';
 
-$test = new GroupTest("Doctrine Framework Unit Tests");
+$test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 $test->addTestCase(new Doctrine_Relation_TestCase());
+
+$test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
 
 $test->addTestCase(new Doctrine_Record_TestCase());
 
@@ -174,9 +180,9 @@ if (TextReporter::inCli()) {
 } else {
     if (isset($_POST))
     {
-        $dsn        = isset($_POST['dsn'])?$_POST['dsn']:null;
-        $username   = isset($_POST['username'])?$_POST['username']:null;
-        $password   = isset($_POST['password'])?$_POST['password']:null;
+        $dsn        = isset($_POST["dsn"])?$_POST["dsn"]:null;
+        $username   = isset($_POST["username"])?$_POST["username"]:null;
+        $password   = isset($_POST["password"])?$_POST["password"]:null;
     }
     $test->run(new MyReporter());
     $output = ob_get_clean();

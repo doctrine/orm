@@ -496,7 +496,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @see Doctrine_Record::STATE_* constants
      * @return integer
      */
-    final public function getState() {
+    public function getState() {
         return $this->_state;
     }
     /**
@@ -504,6 +504,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * returns / assigns the state of this record
      *
      * @param integer|string $state                 if set, this method tries to set the record state to $state
+     * @see Doctrine_Record::STATE_* constants
      *
      * @throws Doctrine_Record_State_Exception      if trying to set an unknown state
      * @return null|integer
@@ -514,7 +515,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
         $err = false;
         if(is_integer($state)) {
-                               	
+
             if($state >= 1 && $state <= 6)
                 $this->_state = $state;
             else

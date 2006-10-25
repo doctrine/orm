@@ -460,7 +460,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return array
      */
-    final public function getBounds() {
+    public function getBounds() {
         return $this->bound;
     }
     /**
@@ -469,7 +469,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $name
      * @return array
      */
-    final public function getBound($name) {
+    public function getBound($name) {
         if( ! isset($this->bound[$name]))
             throw new Doctrine_Table_Exception('Unknown bound '.$name);
 
@@ -481,9 +481,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $name
      * @return array
      */
-    final public function getBoundForName($name) {
+    public function getBoundForName($name, $component) {
         foreach($this->bound as $k => $bound) {
-            if($bound[3] == $name) {
+            $e = explode('.', $bound[0]);
+            
+            if($bound[3] == $name && $e[0] == $component) {
                 return $this->bound[$k];
             }
         }
@@ -518,7 +520,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return void
      */
-    final public function unbindAll() {
+    public function unbindAll() {
         $this->bound        = array();
         $this->relations    = array();
         $this->boundAliases = array();
@@ -530,7 +532,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param $name
      * @return boolean
      */
-    final public function unbind($name) {
+    public function unbind($name) {
         if( ! isset($this->bound[$name]))
             return false;
 
@@ -551,9 +553,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $field
      * @return void
      */
-    final public function bind($name,$field,$type,$localKey) {
+    final public function bind($name, $field, $type, $localKey) {
         if(isset($this->relations[$name]))
-            throw new Doctrine_Table_Exception('Relation already set for '.$name);
+            unset($this->relations[$name]);
 
         $e          = explode(" as ",$name);
         $name       = $e[0];
@@ -571,20 +573,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * getComponentName
      * @return string                   the component name
      */
-    final public function getComponentName() {
+    public function getComponentName() {
         return $this->options['name'];
     }
     /**
      * @return Doctrine_Connection
      */
-    final public function getConnection() {
+    public function getConnection() {
         return $this->connection;
-    }
-    /**
-     * @return Doctrine_Cache
-     */
-    final public function getCache() {
-        return $this->cache;
     }
     /**
      * hasRelatedComponent
@@ -662,7 +658,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                 foreach(array_reverse($classes) as $class) {
                     try {
-                        $bound = $table->getBoundForName($class);
+                        $bound = $table->getBoundForName($class, $component);
                         break;
                     } catch(Doctrine_Table_Exception $exc) { }
 
@@ -670,11 +666,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 if( ! isset($local))
                     $local = $this->identifier;
 
-                $e2    = explode(".",$bound[0]);
-                $fields = explode("-",$e2[1]);
+                $e2     = explode('.', $bound[0]);
+                $fields = explode('-', $e2[1]);
 
                 if($e2[0] != $component)
-                    throw new Doctrine_Table_Exception($e2[0]." doesn't match ".$component);
+                    throw new Doctrine_Table_Exception($e2[0] . ' doesn\'t match ' . $component);
 
                 $associationTable = $this->connection->getTable($e2[0]);
 
@@ -973,7 +969,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     final public function enumValue($field, $index) {
         if ($index instanceof Doctrine_Null)
             return $index;
-        
+
         return isset($this->options['enumMap'][$field][$index]) ? $this->options['enumMap'][$field][$index] : $index;
     }
     /**

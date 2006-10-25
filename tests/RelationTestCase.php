@@ -7,8 +7,6 @@ class RelationTest extends Doctrine_Record {
     }
     public function setUp() {
         $this->ownsMany('OwnsOneToManyWithAlias as AliasO2M', 'AliasO2M.component_id');
-        $this->hasMany('M2M as AliasM2M', 'JoinTable.c1_id');
-    //    $this->hasMany('M2M as AliasM2M2', 'JoinTable.c1_id');
     }
 }
 class RelationTestChild extends RelationTest {
@@ -25,12 +23,7 @@ class HasOneToOne extends Doctrine_Record {
 class HasOneToOneWithAlias extends Doctrine_Record {
 
 }
-class JoinTable extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('c1_id', 'integer');
-        $this->hasColumn('c2_id', 'integer');
-    }
-}
+
 class HasManyWithAlias extends Doctrine_Record {
 
 }
@@ -42,21 +35,14 @@ class OwnsOneToManyWithAlias extends Doctrine_Record {
 
     }
 }
-class M2M extends Doctrine_Record {
-    public function setTableDefinition() { 
-        $this->hasColumn('name', 'string', 200);
-    }
-    public function setUp() {
-        $this->hasMany('RelationTest as AliasM2M', 'JoinTable.c2_id');
-    }
-}
+
 class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
     public function prepareData() { }
     public function prepareTables() {
-        $this->tables = array('M2M', 'RelationTest', 'JoinTable');
-        
         parent::prepareTables();
     }
+
+
     public function testOneToManyTreeRelationWithConcreteInheritance() {
         $component = new RelationTestChild();
         
@@ -98,36 +84,6 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
     }
-    public function testManyToManyHasRelationWithAliases() {
-        $component = new RelationTest();
-        
-        try {
-            $rel = $component->getTable()->getRelation('AliasM2M');
-            $this->pass();
-        } catch(Doctrine_Exception $e) {
-            $this->fail();
-        }
-        $this->assertTrue($rel instanceof Doctrine_Relation_Association);
-        
-        $this->assertTrue($component->AliasM2M instanceof Doctrine_Collection);
-
-        $component->AliasM2M[0]->name = '1';
-        $component->AliasM2M[1]->name = '2';
-        $component->name = '2';
-        
-        $count = $this->dbh->count();
-
-        $component->save();
-
-        $this->assertEqual($this->dbh->count(), ($count + 5));
-        
-        $this->assertEqual($component->AliasM2M->count(), 2);
-        
-        $component = $component->getTable()->find($component->id);
-        
-        $this->assertEqual($component->AliasM2M->count(), 2);
-    }
-
 
     public function testManyToManyRelation() {
         $this->manager->setAttribute(Doctrine::ATTR_CREATE_TABLES, false);
