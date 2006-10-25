@@ -343,10 +343,16 @@ $menu = array("Getting started" =>
            "Transactions" => array(
                         "Introduction",
                         "Unit of work",
+                        "Nesting",
+                        "Savepoints",
                         "Locking strategies" =>
                             array("Pessimistic locking",
                                   "Optimistic locking"),
-                        "Nesting"
+
+                        "Lock modes",
+                        "Isolation levels",
+                        "Deadlocks",
+
                         ),
             /**
             "Developer components" => array(
@@ -466,12 +472,12 @@ $menu = array("Getting started" =>
                                 if( ! file_exists("docs/$title - $k - $v2.php")) {
                                     $missing[0]++;
                                     $str .= " [ <font color='red'>doc</font> ] ";
-                                    touch("docs/$title - $k - $v2.php");
+                                    //touch("docs/$title - $k - $v2.php");
                                 }
                                 if( ! file_exists("codes/$title - $k - $v2.php")) {
                                     $missing[1]++;
                                     $str .= " [ <font color='red'>code</font> ] ";
-                                    touch("codes/$title - $k - $v2.php");
+                                    //touch("codes/$title - $k - $v2.php");
 
                                 }
 
@@ -486,12 +492,12 @@ $menu = array("Getting started" =>
                             if( ! file_exists("docs/$title - $t.php")) {
                                 $missing[0]++;
                                 $str .= " [ <font color='red'>doc</font> ] ";
-                                touch("docs/$title - $t.php");
+                                //touch("docs/$title - $t.php");
                             }
                             if( ! file_exists("codes/$title - $t.php")) {
                                 $missing[1]++;
                                 $str .= " [ <font color='red'>code</font> ] ";
-                                touch("codes/$title - $t.php");
+                                //touch("codes/$title - $t.php");
                             }
                             print "<dt>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i#$e\">".$t."</a>$str</dt>\n";
                         }

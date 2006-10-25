@@ -177,7 +177,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         $names = array_reverse($names);
 
         // create database table
-        if(method_exists($record,"setTableDefinition")) {
+        if(method_exists($record, 'setTableDefinition')) {
             $record->setTableDefinition();
 
             $this->columnCount = count($this->columns);
@@ -185,7 +185,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             if(isset($this->columns)) {
                                       	
                 // get the declaring class of setTableDefinition method
-                $method    = new ReflectionMethod($this->options['name'],"setTableDefinition");
+                $method    = new ReflectionMethod($this->options['name'], 'setTableDefinition');
                 $class     = $method->getDeclaringClass();
 
                 if( ! isset($this->options['tableName']))
@@ -193,9 +193,17 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                 switch(count($this->primaryKeys)):
                     case 0:
-                        $this->columns = array_merge(array("id" => array("integer", 20, array("autoincrement" => true, "primary" => true))), $this->columns);
-                        $this->primaryKeys[] = "id";
-                        $this->identifier = "id";
+                        $this->columns = array_merge(array('id' => 
+                                                        array('integer', 
+                                                              20,
+                                                              array('autoincrement' => true,
+                                                                    'primary'       => true
+                                                                    )
+                                                              )
+                                                        ), $this->columns);
+
+                        $this->primaryKeys[] = 'id';
+                        $this->identifier = 'id';
                         $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
                         $this->columnCount++;
                     break;
@@ -964,9 +972,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     final public function enumValue($field, $index) {
         if ($index instanceof Doctrine_Null)
-        {
-          return $index;
-        }
+            return $index;
+        
         return isset($this->options['enumMap'][$field][$index]) ? $this->options['enumMap'][$field][$index] : $index;
     }
     /**

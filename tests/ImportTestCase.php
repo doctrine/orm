@@ -90,6 +90,7 @@ class Doctrine_Import_TestCase extends Doctrine_UnitTestCase {
         unlink('tmp' . DIRECTORY_SEPARATOR . 'ImportTest.php');
     }
     public function testForeignKeySupport() {
+        /**
         $this->dbh->query('CREATE TABLE album (
           id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
           title VARCHAR(100),
@@ -109,7 +110,7 @@ class Doctrine_Import_TestCase extends Doctrine_UnitTestCase {
         $sql    = "PRAGMA table_info(track)";
         $sql    = "PRAGMA foreign_key_list(track)";
         $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        
+        */
 
     }
 

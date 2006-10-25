@@ -512,9 +512,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if($state == null) {
             return $this->_state;
         }
+        $err = false;
         if(is_integer($state)) {
+                               	
             if($state >= 1 && $state <= 6)
                 $this->_state = $state;
+            else
+                $err = true;
+
         } elseif(is_string($state)) {
             $upper = strtoupper($state);
             switch($upper) {
@@ -526,10 +531,13 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 case 'DELETED':
                     $this->_state = constant('Doctrine_Record::STATE_' . $upper);
                 break;
+                default:
+                    $err = true;
             }
-        }
+        } 
         
-        throw new Doctrine_Record_State_Exception('Unknown record state ' . $state);
+        if($err)
+            throw new Doctrine_Record_State_Exception('Unknown record state ' . $state);
     }
     /**
      * refresh

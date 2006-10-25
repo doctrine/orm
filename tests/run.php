@@ -12,6 +12,7 @@ require_once("BatchIteratorTestCase.php");
 require_once("CacheFileTestCase.php");
 
 require_once("RecordTestCase.php");
+require_once("RecordStateTestCase.php");
 require_once("RecordFilterTestCase.php");
 
 require_once("AccessTestCase.php");
@@ -57,13 +58,15 @@ print "<pre>";
 $test = new GroupTest("Doctrine Framework Unit Tests");
 
 
+$test->addTestCase(new Doctrine_Relation_TestCase());
+
+$test->addTestCase(new Doctrine_Record_TestCase());
+
+$test->addTestCase(new Doctrine_Record_State_TestCase());
+
 $test->addTestCase(new Doctrine_Import_TestCase());
 
 $test->addTestCase(new Doctrine_SchemaTestCase());
-
-$test->addTestCase(new Doctrine_Relation_TestCase());
-
-$test->addTestCase(new Doctrine_RecordTestCase());
 
 $test->addTestCase(new Doctrine_ValidatorTestCase());
 

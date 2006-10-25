@@ -3,11 +3,12 @@
 class RelationTest extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn('name', 'string', 200);
-        $this->hasColumn("child_id", "integer");
+        $this->hasColumn('child_id', 'integer');
     }
     public function setUp() {
         $this->ownsMany('OwnsOneToManyWithAlias as AliasO2M', 'AliasO2M.component_id');
-        $this->hasMany('HasManyToManyWithAlias as AliasM2M', 'JoinTable.c1_id');
+        $this->hasMany('M2M as AliasM2M', 'JoinTable.c1_id');
+    //    $this->hasMany('M2M as AliasM2M2', 'JoinTable.c1_id');
     }
 }
 class RelationTestChild extends RelationTest {
@@ -41,7 +42,7 @@ class OwnsOneToManyWithAlias extends Doctrine_Record {
 
     }
 }
-class HasManyToManyWithAlias extends Doctrine_Record {
+class M2M extends Doctrine_Record {
     public function setTableDefinition() { 
         $this->hasColumn('name', 'string', 200);
     }
@@ -52,7 +53,7 @@ class HasManyToManyWithAlias extends Doctrine_Record {
 class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
     public function prepareData() { }
     public function prepareTables() {
-        $this->tables = array('HasManyToManyWithAlias', 'RelationTest', 'JoinTable');
+        $this->tables = array('M2M', 'RelationTest', 'JoinTable');
         
         parent::prepareTables();
     }

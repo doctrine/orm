@@ -1,7 +1,7 @@
 <?php
 require_once("UnitTestCase.php");
 
-class Doctrine_RecordTestCase extends Doctrine_UnitTestCase {
+class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
     public function prepareTables() {
         $this->tables[] = "enumTest";
