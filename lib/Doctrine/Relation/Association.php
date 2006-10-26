@@ -61,10 +61,11 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
     public function getRelationDql($count, $context = 'record') {    
         switch($context):
             case "record":
-                $sub    = "SELECT ".$this->foreign.
-                          " FROM ".$this->associationTable->getTableName().
-                          " WHERE ".$this->local.
-                          " IN (".substr(str_repeat("?, ", $count),0,-2).")";
+                $sub    = 'SQL:SELECT ' . $this->foreign.
+                          ' FROM '  . $this->associationTable->getTableName().
+                          ' WHERE ' . $this->local.
+                          ' IN ('   . substr(str_repeat("?, ", $count),0,-2) . 
+                          ')';
 
                 $dql  = "FROM ".$this->table->getComponentName();
                 $dql .= ".".$this->associationTable->getComponentName();

@@ -28,7 +28,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
         }
         $r = array_shift($e);
 
-        $a = explode(".",$r);
+        $a = explode('.', $r);
 
         if(count($a) > 1) {
             $field     = array_pop($a);
@@ -84,35 +84,42 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
                 }
             } else {
                 $table     = $this->query->load($reference, false);
-                $enumIndex = $table->enumIndex($field, trim($value,"'"));
                 $alias     = $this->query->getTableAlias($reference);
                 $table     = $this->query->getTable($alias);
+                // check if value is enumerated value
+                $enumIndex = $table->enumIndex($field, trim($value, "'"));
 
+                if(substr($value, 0, 1) == '(') {
+                    // trim brackets
+                    $trimmed   = Doctrine_Query::bracketTrim($value);
 
-                if($value == 'true')
-                    $value = 1;
-                elseif($value == 'false')
-                    $value = 0;
-                elseif(substr($value,0,5) == '(FROM') {
-                    // subquery
-                    $sub   = Doctrine_Query::bracketTrim($value);
-                    $q     = new Doctrine_Query();
-                    $value = '(' . $q->parseQuery($sub)->getQuery() . ')';
-                } else {
-                    // check that value isn't a string
-                    if(strpos($value, '\'') === false) {
-                        $a = explode('.', $value);
-
-                        if(count($a) > 1) {
-                            // either a float or a component..
-    
-                            if( ! is_numeric($a[0])) {
-                                // a component found
-                                $value = $this->query->getTableAlias($a[0]). '.' . $a[1];
-                            }
+                    if(substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
+                        // subquery found
+                        $q     = new Doctrine_Query();
+                        $value = '(' . $q->parseQuery($trimmed)->getQuery() . ')';
+                    } elseif(substr($trimmed, 0, 4) == 'SQL:') {
+                        $value = '(' . substr($trimmed, 4) . ')';
+                    } else {
+                        // simple in expression found
+                        $e     = Doctrine_Query::sqlExplode($trimmed, ',');
+                        
+                        $value = array();
+                        foreach($e as $part) {
+                            $index   = $table->enumIndex($field, trim($part, "'"));
+                            if($index !== false)
+                                $value[] = $index;
+                            else
+                                $value[] = $this->parseLiteralValue($part);
                         }
+                        $value = '(' . implode(', ', $value) . ')';
                     }
+                } else {
+                    if($enumIndex !== false)
+                        $value = $enumIndex;
+                    else
+                        $value = $this->parseLiteralValue($value);
                 }
+
 
                 switch($operator) {
                     case '<':
@@ -128,7 +135,32 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
         }
         return $where;
     }
+    public function parseLiteralValue($value) {
+        // check that value isn't a string
+        if(strpos($value, '\'') === false) {
+                        
+            // parse booleans
+            if($value == 'true')
+                $value = 1;
+            elseif($value == 'false')
+                $value = 0;
 
+            $a = explode('.', $value);
+
+            if(count($a) > 1) {
+            // either a float or a component..
+    
+                if( ! is_numeric($a[0])) {
+                    // a component found
+                    $value = $this->query->getTableAlias($a[0]). '.' . $a[1];
+                }
+            }
+        } else {
+            // string literal found
+        }
+
+        return $value;
+    }
     public function parseExists($where, $negation) {
         $operator = ($negation) ? 'EXISTS' : 'NOT EXISTS';
 

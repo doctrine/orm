@@ -22,7 +22,7 @@ class Doctrine_EnumTestCase extends Doctrine_UnitTestCase {
 
         try {
             $query = new Doctrine_Query($this->connection);
-            $ret = $query->query('FROM EnumTest WHERE EnumTest.status = open');
+            $ret = $query->query("FROM EnumTest WHERE EnumTest.status = 'open'");
             $this->assertEqual(count($ret), 1);
         } catch (Exception $e) {
           $this->fail();
@@ -32,7 +32,7 @@ class Doctrine_EnumTestCase extends Doctrine_UnitTestCase {
     public function testInAndNotIn() {
         try {
             $query = new Doctrine_Query($this->connection);
-            $ret = $query->query('FROM EnumTest WHERE EnumTest.status IN (open)');
+            $ret = $query->query("FROM EnumTest WHERE EnumTest.status IN ('open')");
             $this->assertEqual(count($ret), 1);
         } catch (Exception $e) {
             $this->fail();
@@ -40,18 +40,26 @@ class Doctrine_EnumTestCase extends Doctrine_UnitTestCase {
 
         try {
             $query = new Doctrine_Query($this->connection);
-            $ret = $query->query('FROM EnumTest WHERE EnumTest.status NOT IN (verified, closed)');
+            $ret = $query->query("FROM EnumTest WHERE EnumTest.status NOT IN ('verified', 'closed')");
             $this->assertEqual(count($ret), 1);
         } catch (Exception $e) {
             $this->fail();
         }
     }
 
-    public function testNotEqual()
-    {
+    public function testExpressionComposition() {
         try {
             $query = new Doctrine_Query($this->connection);
-            $ret = $query->query('FROM EnumTest WHERE EnumTest.status != closed');
+            $ret = $query->query("FROM EnumTest e WHERE e.id > 0 AND (e.status != 'closed' OR e.status = 'verified')");
+            $this->assertEqual(count($ret), 1);
+        } catch (Exception $e) {
+            $this->fail();
+        }
+    }
+    public function testNotEqual() {
+        try {
+            $query = new Doctrine_Query($this->connection);
+            $ret = $query->query("FROM EnumTest WHERE EnumTest.status != 'closed'");
             $this->assertEqual(count($ret), 1);
         } catch (Exception $e) {
             $this->fail();
@@ -119,5 +127,6 @@ class Doctrine_EnumTestCase extends Doctrine_UnitTestCase {
         }
         $this->assertTrue($f);
     }
+
 }
 ?>

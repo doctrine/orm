@@ -54,6 +54,9 @@ require_once('BooleanTestCase.php');
 require_once('EnumTestCase.php');
 
 require_once('DataDictSqliteTestCase.php');
+require_once('DataDict/PgsqlTestCase.php');
+
+
 require_once('CustomResultSetOrderTestCase.php');
 
 error_reporting(E_ALL);
@@ -61,6 +64,7 @@ print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
+$test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
 
 $test->addTestCase(new Doctrine_Relation_TestCase());
 
@@ -124,8 +128,6 @@ $test->addTestCase(new Doctrine_CustomResultSetOrderTestCase());
 
 $test->addTestCase(new Doctrine_BooleanTestCase());
 
-$test->addTestCase(new Doctrine_EnumTestCase());
-
 $test->addTestCase(new Doctrine_Record_Filter_TestCase());
                                                              
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
@@ -148,6 +150,8 @@ $test->addTestCase(new Doctrine_Query_Delete_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Update_TestCase());
 
+
+$test->addTestCase(new Doctrine_EnumTestCase());
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());

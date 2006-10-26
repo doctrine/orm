@@ -88,8 +88,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      *                                      so the full columns array might look something like the following:
      *                                      array(
-     *                                             'name' => array('string', 20, array('notnull' => true, 'default' => 'someone')
-     *                                             'age'  => array('integer', 11,  array('notnull' => true))
+     *                                             'name' => array('string',  20, array('notnull' => true, 'default' => 'someone')),
+     *                                             'age'  => array('integer', 11, array('notnull' => true))
      *                                              )
      */
     protected $columns          = array();
@@ -115,21 +115,21 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     private $hasDefaultValues;
     /**
-     * @var array $options                              an array containing all options
+     * @var array $options                  an array containing all options
      *
-     *      -- name                                     name of the component, for example component name of the GroupTable is 'Group'
+     *      -- name                         name of the component, for example component name of the GroupTable is 'Group'
      *
-     *      -- tableName                                database table name, in most cases this is the same as component name but in some cases
-     *                                                  where one-table-multi-class inheritance is used this will be the name of the inherited table
+     *      -- tableName                    database table name, in most cases this is the same as component name but in some cases
+     *                                      where one-table-multi-class inheritance is used this will be the name of the inherited table
      *
-     *      -- sequenceName                             Some databases need sequences instead of auto incrementation primary keys, 
-     *                                                  you can set specific sequence for your table by calling setOption('sequenceName', $seqName)
-     *                                                  where $seqName is the name of the desired sequence
+     *      -- sequenceName                 Some databases need sequences instead of auto incrementation primary keys,
+     *                                      you can set specific sequence for your table by calling setOption('sequenceName', $seqName)
+     *                                      where $seqName is the name of the desired sequence
      *
-     *      -- enumMap                                  enum value arrays
+     *      -- enumMap                      enum value arrays
      *
-     *      -- inheritanceMap                           inheritanceMap is used for inheritance mapping, keys representing columns and values
-     *                                                  the column values that should correspond to child classes
+     *      -- inheritanceMap               inheritanceMap is used for inheritance mapping, keys representing columns and values
+     *                                      the column values that should correspond to child classes
      */
     protected $options          = array('name'           => null,
                                         'tableName'      => null,
@@ -484,7 +484,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     public function getBoundForName($name, $component) {
         foreach($this->bound as $k => $bound) {
             $e = explode('.', $bound[0]);
-            
+
             if($bound[3] == $name && $e[0] == $component) {
                 return $this->bound[$k];
             }
@@ -873,7 +873,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     /**
      * @param $id                       database row id
      * @throws Doctrine_Find_Exception
-     * @return DAOProxy                 a proxy for given identifier
      */
     final public function getProxy($id = null) {
         if($id !== null) {
@@ -888,13 +887,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 return false;
         }
         return $this->getRecord();
-    }
-    /**
-     * getTableDescription
-     * @return array
-     */
-    final public function getTableDescription() {
-        return $this->columns;
     }
     /**
      * count
