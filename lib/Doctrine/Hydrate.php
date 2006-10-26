@@ -329,14 +329,15 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         array_walk($params, array(__CLASS__, 'convertBoolean'));
         
         if( ! $this->view)
-            $query = $this->getQuery();
+            $query = $this->getQuery(true);
         else
             $query = $this->view->getSelectSql();
 
-        if($this->isLimitSubqueryUsed())
+        if($this->isLimitSubqueryUsed() && 
+           $this->connection->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) !== 'mysql')
             $params = array_merge($params, $params);
 
-        $stmt  = $this->connection->execute($query,$params);
+        $stmt  = $this->connection->execute($query, $params);
 
         if($this->aggregate)
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

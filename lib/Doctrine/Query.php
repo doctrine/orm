@@ -438,7 +438,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      *
      * @return string
      */
-    public function getQuery() {
+    public function getQuery($executeSubquery = false) {
         if(empty($this->parts["select"]) || empty($this->parts["from"]))
             return false;
 
@@ -488,8 +488,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $dbh      = $this->connection->getDBH();
 
                 // mysql doesn't support LIMIT in subqueries
-                if($dbh->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') { }
-                    //$dbh->query();
+                if($dbh->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+                    $list = $dbh->query($subquery)->fetchAll(PDO::FETCH_NUM);
+                }
 
                 $field    = $table->getTableName().'.'.$table->getIdentifier();
                 array_unshift($this->parts['where'], $field.' IN ('.$subquery.')');
@@ -548,7 +549,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $subquery .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ',$this->parts['where']):'';
         $subquery .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ',$this->parts['groupby']):'';
         $subquery .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' ',$this->parts['having']):'';
-    
+        $subquery .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(' ', $this->parts['orderby']):'';
+        
         // add driver specific limit clause
         $subquery = $this->connection->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
     
