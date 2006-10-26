@@ -27,14 +27,79 @@
  * @license     LGPL
  */
 class Doctrine_Export {
+    /**
+     * @var Doctrine_Connection $conn       Doctrine_Connection object
+     */
     private $conn;
-    
+    /**
+     * @var mixed $dbh                      the database handler (either PDO or Doctrine_DB object)
+     */
     private $dbh;
 
     public function __construct($conn) {
         $this->conn = $conn;
         $this->dbh  = $conn->getDBH();
     }
+    /**
+     * dropTable
+     *
+     * @param string    $table              name of table that should be dropped from the database
+     * @throws PDOException
+     * @return void
+     */
+    public function dropTable($table) {
+        $this->dbh->query('DROP TABLE '.$table);
+    }
+    /**
+     * [[ borrowed from PEAR MDB2 ]]
+     *
+     * Get the stucture of a field into an array
+     *
+     *
+     * @param string    $table         name of the table on which the index is to be created
+     * @param string    $name          name of the index to be created
+     * @param array     $definition    associative array that defines properties of the index to be created.
+     *                                 Currently, only one property named FIELDS is supported. This property
+     *                                 is also an associative with the names of the index fields as array
+     *                                 indexes. Each entry of this array is set to another type of associative
+     *                                 array that specifies properties of the index that are specific to
+     *                                 each field.
+     *
+     *                                 Currently, only the sorting property is supported. It should be used
+     *                                 to define the sorting direction of the index. It may be set to either
+     *                                 ascending or descending.
+     *
+     *                                 Not all DBMS support index sorting direction configuration. The DBMS
+     *                                 drivers of those that do not support it ignore this property. Use the
+     *                                 function supports() to determine whether the DBMS driver can manage indexes.
+     *
+     *                                 Example
+     *                                    array(
+     *                                        'fields' => array(
+     *                                            'user_name' => array(
+     *                                                'sorting' => 'ascending'
+     *                                            ),
+     *                                            'last_login' => array()
+     *                                        )
+     *                                    )
+     * @throws PDOException
+     * @return void
+     */
+    function createIndex($table, $name, array $definition) {
+        $table  = $this->conn->quoteIdentifier($table);
+        $name   = $this->conn->quoteIdentifier($name);
+
+        $query = "CREATE INDEX $name ON $table";
+        $fields = array();
+        foreach (array_keys($definition['fields']) as $field) {
+            $fields[] = $this->conn->quoteIdentifier($field);
+        }
+        $query .= ' ('. implode(', ', $fields) . ')';
+        return $this->dbh->query($query);
+    }
+    /**
+     * export
+     */
     public function export() {
         $parent = new ReflectionClass('Doctrine_Record');
         $conn   = Doctrine_Manager::getInstance()->getCurrentConnection();

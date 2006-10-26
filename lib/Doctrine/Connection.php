@@ -68,6 +68,15 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
     }
     /**
+     * quoteIdentifier
+     *
+     * @param string $identifier        identifier to be quoted
+     * @return string                   modified identifier
+     */
+    public function quoteIdentifier($identifier) {
+        return $identifier;
+    }
+    /**
      * getUnitOfWork
      *
      * returns the unit of work object
@@ -145,7 +154,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *                  READ COMMITTED (prevents dirty reads)
      *                  REPEATABLE READ (prevents nonrepeatable reads)
      *                  SERIALIZABLE (prevents phantom reads)
-     * @throws Doctrine_Connection_Mysql_Exception      if using unknown isolation level
+     *
      * @throws PDOException                             if something fails at the PDO level
      * @return void
      */
@@ -161,6 +170,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function getRegexpOperator() {
         throw new Doctrine_Connection_Exception('Regular expression operator is not supported by this database driver.');                                    	
+    }
+    /**
+     * getTransactionIsolation
+     * 
+     * @return string               returns the current session transaction isolation level
+     */
+    public function getTransactionIsolation() {
+        throw new Doctrine_Connection_Exception('Fetching transaction isolation level not supported by this database driver.');
     }
     /**
      * query

@@ -47,6 +47,15 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         return 'RLIKE';
     }
     /**
+     * getTransactionIsolation
+     * 
+     * @return string               returns the current session transaction isolation level
+     */
+    public function getTransactionIsolation() {
+        $ret = $this->dbh->query('SELECT @@tx_isolation')->fetch(PDO::FETCH_NUM);
+        return $ret[0];
+    }
+    /**
      * Set the transacton isolation level.
      *
      * @param   string  standard isolation level
