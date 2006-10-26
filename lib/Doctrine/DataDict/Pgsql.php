@@ -29,7 +29,7 @@
  * @version     $Id$
  */
 
-class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
+class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
@@ -53,7 +53,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getTypeDeclaration(array $field) {
+    public function getNativeDeclaration(array $field) {
         switch ($field['type']) {
             case 'string':
             case 'array':
@@ -115,8 +115,8 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @author  Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function mapNativeDatatype($field) {
-        $db_type = preg_replace('/\d/','', strtolower($field['type']) );
+    public function getDoctrineDeclaration(array $field) {
+
         $length = $field['length'];
         if ($length == '-1' && !empty($field['atttypmod'])) {
             $length = $field['atttypmod'] - 4;
@@ -126,7 +126,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
         }
         $type = array();
         $unsigned = $fixed = null;
-        switch ($db_type) {
+        switch ($field['type']) {
             case 'smallint':
             case 'int2':
                 $type[] = 'integer';
@@ -159,7 +159,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
             case 'bool':
             case 'boolean':
                 $type[] = 'boolean';
-                $length = null;
+                $length = 1;
                 break;
             case 'text':
             case 'varchar':
