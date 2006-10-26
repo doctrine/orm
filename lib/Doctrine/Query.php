@@ -384,7 +384,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     $this->parts[$name] = array($this->$method($value));
                 break;
                 case "limit":
-                case "offset": 
+                case "offset":
                     if($value == null)
                         $value = false;
 
@@ -458,10 +458,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         if($this->isDistinct())
             $str = 'DISTINCT ';
 
-
-
-        $q = "SELECT ".$str.implode(", ",$this->parts["select"]).
-             " FROM ";
+        $q = 'SELECT '.$str.implode(", ",$this->parts["select"]).
+             ' FROM ';
         $q = $this->getQueryBase();
 
         foreach($this->parts["from"] as $tname => $bool) {
@@ -469,30 +467,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
         $q .= implode(", ",$a);
 
-        if($needsSubQuery)
-            $subquery = 'SELECT DISTINCT ' . $table->getTableName() 
-                      . '.' . $table->getIdentifier()
-                      . ' FROM '.$table->getTableName();
-
-
         if( ! empty($this->parts['join'])) {
             foreach($this->parts['join'] as $part) {
                 $q .= " ".implode(' ', $part);
-            }
-
-            if($needsSubQuery) {
-                foreach($this->parts['join'] as $parts) {
-                    foreach($parts as $part) {
-                        if(substr($part,0,9) === 'LEFT JOIN') {
-                            $e = explode(' ', $part);
-
-                            if( ! in_array($e[2],$this->subqueryAliases))
-                                continue;
-                        }
-
-                        $subquery .= " ".$part;
-                    }
-                }
             }
         }
 
@@ -501,18 +478,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         if( ! empty($string))
             $this->parts['where'][] = '('.$string.')';
 
-        if($needsSubQuery) {
-            // all conditions must be preserved in subquery
-            $subquery .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';
-            $subquery .= ( ! empty($this->parts['groupby']))?" GROUP BY ".implode(", ",$this->parts["groupby"]):'';
-            $subquery .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
-        }
+
 
         $modifyLimit = true;
         if( ! empty($this->parts["limit"]) || ! empty($this->parts["offset"])) {
 
             if($needsSubQuery) {
-                $subquery = $this->connection->modifyLimitQuery($subquery,$this->parts["limit"],$this->parts["offset"]);
+                $subquery = $this->getLimitSubquery();
                 $dbh      = $this->connection->getDBH();
 
                 // mysql doesn't support LIMIT in subqueries
@@ -525,12 +497,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             }
         }
 
-        $q .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';
-        $q .= ( ! empty($this->parts['groupby']))?" GROUP BY ".implode(", ",$this->parts["groupby"]):'';
-        $q .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
-        $q .= ( ! empty($this->parts['orderby']))?" ORDER BY ".implode(" ",$this->parts["orderby"]):'';
+        $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']):'';
+        $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']):'';
+        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' ', $this->parts['having']):'';
+        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(' ', $this->parts['orderby']):'';
+
         if($modifyLimit)
-            $q = $this->connection->modifyLimitQuery($q,$this->parts["limit"],$this->parts["offset"]);
+            $q = $this->connection->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
 
         // return to the previous state
         if( ! empty($string))
@@ -539,6 +512,47 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             array_shift($this->parts['where']);
 
         return $q;
+    }
+    /**
+     * this is method is used by the record limit algorithm
+     *
+     * when fetching one-to-many, many-to-many associated data with LIMIT clause 
+     * an additional subquery is needed for limiting the number of returned records instead
+     * of limiting the number of sql result set rows
+     *
+     * @return string       the limit subquery
+     */
+    public function getLimitSubquery() {
+        $k        = array_keys($this->tables);
+        $table    = $this->tables[$k[0]];
+
+        $subquery = 'SELECT DISTINCT ' . $table->getTableName()
+                  . '.' . $table->getIdentifier()
+                  . ' FROM '.$table->getTableName();
+        
+        foreach($this->parts['join'] as $parts) {
+            foreach($parts as $part) {
+                // preserve LEFT JOINs only if needed
+                if(substr($part,0,9) === 'LEFT JOIN') {
+                    $e = explode(' ', $part);
+
+                    if( ! in_array($e[2],$this->subqueryAliases))
+                        continue;
+                }
+
+                $subquery .= ' '.$part;
+            }
+        }
+
+        // all conditions must be preserved in subquery
+        $subquery .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ',$this->parts['where']):'';
+        $subquery .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ',$this->parts['groupby']):'';
+        $subquery .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' ',$this->parts['having']):'';
+    
+        // add driver specific limit clause
+        $subquery = $this->connection->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
+    
+        return $subquery;
     }
 
 

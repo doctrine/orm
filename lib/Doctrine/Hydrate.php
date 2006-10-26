@@ -392,6 +392,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                             $alias   = $this->getPathAlias($path);
                             
                             //print_r($this->pendingAggregates);
+                            
+                            // map each aggregate value
                             foreach($row as $index => $value) {
                                 $agg = false;
 

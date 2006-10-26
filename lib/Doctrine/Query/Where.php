@@ -135,6 +135,15 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
         }
         return $where;
     }
+    /**
+     * parses a literal value and returns the parsed value
+     * 
+     * boolean literals are parsed to integers
+     * components are parsed to associated table aliases
+     *
+     * @param string $value         literal value to be parsed
+     * @return string
+     */
     public function parseLiteralValue($value) {
         // check that value isn't a string
         if(strpos($value, '\'') === false) {
@@ -161,6 +170,13 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
 
         return $value;
     }
+    /**
+     * parses an EXISTS expression
+     *
+     * @param string $where         query where part to be parsed
+     * @param boolean $negation     whether or not to use the NOT keyword
+     * @return string
+     */
     public function parseExists($where, $negation) {
         $operator = ($negation) ? 'EXISTS' : 'NOT EXISTS';
 
