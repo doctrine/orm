@@ -498,7 +498,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     break;
                 }
 
-                $field    = $table->getTableName().'.'.$table->getIdentifier();
+                $field    = $table->getTableName() . '.' . $table->getIdentifier();
                 array_unshift($this->parts['where'], $field. ' IN (' . $subquery . ')');
                 $modifyLimit = false;
             }
@@ -533,9 +533,18 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $k        = array_keys($this->tables);
         $table    = $this->tables[$k[0]];
 
-        $subquery = 'SELECT DISTINCT ' . $table->getTableName()
-                  . '.' . $table->getIdentifier()
-                  . ' FROM '.$table->getTableName();
+        $subquery  = 'SELECT DISTINCT ' . $table->getTableName()
+                   . '.' . $table->getIdentifier();
+        
+        if($this->connection->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'pgsql') {
+            foreach($this->parts['orderby'] as $part) {
+                $e = explode(' ', $part);
+                
+                $subquery .= ', ' . $e[0];                                           	
+            }
+        }
+
+        $subquery .= ' FROM '.$table->getTableName();
         
         foreach($this->parts['join'] as $parts) {
             foreach($parts as $part) {
