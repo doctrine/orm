@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_DataDict');
 /**
  * @package     Doctrine
  * @url         http://www.phpdoctrine.com
@@ -27,7 +27,6 @@
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @version     $Id$
  */
- 
 class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
