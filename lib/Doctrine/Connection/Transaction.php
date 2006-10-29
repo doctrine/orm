@@ -145,7 +145,7 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
 
                 $this->conn->getDBH()->beginTransaction();
 
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this->conn);
+                $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this->conn);
             }
 
             try {
@@ -214,8 +214,14 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
             }
             if($record instanceof Doctrine_Record) {
                 $params  = substr(str_repeat("?, ",count($ids)),0,-2);
-                $query   = "DELETE FROM ".$record->getTable()->getTableName()." WHERE ".$record->getTable()->getIdentifier()." IN(".$params.")";
-                $this->conn->execute($query,$ids);
+                
+                $query   = 'DELETE FROM '
+                         . $record->getTable()->getTableName() 
+                         . ' WHERE ' 
+                         . $record->getTable()->getIdentifier()
+                         . ' IN(' . $params . ')';
+
+                $this->conn->execute($query, $ids);
             }
 
         }
