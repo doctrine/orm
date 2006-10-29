@@ -83,7 +83,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
     
 
     public function testLimitWithOneToManyInnerJoin() {
-        $this->query->from("User(id):Phonenumber");
+        $this->query->select('u.id')->from("User u INNER JOIN u.Phonenumber");
         $this->query->limit(5);
 
 
@@ -177,7 +177,8 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
 
         $q = new Doctrine_Query();
-        $q->from("User")->where("User.Group.id = ?")->orderby("User.id DESC")->limit(5);
+        $q->from("User")->where("User.Group.id = ?")->orderby("User.id ASC")->limit(5);
+
         $users = $q->execute(array($user->Group[1]->id));
 
         $this->assertEqual($users->count(), 3);
@@ -222,7 +223,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $photos = $q->execute(array(1));
         $this->assertEqual($photos->count(), 3);
         $this->assertEqual($q->getQuery(), 
-        "SELECT photo.id AS photo__id, photo.name AS photo__name FROM photo LEFT JOIN phototag ON photo.id = phototag.photo_id LEFT JOIN tag ON tag.id = phototag.tag_id WHERE photo.id IN (SELECT DISTINCT photo.id FROM photo LEFT JOIN phototag ON photo.id = phototag.photo_id LEFT JOIN tag ON tag.id = phototag.tag_id WHERE tag.id = ? LIMIT 100) AND tag.id = ? ORDER BY photo.id DESC");
+        "SELECT photo.id AS photo__id, photo.name AS photo__name FROM photo LEFT JOIN phototag ON photo.id = phototag.photo_id LEFT JOIN tag ON tag.id = phototag.tag_id WHERE photo.id IN (SELECT DISTINCT photo.id FROM photo LEFT JOIN phototag ON photo.id = phototag.photo_id LEFT JOIN tag ON tag.id = phototag.tag_id WHERE tag.id = ? ORDER BY photo.id DESC LIMIT 100) AND tag.id = ? ORDER BY photo.id DESC");
     }
 }
 ?>

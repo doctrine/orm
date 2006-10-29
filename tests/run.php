@@ -66,9 +66,11 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 $test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
 
-$test->addTestCase(new Doctrine_Relation_TestCase());
 
 $test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
+
+
+$test->addTestCase(new Doctrine_Relation_TestCase());
 
 $test->addTestCase(new Doctrine_Record_TestCase());
 
@@ -148,7 +150,6 @@ $test->addTestCase(new Doctrine_Query_Delete_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Update_TestCase());
 
-                                                             
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 
 $test->addTestCase(new Doctrine_EnumTestCase());

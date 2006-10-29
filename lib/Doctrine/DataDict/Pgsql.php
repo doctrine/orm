@@ -126,7 +126,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
         }
         $type = array();
         $unsigned = $fixed = null;
-        switch ($field['type']) {
+        switch (strtolower($field['type'])) {
             case 'smallint':
             case 'int2':
                 $type[] = 'integer';

@@ -10,9 +10,40 @@ class M2MTest extends Doctrine_Record {
         $this->hasMany('RTC2 as RTC2', 'JC1.c1_id');
         $this->hasMany('RTC3 as RTC3', 'JC2.c1_id');
         $this->hasMany('RTC3 as RTC4', 'JC1.c1_id');
+
     }
 }
-
+class RelationErrorTest extends Doctrine_Record {
+    public function setTableDefinition() { 
+        $this->hasColumn('name', 'string', 200);
+    }
+    public function setUp() {
+        $this->hasMany('RTCUnknown', 'JC1.c1_id');
+    }
+}
+class M2MTest2 extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('oid', 'integer', 11, array('autoincrement', 'primary'));
+        $this->hasColumn('name', 'string', 20);
+    }
+    public function setUp() {
+        $this->hasMany('RTC4 as RTC5', 'JC3.c1_id');
+    }
+}
+class RTCUnknown extends Doctrine_Record {
+    public function setTableDefinition() { 
+        $this->hasColumn('name', 'string', 200);
+    }
+    public function setUp() {
+        $this->hasMany('M2MTest', 'JC2.c2_id');
+    }
+}
+class JC3 extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('c1_id', 'integer');
+        $this->hasColumn('c2_id', 'integer');
+    }
+}
 class JC1 extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn('c1_id', 'integer');
@@ -50,11 +81,104 @@ class RTC3 extends Doctrine_Record {
         $this->hasMany('M2MTest as RTC4', 'JC1.c2_id');
     }
 }
+class RTC4 extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('oid', 'integer', 11, array('autoincrement', 'primary'));  
+        $this->hasColumn('name', 'string', 20);
+    }
+    public function setUp() {
+        $this->hasMany('M2MTest2', 'JC3.c2_id');
+    }
+}
 
 class Doctrine_Relation_ManyToMany_TestCase extends Doctrine_UnitTestCase {
     public function prepareData() { }
     public function prepareTables() {
         parent::prepareTables();
+    }
+
+    public function testManyToManyRelationWithAliasesAndCustomPKs() {
+        $component = new M2MTest2();
+
+        try {
+            $rel = $component->getTable()->getRelation('RTC5');
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
+        $this->assertTrue($rel instanceof Doctrine_Relation_Association);
+
+        $this->assertTrue($component->RTC5 instanceof Doctrine_Collection);
+
+        try {
+            $rel = $component->getTable()->getRelation('JC3');
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
+        $this->assertEqual($rel->getLocal(), 'oid');
+    }
+    public function testJoinComponent() {
+        $component = new JC3();
+        
+        try {
+            $rel = $component->getTable()->getRelation('M2MTest2');
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
+        $this->assertEqual($rel->getForeign(), 'oid');
+        try {
+            $rel = $component->getTable()->getRelation('RTC4');
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
+        $this->assertEqual($rel->getForeign(), 'oid');
+    }
+
+    public function testManyToManyRelationFetchingWithAliasesAndCustomPKs() {
+        $q = new Doctrine_Query();
+        
+        try {
+            $q->from('M2MTest2 m LEFT JOIN m.RTC5');
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
+        try {
+            $q->execute();
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
+    }
+    
+    public function testUnknownManyToManyRelation() {
+        $component = new RelationErrorTest();
+        
+        try {
+            $rel = $component->getTable()->getRelation('RTCUnknown');
+            $this->fail();
+        } catch(Doctrine_Table_Exception $e) {
+            $this->pass();
+        }
+    }
+    public function testManyToManyRelationFetchingWithAliasesAndCustomPKs2() {
+        $q = new Doctrine_Query();
+        
+        try {
+            $q->from('M2MTest2 m INNER JOIN m.JC3');
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
+        try {
+            $q->execute();
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
     }
     public function testManyToManyHasRelationWithAliases4() {
         $component = new M2MTest();

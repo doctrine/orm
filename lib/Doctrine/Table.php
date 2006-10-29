@@ -482,6 +482,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return array
      */
     public function getBoundForName($name, $component) {
+
         foreach($this->bound as $k => $bound) {
             $e = explode('.', $bound[0]);
 
@@ -553,7 +554,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $field
      * @return void
      */
-    final public function bind($name, $field, $type, $localKey) {
+    public function bind($name, $field, $type, $localKey) {
         if(isset($this->relations[$name]))
             unset($this->relations[$name]);
 
@@ -567,7 +568,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $alias = $name;
 
 
-        $this->bound[$alias] = array($field,$type,$localKey,$name);
+        $this->bound[$alias] = array($field, $type, $localKey, $name);
     }
     /**
      * getComponentName
@@ -661,8 +662,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                         $bound = $table->getBoundForName($class, $component);
                         break;
                     } catch(Doctrine_Table_Exception $exc) { }
-
                 }
+                if( ! isset($bound)) 
+                    throw new Doctrine_Table_Exception("Couldn't map many-to-many relation for "
+                                                      . $this->options['name'] . " and $name. Components use different join tables.");
+
+
                 if( ! isset($local))
                     $local = $this->identifier;
 
@@ -676,17 +681,17 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                 if(count($fields) > 1) {
                     // SELF-REFERENCING THROUGH JOIN TABLE
-                    $this->relations[$e2[0]] = new Doctrine_Relation_ForeignKey($associationTable,$local,$fields[0],Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
+                    $this->relations[$e2[0]] = new Doctrine_Relation_ForeignKey($associationTable, $local, $fields[0],Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
 
-                    $relation = new Doctrine_Relation_Association_Self($table,$associationTable,$fields[0],$fields[1], $type, $alias);
+                    $relation = new Doctrine_Relation_Association_Self($table, $associationTable, $fields[0], $fields[1], $type, $alias);
                 } else {
 
                     // auto initialize a new one-to-one relationship for association table
-                    $associationTable->bind($this->getComponentName(),  $associationTable->getComponentName(). '.' .$e2[1], Doctrine_Relation::ONE_AGGREGATE, 'id');
-                    $associationTable->bind($table->getComponentName(), $associationTable->getComponentName(). '.' .$foreign, Doctrine_Relation::ONE_AGGREGATE, 'id');
+                    $associationTable->bind($this->getComponentName(),  $associationTable->getComponentName(). '.' .$e2[1], Doctrine_Relation::ONE_AGGREGATE, $this->getIdentifier());
+                    $associationTable->bind($table->getComponentName(), $associationTable->getComponentName(). '.' .$foreign, Doctrine_Relation::ONE_AGGREGATE, $table->getIdentifier());
 
                     // NORMAL MANY-TO-MANY RELATIONSHIP
-                    $this->relations[$e2[0]] = new Doctrine_Relation_ForeignKey($associationTable,$local,$e2[1],Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
+                    $this->relations[$e2[0]] = new Doctrine_Relation_ForeignKey($associationTable, $local, $e2[1], Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
 
                     $relation = new Doctrine_Relation_Association($table, $associationTable, $e2[1], $foreign, $type, $alias);
                 }

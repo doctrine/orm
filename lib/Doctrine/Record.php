@@ -847,11 +847,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * this method is smart enough to know if any changes are made
      * and whether to use INSERT or UPDATE statement
      *
-     * this method also saves the related composites
+     * this method also saves the related components
      *
+     * @param Doctrine_Connection $conn
      * @return void
      */
-    final public function save(Doctrine_Connection $conn = null) {
+    public function save(Doctrine_Connection $conn = null) {
         if ($conn === null) {
             $conn = $this->_table->getConnection();
         }
@@ -885,7 +886,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * returns an array of modified fields and associated values
      * @return array
      */
-    final public function getModified() {
+    public function getModified() {
         $a = array();
 
         foreach($this->_modified as $k => $v) {
@@ -1301,8 +1302,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $fkField
      * @return void
      */
-    final public function ownsOne($componentName,$foreignKey, $localKey = null) {
-        $this->_table->bind($componentName,$foreignKey,Doctrine_Relation::ONE_COMPOSITE, $localKey);
+    final public function ownsOne($componentName, $foreignKey, $localKey = null) {
+        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_COMPOSITE, $localKey);
     }
     /**
      * binds One-to-Many composite relation
@@ -1312,7 +1313,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function ownsMany($componentName,$foreignKey, $localKey = null) {
-        $this->_table->bind($componentName,$foreignKey,Doctrine_Relation::MANY_COMPOSITE, $localKey);
+        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_COMPOSITE, $localKey);
     }
     /**
      * binds One-to-One aggregate relation
@@ -1322,7 +1323,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function hasOne($componentName,$foreignKey, $localKey = null) {
-        $this->_table->bind($componentName,$foreignKey,Doctrine_Relation::ONE_AGGREGATE, $localKey);
+        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_AGGREGATE, $localKey);
     }
     /**
      * binds One-to-Many aggregate relation
@@ -1332,7 +1333,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function hasMany($componentName,$foreignKey, $localKey = null) {
-        $this->_table->bind($componentName,$foreignKey,Doctrine_Relation::MANY_AGGREGATE, $localKey);
+        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_AGGREGATE, $localKey);
     }
     /**
      * setPrimaryKey
