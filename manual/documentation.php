@@ -336,7 +336,12 @@ $menu = array("Getting started" =>
 
                                   'GROUP BY, HAVING clauses',
                                   'ORDER BY clause',
-                                  'LIMIT and OFFSET clauses',
+                                  'LIMIT and OFFSET clauses' =>
+                                        array('Introduction',
+                                              'Driver portability',
+                                              'The limit-subquery-algorithm',
+                                        ),
+
                                   'Examples',
                                   'BNF'),
 
@@ -353,6 +358,11 @@ $menu = array("Getting started" =>
                         "Isolation levels",
                         "Deadlocks",
 
+                        ),
+           "Native SQL" => array(
+                        "Scalar queries",
+                        "Component queries",
+                        "Fetching multiple components",
                         ),
             /**
             "Developer components" => array(
@@ -382,6 +392,47 @@ $menu = array("Getting started" =>
                                         ),
                         ),
             */
+            "Improving performance" => array(
+                            "Introduction",
+                            "Data types" =>
+                                array(
+                                    "Enum",
+                                ),
+                            "Primary keys" => array(
+                                "When to use surrogate primary keys",
+                            ),
+                            "Constraints" => array(
+                                "General tips",
+                                "Foreign keys",
+                                "Triggers",
+                            ),
+                            "Data manipulation" => array(
+                                "INSERT queries",
+                                "UPDATE queries",
+                                "DELETE queries",
+                            ),
+                            "Indexes" => array(
+                                "General tips",
+                                "Using compound indexes",
+                            ),
+                            "Transactions" => array(
+                                "General tips",
+                                "Locks",
+                                "Isolation",
+                            ),
+                            "Data fetching" => array(
+                                "General tips",
+                            ),
+                            "Normalization" => array(
+
+                            ),
+                            "Caching" => array(
+                                "General tips"
+                            ),
+                            "Performance monitoring" => array( "Using the database profiler") 
+                            
+                            ),
+
             "Technology" => array(
                 "Architecture",
                 "Design patterns used",
