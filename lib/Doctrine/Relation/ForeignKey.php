@@ -29,6 +29,35 @@ Doctrine::autoload('Doctrine_Relation');
  */
 class Doctrine_Relation_ForeignKey extends Doctrine_Relation {
     /**
+     * processDiff
+     *
+     * @param Doctrine_Record $record
+     */
+    public function processDiff(Doctrine_Record $record) {
+        $alias = $this->getAlias();
+        
+        if($this->isOneToOne()) {
+            if($record->obtainOriginals($alias) && 
+               $record->obtainOriginals($alias)->obtainIdentifier() != $this->obtainReference($alias)->obtainIdentifier())
+                    $record->obtainOriginals($alias)->delete();
+        } else {
+            if($record->hasReference($alias)) {
+                $new = $record->obtainReference($alias);
+
+                if( ! $record->obtainOriginals($alias))
+                    $record->loadReference($alias);
+
+                $operations = Doctrine_Relation::getDeleteOperations($record->obtainOriginals($alias), $new);
+
+                foreach($operations as $r) {
+                    $r->delete();
+                }
+
+                $record->assignOriginals($alias, clone $record->get($alias));
+            }
+        }
+    }
+    /**
      * fetchRelatedFor
      *
      * fetches a component related to given record

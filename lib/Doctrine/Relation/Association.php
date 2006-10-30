@@ -53,6 +53,45 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
         return $this->associationTable;
     }
     /**
+     * processDiff
+     *
+     * @param Doctrine_Record
+     */
+    public function processDiff(Doctrine_Record $record) {
+        $asf     = $this->getAssociationFactory();
+        $alias   = $this->getAlias();
+
+        if($record->hasReference($alias)) {
+
+            $new = $record->obtainReference($alias);
+
+            if( ! $record->obtainOriginals($alias))
+                $record->loadReference($alias);
+
+
+            $operations = Doctrine_Relation::getDeleteOperations($record->obtainOriginals($alias), $new);
+
+            foreach($operations as $r) {
+                $query = 'DELETE FROM ' . $asf->getTableName()
+                       . ' WHERE '      . $this->getForeign() . ' = ?'
+                       . ' AND '        . $this->getLocal()   . ' = ?';
+
+                $this->getTable()->getConnection()->execute($query, array($r->getIncremented(),$record->getIncremented()));
+            }
+
+            $operations = Doctrine_Relation::getInsertOperations($record->obtainOriginals($alias),$new);
+            
+            foreach($operations as $r) {
+                $reldao = $asf->create();
+                $reldao->set($this->getForeign(), $r);
+                $reldao->set($this->getLocal(), $record);
+                $reldao->save();
+            }
+
+            $record->assignOriginals($alias, clone $record->get($alias));
+        }
+    }
+    /**
      * getRelationDql
      *
      * @param integer $count

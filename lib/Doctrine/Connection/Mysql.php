@@ -35,6 +35,28 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
     public function __construct(Doctrine_Manager $manager,PDO $pdo) {
         $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
         $this->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_ROWS);
+        
+        $this->supported = array(
+                          'sequences'            => 'emulated',
+                          'indexes'              => true,
+                          'affected_rows'        => true,
+                          'transactions'         => true,
+                          'savepoints'           => false,
+                          'summary_functions'    => true,
+                          'order_by_text'        => true,
+                          'current_id'           => 'emulated',
+                          'limit_queries'        => true,
+                          'LOBs'                 => true,
+                          'replace'              => true,
+                          'sub_selects'          => true,
+                          'auto_increment'       => true,
+                          'primary_key'          => true,
+                          'result_introspection' => true,
+                          'prepared_statements'  => 'emulated',
+                          'identifier_quoting'   => true,
+                          'pattern_escaping'     => true
+                          );
+
         parent::__construct($manager,$pdo);
     }    
     /**

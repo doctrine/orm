@@ -645,7 +645,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     }
     /**
      * save
-     * saves all records
+     * saves all records of this collection
      *
      * @return void
      */
@@ -653,19 +653,34 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if ($conn == null) {
             $conn = $this->table->getConnection();
         }
-        $conn->saveCollection($this);
+        $conn->beginTransaction();
+
+        foreach($this as $key => $record):
+            $record->save();
+        endforeach;
+
+        $conn->commit();
     }
     /**
      * single shot delete
      * deletes all records from this collection
-     * uses only one database query to perform this operation
+     * and uses only one database query to perform this operation
+     *
      * @return boolean
      */
     public function delete(Doctrine_Connection $conn = null) {
         if ($conn == null) {
             $conn = $this->table->getConnection();
         }
-        $ids = $conn->deleteCollection($this);
+
+        $conn->beginTransaction();
+
+        foreach($this as $key => $record) {
+            $record->delete();
+        }
+
+        $conn->commit();
+
         $this->data = array();
     }
     /**

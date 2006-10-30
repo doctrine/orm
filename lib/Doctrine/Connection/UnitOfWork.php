@@ -44,7 +44,12 @@ class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
     /**
      * buildFlushTree
      * builds a flush tree that is used in transactions
+     * 
+     * The returned array has all the initialized components in
+     * 'correct' order. Basically this means that the records of those 
+     * components can be saved safely in the order specified by the returned array.
      *
+     * @param array $tables
      * @return array
      */
     public function buildFlushTree(array $tables) {
@@ -133,7 +138,81 @@ class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
         }
         return array_values($tree);
     }
+    /**
+     * saveRelated
+     * saves all related records to $record
+     *
+     * @param Doctrine_Record $record
+     */
+    public function saveRelated(Doctrine_Record $record) {
+        $saveLater = array();
+        foreach($record->getReferences() as $k=>$v) {
+            $fk = $record->getTable()->getRelation($k);
+            if($fk instanceof Doctrine_Relation_ForeignKey ||
+               $fk instanceof Doctrine_Relation_LocalKey) {
+                if($fk->isComposite()) {
+                    $local = $fk->getLocal();
+                    $foreign = $fk->getForeign();
 
+                    if($record->getTable()->hasPrimaryKey($fk->getLocal())) {
+                        if( ! $record->exists())
+                            $saveLater[$k] = $fk;
+                        else
+                            $v->save();
+                    } else {
+                        // ONE-TO-ONE relationship
+                        $obj = $record->get($fk->getTable()->getComponentName());
+
+                        if($obj->getState() != Doctrine_Record::STATE_TCLEAN)
+                            $obj->save();
+
+                    }
+                }
+            } elseif($fk instanceof Doctrine_Relation_Association) {
+                $v->save();
+            }
+        }
+        return $saveLater;
+    }
+    /**
+     * saveAssociations
+     * 
+     * this method takes a diff of one-to-many / many-to-many original and 
+     * current collections and applies the changes
+     *
+     * for example if original many-to-many related collection has records with
+     * primary keys 1,2 and 3 and the new collection has records with primary keys
+     * 3, 4 and 5, this method would first destroy the associations to 1 and 2 and then
+     * save new associations to 4 and 5
+     *
+     * @param Doctrine_Record $record
+     * @return void
+     */
+    public function saveAssociations(Doctrine_Record $record) {
+        foreach($record->getTable()->getRelations() as $rel) {
+            $table   = $rel->getTable();
+            $alias   = $rel->getAlias();
+
+            $rel->processDiff($record);
+        }
+    }
+    /**
+     * deletes all related composites
+     * this method is always called internally when a record is deleted
+     *
+     * @return void
+     */
+    public function deleteComposites(Doctrine_Record $record) {
+        foreach($record->getTable()->getRelations() as $fk) {
+            switch($fk->getType()):
+                case Doctrine_Relation::ONE_COMPOSITE:
+                case Doctrine_Relation::MANY_COMPOSITE:
+                    $obj = $record->get($fk->getAlias());
+                    $obj->delete();
+                break;
+            endswitch;
+        }
+    }
     public function getIterator() { }
 
     public function count() { }

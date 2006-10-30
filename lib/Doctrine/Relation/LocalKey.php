@@ -29,6 +29,18 @@ Doctrine::autoload('Doctrine_Relation');
  */
 class Doctrine_Relation_LocalKey extends Doctrine_Relation {
     /**
+     * processDiff
+     *
+     * @param Doctrine_Record $record
+     */
+    public function processDiff(Doctrine_Record $record) {
+        $alias = $this->getAlias();
+
+        if($record->obtainOriginals($alias) &&
+           $record->obtainOriginals($alias)->obtainIdentifier() != $this->references[$alias]->obtainIdentifier())
+            $record->obtainOriginals($alias)->delete();
+    }
+    /**
      * fetchRelatedFor
      *
      * fetches a component related to given record

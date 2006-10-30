@@ -48,13 +48,30 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @var Doctrine_DataDict $dataDict
      */
     private $dataDict;
+    
+    
+    private static $availibleDrivers   = array(
+                                        "Mysql",
+                                        "Pgsql",
+                                        "Oracle",
+                                        "Informix",
+                                        "Mssql",
+                                        "Sqlite",
+                                        "Firebird"
+                                        );
+    private static $driverMap = array('oracle'     => 'oci8',
+                                      'postgres'   => 'pgsql',
+                                      'oci'        => 'oci8',
+                                      'sqlite2'    => 'sqlite',
+                                      'sqlite3'    => 'sqlite');
+
     /**
      * the constructor
      *
      * @param Doctrine_Manager $manager     the manager object
      * @param PDO $pdo                      the database handler
      */
-    public function __construct(Doctrine_Manager $manager,PDO $pdo) {
+    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
         $this->dbh   = $pdo;
 
         $this->transaction  = new Doctrine_Connection_Transaction($this);
@@ -111,6 +128,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function getDBH() {
         return $this->dbh;
+    }
+    /**
+     * converts given driver name
+     *
+     * @param
+     */
+    public function driverName($name) {
     }
     /**
      * returns a datadict object
@@ -202,7 +226,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function select($query,$limit = 0,$offset = 0) {
         if($limit > 0 || $offset > 0)
-            $query = $this->modifyLimitQuery($query,$limit,$offset);
+            $query = $this->modifyLimitQuery($query, $limit, $offset);
 
         return $this->dbh->query($query);
     }
@@ -332,7 +356,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         foreach($tree as $name) {
             $table = $this->tables[$name];
             foreach($table->getRepository() as $record) {
-                $record->saveAssociations();
+                $this->unitOfWork->saveAssociations($record);
             }
         }
     }
@@ -410,60 +434,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->transaction->rollback();
     }
     /**
-     * returns maximum identifier values
-     *
-     * @param array $names          an array of component names
-     * @return array
-     */   
-    public function getMaximumValues(array $names) {
-        $values = array();
-        foreach($names as $name) {
-            $table     = $this->tables[$name];
-            $keys      = $table->getPrimaryKeys();
-            $tablename = $table->getTableName();
-
-            if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
-                // record uses auto_increment column
-
-                $sql    = "SELECT MAX(".$table->getIdentifier().") FROM ".$tablename;
-                $stmt   = $this->dbh->query($sql);
-                $data   = $stmt->fetch(PDO::FETCH_NUM);
-                $values[$tablename] = $data[0];
-
-                $stmt->closeCursor();
-            }
-        }
-        return $values;
-    }
-    /**
-     * saves a collection
-     *
-     * @param Doctrine_Collection $coll
-     * @return void
-     */
-    public function saveCollection(Doctrine_Collection $coll) {
-        $this->beginTransaction();
-
-        foreach($coll as $key=>$record):
-                $record->save();
-        endforeach;
-
-        $this->commit();
-    }
-    /**
-     * deletes all records from collection
-     *
-     * @param Doctrine_Collection $coll
-     * @return void
-     */
-    public function deleteCollection(Doctrine_Collection $coll) {
-        $this->beginTransaction();
-        foreach($coll as $k=>$record) {
-            $record->delete();
-        }
-        $this->commit();
-    }
-    /**
      * saves the given record
      *
      * @param Doctrine_Record $record
@@ -490,125 +460,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
     }
     /**
-     * saves all related records to $record
-     *
-     * @param Doctrine_Record $record
-     */
-    public function saveRelated(Doctrine_Record $record) {
-        $saveLater = array();
-        foreach($record->getReferences() as $k=>$v) {
-            $fk = $record->getTable()->getRelation($k);
-            if($fk instanceof Doctrine_Relation_ForeignKey ||
-               $fk instanceof Doctrine_Relation_LocalKey) {
-                if($fk->isComposite()) {
-                    $local = $fk->getLocal();
-                    $foreign = $fk->getForeign();
-
-                    if($record->getTable()->hasPrimaryKey($fk->getLocal())) {
-                        if( ! $record->exists())
-                            $saveLater[$k] = $fk;
-                        else
-                            $v->save();
-                    } else {
-                        // ONE-TO-ONE relationship
-                        $obj = $record->get($fk->getTable()->getComponentName());
-
-                        if($obj->getState() != Doctrine_Record::STATE_TCLEAN)
-                            $obj->save();
-
-                    }
-                }
-            } elseif($fk instanceof Doctrine_Relation_Association) {
-                $v->save();
-            }
-        }
-        return $saveLater;
-    }
-    /**
-     * deletes all related composites
-     * this method is always called internally when a record is deleted
-     *
-     * @return void
-     */
-    final public function deleteComposites(Doctrine_Record $record) {
-        foreach($record->getTable()->getRelations() as $fk) {
-            switch($fk->getType()):
-                case Doctrine_Relation::ONE_COMPOSITE:
-                case Doctrine_Relation::MANY_COMPOSITE:
-                    $obj = $record->get($fk->getAlias());
-                    $obj->delete();
-                break;
-            endswitch;
-        }
-    }
-    /**
-     * saveAssociations
-     * save the associations of many-to-many relations
-     * this method also deletes associations that do not exist anymore
-     * @return void
-     */
-    final public function saveAssociations(Doctrine_Record $record) {
-        foreach($record->getTable()->table->getRelations() as $rel):
-            $table   = $rel->getTable();
-            $name    = $table->getComponentName();
-            $alias   = $this->table->getAlias($name);
-
-            if($rel instanceof Doctrine_Relation_Association) {
-
-                $asf     = $rel->getAssociationFactory();
-
-                if($record->hasReference($alias)) {
-
-                    $new = $record->getReference($alias);
-
-                    if( ! $this->hasOriginalsFor($alias))
-                        $record->loadReference($alias);
-
-
-                    $operations = Doctrine_Relation::getDeleteOperations($this->originals[$alias],$new);
-
-                    foreach($operations as $r) {
-                        $query = "DELETE FROM ".$asf->getTableName()." WHERE ".$fk->getForeign()." = ?"
-                                                                            ." AND ".$fk->getLocal()." = ?";
-                        $this->table->getConnection()->execute($query, array($r->getIncremented(),$record->getIncremented()));
-                    }
-
-                    $operations = Doctrine_Relation::getInsertOperations($record->obtainOriginals($alias),$new);
-                    foreach($operations as $r) {
-                        $reldao = $asf->create();
-                        $reldao->set($fk->getForeign(),$r);
-                        $reldao->set($fk->getLocal(),$this);
-                        $reldao->save();
-
-                    }
-                    $record->assignOriginals($alias, clone $this->references[$alias]);
-                }
-            } elseif($fk instanceof Doctrine_Relation_ForeignKey ||
-                     $fk instanceof Doctrine_Relation_LocalKey) {
-
-                if($fk->isOneToOne()) {
-                    if($record->obtainOriginals($alias) && $record->obtainOriginals($alias)->obtainIdentifier() != $this->references[$alias]->obtainIdentifier())
-                            $record->obtainOriginals($alias)->delete();
-                } else {
-                    if(isset($this->references[$alias])) {
-                        $new = $this->references[$alias];
-
-                        if( ! isset($this->originals[$alias]))
-                            $record->loadReference($alias);
-
-                        $operations = Doctrine_Relation::getDeleteOperations($this->originals[$alias], $new);
-
-                        foreach($operations as $r) {
-                            $r->delete();
-                        }
-
-                        $record->assignOriginals($alias, clone $this->references[$alias]);
-                    }
-                }
-            }
-        endforeach;
-    }
-    /**
      * deletes this data access object and all the related composites
      * this operation is isolated by a transaction
      * 
@@ -616,7 +467,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return boolean      true on success, false on failure
      */
-    final public function delete(Doctrine_Record $record) {
+    public function delete(Doctrine_Record $record) {
         if( ! $record->exists())
             return false;
 
@@ -624,7 +475,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $record->getTable()->getListener()->onPreDelete($record);
 
-        $this->deleteComposites($record);
+        $this->unitOfWork->deleteComposites($record);
 
         $this->transaction->addDelete($record);
 

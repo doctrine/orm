@@ -64,15 +64,13 @@ print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
-$test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
+$test->addTestCase(new Doctrine_Record_TestCase());
 
+$test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
 
 $test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
 
-
 $test->addTestCase(new Doctrine_Relation_TestCase());
-
-$test->addTestCase(new Doctrine_Record_TestCase());
 
 $test->addTestCase(new Doctrine_Record_State_TestCase());
 

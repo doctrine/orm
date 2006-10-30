@@ -598,25 +598,26 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
     }
     /**
-     * DQL PARSER
-     * parses a DQL query
-     * first splits the query in parts and then uses individual
-     * parsers for each part
+     * splitQuery
+     * splits the given dql query into an array where keys
+     * represent different query part names and values are
+     * arrays splitted using sqlExplode method
+     *
+     * example: 
+     *
+     * parameter:
+     *      $query = "SELECT u.* FROM User u WHERE u.name LIKE ?"
+     * returns:
+     *      array('select' => array('u.*'),
+     *            'from'   => array('User', 'u'),
+     *            'where'  => array('u.name', 'LIKE', '?'))
      *
      * @param string $query                 DQL query
-     * @param boolean $clear                whether or not to clear the aliases
      * @throws Doctrine_Query_Exception     if some generic parsing error occurs
-     * @return Doctrine_Query
+     * @return array                        an array containing the query string parts
      */
-    public function parseQuery($query, $clear = true) {
-        if($clear)
-            $this->clear();
-        
-        $query = trim($query);
-        $query = str_replace("\n"," ",$query);
-        $query = str_replace("\r"," ",$query);
-
-        $e = self::sqlExplode($query," ","(",")");
+    public function splitQuery($query) {
+        $e = self::sqlExplode($query, ' ');
 
         foreach($e as $k=>$part) {
             $part = trim($part);
@@ -651,6 +652,28 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     $parts[$p][] = $part;
             }
         }
+        return $parts;
+    }
+    /**
+     * DQL PARSER
+     * parses a DQL query
+     * first splits the query in parts and then uses individual
+     * parsers for each part
+     *
+     * @param string $query                 DQL query
+     * @param boolean $clear                whether or not to clear the aliases
+     * @throws Doctrine_Query_Exception     if some generic parsing error occurs
+     * @return Doctrine_Query
+     */
+    public function parseQuery($query, $clear = true) {
+        if($clear)
+            $this->clear();
+        
+        $query = trim($query);
+        $query = str_replace("\n"," ",$query);
+        $query = str_replace("\r"," ",$query);
+
+        $parts = $this->splitQuery($query);
 
         foreach($parts as $k => $part) {
             $part = implode(" ",$part);
@@ -753,11 +776,18 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     }
     /**
      * bracketExplode
-     * usage:
-     * $str = (age < 20 AND age > 18) AND email LIKE 'John@example.com'
-     * now exploding $str with parameters $d = ' AND ', $e1 = '(' and $e2 = ')'
+     *
+     * example:
+     * 
+     * parameters:
+     *      $str = (age < 20 AND age > 18) AND email LIKE 'John@example.com'
+     *      $d = ' AND '
+     *      $e1 = '(' 
+     *      $e2 = ')'
+     *
      * would return an array:
-     * array("(age < 20 AND age > 18)", "email LIKE 'John@example.com'")
+     *      array("(age < 20 AND age > 18)", 
+     *            "email LIKE 'John@example.com'")
      *
      * @param string $str
      * @param string $d         the delimeter which explodes the string
@@ -765,7 +795,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param string $e2        the second bracket, usually ')'
      *
      */
-    public static function bracketExplode($str,$d,$e1 = '(',$e2 = ')') {
+    public static function bracketExplode($str, $d = ' ', $e1 = '(', $e2 = ')') {
         if(is_array($d)) {
             $a = preg_split('/('.implode('|', $d).')/', $str);
             $d = stripslashes($d[0]);
@@ -777,13 +807,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         foreach($a as $key=>$val) {
             if (empty($term[$i])) {
                 $term[$i] = trim($val);
-                $s1 = substr_count($term[$i],"$e1");
-                $s2 = substr_count($term[$i],"$e2");
+                $s1 = substr_count($term[$i], "$e1");
+                $s2 = substr_count($term[$i], "$e2");
                     if($s1 == $s2) $i++;
             } else {
                 $term[$i] .= "$d".trim($val);
-                $c1 = substr_count($term[$i],"$e1");
-                $c2 = substr_count($term[$i],"$e2");
+                $c1 = substr_count($term[$i], "$e1");
+                $c2 = substr_count($term[$i], "$e2");
                     if($c1 == $c2) $i++;
             }
         }
@@ -795,6 +825,21 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * explodes a string into array using custom brackets and
      * quote delimeters
      *
+     *
+     * example:
+     *
+     * parameters:
+     *      $str = "(age < 20 AND age > 18) AND name LIKE 'John Doe'"
+     *      $d   = ' '
+     *      $e1  = '('
+     *      $e2  = ')'
+     *
+     * would return an array:
+     *      array('(age < 20 AND age > 18)', 
+     *            'name',
+     *            'LIKE', 
+     *            'John Doe')
+     *
      * @param string $str
      * @param string $d         the delimeter which explodes the string
      * @param string $e1        the first bracket, usually '('
@@ -802,7 +847,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      *
      * @return array
      */
-    public static function sqlExplode($str,$d = " ",$e1 = '(',$e2 = ')') {
+    public static function sqlExplode($str, $d = ' ', $e1 = '(', $e2 = ')') {
         if(is_array($d)) {
             $str = preg_split('/('.implode('|', $d).')/', $str);
             $d = stripslashes($d[0]);
