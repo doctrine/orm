@@ -271,6 +271,9 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return array
      */
     public function listDatabases() {
+        $sql = 'SHOW DATABASES';
+        
+        return $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
     }
     /**
@@ -318,7 +321,11 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
         $sql = "DESCRIBE $table";
         $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         $description = array();
-        foreach ($result as $key => $val) {
+        foreach ($result as $key => $val2) {
+	    $val = array();
+	    foreach(array_keys($val2) as $valKey){ // lowercase the key names
+		$val[strtolower($valKey)] = $val2[$valKey];
+	    }
             $description = array(
                 'name'    => $val['field'],
                 'type'    => $val['type'],
