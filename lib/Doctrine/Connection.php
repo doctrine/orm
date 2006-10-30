@@ -124,21 +124,21 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $driver = $this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME);
         switch($driver) {
             case "mysql":
-                $this->dataDict = new Doctrine_DataDict_Mysql($this);
+                $this->dataDict = new Doctrine_DataDict_Mysql($this->dbh);
             break;
             case "sqlite":
             case "sqlite2":
-                $this->dataDict = new Doctrine_DataDict_Sqlite($this);
+                $this->dataDict = new Doctrine_DataDict_Sqlite($this->dbh);
             break;
             case "pgsql":
-                $this->dataDict = new Doctrine_DataDict_Pgsql($this);
+                $this->dataDict = new Doctrine_DataDict_Pgsql($this->dbh);
             break;
             case "oci":
             case "oci8":
-                $this->dataDict = new Doctrine_DataDict_Oracle($this);
+                $this->dataDict = new Doctrine_DataDict_Oracle($this->dbh);
             break;
             case "mssql":
-                $this->dataDict = new Doctrine_DataDict_Mssql($this);
+                $this->dataDict = new Doctrine_DataDict_Mssql($this->dbh);
             break;
             default:
                 throw new Doctrine_Connection_Exception("No datadict driver availible for ".$driver);
