@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -27,6 +27,10 @@ Doctrine::autoload('Doctrine_Connection');
  * @license     LGPL
  */
 class Doctrine_Connection_Mssql extends Doctrine_Connection {
+    /**
+     * @var string $driverName                  the name of this connection driver
+     */
+    protected $driverName = 'Mssql';    
     /**
      * returns the next value in the given sequence
      * @param string $sequence

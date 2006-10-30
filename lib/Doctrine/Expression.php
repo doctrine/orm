@@ -39,6 +39,15 @@ class Doctrine_Expression {
         $this->conn = $conn;
     }
     /**
+     * regexp
+     * returns the regular expression operator 
+     *
+     * @return string
+     */
+    public function regexp() {
+        throw new Doctrine_Connection_Exception('Regular expression operator is not supported by this database driver.');                                    	
+    }
+    /**
      * Returns the average value of a column
      *
      * @param string $column    the column to use
@@ -160,7 +169,8 @@ class Doctrine_Expression {
     }
     /**
      * upper
-     * Returns the string $str with all characters changed to uppercase according to the current character set mapping.
+     * Returns the string $str with all characters changed to 
+     * uppercase according to the current character set mapping.
      *
      * @param string $str       literal string or column name
      * @return string
@@ -170,7 +180,8 @@ class Doctrine_Expression {
     }
     /**
      * lower
-     * Returns the string $str with all characters changed to lowercase according to the current character set mapping.
+     * Returns the string $str with all characters changed to 
+     * lowercase according to the current character set mapping.
      *
      * @param string $str       literal string or column name
      * @return string
@@ -198,16 +209,18 @@ class Doctrine_Expression {
         return 'NOW()';
     }
     /**
-     * Returns part of a string.
+     * return string to call a function to get a substring inside an SQL statement
      *
-     * Note: Not SQL92, but common functionality.
+     * Note: Not SQL92, but common functionality. 
+     * 
+     * SQLite only supports the 2 parameter variant of this function
      *
-     * @param string $value the target $value the string or the string column.
-     * @param int $from extract from this characeter.
-     * @param int $len extract this amount of characters.
-     * @return string sql that extracts part of a string.
+     * @param string $value         an sql string literal or column name/alias
+     * @param integer $position     where to start the substring portion
+     * @param integer $length       the substring portion length
+     * @return string               SQL substring function with given parameters
      */
-    public function subString($value, $from, $len = null) {
+    public function substring($value, $from, $len = null) {
         $value = $this->getIdentifier($value);
         if ($len === null)
             return 'SUBSTRING(' . $value . ' FROM ' . $from . ')';

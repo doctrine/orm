@@ -28,6 +28,10 @@ Doctrine::autoload("Doctrine_Connection_Common");
  */
 class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
     /**
+     * @var string $driverName                  the name of this connection driver
+     */
+    protected $driverName = 'Pgsql';
+    /**
      * returns the next value in the given sequence
      * @param string $sequence
      * @return integer
@@ -60,22 +64,6 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
         $query = 'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL ' . $isolation;
         return $this->dbh->query($query);
     }
-    /**
-     * getRegexpOperator
-     *
-     * @return string           the regular expression operator
-     */
-    public function getRegexpOperator() {
-        return 'SIMILAR TO';
-    }
-    /**
-     * return string to call a function to get random value inside an SQL statement
-     *
-     * @return return string to generate float between 0 and 1
-     * @access public
-     */
-    public function random() {
-        return 'RANDOM()';
-    }
+
 }
 

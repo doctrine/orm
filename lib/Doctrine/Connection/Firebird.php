@@ -28,6 +28,11 @@ Doctrine::autoload('Doctrine_Connection');
  */
 class Doctrine_Connection_Firebird extends Doctrine_Connection {
     /**
+     * @var string $driverName                  the name of this connection driver
+     */
+    protected $driverName = 'Firebird';
+
+    /**
      * Adds an driver-specific LIMIT clause to the query
      *
      * @param string $query

@@ -28,22 +28,54 @@ Doctrine::autoload('Doctrine_Expression');
  */
 class Doctrine_Expression_Sqlite extends Doctrine_Expression {
     /**
-     * Returns part of a string.
+     * returns the regular expression operator 
      *
-     * Note: Not SQL92, but common functionality. SQLite only supports the 3
-     * parameter variant of this function, so we are using 2^30-1 as
-     * artificial length in that case.
-     *
-     * @param string $value the target $value the string or the string column.
-     * @param int $from extract from this characeter.
-     * @param int $len extract this amount of characters.
-     * @return string sql that extracts part of a string.
+     * @return string
      */
-    public function subString($value, $from, $len = null) {
-        $value = $this->getIdentifier( $value );
-        if ( $len === null )
-            $len = 1073741823;
+    public function regexp() {
+        return 'RLIKE';
+    }
+    /**
+     * Return string to call a variable with the current timestamp inside an SQL statement
+     * There are three special variables for current date and time.
+     *
+     * @return string       sqlite function as string
+     */
+    public function now($type = 'timestamp') {
+        switch ($type) {
+        case 'time':
+            return 'time(\'now\')';
+        case 'date':
+            return 'date(\'now\')';
+        case 'timestamp':
+        default:
+            return 'datetime(\'now\')';
+        }
+    }
+    /**
+     * return string to call a function to get random value inside an SQL statement
+     *
+     * @return string to generate float between 0 and 1
+     */
+    public function random() {
+        return '((RANDOM() + 2147483648) / 4294967296)';
+    }
+    /**
+     * return string to call a function to get a substring inside an SQL statement
+     *
+     * Note: Not SQL92, but common functionality. 
+     * 
+     * SQLite only supports the 2 parameter variant of this function
+     *
+     * @param string $value         an sql string literal or column name/alias
+     * @param integer $position     where to start the substring portion
+     * @param integer $length       the substring portion length
+     * @return string               SQL substring function with given parameters
+     */
+    public function substring($value, $position = 1, $length = null) {
+        if($length !== null)
+            return 'SUBSTR(' . $value . ', ' . $position . ', ' . $length . ')';
 
-        return 'SUBSTR(' . $value . ', ' . $from . ', ' . $len . ')';
+        return 'SUBSTR(' . $value . ', ' . $position . ', LENGTH(' . $value . '))';
     }
 }

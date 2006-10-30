@@ -29,22 +29,9 @@ Doctrine::autoload("Doctrine_Connection_Common");
 
 class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common { 
     /**
-     * Return string to call a variable with the current timestamp inside an SQL statement
-     * There are three special variables for current date and time.
-     *
-     * @return string       sqlite function as string
+     * @var string $driverName                  the name of this connection driver
      */
-    public function now($type = 'timestamp') {
-        switch ($type) {
-        case 'time':
-            return 'time(\'now\')';
-        case 'date':
-            return 'date(\'now\')';
-        case 'timestamp':
-        default:
-            return 'datetime(\'now\')';
-        }
-    }
+    protected $driverName = 'Sqlite';
     /**
      * Set the transacton isolation level.
      *
@@ -72,27 +59,6 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
         $query = "PRAGMA read_uncommitted=$isolation";
         return $this->_doQuery($query, true);
     }
-    /**
-     * return string to call a function to get a substring inside an SQL statement
-     *
-     * @return string to call a function to get a substring
-     * @access public
-     */
-    public function substring($value, $position = 1, $length = null) {
-        if($length !== null)
-            return "substr($value,$position,$length)";
 
-        return "substr($value,$position,length($value))";
-    }
-
-    /**
-     * return string to call a function to get random value inside an SQL statement
-     *
-     * @return string to generate float between 0 and 1
-     */
-    public function random()
-    {
-        return '((RANDOM() + 2147483648) / 4294967296)';
-    }
 }
 

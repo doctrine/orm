@@ -45,25 +45,30 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     protected $tables           = array();
     /**
+     * @var string $driverName                  the name of this connection driver
+     */
+    protected $driverName;
+    /**
+     * @var array $supported                    an array containing all features this driver supports, 
+     *                                          keys representing feature names and values as 
+     *                                          one of the following (true, false, 'emulated')
+     */
+    protected $supported        = array();
+    /**
      * @var Doctrine_DataDict $dataDict
      */
     private $dataDict;
     
     
-    private static $availibleDrivers   = array(
-                                        "Mysql",
-                                        "Pgsql",
-                                        "Oracle",
-                                        "Informix",
-                                        "Mssql",
-                                        "Sqlite",
-                                        "Firebird"
+    private static $availibleDrivers    = array(
+                                        'Mysql',
+                                        'Pgsql',
+                                        'Oracle',
+                                        'Informix',
+                                        'Mssql',
+                                        'Sqlite',
+                                        'Firebird'
                                         );
-    private static $driverMap = array('oracle'     => 'oci8',
-                                      'postgres'   => 'pgsql',
-                                      'oci'        => 'oci8',
-                                      'sqlite2'    => 'sqlite',
-                                      'sqlite3'    => 'sqlite');
 
     /**
      * the constructor
@@ -84,6 +89,15 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
     }
+    /**
+     * getName
+     *
+     * @return string           returns the name of this driver
+     */
+    public function getName() {
+        return $this->driverName;
+    }
+
     /**
      * quoteIdentifier
      *
@@ -145,28 +159,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         if(isset($this->dataDict))
             return $this->dataDict;
 
-        $driver = $this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME);
-        switch($driver) {
-            case "mysql":
-                $this->dataDict = new Doctrine_DataDict_Mysql($this->dbh);
-            break;
-            case "sqlite":
-            case "sqlite2":
-                $this->dataDict = new Doctrine_DataDict_Sqlite($this->dbh);
-            break;
-            case "pgsql":
-                $this->dataDict = new Doctrine_DataDict_Pgsql($this->dbh);
-            break;
-            case "oci":
-            case "oci8":
-                $this->dataDict = new Doctrine_DataDict_Oracle($this->dbh);
-            break;
-            case "mssql":
-                $this->dataDict = new Doctrine_DataDict_Mssql($this->dbh);
-            break;
-            default:
-                throw new Doctrine_Connection_Exception("No datadict driver availible for ".$driver);
-        }
+        $class = 'Doctrine_DataDict_' . $this->getName();
+        $this->dataDict = new $class($this->dbh);
+
         return $this->dataDict;
     }
     /**
@@ -185,16 +180,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function setTransactionIsolation($isolation) {
         throw new Doctrine_Connection_Exception('Transaction isolation levels not supported by this database driver.');
     }
-    /**
-     * getRegexpOperator
-     * returns the regular expression operator 
-     * (implemented by the connection drivers)
-     *
-     * @return string
-     */
-    public function getRegexpOperator() {
-        throw new Doctrine_Connection_Exception('Regular expression operator is not supported by this database driver.');                                    	
-    }
+
     /**
      * getTransactionIsolation
      * 
@@ -246,9 +232,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
     }
     /**
+     * hasTable
      * whether or not this connection has table $name initialized
      *
-     * @param $mixed $name
+     * @param mixed $name
      * @return boolean
      */
     public function hasTable($name) {

@@ -27,7 +27,10 @@ Doctrine::autoload('Doctrine_Connection_Common');
  * @license     LGPL
  */
 class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
-
+    /**
+     * @var string $driverName                  the name of this connection driver
+     */
+    protected $driverName = 'Mysql';
     /**
      * the constructor
      * @param PDO $pdo  -- database handle
@@ -59,15 +62,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
 
         parent::__construct($manager,$pdo);
     }    
-    /**
-     * returns the regular expression operator 
-     * (implemented by the connection drivers)
-     *
-     * @return string
-     */
-    public function getRegexpOperator() {
-        return 'RLIKE';
-    }
+
     /**
      * getTransactionIsolation
      * 

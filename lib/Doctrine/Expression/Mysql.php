@@ -26,4 +26,13 @@ Doctrine::autoload('Doctrine_Expression');
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_Expression_Mysql extends Doctrine_Expression { }
+class Doctrine_Expression_Mysql extends Doctrine_Expression {
+    /**
+     * returns the regular expression operator 
+     *
+     * @return string
+     */
+    public function regexp() {
+        return 'RLIKE';
+    }
+}

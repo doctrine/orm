@@ -1,4 +1,4 @@
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -87,5 +87,22 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
         $cols = $this->getIdentifiers($cols);
 
         return join(' || ' , $cols);
+    }
+    /**
+     * regexp
+     *
+     * @return string           the regular expression operator
+     */
+    public function regexp() {
+        return 'SIMILAR TO';
+    }
+    /**
+     * return string to call a function to get random value inside an SQL statement
+     *
+     * @return return string to generate float between 0 and 1
+     * @access public
+     */
+    public function random() {
+        return 'RANDOM()';
     }
 }

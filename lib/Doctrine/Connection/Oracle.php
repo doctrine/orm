@@ -28,6 +28,10 @@ Doctrine::autoload('Doctrine_Connection');
  */
 class Doctrine_Connection_Oracle extends Doctrine_Connection {
     /**
+     * @var string $driverName                  the name of this connection driver
+     */
+    protected $driverName = 'Oracle';    
+    /**
      * Adds an driver-specific LIMIT clause to the query
      *
      * @param string $query
@@ -78,44 +82,8 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return $data[0];
     }
-    /**
-     * Return string to call a variable with the current timestamp inside an SQL statement
-     * There are three special variables for current date and time:
-     * - CURRENT_TIMESTAMP (date and time, TIMESTAMP type)
-     * - CURRENT_DATE (date, DATE type)
-     * - CURRENT_TIME (time, TIME type)
-     *
-     * @return string to call a variable with the current timestamp
-     * @access public
-     */
-    function now($type = 'timestamp')
-    {
-        switch ($type) {
-        case 'date':
-        case 'time':
-        case 'timestamp':
-        default:
-            return 'TO_CHAR(CURRENT_TIMESTAMP, \'YYYY-MM-DD HH24:MI:SS\')';
-        }
-    }
-    /**
-     * substring
-     *
-     * @return string           SQL substring function with given parameters
-     */
-    function substring($value, $position = 1, $length = null) {
-        if($length !== null)
-            return "SUBSTR($value, $position, $length)";
 
-        return "SUBSTR($value, $position)";
-    }
-    /**
-     * random
-     *
-     * @return string           an oracle SQL string that generates a float between 0 and 1
-     */
-    function random() {
-        return 'dbms_random.value';
-    }
+
+
 }
 

@@ -26,7 +26,11 @@
  * @package     Doctrine
  */
 class Doctrine_DB_Profiler extends Doctrine_DB_EventListener {
-    public function onPreQuery(Doctrine_DB $dbh, array $args) { }
+    private $queries;
+
+    public function onPreQuery(Doctrine_DB $dbh, array $args) { 
+        $this->queries[] = $args[0];
+    }
     public function onQuery(Doctrine_DB $dbh, array $args) { }
 
     public function onPrePrepare(Doctrine_DB $dbh, array $args) { }
