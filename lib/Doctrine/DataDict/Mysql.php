@@ -273,8 +273,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
     public function listDatabases() {
         $sql = 'SHOW DATABASES';
         
-        return $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
+        return $this->dbh->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
     /**
      * lists all availible database functions
@@ -358,7 +357,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
     public function listTables($database = null) {
         $sql = 'SHOW TABLES';
         
-        return $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        return $this->dbh->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
     /**
      * lists table triggers
