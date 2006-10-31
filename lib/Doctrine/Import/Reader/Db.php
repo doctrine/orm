@@ -66,7 +66,27 @@ class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
      */
     public function read( )
     {
-    	return new Doctrine_Schema(); /* @todo FIXME i am incomplete*/
+	$dataDict = Doctrine_Manager::getInstance()->getCurrentConnection()->getDataDict();
+    	
+	$schema = new Doctrine_Schema(); /* @todo FIXME i am incomplete*/
+	$db = new Doctrine_Schema_Database();
+	$schema->addDatabase($db);
+	
+	$dbName = 'XXtest'; // @todo FIXME where should we get 
+
+	$db->set("name",$dbName);
+	$tableNames = $dataDict->listTables();
+	foreach($tableNames as $tableName){
+		$table = new Doctrine_Schema_Table();
+		$table->set("name",$tableName);
+		$tableColumns = $dataDict->listTableColumns($tableName);
+		foreach($tableColumns as $tableColumn){
+			$table->addColumn($tableColumn);
+		}
+		$db->addTable($table);
+	}
+
+	return $schema;
     }
 
 
