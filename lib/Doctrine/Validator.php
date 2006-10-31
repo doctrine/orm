@@ -104,15 +104,12 @@ class Doctrine_Validator {
                     continue;
                 }
             }
-
-            if($column[0] == "array" || $column[0] == "object")
-                $length = strlen(serialize($value));
-            else
-                $length = strlen($value);
-
-            if($length > $column[1]) {
-                $errorStack->add($key, 'length');
-                continue;
+            
+            if($record->getTable()->getAttribute(Doctrine::ATTR_AUTO_LENGTH_VLD)) {
+                if(!$this->validateLength($column, $key, $value)) {
+                    $errorStack->add($key, 'length');
+                    continue;
+                }
             }
 
             if( ! is_array($column[2]))
@@ -137,7 +134,25 @@ class Doctrine_Validator {
                                    $name == 'autoincrement' ||
                                    $name == 'default')
                     continue;
-
+                
+                if(strtolower($name) == 'length') {
+                    if(!$record->getTable()->getAttribute(Doctrine::ATTR_AUTO_LENGTH_VLD)) {
+                        if(!$this->validateLength($column, $key, $value)) {
+                            $errorStack->add($key, 'length');
+                        }
+                    }
+                    continue;
+                }
+                
+                if(strtolower($name) == 'type') {
+                    if(!$record->getTable()->getAttribute(Doctrine::ATTR_AUTO_TYPE_VLD)) {
+                        if( ! self::isValidType($value, $column[0])) {
+                            $errorStack->add($key, 'type');
+                        }
+                    }
+                    continue;
+                }
+                    
                 $validator = self::getValidator($name);
                 if( ! $validator->validate($record, $key, $value, $args)) {
 
@@ -147,15 +162,33 @@ class Doctrine_Validator {
                     //$err[$key] = 'not valid';
 
                     // errors found quit validation looping for this column
-                    break;
+                    //break;
                 }
             }
-            if( ! self::isValidType($value, $column[0])) {
-                $errorStack->add($key, 'type');
-                continue;
+            
+            if($record->getTable()->getAttribute(Doctrine::ATTR_AUTO_TYPE_VLD)) {
+                if( ! self::isValidType($value, $column[0])) {
+                    $errorStack->add($key, 'type');
+                    continue;
+                }
             }
         }
     }
+    /**
+     * Enter description here...
+     *
+     */
+    private function validateLength($column, $key, $value) {
+        if($column[0] == "array" || $column[0] == "object")
+            $length = strlen(serialize($value));
+        else
+            $length = strlen($value);
+    
+        if($length > $column[1]) {
+            return false;
+        }
+        return true;
+    }    
     /**
      * whether or not this validator has errors
      *

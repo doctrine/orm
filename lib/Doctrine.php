@@ -149,6 +149,14 @@ final class Doctrine {
      * accessor invoking attribute
      */
     const ATTR_ACCESSORS        = 18;
+    /**
+     * automatic length validations attribute
+     */
+    const ATTR_AUTO_LENGTH_VLD = 19;
+    /**
+     * automatic type validations attribute
+     */
+    const ATTR_AUTO_TYPE_VLD = 20;
     
     
     /**
