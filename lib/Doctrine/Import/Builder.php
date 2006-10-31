@@ -110,6 +110,16 @@ class Doctrine_Import_Builder {
             if($column['notnull']) {
                 $a[] = '\'notnull\' => true';
             }
+	    if($column['primary']) {
+                $a[] = '\'primary\' => true';
+            }
+	    if($column['autoinc']) {
+                $a[] = '\'autoincrement\' => true';
+            }
+	    if($column['unique']) {
+                $a[] = '\'unique\' => true';
+            }
+
             if( ! empty($a))
                 $columns[$i] .= ', ' . 'array(' . implode(',
 ', $a) . ')';
