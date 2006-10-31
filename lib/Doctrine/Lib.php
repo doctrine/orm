@@ -95,23 +95,10 @@ class Doctrine_Lib {
     public static function getConnectionAsString(Doctrine_Connection $connection) {
         $r[] = "<pre>";
         $r[] = "Doctrine_Connection object";
-        $r[] = "State               : ".Doctrine_Lib::getConnectionStateAsString($connection->getState());
-        $r[] = "Open Transactions   : ".$connection->getTransactionLevel();
-        $r[] = "Open Factories      : ".$connection->count();
-        $sum = 0;
-        $rsum = 0;
-        $csum = 0;
-        foreach($connection->getTables() as $objTable) {
-            if($objTable->getCache() instanceof Doctrine_Cache_File) {
-                $sum += array_sum($objTable->getCache()->getStats());
-                $rsum += $objTable->getRepository()->count();
-                $csum += $objTable->getCache()->count();
-            }
-        }
-        $r[] = "Cache Hits          : ".$sum." hits ";
-        $r[] = "Cache               : ".$csum." objects ";
+        $r[] = "State               : ".Doctrine_Lib::getConnectionStateAsString($connection->getTransaction()->getState());
+        $r[] = "Open Transactions   : ".$connection->getTransaction()->getTransactionLevel();
+        $r[] = "Table in memory     : ".$connection->count();
 
-        $r[] = "Repositories        : ".$rsum." objects ";
         $queries = false;
         if($connection->getDBH() instanceof Doctrine_DB) {
             $handler = "Doctrine Database Handler";
