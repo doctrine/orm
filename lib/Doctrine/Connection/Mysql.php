@@ -75,11 +75,18 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
     /**
      * Set the transacton isolation level.
      *
+     * example :
+     *
+     * <code>
+     * $conn->setTransactionIsolation('READ UNCOMMITTED');
+     * </code>
+     *
      * @param   string  standard isolation level
      *                  READ UNCOMMITTED (allows dirty reads)
      *                  READ COMMITTED (prevents dirty reads)
      *                  REPEATABLE READ (prevents nonrepeatable reads)
      *                  SERIALIZABLE (prevents phantom reads)
+     *
      * @throws Doctrine_Connection_Mysql_Exception      if using unknown isolation level
      * @throws PDOException                             if something fails at the PDO level
      * @return void

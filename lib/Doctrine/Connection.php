@@ -165,8 +165,38 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->dataDict;
     }
     /**
+     * returns the next value in the given sequence
+     *
+     * @param string $sequence
+     * @throws PDOException     if something went wrong at database level
+     * @return integer
+     */
+    public function nextId($sequence) {
+        throw new Doctrine_Connection_Exception('NextId() for sequences not supported by this driver.');
+    }
+    /**
+     * Set the charset on the current connection
+     *
+     * @param string    charset
+     * @param resource  connection handle
+     *
+     * @throws Doctrine_Connection_Exception            if the feature is not supported by the driver
+     * @return true on success, MDB2 Error Object on failure
+     */
+    public function setCharset($charset) {
+        throw new Doctrine_Connection_Exception('Altering charset not supported by this driver.');
+    }
+    /**
+     * setTransactionIsolation
+     *
      * Set the transacton isolation level.
      * (implemented by the connection drivers)
+     *
+     * example:
+     *
+     * <code>
+     * $conn->setTransactionIsolation('READ UNCOMMITTED');
+     * </code>
      *
      * @param   string  standard isolation level
      *                  READ UNCOMMITTED (allows dirty reads)
@@ -174,29 +204,40 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *                  REPEATABLE READ (prevents nonrepeatable reads)
      *                  SERIALIZABLE (prevents phantom reads)
      *
+     * @throws Doctrine_Connection_Exception            if the feature is not supported by the driver
      * @throws PDOException                             if something fails at the PDO level
      * @return void
      */
     public function setTransactionIsolation($isolation) {
-        throw new Doctrine_Connection_Exception('Transaction isolation levels not supported by this database driver.');
+        throw new Doctrine_Connection_Exception('Transaction isolation levels not supported by this driver.');
     }
 
     /**
      * getTransactionIsolation
      * 
+     * @throws Doctrine_Connection_Exception            if the feature is not supported by the driver
+     * @throws PDOException                             if something fails at the PDO level
      * @return string               returns the current session transaction isolation level
      */
     public function getTransactionIsolation() {
-        throw new Doctrine_Connection_Exception('Fetching transaction isolation level not supported by this database driver.');
+        throw new Doctrine_Connection_Exception('Fetching transaction isolation level not supported by this driver.');
     }
     /**
      * query
-     * queries the database with Doctrine Query Language
+     * queries the database using Doctrine Query Language
      *
-     * @param string $query         DQL query
-     * @param array $params         query parameters
+     * <code>
+     * $users = $conn->query('SELECT u.* FROM User u');
+     *
+     * $users = $conn->query('SELECT u.* FROM User u WHERE u.name LIKE ?', array('someone'));
+     * </code>
+     *
+     * @param string $query             DQL query
+     * @param array $params             query parameters
+     * @see Doctrine_Query
+     * @return Doctrine_Collection      Collection of Doctrine_Record objects
      */
-    final public function query($query,array $params = array()) {
+    public function query($query, array $params = array()) {
         $parser = new Doctrine_Query($this);
 
         return $parser->query($query, $params);
