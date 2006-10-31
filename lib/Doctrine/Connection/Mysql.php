@@ -120,5 +120,14 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         $args = func_get_args();
         return "CONCAT(".implode(', ', $args).")";
     }
+    /**
+     * returns the state of this connection
+     *
+     * @see Doctrine_Connection_Transaction::STATE_* constants
+     * @return integer          the connection state
+     */
+    public function getState() {
+        return 0; // @todo FIXME not working!
+    }
 }
 
