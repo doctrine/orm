@@ -309,7 +309,7 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
         }
 
         $strfields = join(", ", array_keys($array));
-        $strvalues = substr(str_repeat("?, ",count($array)),0,-2); 
+        $strvalues = substr(str_repeat("?, ", count($array)), 0, -2); 
         $sql  = "INSERT INTO ".$record->getTable()->getTableName()." (".$strfields.") VALUES (".$strvalues.")";
 
         $stmt = $this->conn->getDBH()->prepare($sql);

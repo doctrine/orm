@@ -165,6 +165,75 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->dataDict;
     }
     /**
+     * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
+     * query, except that if there is already a row in the table with the same
+     * key field values, the REPLACE query just updates its values instead of
+     * inserting a new row.
+     *
+     * The REPLACE type of query does not make part of the SQL standards. Since
+     * practically only MySQL and SQLIte implement it natively, this type of
+     * query isemulated through this method for other DBMS using standard types
+     * of queries inside a transaction to assure the atomicity of the operation.
+     *
+     * @param                   string  name of the table on which the REPLACE query will
+     *                          be executed.
+     *
+     * @param   array           an associative array that describes the fields and the
+     *                          values that will be inserted or updated in the specified table. The
+     *                          indexes of the array are the names of all the fields of the table.
+     *
+     *                          The values of the array are values to be assigned to the specified field.
+     *
+     * @param array $keys       an array containing all key fields (primary key fields
+     *                          or unique index fields) for this table
+     *
+     *                          the uniqueness of a row will be determined according to
+     *                          the provided key fields
+     *
+     *                          this method will fail if no key fields are specified
+     *
+     * @throws Doctrine_Connection_Exception        if this driver doesn't support replace
+     * @throws Doctrine_Connection_Exception        if some of the key values was null
+     * @throws Doctrine_Connection_Exception        if there were no key fields
+     * @throws PDOException                         if something fails at PDO level
+     * @return void
+     */
+    public function replace($table, array $fields, array $keys) {
+        if( ! $this->supports('replace'))
+            throw new Doctrine_Connection_Exception('replace query is not supported');
+
+
+        if(empty($keys))
+            throw new Doctrine_Connection_Exception('Not specified which fields are keys');
+
+        $condition = $values = array();
+
+        foreach($fields as $name => $value) {
+            $values[$name] = $value;
+
+            if(in_array($name, $keys)) {
+                if($value === null)
+                    throw new Doctrine_Connection_Exception('key value '.$name.' may not be null');
+
+                $condition[]       = $name . ' = ?';
+                $conditionValues[] = $value;
+            }
+        }
+
+        $query          = 'DELETE FROM '. $table . ' WHERE ' . implode(' AND ', $condition);
+        $affectedRows   = $this->dbh->exec($query);
+
+        $insert = implode(', ', array_keys($values));
+        $query  = 'INSERT INTO ' . $table . ' (' . $insert . ') VALUES (' . substr(str_repeat('?, ', count($values)), 0, -2) . ')';
+        $stmt   = $this->dbh->prepare($query);
+        $stmt->execute($values);
+
+        $affectedRows++;
+
+
+        return $affectedRows;
+    }
+    /**
      * returns the next value in the given sequence
      *
      * @param string $sequence
