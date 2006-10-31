@@ -332,6 +332,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
                 'primary' => (strtolower($val['key']) == 'pri'),
                 'default' => $val['default'],
                 'notnull' => (bool) ($val['null'] != 'YES'),
+                'autoinc' => (bool) (strpos($val['extra'],"auto_increment") > -1),
             );
             $columns[$val['field']] = new Doctrine_Schema_Column($description);
         }
