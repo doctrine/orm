@@ -148,7 +148,11 @@ class Doctrine_Import_Builder {
      * @throws Doctrine_Import_Exception
      */
     public function build(Doctrine_Schema_Object $schema) {
-
+	foreach($schema->getDatabases() as $database){
+		foreach($database->getTables() as $table){
+			$this->buildRecord($table);
+		}
+	}
     }
 
 }
