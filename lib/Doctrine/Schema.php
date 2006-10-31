@@ -46,10 +46,19 @@ class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, Itera
      * @param Doctrine_Schema_Database database      * @return 
      * @access public
      */
-    public function addDatabase( $database ) {
-        
+    public function addDatabase( Doctrine_Schema_Database $database ) {
+         $this->childs[] = $database;      
     }
-
+    
+    /**
+     * Return the childs for this schema
+     *
+     * @return array of Doctrine_Schema_Database
+     *
+     */
+    public function getDatabases(){
+         return $this->childs;
+    }
     /**
      *
      * @return 
