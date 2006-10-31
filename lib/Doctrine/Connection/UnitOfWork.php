@@ -142,6 +142,7 @@ class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
      * saveRelated
      * saves all related records to $record
      *
+     * @throws PDOException         if something went wrong at database level
      * @param Doctrine_Record $record
      */
     public function saveRelated(Doctrine_Record $record) {
@@ -185,6 +186,7 @@ class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
      * 3, 4 and 5, this method would first destroy the associations to 1 and 2 and then
      * save new associations to 4 and 5
      *
+     * @throws PDOException         if something went wrong at database level
      * @param Doctrine_Record $record
      * @return void
      */
@@ -200,6 +202,7 @@ class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
      * deletes all related composites
      * this method is always called internally when a record is deleted
      *
+     * @throws PDOException         if something went wrong at database level
      * @return void
      */
     public function deleteComposites(Doctrine_Record $record) {
@@ -211,6 +214,35 @@ class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
                     $obj->delete();
                 break;
             endswitch;
+        }
+    }
+    /**
+     * saveAll                      
+     * persists all the pending records from all tables
+     *
+     * @throws PDOException         if something went wrong at database level
+     * @return void
+     */
+    public function saveAll() {
+        // get the flush tree
+        $tree = $this->buildFlushTree($this->conn->getTables());
+
+        // save all records
+        foreach($tree as $name) {
+            $table = $this->conn->getTable($name);
+
+            foreach($table->getRepository() as $record) {
+                $this->conn->save($record);
+            }
+        }
+        
+        // save all associations
+        foreach($tree as $name) {
+            $table = $this->conn->getTable($name);
+
+            foreach($table->getRepository() as $record) {
+                $this->saveAssociations($record);
+            }
         }
     }
     public function getIterator() { }

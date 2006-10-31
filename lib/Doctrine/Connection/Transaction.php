@@ -282,7 +282,7 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
     /**
      * inserts a record into database
      *
-     * @param Doctrine_Record $record
+     * @param Doctrine_Record $record   record to be inserted
      * @return boolean
      */
     public function insert(Doctrine_Record $record) {
@@ -296,26 +296,17 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
 
         $table     = $record->getTable();
         $keys      = $table->getPrimaryKeys();
-
-
             
 
         $seq = $record->getTable()->getSequenceName();
 
         if( ! empty($seq)) {
-            $id             = $this->getNextID($seq);
+            $id             = $this->nextId($seq);
             $name           = $record->getTable()->getIdentifier();
             $array[$name]   = $id;
         }
 
-        $strfields = join(", ", array_keys($array));
-        $strvalues = substr(str_repeat("?, ", count($array)), 0, -2); 
-        $sql  = "INSERT INTO ".$record->getTable()->getTableName()." (".$strfields.") VALUES (".$strvalues.")";
-
-        $stmt = $this->conn->getDBH()->prepare($sql);
-
-        $stmt->execute(array_values($array));
-        
+        $this->conn->insert($table->getTableName(), $array);
 
         if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
             $id = $this->conn->getDBH()->lastInsertID();

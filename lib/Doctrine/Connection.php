@@ -223,15 +223,37 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $query          = 'DELETE FROM '. $table . ' WHERE ' . implode(' AND ', $condition);
         $affectedRows   = $this->dbh->exec($query);
 
-        $insert = implode(', ', array_keys($values));
-        $query  = 'INSERT INTO ' . $table . ' (' . $insert . ') VALUES (' . substr(str_repeat('?, ', count($values)), 0, -2) . ')';
-        $stmt   = $this->dbh->prepare($query);
-        $stmt->execute($values);
+        $this->insert($table, $values);
 
         $affectedRows++;
 
 
         return $affectedRows;
+    }
+    /**
+     * Inserts a table row with specified data.
+     *
+     * @param string $table     The table to insert data into.
+     * @param array $values     An associateve array containing column-value pairs.
+     * @return boolean
+     */
+    public function insert($table, array $values = array()) {
+        if(empty($values))
+            return false;
+
+        // column names are specified as array keys
+        $cols = array_keys($values);
+
+        // build the statement
+        $query = "INSERT INTO $table "
+               . '(' . implode(', ', $cols) . ') '
+               . 'VALUES (' . substr(str_repeat('?, ', count($values)), 0, -2) . ')';
+
+        // prepare and execute the statement
+        $stmt   = $this->dbh->prepare($query);
+        $stmt->execute(array_values($values));
+
+        return true;
     }
     /**
      * returns the next value in the given sequence
@@ -427,35 +449,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * saves all the records from all tables
      * this operation is isolated using a transaction
      *
+     * @throws PDOException         if something went wrong at database level
      * @return void
      */
     public function flush() {
         $this->beginTransaction();
-        $this->saveAll();
+        $this->unitOfWork->saveAll();
         $this->commit();
-    }
-    /**
-     * saveAll                      
-     * persists all the records from all tables
-     *
-     * @return void
-     */
-    private function saveAll() {
-        $tree = $this->unitOfWork->buildFlushTree($this->tables);
-
-        foreach($tree as $name) {
-            $table = $this->tables[$name];
-
-            foreach($table->getRepository() as $record) {
-                $this->save($record);
-            }
-        }
-        foreach($tree as $name) {
-            $table = $this->tables[$name];
-            foreach($table->getRepository() as $record) {
-                $this->unitOfWork->saveAssociations($record);
-            }
-        }
     }
     /**
      * clear
@@ -503,6 +503,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /**
      * beginTransaction
      * starts a new transaction
+     *
+     * this method can be listened by onPreBeginTransaction and onBeginTransaction
+     * listener methods
+     *
      * @return void
      */
     public function beginTransaction() {
@@ -579,6 +583,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $record->getTable()->getListener()->onDelete($record);
 
         $this->commit();
+        
         return true;
     }
     /**
