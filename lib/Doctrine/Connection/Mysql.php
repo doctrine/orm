@@ -33,7 +33,9 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
     protected $driverName = 'Mysql';
     /**
      * the constructor
-     * @param PDO $pdo  -- database handle
+     *
+     * @param Doctrine_Manager $manager
+     * @param PDO $pdo                          database handle
      */
     public function __construct(Doctrine_Manager $manager,PDO $pdo) {
         $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);

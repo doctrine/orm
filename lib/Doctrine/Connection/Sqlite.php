@@ -33,6 +33,43 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
      */
     protected $driverName = 'Sqlite';
     /**
+     * the constructor
+     *
+     * @param Doctrine_Manager $manager
+     * @param PDO $pdo                          database handle
+     */
+    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
+        
+        $this->supported = array(
+                          'sequences'            => 'emulated',
+                          'indexes'              => true,
+                          'affected_rows'        => true,
+                          'summary_functions'    => true,
+                          'order_by_text'        => true,
+                          'current_id'           => 'emulated',
+                          'limit_queries'        => true,
+                          'LOBs'                 => true,
+                          'replace'              => true,
+                          'transactions'         => true,
+                          'savepoints'           => false,
+                          'sub_selects'          => true,
+                          'auto_increment'       => true,
+                          'primary_key'          => true,
+                          'result_introspection' => false, // not implemented
+                          'prepared_statements'  => 'emulated',
+                          'identifier_quoting'   => true,
+                          'pattern_escaping'     => false,
+                          );
+
+        $this->options['base_transaction_name'] = '___php_MDB2_sqlite_auto_commit_off';
+        $this->options['fixed_float'] = 0;
+        $this->options['database_path'] = '';
+        $this->options['database_extension'] = '';
+        $this->options['server_version'] = '';
+
+        parent::__construct($manager, $pdo);
+    }
+    /**
      * Set the transacton isolation level.
      *
      * @param   string  standard isolation level
@@ -42,7 +79,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
      *                  SERIALIZABLE (prevents phantom reads)
      * @return void
      */
-    function setTransactionIsolation($isolation) {
+    public function setTransactionIsolation($isolation) {
         switch ($isolation) {
             case 'READ UNCOMMITTED':
                 $isolation = 0;
