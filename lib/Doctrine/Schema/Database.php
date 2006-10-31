@@ -41,7 +41,7 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
                                   'version'     => null,
                                   'engine'      => null);
 
-
+    private $childs = array();
 
     /**
      *
@@ -73,6 +73,15 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
      * @access public
      */
     public function addTable( $table = null ) {
-        
+        $this->childs[] = $table;   
+    }
+
+    /**
+     *
+     * @return array of Doctrine_Schema_Table
+     *
+     */
+    public function getTables() {
+        return $this->childs;
     }
 }
