@@ -151,6 +151,17 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function driverName($name) {
     }
     /**
+     * supports
+     *
+     * @param string $feature   the name of the feature
+     * @return boolean          whether or not this drivers supports given feature
+     */
+    public function supports($feature) {
+        return (isset($this->supported[$feature]) &&
+                $this->supported[$feature] === 'emulated' || 
+                $this->supported[$feature]);
+    }
+    /**
      * returns a datadict object
      *
      * @return Doctrine_DataDict
@@ -316,6 +327,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /**
      * query
      * queries the database using Doctrine Query Language
+     * returns a collection of Doctrine_Record objects
      *
      * <code>
      * $users = $conn->query('SELECT u.* FROM User u');
@@ -332,6 +344,34 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $parser = new Doctrine_Query($this);
 
         return $parser->query($query, $params);
+    }
+    /**
+     * query
+     * queries the database using Doctrine Query Language and returns 
+     * the first record found
+     *
+     * <code>
+     * $user = $conn->queryOne('SELECT u.* FROM User u WHERE u.id = ?', array(1));
+     *
+     * $user = $conn->queryOne('SELECT u.* FROM User u WHERE u.name LIKE ? AND u.password = ?', 
+     *         array('someone', 'password')
+     *         );
+     * </code>
+     *
+     * @param string $query             DQL query
+     * @param array $params             query parameters
+     * @see Doctrine_Query
+     * @return Doctrine_Record|false    Doctrine_Record object on success,
+     *                                  boolean false on failure
+     */
+    public function queryOne($query, array $params = array()) {
+        $parser = new Doctrine_Query($this);
+
+        $coll = $parser->query($query, $params);
+        if( ! $coll->contains(0))
+            return false;
+        
+        return $coll[0];
     }
     /**
      * queries the database with limit and offset
@@ -583,7 +623,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $record->getTable()->getListener()->onDelete($record);
 
         $this->commit();
-        
+
         return true;
     }
     /**
