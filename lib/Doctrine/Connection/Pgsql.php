@@ -24,7 +24,10 @@ Doctrine::autoload("Doctrine_Connection_Common");
  *
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @author      Konsta Vesterinen
+ * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @version     $Id$
  */
 class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
     /**
@@ -59,7 +62,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
                           'identifier_quoting'      => true,
                           'pattern_escaping'        => true,
                           );
-                          
+
         $this->options['multi_query'] = false;
 
         parent::__construct($manager, $pdo);

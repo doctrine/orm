@@ -24,8 +24,11 @@ Doctrine::autoload('Doctrine_Connection');
  *
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
- * @author      Lorenzo Alberton <l.alberton@quipo.it> (PEAR MDB2 library)
- * @license     LGPL
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @author      Konsta Vesterinen
+ * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @author      Lorenzo Alberton <l.alberton@quipo.it> (PEAR MDB2 library interbase driver)
+ * @version     $Id$
  */
 class Doctrine_Connection_Firebird extends Doctrine_Connection {
     /**
@@ -129,7 +132,6 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
      * Set the charset on the current connection
      *
      * @param string    charset
-     * @param resource  connection handle
      *
      * @return void
      */

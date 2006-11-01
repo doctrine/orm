@@ -115,14 +115,15 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
      * @return void
      */
     public function setTransactionIsolation($isolation) {
-        switch ($isolation) {
+        switch($isolation) {
             case 'READ UNCOMMITTED':
                 $isolation = 'READ COMMITTED';
+            break;
             case 'READ COMMITTED':
             case 'REPEATABLE READ':
-                $isolation = 'SERIALIZABLE';
             case 'SERIALIZABLE':
-                break;
+                $isolation = 'SERIALIZABLE';
+            break;
             default:
                 throw new Doctrine_Connection_Oracle_Exception('Isolation level ' . $isolation . ' is not supported.');
         }
