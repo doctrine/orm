@@ -18,12 +18,12 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Exception');
+Doctrine::autoload('Doctrine_Connection_Exception');
 /**
- * Doctrine_Exception
+ * Doctrine_Connection_Oracle_Exception
  *
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
  * @license     LGPL
  */
-class Doctrine_Connection_Exception extends Doctrine_Exception { }     
+class Doctrine_Connection_Oracle_Exception extends Doctrine_Connection_Exception { }
