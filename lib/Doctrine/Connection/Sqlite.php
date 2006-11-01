@@ -24,7 +24,10 @@ Doctrine::autoload("Doctrine_Connection_Common");
  *
  * @package     Doctrine ORM
  * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @author      Konsta Vesterinen
+ * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @version     $Id$
  */
 
 class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common { 
@@ -96,6 +99,18 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
         $query = "PRAGMA read_uncommitted=$isolation";
         return $this->_doQuery($query, true);
     }
-
+    /**
+     * Returns the current id of a sequence
+     *
+     * @param string $seq_name  name of the sequence
+     * @return integer          the current id in the given sequence
+     */
+    public function currId($sequence) {
+        $sequence = $this->quoteIdentifier($sequence, true);
+        $seqColumn = $this->quoteIdentifier($this->options['seqcol_name'], true);
+        $stmt = $this->dbh->query('SELECT MAX(' . $seqColumn . ') FROM ' . $sequence);
+        $data = $stmt->fetch(PDO::FETCH_NUM);
+        return $data[0];
+    }
 }
 
