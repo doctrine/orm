@@ -111,26 +111,4 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         $query = "SET SESSION TRANSACTION ISOLATION LEVEL $isolation";
         return $this->dbh->query($query);
     }
-    /**
-     * Returns string to concatenate two or more string parameters
-     *
-     * @param string $value1
-     * @param string $value2
-     * @param string $values...
-     * @return string               a concatenation of two or more strings
-     */
-    public function concat($value1, $value2) {
-        $args = func_get_args();
-        return "CONCAT(".implode(', ', $args).")";
-    }
-    /**
-     * returns the state of this connection
-     *
-     * @see Doctrine_Connection_Transaction::STATE_* constants
-     * @return integer          the connection state
-     */
-    public function getState() {
-        return 0; // @todo FIXME not working!
-    }
 }
-

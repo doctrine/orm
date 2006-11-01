@@ -85,7 +85,7 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
      *                  'rw'   => 'READ WRITE' | 'READ ONLY'
      * @return void
      */
-    function setTransactionIsolation($isolation, $options = array()) {
+    public function setTransactionIsolation($isolation, $options = array()) {
         switch ($isolation) {
             case 'READ UNCOMMITTED':
                 $ibase_isolation = 'READ COMMITTED RECORD_VERSION';
