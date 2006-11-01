@@ -30,11 +30,23 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
     /**
      * @var string $driverName                  the name of this connection driver
      */
-    protected $driverName = 'Mssql';    
+    protected $driverName = 'Mssql';
+    /**
+     * the constructor
+     *
+     * @param Doctrine_Manager $manager
+     * @param PDO $pdo                          database handle
+     */
+    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
+        // initialize all driver options
+
+        parent::__construct($manager, $pdo);
+    }
     /**
      * returns the next value in the given sequence
-     * @param string $sequence
-     * @return integer
+     *
+     * @param string $sequence      name of the sequence
+     * @return integer              the next value in the given sequence
      */
     public function getNextID($sequence) {
         $this->query("INSERT INTO $sequence (vapor) VALUES (0)");

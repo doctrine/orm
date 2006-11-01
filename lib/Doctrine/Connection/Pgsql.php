@@ -32,6 +32,17 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
      */
     protected $driverName = 'Pgsql';
     /**
+     * the constructor
+     *
+     * @param Doctrine_Manager $manager
+     * @param PDO $pdo                          database handle
+     */
+    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
+        // initialize all driver options
+
+        parent::__construct($manager, $pdo);
+    }
+    /**
      * returns the next value in the given sequence
      * @param string $sequence
      * @return integer
