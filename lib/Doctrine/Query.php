@@ -530,17 +530,23 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @return string       the limit subquery
      */
     public function getLimitSubquery() {
-        $k        = array_keys($this->tables);
-        $table    = $this->tables[$k[0]];
+        $k          = array_keys($this->tables);
+        $table      = $this->tables[$k[0]];
 
-        $subquery  = 'SELECT DISTINCT ' . $table->getTableName()
-                   . '.' . $table->getIdentifier();
-        
+        $primaryKey = $table->getTableName() . '.' . $table->getIdentifier();
+
+        // initialize the base of the subquery
+        $subquery   = 'SELECT DISTINCT ' . $primaryKey;
+
         if($this->connection->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'pgsql') {
+            // pgsql needs the order by fields to be preserved in select clause
+
             foreach($this->parts['orderby'] as $part) {
                 $e = explode(' ', $part);
-                
-                $subquery .= ', ' . $e[0];                                           	
+
+                // don't add primarykey column (its already in the select clause)
+                if($e[0] !== $primaryKey)
+                    $subquery .= ', ' . $e[0];
             }
         }
 
