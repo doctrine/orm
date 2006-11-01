@@ -110,7 +110,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
 
      * @return string               modified query
      */
-    public function modifyLimitQuery($query, $limit, $offset, $isManip = false) {
+    public function modifyLimitQuery($query, $limit=false, $offset=false, $isManip = false) {
         if ($limit > 0) {
             $query = rtrim($query);
             
