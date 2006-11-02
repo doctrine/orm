@@ -28,6 +28,32 @@ Doctrine::autoload('Doctrine_Expression');
  */
 class Doctrine_Expression_Sqlite extends Doctrine_Expression {
     /**
+     * Returns the md5 sum of the data that SQLite's md5() function receives.
+     *
+     * @return string
+     */
+    public static function md5Impl($data) {
+        return md5($data);
+    }
+    /**
+     * Returns the modules of the data that SQLite's mod() function receives.
+     *
+     * @return string
+     */
+    public static function modImpl($dividend, $divisor) {
+        return $dividend % $divisor;
+    }
+
+    /**
+     * Returns a concattenation of the data that SQLite's concat() function receives.
+     *
+     * @return string
+     */
+    public static function concatImpl() {
+        $args = func_get_args();
+        return join( '', $args );
+    }
+    /**
      * returns the regular expression operator 
      *
      * @return string

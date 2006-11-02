@@ -73,6 +73,15 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
         parent::__construct($manager, $pdo);
     }
     /**
+     * initializes database functions missing in sqlite
+     */
+    public function initFunctions() {
+        $this->dbh->sqliteCreateFunction('md5',    array('Doctrine_Expression_Sqlite', 'md5Impl'), 1);
+        $this->dbh->sqliteCreateFunction('mod',    array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
+        $this->dbh->sqliteCreateFunction('concat', array('Doctrine_Expression_Sqlite', 'concatImpl'));
+        $this->dbh->sqliteCreateFunction('now', 'time', 0);
+    }
+    /**
      * Set the transacton isolation level.
      *
      * @param   string  standard isolation level
