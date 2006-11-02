@@ -34,7 +34,7 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
      * md5() works with the default PostgreSQL 8 versions.
      *
      * If you are using PostgreSQL 7.x or older you need
-     * to make sure that the digest procedure.
+     * to make sure that the digest procedure is installed.
      * If you use RPMS (Redhat and Mandrake) install the postgresql-contrib
      * package. You must then install the procedure by running this shell command:
      * <code>
