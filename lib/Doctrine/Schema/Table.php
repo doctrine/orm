@@ -39,7 +39,10 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable,
                                   'check'       => '',
                                   'charset'     => '',
                                   'description' => '');
-
+    /**
+     * Relations this table has with others. An array of Doctrine_Schema_Relation
+     */
+    private $relations = array();
     /**
      *
      * @return bool
@@ -76,6 +79,24 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable,
         $this->children[$name] = $column;
 
         return $this;
+    }
+
+    /**
+     * Adds a relation between a local column and a 2nd table / column
+     *
+     * @param Doctrine_Schema_Relation Relation
+     *
+    */
+    public function setRelation(Doctrine_Schema_Relation $relation){
+         $this->relations[] = $relation;	
+    }
+    /**
+     * Return all the relations this table has with others
+     * 
+     * @return array Array of Doctrine_Schema_Relation
+    */
+    public function getRelations(){
+    	return $this->relations;
     }
 
 }
