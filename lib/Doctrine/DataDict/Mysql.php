@@ -308,7 +308,8 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return array
      */
     public function listTableConstraints($table) {
-    
+    	$sql = 'select KCU.COLUMN_NAME as referencingColumn, TC.CONSTRAINT_NAME as constraintName, KCU.REFERENCED_TABLE_SCHEMA as referencedTableSchema, KCU.REFERENCED_TABLE_NAME as referencedTable, KCU.REFERENCED_COLUMN_NAME as referencedColumn from INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC inner JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE  KCU on TC.CONSTRAINT_NAME=KCU.CONSTRAINT_NAME and TC.TABLE_SCHEMA = KCU.TABLE_SCHEMA and TC.TABLE_NAME=KCU.TABLE_NAME WHERE  TC.TABLE_SCHEMA=database() AND TC.TABLE_NAME="'.$table.'" AND CONSTRAINT_TYPE="FOREIGN KEY"';
+	return $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
     /**
      * lists table constraints
