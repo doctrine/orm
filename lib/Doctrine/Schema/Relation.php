@@ -36,16 +36,23 @@
 class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
 
     /**
-     * Columns that refer to another table
+     * Column that refers to another table
      * @access public
      */
-    public $referencingFields;
+    public $referencingColumn;
 
     /**
-     * Columns that are referred from another table
+     * Column that is referred from another table
      * @access public
      */
-    public $referredFields;
+    public $referencedColumn;
+    
+    /**
+     * Table where the referred column lives 
+     * @access public
+     *
+    */
+    public $referencedTable;
 
     /**
      * ON UPDATE or ON DELETE action
@@ -85,13 +92,16 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
 
     /**
      *
-     * @param Doctrine_Schema_Column referringColumns      
-     * @param Doctrine_Schema_Column referencedColumns      
+     * @param Doctrine_Schema_Column referencing      
+     * @param Doctrine_Schema_Table referencedtable      
+     * @param Doctrine_Schema_Column referencedColumn      
      * @return
      * @access public
      */
-    public function setRelationBetween( $referringColumns,  $referencedColumns ) {
-        
+    public function setRelationBetween( $referencingColumn, $referencedTable, $referencedColumn ) {
+        $this->referencingColumn = $referencingColumn;
+        $this->referencedTable = $referencedTable;
+        $this->referencedColumn = $referencedColumn;
     }
     /**
      *
@@ -99,7 +109,7 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
      * @access public
      */
     public function __toString( ) {
-        
+    	return "Relation between '".$this->referencingColumn."' and '".$this->referencedTable."'.'".$this->referencingColumn."'";    
     }
     /**
      *
