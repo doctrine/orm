@@ -187,31 +187,36 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 	/**
  	 * count
      *
+     * @param array $params
 	 * @return integer
      */
-	public function count(Doctrine_Table $table, $params = array()) {
+	public function count($params = array()) {
 		$this->remove('select');
 		$join  = $this->join;
 		$where = $this->where;
 		$having = $this->having;
+		$table  = reset($this->tables);
 
-		$q = "SELECT COUNT(DISTINCT ".$table->getTableName().'.'.$table->getIdentifier().") FROM ".$table->getTableName()." ";
+		$q  = 'SELECT COUNT(DISTINCT ' . $this->getShortAlias($table->getTableName())
+            . '.' . $table->getIdentifier() 
+            . ') FROM ' . $table->getTableName() . ' ' . $this->getShortAlias($table->getTableName);
+
 		foreach($join as $j) {
-            $q .= ' '.implode(" ",$j);
+            $q .= ' '.implode(' ',$j);
 		}
         $string = $this->applyInheritance();
 
         if( ! empty($where)) {
-            $q .= " WHERE ".implode(" AND ",$where);
+            $q .= ' WHERE ' . implode(' AND ', $where);
             if( ! empty($string))
-                $q .= " AND (".$string.")";
+                $q .= ' AND (' . $string . ')';
         } else {
             if( ! empty($string))
-                $q .= " WHERE (".$string.")";
+                $q .= ' WHERE (' . $string . ')';
         }
 			
 		if( ! empty($having)) 
-			$q .= " HAVING ".implode(' AND ',$having);
+			$q .= ' HAVING ' . implode(' AND ',$having);
 
 		$a = $this->getConnection()->execute($q, $params)->fetch(PDO::FETCH_NUM);
 		return $a[0];		
