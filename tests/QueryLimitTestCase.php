@@ -7,13 +7,14 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         parent::prepareTables();
     }
+    /**
     public function testLimitWithOneToOneLeftJoin() {
         $q = new Doctrine_Query($this->connection);
         $q->from('User(id).Email')->limit(5);
 
         $users = $q->execute();
         $this->assertEqual($users->count(), 5);
-        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id, email.id AS email__id, email.address AS email__address FROM entity LEFT JOIN email ON entity.email_id = email.id WHERE (entity.type = 0) LIMIT 5");
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e2.id AS e2__id, e2.address AS e2__address FROM entity e LEFT JOIN email e2 ON e.email_id = e2.id WHERE (e.type = 0) LIMIT 5");
 
     }
     public function testLimitWithOneToOneInnerJoin() {
@@ -22,13 +23,15 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $users = $q->execute();
         $this->assertEqual($users->count(), 5);
-        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id, email.id AS email__id, email.address AS email__address FROM entity INNER JOIN email ON entity.email_id = email.id WHERE (entity.type = 0) LIMIT 5");
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e2.id AS e2__id, e2.address AS e2__address FROM entity e INNER JOIN email e2 ON e.email_id = e2.id WHERE (e.type = 0) LIMIT 5");
     }
     public function testLimitWithOneToManyLeftJoin() {
         $this->query->from("User(id).Phonenumber");
         $this->query->limit(5);
 
         $sql = $this->query->getQuery();
+        $this->assertEqual($this->query->getQuery(), 
+        'SELECT e.id AS e__id, p.id AS p__id, p.phonenumber AS p__phonenumber, p.entity_id AS p__entity_id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE e.id IN (SELECT DISTINCT e2.id FROM entity e2 WHERE (e2.type = 0) LIMIT 5) AND (e.type = 0)');
 
         $users = $this->query->execute();
         $count = $this->dbh->count();
@@ -37,8 +40,6 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($count, $this->dbh->count());
         
 
-        $this->assertEqual($this->query->getQuery(), 
-        'SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity WHERE (entity.type = 0) LIMIT 5) AND (entity.type = 0)');
 
 
         $this->query->offset(2);
@@ -53,19 +54,21 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
     public function testLimitWithOneToManyLeftJoinAndCondition() {
         $q = new Doctrine_Query($this->connection);
         $q->from("User(name)")->where("User.Phonenumber.phonenumber LIKE '%123%'")->limit(5);
+
         $users = $q->execute();
-        
+
+        $this->assertEqual($users->count(), 5);
+
         $this->assertEqual($users[0]->name, 'zYne');
         $this->assertEqual($users[1]->name, 'Arnold Schwarzenegger');
         $this->assertEqual($users[2]->name, 'Michael Caine');
         $this->assertEqual($users[3]->name, 'Sylvester Stallone');
         $this->assertEqual($users[4]->name, 'Jean Reno');
 
-        $this->assertEqual($users->count(), 5);
-
         $this->assertEqual($q->getQuery(),
-        "SELECT entity.id AS entity__id, entity.name AS entity__name FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '%123%' AND (entity.type = 0) LIMIT 5) AND phonenumber.phonenumber LIKE '%123%' AND (entity.type = 0)");
+        "SELECT e.id AS e__id, e.name AS e__name FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE e.id IN (SELECT DISTINCT e2.id FROM entity e2 LEFT JOIN phonenumber p2 ON e2.id = p2.entity_id WHERE p2.phonenumber LIKE '%123%' AND (e2.type = 0) LIMIT 5) AND p.phonenumber LIKE '%123%' AND (e.type = 0)");
     }
+
 
     public function testLimitWithOneToManyLeftJoinAndOrderBy() {
         $q = new Doctrine_Query($this->connection);
@@ -80,7 +83,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 5);
     }
-    
+
 
     public function testLimitWithOneToManyInnerJoin() {
         $this->query->select('u.id')->from("User u INNER JOIN u.Phonenumber");
@@ -105,8 +108,9 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($count, $this->dbh->count());
         
         $this->assertEqual($this->query->getQuery(),
-        'SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity INNER JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity INNER JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0) LIMIT 5 OFFSET 2) AND (entity.type = 0)');
+        'SELECT e.id AS e__id, p.id AS p__id, p.phonenumber AS p__phonenumber, p.entity_id AS p__entity_id FROM entity e INNER JOIN phonenumber p ON e.id = p.entity_id WHERE e.id IN (SELECT DISTINCT e2.id FROM entity e2 INNER JOIN phonenumber p2 ON e2.id = p2.entity_id WHERE (e2.type = 0) LIMIT 5 OFFSET 2) AND (e.type = 0)');
     }
+
     public function testLimitWithPreparedQueries() {
         $q = new Doctrine_Query();
         $q->from("User(id).Phonenumber(id)");
@@ -120,7 +124,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($count, $this->dbh->count());
 
         $this->assertEqual($q->getQuery(),
-        'SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity WHERE entity.name = ? AND (entity.type = 0) LIMIT 5) AND entity.name = ? AND (entity.type = 0)');
+        'SELECT e.id AS e__id, p.id AS p__id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE e.id IN (SELECT DISTINCT e2.id FROM entity e2 WHERE e2.name = ? AND (e2.type = 0) LIMIT 5) AND e.name = ? AND (e.type = 0)');
 
         $q = new Doctrine_Query();
         $q->from("User(id).Phonenumber(id)");
@@ -135,9 +139,11 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($count, $this->dbh->count());
 
         $this->assertEqual($q->getQuery(),
-        "SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity WHERE (entity.name LIKE ? OR entity.name LIKE ?) AND (entity.type = 0) LIMIT 5) AND (entity.name LIKE ? OR entity.name LIKE ?) AND (entity.type = 0)");
+        "SELECT e.id AS e__id, p.id AS p__id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE e.id IN (SELECT DISTINCT e2.id FROM entity e2 WHERE (e2.name LIKE ? OR e2.name LIKE ?) AND (e2.type = 0) LIMIT 5) AND (e.name LIKE ? OR e.name LIKE ?) AND (e.type = 0)");
 
-    }    
+    } 
+
+
 
     public function testConnectionFlushing() {
         $q = new Doctrine_Query();
@@ -150,10 +156,13 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $this->connection->flush();
     }
 
+
     public function testLimitWithManyToManyColumnAggInheritanceLeftJoin() {
         $q = new Doctrine_Query($this->connection);
         $q->from("User.Group")->limit(5);
+
         $users = $q->execute();
+ 
 
         $this->assertEqual($users->count(), 5);
         
@@ -179,6 +188,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $q = new Doctrine_Query();
         $q->from("User")->where("User.Group.id = ?")->orderby("User.id ASC")->limit(5);
 
+
         $users = $q->execute(array($user->Group[1]->id));
 
         $this->assertEqual($users->count(), 3);
@@ -190,20 +200,22 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 3);
     }
+
     public function testLimitAttribute() {
-        $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_ROWS);
+        $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_RECORDS);
         
         $this->connection->clear();
         $q = new Doctrine_Query();
         $q->from("User")->where("User.Group.id = ?")->orderby("User.id DESC")->limit(5);
         $users = $q->execute(array(3));
-
+        print $q;
         $this->assertEqual($users->count(), 3);
         
-        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id WHERE entity2.id = ? AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL)) ORDER BY entity.id DESC LIMIT 5");
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e LEFT JOIN groupuser ON e.id = groupuser.user_id LEFT JOIN entity e2 ON e2.id = groupuser.group_id WHERE e2.id = ? AND (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL)) ORDER BY e.id DESC LIMIT 5");
 
         $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_RECORDS);
     }
+        */
     public function testLimitWithNormalManyToMany() {
         $coll = new Doctrine_Collection($this->connection->getTable("Photo"));
         $tag = new Tag();
@@ -220,10 +232,12 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $q = new Doctrine_Query();
         $q->from("Photo")->where("Photo.Tag.id = ?")->orderby("Photo.id DESC")->limit(100);
+
         $photos = $q->execute(array(1));
         $this->assertEqual($photos->count(), 3);
         $this->assertEqual($q->getQuery(), 
-        "SELECT photo.id AS photo__id, photo.name AS photo__name FROM photo LEFT JOIN phototag ON photo.id = phototag.photo_id LEFT JOIN tag ON tag.id = phototag.tag_id WHERE photo.id IN (SELECT DISTINCT photo.id FROM photo LEFT JOIN phototag ON photo.id = phototag.photo_id LEFT JOIN tag ON tag.id = phototag.tag_id WHERE tag.id = ? ORDER BY photo.id DESC LIMIT 100) AND tag.id = ? ORDER BY photo.id DESC");
+        "SELECT p.id AS p__id, p.name AS p__name FROM photo p LEFT JOIN phototag ON p.id = phototag.photo_id LEFT JOIN tag t ON t.id = phototag.tag_id WHERE p.id IN (SELECT DISTINCT p2.id FROM photo p2 LEFT JOIN phototag ON p2.id = phototag.photo_id LEFT JOIN tag t2 ON t2.id = phototag.tag_id WHERE t2.id = ? ORDER BY p2.id DESC LIMIT 100) AND t2.id = ? ORDER BY p.id DESC");
     }
+
 }
 ?>

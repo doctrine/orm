@@ -88,6 +88,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
     protected $pendingAggregates = array();
 
     protected $aggregateMap      = array();
+    
+    protected $shortAliases      = array();
+    
+    protected $shortAliasIndexes = array();
     /**
      * @var array $parts            SQL query string parts
      */
@@ -227,6 +231,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         $this->joins            = array();
         $this->tableIndexes     = array();
         $this->tableAliases     = array();
+        $this->shortAliases     = array();
+        $this->shortAliasIndexes = array();
     }
     /**
      * getConnection
@@ -371,6 +377,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             foreach($data as $key => $row) {
                 if(empty($row))
                     continue;
+                
+                //$key = array_search($key, $this->shortAliases);
 
                 foreach($this->tables as $k => $t) {
                     if ( ! strcasecmp($key, $k))
@@ -391,9 +399,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                         if(isset($row[0])) {
                             $path    = array_search($name, $this->tableAliases);
                             $alias   = $this->getPathAlias($path);
-                            
-                            //print_r($this->pendingAggregates);
-                            
+
                             // map each aggregate value
                             foreach($row as $index => $value) {
                                 $agg = false;
@@ -487,7 +493,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         $pointer = $this->joins[$name];
 
         $path    = array_search($name, $this->tableAliases);
-        $tmp     = explode(".", $path);
+        $tmp     = explode('.', $path);
         $alias   = end($tmp);
 
         $fk      = $this->tables[$pointer]->getRelation($alias);
@@ -533,6 +539,36 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         }
         return false;
     }
+    public function getShortAliasIndex($alias) {
+        if( ! isset($this->shortAliasIndexes[$alias]))
+            return 0;
+        
+        return $this->shortAliasIndexes[$alias];
+    }
+    public function generateShortAlias($tableName) {
+        $char   = strtolower(substr($tableName, 0, 1));
+
+        $alias  = $char;
+
+        if( ! isset($this->shortAliasIndexes[$alias]))
+            $this->shortAliasIndexes[$alias] = 1;
+
+        while(isset($this->shortAliases[$alias])) {
+            $alias = $char . ++$this->shortAliasIndexes[$alias];
+        }
+        $this->shortAliases[$alias] = $tableName;
+
+        return $alias;
+    }
+
+    public function getShortAlias($tableName) {
+        $alias = array_search($tableName, $this->shortAliases);
+
+        if($alias !== false)
+            return $alias;
+        
+        return $this->generateShortAlias($tableName);
+    }
     /**
      * applyInheritance
      * applies column aggregation inheritance to DQL / SQL query
@@ -552,23 +588,29 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         $c = array();
 
         $index = 0;
-        foreach($array as $tname => $maps) {
+        foreach($array as $tableAlias => $maps) {
+
             $a = array();
             foreach($maps as $map) {
                 $b = array();
                 foreach($map as $field => $value) {
                     if($index > 0)
-                        $b[] = "(".$tname.".$field = $value OR $tname.$field IS NULL)";
+                        $b[] = '(' . $tableAlias . '.' . $field . ' = ' . $value . ' OR ' . $tableAlias . '.' . $field . ' IS NULL)';
                     else
-                        $b[] = $tname.".$field = $value";
+                        $b[] = $tableAlias . '.' . $field . ' = ' . $value;
                 }
-                if( ! empty($b)) $a[] = implode(" AND ",$b);
+            
+                if( ! empty($b))
+                    $a[] = implode(' AND ', $b);
             }
-            if( ! empty($a)) $c[] = implode(" AND ",$a);
+
+            if( ! empty($a))
+                $c[] = implode(' AND ', $a);
+
             $index++;
         }
 
-        $str .= implode(" AND ",$c);
+        $str .= implode(' AND ', $c);
 
         return $str;
     }
@@ -576,6 +618,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * parseData
      * parses the data returned by PDOStatement
      *
+     * @param PDOStatement $stmt
      * @return array
      */
     public function parseData(PDOStatement $stmt) {

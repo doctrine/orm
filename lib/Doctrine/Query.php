@@ -97,7 +97,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
     public function processPendingFields($componentAlias) {
         $tableAlias = $this->getTableAlias($componentAlias);
-        
+
+
         $componentPath  = $this->compAliases[$componentAlias];
 
         if( ! isset($this->components[$componentPath])) 
@@ -249,9 +250,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         foreach($names as $name) {
             if($count == 0) {
-                $this->parts["select"][] = $tablename.".".$name;
+                $this->parts["select"][] = $tablename . '.' . $name;
             } else {
-                $this->parts["select"][] = $tablename.".".$name." AS ".$tablename."__".$name;
+                $this->parts["select"][] = $tablename . '.' . $name . ' AS ' . $tablename . '__' . $name;
             }
         }
     }
@@ -322,6 +323,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $this->fetchModes       = array();
                 $this->tableIndexes     = array();
                 $this->tableAliases     = array();
+                $this->shortAliases     = array();
+                $this->shortAliasIndexes = array();
 
                 $class = "Doctrine_Query_".ucwords($name);
                 $parser = new $class($this);
@@ -462,10 +465,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
              ' FROM ';
         $q = $this->getQueryBase();
 
-        foreach($this->parts["from"] as $tname => $bool) {
-            $a[] = $tname;
-        }
-        $q .= implode(", ",$a);
+        $q .= $this->parts['from'];
 
         if( ! empty($this->parts['join'])) {
             foreach($this->parts['join'] as $part) {
@@ -498,7 +498,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     break;
                 }
 
-                $field    = $table->getTableName() . '.' . $table->getIdentifier();
+                $field    = $this->getShortAlias($table->getTableName()) . '.' . $table->getIdentifier();
                 array_unshift($this->parts['where'], $field. ' IN (' . $subquery . ')');
                 $modifyLimit = false;
             }
@@ -533,7 +533,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $k          = array_keys($this->tables);
         $table      = $this->tables[$k[0]];
 
-        $primaryKey = $table->getTableName() . '.' . $table->getIdentifier();
+        $alias      = $this->getShortAlias($table->getTableName());
+        $primaryKey = $alias . '.' . $table->getIdentifier();
 
         // initialize the base of the subquery
         $subquery   = 'SELECT DISTINCT ' . $primaryKey;
@@ -550,21 +551,22 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             }
         }
 
-        $subquery .= ' FROM '.$table->getTableName();
-        
+        $subquery .= ' FROM ' . $table->getTableName() . ' ' . $alias;
+
         foreach($this->parts['join'] as $parts) {
             foreach($parts as $part) {
                 // preserve LEFT JOINs only if needed
                 if(substr($part,0,9) === 'LEFT JOIN') {
                     $e = explode(' ', $part);
 
-                    if( ! in_array($e[2],$this->subqueryAliases))
+                    if( ! in_array($e[3], $this->subqueryAliases))
                         continue;
                 }
 
                 $subquery .= ' '.$part;
             }
         }
+
 
         // all conditions must be preserved in subquery
         $subquery .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ',$this->parts['where']):'';
@@ -574,8 +576,47 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         // add driver specific limit clause
         $subquery = $this->connection->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
-    
+
+        $parts = self::quoteExplode($subquery, ' ', "'", "'");
+
+        foreach($parts as $k => $part) {
+            if(strpos($part, "'") !== false)
+                continue;
+
+            if(isset($this->shortAliases[$part])) {
+                $parts[$k] = $this->generateNewAlias($part);
+            }
+
+            if(strpos($part, '.') !== false) {
+                $e = explode('.', $part);
+                
+                $trimmed = ltrim($e[0], '( ');
+                $pos     = strpos($e[0], $trimmed);
+
+                $e[0] = substr($e[0], 0, $pos) . $this->generateNewAlias($trimmed);
+                $parts[$k] = implode('.', $e);
+            }
+        }
+        $subquery = implode(' ', $parts);
+
         return $subquery;
+    }
+    
+    public function generateNewAlias($alias) {
+        if(isset($this->shortAliases[$alias])) {
+            // generate a new alias
+            $name = substr($alias, 0, 1);
+            $i    = ((int) substr($alias, 1));
+
+            if($i == 0)
+                $i = 1;
+
+            $newIndex  = ($this->shortAliasIndexes[$name] + $i);
+
+            return $name . $newIndex;
+        }
+        
+        return $alias;
     }
 
 
@@ -592,7 +633,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         if($this->aggregate) {
             $keys  = array_keys($this->tables);
             $query = $this->getQuery();
-            $stmt  = $this->tables[$keys[0]]->getConnection()->select($query,$this->parts["limit"],$this->parts["offset"]);
+            $stmt  = $this->tables[$keys[0]]->getConnection()->select($query, $this->parts["limit"], $this->parts["offset"]);
             $data  = $stmt->fetch(PDO::FETCH_ASSOC);
             if(count($data) == 1) {
                 return current($data);
@@ -826,6 +867,47 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         return $term;
     }
     /**
+     * quoteExplode
+     *
+     * example:
+     * 
+     * parameters:
+     *      $str = email LIKE 'John@example.com'
+     *      $d = ' AND '
+     *      $e1 = '('
+     *      $e2 = ')'
+     *
+     * would return an array:
+     *      array("email", "LIKE", "'John@example.com'")
+     *
+     * @param string $str
+     * @param string $d         the delimeter which explodes the string       *
+     */
+    public static function quoteExplode($str, $d = ' ') {
+        if(is_array($d)) {
+            $a = preg_split('/('.implode('|', $d).')/', $str);
+            $d = stripslashes($d[0]);
+        } else
+            $a = explode("$d",$str);
+
+        $i = 0;
+        $term = array();
+        foreach($a as $key => $val) {
+            if (empty($term[$i])) {
+                $term[$i] = trim($val);
+
+                if( ! (substr_count($term[$i], "'") & 1))
+                    $i++;
+            } else {
+                $term[$i] .= "$d".trim($val);
+
+                if( ! (substr_count($term[$i], "'") & 1))
+                    $i++;
+            }
+        }
+        return $term;
+    }
+    /**
      * sqlExplode
      *
      * explodes a string into array using custom brackets and
@@ -944,25 +1026,26 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $e2    = preg_split("/[-(]/",$fullname);
                 $name  = $e2[0];
 
-                $currPath .= ".".$name;
+                $currPath .= '.' . $name;
 
                 if($key == 0) {
                     $currPath = substr($currPath,1);
 
-
-
                     $table = $this->connection->getTable($name);
 
-                    $tname = $table->getTableName();
+
+                    $tname = $this->getShortAlias($table->getTableName());
 
                     if( ! isset($this->tableAliases[$currPath]))
                         $this->tableIndexes[$tname] = 1;
 
-                    $this->parts["from"][$tname]   = true;
+
+                    $this->parts["from"]           = $table->getTableName() . ' ' . $tname;
 
                     $this->tableAliases[$currPath] = $tname;
-                    
+
                     $tableName = $tname;
+
                 } else {
 
                     $index += strlen($e[($key - 1)]) + 1;
@@ -972,7 +1055,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     if(isset($this->tableAliases[$prevPath])) {
                         $tname = $this->tableAliases[$prevPath];
                     } else
-                        $tname = $table->getTableName();
+                        $tname = $this->getShortAlias($table->getTableName());
 
 
                     $fk       = $table->getRelation($name);
@@ -984,18 +1067,15 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     if(isset($this->tableAliases[$currPath])) {
                         $tname2 = $this->tableAliases[$currPath];
                     } else
-                        $tname2 = $this->generateAlias($original);
+                        $tname2 = $this->generateShortAlias($original);
 
-                    if($original !== $tname2) 
-                        $aliasString = $original." AS ".$tname2;
-                    else
-                        $aliasString = $original;
+                    $aliasString = $original . ' ' . $tname2;
 
                     switch($mark) {
-                        case ":":
+                        case ':':
                             $join = 'INNER JOIN ';
                         break;
-                        case ".":
+                        case '.':
                             $join = 'LEFT JOIN ';
                         break;
                         default:
@@ -1003,36 +1083,44 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     }
 
                     if( ! $fk->isOneToOne()) {
-                        if( ! $loadFields) {
+                        if( ! $loadFields || $table->usesInheritanceMap()) {
                             $this->subqueryAliases[] = $tname2;
                         }
                         
                         $this->needsSubquery = true;
                     }
-                    
+
                     if($fk instanceof Doctrine_Relation_Association) {
                         $asf = $fk->getAssociationFactory();
 
                         $assocTableName = $asf->getTableName();
-                        
-                        if( ! $loadFields) {
+
+                        if( ! $loadFields || $table->usesInheritanceMap()) {
                             $this->subqueryAliases[] = $assocTableName;
                         }
-                        $this->parts["join"][$tname][$assocTableName] = $join.$assocTableName .' ON '.$tname.".".$table->getIdentifier()." = ".$assocTableName.".".$fk->getLocal();
-                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString    .' ON '.$tname2.".".$table->getIdentifier()." = ".$assocTableName.".".$fk->getForeign();
+                        $this->parts["join"][$tname][$assocTableName] = $join.$assocTableName . ' ON ' .$tname  . '.' 
+                                                                      . $table->getIdentifier() . ' = '
+                                                                      . $assocTableName . '.' . $fk->getLocal();
+
+                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString    . ' ON ' .$tname2 . '.'
+                                                                      . $table->getIdentifier() . ' = '
+                                                                      . $assocTableName . '.' . $fk->getForeign();
 
                     } else {
-                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString    .' ON '.$tname.".".$fk->getLocal()." = ".$tname2.".".$fk->getForeign();
+                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString    . ' ON ' .$tname .  '.'
+                                                                      . $fk->getLocal() . ' = ' . $tname2 . '.' . $fk->getForeign();
                     }
+
 
                     $this->joins[$tname2] = $prevTable;
 
 
                     $table = $fk->getTable();
+
                     $this->tableAliases[$currPath] = $tname2;
 
                     $tableName = $tname2;
-                    
+
                     $this->relationStack[] = $fk;
                 }
                 

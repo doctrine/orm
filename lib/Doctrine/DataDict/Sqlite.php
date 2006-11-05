@@ -274,7 +274,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
      */
     public function listTableColumns($table) { 
 
-        $sql    = "PRAGMA table_info($table)";
+        $sql    = 'PRAGMA table_info(' . $table . ')';
         $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         $description = array();

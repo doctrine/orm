@@ -54,12 +54,12 @@ class Doctrine_DB_EventListener_Chain extends Doctrine_Access implements Doctrin
         $this->listeners[$name] = $listener;
     }
 
-    public function onPreQuery(Doctrine_DB2 $dbh, array $args) {
+    public function onQuery(Doctrine_DB2 $dbh, $statement, array $args, $queryId) {
         foreach($this->listeners as $listener) {
             $listener->onPreQuery($dbh, $args);
         }
     }
-    public function onQuery(Doctrine_DB2 $dbh, array $args) {
+    public function onPreQuery(Doctrine_DB2 $dbh, $statement, array $args) {
         foreach($this->listeners as $listener) {
             $listener->onQuery($dbh, $args);
         }

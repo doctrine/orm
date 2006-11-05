@@ -7,21 +7,21 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
 
         $q->parseQuery('SELECT COUNT(u.id) FROM User u');
 
-        $this->assertEqual($q->getQuery(), 'SELECT COUNT(entity.id) AS entity__0 FROM entity WHERE (entity.type = 0)');
+        $this->assertEqual($q->getQuery(), 'SELECT COUNT(e.id) AS e__0 FROM entity e WHERE (e.type = 0)');
     }
     public function testMultipleAggregateFunctions() {
         $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT MAX(u.id), MIN(u.name) FROM User u');
 
-        $this->assertEqual($q->getQuery(), 'SELECT MAX(entity.id) AS entity__0, MIN(entity.name) AS entity__1 FROM entity WHERE (entity.type = 0)');
+        $this->assertEqual($q->getQuery(), 'SELECT MAX(e.id) AS e__0, MIN(e.name) AS e__1 FROM entity e WHERE (e.type = 0)');
     }
     public function testMultipleAggregateFunctionsWithMultipleComponents() {
         $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT MAX(u.id), MIN(u.name), COUNT(p.id) FROM User u, u.Phonenumber p');
 
-        $this->assertEqual($q->getQuery(), 'SELECT MAX(entity.id) AS entity__0, MIN(entity.name) AS entity__1, COUNT(phonenumber.id) AS phonenumber__2 FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0)');
+        $this->assertEqual($q->getQuery(), 'SELECT MAX(e.id) AS e__0, MIN(e.name) AS e__1, COUNT(p.id) AS p__2 FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)');
     }
     public function testEmptySelectPart() {
         $q = new Doctrine_Query();
@@ -97,28 +97,28 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
 
         $q->parseQuery('SELECT u.* FROM User u');
 
-        $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity WHERE (entity.type = 0)');
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e WHERE (e.type = 0)');
     }
     public function testSingleComponentWithMultipleColumns() {
         $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.name, u.type FROM User u'); 
         
-        $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.type AS entity__type FROM entity WHERE (entity.type = 0)');
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, e.type AS e__type FROM entity e WHERE (e.type = 0)');
     }
     public function testMultipleComponentsWithAsterisk() {
         $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.*, p.* FROM User u, u.Phonenumber p');
 
-        $this->assertEqual($q->getQuery(),'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0)');
+        $this->assertEqual($q->getQuery(),'SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id, p.id AS p__id, p.phonenumber AS p__phonenumber, p.entity_id AS p__entity_id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)');
     }
     public function testMultipleComponentsWithMultipleColumns() {
         $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.id, u.name, p.id FROM User u, u.Phonenumber p');
 
-        $this->assertEqual($q->getQuery(),'SELECT entity.id AS entity__id, entity.name AS entity__name, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0)');
+        $this->assertEqual($q->getQuery(),'SELECT e.id AS e__id, e.name AS e__name, p.id AS p__id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)');
     }
 
 }

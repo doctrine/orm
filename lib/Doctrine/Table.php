@@ -292,6 +292,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         }
         $this->options[$name] = $value;
     }
+    
+    public function usesInheritanceMap() {
+        return ( ! empty($this->options['inheritanceMap']));
+    }
+    public function getOption($name) {
+        if(isset($this->options[$name]))
+            return $this->options[$name];
+            
+        return null;
+    }
     /**
      * setColumn
      * @param string $name

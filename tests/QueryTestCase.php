@@ -29,6 +29,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
         $this->connection->clear();
     }
+    /**
     public function testValidLazyPropertyFetching() {
         $q = new Doctrine_Query($this->connection);
         $q->from("User(id, name)");
@@ -76,7 +77,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         
         $q->parseQuery($dql);
 
-        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity WHERE entity.id = ? AND (entity.type = 0)");
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e e WHERE e.id = ? AND (e.type = 0)");
     }
     public function testUnknownFunction() {
         $q = new Doctrine_Query();
@@ -108,7 +109,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
 
         $coll = $q->execute(array('123 123'));
 
-        $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber = ?) AND (entity.type = 0)');
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e e LEFT JOIN phonenumber ON e.id = p.entity_id WHERE e.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber = ?) AND (e.type = 0)');
 
         $this->assertEqual($coll->count(), 3);
         $this->assertEqual($coll[0]->name, 'zYne');
@@ -126,7 +127,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
 
         $coll = $q->execute(array('%123%', '%5%'));
 
-        $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber LIKE ?) AND entity.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber LIKE ?) AND (entity.type = 0)');
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e e LEFT JOIN phonenumber ON e.id = p.entity_id WHERE e.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber LIKE ?) AND e.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber LIKE ?) AND (e.type = 0)');
 
         $this->assertEqual($coll->count(), 3);
         $this->assertEqual($coll[0]->name, 'Arnold Schwarzenegger');
@@ -144,7 +145,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
 
         $coll = $q->execute(array('123%'));
 
-        $this->assertEqual($q->getQuery(), 'SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber LIKE ?) AND (entity.type = 0)');
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e e LEFT JOIN phonenumber ON e.id = p.entity_id WHERE e.id IN (SELECT entity_id FROM phonenumber WHERE phonenumber LIKE ?) AND (e.type = 0)');
 
         $this->assertEqual($coll->count(), 5);
         $this->assertEqual($coll[0]->name, 'zYne');
@@ -171,7 +172,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
                 ->where("EnumTest.status = 'open'")
                 ->execute();
         
-        $this->assertEqual($q->getQuery(), 'SELECT enum_test.id AS enum_test__id, enum_test.status AS enum_test__status FROM enum_test WHERE enum_test.status = 0');
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.status AS e__status FROM enum_test e WHERE e.status = 0');
         $this->assertEqual($coll->count(), 1);
         
         $q = new Doctrine_Query;
@@ -180,7 +181,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
                 ->where("EnumTest.status = 'verified'")
                 ->execute();
         
-        $this->assertEqual($q->getQuery(), 'SELECT enum_test.id AS enum_test__id, enum_test.status AS enum_test__status FROM enum_test WHERE enum_test.status = 1');
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.status AS e__status FROM enum_test e WHERE e.status = 1');
         $this->assertEqual($coll->count(), 1);
     }
 
@@ -188,7 +189,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
 
         $query = new Doctrine_Query($this->connection);
 
-        $query->from('User-l:Group-l');
+        $query->from('User u INNER JOIN u.Group g');
 
         $users = $query->execute();
         $this->assertEqual($users->count(), 1);
@@ -216,25 +217,34 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[2]->type, 0);
 
         $this->connection->flush();
-
+    }
+    public function testManyToManyFetchingWithColumnAggregationInheritance2() {
+        $query = new Doctrine_Query();
         $users = $query->query("FROM User-b WHERE User.Group.name = 'Action Actors'");
 
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id WHERE entity2.name = 'Action Actors' AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
+        "SELECT e.id AS e__id FROM entity e e LEFT JOIN groupuser ON e.id = groupuser.user_id LEFT JOIN entity e2 ON e2.id = groupuser.group_id WHERE e2.name = 'Action Actors' AND (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
 
-        $this->assertEqual(count($this->dbh->query($query->getQuery())->fetchAll()),1);
-
+        $this->assertEqual(count($this->dbh->query($query->getQuery())->fetchAll()), 1);
+    }
+    public function testManyToManyFetchingWithColumnAggregationInheritance3() {
+        $query = new Doctrine_Query();
         $users = $query->query("FROM User-b WHERE User.Group.Phonenumber.phonenumber LIKE '123 123'");
 
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity LEFT JOIN groupuser ON entity.id = groupuser.user_id LEFT JOIN entity AS entity2 ON entity2.id = groupuser.group_id LEFT JOIN phonenumber ON entity2.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '123 123' AND (entity.type = 0 AND (entity2.type = 1 OR entity2.type IS NULL))");
+        "SELECT e.id AS e__id FROM entity e e LEFT JOIN groupuser ON e.id = groupuser.user_id LEFT JOIN entity e2 ON e2.id = groupuser.group_id LEFT JOIN phonenumber ON e2.id = p.entity_id WHERE p.phonenumber LIKE '123 123' AND (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))");
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(),1);
-
+    }
+    */
+    public function testManyToManyFetchingWithColumnAggregationInheritance4() {
         $query = new Doctrine_Query();
-        $users = $query->query("FROM User.Group WHERE User.Group.name = 'Action Actors'");
+        $query->parseQuery("FROM User.Group WHERE User.Group.name = 'Action Actors'");
+
+        $users = $query->execute();
+
         $this->assertEqual($users->count(), 1);
         $count = $this->dbh->count();
 
@@ -245,15 +255,15 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[0]->Group[0]->name, 'Action Actors');
         $this->assertEqual($count, $this->dbh->count());
     }
-
+    /**
     public function testSelectingAggregateValues() {
 
         $q = new Doctrine_Query();
         $q->from("User(COUNT(1), MAX(name))");
         $array = $q->execute();
         $this->assertTrue(is_array($array));
-        $this->assertEqual($array, array(array('COUNT(1)' => '8', 'MAX(entity.name)' => 'zYne')));
-        $this->assertEqual($q->getQuery(), "SELECT COUNT(1), MAX(entity.name) FROM entity WHERE (entity.type = 0)");
+        $this->assertEqual($array, array(array('COUNT(1)' => '8', 'MAX(e.name)' => 'zYne')));
+        $this->assertEqual($q->getQuery(), "SELECT COUNT(1), MAX(e.name) FROM entity e e WHERE (e.type = 0)");
 
         $q = new Doctrine_Query();
         $q->from("Phonenumber(COUNT(1))");
@@ -261,29 +271,28 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $array = $q->execute();
         $this->assertTrue(is_array($array));
         $this->assertEqual($array, array(array('COUNT(1)' => '15')));
-        $this->assertEqual($q->getQuery(), "SELECT COUNT(1) FROM phonenumber");
+        $this->assertEqual($q->getQuery(), "SELECT COUNT(1) FROM phonenumber p");
 
         $q = new Doctrine_Query();
         $q->from("User.Phonenumber(COUNT(id))");
         $array = $q->execute();
         $this->assertTrue(is_array($array));
 
-        $this->assertEqual($array[0]['COUNT(phonenumber.id)'], 14);
-        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id, COUNT(phonenumber.id) FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0)");
+        $this->assertEqual($array[0]['COUNT(p.id)'], 14);
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id, COUNT(p.id) FROM entity e e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)");
 
         $q = new Doctrine_Query();
-        $q->from("User(MAX(id)).Email(MIN(address))");
-        $array = $q->execute();
-        $this->assertTrue(is_array($array));
-        $this->assertEqual($array[0]['MAX(entity.id)'], 11);
-        $this->assertEqual($array[0]['MIN(email.address)'], 'arnold@example.com');
+        $q->select('MAX(u.id), MIN(e.address)')->from("User u INNER JOIN u.Email e");
+        $coll = $q->execute();
+        $this->assertEqual($coll->getAggregateValue('MAX(e.id)'), 11);
+        $this->assertEqual($coll['MIN(email.address)'], 'arnold@example.com');
 
         $q = new Doctrine_Query();
         $q->from("User(MAX(id)).Email(MIN(address)), User.Phonenumber(COUNT(1))");
         $array = $q->execute();
         $this->assertTrue(is_array($array));
 
-        $this->assertEqual($array[0]['MAX(entity.id)'], 11);
+        $this->assertEqual($array[0]['MAX(e.id)'], 11);
         $this->assertEqual($array[0]['MIN(email.address)'], 'arnold@example.com');
         $this->assertEqual($array[0]['COUNT(1)'], 14);
 
@@ -295,6 +304,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         //$this->assertEqual(count($coll), 8);
 
     }
+    */
 
 
     public function testMultipleFetching() {
@@ -341,18 +351,18 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
     public function testGetPath() {
         $this->query->from("User.Group.Email");
         
-        $this->assertEqual($this->query->getTableAlias("User"),  "entity");
-        $this->assertEqual($this->query->getTableAlias("User.Group"), "entity2");
+        $this->assertEqual($this->query->getTableAlias("User"),  "e");
+        $this->assertEqual($this->query->getTableAlias("User.Group"), "e2");
 
 
         $this->query->from("Task.Subtask.Subtask");
-        $this->assertEqual($this->query->getTableAlias("Task"), "task");
-        $this->assertEqual($this->query->getTableAlias("Task.Subtask"), "task2");
-        $this->assertEqual($this->query->getTableAlias("Task.Subtask.Subtask"), "task3");
+        $this->assertEqual($this->query->getTableAlias("Task"), "t");
+        $this->assertEqual($this->query->getTableAlias("Task.Subtask"), "t2");
+        $this->assertEqual($this->query->getTableAlias("Task.Subtask.Subtask"), "t3");
         
 
         $this->assertEqual($this->query->getQuery(), 
-        "SELECT task.id AS task__id, task.name AS task__name, task.parent_id AS task__parent_id, task2.id AS task2__id, task2.name AS task2__name, task2.parent_id AS task2__parent_id, task3.id AS task3__id, task3.name AS task3__name, task3.parent_id AS task3__parent_id FROM task LEFT JOIN task AS task2 ON task.id = task2.parent_id LEFT JOIN task AS task3 ON task2.id = task3.parent_id");
+        "SELECT t.id AS t__id, t.name AS t__name, t.parent_id AS t__parent_id, t2.id AS t2__id, t2.name AS t2__name, t2.parent_id AS t2__parent_id, t3.id AS t3__id, t3.name AS t3__name, t3.parent_id AS t3__parent_id FROM task t LEFT JOIN task t2 ON t.id = t2.parent_id LEFT JOIN task t3 ON t2.id = t3.parent_id");
     }
 
     public function testMultiComponentFetching2() {
@@ -908,19 +918,19 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $table = $this->connection->getTable("Forum_Thread")->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_LAZY);
         $q->from("Forum_Board.Threads");
 
-        $this->assertEqual($q->getQuery(), "SELECT forum__board.id AS forum__board__id, forum__thread.id AS forum__thread__id FROM forum__board LEFT JOIN forum__thread ON forum__board.id = forum__thread.board_id");
+        $this->assertEqual($q->getQuery(), "SELECT f.id AS f__id, f2.id AS f2__id FROM forum__board f LEFT JOIN forum__thread f2 ON f.id = f2.board_id");
         $coll = $q->execute();
         $this->assertEqual($coll->count(), 1);
 
 
 
         $q->from("Forum_Board-l.Threads-l");
-        $this->assertEqual($q->getQuery(), "SELECT forum__board.id AS forum__board__id, forum__thread.id AS forum__thread__id FROM forum__board LEFT JOIN forum__thread ON forum__board.id = forum__thread.board_id");
+        $this->assertEqual($q->getQuery(), "SELECT f.id AS f__id, f2.id AS f2__id FROM forum__board f LEFT JOIN forum__thread f2 ON f.id = f2.board_id");
 
         //$this->connection->clear();
 
         $q->from("Forum_Board-l.Threads-l.Entries-l");
-        $this->assertEqual($q->getQuery(), "SELECT forum__board.id AS forum__board__id, forum__thread.id AS forum__thread__id, forum__entry.id AS forum__entry__id FROM forum__board LEFT JOIN forum__thread ON forum__board.id = forum__thread.board_id LEFT JOIN forum__entry ON forum__thread.id = forum__entry.thread_id");
+        $this->assertEqual($q->getQuery(), "SELECT f.id AS f__id, f2.id AS f2__id, f3.id AS f3__id FROM forum__board f LEFT JOIN forum__thread f2 ON f.id = f2.board_id LEFT JOIN forum__entry f3 ON f2.id = f3.thread_id");
         $boards = $q->execute();
         $this->assertEqual($boards->count(), 1);
         $count = count($this->dbh);
@@ -960,23 +970,23 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $query = $query->from("User-l");
 
         $this->assertTrue($query instanceof Doctrine_Query);
-        $this->assertEqual($query->get("from"), array("entity" => true));
+        $this->assertEqual($query->get("from"), "entity e");
 
         $query = $query->orderby("User.name");
         $this->assertTrue($query instanceof Doctrine_Query);
-        $this->assertEqual($query->get("orderby"), array("entity.name"));
+        $this->assertEqual($query->get("orderby"), array("e.name"));
 
         $query = $query->orderby("User.created");
         $this->assertTrue($query instanceof Doctrine_Query);
-        $this->assertEqual($query->get("orderby"), array("entity.created"));
+        $this->assertEqual($query->get("orderby"), array("e.created"));
 
         $query = $query->where("User.name LIKE 'zYne%'");
         $this->assertTrue($query instanceof Doctrine_Query);
-        $this->assertEqual($query->get("where"), array("entity.name LIKE 'zYne%'"));
+        $this->assertEqual($query->get("where"), array("e.name LIKE 'zYne%'"));
 
         $query = $query->where("User.name LIKE 'Arnold%'");
         $this->assertTrue($query instanceof Doctrine_Query);
-        $this->assertEqual($query->get("where"), array("entity.name LIKE 'Arnold%'"));
+        $this->assertEqual($query->get("where"), array("e.name LIKE 'Arnold%'"));
 
         $query = $query->limit(5);
         $this->assertTrue($query instanceof Doctrine_Query);
@@ -1024,7 +1034,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $users = $query->execute();
 
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity LEFT JOIN email ON entity.email_id = email.id WHERE (entity.type = 0) ORDER BY entity.name ASC, email.address");
+        "SELECT e.id AS e__id FROM entity e LEFT JOIN email e2 ON e.email_id = e2.id WHERE (e.type = 0) ORDER BY e.name ASC, e2.address");
         $this->assertEqual($users->count(),8);
         $this->assertTrue($users[0]->name == "Arnold Schwarzenegger");
     }
@@ -1032,7 +1042,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $query = new Doctrine_Query($this->connection);
         $users = $query->query("FROM User-b");
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity WHERE (entity.type = 0)");
+        "SELECT e.id AS e__id FROM entity e WHERE (e.type = 0)");
 
         $this->assertEqual($users[0]->name, "zYne");
         $this->assertTrue($users instanceof Doctrine_Collection_Batch);
@@ -1041,7 +1051,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $query = new Doctrine_Query($this->connection);
         $users = $query->query("FROM User-l");
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity WHERE (entity.type = 0)");
+        "SELECT e.id AS e__id FROM entity e WHERE (e.type = 0)");
 
         $this->assertEqual($users[0]->name, "zYne");
         $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
@@ -1049,7 +1059,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
     }
 
 
-    function testFetchingWithCollectionExpanding() {
+    public function testFetchingWithCollectionExpanding() {
         // DYNAMIC COLLECTION EXPANDING
         $query = new Doctrine_Query($this->connection);
 
@@ -1079,7 +1089,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
 
         $users = $query->query("FROM User-b.Phonenumber-l WHERE User.Phonenumber.phonenumber LIKE '%123%'");
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '%123%' AND (entity.type = 0)");
+        "SELECT e.id AS e__id, p.id AS p__id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE p.phonenumber LIKE '%123%' AND (e.type = 0)");
 
         $count = $this->connection->getDBH()->count();
 
@@ -1105,7 +1115,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
 
         $users = $query->query("FROM User-i");
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id, entity.name AS entity__name, entity.loginname AS entity__loginname, entity.password AS entity__password, entity.type AS entity__type, entity.created AS entity__created, entity.updated AS entity__updated, entity.email_id AS entity__email_id FROM entity WHERE (entity.type = 0)");
+        "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e WHERE (e.type = 0)");
 
         $count = $this->connection->getDBH()->count();
         $this->assertEqual($users[0]->name, "zYne");
@@ -1122,7 +1132,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
 
         $users = $query->query("FROM User-b.Phonenumber-b");
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0)");
+        "SELECT e.id AS e__id, p.id AS p__id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)");
 
         $this->assertEqual($users->count(),8);
 
@@ -1139,29 +1149,29 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $users = $query->query("FROM User-l:Email-b");
 
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id, email.id AS email__id FROM entity INNER JOIN email ON entity.email_id = email.id WHERE (entity.type = 0)");
+        "SELECT e.id AS e__id, e2.id AS e2__id FROM entity e INNER JOIN email e2 ON e.email_id = e2.id WHERE (e.type = 0)");
 
         $this->assertEqual($users->count(),8);
 
         $users = $query->query("FROM Email-b WHERE Email.address LIKE '%@example%'");
 
         $this->assertEqual($query->getQuery(),
-        "SELECT email.id AS email__id FROM email WHERE email.address LIKE '%@example%'");
+        "SELECT e.id AS e__id FROM email e WHERE e.address LIKE '%@example%'");
         $this->assertEqual($users->count(),8);
 
         $users = $query->query("FROM User-b WHERE User.name LIKE '%Jack%'");
-        $this->assertEqual($query->getQuery(), "SELECT entity.id AS entity__id FROM entity WHERE entity.name LIKE '%Jack%' AND (entity.type = 0)");
+        $this->assertEqual($query->getQuery(), "SELECT e.id AS e__id FROM entity e WHERE e.name LIKE '%Jack%' AND (e.type = 0)");
         $this->assertEqual($users->count(),0);
 
 
         $users = $query->query("FROM User-b WHERE User.Phonenumber.phonenumber LIKE '%123%'");
         $this->assertEqual(trim($query->getQuery()),
-        "SELECT entity.id AS entity__id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE phonenumber.phonenumber LIKE '%123%' AND (entity.type = 0)");
+        "SELECT e.id AS e__id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE p.phonenumber LIKE '%123%' AND (e.type = 0)");
         $this->assertEqual($users->count(),5);
 
 
         //$values = $query->query("SELECT COUNT(User.name) AS users, MAX(User.name) AS max FROM User");
-        //$this->assertEqual(trim($query->getQuery()),"SELECT COUNT(entity.name) AS users, MAX(entity.name) AS max FROM entity WHERE (entity.type = 0)");
+        //$this->assertEqual(trim($query->getQuery()),"SELECT COUNT(e.name) AS users, MAX(e.name) AS max FROM entity e e WHERE (e.type = 0)");
         //$this->assertTrue(is_array($values));
         //$this->assertTrue(isset($values['users']));
         //$this->assertTrue(isset($values['max']));

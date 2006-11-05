@@ -39,6 +39,7 @@ require_once('QueryConditionTestCase.php');
 require_once('QueryComponentAliasTestCase.php');
 require_once('QuerySubqueryTestCase.php');
 require_once('QuerySelectTestCase.php');
+require_once('QueryShortAliasesTestCase.php');
 require_once('QueryDeleteTestCase.php');
 require_once('QueryUpdateTestCase.php');
 
@@ -47,7 +48,9 @@ require_once('RelationTestCase.php');
 require_once('RelationManyToManyTestCase.php');
 
 
-require_once('DBTestCase.php');
+require_once('DbTestCase.php');
+require_once('DbProfilerTestCase.php');
+
 require_once('SchemaTestCase.php');
 require_once('ImportTestCase.php');
 require_once('BooleanTestCase.php');
@@ -64,7 +67,16 @@ print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
+
+//$test->addTestCase(new Doctrine_Db_Profiler_TestCase());
+
+//$test->addTestCase(new Doctrine_DB_TestCase());
+
+$test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
+
 $test->addTestCase(new Doctrine_Record_TestCase());
+
+$test->addTestCase(new Doctrine_ConnectionTestCase());
 
 $test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
 
@@ -74,21 +86,17 @@ $test->addTestCase(new Doctrine_Relation_TestCase());
 
 $test->addTestCase(new Doctrine_Record_State_TestCase());
 
-$test->addTestCase(new Doctrine_Import_TestCase());
+//$test->addTestCase(new Doctrine_Import_TestCase());
 
 $test->addTestCase(new Doctrine_SchemaTestCase());
 
 $test->addTestCase(new Doctrine_ValidatorTestCase());
 
-$test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 
 $test->addTestCase(new Doctrine_EventListenerTestCase());
 
 $test->addTestCase(new Doctrine_Connection_Transaction_TestCase());
 
-$test->addTestCase(new Doctrine_ConnectionTestCase());
-
-$test->addTestCase(new Doctrine_DB_TestCase());
 
 $test->addTestCase(new Doctrine_AccessTestCase());
 
@@ -136,7 +144,11 @@ $test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 
+$test->addTestCase(new Doctrine_EnumTestCase());
+
 $test->addTestCase(new Doctrine_Query_TestCase());
+
+$test->addTestCase(new Doctrine_Query_ShortAliases_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Where_TestCase());
 
@@ -150,7 +162,7 @@ $test->addTestCase(new Doctrine_Query_Update_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 
-$test->addTestCase(new Doctrine_EnumTestCase());
+
 
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());

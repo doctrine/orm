@@ -15,7 +15,7 @@ class Doctrine_Query_Condition_TestCase extends Doctrine_UnitTestCase {
 
         $query->from("User(id)")->where("User.name LIKE 'z%' || User.name LIKE 's%'");
 
-        $sql = "SELECT entity.id AS entity__id FROM entity WHERE (entity.name LIKE 'z%' OR entity.name LIKE 's%') AND (entity.type = 0)";
+        $sql = "SELECT e.id AS e__id FROM entity e WHERE (e.name LIKE 'z%' OR e.name LIKE 's%') AND (e.type = 0)";
         $this->assertEqual($query->getQuery(), $sql);
 
         $query->where("(User.name LIKE 'z%') || (User.name LIKE 's%')");
@@ -32,7 +32,7 @@ class Doctrine_Query_Condition_TestCase extends Doctrine_UnitTestCase {
 
         $query->where("(User.name LIKE 'z%') || User.name LIKE 's%' && User.name LIKE 'a%'");
 
-        $sql = "SELECT entity.id AS entity__id FROM entity WHERE ((entity.name LIKE 'z%' OR entity.name LIKE 's%') AND entity.name LIKE 'a%') AND (entity.type = 0)";
+        $sql = "SELECT e.id AS e__id FROM entity e WHERE ((e.name LIKE 'z%' OR e.name LIKE 's%') AND e.name LIKE 'a%') AND (e.type = 0)";
 
         $this->assertEqual($query->getQuery(), $sql);
 
@@ -52,7 +52,7 @@ class Doctrine_Query_Condition_TestCase extends Doctrine_UnitTestCase {
 
         $query->from("User(id)")->where("User.name LIKE 'z%' || User.name LIKE 's%'");
 
-        $sql = "SELECT entity.id AS entity__id FROM entity WHERE (entity.name LIKE 'z%' OR entity.name LIKE 's%') AND (entity.type = 0)";
+        $sql = "SELECT e.id AS e__id FROM entity e WHERE (e.name LIKE 'z%' OR e.name LIKE 's%') AND (e.type = 0)";
         $this->assertEqual($query->getQuery(), $sql);
 
         $query->where("(User.name LIKE 'z%') OR (User.name LIKE 's%')");
@@ -69,7 +69,7 @@ class Doctrine_Query_Condition_TestCase extends Doctrine_UnitTestCase {
 
         $query->where("(User.name LIKE 'z%') OR User.name LIKE 's%' AND User.name LIKE 'a%'");
 
-        $sql = "SELECT entity.id AS entity__id FROM entity WHERE ((entity.name LIKE 'z%' OR entity.name LIKE 's%') AND entity.name LIKE 'a%') AND (entity.type = 0)";
+        $sql = "SELECT e.id AS e__id FROM entity e WHERE ((e.name LIKE 'z%' OR e.name LIKE 's%') AND e.name LIKE 'a%') AND (e.type = 0)";
 
         $this->assertEqual($query->getQuery(), $sql);
 

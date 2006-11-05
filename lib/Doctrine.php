@@ -152,12 +152,15 @@ final class Doctrine {
     /**
      * automatic length validations attribute
      */
-    const ATTR_AUTO_LENGTH_VLD = 19;
+    const ATTR_AUTO_LENGTH_VLD  = 19;
     /**
      * automatic type validations attribute
      */
-    const ATTR_AUTO_TYPE_VLD = 20;
-    
+    const ATTR_AUTO_TYPE_VLD    = 20;
+    /**
+     * short aliases attribute
+     */
+    const ATTR_SHORT_ALIASES    = 21;
     
     /**
      * LIMIT CONSTANTS

@@ -28,6 +28,43 @@
  * @package     Doctrine
  */
 class Doctrine_DB2 implements Countable, IteratorAggregate {
+
+    /**
+     * A connection operation or selecting a database.
+     */
+    const CONNECT = 1;
+
+    /**
+     * Any general database query that does not fit into the other constants.
+     */
+    const QUERY = 2;
+
+    /**
+     * Adding new data to the database, such as SQL's INSERT.
+     */
+    const INSERT = 4;
+
+    /**
+     * Updating existing information in the database, such as SQL's UPDATE.
+     *
+     */
+    const UPDATE = 8;
+
+    /**
+     * An operation related to deleting data in the database,
+     * such as SQL's DELETE.
+     */
+    const DELETE = 16;
+
+    /**
+     * Retrieving information from the database, such as SQL's SELECT.
+     */
+    const SELECT = 32;
+
+    /**
+     * Transactional operation, such as start transaction, commit, or rollback.
+     */
+    const TRANSACTION = 64;
     /**
      * default DSN
      */
@@ -60,10 +97,16 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @var Doctrine_DB_EventListener_Interface|Doctrine_Overloadable $listener   listener for listening events
      */
     protected $listener;
-    
-    private static $driverMap = array("oracle"     => "oci8",
-                                      "postgres"   => "pgsql",
-                                      "oci"        => "oci8");
+    /**
+     * @var integer $querySequence
+     */
+    protected $querySequence  = 0;
+
+    private static $driverMap = array('oracle'     => 'oci8',
+                                      'postgres'   => 'pgsql',
+                                      'oci'        => 'oci8',
+                                      'sqlite2'    => 'sqlite',
+                                      'sqlite3'    => 'sqlite');
 
 
     /**
@@ -78,6 +121,13 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
         $this->username = $username;
         $this->password = $password;
         $this->listener = new Doctrine_DB_EventListener();
+    }
+
+    /**
+     * getQuerySequence
+     */
+    public function getQuerySequence() {
+        return $this->querySequence;
     }
     /**
      * getDBH
@@ -303,31 +353,36 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
 
         $args = func_get_args();
 
-        $this->listener->onPrePrepare($this, $args);
+        $this->listener->onPrePrepare($this, $statement, $args);
 
         $stmt = $this->dbh->prepare($statement);
 
-        $this->listener->onPrepare($this, $args);
-        
+        $this->listener->onPrepare($this, $statement, $args, $this->querySequence);
+
+        $this->querySequence++;
+
         return $stmt;
     }
     /**
      * query
      *
      * @param string $statement
+     * @param array $params
      * @return Doctrine_DB_Statement|boolean
      */
     public function query($statement, array $params = array()) {
         $this->connect();
 
-        $this->listener->onPreQuery($this, $params);
+        $this->listener->onPreQuery($this, $statement, $params);
         
         if( ! empty($params)) 
             $stmt = $this->dbh->query($statement)->execute($params);
         else
             $stmt = $this->dbh->query($statement);
 
-        $this->listener->onQuery($this, $params);
+        $this->listener->onQuery($this, $statement, $params, $this->querySequence);
+
+        $this->querySequence++;
 
         return $stmt;
     }
@@ -355,11 +410,11 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
 
         $args = func_get_args();
 
-        $this->listener->onPreExec($this, $args);
+        $this->listener->onPreExec($this, $statement, $args);
 
         $rows = $this->dbh->exec($statement);
 
-        $this->listener->onExec($this, $args);
+        $this->listener->onExec($this, $statement, $args);
 
         return $rows;
     }
@@ -477,7 +532,8 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return ArrayIterator
      */
     public function getIterator() {
-        return new ArrayIterator($this->queries);
+        if($this->listener instanceof Doctrine_DB_Profiler)
+            return $this->listener;
     }
     /**
      * count
@@ -486,7 +542,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return integer
      */
     public function count() {
-        return count($this->queries);
+        return $this->querySequence;
     }
 
 }

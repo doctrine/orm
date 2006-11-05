@@ -117,6 +117,7 @@ abstract class Doctrine_Configurable {
             case Doctrine::ATTR_VLD:
             case Doctrine::ATTR_AUTO_LENGTH_VLD:
             case Doctrine::ATTR_AUTO_TYPE_VLD:
+            case Doctrine::ATTR_SHORT_ALIASES:
             case Doctrine::ATTR_QUERY_LIMIT:
 
             break;
@@ -190,8 +191,8 @@ abstract class Doctrine_Configurable {
     public function getAttribute($attribute) {
         $attribute = (int) $attribute;
 
-        if($attribute < 1 || $attribute > 20)
-            throw new InvalidKeyException();
+        if($attribute < 1 || $attribute > 21)
+            throw new Doctrine_Exception('Unknown attribute.');
 
         if( ! isset($this->attributes[$attribute])) {
             if(isset($this->parent))

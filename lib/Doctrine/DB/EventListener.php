@@ -26,17 +26,17 @@
  * @package     Doctrine
  */
 class Doctrine_DB_EventListener implements Doctrine_DB_EventListener_Interface {
-    public function onPreQuery(Doctrine_DB2 $dbh, array $args) { }
-    public function onQuery(Doctrine_DB2 $dbh, array $args) { }
+    public function onPreQuery(Doctrine_DB2 $dbh, $statement, array $args) { }
+    public function onQuery(Doctrine_DB2 $dbh, $statement, array $args, $queryId) { }
 
-    public function onPrePrepare(Doctrine_DB2 $dbh, array $args) { }
-    public function onPrepare(Doctrine_DB2 $dbh, array $args) { }
+    public function onPrePrepare(Doctrine_DB2 $dbh, $statement, array $args) { }
+    public function onPrepare(Doctrine_DB2 $dbh, $statement, array $args, $queryId) { }
 
     public function onPreCommit(Doctrine_DB2 $dbh) { }
     public function onCommit(Doctrine_DB2 $dbh) { }
 
-    public function onPreExec(Doctrine_DB2 $dbh, array $args) { }
-    public function onExec(Doctrine_DB2 $dbh, array $args) { }
+    public function onPreExec(Doctrine_DB2 $dbh, $statement, array $args) { }
+    public function onExec(Doctrine_DB2 $dbh, $statement, array $args) { }
 
     public function onPreRollBack(Doctrine_DB2 $dbh) { }
     public function onRollBack(Doctrine_DB2 $dbh) { }

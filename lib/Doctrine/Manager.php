@@ -93,7 +93,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_AUTO_LENGTH_VLD  => true,
                         Doctrine::ATTR_AUTO_TYPE_VLD    => true,
                         Doctrine::ATTR_CREATE_TABLES    => true,
-                        Doctrine::ATTR_QUERY_LIMIT      => Doctrine::LIMIT_RECORDS
+                        Doctrine::ATTR_QUERY_LIMIT      => Doctrine::LIMIT_RECORDS,
+                        Doctrine::ATTR_SHORT_ALIASES    => false,
                         );
             foreach($attributes as $attribute => $value) {
                 $old = $this->getAttribute($attribute);

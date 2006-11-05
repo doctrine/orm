@@ -80,7 +80,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase {
         $users = $q->execute();
         $this->assertEqual($users->count(), 2);
         $this->assertEqual($users[0]->name, 'someone');
-        $this->assertEqual($users[1]->name, 'someone.2');  
+        $this->assertEqual($users[1]->name, 'someone.2');
     }
     public function testComponentAliases() {
         $q = new Doctrine_Query();
@@ -118,7 +118,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase {
         $users = $q->execute();
         $this->assertEqual($users->count(), 1);
         
-        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id FROM entity WHERE entity.name = 'someone' AND (entity.type = 0)");
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id FROM entity e WHERE e.name = 'someone' AND (e.type = 0)");
     }
     public function testOperatorWithNoTrailingSpaces2() {
         $q = new Doctrine_Query();
@@ -128,7 +128,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase {
         $users = $q->execute();
         $this->assertEqual($users->count(), 0);
         
-        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id FROM entity WHERE entity.name = 'foo.bar' AND (entity.type = 0)");
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id FROM entity e WHERE e.name = 'foo.bar' AND (e.type = 0)");
     }
     public function testOperatorWithSingleTrailingSpace() {
         $q = new Doctrine_Query();
@@ -138,7 +138,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase {
         $users = $q->execute();
         $this->assertEqual($users->count(), 0);
         
-        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id FROM entity WHERE entity.name = 'foo.bar' AND (entity.type = 0)");
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id FROM entity e WHERE e.name = 'foo.bar' AND (e.type = 0)");
     }
     public function testOperatorWithSingleTrailingSpace2() {
         $q = new Doctrine_Query();
@@ -148,7 +148,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase {
         $users = $q->execute();
         $this->assertEqual($users->count(), 0);
         
-        $this->assertEqual($q->getQuery(), "SELECT entity.id AS entity__id FROM entity WHERE entity.name = 'foo.bar' AND (entity.type = 0)");
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id FROM entity e WHERE e.name = 'foo.bar' AND (e.type = 0)");
     }
 
 }

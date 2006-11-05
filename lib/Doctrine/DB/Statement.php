@@ -27,12 +27,22 @@
  */
 class Doctrine_DB_Statement extends PDOStatement { 
     protected $dbh;
-    
+
+    protected $querySequence;
+
     protected function __construct($dbh) {
         $this->dbh = $dbh;
+        $this->querySequence = $this->dbh->getQuerySequence();
     }
     
-    public function execute($params) {
+    public function getQuerySequence() {
+        return $this->querySequence;
+    }
+    public function getQuery() {
+        return $this->queryString;
+    }
+
+    public function execute(array $params) {
         $this->dbh->getListener()->onPreExecute($this, $params);
         
         $ret = parent::execute($params);

@@ -444,6 +444,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * returns an iterator that iterators through all 
      * initialized table objects
      *
+     * <code>
+     * foreach($conn as $index => $table) {
+     *      print $table;  // get a string representation of each table object
+     * }
+     * </code>
+     *
      * @return ArrayIterator
      */
     public function getIterator() {
