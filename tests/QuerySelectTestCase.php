@@ -1,6 +1,13 @@
 <?php
 class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
     public function prepareTables() { }
+    public function testAggregateFunctionWithDistinctKeyword() {
+        $q = new Doctrine_Query();
+
+        $q->parseQuery('SELECT COUNT(DISTINCT u.name) FROM User u');
+
+        $this->assertEqual($q->getQuery(), 'SELECT COUNT(DISTINCT e.name) AS e__0 FROM entity e WHERE (e.type = 0)');
+    }
 
     public function testAggregateFunction() {
         $q = new Doctrine_Query();
@@ -9,6 +16,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($q->getQuery(), 'SELECT COUNT(e.id) AS e__0 FROM entity e WHERE (e.type = 0)');
     }
+
     public function testMultipleAggregateFunctions() {
         $q = new Doctrine_Query();
 

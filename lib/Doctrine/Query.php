@@ -147,10 +147,20 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             case 'COUNT':
             case 'AVG':
                 $reference = substr($func, ($pos + 1), -1);
+                $e2    = explode(' ', $reference);
+                
+                $distinct = '';
+                if(count($e2) > 1) {
+                    if(strtoupper($e2[0]) == 'DISTINCT')
+                        $distinct  = 'DISTINCT ';
+                    
+                    $reference = $e2[1];
+                }
 
                 $parts = explode('.', $reference);
+
                 $alias = (isset($e[1])) ? $e[1] : $name;
-                $this->pendingAggregates[$parts[0]][] = array($alias, $parts[1]);
+                $this->pendingAggregates[$parts[0]][] = array($alias, $parts[1], $distinct);
             break;
             default:
                 throw new Doctrine_Query_Exception('Unknown aggregate function '.$name);
@@ -167,9 +177,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $table      = $this->components[$componentPath];
 
         foreach($this->pendingAggregates[$componentAlias] as $args) {
-            list($name, $arg) = $args;
+            list($name, $arg, $distinct) = $args;
 
-            $this->parts["select"][] = $name . '(' . $tableAlias . '.' . $arg . ') AS ' . $tableAlias . '__' . count($this->aggregateMap);
+            $this->parts["select"][] = $name . '(' . $distinct . $tableAlias . '.' . $arg . ') AS ' . $tableAlias . '__' . count($this->aggregateMap);
 
             $this->aggregateMap[] = $table;
         }

@@ -104,17 +104,14 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
         $this->referencedColumn = $referencedColumn;
     }
     /**
-     *
-     * @return 
-     * @access public
+     * @return string
      */
     public function __toString( ) {
-    	return "Relation between '".$this->referencingColumn."' and '".$this->referencedTable."'.'".$this->referencingColumn."'";    
+    	return "Relation between '".$this->referencingColumn."' and '".$this->referencedTable."'.'".$this->referencingColumn."'";
     }
     /**
      *
      * @return bool
-     * @access public
      */
     public function isValid( ) {
         
