@@ -199,7 +199,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
 		$q  = 'SELECT COUNT(DISTINCT ' . $this->getShortAlias($table->getTableName())
             . '.' . $table->getIdentifier() 
-            . ') FROM ' . $table->getTableName() . ' ' . $this->getShortAlias($table->getTableName);
+            . ') FROM ' . $table->getTableName() . ' ' . $this->getShortAlias($table->getTableName());
 
 		foreach($join as $j) {
             $q .= ' '.implode(' ',$j);
