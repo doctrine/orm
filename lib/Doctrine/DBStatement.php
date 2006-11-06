@@ -18,15 +18,15 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-class Doctrine_DBStatement extends PDOStatement {
+class Doctrine_DbStatement extends PDOStatement {
     /**
-     * @param Doctrine_DB $dbh        Doctrine Database Handler
+     * @param Doctrine_Db $dbh        Doctrine Database Handler
      */
     private $dbh;
     /**
-     * @param Doctrine_DB $dbh
+     * @param Doctrine_Db $dbh
      */
-    private function __construct(Doctrine_DB $dbh) {
+    private function __construct(Doctrine_Db $dbh) {
         $this->dbh = $dbh;
     }
     /**
