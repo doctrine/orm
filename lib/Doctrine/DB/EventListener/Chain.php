@@ -19,19 +19,19 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * Doctrine_DB_EventListener
+ * Doctrine_Db_EventListener
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB_EventListener_Chain extends Doctrine_Access implements Doctrine_DB_EventListener_Interface {
+class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrine_DB_EventListener_Interface {
     private $listeners = array();
 
     public function add($listener, $name = null) {
-        if( ! ($listener instanceof Doctrine_DB_EventListener_Interface) &&
+        if( ! ($listener instanceof Doctrine_Db_EventListener_Interface) &&
             ! ($listener instanceof Doctrine_Overloadable))
-            throw new Doctrine_DB_Exception("Couldn't add eventlistener. EventListeners should implement either Doctrine_DB_EventListener_Interface or Doctrine_Overloadable");
+            throw new Doctrine_Db_Exception("Couldn't add eventlistener. EventListeners should implement either Doctrine_DB_EventListener_Interface or Doctrine_Overloadable");
 
         if($name === null)
             $this->listeners[] = $listener;
@@ -41,15 +41,15 @@ class Doctrine_DB_EventListener_Chain extends Doctrine_Access implements Doctrin
 
     public function get($name) {
         if( ! isset($this->listeners[$name]))
-            throw new Doctrine_DB_Exception("Unknown listener $name");
+            throw new Doctrine_Db_Exception("Unknown listener $name");
 
         return $this->listeners[$name];
     }
 
     public function set($name, $listener) {
-        if( ! ($listener instanceof Doctrine_DB_EventListener_Interface) &&
+        if( ! ($listener instanceof Doctrine_Db_EventListener_Interface) &&
             ! ($listener instanceof Doctrine_Overloadable))
-            throw new Doctrine_DB_Exception("Couldn't set eventlistener. EventListeners should implement either Doctrine_DB_EventListener_Interface or Doctrine_Overloadable");
+            throw new Doctrine_Db_Exception("Couldn't set eventlistener. EventListeners should implement either Doctrine_DB_EventListener_Interface or Doctrine_Overloadable");
 
         $this->listeners[$name] = $listener;
     }
@@ -120,12 +120,12 @@ class Doctrine_DB_EventListener_Chain extends Doctrine_Access implements Doctrin
         }
     }
 
-    public function onPreExecute(Doctrine_DB_Statement $stmt, array $params) {
+    public function onPreExecute(Doctrine_Db_Statement $stmt, array $params) {
         foreach($this->listeners as $listener) {
             $listener->onPreExecute($stmt, $params);
         }
     }
-    public function onExecute(Doctrine_DB_Statement $stmt, array $params) {
+    public function onExecute(Doctrine_Db_Statement $stmt, array $params) {
         foreach($this->listeners as $listener) {
             $listener->onExecute($stmt, $params);
         }

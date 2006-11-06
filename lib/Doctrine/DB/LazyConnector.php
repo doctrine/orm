@@ -19,30 +19,30 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * Doctrine_DB_LazyConnector
+ * Doctrine_Db_LazyConnector
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB_LazyConnector extends Doctrine_DB_EventListener {
-    public function onPreQuery(Doctrine_DB $dbh, array $args) { 
+class Doctrine_Db_LazyConnector extends Doctrine_Db_EventListener {
+    public function onPreQuery(Doctrine_Db $dbh, array $args) { 
         $dbh->connect();
     }
 
-    public function onPrePrepare(Doctrine_DB $dbh, array $args) { 
+    public function onPrePrepare(Doctrine_Db $dbh, array $args) { 
         $dbh->connect();
     }
 
-    public function onPreCommit(Doctrine_DB $dbh) {
+    public function onPreCommit(Doctrine_Db $dbh) {
         $dbh->connect();
     }
 
-    public function onPreRollBack(Doctrine_DB $dbh) { 
+    public function onPreRollBack(Doctrine_Db $dbh) { 
         $dbh->connect();
     }
 
-    public function onPreBeginTransaction(Doctrine_DB $dbh) { 
+    public function onPreBeginTransaction(Doctrine_Db $dbh) { 
         $dbh->connect();    
     }
 }

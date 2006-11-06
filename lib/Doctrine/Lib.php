@@ -100,7 +100,7 @@ class Doctrine_Lib {
         $r[] = "Table in memory     : ".$connection->count();
 
         $queries = false;
-        if($connection->getDBH() instanceof Doctrine_DB) {
+        if($connection->getDBH() instanceof Doctrine_Db) {
             $handler = "Doctrine Database Handler";
             $queries = count($connection->getDBH()->getQueries());
             $sum     = array_sum($connection->getDBH()->getExecTimes());

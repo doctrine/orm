@@ -19,13 +19,13 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * Doctrine_DB_EventListener
+ * Doctrine_Db_EventListener
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB_EventListener implements Doctrine_DB_EventListener_Interface {
+class Doctrine_Db_EventListener implements Doctrine_Db_EventListener_Interface {
     public function onPreQuery(Doctrine_DB2 $dbh, $statement, array $args) { }
     public function onQuery(Doctrine_DB2 $dbh, $statement, array $args, $queryId) { }
 
@@ -44,6 +44,6 @@ class Doctrine_DB_EventListener implements Doctrine_DB_EventListener_Interface {
     public function onPreBeginTransaction(Doctrine_DB2 $dbh) { }
     public function onBeginTransaction(Doctrine_DB2 $dbh) { }
 
-    public function onPreExecute(Doctrine_DB_Statement $stmt, array $params) { }
-    public function onExecute(Doctrine_DB_Statement $stmt, array $params) { }
+    public function onPreExecute(Doctrine_Db_Statement $stmt, array $params) { }
+    public function onExecute(Doctrine_Db_Statement $stmt, array $params) { }
 }

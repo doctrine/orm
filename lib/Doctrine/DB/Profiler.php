@@ -19,13 +19,13 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * Doctrine_DB_Profiler
+ * Doctrine_Db_Profiler
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB_Profiler extends Doctrine_DB_EventListener {
+class Doctrine_Db_Profiler extends Doctrine_Db_EventListener {
     public function onPreQuery(Doctrine_DB2 $dbh, $statement, array $args) {
         $this->queryStart($statement);
     }
@@ -49,10 +49,10 @@ class Doctrine_DB_Profiler extends Doctrine_DB_EventListener {
     public function onPreBeginTransaction(Doctrine_DB2 $dbh) { }
     public function onBeginTransaction(Doctrine_DB2 $dbh) { }
 
-    public function onPreExecute(Doctrine_DB_Statement $stmt, array $params) {
+    public function onPreExecute(Doctrine_Db_Statement $stmt, array $params) {
         $this->queryStart($stmt->getQuery(), $stmt->getQuerySequence());
     }
-    public function onExecute(Doctrine_DB_Statement $stmt, array $params) { 
+    public function onExecute(Doctrine_Db_Statement $stmt, array $params) { 
         $this->queryEnd($stmt->getQuerySequence());
     }
     /**
@@ -100,7 +100,7 @@ class Doctrine_DB_Profiler extends Doctrine_DB_EventListener {
     public function queryStart($queryText, $querySequence = -1) {
         $prepareTime = (isset($this->prepareTimes[$querySequence])) ? $this->prepareTimes[$querySequence] : null;
 
-        $this->_queryProfiles[] = new Doctrine_DB_Profiler_Query($queryText, $prepareTime);
+        $this->_queryProfiles[] = new Doctrine_Db_Profiler_Query($queryText, $prepareTime);
     }
     /**
      * Ends a query.  Pass it the handle that was returned by queryStart().

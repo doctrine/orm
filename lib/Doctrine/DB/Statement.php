@@ -19,13 +19,13 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * Doctrine_DB_Statement
+ * Doctrine_Db_Statement
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB_Statement extends PDOStatement { 
+class Doctrine_Db_Statement extends PDOStatement { 
     protected $dbh;
 
     protected $querySequence;

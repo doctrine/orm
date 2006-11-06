@@ -142,8 +142,8 @@ abstract class Doctrine_Configurable {
     /**
      * addListener
      *
-     * @param Doctrine_DB_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_DB
+     * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_Db
      */
     public function addListener($listener, $name = null) {
         if( ! ($this->attributes[Doctrine::ATTR_LISTENER] instanceof Doctrine_EventListener_Chain))
@@ -156,7 +156,7 @@ abstract class Doctrine_Configurable {
     /**
      * getListener
      * 
-     * @return Doctrine_DB_EventListener_Interface|Doctrine_Overloadable
+     * @return Doctrine_Db_EventListener_Interface|Doctrine_Overloadable
      */
     public function getListener() {
         if( ! isset($this->attributes[Doctrine::ATTR_LISTENER])) {
@@ -170,8 +170,8 @@ abstract class Doctrine_Configurable {
     /**
      * setListener
      *
-     * @param Doctrine_DB_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_DB
+     * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_Db
      */
     public function setListener($listener) {
         if( ! ($listener instanceof Doctrine_EventListener_Interface) &&

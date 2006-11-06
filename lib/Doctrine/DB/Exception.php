@@ -19,10 +19,10 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * Doctrine_DB_Exception
+ * Doctrine_Db_Exception
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB_Exception extends Doctrine_Exception { }
+class Doctrine_Db_Exception extends Doctrine_Exception { }

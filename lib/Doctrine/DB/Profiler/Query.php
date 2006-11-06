@@ -20,13 +20,13 @@
  */
 
 /**
- * Doctrine_DB_Profiler_Query
+ * Doctrine_Db_Profiler_Query
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB_Profiler_Query {
+class Doctrine_Db_Profiler_Query {
     /**
      * @var string      SQL query string or user comment, set by $query argument in constructor.
      */

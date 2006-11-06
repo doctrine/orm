@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_DB');
+Doctrine::autoload('Doctrine_Db');
 /**
  * @package     Doctrine
  * @url         http://www.phpdoctrine.com
@@ -27,6 +27,6 @@ Doctrine::autoload('Doctrine_DB');
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @version     $Id$
  */
-class Doctrine_DB_Pgsql extends Doctrine_DB {
+class Doctrine_Db_Pgsql extends Doctrine_Db {
 
 }

@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-class Doctrine_DB extends PDO implements Countable, IteratorAggregate {
+class Doctrine_Db extends PDO implements Countable, IteratorAggregate {
     /**
      * default DSN
      */
@@ -41,7 +41,7 @@ class Doctrine_DB extends PDO implements Countable, IteratorAggregate {
     public function __construct($dsn,$username,$password) {
         parent::__construct($dsn,$username,$password);
         $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array("Doctrine_DBStatement",array($this)));
+        $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array("Doctrine_DbStatement",array($this)));
     }
     
     
@@ -49,7 +49,7 @@ class Doctrine_DB extends PDO implements Countable, IteratorAggregate {
         static $instance;
         
         if( ! isset($instance)) {
-            $instance = new Doctrine_DB($dsn,$username,$password);
+            $instance = new Doctrine_Db($dsn,$username,$password);
         }
         return $instance;
     }
@@ -74,7 +74,7 @@ class Doctrine_DB extends PDO implements Countable, IteratorAggregate {
             $e[1] = $a["user"];
             $e[2] = $a["pass"];
 
-            $instance[$md5] = new Doctrine_DB($e[0],$e[1],$e[2]);
+            $instance[$md5] = new Doctrine_Db($e[0],$e[1],$e[2]);
         }
         return $instance[$md5];
     }

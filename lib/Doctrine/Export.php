@@ -32,7 +32,7 @@ class Doctrine_Export {
      */
     private $conn;
     /**
-     * @var mixed $dbh                      the database handler (either PDO or Doctrine_DB object)
+     * @var mixed $dbh                      the database handler (either PDO or Doctrine_Db object)
      */
     private $dbh;
 
