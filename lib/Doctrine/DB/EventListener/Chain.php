@@ -25,13 +25,13 @@
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrine_DB_EventListener_Interface {
+class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrine_Db_EventListener_Interface {
     private $listeners = array();
 
     public function add($listener, $name = null) {
         if( ! ($listener instanceof Doctrine_Db_EventListener_Interface) &&
             ! ($listener instanceof Doctrine_Overloadable))
-            throw new Doctrine_Db_Exception("Couldn't add eventlistener. EventListeners should implement either Doctrine_DB_EventListener_Interface or Doctrine_Overloadable");
+            throw new Doctrine_Db_Exception("Couldn't add eventlistener. EventListeners should implement either Doctrine_Db_EventListener_Interface or Doctrine_Overloadable");
 
         if($name === null)
             $this->listeners[] = $listener;
@@ -49,7 +49,7 @@ class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrin
     public function set($name, $listener) {
         if( ! ($listener instanceof Doctrine_Db_EventListener_Interface) &&
             ! ($listener instanceof Doctrine_Overloadable))
-            throw new Doctrine_Db_Exception("Couldn't set eventlistener. EventListeners should implement either Doctrine_DB_EventListener_Interface or Doctrine_Overloadable");
+            throw new Doctrine_Db_Exception("Couldn't set eventlistener. EventListeners should implement either Doctrine_Db_EventListener_Interface or Doctrine_Overloadable");
 
         $this->listeners[$name] = $listener;
     }
