@@ -32,10 +32,6 @@
  */
 class Doctrine_Table extends Doctrine_Configurable implements Countable {
     /**
-     * @var boolean $isNewEntry                         whether ot not this table created a new record or not, used only internally
-     */
-    private $isNewEntry       = false;
-    /**
      * @var array $data                                 temporary data which is then loaded into Doctrine_Record::$data
      */
     private $data             = array();
@@ -761,9 +757,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     public function create(array $array = array()) {
         $this->data         = $array;
-        $this->isNewEntry   = true;
-        $record = new $this->options['name']($this);
-        $this->isNewEntry   = false;
+        $record = new $this->options['name']($this, true);
         $this->data         = array();
         return $record;
     }
@@ -1107,14 +1101,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         $stmt = $this->connection->getDBH()->query($sql);
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return isset($data[0])?$data[0]:1;
-    }
-    /**
-     * return whether or not a newly created object is new or not
-     *
-     * @return boolean
-     */
-    final public function isNewEntry() {
-        return $this->isNewEntry;
     }
     /**
      * returns simple cached query
