@@ -126,13 +126,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *                                         open connections
      * @throws Doctrine_Record_Exception       if the cleanData operation fails somehow
      */
-    public function __construct($table = null, $isNewEntry = false) {
+    public function __construct($table = null) {
         if(isset($table) && $table instanceof Doctrine_Table) {
             $this->_table = $table;
+            $exists  = ( ! $this->_table->isNewEntry());
         } else {
             $this->_table = Doctrine_Manager::getInstance()->getCurrentConnection()->getTable(get_class($this));
+            $exists  = false;
         }
-        $exists = !$isNewEntry;
 
         // Check if the current connection has the records table in its registry
         // If not this record is only used for creating table definition and setting up
