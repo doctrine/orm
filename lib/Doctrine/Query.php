@@ -218,6 +218,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 		if( ! empty($having)) 
 			$q .= ' HAVING ' . implode(' AND ',$having);
 
+    $params = array_merge($this->params, $params);
+
 		$a = $this->getConnection()->execute($q, $params)->fetch(PDO::FETCH_NUM);
 		return $a[0];		
 	}
@@ -347,6 +349,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $parser->parse($args[0]);
             break;
             case 'where':
+                call_user_func_array(array($this, 'addWhere'), $args);
+                break;
             case 'having':
             case 'orderby':
             case 'groupby':
