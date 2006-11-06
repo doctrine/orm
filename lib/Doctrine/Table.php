@@ -979,7 +979,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param mixed $value
      */
     public function invokeSet(Doctrine_Record $record, $name, $value) {
-        if( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) | Doctrine::ACCESSOR_SET))
+        if( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) & Doctrine::ACCESSOR_SET))
             return $value;
 
         $method = 'set' . $name;
@@ -996,7 +996,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param mixed $value
      */
     public function invokeGet(Doctrine_Record $record, $name, $value) {
-        if( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) | Doctrine::ACCESSOR_GET))
+        if( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) & Doctrine::ACCESSOR_GET))
             return $value;
 
         $method = 'get' . $name;
