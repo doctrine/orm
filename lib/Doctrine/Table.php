@@ -271,6 +271,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         $this->repository = new Doctrine_Table_Repository($this);
     }
     /**
+     * createQuery
+     * creates a new Doctrine_Query object and adds the component name
+     * of this table as the query 'from' part
+     * 
+     * @return Doctrine_Query
+     */
+    public function createQuery() {
+        return Doctrine_Query::create()->from($this->getComponentName());
+    }
+    /**
      * getRepository
      *
      * @return Doctrine_Table_Repository
