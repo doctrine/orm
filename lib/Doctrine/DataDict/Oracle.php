@@ -82,14 +82,14 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
         }
     }
     /**
-     * Maps a native array description of a field to a MDB2 datatype and length
+     * Maps a native array description of a field to a doctrine datatype and length
      *
      * @param array  $field native field description
      * @return array containing the various possible types, length, sign, fixed
      * @author  Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
      * @throws Doctrine_DataDict_Oracle_Exception
      */
-    function mapNativeDatatype($field) {
+    public function mapNativeDatatype(array $field) {
         $db_type = strtolower($field['type']);
         $type = array();
         $length = $unsigned = $fixed = null;

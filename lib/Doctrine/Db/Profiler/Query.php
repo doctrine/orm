@@ -58,14 +58,17 @@ class Doctrine_Db_Profiler_Query {
      *
      * @param string $query
      * @param int $queryType
-     * @return bool
      */
-    public function __construct($query, $prepareTime = null)
-    {
+    public function __construct($query, $prepareTime = null) {
         $this->query = $query;
-        $this->prepareTime = $prepareTime;
-        $this->startedMicrotime = microtime(true);
-        return true;
+        if($prepareTime !== null) {
+            $this->prepareTime = $prepareTime;
+        } else {
+            $this->startedMicrotime = microtime(true);
+        }
+    }
+    public function start() {
+        $this->startedMicrotime = microtime(true);                       	
     }
     /**
      * The query has ended.  Record the time so that the elapsed time can be determined later.

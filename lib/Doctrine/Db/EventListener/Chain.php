@@ -56,32 +56,32 @@ class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrin
 
     public function onQuery(Doctrine_DB2 $dbh, $statement, array $args, $queryId) {
         foreach($this->listeners as $listener) {
-            $listener->onPreQuery($dbh, $args);
+            $listener->onQuery($dbh, $args);
         }
     }
     public function onPreQuery(Doctrine_DB2 $dbh, $statement, array $args) {
         foreach($this->listeners as $listener) {
-            $listener->onQuery($dbh, $args);
+            $listener->onPreQuery($dbh, $args);
         }
     }
 
-    public function onPreExec(Doctrine_DB2 $dbh, array $args) { 
+    public function onPreExec(Doctrine_DB2 $dbh, $statement, array $args) {
         foreach($this->listeners as $listener) {
             $listener->onPreExec($dbh, $args);
         }
     }
-    public function onExec(Doctrine_DB2 $dbh, array $args) { 
+    public function onExec(Doctrine_DB2 $dbh, $statement, array $args) {
         foreach($this->listeners as $listener) {
             $listener->onExec($dbh, $args);
         }
     }
 
-    public function onPrePrepare(Doctrine_DB2 $dbh, array $args) { 
+    public function onPrePrepare(Doctrine_DB2 $dbh, $statement, array $args) {
         foreach($this->listeners as $listener) {
             $listener->onPrePrepare($dbh, $args);
         }
     }
-    public function onPrepare(Doctrine_DB2 $dbh, array $args) { 
+    public function onPrepare(Doctrine_DB2 $dbh, $statement, array $args, $queryId) {
         foreach($this->listeners as $listener) {
             $listener->onPrepare($dbh, $args);
         }

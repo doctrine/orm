@@ -18,32 +18,12 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Db_Exception');
 /**
- * Doctrine_Db_EventListener
+ * Doctrine_Db_Exception
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_Db_EventListener implements Doctrine_Db_EventListener_Interface {
-    public function onPreQuery(Doctrine_Db_Event $event) { }
-    public function onQuery(Doctrine_Db_Event $event) { }
-
-    public function onPrePrepare(Doctrine_Db_Event $event) { }
-    public function onPrepare(Doctrine_Db_Event $event) { }
-
-    public function onPreCommit(Doctrine_Db_Event $event) { }
-    public function onCommit(Doctrine_Db_Event $event) { }
-
-    public function onPreExec(Doctrine_Db_Event $event) { }
-    public function onExec(Doctrine_Db_Event $event) { }
-
-    public function onPreRollBack(Doctrine_Db_Event $event) { }
-    public function onRollBack(Doctrine_Db_Event $event) { }
-
-    public function onPreBeginTransaction(Doctrine_Db_Event $event) { }
-    public function onBeginTransaction(Doctrine_Db_Event $event) { }
-
-    public function onPreExecute(Doctrine_Db_Event $event) { }
-    public function onExecute(Doctrine_Db_Event $event) { }
-}
+class Doctrine_Db_Profiler_Exception extends Doctrine_Db_Exception { }

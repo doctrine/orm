@@ -68,9 +68,9 @@ print '<pre>';
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
-//$test->addTestCase(new Doctrine_Db_Profiler_TestCase());
-
-//$test->addTestCase(new Doctrine_DB_TestCase());
+$test->addTestCase(new Doctrine_Db_Profiler_TestCase());
+/**
+$test->addTestCase(new Doctrine_Db_TestCase());
 
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 
@@ -154,13 +154,14 @@ $test->addTestCase(new Doctrine_Query_Where_TestCase());
 
 $test->addTestCase(new Doctrine_Query_From_TestCase());
 
-$test->addTestCase(new Doctrine_Query_Select_TestCase());
-
 $test->addTestCase(new Doctrine_Query_Delete_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Update_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
+
+*/
+$test->addTestCase(new Doctrine_Query_Select_TestCase());
 
 
 

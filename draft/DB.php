@@ -37,12 +37,12 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
     /**
      * Any general database query that does not fit into the other constants.
      */
-    const QUERY = 2;
+    const QUERY   = 2;
 
     /**
      * Adding new data to the database, such as SQL's INSERT.
      */
-    const INSERT = 4;
+    const INSERT  = 4;
 
     /**
      * Updating existing information in the database, such as SQL's UPDATE.
@@ -123,6 +123,10 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
         $this->listener = new Doctrine_DB_EventListener();
     }
 
+
+    public function nextQuerySequence() {
+        return ++$this->querySequence;
+    }
     /**
      * getQuerySequence
      */
@@ -351,13 +355,13 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
     public function prepare($statement) {
         $this->connect();
 
-        $args = func_get_args();
+        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::PREPARE, $statement);
 
-        $this->listener->onPrePrepare($this, $statement, $args);
+        $this->listener->onPrePrepare($event);
 
         $stmt = $this->dbh->prepare($statement);
 
-        $this->listener->onPrepare($this, $statement, $args, $this->querySequence);
+        $this->listener->onPrepare($event);
 
         $this->querySequence++;
 
@@ -372,15 +376,17 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      */
     public function query($statement, array $params = array()) {
         $this->connect();
-
-        $this->listener->onPreQuery($this, $statement, $params);
         
-        if( ! empty($params)) 
+        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::QUERY, $statement);
+
+        $this->listener->onPreQuery($event);
+
+        if( ! empty($params))
             $stmt = $this->dbh->query($statement)->execute($params);
         else
             $stmt = $this->dbh->query($statement);
 
-        $this->listener->onQuery($this, $statement, $params, $this->querySequence);
+        $this->listener->onQuery($event);
 
         $this->querySequence++;
 
@@ -409,12 +415,14 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
         $this->connect();
 
         $args = func_get_args();
+        
+        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::EXEC, $statement);
 
-        $this->listener->onPreExec($this, $statement, $args);
+        $this->listener->onPreExec($event);
 
         $rows = $this->dbh->exec($statement);
 
-        $this->listener->onExec($this, $statement, $args);
+        $this->listener->onExec($event);
 
         return $rows;
     }
@@ -463,11 +471,13 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return boolean
      */
     public function beginTransaction() {
-        $this->listener->onPreBeginTransaction($this);
+        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::BEGIN);
+
+        $this->listener->onPreBeginTransaction($event);
 
         $return = $this->dbh->beginTransaction();
 
-        $this->listener->onBeginTransaction($this);
+        $this->listener->onBeginTransaction($event);
     
         return $return;
     }
@@ -477,11 +487,13 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return boolean
      */
     public function commit() {
-        $this->listener->onPreCommit($this);
+        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::COMMIT);
+
+        $this->listener->onPreCommit($event);
 
         $return = $this->dbh->commit();
 
-        $this->listener->onCommit($this);
+        $this->listener->onCommit($event);
 
         return $return;
     }
@@ -492,8 +504,14 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      */
     public function rollBack() {
         $this->connect();
-        
+
+        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::ROLLBACK);
+
+        $this->listener->onPreRollback($event);
+
         $this->dbh->rollBack();
+        
+        $this->listener->onRollback($event);
     }
     /**
      * getAttribute

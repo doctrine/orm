@@ -58,6 +58,8 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
             case 'string':
             case 'array':
             case 'object':
+            case 'varchar':
+            case 'char':
                 $length = !empty($field['length'])
                     ? $field['length'] : $db->options['default_text_field_length'];
 
