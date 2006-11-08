@@ -349,6 +349,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $parser->parse($args[0]);
             break;
             case 'where':
+                if(isset($args[1])) {
+                    if(is_array($args[1])) {
+                        $this->params = $args[1];
+                    } else {
+                        $this->params = array($args[1]);
+                    }
+                }
             case 'having':
             case 'orderby':
             case 'groupby':

@@ -22,6 +22,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users->count(), 1);
         $this->assertEqual($users[0]->name, 'someone');
     }
+
     public function testDirectMultipleParameterSetting() {
         $user = new User();
         $user->name = 'someone.2';
@@ -37,7 +38,26 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[0]->name, 'someone');
         $this->assertEqual($users[1]->name, 'someone.2');
     }
+    public function testDirectMultipleParameterSetting2() {
+        $q = new Doctrine_Query();
 
+        $q->from('User(id)')->where('User.id IN (?, ?)', array(1,2));
+
+        $users = $q->execute();
+
+        $this->assertEqual($users->count(), 2);
+        $this->assertEqual($users[0]->name, 'someone');
+        $this->assertEqual($users[1]->name, 'someone.2');
+
+        // the parameters and where part should be reseted
+        $q->where('User.id IN (?, ?)', array(1,2));
+
+        $users = $q->execute();
+
+        $this->assertEqual($users->count(), 2);
+        $this->assertEqual($users[0]->name, 'someone');
+        $this->assertEqual($users[1]->name, 'someone.2');
+    }
     public function testNotInExpression() {
         $q = new Doctrine_Query();
 

@@ -66,11 +66,10 @@ error_reporting(E_ALL);
 print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
-
-
-$test->addTestCase(new Doctrine_Db_Profiler_TestCase());
 /**
 $test->addTestCase(new Doctrine_Db_TestCase());
+
+$test->addTestCase(new Doctrine_Db_Profiler_TestCase());
 
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 
@@ -92,11 +91,9 @@ $test->addTestCase(new Doctrine_SchemaTestCase());
 
 $test->addTestCase(new Doctrine_ValidatorTestCase());
 
-
 $test->addTestCase(new Doctrine_EventListenerTestCase());
 
 $test->addTestCase(new Doctrine_Connection_Transaction_TestCase());
-
 
 $test->addTestCase(new Doctrine_AccessTestCase());
 
@@ -136,7 +133,7 @@ $test->addTestCase(new Doctrine_CustomResultSetOrderTestCase());
 
 $test->addTestCase(new Doctrine_BooleanTestCase());
 
-$test->addTestCase(new Doctrine_Record_Filter_TestCase());
+//$test->addTestCase(new Doctrine_Record_Filter_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Condition_TestCase());
 
@@ -148,19 +145,18 @@ $test->addTestCase(new Doctrine_EnumTestCase());
 
 $test->addTestCase(new Doctrine_Query_TestCase());
 
-$test->addTestCase(new Doctrine_Query_ShortAliases_TestCase());
-
-$test->addTestCase(new Doctrine_Query_Where_TestCase());
+$test->addTestCase(new Doctrine_Query_ShortAliases_TestCase());  
 
 $test->addTestCase(new Doctrine_Query_From_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Delete_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Update_TestCase());
+*/
+$test->addTestCase(new Doctrine_Query_Where_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 
-*/
 $test->addTestCase(new Doctrine_Query_Select_TestCase());
 
 
