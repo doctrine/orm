@@ -28,5 +28,36 @@ Doctrine::autoload('Doctrine_Db');
  * @version     $Id$
  */
 class Doctrine_Db_Sqlite extends Doctrine_Db {
+    protected static $errorRegexps = array(
+                              '/^no such table:/'                    => Doctrine_Db::ERR_NOSUCHTABLE,
+                              '/^no such index:/'                    => Doctrine_Db::ERR_NOT_FOUND,
+                              '/^(table|index) .* already exists$/'  => Doctrine_Db::ERR_ALREADY_EXISTS,
+                              '/PRIMARY KEY must be unique/i'        => Doctrine_Db::ERR_CONSTRAINT,
+                              '/is not unique/'                      => Doctrine_Db::ERR_CONSTRAINT,
+                              '/columns .* are not unique/i'         => Doctrine_Db::ERR_CONSTRAINT,
+                              '/uniqueness constraint failed/'       => Doctrine_Db::ERR_CONSTRAINT,
+                              '/may not be NULL/'                    => Doctrine_Db::ERR_CONSTRAINT_NOT_NULL,
+                              '/^no such column:/'                   => Doctrine_Db::ERR_NOSUCHFIELD,
+                              '/column not present in both tables/i' => Doctrine_Db::ERR_NOSUCHFIELD,
+                              '/^near ".*": syntax error$/'          => Doctrine_Db::ERR_SYNTAX,
+                              '/[0-9]+ values for [0-9]+ columns/i'  => Doctrine_Db::ERR_VALUE_COUNT_ON_ROW,
+                              );
 
+    /**
+     * This method is used to collect information about an error
+     *
+     * @param integer $error
+     * @return array
+     * @access public
+     */
+    public function processErrorInfo(array $errorInfo) {
+        foreach (self::$errorRegexps as $regexp => $code) {
+            if (preg_match($regexp, $native_msg)) {
+                $error = $code;
+                break;
+            }
+        }
+
+        return array($error, $native_code, $native_msg);
+    }
 }
