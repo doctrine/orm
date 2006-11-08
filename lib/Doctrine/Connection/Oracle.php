@@ -33,7 +33,7 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
     protected $driverName = 'Oracle';
     
     
-    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
+    public function __construct(Doctrine_Manager $manager, $adapter) {
         $this->supported = array(
                           'sequences'            => true,
                           'indexes'              => true,
@@ -63,7 +63,7 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
         $this->options['default_text_field_length'] = 2000;
         $this->options['result_prefetching'] = false;
         
-        parent::__construct($manager, $pdo);
+        parent::__construct($manager, $adapter);
     }
     /**
      * Adds an driver-specific LIMIT clause to the query

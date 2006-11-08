@@ -40,7 +40,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
+    public function __construct(Doctrine_Manager $manager, $adapter) {
         // initialize all driver options
         $this->supported = array(
                           'sequences'             => 'emulated',
@@ -60,7 +60,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
                           'prepared_statements'   => 'emulated',
                           );
 
-        parent::__construct($manager, $pdo);
+        parent::__construct($manager, $adapter);
     }
     /**
      * quoteIdentifier

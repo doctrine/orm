@@ -157,8 +157,7 @@ class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));
         $this->assertTrue($user->Phonenumber->count(), 4);
         $this->assertEqual($user->Group->count(), 2);
-        
-        $this->assertTrue($this->dbh instanceof Doctrine_DB);
+
 
         $user = $this->objTable->find(5);
 
@@ -303,8 +302,8 @@ class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
         $email = $this->connection->create("Email");
         $this->assertTrue($email instanceof Email);
     }
-    public function testGetDBH() {
-        $this->assertTrue($this->connection->getDBH() instanceof PDO);
+    public function testGetDbh() {
+        $this->assertTrue($this->connection->getDBH() instanceof Doctrine_Db);
     }
     public function testCount() {
         $this->assertTrue(is_integer(count($this->connection)));

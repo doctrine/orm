@@ -55,7 +55,7 @@ class Doctrine_Db_Statement extends PDOStatement {
         $this->executed = (bool) $executed;
     }
 
-    public function execute(array $params) {
+    public function execute(array $params = array()) {
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::EXECUTE, $this->queryString);
 
         $this->dbh->getListener()->onPreExecute($event);

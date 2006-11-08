@@ -40,7 +40,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
+    public function __construct(Doctrine_Manager $manager, $adapter) {
         // initialize all driver options
         $this->supported = array(
                           'sequences'               => true,
@@ -65,7 +65,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
 
         $this->options['multi_query'] = false;
 
-        parent::__construct($manager, $pdo);
+        parent::__construct($manager, $adapter);
     }
     /**
      * Set the charset on the current connection

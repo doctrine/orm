@@ -40,10 +40,9 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager,PDO $pdo) {
-        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-        $this->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_ROWS);
-        
+    public function __construct(Doctrine_Manager $manager, $adapter) {
+        $adapter->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+
         $this->supported = array(
                           'sequences'            => 'emulated',
                           'indexes'              => true,
@@ -65,7 +64,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
                           'pattern_escaping'     => true
                           );
 
-        parent::__construct($manager,$pdo);
+        parent::__construct($manager, $adapter);
     }    
 
     /**

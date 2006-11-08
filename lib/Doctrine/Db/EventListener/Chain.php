@@ -54,80 +54,80 @@ class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrin
         $this->listeners[$name] = $listener;
     }
 
-    public function onQuery(Doctrine_DB2 $dbh, $statement, array $args, $queryId) {
+    public function onQuery(Doctrine_Db_Event $event) {
         foreach($this->listeners as $listener) {
-            $listener->onQuery($dbh, $args);
+            $listener->onQuery($event);
         }
     }
-    public function onPreQuery(Doctrine_DB2 $dbh, $statement, array $args) {
+    public function onPreQuery(Doctrine_Db_Event $event) {
         foreach($this->listeners as $listener) {
-            $listener->onPreQuery($dbh, $args);
-        }
-    }
-
-    public function onPreExec(Doctrine_DB2 $dbh, $statement, array $args) {
-        foreach($this->listeners as $listener) {
-            $listener->onPreExec($dbh, $args);
-        }
-    }
-    public function onExec(Doctrine_DB2 $dbh, $statement, array $args) {
-        foreach($this->listeners as $listener) {
-            $listener->onExec($dbh, $args);
+            $listener->onPreQuery($event);
         }
     }
 
-    public function onPrePrepare(Doctrine_DB2 $dbh, $statement, array $args) {
+    public function onPreExec(Doctrine_Db_Event $event) {
         foreach($this->listeners as $listener) {
-            $listener->onPrePrepare($dbh, $args);
+            $listener->onPreExec($event);
         }
     }
-    public function onPrepare(Doctrine_DB2 $dbh, $statement, array $args, $queryId) {
+    public function onExec(Doctrine_Db_Event $event) {
         foreach($this->listeners as $listener) {
-            $listener->onPrepare($dbh, $args);
-        }
-    }
-
-    public function onPreCommit(Doctrine_DB2 $dbh) { 
-        foreach($this->listeners as $listener) {
-            $listener->onPreCommit($dbh);
-        }
-    }
-    public function onCommit(Doctrine_DB2 $dbh) { 
-        foreach($this->listeners as $listener) {
-            $listener->onCommit($dbh);
+            $listener->onExec($event);
         }
     }
 
-    public function onPreRollBack(Doctrine_DB2 $dbh) {
+    public function onPrePrepare(Doctrine_Db_Event $event) {
         foreach($this->listeners as $listener) {
-            $listener->onPreRollBack($dbh);
+            $listener->onPrePrepare($event);
         }
     }
-    public function onRollBack(Doctrine_DB2 $dbh) { 
+    public function onPrepare(Doctrine_Db_Event $event) {
         foreach($this->listeners as $listener) {
-            $listener->onRollBack($dbh);
-        }
-    }
-
-    public function onPreBeginTransaction(Doctrine_DB2 $dbh) {
-        foreach($this->listeners as $listener) {
-            $listener->onPreBeginTransaction($dbh);
-        }
-    }
-    public function onBeginTransaction(Doctrine_DB2 $dbh) { 
-        foreach($this->listeners as $listener) {
-            $listener->onBeginTransaction($dbh);
+            $listener->onPrepare($event);
         }
     }
 
-    public function onPreExecute(Doctrine_Db_Statement $stmt, array $params) {
+    public function onPreCommit(Doctrine_Db_Event $event) {
         foreach($this->listeners as $listener) {
-            $listener->onPreExecute($stmt, $params);
+            $listener->onPreCommit($event);
         }
     }
-    public function onExecute(Doctrine_Db_Statement $stmt, array $params) {
+    public function onCommit(Doctrine_Db_Event $event) {
         foreach($this->listeners as $listener) {
-            $listener->onExecute($stmt, $params);
+            $listener->onCommit($event);
+        }
+    }
+
+    public function onPreRollBack(Doctrine_Db_Event $event) {
+        foreach($this->listeners as $listener) {
+            $listener->onPreRollBack($event);
+        }
+    }
+    public function onRollBack(Doctrine_Db_Event $event) {
+        foreach($this->listeners as $listener) {
+            $listener->onRollBack($event);
+        }
+    }
+
+    public function onPreBeginTransaction(Doctrine_Db_Event $event) {
+        foreach($this->listeners as $listener) {
+            $listener->onPreBeginTransaction($event);
+        }
+    }
+    public function onBeginTransaction(Doctrine_Db_Event $event) {
+        foreach($this->listeners as $listener) {
+            $listener->onBeginTransaction($event);
+        }
+    }
+
+    public function onPreExecute(Doctrine_Db_Event $event) {
+        foreach($this->listeners as $listener) {
+            $listener->onPreExecute($event);
+        }
+    }
+    public function onExecute(Doctrine_Db_Event $event) {
+        foreach($this->listeners as $listener) {
+            $listener->onExecute($event);
         }
     }
 }

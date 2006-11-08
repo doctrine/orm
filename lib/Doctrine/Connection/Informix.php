@@ -37,9 +37,9 @@ class Doctrine_Connection_Informix extends Doctrine_Connection {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
+    public function __construct(Doctrine_Manager $manager, $adapter) {
         // initialize all driver options
 
-        parent::__construct($manager, $pdo);
+        parent::__construct($manager, $adapter);
     }
 }

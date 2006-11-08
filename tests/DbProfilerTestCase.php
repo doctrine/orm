@@ -126,6 +126,7 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase {
             $this->pass();
         } catch(Doctrine_Db_Exception $e) {
             $this->fail($e->__toString());
+            $this->dbh->rollback();
         }
 
         $this->assertEqual($this->profiler->lastEvent()->getQuery(), null);

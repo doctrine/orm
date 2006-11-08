@@ -25,7 +25,7 @@ GLOBAL $ADODB_FETCH_MODE;
 $ADODB_FETCH_MODE = ADODB_FETCH_DEFAULT;	// DEFAULT, NUM, ASSOC or BOTH. Default follows native driver default...
 
 
-function NewDataDictionary(PDO $conn) {
+function NewDataDictionary($conn) {
 
 	$dbtype = $conn->getAttribute(PDO::ATTR_DRIVER_NAME);
 

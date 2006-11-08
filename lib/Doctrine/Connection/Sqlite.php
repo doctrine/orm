@@ -41,7 +41,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
+    public function __construct(Doctrine_Manager $manager, $adapter) {
         
         $this->supported = array(
                           'sequences'            => 'emulated',
@@ -70,7 +70,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
         $this->options['database_extension'] = '';
         $this->options['server_version'] = '';
 
-        parent::__construct($manager, $pdo);
+        parent::__construct($manager, $adapter);
     }
     /**
      * initializes database functions missing in sqlite

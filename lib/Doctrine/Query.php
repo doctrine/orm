@@ -218,7 +218,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 		if( ! empty($having)) 
 			$q .= ' HAVING ' . implode(' AND ',$having);
 
-    $params = array_merge($this->params, $params);
+        $params = array_merge($this->params, $params);
 
 		$a = $this->getConnection()->execute($q, $params)->fetch(PDO::FETCH_NUM);
 		return $a[0];		
@@ -349,8 +349,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $parser->parse($args[0]);
             break;
             case 'where':
-                call_user_func_array(array($this, 'addWhere'), $args);
-                break;
             case 'having':
             case 'orderby':
             case 'groupby':
@@ -571,6 +569,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
 
         $subquery .= ' FROM ' . $table->getTableName() . ' ' . $alias;
+
 
         foreach($this->parts['join'] as $parts) {
             foreach($parts as $part) {
@@ -1102,11 +1101,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     }
 
                     if( ! $fk->isOneToOne()) {
-                        if( ! $loadFields || $table->usesInheritanceMap()) {
-                            $this->subqueryAliases[] = $tname2;
-                        }
-                        
-                        $this->needsSubquery = true;
+                       $this->needsSubquery = true;
+                    }
+                    
+                    if( ! $loadFields || $fk->getTable()->usesInheritanceMap()) {
+                        $this->subqueryAliases[] = $tname2;
                     }
 
                     if($fk instanceof Doctrine_Relation_Association) {

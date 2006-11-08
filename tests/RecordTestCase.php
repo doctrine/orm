@@ -33,7 +33,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         try {
             $null->save();
             $this->fail();
-        } catch(Doctrine_Exception $e) {
+        } catch(Exception $e) {
             $this->pass();
             $this->connection->rollback();
         }

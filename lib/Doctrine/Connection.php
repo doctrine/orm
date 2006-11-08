@@ -73,11 +73,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /**
      * the constructor
      *
-     * @param Doctrine_Manager $manager     the manager object
-     * @param PDO $pdo                      the database handler
+     * @param Doctrine_Manager $manager                 the manager object
+     * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
      */
-    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
-        $this->dbh   = $pdo;
+    public function __construct(Doctrine_Manager $manager, $adapter) {
+        if( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter)))
+            throw new Doctrine_Connection_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
+
+        $this->dbh   = $adapter;
 
         $this->transaction  = new Doctrine_Connection_Transaction($this);
         $this->unitOfWork   = new Doctrine_Connection_UnitOfWork($this);
@@ -140,7 +143,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return PDO              the database handler
      */
-    public function getDBH() {
+    public function getDbh() {
         return $this->dbh;
     }
     /**

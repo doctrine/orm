@@ -94,7 +94,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_AUTO_TYPE_VLD    => true,
                         Doctrine::ATTR_CREATE_TABLES    => true,
                         Doctrine::ATTR_QUERY_LIMIT      => Doctrine::LIMIT_RECORDS,
-                        Doctrine::ATTR_SHORT_ALIASES    => false,
                         );
             foreach($attributes as $attribute => $value) {
                 $old = $this->getAttribute($attribute);
@@ -140,12 +139,16 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * openConnection
      * opens a new connection and saves it to Doctrine_Manager->connections
      *
-     * @param PDO $pdo                      PDO database driver
-     * @param string $name                  name of the connection, if empty numeric key is used
-     * @throws Doctrine_Manager_Exception   if trying to bind a connection with an existing name
+     * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
+     * @param string $name                              name of the connection, if empty numeric key is used
+     * @throws Doctrine_Manager_Exception               if trying to bind a connection with an existing name
      * @return Doctrine_Connection
      */
-    public function openConnection(PDO $pdo, $name = null) {
+    public function openConnection($adapter, $name = null) {
+        if( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter)))
+            throw new Doctrine_Manager_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
+
+
         // initialize the default attributes
         $this->setDefaultAttributes();
 
@@ -153,32 +156,32 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $name = (string) $name;
             if(isset($this->connections[$name]))
                 throw new Doctrine_Manager_Exception("Connection with $name already exists!");
-        
+
         } else {
             $name = $this->index;
             $this->index++;
         }
-        switch($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)):
+        switch($adapter->getAttribute(PDO::ATTR_DRIVER_NAME)):
             case "mysql":
-                $this->connections[$name] = new Doctrine_Connection_Mysql($this,$pdo);
+                $this->connections[$name] = new Doctrine_Connection_Mysql($this, $adapter);
             break;
             case "sqlite":
-                $this->connections[$name] = new Doctrine_Connection_Sqlite($this,$pdo);
+                $this->connections[$name] = new Doctrine_Connection_Sqlite($this, $adapter);
             break;
             case "pgsql":
-                $this->connections[$name] = new Doctrine_Connection_Pgsql($this,$pdo);
+                $this->connections[$name] = new Doctrine_Connection_Pgsql($this, $adapter);
             break;
             case "oci":
-                $this->connections[$name] = new Doctrine_Connection_Oracle($this,$pdo);
+                $this->connections[$name] = new Doctrine_Connection_Oracle($this, $adapter);
             break;
             case "mssql":
-                $this->connections[$name] = new Doctrine_Connection_Mssql($this,$pdo);
+                $this->connections[$name] = new Doctrine_Connection_Mssql($this, $adapter);
             break;
             case "firebird":
-                $this->connections[$name] = new Doctrine_Connection_Firebird($this,$pdo);
+                $this->connections[$name] = new Doctrine_Connection_Firebird($this, $adapter);
             break;
             case "informix":
-                $this->connections[$name] = new Doctrine_Connection_Informix($this,$pdo);
+                $this->connections[$name] = new Doctrine_Connection_Informix($this, $adapter);
             break;
         endswitch;
 

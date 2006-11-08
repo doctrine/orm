@@ -41,7 +41,7 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, PDO $pdo) {
+    public function __construct(Doctrine_Manager $manager, $adapter) {
 
         $this->supported = array(
                           'sequences'             => true,
@@ -69,7 +69,7 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
         $this->options['database_path'] = '';
         $this->options['database_extension'] = '.gdb';
         $this->options['server_version'] = '';
-        parent::__construct($manager, $pdo);
+        parent::__construct($manager, $adapter);
     }
     /**
      * Set the transacton isolation level.

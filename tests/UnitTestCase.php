@@ -65,18 +65,21 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         if($this->manager->count() > 0) {
             $this->connection = $this->manager->getConnection(0);
             $this->connection->evictTables();
-            $this->dbh     = $this->connection->getDBH();
+            $this->dbh      = $this->connection->getDBH();
             $this->listener = $this->manager->getAttribute(Doctrine::ATTR_LISTENER);
 
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         } else {
             //$this->dbh     = Doctrine_DB::getConnection();
-            $this->dbh      = Doctrine_DB::getConn("sqlite::memory:");
+            $this->dbh       = Doctrine_Db2::getConnection("sqlite::memory:");
             //$this->dbh      = new PDO("sqlite::memory:");
+
             $this->connection  = $this->manager->openConnection($this->dbh);
+
             $this->listener = new Doctrine_EventListener_Debugger();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
+
         $this->connection->setListener(new Doctrine_EventListener());
         $this->query = new Doctrine_Query($this->connection);
         $this->prepareTables();

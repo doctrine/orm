@@ -18,21 +18,23 @@ class Doctrine_Db_TestValidListener extends Doctrine_Db_EventListener { }
 class Doctrine_Db_TestInvalidListener { }
 
 class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
+    protected $dbh;
+
     public function prepareData() { }
     public function prepareTables() { }
     public function init() { }
 
     public function testFetchAll() {
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
-        $dbh->connect();
+        $this->dbh = Doctrine_Db2::getConnection('sqlite::memory:');
+        $this->dbh->connect();
 
 
-        $dbh->query('CREATE TABLE entity (id INTEGER, name TEXT)');
+        $this->dbh->query('CREATE TABLE entity (id INTEGER, name TEXT)');
 
-        $dbh->query("INSERT INTO entity (id, name) VALUES (1, 'zYne')");
-        $dbh->query("INSERT INTO entity (id, name) VALUES (2, 'John')");
+        $this->dbh->query("INSERT INTO entity (id, name) VALUES (1, 'zYne')");
+        $this->dbh->query("INSERT INTO entity (id, name) VALUES (2, 'John')");
 
-        $a = $dbh->fetchAll('SELECT * FROM entity');
+        $a = $this->dbh->fetchAll('SELECT * FROM entity');
 
 
         $this->assertEqual($a, array (
@@ -49,13 +51,11 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
                           ));
     }
     public function testFetchOne() {
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
-
-        $c = $dbh->fetchOne('SELECT COUNT(1) FROM entity');
+        $c = $this->dbh->fetchOne('SELECT COUNT(1) FROM entity');
         
         $this->assertEqual($c, 2);
         
-        $c = $dbh->fetchOne('SELECT COUNT(1) FROM entity WHERE id = ?', array(1));
+        $c = $this->dbh->fetchOne('SELECT COUNT(1) FROM entity WHERE id = ?', array(1));
         
         $this->assertEqual($c, 1);
     }
@@ -64,32 +64,28 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
 
     }
     public function testFetchColumn() {
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
-
-        $a = $dbh->fetchColumn('SELECT * FROM entity');
+        $a = $this->dbh->fetchColumn('SELECT * FROM entity');
 
         $this->assertEqual($a, array (
                               0 => '1',
                               1 => '2',
                             ));
 
-        $a = $dbh->fetchColumn('SELECT * FROM entity WHERE id = ?', array(1));
+        $a = $this->dbh->fetchColumn('SELECT * FROM entity WHERE id = ?', array(1));
 
         $this->assertEqual($a, array (
                               0 => '1',
                             ));
     }
     public function testFetchArray() {
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
-
-        $a = $dbh->fetchArray('SELECT * FROM entity');
+        $a = $this->dbh->fetchArray('SELECT * FROM entity');
 
         $this->assertEqual($a, array (
                               0 => '1',
                               1 => 'zYne',
                             ));
 
-        $a = $dbh->fetchArray('SELECT * FROM entity WHERE id = ?', array(1));
+        $a = $this->dbh->fetchArray('SELECT * FROM entity WHERE id = ?', array(1));
 
         $this->assertEqual($a, array (
                               0 => '1',
@@ -97,16 +93,14 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
                             ));
     }
     public function testFetchRow() {
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
-
-        $c = $dbh->fetchRow('SELECT * FROM entity');
+        $c = $this->dbh->fetchRow('SELECT * FROM entity');
 
         $this->assertEqual($c, array (
                               'id' => '1',
                               'name' => 'zYne',
                             ));
                             
-        $c = $dbh->fetchRow('SELECT * FROM entity WHERE id = ?', array(1));
+        $c = $this->dbh->fetchRow('SELECT * FROM entity WHERE id = ?', array(1));
         
         $this->assertEqual($c, array (
                               'id' => '1',
@@ -117,62 +111,61 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
                                    	
     }
     public function testAddValidEventListener() {
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
-        
-        $this->assertTrue($dbh->getListener() instanceof Doctrine_Db_EventListener);
+        $this->dbh->setListener(new Doctrine_Db_EventListener());
+
+        $this->assertTrue($this->dbh->getListener() instanceof Doctrine_Db_EventListener);
         try {
-            $ret = $dbh->addListener(new Doctrine_Db_TestLogger());
+            $ret = $this->dbh->addListener(new Doctrine_Db_TestLogger());
             $this->pass();
             $this->assertTrue($ret instanceof Doctrine_Db2);
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
-        $this->assertTrue($dbh->getListener() instanceof Doctrine_Db_EventListener_Chain);
-        $this->assertTrue($dbh->getListener()->get(0) instanceof Doctrine_Db_TestLogger);
-        
+        $this->assertTrue($this->dbh->getListener() instanceof Doctrine_Db_EventListener_Chain);
+        $this->assertTrue($this->dbh->getListener()->get(0) instanceof Doctrine_Db_TestLogger);
+
         try {
-            $ret = $dbh->addListener(new Doctrine_Db_TestValidListener());
+            $ret = $this->dbh->addListener(new Doctrine_Db_TestValidListener());
             $this->pass();
             $this->assertTrue($ret instanceof Doctrine_Db2);
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
-        $this->assertTrue($dbh->getListener() instanceof Doctrine_Db_EventListener_Chain);
-        $this->assertTrue($dbh->getListener()->get(0) instanceof Doctrine_Db_TestLogger);
-        $this->assertTrue($dbh->getListener()->get(1) instanceof Doctrine_Db_TestValidListener);
+        $this->assertTrue($this->dbh->getListener() instanceof Doctrine_Db_EventListener_Chain);
+        $this->assertTrue($this->dbh->getListener()->get(0) instanceof Doctrine_Db_TestLogger);
+        $this->assertTrue($this->dbh->getListener()->get(1) instanceof Doctrine_Db_TestValidListener);
         
         try {
-            $ret = $dbh->addListener(new Doctrine_Db_EventListener_Chain(), 'chain');
+            $ret = $this->dbh->addListener(new Doctrine_Db_EventListener_Chain(), 'chain');
             $this->pass();
             $this->assertTrue($ret instanceof Doctrine_Db2);
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
-        $this->assertTrue($dbh->getListener() instanceof Doctrine_Db_EventListener_Chain);
-        $this->assertTrue($dbh->getListener()->get(0) instanceof Doctrine_Db_TestLogger);
-        $this->assertTrue($dbh->getListener()->get(1) instanceof Doctrine_Db_TestValidListener);
-        $this->assertTrue($dbh->getListener()->get('chain') instanceof Doctrine_Db_EventListener_Chain);
+        $this->assertTrue($this->dbh->getListener() instanceof Doctrine_Db_EventListener_Chain);
+        $this->assertTrue($this->dbh->getListener()->get(0) instanceof Doctrine_Db_TestLogger);
+        $this->assertTrue($this->dbh->getListener()->get(1) instanceof Doctrine_Db_TestValidListener);
+        $this->assertTrue($this->dbh->getListener()->get('chain') instanceof Doctrine_Db_EventListener_Chain);
         
         // replacing
 
         try {
-            $ret = $dbh->addListener(new Doctrine_Db_EventListener_Chain(), 'chain');
+            $ret = $this->dbh->addListener(new Doctrine_Db_EventListener_Chain(), 'chain');
             $this->pass();
             $this->assertTrue($ret instanceof Doctrine_Db2);
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
-        $this->assertTrue($dbh->getListener() instanceof Doctrine_Db_EventListener_Chain);
-        $this->assertTrue($dbh->getListener()->get(0) instanceof Doctrine_Db_TestLogger);
-        $this->assertTrue($dbh->getListener()->get(1) instanceof Doctrine_Db_TestValidListener);
-        $this->assertTrue($dbh->getListener()->get('chain') instanceof Doctrine_Db_EventListener_Chain);
+        $this->assertTrue($this->dbh->getListener() instanceof Doctrine_Db_EventListener_Chain);
+        $this->assertTrue($this->dbh->getListener()->get(0) instanceof Doctrine_Db_TestLogger);
+        $this->assertTrue($this->dbh->getListener()->get(1) instanceof Doctrine_Db_TestValidListener);
+        $this->assertTrue($this->dbh->getListener()->get('chain') instanceof Doctrine_Db_EventListener_Chain);
     }
+
     public function testListeningEventsWithSingleListener() {
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
-        $dbh->connect();
-        $dbh->setListener(new Doctrine_Db_TestLogger());
-        $listener = $dbh->getListener();
-        $stmt = $dbh->prepare('INSERT INTO entity (id) VALUES(?)');
+        $this->dbh->setListener(new Doctrine_Db_TestLogger());
+        $listener = $this->dbh->getListener();
+        $stmt = $this->dbh->prepare('INSERT INTO entity (id) VALUES(?)');
 
         $this->assertEqual($listener->pop(), 'onPrepare');
         $this->assertEqual($listener->pop(), 'onPrePrepare');
@@ -182,19 +175,19 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($listener->pop(), 'onExecute');
         $this->assertEqual($listener->pop(), 'onPreExecute');
         
-        $dbh->exec('DELETE FROM entity');
+        $this->dbh->exec('DELETE FROM entity');
 
         $this->assertEqual($listener->pop(), 'onExec');
         $this->assertEqual($listener->pop(), 'onPreExec');
         
-        $dbh->beginTransaction();
+        $this->dbh->beginTransaction();
 
         $this->assertEqual($listener->pop(), 'onBeginTransaction');
         $this->assertEqual($listener->pop(), 'onPreBeginTransaction');
 
-        $dbh->query('INSERT INTO entity (id) VALUES (1)');
+        $this->dbh->query('INSERT INTO entity (id) VALUES (1)');
 
-        $dbh->commit();
+        $this->dbh->commit();
         
         $this->assertEqual($listener->pop(), 'onCommit');
         $this->assertEqual($listener->pop(), 'onPreCommit');
@@ -202,18 +195,18 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($listener->pop(), 'onQuery');
         $this->assertEqual($listener->pop(), 'onPreQuery');
         
-        $dbh->query('DROP TABLE entity');
+
     }
     public function testListeningEventsWithListenerChain() {
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
-        $dbh->connect();
-        $dbh->addListener(new Doctrine_Db_TestLogger());
-        $dbh->addListener(new Doctrine_Db_TestLogger());
+        $this->dbh->query('DROP TABLE entity');
 
-        $dbh->query('CREATE TABLE entity (id INT)');
+        $this->dbh->addListener(new Doctrine_Db_TestLogger());
+        $this->dbh->addListener(new Doctrine_Db_TestLogger());
 
-        $listener = $dbh->getListener()->get(0);
-        $listener2 = $dbh->getListener()->get(1);
+        $this->dbh->query('CREATE TABLE entity (id INT)');
+
+        $listener = $this->dbh->getListener()->get(0);
+        $listener2 = $this->dbh->getListener()->get(1);
         $this->assertEqual($listener->pop(), 'onQuery');
         $this->assertEqual($listener->pop(), 'onPreQuery');
 
@@ -221,7 +214,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($listener2->pop(), 'onPreQuery');
 
 
-        $stmt = $dbh->prepare('INSERT INTO entity (id) VALUES(?)');
+        $stmt = $this->dbh->prepare('INSERT INTO entity (id) VALUES(?)');
 
         $this->assertEqual($listener->pop(), 'onPrepare');
         $this->assertEqual($listener->pop(), 'onPrePrepare');
@@ -237,7 +230,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($listener2->pop(), 'onExecute');
         $this->assertEqual($listener2->pop(), 'onPreExecute');
         
-        $dbh->exec('DELETE FROM entity');
+        $this->dbh->exec('DELETE FROM entity');
 
         $this->assertEqual($listener->pop(), 'onExec');
         $this->assertEqual($listener->pop(), 'onPreExec');
@@ -245,7 +238,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($listener2->pop(), 'onExec');
         $this->assertEqual($listener2->pop(), 'onPreExec');
 
-        $dbh->beginTransaction();
+        $this->dbh->beginTransaction();
 
         $this->assertEqual($listener->pop(), 'onBeginTransaction');
         $this->assertEqual($listener->pop(), 'onPreBeginTransaction');
@@ -253,9 +246,9 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($listener2->pop(), 'onBeginTransaction');
         $this->assertEqual($listener2->pop(), 'onPreBeginTransaction');
 
-        $dbh->query('INSERT INTO entity (id) VALUES (1)');
+        $this->dbh->query('INSERT INTO entity (id) VALUES (1)');
 
-        $dbh->commit();
+        $this->dbh->commit();
 
         $this->assertEqual($listener->pop(), 'onCommit');
         $this->assertEqual($listener->pop(), 'onPreCommit');
@@ -263,44 +256,42 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($listener->pop(), 'onQuery');
         $this->assertEqual($listener->pop(), 'onPreQuery');
         
-        $dbh->query('DROP TABLE entity');
+        $this->dbh->query('DROP TABLE entity');
     }
     public function testSetValidEventListener() {
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
         try {
-            $dbh->setListener(new Doctrine_Db_TestLogger());
+            $this->dbh->setListener(new Doctrine_Db_TestLogger());
             $this->pass();
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
-        $this->assertTrue($dbh->getListener() instanceof Doctrine_Db_TestLogger);
+        $this->assertTrue($this->dbh->getListener() instanceof Doctrine_Db_TestLogger);
         try {
-            $dbh->setListener(new Doctrine_Db_TestValidListener());
+            $this->dbh->setListener(new Doctrine_Db_TestValidListener());
             $this->pass();
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
-        $this->assertTrue($dbh->getListener() instanceof Doctrine_Db_TestValidListener);
+        $this->assertTrue($this->dbh->getListener() instanceof Doctrine_Db_TestValidListener);
         try {
-            $dbh->setListener(new Doctrine_Db_EventListener_Chain());
+            $this->dbh->setListener(new Doctrine_Db_EventListener_Chain());
             $this->pass();
 
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
-        $this->assertTrue($dbh->getListener() instanceof Doctrine_Db_EventListener_Chain);
+        $this->assertTrue($this->dbh->getListener() instanceof Doctrine_Db_EventListener_Chain);
         try {
-            $dbh->setListener(new Doctrine_Db_EventListener());
+            $this->dbh->setListener(new Doctrine_Db_EventListener());
             $this->pass();
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
-        $this->assertTrue($dbh->getListener() instanceof Doctrine_Db_EventListener);
+        $this->assertTrue($this->dbh->getListener() instanceof Doctrine_Db_EventListener);
     }
     public function testSetInvalidEventListener() {
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
         try {
-            $dbh->setListener(new Doctrine_Db_TestInvalidListener());
+            $this->dbh->setListener(new Doctrine_Db_TestInvalidListener());
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
@@ -308,19 +299,19 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
     }
     public function testInvalidDSN() {
         try {
-            $dbh = Doctrine_Db2::getConnection('');
+            $this->dbh = Doctrine_Db2::getConnection('');
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
         }
         try {
-            $dbh = Doctrine_Db2::getConnection('unknown');
+            $this->dbh = Doctrine_Db2::getConnection('unknown');
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
         }   
         try {
-            $dbh = Doctrine_Db2::getConnection(0);
+            $this->dbh = Doctrine_Db2::getConnection(0);
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
@@ -328,7 +319,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
     }
     public function testInvalidScheme() {
         try {
-            $dbh = Doctrine_Db2::getConnection('unknown://:memory:');
+            $this->dbh = Doctrine_Db2::getConnection('unknown://:memory:');
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
@@ -336,7 +327,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
     }
     public function testInvalidHost() {
         try {
-            $dbh = Doctrine_Db2::getConnection('mysql://user:password@');
+            $this->dbh = Doctrine_Db2::getConnection('mysql://user:password@');
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
@@ -344,41 +335,41 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
     }
     public function testInvalidDatabase() {
         try {
-            $dbh = Doctrine_Db2::getConnection('mysql://user:password@host/');
+            $this->dbh = Doctrine_Db2::getConnection('mysql://user:password@host/');
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
         }
     }
     public function testGetConnectionPdoLikeDSN() {
-        $dbh = Doctrine_Db2::getConnection('mysql:host=localhost;dbname=test', 'root', 'password');
-        $this->assertEqual($dbh->getDSN(), 'mysql:host=localhost;dbname=test');
-        $this->assertEqual($dbh->getUsername(), 'root');
-        $this->assertEqual($dbh->getPassword(), 'password');
+        $this->dbh = Doctrine_Db2::getConnection('mysql:host=localhost;dbname=test', 'root', 'password');
+        $this->assertEqual($this->dbh->getOption('dsn'), 'mysql:host=localhost;dbname=test');
+        $this->assertEqual($this->dbh->getOption('username'), 'root');
+        $this->assertEqual($this->dbh->getOption('password'), 'password');
 
 
-        $dbh = Doctrine_Db2::getConnection('sqlite::memory:');
+        $this->dbh = Doctrine_Db2::getConnection('sqlite::memory:');
 
-        $this->assertEqual($dbh->getDSN(), 'sqlite::memory:');
-        $this->assertEqual($dbh->getUsername(), null);
-        $this->assertEqual($dbh->getPassword(), null);
+        $this->assertEqual($this->dbh->getOption('dsn'), 'sqlite::memory:');
+        $this->assertEqual($this->dbh->getOption('username'), false);
+        $this->assertEqual($this->dbh->getOption('password'), false);
     }
     public function testDriverName() {
 
     }
 
     public function testGetConnectionWithPearLikeDSN() {
-        $dbh = Doctrine_Db2::getConnection('mysql://zYne:password@localhost/test');
-        $this->assertEqual($dbh->getDSN(), 'mysql:host=localhost;dbname=test');
-        $this->assertEqual($dbh->getUsername(), 'zYne');
-        $this->assertEqual($dbh->getPassword(), 'password');
+        $this->dbh = Doctrine_Db2::getConnection('mysql://zYne:password@localhost/test');
+        $this->assertEqual($this->dbh->getOption('dsn'), 'mysql:host=localhost;dbname=test');
+        $this->assertEqual($this->dbh->getOption('username'), 'zYne');
+        $this->assertEqual($this->dbh->getOption('password'), 'password');
 
 
-        $dbh = Doctrine_Db2::getConnection('sqlite://:memory:');
+        $this->dbh = Doctrine_Db2::getConnection('sqlite://:memory:');
 
-        $this->assertEqual($dbh->getDSN(), 'sqlite::memory:');
-        $this->assertEqual($dbh->getUsername(), null);
-        $this->assertEqual($dbh->getPassword(), null);
+        $this->assertEqual($this->dbh->getOption('dsn'), 'sqlite::memory:');
+        $this->assertEqual($this->dbh->getOption('username'), false);
+        $this->assertEqual($this->dbh->getOption('password'), false);
     }
 
 }

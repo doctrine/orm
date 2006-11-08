@@ -7,7 +7,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         parent::prepareTables();
     }
-    /**
+
     public function testLimitWithOneToOneLeftJoin() {
         $q = new Doctrine_Query($this->connection);
         $q->from('User(id).Email')->limit(5);
@@ -73,6 +73,8 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
     public function testLimitWithOneToManyLeftJoinAndOrderBy() {
         $q = new Doctrine_Query($this->connection);
         $q->from("User(name)")->where("User.Phonenumber.phonenumber LIKE '%123%'")->orderby("User.Email.address")->limit(5);
+        
+
         $users = $q->execute();
 
         $this->assertEqual($users[0]->name, 'Arnold Schwarzenegger');
@@ -83,7 +85,6 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 5);
     }
-
 
     public function testLimitWithOneToManyInnerJoin() {
         $this->query->select('u.id')->from("User u INNER JOIN u.Phonenumber");
@@ -202,20 +203,20 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
     }
 
     public function testLimitAttribute() {
-        $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_RECORDS);
+        $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_ROWS);
         
         $this->connection->clear();
         $q = new Doctrine_Query();
         $q->from("User")->where("User.Group.id = ?")->orderby("User.id DESC")->limit(5);
         $users = $q->execute(array(3));
-        print $q;
+
         $this->assertEqual($users->count(), 3);
-        
+
         $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e LEFT JOIN groupuser ON e.id = groupuser.user_id LEFT JOIN entity e2 ON e2.id = groupuser.group_id WHERE e2.id = ? AND (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL)) ORDER BY e.id DESC LIMIT 5");
 
         $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_RECORDS);
     }
-        */
+
     public function testLimitWithNormalManyToMany() {
         $coll = new Doctrine_Collection($this->connection->getTable("Photo"));
         $tag = new Tag();

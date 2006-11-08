@@ -27,48 +27,7 @@
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB2 implements Countable, IteratorAggregate {
-
-    /**
-     * A connection operation or selecting a database.
-     */
-    const CONNECT = 1;
-
-    /**
-     * Any general database query that does not fit into the other constants.
-     */
-    const QUERY   = 2;
-
-    /**
-     * Adding new data to the database, such as SQL's INSERT.
-     */
-    const INSERT  = 4;
-
-    /**
-     * Updating existing information in the database, such as SQL's UPDATE.
-     *
-     */
-    const UPDATE = 8;
-
-    /**
-     * An operation related to deleting data in the database,
-     * such as SQL's DELETE.
-     */
-    const DELETE = 16;
-
-    /**
-     * Retrieving information from the database, such as SQL's SELECT.
-     */
-    const SELECT = 32;
-
-    /**
-     * Transactional operation, such as start transaction, commit, or rollback.
-     */
-    const TRANSACTION = 64;
-    /**
-     * default DSN
-     */
-    const DSN = "mysql://root:dc34@localhost/test";
+class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Interface {
     /**
      * @var array $instances        all the instances of this class
      */
@@ -78,23 +37,19 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      */
     protected $isConnected        = false;
     /**
-     * @var string $dsn             data source name
-     */
-    protected $dsn;
-    /**
-     * @var string $username        database username
-     */
-    protected $username;
-    /**
-     * @var string $password        database password
-     */
-    protected $password;
-    /**
      * @var PDO $dbh                the database handler
      */
     protected $dbh;
     /**
-     * @var Doctrine_DB_EventListener_Interface|Doctrine_Overloadable $listener   listener for listening events
+     * @var array $options
+     */
+    protected $options            = array('dsn'      => null,
+                                          'username' => null,
+                                          'password' => null,
+                                          );
+    /**
+     * @var Doctrine_DB_EventListener_Interface|Doctrine_Overloadable $listener     
+     *                              listener for listening events
      */
     protected $listener;
     /**
@@ -113,13 +68,18 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * constructor
      *
      * @param string $dsn           data source name
-     * @param string $username      database username
-     * @param string $password      database password
+     * @param string $user          database username
+     * @param string $pass          database password
      */
-    public function __construct($dsn,$username,$password) {
-        $this->dsn      = $dsn;
-        $this->username = $username;
-        $this->password = $password;
+    public function __construct($dsn, $user, $pass) {
+        if( ! isset($user)) {
+            $a = self::parseDSN($dsn);
+
+            extract($a);
+        }
+        $this->options['dsn']      = $dsn;
+        $this->options['username'] = $user;
+        $this->options['password'] = $pass;
         $this->listener = new Doctrine_DB_EventListener();
     }
 
@@ -139,30 +99,11 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
     public function getDBH() {
         return $this->dbh;
     }
-    /**
-     * getDSN
-     * returns the data source name
-     *
-     * @return string
-     */
-    public function getDSN() {
-        return $this->dsn;
-    }
-    /**
-     * getUsername
-     *
-     * @return string
-     */
-    public function getUsername() {
-        return $this->username;
-    }
-    /**
-     * getPassword
-     *
-     * @return string
-     */
-    public function getPassword() {
-        return $this->password;
+    public function getOption($name) {
+        if( ! array_key_exists($name, $this->options))
+            throw new Doctrine_Db_Exception('Unknown option ' . $name);
+        
+        return $this->options[$name];
     }
     /**
      * addListener
@@ -212,7 +153,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
         if($this->isConnected)
             return false;
 
-        $this->dbh = new PDO($this->dsn,$this->username,$this->password);
+        $this->dbh = new PDO($this->options['dsn'], $this->options['username'], $this->options['password']);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array("Doctrine_DB_Statement", array($this)));
         $this->isConnected = true;
@@ -228,25 +169,9 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      * @return
      */
     public static function getConnection($dsn = null, $username = null, $password = null) {
-        $md5 = md5($dsn);
-
-        if( ! isset(self::$instances[$md5])) {
-            if(isset($username)) {
-                self::$instances[$md5] = new self($dsn, $username, $password);
-            } else {
-                if( ! isset($dsn))
-                    $a = self::parseDSN(self::DSN);
-                else
-                    $a = self::parseDSN($dsn);
-
-                extract($a);
-    
-                self::$instances[$md5] = new self($dsn, $user, $pass);
-            }
-        }
-        return self::$instances[$md5];
+        return new self($dsn, $username, $password);
     }
-    /** 
+    /**
      * driverName
      * converts a driver name like (oracle) to appropriate PDO 
      * driver name (oci8 in the case of oracle)
@@ -523,7 +448,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
     public function getAttribute($attribute) {
         $this->connect();
         
-        $this->dbh->getAttribute($attribute);
+        return $this->dbh->getAttribute($attribute);
     }
     /**
      * returns an array of available PDO drivers
@@ -561,7 +486,5 @@ class Doctrine_DB2 implements Countable, IteratorAggregate {
      */
     public function count() {
         return $this->querySequence;
-    }
-
+    }  
 }
-
