@@ -22,8 +22,50 @@ Doctrine::autoload('Doctrine_Connection_Exception');
 /**
  * Doctrine_Connection_Mssql_Exception
  *
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @package     Doctrine
+ * @url         http://www.phpdoctrine.com
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @author      Konsta Vesterinen
+ * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @since       1.0
+ * @version     $Id$
  */
-class Doctrine_Connection_Mssql_Exception extends Doctrine_Connection_Exception { }
+class Doctrine_Connection_Mssql_Exception extends Doctrine_Connection_Exception { 
+    /**
+     * @var array $errorRegexps         an array that is used for determining portable 
+     *                                  error code from a native database error code
+     */
+    protected static $errorCodeMap = array(
+                                      110   => MDB2_ERROR_VALUE_COUNT_ON_ROW,
+                                      155   => MDB2_ERROR_NOSUCHFIELD,
+                                      170   => MDB2_ERROR_SYNTAX,
+                                      207   => MDB2_ERROR_NOSUCHFIELD,
+                                      208   => MDB2_ERROR_NOSUCHTABLE,
+                                      245   => MDB2_ERROR_INVALID_NUMBER,
+                                      515   => MDB2_ERROR_CONSTRAINT_NOT_NULL,
+                                      547   => MDB2_ERROR_CONSTRAINT,
+                                      1913  => MDB2_ERROR_ALREADY_EXISTS,
+                                      2627  => MDB2_ERROR_CONSTRAINT,
+                                      2714  => MDB2_ERROR_ALREADY_EXISTS,
+                                      3701  => MDB2_ERROR_NOSUCHTABLE,
+                                      8134  => MDB2_ERROR_DIVZERO,
+                                      );
+    /**
+     * This method checks if native error code/message can be 
+     * converted into a portable code and then adds this 
+     * portable error code to errorInfo array and returns the modified array
+     *
+     * the portable error code is added at the end of array
+     *
+     * @param array $errorInfo      error info array
+     * @since 1.0
+     * @return array
+     */
+    public function processErrorInfo(array $errorInfo) {
+        $code = $errorInfo[1];
+        if(isset(self::$errorCodeMap[$code]))
+            $errorInfo[3] = self::$errorCodeMap[$code];
+            
+        return $errorInfo;
+    }
+}

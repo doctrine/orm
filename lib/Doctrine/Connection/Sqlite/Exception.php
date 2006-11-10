@@ -57,7 +57,7 @@ class Doctrine_Connection_Sqlite_Exception extends Doctrine_Connection_Exception
      *
      * the portable error code is added at the end of array
      *
-     * @param array $errorInfo
+     * @param array $errorInfo      error info array
      * @since 1.0
      * @return array
      */

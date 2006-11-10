@@ -31,55 +31,43 @@ require_once("Doctrine/Exception.php");
  */
 final class Doctrine {
     /**
-     * ERROR MODE CONSTANTS
+     * error constants
      */
-
-    /**
-     * NO PRIMARY KEY COLUMN ERROR
-     * no primary key column found error code
-     */
-    const ERR_NO_PK                 = 0;
-    /**
-     * PRIMARY KEY MISMATCH ERROR
-     * this error code is used when user uses factory refresh for a
-     * given Doctrine_Record and the old primary key doesn't match the new one
-     */
-    const ERR_REFRESH               = 1;
-    /**
-     * FIND ERROR
-     * this code used when for example Doctrine_Table::find() is called and
-     * a Data Access Object is not found
-     */
-    const ERR_FIND                  = 2;
-    /**
-     * TABLE NOT FOUND ERROR
-     * this error code is used when user tries to initialize
-     * a table and there is no database table for this factory
-     */
-    const ERR_NOSUCH_TABLE          = 3;
-    /**
-     * NAMING ERROR
-     * this code is used when user defined Doctrine_Table is badly named
-     */
-    const ERR_NAMING                = 5;
-    /**
-     * TABLE INSTANCE ERROR
-     * this code is used when user tries to initialize
-     * a table that is already initialized
-     */
-    const ERR_TABLE_INSTANCE        = 6;
-    /**
-     * NO OPEN SESSIONS ERROR
-     * error code which is used when user tries to get
-     * current session are there are no sessions open
-     */
-    const ERR_NO_SESSIONS           = 7;
-    /**
-     * MAPPING ERROR
-     * if there is something wrong with mapping logic
-     * this error code is used
-     */
-    const ERR_MAPPING               = 8;
+    const ERR                       = -1;
+    const ERR_SYNTAX                = -2;
+    const ERR_CONSTRAINT            = -3;
+    const ERR_NOT_FOUND             = -4;
+    const ERR_ALREADY_EXISTS        = -5;
+    const ERR_UNSUPPORTED           = -6;
+    const ERR_MISMATCH              = -7;
+    const ERR_INVALID               = -8;
+    const ERR_NOT_CAPABLE           = -9;
+    const ERR_TRUNCATED             = -10;
+    const ERR_INVALID_NUMBER        = -11;
+    const ERR_INVALID_DATE          = -12;
+    const ERR_DIVZERO               = -13;
+    const ERR_NODBSELECTED          = -14;
+    const ERR_CANNOT_CREATE         = -15;
+    const ERR_CANNOT_DELETE         = -16;
+    const ERR_CANNOT_DROP           = -17;
+    const ERR_NOSUCHTABLE           = -18;
+    const ERR_NOSUCHFIELD           = -19;
+    const ERR_NEED_MORE_DATA        = -20;
+    const ERR_NOT_LOCKED            = -21;
+    const ERR_VALUE_COUNT_ON_ROW    = -22;
+    const ERR_INVALID_DSN           = -23;
+    const ERR_CONNECT_FAILED        = -24;
+    const ERR_EXTENSION_NOT_FOUND   = -25;
+    const ERR_NOSUCHDB              = -26;
+    const ERR_ACCESS_VIOLATION      = -27;
+    const ERR_CANNOT_REPLACE        = -28;
+    const ERR_CONSTRAINT_NOT_NULL   = -29;
+    const ERR_DEADLOCK              = -30;
+    const ERR_CANNOT_ALTER          = -31;
+    const ERR_MANAGER               = -32;
+    const ERR_MANAGER_PARSE         = -33;
+    const ERR_LOADMODULE            = -34;
+    const ERR_INSUFFICIENT_DATA     = -35;
 
     /**
      * ATTRIBUTE CONSTANTS
