@@ -527,7 +527,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return string
      */
     final public function getAliasName($alias) {
-        if($name = array_search($this->boundAliases,$alias))
+        if($name = array_search($alias, $this->boundAliases))
             return $name;
 
         throw new Doctrine_Table_Exception('Unknown alias '.$alias);
