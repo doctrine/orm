@@ -196,6 +196,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
         $e = explode(".", $componentName);
 
         $currPath = '';
+        $table = null;
 
         foreach($e as $k => $component) {
             $currPath .= '.'.$component;
@@ -207,7 +208,12 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
             else
                 $alias = $tableAlias;
 
-            $table = $this->connection->getTable($component);
+            if ($table) {
+                $t_name = $table->getAliasName($component);
+                $table = $this->connection->getTable($t_name);
+            } else {
+                $table = $this->connection->getTable($component);
+            }
             $this->tables[$alias]           = $table;
             $this->fetchModes[$alias]       = Doctrine::FETCH_IMMEDIATE;
             $this->tableAliases[$currPath]  = $alias;
