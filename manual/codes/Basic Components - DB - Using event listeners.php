@@ -2,14 +2,14 @@
 
 // using PDO dsn for connecting sqlite memory table
 
-$dbh = Doctrine_DB::getConnection('sqlite::memory:');
+$dbh = Doctrine_Db::getConnection('sqlite::memory:');
 
-class MyLogger extends Doctrine_DB_EventListener {
-    public function onPreQuery(Doctrine_DB $dbh, $query, $params) {
+class MyLogger extends Doctrine_Db_EventListener {
+    public function onPreQuery(Doctrine_Db_Event $event) {
         print "database is going to be queried!";
     }
-    public function onQuery(Doctrine_DB $dbh, $query, $params) {
-        print "executed: $query";
+    public function onQuery(Doctrine_Db_Event $event) {
+        print "executed: " . $event->getQuery();
     }
 }
 

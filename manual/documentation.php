@@ -59,15 +59,17 @@ function render_block($name) {
         renderCode($c);
     }
 }
+
 function renderCode($c = null) {
+    global $h;
     if( ! empty($c)) {
-        $h = new PHP_Highlight;
+
         $h->loadString($c);
 
         print "<table width=500 border=1 class='dashed' cellpadding=0 cellspacing=0>";
         print "<tr><td>";
 
-        print $h->toHtml();
+        $h->toHtml();
         print "</td></tr>";
         print "</table>";
     }
@@ -197,7 +199,7 @@ $menu = array("Getting started" =>
                                          "Using SQL",
                                          "Adding components",
                                          "Method overloading"),
-                        "DB"     => array(
+                        "Db"     => array(
                                          "Introduction",
                                          "Connecting to a database",
                                          "Using event listeners",

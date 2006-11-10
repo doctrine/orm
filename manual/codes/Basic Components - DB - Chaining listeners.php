@@ -2,12 +2,12 @@
 
 // using PDO dsn for connecting sqlite memory table
 
-$dbh = Doctrine_DB::getConnection('sqlite::memory:');
+$dbh = Doctrine_Db::getConnection('sqlite::memory:');
 
-class Counter extends Doctrine_DB_EventListener {
+class Counter extends Doctrine_Db_EventListener {
     private $queries = 0;
 
-    public function onQuery(Doctrine_DB $dbh, $query, $params) {
+    public function onQuery(Doctrine_Db_Event $event) {
         $this->queries++;
     }
     public function count() {
