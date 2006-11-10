@@ -22,8 +22,55 @@ Doctrine::autoload('Doctrine_Connection_Exception');
 /**
  * Doctrine_Connection_Oracle_Exception
  *
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @package     Doctrine
+ * @url         http://www.phpdoctrine.com
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @author      Konsta Vesterinen
+ * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @since       1.0
+ * @version     $Id$
  */
-class Doctrine_Connection_Oracle_Exception extends Doctrine_Connection_Exception { }
+class Doctrine_Connection_Oracle_Exception extends Doctrine_Connection_Exception { 
+    /**
+     * @var array $errorRegexps         an array that is used for determining portable 
+     *                                  error code from a native database error code
+     */
+    protected static $errorCodeMap = array(
+                                      1    => Doctrine::ERR_CONSTRAINT,
+                                      900  => Doctrine::ERR_SYNTAX,
+                                      904  => Doctrine::ERR_NOSUCHFIELD,
+                                      913  => Doctrine::ERR_VALUE_COUNT_ON_ROW,
+                                      921  => Doctrine::ERR_SYNTAX,
+                                      923  => Doctrine::ERR_SYNTAX,
+                                      942  => Doctrine::ERR_NOSUCHTABLE,
+                                      955  => Doctrine::ERR_ALREADY_EXISTS,
+                                      1400 => Doctrine::ERR_CONSTRAINT_NOT_NULL,
+                                      1401 => Doctrine::ERR_INVALID,
+                                      1407 => Doctrine::ERR_CONSTRAINT_NOT_NULL,
+                                      1418 => Doctrine::ERR_NOT_FOUND,
+                                      1476 => Doctrine::ERR_DIVZERO,
+                                      1722 => Doctrine::ERR_INVALID_NUMBER,
+                                      2289 => Doctrine::ERR_NOSUCHTABLE,
+                                      2291 => Doctrine::ERR_CONSTRAINT,
+                                      2292 => Doctrine::ERR_CONSTRAINT,
+                                      2449 => Doctrine::ERR_CONSTRAINT,
+                                      );
+    /**
+     * This method checks if native error code/message can be 
+     * converted into a portable code and then adds this 
+     * portable error code to errorInfo array and returns the modified array
+     *
+     * the portable error code is added at the end of array
+     *
+     * @param array $errorInfo      error info array
+     * @since 1.0
+     * @return array
+     */
+    public function processErrorInfo(array $errorInfo) {
+        $code = $errorInfo[1];
+        if(isset(self::$errorCodeMap[$code]))
+            $errorInfo[3] = self::$errorCodeMap[$code];
+            
+        return $errorInfo;
+    }
+}
