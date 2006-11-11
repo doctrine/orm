@@ -9,7 +9,7 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase {
     public function testQuery() {
         $this->dbh = Doctrine_DB2::getConnection('sqlite::memory:');
 
-        $this->profiler = new Doctrine_DB_Profiler();
+        $this->profiler = new Doctrine_Db_Profiler();
 
         $this->dbh->setListener($this->profiler);
 

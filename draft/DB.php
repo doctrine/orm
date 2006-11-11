@@ -150,8 +150,8 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
      * @return Doctrine_DB
      */
     public function addListener($listener, $name = null) {
-        if( ! ($this->listener instanceof Doctrine_DB_EventListener_Chain))
-            $this->listener = new Doctrine_DB_EventListener_Chain();
+        if( ! ($this->listener instanceof Doctrine_Db_EventListener_Chain))
+            $this->listener = new Doctrine_Db_EventListener_Chain();
 
         $this->listener->add($listener, $name);
         
@@ -172,9 +172,9 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
      * @return Doctrine_DB
      */
     public function setListener($listener) {
-        if( ! ($listener instanceof Doctrine_DB_EventListener_Interface) &&
+        if( ! ($listener instanceof Doctrine_Db_EventListener_Interface) &&
             ! ($listener instanceof Doctrine_Overloadable))
-            throw new Doctrine_DB_Exception("Couldn't set eventlistener for database handler. EventListeners should implement either Doctrine_DB_EventListener_Interface or Doctrine_Overloadable");
+            throw new Doctrine_Db_Exception("Couldn't set eventlistener for database handler. EventListeners should implement either Doctrine_DB_EventListener_Interface or Doctrine_Overloadable");
 
         $this->listener = $listener;
 

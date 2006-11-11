@@ -48,7 +48,7 @@ require_once('RelationTestCase.php');
 require_once('RelationManyToManyTestCase.php');
 
 
-require_once('DbTestCase.php');
+require_once('DBTestCase.php');
 require_once('DbProfilerTestCase.php');
 
 require_once('SchemaTestCase.php');
