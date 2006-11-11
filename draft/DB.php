@@ -20,14 +20,14 @@
  */
 
 /**
- * Doctrine_DB
+ * Doctrine_Db
  * A thin layer on top of PDO
  *
  * @author      Konsta Vesterinen
  * @license     LGPL
  * @package     Doctrine
  */
-class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Interface {
+class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Interface {
     /**
      * error constants
      */
@@ -86,7 +86,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
                                           'password' => null,
                                           );
     /**
-     * @var Doctrine_DB_EventListener_Interface|Doctrine_Overloadable $listener     
+     * @var Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener     
      *                              listener for listening events
      */
     protected $listener;
@@ -118,7 +118,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
         $this->options['dsn']      = $dsn;
         $this->options['username'] = $user;
         $this->options['password'] = $pass;
-        $this->listener = new Doctrine_DB_EventListener();
+        $this->listener = new Doctrine_Db_EventListener();
     }
 
 
@@ -146,8 +146,8 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     /**
      * addListener
      *
-     * @param Doctrine_DB_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_DB
+     * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_Db
      */
     public function addListener($listener, $name = null) {
         if( ! ($this->listener instanceof Doctrine_Db_EventListener_Chain))
@@ -160,7 +160,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     /**
      * getListener
      * 
-     * @return Doctrine_DB_EventListener_Interface|Doctrine_Overloadable
+     * @return Doctrine_Db_EventListener_Interface|Doctrine_Overloadable
      */
     public function getListener() {
         return $this->listener;
@@ -168,13 +168,13 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     /**
      * setListener
      *
-     * @param Doctrine_DB_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_DB
+     * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_Db
      */
     public function setListener($listener) {
         if( ! ($listener instanceof Doctrine_Db_EventListener_Interface) &&
             ! ($listener instanceof Doctrine_Overloadable))
-            throw new Doctrine_Db_Exception("Couldn't set eventlistener for database handler. EventListeners should implement either Doctrine_DB_EventListener_Interface or Doctrine_Overloadable");
+            throw new Doctrine_Db_Exception("Couldn't set eventlistener for database handler. EventListeners should implement either Doctrine_Db_EventListener_Interface or Doctrine_Overloadable");
 
         $this->listener = $listener;
 
@@ -193,7 +193,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
 
         $this->dbh = new PDO($this->options['dsn'], $this->options['username'], $this->options['password']);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array("Doctrine_DB_Statement", array($this)));
+        $this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array("Doctrine_Db_Statement", array($this)));
         $this->isConnected = true;
         return true;
     }
@@ -241,14 +241,14 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
         }
 
 		if(count($parts) == 0 || ! isset($parts['scheme']))
-		  throw new Doctrine_DB_Exception('Empty data source name');
+		  throw new Doctrine_Db_Exception('Empty data source name');
 
         $drivers = self::getAvailableDrivers();
 
         $parts['scheme'] = self::driverName($parts['scheme']);
 
         if( ! in_array($parts['scheme'], $drivers))
-            throw new Doctrine_DB_Exception('Driver '.$parts['scheme'].' not availible or extension not loaded');
+            throw new Doctrine_Db_Exception('Driver '.$parts['scheme'].' not availible or extension not loaded');
 
         switch($parts['scheme']) {
             case 'sqlite':
@@ -266,18 +266,18 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
             case 'pgsql':
             case 'odbc':
                 if( ! isset($parts['path']) || $parts['path'] == '/')
-                    throw new Doctrine_DB_Exception('No database availible in data source name');
+                    throw new Doctrine_Db_Exception('No database availible in data source name');
 
          		if(isset($parts['path']))
                     $parts['database'] = substr($parts['path'], 1);
                 
                 if( ! isset($parts['host'])) 
-                    throw new Doctrine_DB_Exception('No hostname set in data source name');
+                    throw new Doctrine_Db_Exception('No hostname set in data source name');
 
                 $parts['dsn'] = $parts["scheme"].":host=".$parts["host"].";dbname=".$parts["database"];
             break;
             default: 
-                throw new Doctrine_DB_Exception('Unknown driver '.$parts['scheme']);
+                throw new Doctrine_Db_Exception('Unknown driver '.$parts['scheme']);
         } 
 
 		return $parts;
@@ -335,7 +335,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
      *
      * @param string $statement
      * @param array $params
-     * @return Doctrine_DB_Statement|boolean
+     * @return Doctrine_Db_Statement|boolean
      */
     public function query($statement, array $params = array()) {
         $this->connect();
@@ -513,7 +513,7 @@ class Doctrine_DB2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
      * @return ArrayIterator
      */
     public function getIterator() {
-        if($this->listener instanceof Doctrine_DB_Profiler)
+        if($this->listener instanceof Doctrine_Db_Profiler)
             return $this->listener;
     }
     /**
