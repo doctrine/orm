@@ -3,7 +3,7 @@
 (unless the interface is approved not to contain it such as Doctrine_Overloadable). Some examples:
 <br \><br \>
 
-Doctrine_DB_EventListener_Interface   <br \>
+Doctrine_Db_EventListener_Interface   <br \>
 <br \>
 Doctrine_EventListener_Interface  <br \>
 </ul>

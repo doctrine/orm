@@ -9,10 +9,10 @@ $manager = Doctrine_Manager::getInstance();
 $dbh     = new PDO("dsn","username","password");
 $conn = $manager->openConnection();
 
-// or if you want to use Doctrine Doctrine_DB and its 
+// or if you want to use Doctrine Doctrine_Db and its 
 // performance monitoring capabilities
 
 $dsn     = "schema://username:password@dsn/dbname";
-$dbh     = Doctrine_DB::getConnection($dsn);
+$dbh     = Doctrine_Db::getConnection($dsn);
 $conn = $manager->openConnection();
 ?>

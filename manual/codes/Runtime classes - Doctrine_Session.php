@@ -1,5 +1,5 @@
 <?php
-$sess = $manager->openConnection(Doctrine_DB::getConnection("schema://username:password@hostname/database"));
+$sess = $manager->openConnection(Doctrine_Db::getConnection("schema://username:password@hostname/database"));
 
 // get connection state:
 switch($sess):

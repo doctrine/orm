@@ -70,7 +70,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         } else {
-            //$this->dbh     = Doctrine_DB::getConnection();
+            //$this->dbh     = Doctrine_Db::getConnection();
             $this->dbh       = Doctrine_Db2::getConnection("sqlite::memory:");
             //$this->dbh      = new PDO("sqlite::memory:");
 
