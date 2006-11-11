@@ -3,8 +3,7 @@
 require_once("UnitTestCase.php");
 
 
-class Doctrine_PessimisticLockingTestCase extends Doctrine_UnitTestCase
-{
+class Doctrine_PessimisticLockingTestCase extends Doctrine_UnitTestCase {
     private $lockingManager;
     
     /**
@@ -12,8 +11,7 @@ class Doctrine_PessimisticLockingTestCase extends Doctrine_UnitTestCase
      *
      * Creates a locking manager and a test record to work with.
      */
-    public function setUp()
-    {
+    public function setUp() {
         parent::setUp();
         $this->lockingManager = new Doctrine_Locking_Manager_Pessimistic($this->connection);
         
@@ -29,8 +27,7 @@ class Doctrine_PessimisticLockingTestCase extends Doctrine_UnitTestCase
      * 
      * Currently tested: successful lock, failed lock, release lock 
      */
-    public function testLock()
-    {
+    public function testLock() {
         $entries = $this->connection->query("FROM Forum_Entry WHERE Forum_Entry.author = 'Bart Simpson'");
         
         // Test successful lock
@@ -48,20 +45,42 @@ class Doctrine_PessimisticLockingTestCase extends Doctrine_UnitTestCase
     
     /**
      * Tests the release mechanism of aged locks
+     * This test implicitly tests getLock().
      */
-    public function testReleaseAgedLocks()
-    {
+    public function testReleaseAgedLocks() {
         $entries = $this->connection->query("FROM Forum_Entry WHERE Forum_Entry.author = 'Bart Simpson'");
         $this->lockingManager->getLock($entries[0], 'romanb');
         $released = $this->lockingManager->releaseAgedLocks(-1); // age -1 seconds => release all
-        $this->assertTrue($released);
+        $this->assertEqual(1, $released);
         
         // A second call should return false (no locks left)
         $released = $this->lockingManager->releaseAgedLocks(-1);
-        $this->assertFalse($released);
+        $this->assertEqual(0, $released);
+        
+        // Test with further parameters
+        $this->lockingManager->getLock($entries[0], 'romanb');
+        $released = $this->lockingManager->releaseAgedLocks(-1, 'User'); // shouldnt release anything
+        $this->assertEqual(0, $released);
+        $released = $this->lockingManager->releaseAgedLocks(-1, 'Forum_Entry'); // should release the lock
+        $this->assertEqual(1, $released);
+        
+        $this->lockingManager->getLock($entries[0], 'romanb');
+        $released = $this->lockingManager->releaseAgedLocks(-1, 'Forum_Entry', 'zyne'); // shouldnt release anything
+        $this->assertEqual(0, $released);
+        $released = $this->lockingManager->releaseAgedLocks(-1, 'Forum_Entry', 'romanb'); // should release the lock
+        $this->assertEqual(1, $released);
+    }
+    
+    /**
+     * Tests the retrieving of a lock's owner.
+     * This test implicitly tests getLock().
+     *
+     * @param Doctrine_Record $lockedRecord
+     */
+    public function testGetLockOwner() {
+        $entries = $this->connection->query("FROM Forum_Entry WHERE Forum_Entry.author = 'Bart Simpson'");
+        $gotLock = $this->lockingManager->getLock($entries[0], 'romanb');
+        $this->assertEqual('romanb', $this->lockingManager->getLockOwner($entries[0]));
     }
 }
 
-
-
-?>
