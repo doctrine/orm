@@ -1,5 +1,6 @@
 <?php
-interface iDoctrine_EventListener {
+interface Doctrine_EventListener_Interface {
+
     public function onLoad(Doctrine_Record $record);
     public function onPreLoad(Doctrine_Record $record);
 
@@ -20,26 +21,25 @@ interface iDoctrine_EventListener {
 
     public function onEvict(Doctrine_Record $record);
     public function onPreEvict(Doctrine_Record $record);
-    
+
     public function onSleep(Doctrine_Record $record);
     
     public function onWakeUp(Doctrine_Record $record);
     
-    public function onClose(Doctrine_Connection $conn);
-    public function onPreClose(Doctrine_Connection $conn);
+    public function onClose(Doctrine_Connection $connection);
+    public function onPreClose(Doctrine_Connection $connection);
     
-    public function onOpen(Doctrine_Connection $conn);
+    public function onOpen(Doctrine_Connection $connection);
 
-    public function onTransactionCommit(Doctrine_Connection $conn);
-    public function onPreTransactionCommit(Doctrine_Connection $conn);
+    public function onTransactionCommit(Doctrine_Connection $connection);
+    public function onPreTransactionCommit(Doctrine_Connection $connection);
 
-    public function onTransactionRollback(Doctrine_Connection $conn);
-    public function onPreTransactionRollback(Doctrine_Connection $conn);
+    public function onTransactionRollback(Doctrine_Connection $connection);
+    public function onPreTransactionRollback(Doctrine_Connection $connection);
 
-    public function onTransactionBegin(Doctrine_Connection $conn);
-    public function onPreTransactionBegin(Doctrine_Connection $conn);
+    public function onTransactionBegin(Doctrine_Connection $connection);
+    public function onPreTransactionBegin(Doctrine_Connection $connection);
     
     public function onCollectionDelete(Doctrine_Collection $collection);
     public function onPreCollectionDelete(Doctrine_Collection $collection);
 }
-?>

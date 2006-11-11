@@ -53,34 +53,3 @@ foreach($e as $line) {
 }
 renderQueries($str);
 ?>
-Propably the most complex feature DQL parser has to offer is its LIMIT clause parser. In pure
-sql the limit clause limits the number of rows returned. So for example when fetching users and their
-phonenumbers using limit 20 you might get anything between 1-20 users, since the first user might have 20 phonenumbers and
-hence the record set would consist of 20 rows.
-<br \><br \>
-DQL overcomes this problem with subqueries and with complex but efficient subquery analysis. In the next example
-we are going to fetch first 20 users and all their phonenumbers with single efficient query. Notice how the DQL parser is smart enough
-to use column aggregation inheritance even in the subquery.
-<br \><br \>
-<?php
-$str = "
-DQL QUERY: FROM User(id).Phonenumber LIMIT 20
-
-SQL QUERY: SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity WHERE (entity.type = 0) LIMIT 20) AND (entity.type = 0)
-";
-renderQueries($str);
-?>
-In the next example
-we are going to fetch first 20 users and all their phonenumbers and only those users that actually have phonenumbers (hence the usage of colon operator = INNER JOIN) with single efficient query.
-Notice how the DQL parser is smart enough to use the INNER JOIN in the subquery.
-<br \>
-<?php
-$str = "
-DQL QUERY: FROM User(id):Phonenumber LIMIT 20
-
-SQL QUERY: SELECT entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity INNER JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE entity.id IN (SELECT DISTINCT entity.id FROM entity INNER JOIN phonenumber ON entity.id = phonenumber.entity_id WHERE (entity.type = 0) LIMIT 20) AND (entity.type = 0)
-";
-renderQueries($str);
-?>
-
-

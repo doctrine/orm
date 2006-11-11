@@ -394,6 +394,7 @@ $menu = array("Getting started" =>
                                         ),
                         ),
             */
+            /**
             "Improving performance" => array(
                             "Introduction",
                             "Data types" =>
@@ -434,7 +435,7 @@ $menu = array("Getting started" =>
                             "Performance monitoring" => array( "Using the database profiler") 
                             
                             ),
-
+            */
             "Technology" => array(
                 "Architecture",
                 "Design patterns used",
@@ -535,7 +536,7 @@ $menu = array("Getting started" =>
                                 }
 
                                 $e = implode(".",array($i,$i2,$i3));
-                                print "<dt>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i.$i2#$e\">".$v2."</a>$str</dt>\n";
+                                print "<dt>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i.$i2#$e\">".$v2."</a></dt>\n";
                                 $i3++;
                             }
                             print "</dl></dd>";
@@ -552,7 +553,7 @@ $menu = array("Getting started" =>
                                 $str .= " [ <font color='red'>code</font> ] ";
                                 //touch("codes/$title - $t.php");
                             }
-                            print "<dt>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i#$e\">".$t."</a>$str</dt>\n";
+                            print "<dt>".$e." <a href=\"".$_SERVER['PHP_SELF']."?index=$i#$e\">".$t."</a></dt>\n";
                         }
                         $i2++;
 
