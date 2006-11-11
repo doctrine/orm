@@ -19,6 +19,8 @@
  * <http://www.phpdoctrine.com>.
  */
 Doctrine::autoload('Doctrine_Access');
+
+Doctrine::autoload('Doctrine_EventListener_Interface');
 /**
  * Doctrine_EventListener_Chain
  * this class represents a chain of different listeners, 

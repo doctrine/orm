@@ -1,4 +1,5 @@
 <?php
+Doctrine::autoload('Doctrine_Connection');
 /**
  * standard connection, the parent of pgsql, mysql and sqlite
  */

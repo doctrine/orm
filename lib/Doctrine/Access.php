@@ -31,7 +31,9 @@
 abstract class Doctrine_Access implements ArrayAccess {
     /**
      * setArray
+     *
      * @param array $array          an array of key => value pairs
+     * @since 1.0
      * @return Doctrine_Access
      */
     public function setArray(array $array) {
@@ -42,18 +44,23 @@ abstract class Doctrine_Access implements ArrayAccess {
         return $this;
     }
     /**
-     * __set -- an alias of set()
+     * __set        an alias of set()
+     *
      * @see set, offsetSet
      * @param $name
      * @param $value
+     * @since 1.0
+     * @return void
      */
     public function __set($name,$value) {
         $this->set($name,$value);
     }
     /**
      * __get -- an alias of get()
+     *
      * @see get,  offsetGet
      * @param mixed $name
+     * @since 1.0
      * @return mixed
      */
     public function __get($name) {
@@ -63,6 +70,8 @@ abstract class Doctrine_Access implements ArrayAccess {
      * __isset()
      * 
      * @param string $name
+     * @since 1.0 
+     * @return boolean          whether or not this object contains $name
      */
     public function __isset($name) {
         return $this->contains($name);
@@ -71,19 +80,21 @@ abstract class Doctrine_Access implements ArrayAccess {
      * __unset()
      * 
      * @param string $name
+     * @since 1.0
+     * @return void
      */
     public function __unset($name) {
         return $this->remove($name);                               	
     }
     /**
      * @param mixed $offset
-     * @return boolean -- whether or not the data has a field $offset
+     * @return boolean          whether or not this object contains $offset
      */
     public function offsetExists($offset) {
         return $this->contains($offset);
     }
     /**
-     * offsetGet -- an alias of get()
+     * offsetGet    an alias of get()
      * @see get,  __get
      * @param mixed $offset
      * @return mixed

@@ -52,7 +52,7 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression {
      * @param integer $length       the substring portion length
      * @return string               SQL substring function with given parameters
      */
-    public function substring($value, $position = 1, $length = null) {
+    public function substring($value, $position, $length = null) {
         if($length !== null)
             return "SUBSTR($value, $position, $length)";
 

@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Relation');
 /**
  * Doctrine_Relation_Association    this class takes care of association mapping
  *                         (= many-to-many relationships, where the relationship is handled with an additional relational table

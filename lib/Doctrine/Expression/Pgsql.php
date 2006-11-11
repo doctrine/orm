@@ -1,3 +1,4 @@
+<?php
 /*
  *  $Id$
  *
@@ -63,7 +64,7 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
      * @param int $len extract this amount of characters.
      * @return string sql that extracts part of a string.
      */
-    public function subString($value, $from, $len = null) {
+    public function substring($value, $from, $len = null) {
         $value = $this->getIdentifier($value);
 
         if ($len === null) {

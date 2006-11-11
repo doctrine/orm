@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Import_Reader');
 /**
  * @package     Doctrine
  * @url         http://www.phpdoctrine.com
@@ -56,7 +56,7 @@ class Doctrine_Import_Reader_Xml_Propel extends Doctrine_Import_Reader
         
     } // end of member function setXml
 
-
+    public function read() { }
 
 
 

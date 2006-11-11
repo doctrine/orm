@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Schema_Object');
 /**
  * @package     Doctrine
  * @url         http://www.phpdoctrine.com
@@ -45,7 +45,7 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
 
     /**
      *
-     * @return 
+     * @return
      * @access public
      */
     public function __clone( ) {

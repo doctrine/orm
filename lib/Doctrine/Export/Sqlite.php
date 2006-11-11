@@ -60,7 +60,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export {
      * @throws PDOException
      * @return void
      */
-    public function createIndex($table, $name, $definition) {
+    public function createIndex($table, $name, array $definition) {
         $table = $this->conn->quoteIdentifier($table, true);
         $name  = $this->dbh->getIndexName($name);
         $query = "CREATE INDEX $name ON $table";
