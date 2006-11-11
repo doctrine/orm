@@ -514,7 +514,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $name
      * @return string
      */
-    final public function getAlias($name) {
+    public function getAlias($name) {
         if(isset($this->boundAliases[$name]))
             return $this->boundAliases[$name];
 
@@ -526,11 +526,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $alias
      * @return string
      */
-    final public function getAliasName($alias) {
+    public function getAliasName($alias) {
         if($name = array_search($alias, $this->boundAliases))
             return $name;
 
-        throw new Doctrine_Table_Exception('Unknown alias '.$alias);
+        return $alias;
     }
     /**
      * unbinds all relations

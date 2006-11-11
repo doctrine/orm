@@ -122,6 +122,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param Doctrine_Table|null $table       a Doctrine_Table object or null, 
      *                                         if null the table object is retrieved from current connection
      *
+     * @param boolean $isNewEntry              whether or not this record is transient
+     *
      * @throws Doctrine_Connection_Exception   if object is created using the new operator and there are no
      *                                         open connections
      * @throws Doctrine_Record_Exception       if the cleanData operation fails somehow

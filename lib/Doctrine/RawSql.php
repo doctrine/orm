@@ -193,13 +193,13 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * @return Doctrine_RawSql
      */
     public function addComponent($tableAlias, $componentName) {
-        $e = explode(".", $componentName);
+        $e = explode('.', $componentName);
 
         $currPath = '';
         $table = null;
 
         foreach($e as $k => $component) {
-            $currPath .= '.'.$component;
+            $currPath .= '.' . $component;
             if($k == 0)
                 $currPath = substr($currPath,1);
 
@@ -209,8 +209,11 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
                 $alias = $tableAlias;
 
             if ($table) {
-                $t_name = $table->getAliasName($component);
-                $table = $this->connection->getTable($t_name);
+
+                $tableName = $table->getAliasName($component);
+                
+
+                $table = $this->connection->getTable($tableName);
             } else {
                 $table = $this->connection->getTable($component);
             }

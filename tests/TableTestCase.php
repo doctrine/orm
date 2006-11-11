@@ -164,9 +164,6 @@ class Doctrine_TableTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_array($columns));
 
     }
-    public function testIsNewEntry() {
-        $this->assertFalse($this->objTable->isNewEntry());
-    }
     public function testApplyInheritance() {
         $this->assertEqual($this->objTable->applyInheritance("id = 3"), "id = 3 AND type = ?");
     }
