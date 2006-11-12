@@ -22,7 +22,7 @@
  * Doctrine_Validator_ErrorStack
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author      Roman Borschel
+ * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @package     Doctrine
  * @category    Object Relational Mapping
