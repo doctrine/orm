@@ -21,9 +21,13 @@
 /**
  * Doctrine_Db_Statement
  *
- * @author      Konsta Vesterinen
- * @license     LGPL
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @package     Doctrine
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
 class Doctrine_Db_Statement extends PDOStatement { 
     protected $dbh;

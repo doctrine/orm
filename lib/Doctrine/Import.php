@@ -25,15 +25,18 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  * @version     $Id$
- */
-
-
-
 /**
  * class Doctrine_Import
  * Main responsible of performing import operation. Delegates database schema
  * reading to a reader object and passes the result to a builder object which
  * builds a Doctrine data model.
+ * @package     Doctrine
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Import {
     /**

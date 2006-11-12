@@ -18,14 +18,17 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
 /**
  * Doctrine_Validator_ErrorStack
  *
- * @author      Konsta Vesterinen
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel
- * @license     LGPL
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @package     Doctrine
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
 class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable, IteratorAggregate {
     

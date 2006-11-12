@@ -22,10 +22,13 @@ Doctrine::autoload('Doctrine_EventListener');
 /**
  * Doctrine_EventListener_AccessorInvoker
  *
- * @author      Konsta Vesterinen
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
 class Doctrine_EventListener_AccessorInvoker extends Doctrine_EventListener {
     /**

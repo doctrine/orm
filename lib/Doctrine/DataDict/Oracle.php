@@ -18,15 +18,15 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
 /**
  * @package     Doctrine
- * @url         http://www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Konsta Vesterinen
- * @version     $Id$
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @version     $Revision$
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
  */
- 
 class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type

@@ -20,16 +20,18 @@
  */
 Doctrine::autoload('Doctrine_Access');
 
-Doctrine::autoload('Doctrine_EventListener_Interface');
 /**
  * Doctrine_EventListener_Chain
  * this class represents a chain of different listeners, 
  * useful for having multiple listeners listening the events at the same time
  *
- * @author      Konsta Vesterinen
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
 class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_EventListener_Interface {
     /**

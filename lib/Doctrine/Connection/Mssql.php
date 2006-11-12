@@ -22,12 +22,14 @@ Doctrine::autoload('Doctrine_Connection');
 /**
  * Doctrine_Connection_Mssql
  *
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
+ * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Konsta Vesterinen
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
- * @version     $Id$
+ * @version     $Revision$
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
  */
 class Doctrine_Connection_Mssql extends Doctrine_Connection {
     /**

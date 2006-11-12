@@ -20,13 +20,16 @@
  */
 Doctrine::autoload('Doctrine_Access');
 
-Doctrine::autoload('Doctrine_Db_EventListener_Interface');
 /**
  * Doctrine_Db_EventListener
  *
- * @author      Konsta Vesterinen
- * @license     LGPL
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @package     Doctrine
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
 class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrine_Db_EventListener_Interface {
     private $listeners = array();

@@ -18,17 +18,18 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
 /**
  * Doctrine_Table   represents a database table
  *                  each Doctrine_Table holds the information of foreignKeys and associations
  *
  *
- * @author      Konsta Vesterinen
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
- * @version     1.0 alpha
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @version     $Revision$
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
  */
 class Doctrine_Table extends Doctrine_Configurable implements Countable {
     /**

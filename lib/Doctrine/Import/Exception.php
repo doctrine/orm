@@ -25,8 +25,14 @@ Doctrine::autoload('Doctrine_Exception');
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Id$
  */
-
 /**
  * class Doctrine_Import_Exception
+ * @package     Doctrine
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Import_Exception extends Doctrine_Exception { }

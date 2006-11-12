@@ -18,14 +18,17 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
 /**
  * Doctrine_Compiler
  * This class can be used for compiling the entire Doctrine framework into a single file
  *
  * @package     Doctrine
- * @author      Konsta Vesterinen
- * @license     LGPL
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
 class Doctrine_Compiler {
     /**

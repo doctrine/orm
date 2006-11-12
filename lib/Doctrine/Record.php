@@ -23,11 +23,14 @@ Doctrine::autoload('Doctrine_Access');
  * Doctrine_Record
  * All record classes should inherit this super class
  *
- * @author      Konsta Vesterinen
- * @license     LGPL
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @package     Doctrine
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
-
 abstract class Doctrine_Record extends Doctrine_Access implements Countable, IteratorAggregate, Serializable {
     /**
      * STATE CONSTANTS

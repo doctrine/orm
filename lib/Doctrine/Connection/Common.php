@@ -2,6 +2,13 @@
 Doctrine::autoload('Doctrine_Connection');
 /**
  * standard connection, the parent of pgsql, mysql and sqlite
+ * @package     Doctrine
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Connection_Common extends Doctrine_Connection {
     /**

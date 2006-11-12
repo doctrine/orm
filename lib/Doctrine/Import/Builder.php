@@ -25,13 +25,16 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  * @version     $Id$
- */
-
-
-
 /**
  * class Doctrine_Import_Builder
  * Is responsible of building Doctrine structure based on a database schema.
+ * @package     Doctrine
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Import_Builder {
     

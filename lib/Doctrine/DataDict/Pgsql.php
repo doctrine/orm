@@ -18,17 +18,17 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
 /**
  * @package     Doctrine
- * @url         http://www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Konsta Vesterinen
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Paul Cooper <pgc@ucecom.com>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
- * @version     $Id$
+ * @version     $Revision$
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
  */
-
 class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type

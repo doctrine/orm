@@ -18,14 +18,16 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
 /**
  * Doctrine_Identifier
  *
- * @author      Konsta Vesterinen
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
 class Doctrine_Identifier {
     /**

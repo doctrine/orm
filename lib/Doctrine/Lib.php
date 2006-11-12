@@ -18,13 +18,16 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
 /**
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * 
  * Doctrine_Lib has not commonly used static functions, mostly for debugging purposes
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Lib {
     /**

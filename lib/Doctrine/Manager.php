@@ -18,14 +18,17 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
 /**
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * 
  * Doctrine_Manager is the base component of all doctrine based projects. 
  * It opens and keeps track of all connections (database connections).
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Manager extends Doctrine_Configurable implements Countable, IteratorAggregate {
     /**

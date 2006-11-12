@@ -24,9 +24,13 @@ Doctrine::autoload('Doctrine_Access');
  * Its purpose is to populate object graphs.
  *
  *
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 abstract class Doctrine_Hydrate extends Doctrine_Access {
     /**

@@ -1,11 +1,13 @@
 <?php
 Doctrine::autoload('Doctrine_Collection');
 /**
- * @author      Konsta Vesterinen
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
- * @version     1.0 alpha
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @version     $Revision$
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
  */
 class Doctrine_Collection_Immediate extends Doctrine_Collection {
     /**

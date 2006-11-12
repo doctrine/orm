@@ -19,15 +19,19 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * Class for handling the pessimistic offline locking of {@link Doctrine_Record}s.
+ * @link        www.phpdoctrine.com
  * Offline locking of records comes in handy where you need to make sure that
  * a time-consuming task on a record or many records, which is spread over several
  * page requests can't be interfered by other users. 
  * 
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Pierre Minnieur <pm@pierre-minnieur.de>
- * @license LGPL
- * @since   1.0
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since       1.0
+ * @package     Doctrine
+ * @category    Object Relational Mapping
+ * @version     $Revision$
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Locking_Manager_Pessimistic {
     /**

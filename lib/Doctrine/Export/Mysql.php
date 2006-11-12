@@ -23,9 +23,13 @@ Doctrine::autoload('Doctrine_Export');
  * Doctrine_Export_Mysql
  *
  * @package     Doctrine
- * @author      Konsta Vesterinen
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
- * @license     LGPL
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
 class Doctrine_Export_Mysql extends Doctrine_Export {
    /**
