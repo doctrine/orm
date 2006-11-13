@@ -34,7 +34,7 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  */
 class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Exception { 
     /**
-     * @var array $errorRegexps         an array that is used for determining portable 
+     * @var array $errorCodeMap         an array that is used for determining portable
      *                                  error code from a native database error code
      */
     protected static $errorCodeMap = array(
