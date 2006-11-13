@@ -56,7 +56,7 @@ class Doctrine_Transaction {
     /**
      * the constructor
      *
-     * @param Doctrine_Connection $conn
+     * @param Doctrine_Connection $conn     Doctrine_Connection object
      */
     public function __construct(Doctrine_Connection $conn) {
         $this->conn  = $conn;
@@ -119,6 +119,7 @@ class Doctrine_Transaction {
         return $level;
     }
     /**
+     * commit
      * Commit the database changes done during a transaction that is in
      * progress or release a savepoint. This function may only be called when
      * auto-committing is disabled, otherwise it will fail. Therefore, a new
@@ -130,41 +131,39 @@ class Doctrine_Transaction {
      * @throws Doctrine_Validator_Exception     if the transaction fails due to record validations
      * @return void
      */
-    public function commit($savepoint) {
+    public function commit($savepoint = null) {
         if($this->transactionLevel == 0)
             throw new Doctrine_Transaction_Exception('Commit/release savepoint cannot be done. There is no active transaction.');
-        
-        
+
         if ( ! is_null($savepoint)) {
-            $query = 'RELEASE SAVEPOINT '.$savepoint;
-            return $this->_doQuery($query, true);
+            $this->releaseSavePoint($savepoint);
         } else {
-        $this->transactionLevel--;
-
-        if($this->transactionLevel == 0) {
-            $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionCommit($this->conn);
-
-            try {
-                $this->bulkDelete();
-
-            } catch(Exception $e) {
-                $this->rollback();
-
-                throw new Doctrine_Connection_Transaction_Exception($e->__toString());
+            $this->transactionLevel--;
+    
+            if($this->transactionLevel == 0) {
+                $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionCommit($this->conn);
+    
+                try {
+                    $this->bulkDelete();
+    
+                } catch(Exception $e) {
+                    $this->rollback();
+    
+                    throw new Doctrine_Connection_Transaction_Exception($e->__toString());
+                }
+    
+                if($tmp = $this->unitOfWork->getInvalid()) {
+                    $this->rollback();
+    
+                    throw new Doctrine_Validator_Exception($tmp);
+                }
+    
+                $this->conn->getDbh()->commit();
+    
+                $this->unitOfWork->reset();
+    
+                $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this->conn);
             }
-
-            if($tmp = $this->unitOfWork->getInvalid()) {
-                $this->rollback();
-
-                throw new Doctrine_Validator_Exception($tmp);
-            }
-
-            $this->conn->getDbh()->commit();
-
-            $this->unitOfWork->reset();
-
-            $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this->conn);
-        }
         }
     }
     /**
