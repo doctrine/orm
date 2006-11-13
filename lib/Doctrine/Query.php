@@ -369,7 +369,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             break;
             case 'limit':
             case 'offset':
-                if($args[0] == null)
+                if($args[0] === null)
                     $args[0] = false;
 
                 $this->parts[$name] = $args[0];
