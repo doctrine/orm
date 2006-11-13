@@ -67,5 +67,30 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
         
         return $this->conn->getDbh()->query($query);
-    } 
+    }
+    /**
+     * Set the transacton isolation level.
+     *
+     * @param   string  standard isolation level
+     *                  READ UNCOMMITTED (allows dirty reads)
+     *                  READ COMMITTED (prevents dirty reads)
+     *                  REPEATABLE READ (prevents nonrepeatable reads)
+     *                  SERIALIZABLE (prevents phantom reads)
+     * @throws PDOException                         if something fails at the PDO level
+     * @throws Doctrine_Transaction_Exception       if using unknown isolation level or unknown wait option
+     * @return void
+     */
+    public function setTransactionIsolation($isolation) {
+        switch ($isolation) {
+            case 'READ UNCOMMITTED':
+            case 'READ COMMITTED':
+            case 'REPEATABLE READ':
+            case 'SERIALIZABLE':
+            break;
+                throw new Doctrine_Connection_Pgsql_Exception('Isolation level '.$isolation.' is not supported.');
+        }
+
+        $query = 'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL ' . $isolation;
+        return $this->dbh->query($query);
+    }
 }

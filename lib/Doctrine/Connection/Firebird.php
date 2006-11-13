@@ -74,63 +74,6 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
         parent::__construct($manager, $adapter);
     }
     /**
-     * Set the transacton isolation level.
-     *
-     * @param   string  standard isolation level (SQL-92)
-     *                  READ UNCOMMITTED (allows dirty reads)
-     *                  READ COMMITTED (prevents dirty reads)
-     *                  REPEATABLE READ (prevents nonrepeatable reads)
-     *                  SERIALIZABLE (prevents phantom reads)
-     *
-     * @param   array some transaction options:
-     *                  'wait' => 'WAIT' | 'NO WAIT'
-     *                  'rw'   => 'READ WRITE' | 'READ ONLY'
-     * @return void
-     */
-    public function setTransactionIsolation($isolation, $options = array()) {
-        switch ($isolation) {
-            case 'READ UNCOMMITTED':
-                $ibase_isolation = 'READ COMMITTED RECORD_VERSION';
-            break;
-            case 'READ COMMITTED':
-                $ibase_isolation = 'READ COMMITTED NO RECORD_VERSION';
-            break;
-            case 'REPEATABLE READ':
-                $ibase_isolation = 'SNAPSHOT';
-            break;
-            case 'SERIALIZABLE':
-                $ibase_isolation = 'SNAPSHOT TABLE STABILITY';
-            break;
-            default:
-                throw new Doctrine_Connection_Firebird_Exception('isolation level is not supported: ' . $isolation);
-        }
-
-        if( ! empty($options['wait'])) {
-            switch ($options['wait']) {
-                case 'WAIT':
-                case 'NO WAIT':
-                    $wait = $options['wait'];
-                break;
-                default:
-                    throw new Doctrine_Connection_Firebird_Exception('wait option is not supported: ' . $options['wait']);
-            }
-        }
-
-        if( ! empty($options['rw'])) {
-            switch ($options['rw']) {
-                case 'READ ONLY':
-                case 'READ WRITE':
-                    $rw = $options['wait'];
-                break;
-                default:
-                    throw new Doctrine_Connection_Firebird_Exception('wait option is not supported: ' . $options['rw']);
-            }
-        }
-
-        $query = 'SET TRANSACTION ' . $rw . ' ' . $wait .' ISOLATION LEVEL ' . $ibase_isolation;
-        $this->dbh->query($query);
-    }
-    /**
      * Set the charset on the current connection
      *
      * @param string    charset

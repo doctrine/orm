@@ -66,4 +66,33 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction {
         
         return $this->conn->getDbh()->query($query);
     }
+    /**
+     * Set the transacton isolation level.
+     *
+     * @param   string  standard isolation level
+     *                  READ UNCOMMITTED (allows dirty reads)
+     *                  READ COMMITTED (prevents dirty reads)
+     *                  REPEATABLE READ (prevents nonrepeatable reads)
+     *                  SERIALIZABLE (prevents phantom reads)
+     * @throws PDOException                         if something fails at the PDO level
+     * @throws Doctrine_Transaction_Exception       if using unknown isolation level
+     * @return void
+     */
+    public function setTransactionIsolation($isolation) {
+        switch($isolation) {
+            case 'READ UNCOMMITTED':
+                $isolation = 'READ COMMITTED';
+            break;
+            case 'READ COMMITTED':
+            case 'REPEATABLE READ':
+            case 'SERIALIZABLE':
+                $isolation = 'SERIALIZABLE';
+            break;
+            default:
+                throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . ' is not supported.');
+        }
+
+        $query = 'ALTER SESSION ISOLATION LEVEL ' . $isolation;
+        return $this->dbh->query($query);
+    }
 }

@@ -109,10 +109,9 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
      * @param integer $limit        limit the number of rows
      * @param integer $offset       start reading from given offset
      * @param boolean $isManip      if the query is a DML query
-
      * @return string               modified query
      */
-    public function modifyLimitQuery($query, $limit=false, $offset=false, $isManip = false) {
+    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false) {
         if ($limit > 0) {
             $query = rtrim($query);
             
@@ -138,29 +137,4 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
         }
         return $query;
     }
-    /**
-     * Set the transacton isolation level.
-     *
-     * @param   string  standard isolation level
-     *                  READ UNCOMMITTED (allows dirty reads)
-     *                  READ COMMITTED (prevents dirty reads)
-     *                  REPEATABLE READ (prevents nonrepeatable reads)
-     *                  SERIALIZABLE (prevents phantom reads)
-     * @return void
-     */
-    public function setTransactionIsolation($isolation) {
-        switch ($isolation) {
-            case 'READ UNCOMMITTED':
-            case 'READ COMMITTED':
-            case 'REPEATABLE READ':
-            case 'SERIALIZABLE':
-            break;
-                throw new Doctrine_Connection_Pgsql_Exception('Isolation level '.$isolation.' is not supported.');
-        }
-
-        $query = 'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL ' . $isolation;
-        return $this->dbh->query($query);
-    }
-
 }
-

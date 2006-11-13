@@ -67,4 +67,42 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
         
         return $this->conn->getDbh()->query($query);
     }
+    /**
+     * Set the transacton isolation level.
+     *
+     * @param   string  standard isolation level
+     *                  READ UNCOMMITTED (allows dirty reads)
+     *                  READ COMMITTED (prevents dirty reads)
+     *                  REPEATABLE READ (prevents nonrepeatable reads)
+     *                  SERIALIZABLE (prevents phantom reads)
+     *
+     * @throws Doctrine_Transaction_Exception           if using unknown isolation level
+     * @throws PDOException                             if something fails at the PDO level
+     * @return void
+     */
+    public function setTransactionIsolation($isolation) {
+        switch ($isolation) {
+            case 'READ UNCOMMITTED':
+            case 'READ COMMITTED':
+            case 'REPEATABLE READ':
+            case 'SERIALIZABLE':
+            
+            break;
+            default:
+                throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . ' is not supported.');
+        }
+
+        $query = "SET SESSION TRANSACTION ISOLATION LEVEL $isolation";
+        
+        return $this->conn->getDbh()->query($query);
+    }
+    /**
+     * getTransactionIsolation
+     * 
+     * @return string               returns the current session transaction isolation level
+     */
+    public function getTransactionIsolation() {
+        $ret = $this->conn->getDbh()->query('SELECT @@tx_isolation')->fetch(PDO::FETCH_NUM);
+        return $ret[0];
+    }
 }

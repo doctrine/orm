@@ -67,4 +67,65 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
         
         return $this->conn->getDbh()->query($query);
     }
+    /**
+     * Set the transacton isolation level.
+     *
+     * @param   string  standard isolation level (SQL-92)
+     *                  READ UNCOMMITTED (allows dirty reads)
+     *                  READ COMMITTED (prevents dirty reads)
+     *                  REPEATABLE READ (prevents nonrepeatable reads)
+     *                  SERIALIZABLE (prevents phantom reads)
+     *
+     * @param   array some transaction options:
+     *                  'wait' => 'WAIT' | 'NO WAIT'
+     *                  'rw'   => 'READ WRITE' | 'READ ONLY'
+     *
+     * @throws PDOException                         if something fails at the PDO level
+     * @throws Doctrine_Transaction_Exception       if using unknown isolation level or unknown wait option
+     * @return void
+     */
+    public function setTransactionIsolation($isolation, $options = array()) {
+        switch ($isolation) {
+            case 'READ UNCOMMITTED':
+                $nativeIsolation = 'READ COMMITTED RECORD_VERSION';
+            break;
+            case 'READ COMMITTED':
+                $nativeIsolation = 'READ COMMITTED NO RECORD_VERSION';
+            break;
+            case 'REPEATABLE READ':
+                $nativeIsolation = 'SNAPSHOT';
+            break;
+            case 'SERIALIZABLE':
+                $nativeIsolation = 'SNAPSHOT TABLE STABILITY';
+            break;
+            default:
+                throw new Doctrine_Transaction_Exception('isolation level is not supported: ' . $isolation);
+        }
+
+        if( ! empty($options['wait'])) {
+            switch ($options['wait']) {
+                case 'WAIT':
+                case 'NO WAIT':
+                    $wait = $options['wait'];
+                break;
+                default:
+                    throw new Doctrine_Transaction_Exception('wait option is not supported: ' . $options['wait']);
+            }
+        }
+
+        if( ! empty($options['rw'])) {
+            switch ($options['rw']) {
+                case 'READ ONLY':
+                case 'READ WRITE':
+                    $rw = $options['wait'];
+                break;
+                default:
+                    throw new Doctrine_Transaction_Exception('wait option is not supported: ' . $options['rw']);
+            }
+        }
+
+        $query = 'SET TRANSACTION ' . $rw . ' ' . $wait .' ISOLATION LEVEL ' . $nativeIsolation;
+
+        $this->conn->getDbh()->query($query);
+    }
 }
