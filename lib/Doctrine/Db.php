@@ -22,11 +22,23 @@
  * Doctrine_Db
  * A thin wrapper layer on top of PDO / Doctrine_Adapter
  *
- * The purpose of this class is to provide an easy to use, pluggable eventlistener
- * architecture to database handler object
+ * Doctrine_Db provides the following things to underlying database hanlder
  *
- * Aspects such as logging, query profiling and caching can be easily implemented through
- * the use of these listeners
+ * 1. Event listeners
+ *    An easy to use, pluggable eventlistener architecture. Aspects such as
+ *    logging, query profiling and caching can be easily implemented through
+ *    the use of these listeners
+ *
+ * 2. Lazy-connecting
+ *    Creating an instance of Doctrine_Db does not connect
+ *    to database. Connecting to database is only invoked when actually needed
+ *    (for example when query() is being called)
+ *
+ * 3. Portable error codes
+ *    Doctrine_Db_Exception drivers provide portable error code handling.
+ *
+ * 4. Easy-to-use fetching methods
+ *    For convience Doctrine_Db provides methods such as fetchOne(), fetchAssoc() etc.
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -401,29 +413,70 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
     /**
      * fetchAll
      *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
      * @return array
      */
     public function fetchAll($statement, array $params = array()) {
         return $this->query($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
-
+    /**
+     * fetchOne
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return mixed
+     */
     public function fetchOne($statement, array $params = array()) {
         return current($this->query($statement, $params)->fetch(PDO::FETCH_NUM));
     }
-    
+    /**
+     * fetchRow
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
+     */
     public function fetchRow($statement, array $params = array()) {
         return $this->query($statement, $params)->fetch(PDO::FETCH_ASSOC);
     }
-    
+    /**
+     * fetchArray
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
+     */
     public function fetchArray($statement, array $params = array()) {
         return $this->query($statement, $params)->fetch(PDO::FETCH_NUM);
     }
+    /**
+     * fetchColumn
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
+     */
     public function fetchColumn($statement, array $params = array()) {
         return $this->query($statement, $params)->fetchAll(PDO::FETCH_COLUMN);
     }
+    /**
+     * fetchAssoc
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
+     */
     public function fetchAssoc($statement, array $params = array()) {
         return $this->query($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
+    /**
+     * fetchBoth
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
+     */
     public function fetchBoth($statement, array $params = array()) { 
         return $this->query($statement, $params)->fetchAll(PDO::FETCH_BOTH);
     }
