@@ -128,7 +128,12 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
                        . $from . ' ' . $where . ' LIMIT ' . $limit . ')';
 
             } else {
-                $query .= ' LIMIT ' . $limit . ' OFFSET ' . $offset;
+                if($limit !== false) {
+                  $query .= ' LIMIT ' . $limit;
+                }
+                if($offset !== false) {
+                  $query .= ' OFFSET ' . $offset;
+                }
             }
         }
         return $query;
