@@ -30,21 +30,17 @@
  */
 class Doctrine_Transaction { 
     /**
-     * Doctrine_Transaction is in open state when it is opened and there are no active transactions
+     * Doctrine_Transaction is in sleep state when it has no active transactions
      */
-    const STATE_OPEN        = 0;
-    /**
-     * Doctrine_Transaction is in closed state when it is closed
-     */
-    const STATE_CLOSED      = 1;
+    const STATE_SLEEP       = 0;
     /**
      * Doctrine_Transaction is in active state when it has one active transaction
      */
-    const STATE_ACTIVE      = 2;
+    const STATE_ACTIVE      = 1;
     /**
      * Doctrine_Transaction is in busy state when it has multiple active transactions
      */
-    const STATE_BUSY        = 3;
+    const STATE_BUSY        = 2;
     /**
      * @var Doctrine_Connection $conn       the connection object
      */
@@ -93,6 +89,8 @@ class Doctrine_Transaction {
      * beginTransaction
      * Start a transaction or set a savepoint.
      *
+     * Listeners: onPreTransactionBegin, onTransactionBegin
+     *
      * @param string $savepoint                 name of a savepoint to set
      * @throws Doctrine_Transaction_Exception   if trying to create a savepoint and there
      *                                          are no active transactions
@@ -122,8 +120,9 @@ class Doctrine_Transaction {
      * commit
      * Commit the database changes done during a transaction that is in
      * progress or release a savepoint. This function may only be called when
-     * auto-committing is disabled, otherwise it will fail. Therefore, a new
-     * transaction is implicitly started after committing the pending changes.
+     * auto-committing is disabled, otherwise it will fail. 
+     *
+     * Listeners: onPreTransactionCommit, onTransactionCommit
      *
      * @param string $savepoint                 name of a savepoint to release
      * @throws Doctrine_Transaction_Exception   if the transaction fails at PDO level
@@ -145,7 +144,7 @@ class Doctrine_Transaction {
     
                 try {
                     $this->bulkDelete();
-    
+
                 } catch(Exception $e) {
                     $this->rollback();
     
@@ -226,5 +225,46 @@ class Doctrine_Transaction {
      */
     public function rollbackSavePoint($savepoint) {
         throw new Doctrine_Transaction_Exception('Savepoints not supported by this driver.');
+    }
+    /**
+     * setIsolation
+     *
+     * Set the transacton isolation level.
+     * (implemented by the connection drivers)
+     *
+     * example:
+     *
+     * <code>
+     * $tx->setIsolation('READ UNCOMMITTED');
+     * </code>
+     *
+     * @param   string  standard isolation level
+     *                  READ UNCOMMITTED (allows dirty reads)
+     *                  READ COMMITTED (prevents dirty reads)
+     *                  REPEATABLE READ (prevents nonrepeatable reads)
+     *                  SERIALIZABLE (prevents phantom reads)
+     *
+     * @throws Doctrine_Connection_Exception            if the feature is not supported by the driver
+     * @throws PDOException                             if something fails at the PDO level
+     * @return void
+     */
+    public function setIsolation($isolation) {
+        throw new Doctrine_Connection_Exception('Transaction isolation levels not supported by this driver.');
+    }
+
+    /**
+     * getTransactionIsolation
+     *
+     * fetches the current session transaction isolation level
+     *
+     * note: some drivers may support setting the transaction isolation level 
+     * but not fetching it
+     * 
+     * @throws Doctrine_Connection_Exception            if the feature is not supported by the driver
+     * @throws PDOException                             if something fails at the PDO level
+     * @return string                                   returns the current session transaction isolation level
+     */
+    public function getIsolation() {
+        throw new Doctrine_Connection_Exception('Fetching transaction isolation level not supported by this driver.');
     }
 }

@@ -532,12 +532,15 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
         return array($type, $length, $unsigned, $fixed);
     }
     /**
+     * listDatabases
      * lists all databases
      *
      * @return array
      */
     public function listDatabases() {
-
+        $query = 'SELECT datname FROM pg_database';
+        
+        return $this->conn->fetchColumn($query);
     }
     /**
      * lists all availible database functions
@@ -545,7 +548,20 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
      * @return array
      */
     public function listFunctions() {
-    
+        $query = "
+            SELECT
+                proname
+            FROM
+                pg_proc pr,
+                pg_type tp
+            WHERE
+                tp.oid = pr.prorettype
+                AND pr.proisagg = FALSE
+                AND tp.typname <> 'trigger'
+                AND pr.pronamespace IN
+                    (SELECT oid FROM pg_namespace WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema')";
+
+        return $this->conn->fetchColumn($query);
     }
     /**
      * lists all database triggers
@@ -563,7 +579,10 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
      * @return array
      */
     public function listSequences($database = null) { 
-    
+        $query = "SELECT relname FROM pg_class WHERE relkind = 'S' AND relnamespace IN";
+        $query.= "(SELECT oid FROM pg_namespace WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema')";
+        
+        return $this->conn->fetchColumn($query);
     }
     /**
      * lists table constraints
@@ -572,7 +591,12 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
      * @return array
      */
     public function listTableConstraints($table) {
-    
+        $table = $db->quote($table, 'text');
+        $subquery = "SELECT indexrelid FROM pg_index, pg_class";
+        $subquery.= " WHERE pg_class.relname=$table AND pg_class.oid=pg_index.indrelid AND (indisunique = 't' OR indisprimary = 't')";
+        $query = "SELECT relname FROM pg_class WHERE oid IN ($subquery)";
+        
+        return $this->conn->fetchColumn($query);
     }
     /**
      * lists table constraints
@@ -619,13 +643,18 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
         return $columns;
     }
     /**
-     * lists table constraints
+     * list all indexes in a table
      *
      * @param string $table     database table name
      * @return array
      */
     public function listTableIndexes($table) {
-    
+        $table = $db->quote($table, 'text');
+        $subquery = "SELECT indexrelid FROM pg_index, pg_class";
+        $subquery.= " WHERE pg_class.relname=$table AND pg_class.oid=pg_index.indrelid AND indisunique != 't' AND indisprimary != 't'";
+        $query    = "SELECT relname FROM pg_class WHERE oid IN ($subquery)";
+
+        return $this->conn->fetchColumn($query);
     }
     /**
      * lists tables
@@ -659,21 +688,25 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
     
     }
     /**
-     * lists table views
+     * list the views in the database that reference a given table
      *
      * @param string $table     database table name
      * @return array
      */
     public function listTableViews($table) { 
-    
+        $query = 'SELECT viewname FROM pg_views';
+
+        return $this->conn->fetchColumn($query);
     }
     /**
      * lists database users
      *
      * @return array
      */
-    public function listUsers() { 
-    
+    public function listUsers() {
+        $query = 'SELECT usename FROM pg_user';
+
+        return $this->conn->fetchColumn($query);
     }
     /**
      * lists database views
@@ -681,7 +714,9 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
      * @param string|null $database
      * @return array
      */
-    public function listViews($database = null) { 
-    
+    public function listViews($database = null) {
+        $query  = 'SELECT viewname FROM pg_views';
+
+        return $this->conn->fetchColumn($query);
     }
 }

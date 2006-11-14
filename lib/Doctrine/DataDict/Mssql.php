@@ -23,6 +23,8 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+ * @author      Frank M. Kromann <frank@kromann.info> (PEAR MDB2 Mssql driver)
+ * @author      David Coallier <davidc@php.net> (PEAR MDB2 Mssql driver)
  * @version     $Revision$
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
@@ -189,7 +191,22 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
      * @return array
      */
     public function listSequences($database = null) { 
-    
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'U'";
+        $table_names = $db->queryCol($query);
+        if (PEAR::isError($table_names)) {
+            return $table_names;
+        }
+        $result = array();
+        foreach ($table_names as $table_name) {
+            if ($sqn = $this->_fixSequenceName($table_name, true)) {
+                $result[] = $sqn;
+            }
+        }
+        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            $result = array_map(($db->options['field_case'] == CASE_LOWER ?
+                          'strtolower' : 'strtoupper'), $result);
+        }
+        return $result;
     }
     /**
      * lists table constraints
@@ -207,7 +224,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
      * @return array
      */
     public function listTableColumns($table) { 
-        $sql     = "exec sp_columns @table_name = " . $this->quoteIdentifier($table);
+        $sql     = 'EXEC sp_columns @table_name = ' . $this->quoteIdentifier($table);
         $result  = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         $columns = array();
 
@@ -262,7 +279,24 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
      * @return array
      */
     public function listTableTriggers($table) { 
-    
+        $table = $db->quote($table, 'text');
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'TR'";
+        if (!is_null($table)) {
+            $query .= "AND object_name(parent_obj) = $table";
+        }
+
+        $result = $db->queryCol($query);
+        if (PEAR::isError($results)) {
+            return $result;
+        }
+
+        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE &&
+            $db->options['field_case'] == CASE_LOWER)
+        {
+            $result = array_map(($db->options['field_case'] == CASE_LOWER ?
+                'strtolower' : 'strtoupper'), $result);
+        }
+        return $result;
     }
     /**
      * lists table views
@@ -271,7 +305,34 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
      * @return array
      */
     public function listTableViews($table) { 
-    
+        $keyName = 'INDEX_NAME';
+        $pkName = 'PK_NAME';
+        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            if ($db->options['field_case'] == CASE_LOWER) {
+                $keyName = strtolower($keyName);
+                $pkName  = strtolower($pkName);
+            } else {
+                $keyName = strtoupper($keyName);
+                $pkName  = strtoupper($pkName);
+            }
+        }
+        $table = $db->quote($table, 'text');
+        $query = 'EXEC sp_statistics @table_name = ' . $table;
+        $indexes = $db->queryCol($query, 'text', $keyName);
+
+        $query = 'EXEC sp_pkeys @table_name = ' . $table;
+        $pkAll = $db->queryCol($query, 'text', $pkName);
+        $result = array();
+        foreach ($indexes as $index) {
+            if (!in_array($index, $pkAll) && $index != null) {
+                $result[$this->_fixIndexName($index)] = true;
+            }
+        }
+
+        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_change_key_case($result, $db->options['field_case']);
+        }
+        return array_keys($result);
     }
     /**
      * lists database users
@@ -288,6 +349,16 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
      * @return array
      */
     public function listViews($database = null) { 
-    
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'V'";
+
+        $result = $db->queryCol($query);
+
+        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE &&
+            $db->options['field_case'] == CASE_LOWER)
+        {
+            $result = array_map(($db->options['field_case'] == CASE_LOWER ?
+                          'strtolower' : 'strtoupper'), $result);
+        }
+        return $result;
     }
 }

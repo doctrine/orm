@@ -295,41 +295,82 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         throw new Doctrine_Connection_Exception('Altering charset not supported by this driver.');
     }
     /**
-     * setTransactionIsolation
+     * fetchAll
      *
-     * Set the transacton isolation level.
-     * (implemented by the connection drivers)
-     *
-     * example:
-     *
-     * <code>
-     * $conn->setTransactionIsolation('READ UNCOMMITTED');
-     * </code>
-     *
-     * @param   string  standard isolation level
-     *                  READ UNCOMMITTED (allows dirty reads)
-     *                  READ COMMITTED (prevents dirty reads)
-     *                  REPEATABLE READ (prevents nonrepeatable reads)
-     *                  SERIALIZABLE (prevents phantom reads)
-     *
-     * @throws Doctrine_Connection_Exception            if the feature is not supported by the driver
-     * @throws PDOException                             if something fails at the PDO level
-     * @return void
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
      */
-    public function setTransactionIsolation($isolation) {
-        throw new Doctrine_Connection_Exception('Transaction isolation levels not supported by this driver.');
+    public function fetchAll($statement, array $params = array()) {
+        return $this->query($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
+    }
+    /**
+     * fetchOne
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return mixed
+     */
+    public function fetchOne($statement, array $params = array()) {
+        return current($this->query($statement, $params)->fetch(PDO::FETCH_NUM));
+    }
+    /**
+     * fetchRow
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
+     */
+    public function fetchRow($statement, array $params = array()) {
+        return $this->query($statement, $params)->fetch(PDO::FETCH_ASSOC);
+    }
+    /**
+     * fetchArray
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
+     */
+    public function fetchArray($statement, array $params = array()) {
+        return $this->query($statement, $params)->fetch(PDO::FETCH_NUM);
+    }
+    /**
+     * fetchColumn
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
+     */
+    public function fetchColumn($statement, array $params = array()) {
+        $result = $this->query($statement, $params)->fetchAll(PDO::FETCH_COLUMN);
+        
+        if($this->options['portability'] & Doctrine::PORTABILITY_FIX_CASE)
+            $result = array_map(($db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
+
+        return $result;
+    }
+    /**
+     * fetchAssoc
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
+     */
+    public function fetchAssoc($statement, array $params = array()) {
+        return $this->query($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
+    }
+    /**
+     * fetchBoth
+     *
+     * @param string $statement         sql query to be executed
+     * @param array $params             prepared statement params
+     * @return array
+     */
+    public function fetchBoth($statement, array $params = array()) { 
+        return $this->query($statement, $params)->fetchAll(PDO::FETCH_BOTH);
     }
 
-    /**
-     * getTransactionIsolation
-     * 
-     * @throws Doctrine_Connection_Exception            if the feature is not supported by the driver
-     * @throws PDOException                             if something fails at the PDO level
-     * @return string               returns the current session transaction isolation level
-     */
-    public function getTransactionIsolation() {
-        throw new Doctrine_Connection_Exception('Fetching transaction isolation level not supported by this driver.');
-    }
+
     /**
      * query
      * queries the database using Doctrine Query Language
