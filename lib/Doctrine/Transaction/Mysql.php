@@ -80,7 +80,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
      * @throws PDOException                             if something fails at the PDO level
      * @return void
      */
-    public function setTransactionIsolation($isolation) {
+    public function setIsolation($isolation) {
         switch ($isolation) {
             case 'READ UNCOMMITTED':
             case 'READ COMMITTED':
@@ -93,7 +93,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
         }
 
         $query = "SET SESSION TRANSACTION ISOLATION LEVEL $isolation";
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**

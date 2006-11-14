@@ -43,7 +43,7 @@ class Doctrine_Transaction_Sqlite extends Doctrine_Transaction {
      * @throws Doctrine_Transaction_Exception       if using unknown isolation level
      * @return void
      */
-    public function setTransactionIsolation($isolation) {
+    public function setIsolation($isolation) {
         switch ($isolation) {
             case 'READ UNCOMMITTED':
                 $isolation = 0;

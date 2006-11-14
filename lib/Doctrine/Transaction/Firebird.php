@@ -84,7 +84,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
      * @throws Doctrine_Transaction_Exception       if using unknown isolation level or unknown wait option
      * @return void
      */
-    public function setTransactionIsolation($isolation, $options = array()) {
+    public function setIsolation($isolation, $options = array()) {
         switch ($isolation) {
             case 'READ UNCOMMITTED':
                 $nativeIsolation = 'READ COMMITTED RECORD_VERSION';

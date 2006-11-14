@@ -80,7 +80,7 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction {
      * @throws Doctrine_Transaction_Exception       if using unknown isolation level or unknown wait option
      * @return void
      */
-    public function setTransactionIsolation($isolation) {
+    public function setIsolation($isolation) {
         switch ($isolation) {
             case 'READ UNCOMMITTED':
             case 'READ COMMITTED':

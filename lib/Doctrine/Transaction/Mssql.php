@@ -30,4 +30,39 @@ Doctrine::autoload('Doctrine_Transaction');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Transaction_Mssql extends Doctrine_Transaction { }
+class Doctrine_Transaction_Mssql extends Doctrine_Transaction { 
+    /**
+     * Set the transacton isolation level.
+     *
+     * @param   string  standard isolation level (SQL-92)
+     *      portable modes:
+     *                  READ UNCOMMITTED (allows dirty reads)
+     *                  READ COMMITTED (prevents dirty reads)
+     *                  REPEATABLE READ (prevents nonrepeatable reads)
+     *                  SERIALIZABLE (prevents phantom reads)
+     *      mssql specific modes:
+     *                  SNAPSHOT
+     *
+     * @link http://msdn2.microsoft.com/en-us/library/ms173763.aspx
+     * @throws PDOException                         if something fails at the PDO level
+     * @throws Doctrine_Transaction_Exception       if using unknown isolation level or unknown wait option
+     * @return void
+     */
+    public function setIsolation($isolation, $options = array()) {
+        switch ($isolation) {
+            case 'READ UNCOMMITTED':
+            case 'READ COMMITTED':
+            case 'REPEATABLE READ':
+            case 'SERIALIZABLE':
+            case 'SNAPSHOT':
+
+            break;
+            default:
+                throw new Doctrine_Transaction_Exception('isolation level is not supported: ' . $isolation);
+        }
+
+        $query = 'SET TRANSACTION ISOLATION LEVEL ' . $isolation;
+
+        $this->conn->getDbh()->query($query);
+    }
+}
