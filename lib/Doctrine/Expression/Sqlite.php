@@ -34,6 +34,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
     /**
      * Returns the md5 sum of the data that SQLite's md5() function receives.
      *
+     * @param mixed $data
      * @return string
      */
     public static function md5Impl($data) {
@@ -42,6 +43,8 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
     /**
      * Returns the modules of the data that SQLite's mod() function receives.
      *
+     * @param integer $dividend
+     * @param integer $divisor
      * @return string
      */
     public static function modImpl($dividend, $divisor) {
@@ -49,7 +52,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
     }
 
     /**
-     * Returns a concattenation of the data that SQLite's concat() function receives.
+     * Returns a concatenation of the data that SQLite's concat() function receives.
      *
      * @return string
      */
@@ -58,12 +61,49 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
         return join( '', $args );
     }
     /**
+     * locate
+     * returns the position of the first occurrence of substring $substr in string $str that
+     * SQLite's locate() function receives
+     *
+     * @param string $substr    literal string to find
+     * @param string $str       literal string
+     * @return string
+     */
+    public static function locateImpl($substr, $str) {
+        return strpos($str, $substr);
+    }
+    public static function sha1($str) {
+        return sha1($str);                                  	
+    }
+    public static function ltrim($str) {
+        return ltrim($str);
+    }
+    public static function rtrim($str) {
+        return rtrim($str);
+    }
+    public static function trim($str) {
+        return trim($str);
+    }
+    /**
      * returns the regular expression operator 
      *
      * @return string
      */
     public function regexp() {
         return 'RLIKE';
+    }
+    /**
+     * soundex
+     * Returns a string to call a function to compute the 
+     * soundex encoding of a string
+     *
+     * The string "?000" is returned if the argument is NULL.
+     *
+     * @param string $value
+     * @return string   SQL soundex function with given parameter
+     */
+    public function soundex($value) {
+        return 'SOUNDEX(' . $value . ')';
     }
     /**
      * Return string to call a variable with the current timestamp inside an SQL statement

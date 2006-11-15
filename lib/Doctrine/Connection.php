@@ -28,6 +28,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Lukas Smith <smith@pooteeweet.org> (MDB2 library)
  */
 abstract class Doctrine_Connection extends Doctrine_Configurable implements Countable, IteratorAggregate {
     /**
@@ -166,6 +167,34 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return (isset($this->supported[$feature]) &&
                 $this->supported[$feature] === 'emulated' || 
                 $this->supported[$feature]);
+    }
+    /**
+     * Removes any formatting in an sequence name using the 'seqname_format' option
+     *
+     * @param string $sqn string that containts name of a potential sequence
+     * @return string name of the sequence with possible formatting removed
+     */
+    public function fixSequenceName($sqn) {
+        $seq_pattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', $db->options['seqname_format']).'$/i';
+        $seq_name = preg_replace($seq_pattern, '\\1', $sqn);
+        if ($seq_name && ! strcasecmp($sqn, $db->getSequenceName($seq_name))) {
+            return $seq_name;
+        }
+        return $sqn;
+    }
+    /**
+     * Removes any formatting in an index name using the 'idxname_format' option
+     *
+     * @param string $idx string that containts name of anl index
+     * @return string name of the index with possible formatting removed
+     */
+    public function fixIndexName($idx) {
+        $idx_pattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', $db->options['idxname_format']).'$/i';
+        $idx_name = preg_replace($idx_pattern, '\\1', $idx);
+        if ($idx_name && !strcasecmp($idx, $db->getIndexName($idx_name))) {
+            return $idx_name;
+        }
+        return $idx;
     }
     /**
      * returns a datadict object
