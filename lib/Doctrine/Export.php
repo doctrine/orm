@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Connection_Module');
 /**
  * Doctrine_Export
  *
@@ -29,20 +30,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export {
-    /**
-     * @var Doctrine_Connection $conn       Doctrine_Connection object
-     */
-    private $conn;
-    /**
-     * @var mixed $dbh                      the database handler (either PDO or Doctrine_Db object)
-     */
-    private $dbh;
-
-    public function __construct($conn) {
-        $this->conn = $conn;
-        $this->dbh  = $conn->getDBH();
-    }
+class Doctrine_Export extends Doctrine_Connection_Module {
     /**
      * drop an existing database
      *

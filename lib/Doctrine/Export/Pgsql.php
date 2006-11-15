@@ -41,7 +41,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
      */
     public function createDatabase($name) {
         $query  = 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name);
-        $result = $this->dbh->query($query);
+        $this->conn->getDbh()->query($query);
     }
     /**
      * drop an existing database
@@ -52,7 +52,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
      */
     public function dropDatabase($name) {
         $query  = 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
-        $this->dbh->query($query);
+        $this->conn->getDbh()->query($query);
     }
     /**
      * alter an existing table
@@ -143,13 +143,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
      * @throws PDOException
      * @return boolean
      */
-    function alterTable($name, $changes, $check)
-    {
-        $db =& $this->getDBInstance();
-        if (PEAR::isError($db)) {
-            return $db;
-        }
-
+    function alterTable($name, $changes, $check) {
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
                 case 'add':
