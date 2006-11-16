@@ -42,11 +42,22 @@ abstract class Doctrine_Configurable {
      */
     private $parent;
     /**
+     * setAttribute
      * sets a given attribute
      *
+     * <code>
+     * $manager->setAttribute(Doctrine::ATTR_PORTABILITY, Doctrine::PORTABILITY_ALL);
+     * 
+     * // or
+     *
+     * $manager->setAttribute('portability', Doctrine::PORTABILITY_ALL);
+     * </code>
+     *
+     * @param mixed $attribute              either a Doctrine::ATTR_* integer constant or a string
+     *                                      corresponding to a constant
+     * @param mixed $value                  the value of the attribute
+     * @see Doctrine::ATTR_* constants
      * @throws Doctrine_Exception           if the value is invalid
-     * @param integer $attribute
-     * @param mixed $value
      * @return void
      */
     public function setAttribute($attribute,$value) {
