@@ -72,16 +72,16 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
     public static function locateImpl($substr, $str) {
         return strpos($str, $substr);
     }
-    public static function sha1($str) {
+    public static function sha1Impl($str) {
         return sha1($str);                                  	
     }
-    public static function ltrim($str) {
+    public static function ltrimImpl($str) {
         return ltrim($str);
     }
-    public static function rtrim($str) {
+    public static function rtrimImpl($str) {
         return rtrim($str);
     }
-    public static function trim($str) {
+    public static function trimImpl($str) {
         return trim($str);
     }
     /**

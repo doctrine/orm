@@ -36,14 +36,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     private $dbh;
     /**
-     * @var Doctrine_Transaction $transaction   the transaction object
-     */
-    private $transaction;
-    /**
-     * @var Doctrine_UnitOfWork $unitOfWork     the unit of work object
-     */
-    private $unitOfWork;
-    /**
      * @var array $tables                       an array containing all the initialized Doctrine_Table objects
      *                                          keys representing Doctrine_Table component names and values as Doctrine_Table objects
      */
@@ -58,18 +50,30 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *                                          one of the following (true, false, 'emulated')
      */
     protected $supported        = array();
-    /**
-     * @var Doctrine_DataDict $dataDict
-     */
-    private $dataDict;
-    
-    protected $options = array();
 
-    private $modules = array('Transaction' => false,
-                             'Expression'  => false,
-                             'DataDict'    => false,
-                             'Export'      => false,
-                             'UnitOfWork'  => false,
+    protected $options = array();
+    /**
+     * @var array $modules                      an array containing all modules
+     *              transaction                 Doctrine_Transaction driver, handles savepoint and transaction isolation abstraction
+     *
+     *              expression                  Doctrine_Expression driver, handles expression abstraction
+     *
+     *              dataDict                    Doctrine_DataDict driver, handles datatype abstraction
+     *
+     *              export                      Doctrine_Export driver, handles db structure modification abstraction (contains
+     *                                          methods such as alterTable, createConstraint etc.)
+     *
+     * @see Doctrine_Connection::__get()
+     * @see Doctrine_DataDict
+     * @see Doctrine_Expression
+     * @see Doctrine_Export
+     * @see Doctrine_Transaction
+     */
+    private $modules = array('transaction' => false,
+                             'expression'  => false,
+                             'dataDict'    => false,
+                             'export'      => false,
+                             'unitOfWork'  => false,
                              );
     /**
      * @var array $availibleDrivers         an array containing all availible drivers
@@ -96,8 +100,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->dbh   = $adapter;
 
-        $this->transaction  = new Doctrine_Connection_Transaction($this);
-        $this->unitOfWork   = new Doctrine_Connection_UnitOfWork($this);
+        $this->modules['transaction']  = new Doctrine_Connection_Transaction($this);
+        $this->modules['unitOfWork']   = new Doctrine_Connection_UnitOfWork($this);
 
         $this->setParent($manager);
 
@@ -119,21 +123,25 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * __get
      * lazy loads given module and returns it
      *
+     * @see Doctrine_DataDict
+     * @see Doctrine_Expression
+     * @see Doctrine_Export
+     * @see Doctrine_Transaction
      * @param string $name                      the name of the module to get
-     * @throws Doctrine_Connection_Exception    if trying to get an unknown module
+     * @throws Doctrine_Connection_Exception    if trying to get an unknown module  
      * @return Doctrine_Connection_Module       connection module
      */
     public function __get($name) {
         if( ! isset($this->modules[$name]))
             throw new Doctrine_Connection_Exception('Unknown module ' . $name);
-           
+
         if($this->modules[$name] === false) {
             switch($name) {
-                case 'UnitOfWork':
+                case 'unitOfWork':
                     $this->modules[$name] = new Doctrine_Connection_UnitOfWork($this);
                 break;
                 default:
-                    $class = 'Doctrine_' . $name . '_' . $this->getName();
+                    $class = 'Doctrine_' . ucwords($name) . '_' . $this->getName();
                     $this->modules[$name] = new $class($this);
             }
         }
@@ -201,26 +209,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->identifier_quoting['start'] . $str . $this->identifier_quoting['end'];
     }
     /**
-     * getUnitOfWork
-     *
-     * returns the unit of work object
-     *
-     * @return Doctrine_UnitOfWork
-     */
-    public function getUnitOfWork() {
-        return $this->unitOfWork;
-    }
-    /**
-     * getTransaction
-     *
-     * returns the current transaction object
-     *
-     * @return Doctrine_Transaction
-     */
-    public function getTransaction() {
-        return $this->transaction;
-    }
-    /**
      * returns the manager that created this connection
      *
      * @return Doctrine_Manager
@@ -261,10 +249,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return string name of the sequence with possible formatting removed
      */
     public function fixSequenceName($sqn) {
-        $seq_pattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', $db->options['seqname_format']).'$/i';
-        $seq_name = preg_replace($seq_pattern, '\\1', $sqn);
-        if ($seq_name && ! strcasecmp($sqn, $db->getSequenceName($seq_name))) {
-            return $seq_name;
+        $seqPattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)',  $this->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT)).'$/i';
+        $seqName    = preg_replace($seqPattern, '\\1', $sqn);
+
+        if ($seqName && ! strcasecmp($sqn, $db->getSequenceName($seqName))) {
+            return $seqName;
         }
         return $sqn;
     }
@@ -275,27 +264,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return string name of the index with possible formatting removed
      */
     public function fixIndexName($idx) {
-        $idx_pattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', $db->options['idxname_format']).'$/i';
-        $idx_name = preg_replace($idx_pattern, '\\1', $idx);
-        if ($idx_name && !strcasecmp($idx, $db->getIndexName($idx_name))) {
-            return $idx_name;
+        $indexPattern   = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', $this->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT)).'$/i';
+        $indexName      = preg_replace($indexPattern, '\\1', $idx);
+        if ($indexName && ! strcasecmp($idx, $this->getIndexName($indexName))) {
+            return $indexName;
         }
         return $idx;
     }
-    /**
-     * returns a datadict object
-     *
-     * @return Doctrine_DataDict
-     */
-    public function getDataDict() {
-        if(isset($this->dataDict))
-            return $this->dataDict;
 
-        $class = 'Doctrine_DataDict_' . $this->getName();
-        $this->dataDict = new $class($this->dbh);
-
-        return $this->dataDict;
-    }
     /**
      * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
      * query, except that if there is already a row in the table with the same
