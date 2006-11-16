@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Connection_Module');
 /**
  * Doctrine_Expression
  *
@@ -29,18 +30,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression {
-    
-    /**
-     * @var Doctrine_Connection $connection
-     */
-    protected $conn;
-    /**
-     * @param Doctrine_Connection $conn
-     */
-    public function __construct(Doctrine_Connection $conn) {
-        $this->conn = $conn;
-    }
+class Doctrine_Expression extends Doctrine_Connection_Module {
     /**
      * regexp
      * returns the regular expression operator 

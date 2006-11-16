@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Connection_Module');
 /**
  * Doctrine_Connection_UnitOfWork
  *
@@ -29,21 +30,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_UnitOfWork implements IteratorAggregate, Countable {
-    /**
-     * @var Doctrine_Connection $conn       the connection object
-     */
-    private $connection;
-
-    /**
-     * the constructor
-     *
-     * @param Doctrine_Connection $conn
-     */
-    public function __construct(Doctrine_Connection $conn) {
-        $this->conn = $conn;
-    }
-
+class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implements IteratorAggregate, Countable {
     /**
      * buildFlushTree
      * builds a flush tree that is used in transactions

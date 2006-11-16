@@ -63,7 +63,17 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     private $dataDict;
     
-    
+    protected $options = array();
+
+    private $modules = array('Transaction' => false,
+                             'Expression'  => false,
+                             'DataDict'    => false,
+                             'Export'      => false,
+                             'UnitOfWork'  => false,
+                             );
+    /**
+     * @var array $availibleDrivers         an array containing all availible drivers
+     */
     private static $availibleDrivers    = array(
                                         'Mysql',
                                         'Pgsql',
@@ -98,21 +108,97 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
     /**
      * getName
+     * returns the name of this driver
      *
-     * @return string           returns the name of this driver
+     * @return string           the name of this driver
      */
     public function getName() {
         return $this->driverName;
     }
-
     /**
-     * quoteIdentifier
+     * __get
+     * lazy loads given module and returns it
      *
-     * @param string $identifier        identifier to be quoted
-     * @return string                   modified identifier
+     * @param string $name                      the name of the module to get
+     * @throws Doctrine_Connection_Exception    if trying to get an unknown module
+     * @return Doctrine_Connection_Module       connection module
      */
-    public function quoteIdentifier($identifier) {
-        return $identifier;
+    public function __get($name) {
+        if( ! isset($this->modules[$name]))
+            throw new Doctrine_Connection_Exception('Unknown module ' . $name);
+           
+        if($this->modules[$name] === false) {
+            switch($name) {
+                case 'UnitOfWork':
+                    $this->modules[$name] = new Doctrine_Connection_UnitOfWork($this);
+                break;
+                default:
+                    $class = 'Doctrine_' . $name . '_' . $this->getName();
+                    $this->modules[$name] = new $class($this);
+            }
+        }
+
+        return $this->modules[$name];
+    }
+    /**
+     * Quotes pattern (% and _) characters in a string)
+     *
+     * EXPERIMENTAL
+     *
+     * WARNING: this function is experimental and may change signature at
+     * any time until labelled as non-experimental
+     *
+     * @param   string  the input string to quote
+     *
+     * @return  string  quoted string
+     */
+    public function escapePattern($text) {
+        if ($this->string_quoting['escape_pattern']) {
+            $text = str_replace($this->string_quoting['escape_pattern'], $this->string_quoting['escape_pattern'] . $this->string_quoting['escape_pattern'], $text);
+            foreach ($this->wildcards as $wildcard) {
+                $text = str_replace($wildcard, $this->string_quoting['escape_pattern'] . $wildcard, $text);
+            }
+        }
+        return $text;
+    }
+    /**
+     * Quote a string so it can be safely used as a table or column name
+     *
+     * Delimiting style depends on which database driver is being used.
+     *
+     * NOTE: just because you CAN use delimited identifiers doesn't mean
+     * you SHOULD use them.  In general, they end up causing way more
+     * problems than they solve.
+     *
+     * Portability is broken by using the following characters inside
+     * delimited identifiers:
+     *   + backtick (<kbd>`</kbd>) -- due to MySQL
+     *   + double quote (<kbd>"</kbd>) -- due to Oracle
+     *   + brackets (<kbd>[</kbd> or <kbd>]</kbd>) -- due to Access
+     *
+     * Delimited identifiers are known to generally work correctly under
+     * the following drivers:
+     *   + mssql
+     *   + mysql
+     *   + mysqli
+     *   + oci8
+     *   + pgsql
+     *   + sqlite
+     *
+     * InterBase doesn't seem to be able to use delimited identifiers
+     * via PHP 4.  They work fine under PHP 5.
+     *
+     * @param string $str           identifier name to be quoted
+     * @param bool $checkOption     check the 'quote_identifier' option
+     *
+     * @return string               quoted identifier string
+     */
+    public function quoteIdentifier($str, $checkOption = true) {
+        if ($checkOption && ! $this->options['quote_identifier']) {
+            return $str;
+        }
+        $str = str_replace($this->identifier_quoting['end'], $this->identifier_quoting['escape'] . $this->identifier_quoting['end'], $str);
+        return $this->identifier_quoting['start'] . $str . $this->identifier_quoting['end'];
     }
     /**
      * getUnitOfWork
@@ -372,7 +458,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function fetchColumn($statement, array $params = array()) {
         $result = $this->query($statement, $params)->fetchAll(PDO::FETCH_COLUMN);
-        
+
         if($this->options['portability'] & Doctrine::PORTABILITY_FIX_CASE)
             $result = array_map(($db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
 
@@ -610,8 +696,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreClose($this);
 
         $this->clear();
-        $this->state = Doctrine_Connection::STATE_CLOSED;
-        
+
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onClose($this);
     }
     /**

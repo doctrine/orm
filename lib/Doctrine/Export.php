@@ -33,6 +33,7 @@ Doctrine::autoload('Doctrine_Connection_Module');
 class Doctrine_Export extends Doctrine_Connection_Module {
     /**
      * drop an existing database
+     * (this method is implemented by the drivers)
      *
      * @param string $name name of the database that should be dropped
      * @return void
@@ -77,6 +78,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
     }
     /**
      * drop existing sequence
+     * (this method is implemented by the drivers)
      *
      * @param string    $seq_name     name of the sequence to be dropped
      * @return void
@@ -86,6 +88,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
     }
     /**
      * create a new database
+     * (this method is implemented by the drivers)
      *
      * @param string $name name of the database that should be created
      * @return void
@@ -121,7 +124,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *
      * @return void
      */
-    public function createTable($name, $fields, $options = array()) {
+    public function createTable($name, array $fields, $options = array()) {
         if ( ! $name)
             throw new Doctrine_Export_Exception('no valid table name specified');
 
@@ -140,6 +143,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
     }
     /**
      * create sequence
+     * (this method is implemented by the drivers)
      *
      * @param string    $seq_name     name of the sequence to be created
      * @param string    $start         start value of the sequence; default is 1
@@ -234,6 +238,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
 
     /**
      * alter an existing table
+     * (this method is implemented by the drivers)
      *
      * @param string $name         name of the table that is intended to be changed.
      * @param array $changes     associative array that contains the details of each type

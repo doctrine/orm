@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Connection_Module');
 /**
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -28,7 +29,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Transaction { 
+class Doctrine_Transaction extends Doctrine_Connection_Module {
     /**
      * Doctrine_Transaction is in sleep state when it has no active transactions
      */
@@ -42,21 +43,9 @@ class Doctrine_Transaction {
      */
     const STATE_BUSY        = 2;
     /**
-     * @var Doctrine_Connection $conn       the connection object
-     */
-    protected $conn;
-    /**
      * @var integer $transaction_level      the nesting level of transactions, used by transaction methods
      */
     protected $transactionLevel  = 0;
-    /**
-     * the constructor
-     *
-     * @param Doctrine_Connection $conn     Doctrine_Connection object
-     */
-    public function __construct(Doctrine_Connection $conn) {
-        $this->conn  = $conn;
-    }
     /**
      * getState
      * returns the state of this connection
