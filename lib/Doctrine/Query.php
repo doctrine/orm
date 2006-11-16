@@ -519,7 +519,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 switch(strtolower($this->connection->getName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
-                        $list     = $this->conn->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
+                        $list     = $this->connection->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
                         $subquery = implode(', ', $list);
                     break;
                     case 'pgsql':
