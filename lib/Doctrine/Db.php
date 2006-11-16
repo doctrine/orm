@@ -410,76 +410,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
 
         return $rows;
     }
-    /**
-     * fetchAll
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return array
-     */
-    public function fetchAll($statement, array $params = array()) {
-        return $this->query($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
-    }
-    /**
-     * fetchOne
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return mixed
-     */
-    public function fetchOne($statement, array $params = array()) {
-        return current($this->query($statement, $params)->fetch(PDO::FETCH_NUM));
-    }
-    /**
-     * fetchRow
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return array
-     */
-    public function fetchRow($statement, array $params = array()) {
-        return $this->query($statement, $params)->fetch(PDO::FETCH_ASSOC);
-    }
-    /**
-     * fetchArray
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return array
-     */
-    public function fetchArray($statement, array $params = array()) {
-        return $this->query($statement, $params)->fetch(PDO::FETCH_NUM);
-    }
-    /**
-     * fetchColumn
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return array
-     */
-    public function fetchColumn($statement, array $params = array()) {
-        return $this->query($statement, $params)->fetchAll(PDO::FETCH_COLUMN);
-    }
-    /**
-     * fetchAssoc
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return array
-     */
-    public function fetchAssoc($statement, array $params = array()) {
-        return $this->query($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
-    }
-    /**
-     * fetchBoth
-     *
-     * @param string $statement         sql query to be executed
-     * @param array $params             prepared statement params
-     * @return array
-     */
-    public function fetchBoth($statement, array $params = array()) { 
-        return $this->query($statement, $params)->fetchAll(PDO::FETCH_BOTH);
-    }
+
     /**
      * lastInsertId
      *

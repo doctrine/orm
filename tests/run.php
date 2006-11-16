@@ -111,7 +111,6 @@ $test->addTestCase(new Doctrine_PessimisticLockingTestCase());
 
 $test->addTestCase(new Doctrine_ViewTestCase());
 
-$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 
 $test->addTestCase(new Doctrine_CustomPrimaryKeyTestCase());
 
@@ -161,6 +160,7 @@ $test->addTestCase(new Doctrine_Query_Select_TestCase());
 
 
 
+//$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
 

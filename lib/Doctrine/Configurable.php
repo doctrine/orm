@@ -55,24 +55,7 @@ abstract class Doctrine_Configurable {
                 if($value < 0)
                     throw new Doctrine_Exception("Batch size should be greater than or equal to zero");
             break;
-            case Doctrine::ATTR_CACHE_DIR:
-                if(substr(trim($value),0,6) == "%ROOT%") {
-                    $dir   = dirname(__FILE__);
-                    $value = $dir.substr($value,6);
-                }
-            break;
-            case Doctrine::ATTR_CACHE_TTL:
-                if($value < 1)
-                    throw new Doctrine_Exception("Cache TimeToLive should be greater than or equal to 1");
-            break;
-            case Doctrine::ATTR_CACHE_SIZE:
-                if($value < 1)
-                    throw new Doctrine_Exception("Cache size should be greater than or equal to 1");
-            break;
-            case Doctrine::ATTR_CACHE_SLAM:
-                if($value < 0 || $value > 1) 
-                    throw new Doctrine_Exception("Cache slam defense should be a floating point number between 0 and 1");
-            break;
+
             case Doctrine::ATTR_FETCHMODE:
                  if($value < 0)
                     throw new Doctrine_Exception("Unknown fetchmode. See Doctrine::FETCH_* constants.");
@@ -121,7 +104,6 @@ abstract class Doctrine_Configurable {
             case Doctrine::ATTR_VLD:
             case Doctrine::ATTR_AUTO_LENGTH_VLD:
             case Doctrine::ATTR_AUTO_TYPE_VLD:
-            case Doctrine::ATTR_SHORT_ALIASES:
             case Doctrine::ATTR_QUERY_LIMIT:
 
             break;

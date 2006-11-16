@@ -25,6 +25,7 @@
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
@@ -32,45 +33,6 @@
  * @version     $Revision$
  */
 final class Doctrine {
-    /**
-     * error constants
-     */
-    const ERR                       = -1;
-    const ERR_SYNTAX                = -2;
-    const ERR_CONSTRAINT            = -3;
-    const ERR_NOT_FOUND             = -4;
-    const ERR_ALREADY_EXISTS        = -5;
-    const ERR_UNSUPPORTED           = -6;
-    const ERR_MISMATCH              = -7;
-    const ERR_INVALID               = -8;
-    const ERR_NOT_CAPABLE           = -9;
-    const ERR_TRUNCATED             = -10;
-    const ERR_INVALID_NUMBER        = -11;
-    const ERR_INVALID_DATE          = -12;
-    const ERR_DIVZERO               = -13;
-    const ERR_NODBSELECTED          = -14;
-    const ERR_CANNOT_CREATE         = -15;
-    const ERR_CANNOT_DELETE         = -16;
-    const ERR_CANNOT_DROP           = -17;
-    const ERR_NOSUCHTABLE           = -18;
-    const ERR_NOSUCHFIELD           = -19;
-    const ERR_NEED_MORE_DATA        = -20;
-    const ERR_NOT_LOCKED            = -21;
-    const ERR_VALUE_COUNT_ON_ROW    = -22;
-    const ERR_INVALID_DSN           = -23;
-    const ERR_CONNECT_FAILED        = -24;
-    const ERR_EXTENSION_NOT_FOUND   = -25;
-    const ERR_NOSUCHDB              = -26;
-    const ERR_ACCESS_VIOLATION      = -27;
-    const ERR_CANNOT_REPLACE        = -28;
-    const ERR_CONSTRAINT_NOT_NULL   = -29;
-    const ERR_DEADLOCK              = -30;
-    const ERR_CANNOT_ALTER          = -31;
-    const ERR_MANAGER               = -32;
-    const ERR_MANAGER_PARSE         = -33;
-    const ERR_LOADMODULE            = -34;
-    const ERR_INSUFFICIENT_DATA     = -35;
-
     /**
      * ATTRIBUTE CONSTANTS
      */
@@ -83,26 +45,6 @@ final class Doctrine {
      * fetchmode attribute
      */
     const ATTR_FETCHMODE        = 2;
-    /**
-     * cache directory attribute
-     */
-    const ATTR_CACHE_DIR        = 3;
-    /**
-     * cache time to live attribute
-     */
-    const ATTR_CACHE_TTL        = 4;
-    /**
-     * cache size attribute
-     */
-    const ATTR_CACHE_SIZE       = 5;
-    /**
-     * cache slam defense probability
-     */
-    const ATTR_CACHE_SLAM       = 6;
-    /**
-     * cache container attribute
-     */
-    const ATTR_CACHE            = 7;
     /**
      * batch size attribute
      */
@@ -147,15 +89,11 @@ final class Doctrine {
      * automatic type validations attribute
      */
     const ATTR_AUTO_TYPE_VLD    = 20;
-    /**
-     * short aliases attribute
-     */
-    const ATTR_SHORT_ALIASES    = 21;
-    
+
     /**
      * LIMIT CONSTANTS
      */
-    
+
     /**
      * constant for row limiting
      */
@@ -236,7 +174,53 @@ final class Doctrine {
      * constant for both accessors get and set
      */
     const ACCESSOR_BOTH         = 4;
+    
+    /**
+     * PORTABILITY CONSTANTS
+     */
 
+
+    /**
+     * Portability: turn off all portability features.
+     * @see Doctrine::ATTR_PORTABILITY
+     */
+    const PORTABILITY_NONE      = 0;
+
+    /**
+     * Portability: convert names of tables and fields to case defined in the
+     * "field_case" option when using the query*(), fetch*() methods.
+     * @see Doctrine::ATTR_PORTABILITY
+     */
+    const PORTABILITY_FIX_CASE      = 1;
+
+    /**
+     * Portability: right trim the data output by query*() and fetch*().
+     * @see Doctrine::ATTR_PORTABILITY
+     */
+    const PORTABILITY_RTRIM         = 2;
+
+    /**
+     * Portability: force reporting the number of rows deleted.
+     * @see Doctrine::ATTR_PORTABILITY
+     */
+    const PORTABILITY_DELETE_COUNT  = 4;
+    /**
+     * Portability: convert empty values to null strings in data output by
+     * query*() and fetch*().
+     * @see Doctrine::ATTR_PORTABILITY
+     */
+    const PORTABILITY_EMPTY_TO_NULL = 8;
+    /**
+     * Portability: removes database/table qualifiers from associative indexes
+     * @see Doctrine::ATTR_PORTABILITY
+     */
+    const PORTABILITY_FIX_ASSOC_FIELD_NAMES = 16;
+
+    /**
+     * Portability: turn on all portability features.
+     * @see Doctrine::ATTR_PORTABILITY
+     */
+    const PORTABILITY_ALL           = 17;
 
     /**
      * LOCKMODE CONSTANTS

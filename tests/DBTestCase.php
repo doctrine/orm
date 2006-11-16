@@ -197,7 +197,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         
 
     }
-    public function testListeningEventsWithListenerChain() {
+    public function testListeningQueryEventsWithListenerChain() {
         $this->dbh->query('DROP TABLE entity');
 
         $this->dbh->addListener(new Doctrine_Db_TestLogger());
@@ -212,10 +212,12 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($listener2->pop(), 'onQuery');
         $this->assertEqual($listener2->pop(), 'onPreQuery');
-
+    }
+    public function testListeningPrepareEventsWithListenerChain() {
 
         $stmt = $this->dbh->prepare('INSERT INTO entity (id) VALUES(?)');
-
+        $listener = $this->dbh->getListener()->get(0);
+        $listener2 = $this->dbh->getListener()->get(1);
         $this->assertEqual($listener->pop(), 'onPrepare');
         $this->assertEqual($listener->pop(), 'onPrePrepare');
 
@@ -226,20 +228,24 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($listener->pop(), 'onExecute');
         $this->assertEqual($listener->pop(), 'onPreExecute');
-        
+
         $this->assertEqual($listener2->pop(), 'onExecute');
         $this->assertEqual($listener2->pop(), 'onPreExecute');
-        
+    }
+    public function testListeningExecEventsWithListenerChain() {
         $this->dbh->exec('DELETE FROM entity');
-
+        $listener = $this->dbh->getListener()->get(0);
+        $listener2 = $this->dbh->getListener()->get(1);
         $this->assertEqual($listener->pop(), 'onExec');
         $this->assertEqual($listener->pop(), 'onPreExec');
 
         $this->assertEqual($listener2->pop(), 'onExec');
         $this->assertEqual($listener2->pop(), 'onPreExec');
-
+    }
+    public function testListeningTransactionEventsWithListenerChain() {
         $this->dbh->beginTransaction();
-
+        $listener = $this->dbh->getListener()->get(0);
+        $listener2 = $this->dbh->getListener()->get(1);
         $this->assertEqual($listener->pop(), 'onBeginTransaction');
         $this->assertEqual($listener->pop(), 'onPreBeginTransaction');
 
