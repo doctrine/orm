@@ -339,7 +339,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         array_walk($params, array(__CLASS__, 'convertBoolean'));
         
         if( ! $this->view)
-            $query = $this->getQuery(true);
+            $query = $this->getQuery($params);
         else
             $query = $this->view->getSelectSql();
 

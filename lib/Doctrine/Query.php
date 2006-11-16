@@ -466,9 +466,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     /**
      * returns the built sql query
      *
+     * @param array $params             an array of prepared statement params (needed only in mysql driver 
+     *                                  when limit subquery algorithm is used)
      * @return string
      */
-    public function getQuery($executeSubquery = false) {
+    public function getQuery($params = array()) {
         if(empty($this->parts["select"]) || empty($this->parts["from"]))
             return false;
 
@@ -512,15 +514,16 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
             if($needsSubQuery) {
                 $subquery = $this->getLimitSubquery();
-                $dbh      = $this->connection->getDBH();
 
-                // mysql doesn't support LIMIT in subqueries
-                switch($dbh->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+
+                switch(strtolower($this->connection->getName())) {
                     case 'mysql':
-                        $list     = $dbh->query($subquery)->fetchAll(PDO::FETCH_COLUMN);
+                        // mysql doesn't support LIMIT in subqueries
+                        $list     = $this->conn->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
                         $subquery = implode(', ', $list);
                     break;
                     case 'pgsql':
+                        // pgsql needs special nested LIMIT subquery
                         $subquery = 'SELECT doctrine_subquery_alias.' . $table->getIdentifier(). ' FROM (' . $subquery . ') AS doctrine_subquery_alias';
                     break;
                 }

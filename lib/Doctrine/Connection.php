@@ -127,6 +127,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @see Doctrine_Expression
      * @see Doctrine_Export
      * @see Doctrine_Transaction
+     * @see Doctrine_Connection::$modules       all availible modules
      * @param string $name                      the name of the module to get
      * @throws Doctrine_Connection_Exception    if trying to get an unknown module  
      * @return Doctrine_Connection_Module       connection module
