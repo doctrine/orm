@@ -864,12 +864,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $conn->beginTransaction();
 
 
-        $saveLater = $conn->getUnitOfWork()->saveRelated($this);
+        $saveLater = $conn->unitOfWork->saveRelated($this);
 
         if ($this->isValid()) {
             $conn->save($this);
         } else {
-            $conn->getTransaction()->addInvalid($this);
+            $conn->transaction->addInvalid($this);
         }
 
         foreach($saveLater as $fk) {
@@ -884,7 +884,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         // save the MANY-TO-MANY associations
 
-        $conn->getUnitOfWork()->saveAssociations($this);
+        $conn->unitOfWork->saveAssociations($this);
         //$this->saveAssociations();
 
         $conn->commit();

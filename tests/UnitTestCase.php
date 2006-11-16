@@ -30,6 +30,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     protected $users;
     protected $valueHolder;
     protected $tables = array();
+    protected $unitOfWork;
 
     private $init = false;
 
@@ -79,7 +80,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->listener = new Doctrine_EventListener_Debugger();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
-
+        $this->unitOfWork = $this->connection->unitOfWork;
         $this->connection->setListener(new Doctrine_EventListener());
         $this->query = new Doctrine_Query($this->connection);
         $this->prepareTables();

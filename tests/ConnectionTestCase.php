@@ -1,109 +1,6 @@
 <?php
 require_once("UnitTestCase.php");
 class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
-
-    public function testbuildFlushTree() {
-        $correct = array("Task","ResourceType","Resource","Assignment","ResourceReference");
-
-        // new model might switch some many-to-many components (NO HARM!)
-        
-        $correct2 = array (
-              0 => 'Resource',
-              1 => 'Task',
-              2 => 'ResourceType',
-              3 => 'Assignment',
-              4 => 'ResourceReference',
-            );
-
-        $task = new Task();
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Task"));
-        $this->assertEqual($tree,array("Resource","Task","Assignment"));
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Task","Resource"));
-        $this->assertEqual($tree,$correct);
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Task","Assignment","Resource"));
-        $this->assertEqual($tree,$correct);
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Assignment","Task","Resource"));
-
-        $this->assertEqual($tree,$correct2);
-
-
-        $correct = array("Forum_Category","Forum_Board","Forum_Thread");
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Board"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Category","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-
-        $correct = array("Forum_Category","Forum_Board","Forum_Thread","Forum_Entry");
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Entry","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Board","Forum_Entry"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Thread","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Board","Forum_Thread"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Entry"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Board","Forum_Entry","Forum_Thread"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Entry","Forum_Board","Forum_Thread"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Entry"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Thread","Forum_Entry","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-
-
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Category"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Category","Forum_Thread","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Category"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Category","Forum_Entry"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Board","Forum_Thread","Forum_Entry","Forum_Category"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Board","Forum_Category","Forum_Thread","Forum_Entry"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Board","Forum_Category"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Entry","Forum_Thread","Forum_Category","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Entry","Forum_Category","Forum_Board","Forum_Thread"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Thread","Forum_Category","Forum_Board","Forum_Entry"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Thread","Forum_Entry","Forum_Category","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Thread","Forum_Board","Forum_Entry","Forum_Category"));
-        $this->assertEqual($tree, $correct);
-
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Category","Forum_Entry","Forum_Board","Forum_Thread"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Category","Forum_Thread","Forum_Entry","Forum_Board"));
-        $this->assertEqual($tree, $correct);
-        $tree = $this->connection->getUnitOfWork()->buildFlushTree(array("Forum_Category","Forum_Board","Forum_Thread","Forum_Entry"));
-        $this->assertEqual($tree, $correct);
-
-    }
-
     public function testBulkInsert() {
         $u1 = new User();
         $u1->name = "Jean Reno";
@@ -111,7 +8,22 @@ class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
 
         $id = $u1->obtainIdentifier();
         $u1->delete();
-
+    }
+    
+    public function testUnknownModule() {
+        try {
+            $this->connection->unknown;
+            $this->fail();
+        } catch(Doctrine_Connection_Exception $e) {
+            $this->pass();
+        }
+    }
+    public function testGetModule() {
+        $this->assertTrue($this->connection->unitOfWork instanceof Doctrine_Connection_UnitOfWork);
+        //$this->assertTrue($this->connection->dataDict instanceof Doctrine_DataDict);
+        $this->assertTrue($this->connection->expression instanceof Doctrine_Expression);
+        $this->assertTrue($this->connection->transaction instanceof Doctrine_Transaction);
+        $this->assertTrue($this->connection->export instanceof Doctrine_Export);
     }
 
     public function testFlush() {
@@ -312,8 +224,8 @@ class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($this->connection->getIterator() instanceof ArrayIterator);
     }
     public function testGetState() {
-        $this->assertEqual($this->connection->getTransaction()->getState(),Doctrine_Connection_Transaction::STATE_OPEN);
-        $this->assertEqual(Doctrine_Lib::getConnectionStateAsString($this->connection->getTransaction()->getState()), "open");
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_OPEN);
+        $this->assertEqual(Doctrine_Lib::getConnectionStateAsString($this->connection->transaction->getState()), "open");
     }
     public function testGetTables() {
         $this->assertTrue(is_array($this->connection->getTables()));
@@ -322,9 +234,9 @@ class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
     public function testTransactions() {
 
         $this->connection->beginTransaction();
-        $this->assertEqual($this->connection->getTransaction()->getState(),Doctrine_Connection_Transaction::STATE_ACTIVE);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_ACTIVE);
         $this->connection->commit();
-        $this->assertEqual($this->connection->getTransaction()->getState(),Doctrine_Connection_Transaction::STATE_OPEN);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_OPEN);
 
         $this->connection->beginTransaction();
         
@@ -341,26 +253,26 @@ class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
 
     public function testRollback() {
         $this->connection->beginTransaction();
-        $this->assertEqual($this->connection->getTransactionLevel(),1);
-        $this->assertEqual($this->connection->getTransaction()->getState(),Doctrine_Connection_Transaction::STATE_ACTIVE);
+        $this->assertEqual($this->connection->transaction->getTransactionLevel(),1);
+        $this->assertEqual($this->connection->transaction->getState(), Doctrine_Connection_Transaction::STATE_ACTIVE);
         $this->connection->rollback();
-        $this->assertEqual($this->connection->getTransaction()->getState(),Doctrine_Connection_Transaction::STATE_OPEN);
-        $this->assertEqual($this->connection->getTransactionLevel(),0);
+        $this->assertEqual($this->connection->transaction->getState(), Doctrine_Connection_Transaction::STATE_OPEN);
+        $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
     }
     public function testNestedTransactions() {
-        $this->assertEqual($this->connection->getTransactionLevel(),0);
+        $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
         $this->connection->beginTransaction();
-        $this->assertEqual($this->connection->getTransactionLevel(),1);
-        $this->assertEqual($this->connection->getTransaction()->getState(),Doctrine_Connection_Transaction::STATE_ACTIVE);
+        $this->assertEqual($this->connection->transaction->getTransactionLevel(),1);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_ACTIVE);
         $this->connection->beginTransaction();
-        $this->assertEqual($this->connection->getTransaction()->getState(),Doctrine_Connection_Transaction::STATE_BUSY);
-        $this->assertEqual($this->connection->getTransactionLevel(),2);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_BUSY);
+        $this->assertEqual($this->connection->transaction->getTransactionLevel(),2);
         $this->connection->commit();
-        $this->assertEqual($this->connection->getTransaction()->getState(),Doctrine_Connection_Transaction::STATE_ACTIVE);
-        $this->assertEqual($this->connection->getTransactionLevel(),1);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_ACTIVE);
+        $this->assertEqual($this->connection->transaction->getTransactionLevel(),1);
         $this->connection->commit();
-        $this->assertEqual($this->connection->getTransaction()->getState(),Doctrine_Connection_Transaction::STATE_OPEN);
-        $this->assertEqual($this->connection->getTransactionLevel(),0);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_OPEN);
+        $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
     }
 }
 ?>

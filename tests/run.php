@@ -43,6 +43,8 @@ require_once('QueryShortAliasesTestCase.php');
 require_once('QueryDeleteTestCase.php');
 require_once('QueryUpdateTestCase.php');
 
+require_once('UnitOfWorkTestCase.php');
+
 require_once('RelationAccessTestCase.php');
 require_once('RelationTestCase.php');
 require_once('RelationManyToManyTestCase.php');
@@ -67,6 +69,10 @@ print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
+$test->addTestCase(new Doctrine_UnitOfWork_TestCase());
+
+$test->addTestCase(new Doctrine_ConnectionTestCase());
+
 $test->addTestCase(new Doctrine_Db_TestCase());
 
 $test->addTestCase(new Doctrine_Db_Profiler_TestCase());
@@ -74,8 +80,6 @@ $test->addTestCase(new Doctrine_Db_Profiler_TestCase());
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 
 $test->addTestCase(new Doctrine_Record_TestCase());
-
-$test->addTestCase(new Doctrine_ConnectionTestCase());
 
 $test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
 
