@@ -20,14 +20,10 @@
  */
 
 /**
- * @package     Doctrine
- * @url         http://www.phpdoctrine.com
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
- * @version     $Id$
-/**
- * class Doctrine_Import_Builder
- * Is responsible of building Doctrine structure based on a database schema.
+ * Doctrine_Import_Builder
+ * Import builder is responsible of building Doctrine ActiveRecord classes 
+ * based on a database schema.
+ *
  * @package     Doctrine
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
@@ -35,6 +31,7 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  */
 class Doctrine_Import_Builder {
     
@@ -113,13 +110,13 @@ class Doctrine_Import_Builder {
             if($column['notnull']) {
                 $a[] = '\'notnull\' => true';
             }
-	    if($column['primary']) {
+            if($column['primary']) {
                 $a[] = '\'primary\' => true';
             }
-	    if($column['autoinc']) {
+            if($column['autoinc']) {
                 $a[] = '\'autoincrement\' => true';
             }
-	    if($column['unique']) {
+            if($column['unique']) {
                 $a[] = '\'unique\' => true';
             }
 
