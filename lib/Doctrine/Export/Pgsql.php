@@ -143,7 +143,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
      * @throws PDOException
      * @return boolean
      */
-    function alterTable($name, $changes, $check) {
+    public function alterTable($name, $changes, $check) {
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
                 case 'add':

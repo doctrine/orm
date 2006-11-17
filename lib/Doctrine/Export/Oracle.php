@@ -41,10 +41,9 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
      * @access public
      */
     public function createDatabase($name) {
-        if (!$db->options['emulate_database']) {
-            return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                'database creation is only supported if the "emulate_database" option is enabled', __FUNCTION__);
-        }
+        if (!$db->options['emulate_database'])
+            throw new Doctrine_Export_Oracle_Exception('database creation is only supported if the "emulate_database" option is enabled');
+
 
         $username = $db->options['database_name_prefix'].$name;
         $password = $db->dsn['password'] ? $db->dsn['password'] : $name;
@@ -53,9 +52,7 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
 
         $query = 'CREATE USER '.$username.' IDENTIFIED BY '.$password.$tablespace;
         $result = $db->standaloneQuery($query, null, true);
-        if (PEAR::isError($result)) {
-            return $result;
-        }
+
         $query = 'GRANT CREATE SESSION, CREATE TABLE, UNLIMITED TABLESPACE, CREATE SEQUENCE, CREATE TRIGGER TO '.$username;
         $result = $db->standaloneQuery($query, null, true);
         if (PEAR::isError($result)) {
@@ -77,10 +74,10 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
      * @access public
      */
     public function dropDatabase($name) {
-        if (!$db->options['emulate_database']) {
-            return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                'database dropping is only supported if the "emulate_database" option is enabled', __FUNCTION__);
-        }
+        if (!$db->options['emulate_database'])
+            throw new Doctrine_Export_Oracle_Exception('database dropping is only supported if the 
+                                                       "emulate_database" option is enabled');
+
 
         $username = $db->options['database_name_prefix'].$name;
         return $db->standaloneQuery('DROP USER '.$username.' CASCADE', null, true);
@@ -339,9 +336,7 @@ END;
      * @param boolean $check     indicates whether the function should just check if the DBMS driver
      *                             can perform the requested table alterations if the value is true or
      *                             actually perform them otherwise.
-     * @access public
-     *
-      * @return mixed MDB2_OK on success, a MDB2 error on failure
+     * @return void
      */
     public function alterTable($name, $changes, $check) {
 
@@ -423,7 +418,7 @@ END;
      * @param object $db database object that is extended by this class
      * @param string $seq_name name of the sequence to be created
      * @param string $start start value of the sequence; default is 1
-     * @return mixed MDB2_OK on success, a MDB2 error on failure
+     * @return void
      */
     public function createSequence($seq_name, $start = 1) {
         $sequence_name = $db->quoteIdentifier($db->getSequenceName($seq_name), true);
@@ -436,7 +431,7 @@ END;
      *
      * @param object $db database object that is extended by this class
      * @param string $seq_name name of the sequence to be dropped
-     * @return mixed MDB2_OK on success, a MDB2 error on failure
+     * @return void
      */
     public function dropSequence($seq_name) {
         $sequence_name = $db->quoteIdentifier($db->getSequenceName($seq_name), true);

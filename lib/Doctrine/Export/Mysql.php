@@ -87,50 +87,50 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      *                              'type'    => 'innodb',
      *                          );
      *
-     * @return mixed MDB2_OK on success, a MDB2 error on failure
-     * @access public
+     * @return void
      */
     public function createTable($name, array $fields, array $options = array()) {
-        if (!$name) {
-            return $this->dbh->raiseError(MDB2_ERROR_CANNOT_CREATE, null, null,
-                'no valid table name specified', __FUNCTION__);
-        }
+        if( ! $name)
+            throw new Doctrine_Export_Mysql_Exception('no valid table name specified');
+
         if(empty($fields))
-            throw new Doctrine_Export_Exception('no fields specified for table "'.$name.'"');
+            throw new Doctrine_Export_Mysql_Exception('no fields specified for table "'.$name.'"');
 
         $query_fields = $this->getFieldDeclarationList($fields);
 
-        if (!empty($options['primary'])) {
-            $query_fields.= ', PRIMARY KEY ('.implode(', ', array_keys($options['primary'])).')';
-        }
-        $name = $this->conn->quoteIdentifier($name, true);
-        $query = "CREATE TABLE $name ($query_fields)";
+        if( ! empty($options['primary']))
+            $query_fields.= ', PRIMARY KEY (' . implode(', ', array_keys($options['primary'])) . ')';
 
-        $options_strings = array();
+        $name  = $this->conn->quoteIdentifier($name, true);
+        $query = 'CREATE TABLE ' . $name . ' (' . $query_fields . ')';
 
-        if (!empty($options['comment'])) {
-            $options_strings['comment'] = 'COMMENT = '.$this->dbh->quote($options['comment'], 'text');
-        }
+        $optionStrings = array();
 
-        if (!empty($options['charset'])) {
-            $options_strings['charset'] = 'DEFAULT CHARACTER SET '.$options['charset'];
-            if (!empty($options['collate'])) {
-                $options_strings['charset'].= ' COLLATE '.$options['collate'];
+        if( ! empty($options['comment']))
+            $optionStrings['comment'] = 'COMMENT = '.$this->dbh->quote($options['comment'], 'text');
+
+
+        if( ! empty($options['charset'])) {
+            $optionsSting['charset'] = 'DEFAULT CHARACTER SET '.$options['charset'];
+            if( ! empty($options['collate'])) {
+                $optionStrings['charset'].= ' COLLATE '.$options['collate'];
             }
         }
 
         $type = false;
+
         if (!empty($options['type'])) {
             $type = $options['type'];
         } elseif ($this->dbh->options['default_table_type']) {
             $type = $this->dbh->options['default_table_type'];
         }
+        
         if ($type) {
-            $options_strings[] = "ENGINE = $type";
+            $optionStrings[] = "ENGINE = $type";
         }
 
-        if (!empty($options_strings)) {
-            $query.= ' '.implode(' ', $options_strings);
+        if (!empty($optionStrings)) {
+            $query.= ' '.implode(' ', $optionStrings);
         }
         return $this->dbh->query($query);
     }
@@ -218,13 +218,13 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      *                                )
      *
      * @param boolean $check     indicates whether the function should just check if the DBMS driver
-     *                             can perform the requested table alterations if the value is true or
-     *                             actually perform them otherwise.
+     *                           can perform the requested table alterations if the value is true or
+     *                           actually perform them otherwise.
      * @return boolean
      */
     public function alterTable($name, $changes, $check) {
-        foreach ($changes as $change_name => $change) {
-            switch ($change_name) {
+        foreach ($changes as $changeName => $change) {
+            switch ($changeName) {
                 case 'add':
                 case 'remove':
                 case 'change':
@@ -232,21 +232,21 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
                 case 'name':
                 break;
                 default:
-                    throw new Doctrine_Export_Exception('change type "'.$change_name.'" not yet supported');
+                    throw new Doctrine_Export_Exception('change type "'.$changeName.'" not yet supported');
             }
         }
 
-        if ($check) {
+        if($check) {
             return true;
         }
 
         $query = '';
-        if (!empty($changes['name'])) {
+        if( ! empty($changes['name'])) {
             $change_name = $this->conn->quoteIdentifier($changes['name'], true);
             $query .= 'RENAME TO ' . $change_name;
         }
 
-        if (!empty($changes['add']) && is_array($changes['add'])) {
+        if( ! empty($changes['add']) && is_array($changes['add'])) {
             foreach ($changes['add'] as $field_name => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -255,7 +255,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
             }
         }
 
-        if (!empty($changes['remove']) && is_array($changes['remove'])) {
+        if( ! empty($changes['remove']) && is_array($changes['remove'])) {
             foreach ($changes['remove'] as $field_name => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -266,13 +266,13 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
         }
 
         $rename = array();
-        if (!empty($changes['rename']) && is_array($changes['rename'])) {
+        if( ! empty($changes['rename']) && is_array($changes['rename'])) {
             foreach ($changes['rename'] as $field_name => $field) {
                 $rename[$field['name']] = $field_name;
             }
         }
 
-        if (!empty($changes['change']) && is_array($changes['change'])) {
+        if( ! empty($changes['change']) && is_array($changes['change'])) {
             foreach ($changes['change'] as $field_name => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -288,7 +288,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
             }
         }
 
-        if (!empty($rename) && is_array($rename)) {
+        if( ! empty($rename) && is_array($rename)) {
             foreach ($rename as $rename_name => $renamed_field) {
                 if ($query) {
                     $query.= ', ';
@@ -299,7 +299,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
             }
         }
 
-        if (!$query) {
+        if( ! $query) {
             return MDB2_OK;
         }
 
@@ -309,29 +309,34 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
     /**
      * create sequence
      *
-     * this method has been borrowed from PEAR MDB2 database abstraction layer
-     *
-     * @param string    $seq_name     name of the sequence to be created
-     * @param string    $start         start value of the sequence; default is 1
-     * @return mixed MDB2_OK on success, a MDB2 error on failure
+     * @param string    $sequenceName name of the sequence to be created
+     * @param string    $seqcol_name  the name of the sequence column
+     * @param string    $start        start value of the sequence; default is 1
+     * @return boolean
      */
-    public function createSequence($sequence_name, $seqcol_name, $start = 1) {
-        $query  = "CREATE TABLE $sequence_name ($seqcol_name INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ($seqcol_name))";
-        $query .= strlen($this->dbh->options['default_table_type']) ? ' TYPE = '.$this->dbh->options['default_table_type'] : '';
+    public function createSequence($sequenceName, $seqcol_name, $start = 1) {
+        $query  = 'CREATE TABLE ' . $sequenceName
+                . ' (' . $seqcol_name . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
+                . $seqcol_name . '))'
+                . strlen($this->dbh->options['default_table_type']) ? ' TYPE = ' 
+                . $this->dbh->options['default_table_type'] : '';
+
         $res    = $this->dbh->query($query);
 
-        if ($start == 1) {
-            return MDB2_OK;
-        }
+        if ($start == 1)
+            return true;
 
-        $query  = "INSERT INTO $sequence_name ($seqcol_name) VALUES (".($start-1).')';
+
+        $query  = 'INSERT INTO ' . $sequenceName
+                . ' (' . $seqcol_name . ') VALUES (' . ($start-1) . ')';
+
         $res    = $this->dbh->query($query);
 
         // Handle error
-        $result = $this->dbh->query("DROP TABLE $sequence_name");
-        if (PEAR::isError($result)) {
-            return $this->dbh->raiseError($result, null, null,
-                'could not drop inconsistent sequence table', __FUNCTION__);
+        try {
+            $result = $this->dbh->query('DROP TABLE ' . $sequenceName);
+        } catch(Exception $e) {
+            throw new Doctrine_Export_Mysql_Exception('could not drop inconsistent sequence table');
         }
 
         return $this->dbh->raiseError($res, null, null,
@@ -339,8 +344,6 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
     }
     /**
      * Get the stucture of a field into an array
-     *
-     * this method has been borrowed from PEAR MDB2 database abstraction layer
      *
      * @author Leoncx
      * @param string    $table         name of the table on which the index is to be created
@@ -390,24 +393,25 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
     }
     /**
      * drop existing index
-     * this method has been borrowed from PEAR MDB2 database abstraction layer
      *
      * @param string    $table          name of table that should be used in method
      * @param string    $name           name of the index to be dropped
-     * @return mixed MDB2_OK on success, a MDB2 error on failure
+     * @return void
      */
     public function dropIndex($table, $name) {
         $table  = $this->conn->quoteIdentifier($table, true);
         $name   = $this->conn->quoteIdentifier($this->dbh->getIndexName($name), true);
-        return $this->dbh->query("DROP INDEX $name ON $table");
+        return $this->dbh->query('DROP INDEX ' . $name . ' ON ' . $table);
     }
     /**
      * dropTable
      *
      * @param string    $table          name of table that should be dropped from the database
      * @throws PDOException
+     * @return void
      */
     public function dropTable($table) {
+        $table  = $this->conn->quoteIdentifier($table, true);
         $this->dbh->query('DROP TABLE '.$table);
     }
 }
