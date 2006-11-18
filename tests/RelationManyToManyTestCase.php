@@ -312,7 +312,18 @@ class Doctrine_Relation_ManyToMany_TestCase extends Doctrine_UnitTestCase {
         $component = $component->getTable()->find($component->id);
         
         $this->assertEqual($component->RTC1->count(), 2);
-
+    }
+    
+    public function testManyToManySimpleUpdate() {
+        $component = $this->connection->getTable('M2MTest')->find(1);
+        
+        $this->assertEqual($component->name, 2);
+        
+        $component->name = 'changed name';
+        
+        $component->save();
+        
+        $this->assertEqual($component->name, 'changed name');
     }
 }
 ?>
