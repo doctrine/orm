@@ -137,4 +137,40 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
         }
         return $query;
     }
+    /**
+     * return version information about the server
+     *
+     * @param string $native    determines if the raw version string should be returned
+     * @return array|string     an array or string with version information
+     */
+    public function getServerVersion($native = false) {
+        $query = 'SHOW SERVER_VERSION';
+
+        $serverInfo = $this->fetchOne($query);
+
+        if( ! $native) {
+            $tmp = explode('.', $server_info, 3);
+            
+            if(empty($tmp[2]) && isset($tmp[1])
+                && preg_match('/(\d+)(.*)/', $tmp[1], $tmp2)) {
+
+                $serverInfo = array(
+                    'major' => $tmp[0],
+                    'minor' => $tmp2[1],
+                    'patch' => null,
+                    'extra' => $tmp2[2],
+                    'native' => $serverInfo,
+                );
+            } else {
+                $serverInfo = array(
+                    'major' => isset($tmp[0]) ? $tmp[0] : null,
+                    'minor' => isset($tmp[1]) ? $tmp[1] : null,
+                    'patch' => isset($tmp[2]) ? $tmp[2] : null,
+                    'extra' => null,
+                    'native' => $serverInfo,
+                );
+            }
+        }
+        return $serverInfo;
+    }
 }
