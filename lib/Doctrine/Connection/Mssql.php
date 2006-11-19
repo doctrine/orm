@@ -153,11 +153,9 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
      *
      * @param string $table name of the table into which a new row was inserted
      * @param string $field name of the field into which a new row was inserted
-     * @return mixed MDB2 Error Object or id
-     * @access public
+     * @return integer
      */
-    function lastInsertID($table = null, $field = null)
-    {
+    public function lastInsertID($table = null, $field = null) {
         $server_info = $this->getServerVersion();
         if (is_array($server_info)
             && !is_null($server_info['major'])
@@ -167,7 +165,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
                     $query = "SELECT @@IDENTITY";
         }
 
-        return $this->queryOne($query, 'integer');
+        return $this->queryOne($query);
     }
 }
 

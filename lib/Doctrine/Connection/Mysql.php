@@ -80,7 +80,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      *
      * @return integer
      */
-    public function nextID($seqName, $ondemand = true) {
+    public function nextId($seqName, $ondemand = true) {
         $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
         $seqcolName   = $this->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
         $query        = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
@@ -99,7 +99,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      * @param string $seq_name name of the sequence
      * @return integer
      */
-    public function currID($seqName) {
+    public function currId($seqName) {
         $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
         $seqcolName = $this->quoteIdentifier($this->options['seqcol_name'], true);
         $query = 'SELECT MAX(' . $seqcolName . ') FROM ' . $sequenceName;
