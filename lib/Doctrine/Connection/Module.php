@@ -43,7 +43,10 @@ class Doctrine_Connection_Module {
      * @param Doctrine_Connection $conn     Doctrine_Connection object, every connection
      *                                      module holds an instance of Doctrine_Connection
      */
-    public function __construct(Doctrine_Connection $conn) {
+    public function __construct($conn = null) {
+        if( ! ($conn instanceof Doctrine_Connection))
+            $conn = Doctrine_Manager::getInstance()->getCurrentConnection();
+            
         $this->conn = $conn;
         
         $e = explode('_', get_class($this));
