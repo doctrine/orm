@@ -42,6 +42,54 @@ final class Doctrine {
      */
     const ATTR_LISTENER         = 1;
     /**
+     * portability attribute
+     */
+    const ATTR_PORTABILITY      = 9;
+    /**
+     * quote identifier attribute
+     */
+    const ATTR_QUOTE_IDENTIFIER = 3;
+    /**
+     * field case attribute
+     */
+    const ATTR_FIELD_CASE       = 4;
+    /**
+     * index name format attribute
+     */
+    const ATTR_IDXNAME_FORMAT   = 5;
+    /**
+     * sequence name format attribute
+     */
+    const ATTR_SEQNAME_FORMAT   = 6;
+    /**
+     * sequence column name attribute
+     */
+    const ATTR_SEQCOL_NAME      = 7;
+    /**
+     * validation attribute
+     */
+    const ATTR_VLD              = 12;
+    /**
+     * collection key attribute
+     */
+    const ATTR_COLL_KEY         = 15;
+    /**
+     * query limit
+     */
+    const ATTR_QUERY_LIMIT      = 17;
+    /**
+     * automatic length validations attribute
+     */
+    const ATTR_AUTO_LENGTH_VLD  = 19;
+    /**
+     * automatic type validations attribute
+     */
+    const ATTR_AUTO_TYPE_VLD    = 20;
+    
+    
+    /** TODO: REMOVE THE FOLLOWING CONSTANTS AND UPDATE THE DOCS ! */
+
+    /**
      * fetchmode attribute
      */
     const ATTR_FETCHMODE        = 2;
@@ -54,10 +102,6 @@ final class Doctrine {
      */
     const ATTR_LOCKMODE         = 11;
     /**
-     * validatate attribute
-     */
-    const ATTR_VLD              = 12;
-    /**
      * name prefix attribute
      */
     const ATTR_NAME_PREFIX      = 13;
@@ -66,29 +110,15 @@ final class Doctrine {
      */
     const ATTR_CREATE_TABLES    = 14;
     /**
-     * collection key attribute
-     */
-    const ATTR_COLL_KEY         = 15;
-    /**
      * collection limit attribute
      */
     const ATTR_COLL_LIMIT       = 16;
     /**
-     * query limit
-     */
-    const ATTR_QUERY_LIMIT      = 17;
-    /**
      * accessor invoking attribute
      */
     const ATTR_ACCESSORS        = 18;
-    /**
-     * automatic length validations attribute
-     */
-    const ATTR_AUTO_LENGTH_VLD  = 19;
-    /**
-     * automatic type validations attribute
-     */
-    const ATTR_AUTO_TYPE_VLD    = 20;
+    
+    
 
     /**
      * LIMIT CONSTANTS
