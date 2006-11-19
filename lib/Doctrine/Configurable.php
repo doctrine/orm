@@ -118,10 +118,6 @@ abstract class Doctrine_Configurable {
             case Doctrine::ATTR_QUERY_LIMIT:
 
             break;
-            case Doctrine::ATTR_CACHE:
-                if($value != Doctrine::CACHE_SQLITE && $value != Doctrine::CACHE_NONE)
-                    throw new Doctrine_Exception("Unknown cache container. See Doctrine::CACHE_* constants for availible containers.");
-            break;
             default:
                 throw new Doctrine_Exception("Unknown attribute.");
         endswitch;
