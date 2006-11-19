@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_DataDict');
 /**
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -48,7 +49,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      *      notnull
      *          Boolean flag that indicates whether this field is constrained
      *          to not be set to null.
-     * @author Lukas Smith (PEAR MDB2 library)
+     *
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
