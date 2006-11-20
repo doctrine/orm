@@ -105,7 +105,7 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
      * @return integer
      */
     public function getNextID($sequence) {
-        $stmt = $this->query("SELECT UNIQUE FROM ".$sequence);
+        $stmt = $this->query('SELECT UNIQUE FROM ' . $sequence);
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return $data[0];
     }
