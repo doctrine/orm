@@ -169,7 +169,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      *
      * @return integer      the number of affected rows
      */
-    public function replace($table, $fields) {
+    public function replace($table, array $fields, array $keys) {
         $count = count($fields);
         $query = $values = '';
         $keys = $colnum = 0;
