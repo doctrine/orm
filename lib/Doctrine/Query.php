@@ -464,11 +464,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         return $q;
     }
     /**
-     * returns the built sql query
+     * builds the sql query from the given parameters and applies things such as
+     * column aggregation inheritance and limit subqueries if needed
      *
      * @param array $params             an array of prepared statement params (needed only in mysql driver 
      *                                  when limit subquery algorithm is used)
-     * @return string
+     * @return string                   the built sql query
      */
     public function getQuery($params = array()) {
         if(empty($this->parts["select"]) || empty($this->parts["from"]))
@@ -560,6 +561,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @return string       the limit subquery
      */
     public function getLimitSubquery() {
+
+
         $k          = array_keys($this->tables);
         $table      = $this->tables[$k[0]];
 
@@ -583,15 +586,15 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         $subquery .= ' FROM ' . $table->getTableName() . ' ' . $alias;
 
-
         foreach($this->parts['join'] as $parts) {
             foreach($parts as $part) {
                 // preserve LEFT JOINs only if needed
                 if(substr($part,0,9) === 'LEFT JOIN') {
                     $e = explode(' ', $part);
 
-                    if( ! in_array($e[3], $this->subqueryAliases))
+                    if( ! in_array($e[3], $this->subqueryAliases) && ! in_array($e[2], $this->subqueryAliases))
                         continue;
+                    
                 }
 
                 $subquery .= ' '.$part;
@@ -1126,7 +1129,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
                         $assocTableName = $asf->getTableName();
 
-                        if( ! $loadFields || $table->usesInheritanceMap()) {
+                        if( ! $loadFields) {
                             $this->subqueryAliases[] = $assocTableName;
                         }
                         $this->parts["join"][$tname][$assocTableName] = $join.$assocTableName . ' ON ' .$tname  . '.' 
