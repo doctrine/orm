@@ -530,7 +530,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 }
 
                 $field    = $this->getShortAlias($table->getTableName()) . '.' . $table->getIdentifier();
-                array_unshift($this->parts['where'], $field. ' IN (' . $subquery . ')');
+                
+                // only append the subquery if it actually contains something
+                if($subquery !== '')
+                    array_unshift($this->parts['where'], $field. ' IN (' . $subquery . ')');
+
                 $modifyLimit = false;
             }
         }
@@ -594,7 +598,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
                     if( ! in_array($e[3], $this->subqueryAliases) && ! in_array($e[2], $this->subqueryAliases))
                         continue;
-                    
+
                 }
 
                 $subquery .= ' '.$part;
