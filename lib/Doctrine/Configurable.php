@@ -116,7 +116,25 @@ abstract class Doctrine_Configurable {
             case Doctrine::ATTR_AUTO_LENGTH_VLD:
             case Doctrine::ATTR_AUTO_TYPE_VLD:
             case Doctrine::ATTR_QUERY_LIMIT:
+            case Doctrine::ATTR_QUOTE_IDENTIFIER:
+            case Doctrine::ATTR_PORTABILITY:
 
+            break;
+            case Doctrine::ATTR_SEQCOL_NAME:
+                if( ! is_string($value))
+                    throw new Doctrine_Exception('Sequence column name attribute only accepts string values');
+
+            break;
+            case Doctrine::ATTR_FIELD_CASE:
+                if($value != 0 && $value != CASE_LOWER && $value != CASE_UPPER)
+                    throw new Doctrine_Exception('Field case attribute should be either 0, CASE_LOWER or CASE_UPPER constant.');
+            break;
+            case Doctrine::ATTR_SEQNAME_FORMAT:
+            case Doctrine::ATTR_IDXNAME_FORMAT:
+                if($this instanceof Doctrine_Table) {
+                    throw new Doctrine_Exception('Sequence / index name format attributes cannot be set'
+                                               . 'at table level (only at connection or global level).');
+                }
             break;
             default:
                 throw new Doctrine_Exception("Unknown attribute.");
