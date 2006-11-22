@@ -143,16 +143,15 @@ class Doctrine_Import_Builder {
     /**
      *
      * @param Doctrine_Schema_Object $schema
-     * @return
-     * @access public
      * @throws Doctrine_Import_Exception
+     * @return void
      */
     public function build(Doctrine_Schema_Object $schema) {
-	foreach($schema->getDatabases() as $database){
-		foreach($database->getTables() as $table){
-			$this->buildRecord($table);
-		}
-	}
+        foreach($schema->getDatabases() as $database){
+            foreach($database->getTables() as $table){
+                $this->buildRecord($table);
+            }
+        }
     }
 
 }

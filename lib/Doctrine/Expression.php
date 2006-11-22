@@ -186,9 +186,9 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * locate
      * returns the position of the first occurrence of substring $substr in string $str
      *
-     * @param string $substr    literal string
+     * @param string $substr    literal string to find
      * @param string $str       literal string
-     * @return string
+     * @return integer
      */
     public function locate($substr, $str) {
         return 'LOCATE(' . $str . ', ' . $substr . ')';
@@ -200,6 +200,19 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      */
     public function now() {
         return 'NOW()';
+    }
+    /**
+     * soundex
+     * Returns a string to call a function to compute the 
+     * soundex encoding of a string
+     *
+     * The string "?000" is returned if the argument is NULL.
+     *
+     * @param string $value
+     * @return string   SQL soundex function with given parameter
+     */
+    public function soundex($value) {
+        throw new Doctrine_Expression_Exception('SQL soundex function not supported by this driver.');
     }
     /**
      * return string to call a function to get a substring inside an SQL statement
