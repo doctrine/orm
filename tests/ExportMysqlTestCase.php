@@ -2,7 +2,26 @@
 class Doctrine_Export_Mysql_TestCase extends Doctrine_Export_TestCase {
     public function __construct() {
         parent::__construct('mysql');
-    } 
+    }
+
+    public function testAlterTableThrowsExceptionWithoutValidTableName() {
+        try {
+            $this->export->alterTable(0,0,array());
+
+            $this->fail();
+        } catch(Doctrine_Export_Exception $e) {
+            $this->pass();
+        }
+    }
+    public function testCreateTableExecutesSql() {
+        $name = 'mytable';
+        
+        $fields = array('id' => array('type' => 'integer', 'unsigned' => 1));
+        
+        $options = array('type' => 'foo');
+        
+        //$this->export->createTable($name, $fields, $options);
+    }
     public function testCreateDatabaseExecutesSql() {
         $this->export->createDatabase('db');
 

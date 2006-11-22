@@ -1,15 +1,7 @@
 <?php
 class Doctrine_Export_TestCase extends Doctrine_Driver_UnitTestCase {
 
-    public function testAlterTableThrowsExceptionWithoutValidTableName() {
-        try {
-            $this->export->alterTable(0,0,array());
 
-            $this->fail();
-        } catch(Doctrine_Export_Exception $e) {
-            $this->pass();
-        }
-    }
     public function testCreateTableThrowsExceptionWithoutValidTableName() {
         try {
             $this->export->createTable(0,array(),array());
@@ -27,6 +19,11 @@ class Doctrine_Export_TestCase extends Doctrine_Driver_UnitTestCase {
         } catch(Doctrine_Export_Exception $e) {
             $this->pass();
         }
+    }
+    public function testDropConstraintExecutesSql() {
+        $this->export->dropConstraint('sometable', 'relevancy');
+        
+        $this->assertEqual($this->adapter->pop(), 'ALTER TABLE sometable DROP CONSTRAINT relevancy');
     }
     public function testCreateIndexExecutesSql() {
         $this->export->createIndex('sometable', 'relevancy', array('fields' => array('title' => array(), 'content' => array())));
