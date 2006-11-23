@@ -106,7 +106,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
             switch ($options['wait']) {
                 case 'WAIT':
                 case 'NO WAIT':
-                    $wait = $options['wait'];
+                    $wait = ' ' . $options['wait'];
                 break;
                 default:
                     throw new Doctrine_Transaction_Exception('wait option is not supported: ' . $options['wait']);
@@ -117,14 +117,14 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
             switch ($options['rw']) {
                 case 'READ ONLY':
                 case 'READ WRITE':
-                    $rw = $options['wait'];
+                    $rw = ' ' . $options['wait'];
                 break;
                 default:
                     throw new Doctrine_Transaction_Exception('wait option is not supported: ' . $options['rw']);
             }
         }
 
-        $query = 'SET TRANSACTION ' . $rw . ' ' . $wait .' ISOLATION LEVEL ' . $nativeIsolation;
+        $query = 'SET TRANSACTION' . $rw . $wait .' ISOLATION LEVEL ' . $nativeIsolation;
 
         $this->conn->getDbh()->query($query);
     }

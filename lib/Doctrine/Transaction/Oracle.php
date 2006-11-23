@@ -93,6 +93,6 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction {
         }
 
         $query = 'ALTER SESSION ISOLATION LEVEL ' . $isolation;
-        return $this->dbh->query($query);
+        return $this->conn->getDbh()->query($query);
     }
 }
