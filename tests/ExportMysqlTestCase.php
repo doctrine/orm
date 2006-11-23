@@ -1,5 +1,5 @@
 <?php
-class Doctrine_Export_Mysql_TestCase extends Doctrine_Export_TestCase {
+class Doctrine_Export_Mysql_TestCase extends Doctrine_Driver_UnitTestCase {
     public function __construct() {
         parent::__construct('mysql');
     }

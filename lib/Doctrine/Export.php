@@ -227,7 +227,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         $table  = $this->conn->quoteIdentifier($table);
         $name   = $this->conn->quoteIdentifier($name);
 
-        $query = 'CREATE INDEX ' . $name . ' ON  ' . $table;
+        $query = 'CREATE INDEX ' . $name . ' ON ' . $table;
         $fields = array();
         foreach (array_keys($definition['fields']) as $field) {
             $fields[] = $this->conn->quoteIdentifier($field);

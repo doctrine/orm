@@ -1,5 +1,5 @@
 <?php
-class Doctrine_Transaction_Pgsql_TestCase extends Doctrine_Driver_UnitTestCase {
+class Doctrine_Transaction_Firebird_TestCase extends Doctrine_Driver_UnitTestCase {
     public function __construct() {
         parent::__construct('firebird');
     }
@@ -46,29 +46,29 @@ class Doctrine_Transaction_Pgsql_TestCase extends Doctrine_Driver_UnitTestCase {
         $this->transaction->setIsolation('READ UNCOMMITTED');
         $this->transaction->setIsolation('READ COMMITTED');
         $this->transaction->setIsolation('REPEATABLE READ');
-        $this->transaction->setIsolation('SERIALIZABLE');
+        $this->transaction->setIsolation('SERIALIZABLE');                      
 
-        $this->assertEqual($this->adapter->pop(), 'ALTER SESSION ISOLATION LEVEL READ COMMITTED RECORD_VERSION');
-        $this->assertEqual($this->adapter->pop(), 'ALTER SESSION ISOLATION LEVEL READ COMMITTED NO RECORD_VERSION');
-        $this->assertEqual($this->adapter->pop(), 'ALTER SESSION ISOLATION LEVEL SNAPSHOT');
-        $this->assertEqual($this->adapter->pop(), 'ALTER SESSION ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
+        $this->assertEqual($this->adapter->pop(), 'SET TRANSACTION ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
+        $this->assertEqual($this->adapter->pop(), 'SET TRANSACTION ISOLATION LEVEL SNAPSHOT');
+        $this->assertEqual($this->adapter->pop(), 'SET TRANSACTION ISOLATION LEVEL READ COMMITTED NO RECORD_VERSION');
+        $this->assertEqual($this->adapter->pop(), 'SET TRANSACTION ISOLATION LEVEL READ COMMITTED RECORD_VERSION');
     }
     public function testSetIsolationSupportsReadWriteOptions() {
         $this->transaction->setIsolation('SERIALIZABLE', array('rw' => 'READ ONLY'));
 
-        $this->assertEqual($this->adapter->pop(), 'ALTER SESSION READ ONLY ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
+        $this->assertEqual($this->adapter->pop(), 'SET TRANSACTION READ ONLY ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
 
         $this->transaction->setIsolation('SERIALIZABLE', array('rw' => 'READ WRITE'));
 
-        $this->assertEqual($this->adapter->pop(), 'ALTER SESSION READ WRITE ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
+        $this->assertEqual($this->adapter->pop(), 'SET TRANSACTION READ WRITE ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
     }
     public function testSetIsolationSupportsWaitOptions() {
         $this->transaction->setIsolation('SERIALIZABLE', array('wait' => 'NO WAIT'));
 
-        $this->assertEqual($this->adapter->pop(), 'ALTER SESSION NO WAIT ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
+        $this->assertEqual($this->adapter->pop(), 'SET TRANSACTION NO WAIT ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
 
         $this->transaction->setIsolation('SERIALIZABLE', array('wait' => 'WAIT'));
 
-        $this->assertEqual($this->adapter->pop(), 'ALTER SESSION WAIT ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
+        $this->assertEqual($this->adapter->pop(), 'SET TRANSACTION WAIT ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
     }
 }

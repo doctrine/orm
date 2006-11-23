@@ -77,8 +77,11 @@ class Doctrine_Driver_UnitTestCase extends UnitTestCase {
         if( ! $this->generic) {
             $this->export   = $this->conn->export;
 
-            $tx = 'Doctrine_Transaction_' . ucwords($this->adapter->getName());
-            if(class_exists($tx)) 
+            if($this->adapter->getName() == 'oci')
+                $tx = 'Doctrine_Transaction_Oracle'; 
+            else
+                $tx = 'Doctrine_Transaction_' . ucwords($this->adapter->getName());
+            if(class_exists($tx))
             $this->transaction = new $tx($this->conn);
             //$this->dataDict = $this->conn->dataDict;
         } else {

@@ -101,8 +101,10 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
             default:
                 throw new Doctrine_Transaction_Exception('isolation level is not supported: ' . $isolation);
         }
+        
+        $rw = $wait = '';
 
-        if( ! empty($options['wait'])) {
+        if(isset($options['wait'])) {
             switch ($options['wait']) {
                 case 'WAIT':
                 case 'NO WAIT':
@@ -113,11 +115,11 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
             }
         }
 
-        if( ! empty($options['rw'])) {
+        if(isset($options['rw'])) {
             switch ($options['rw']) {
                 case 'READ ONLY':
                 case 'READ WRITE':
-                    $rw = ' ' . $options['wait'];
+                    $rw = ' ' . $options['rw'];
                 break;
                 default:
                     throw new Doctrine_Transaction_Exception('wait option is not supported: ' . $options['rw']);

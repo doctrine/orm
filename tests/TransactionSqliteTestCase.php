@@ -1,5 +1,5 @@
 <?php
-class Doctrine_Transaction_Oracle_TestCase extends Doctrine_Driver_UnitTestCase {
+class Doctrine_Transaction_Sqlite_TestCase extends Doctrine_Driver_UnitTestCase {
     public function __construct() {
         parent::__construct('sqlite');
     }
@@ -15,11 +15,11 @@ class Doctrine_Transaction_Oracle_TestCase extends Doctrine_Driver_UnitTestCase 
         $this->transaction->setIsolation('READ UNCOMMITTED');
         $this->transaction->setIsolation('READ COMMITTED');
         $this->transaction->setIsolation('REPEATABLE READ');
-        $this->transaction->setIsolation('SERIALIZABLE');
-
+        $this->transaction->setIsolation('SERIALIZABLE'); 
+        
+        $this->assertEqual($this->adapter->pop(), 'PRAGMA read_uncommitted = 1');
+        $this->assertEqual($this->adapter->pop(), 'PRAGMA read_uncommitted = 1');
+        $this->assertEqual($this->adapter->pop(), 'PRAGMA read_uncommitted = 1');
         $this->assertEqual($this->adapter->pop(), 'PRAGMA read_uncommitted = 0');
-        $this->assertEqual($this->adapter->pop(), 'PRAGMA read_uncommitted = 1');
-        $this->assertEqual($this->adapter->pop(), 'PRAGMA read_uncommitted = 1');
-        $this->assertEqual($this->adapter->pop(), 'PRAGMA read_uncommitted = 1');
     }
 }

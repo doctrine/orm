@@ -4,7 +4,7 @@ class Doctrine_Export_TestCase extends Doctrine_Driver_UnitTestCase {
 
     public function testCreateTableThrowsExceptionWithoutValidTableName() {
         try {
-            $this->export->createTable(0,array(),array());
+            $this->export->createTable(0, array(), array());
 
             $this->fail();
         } catch(Doctrine_Export_Exception $e) {
@@ -13,7 +13,7 @@ class Doctrine_Export_TestCase extends Doctrine_Driver_UnitTestCase {
     }
     public function testCreateTableThrowsExceptionWithEmptyFieldsArray() {
         try {
-            $this->export->createTable('sometable',array(),array());
+            $this->export->createTable('sometable', array(), array());
 
             $this->fail();
         } catch(Doctrine_Export_Exception $e) {

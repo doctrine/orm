@@ -30,9 +30,9 @@ class Doctrine_Transaction_Oracle_TestCase extends Doctrine_Driver_UnitTestCase 
         $this->transaction->setIsolation('REPEATABLE READ');
         $this->transaction->setIsolation('SERIALIZABLE');
 
-        $this->assertEqual($this->adapter->pop(), 'ALTER SESSION ISOLATION LEVEL READ UNCOMMITTED');
         $this->assertEqual($this->adapter->pop(), 'ALTER SESSION ISOLATION LEVEL SERIALIZABLE');
         $this->assertEqual($this->adapter->pop(), 'ALTER SESSION ISOLATION LEVEL SERIALIZABLE');
         $this->assertEqual($this->adapter->pop(), 'ALTER SESSION ISOLATION LEVEL SERIALIZABLE');
+        $this->assertEqual($this->adapter->pop(), 'ALTER SESSION ISOLATION LEVEL READ COMMITTED');
     }
 }

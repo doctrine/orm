@@ -1,7 +1,7 @@
 <?php
-class Doctrine_Transaction_Oracle_TestCase extends Doctrine_Driver_UnitTestCase {
+class Doctrine_Transaction_Mssql_TestCase extends Doctrine_Driver_UnitTestCase {
     public function __construct() {
-        parent::__construct('sqlite');
+        parent::__construct('mssql');
     }
     public function testSetIsolationThrowsExceptionOnUnknownIsolationMode() {
         try {

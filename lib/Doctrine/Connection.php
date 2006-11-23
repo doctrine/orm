@@ -206,6 +206,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
             return $str;
         }
+        return $str;
         //$str = str_replace($this->identifier_quoting['end'], $this->identifier_quoting['escape'] . $this->identifier_quoting['end'], $str);
         //return $this->identifier_quoting['start'] . $str . $this->identifier_quoting['end'];
     }
