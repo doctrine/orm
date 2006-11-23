@@ -49,7 +49,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return void
      */
     public function dropTable($table) {
-        $this->dbh->query('DROP TABLE '.$table);
+        $this->conn->getDbh()->query('DROP TABLE '.$table);
     }
 
     /**
@@ -60,8 +60,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return void
      */
     public function dropIndex($table, $name) {
-        $name = $db->quoteIdentifier($db->getIndexName($name), true);
-        return $db->exec("DROP INDEX $name");
+        $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
+        return $this->conn->getDbh()->exec('DROP INDEX ' . $name);
     }
     /**
      * drop existing constraint
@@ -72,9 +72,9 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return void
      */
     public function dropConstraint($table, $name, $primary = false) {
-        $table = $db->quoteIdentifier($table, true);
-        $name  = $db->quoteIdentifier($db->getIndexName($name), true);
-        return $db->exec("ALTER TABLE $table DROP CONSTRAINT $name");
+        $table = $this->conn->quoteIdentifier($table, true);
+        $name  = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
+        return $this->conn->getDbh()->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
     }
     /**
      * drop existing sequence
@@ -175,8 +175,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return void
      */
     public function createConstraint($table, $name, $definition) {
-        $table = $db->quoteIdentifier($table, true);
-        $name = $db->quoteIdentifier($db->getIndexName($name), true);
+        $table = $this->conn->quoteIdentifier($table, true);
+        $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
         $query = "ALTER TABLE $table ADD CONSTRAINT $name";
         if (!empty($definition['primary'])) {
             $query.= ' PRIMARY KEY';
@@ -185,10 +185,10 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         }
         $fields = array();
         foreach (array_keys($definition['fields']) as $field) {
-            $fields[] = $db->quoteIdentifier($field, true);
+            $fields[] = $this->conn->quoteIdentifier($field, true);
         }
         $query .= ' ('. implode(', ', $fields) . ')';
-        return $db->exec($query);
+        return $this->conn->getDbh()->exec($query);
     }
     /**
      * Get the stucture of a field into an array
@@ -227,13 +227,13 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         $table  = $this->conn->quoteIdentifier($table);
         $name   = $this->conn->quoteIdentifier($name);
 
-        $query = "CREATE INDEX $name ON $table";
+        $query = 'CREATE INDEX ' . $name . ' ON  ' . $table;
         $fields = array();
         foreach (array_keys($definition['fields']) as $field) {
             $fields[] = $this->conn->quoteIdentifier($field);
         }
         $query .= ' ('. implode(', ', $fields) . ')';
-        return $this->dbh->query($query);
+        return $this->conn->getDbh()->query($query);
     }
 
     /**
@@ -325,7 +325,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *                             actually perform them otherwise.
      * @return void
      */
-    public function alterTable($name, $changes, $check) {
+    public function alterTable($name, array $changes, $check) {
         throw new Doctrine_Export_Exception('Alter table not supported by this driver.');
     }
     /**
@@ -348,7 +348,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      */
     public function getFieldDeclarationList(array $fields) {
         foreach ($fields as $field_name => $field) {
-            $query = $db->getDeclaration($field['type'], $field_name, $field);
+            $query = $this->conn->dataDict->getNativeDeclaration($field['type'], $field_name, $field);
             $query_fields[] = $query;
         }
         return implode(', ', $query_fields);

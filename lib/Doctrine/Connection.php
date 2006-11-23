@@ -203,11 +203,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return string               quoted identifier string
      */
     public function quoteIdentifier($str, $checkOption = true) {
-        if ($checkOption && ! $this->options['quote_identifier']) {
+        if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
             return $str;
         }
-        $str = str_replace($this->identifier_quoting['end'], $this->identifier_quoting['escape'] . $this->identifier_quoting['end'], $str);
-        return $this->identifier_quoting['start'] . $str . $this->identifier_quoting['end'];
+        //$str = str_replace($this->identifier_quoting['end'], $this->identifier_quoting['escape'] . $this->identifier_quoting['end'], $str);
+        //return $this->identifier_quoting['start'] . $str . $this->identifier_quoting['end'];
     }
     /**
      * returns the manager that created this connection
@@ -271,6 +271,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             return $indexName;
         }
         return $idx;
+    }
+    public function getIndexName($idx) {
+        return $idx;
+    }
+    public function getSequenceName($sqn) {
+        return $sqn;
     }
 
     /**
@@ -404,7 +410,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return mixed
      */
     public function fetchOne($statement, array $params = array()) {
-        return current($this->query($statement, $params)->fetch(PDO::FETCH_NUM));
+        return current($this->execute($statement, $params)->fetch(PDO::FETCH_NUM));
     }
     /**
      * fetchRow

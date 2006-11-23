@@ -103,20 +103,25 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      */
     public function _dropAutoincrement($table) {
 
-        $result = $db->manager->dropSequence($table);
+        $result = $this->dropSequence($table);
         
+        /**
         if (PEAR::isError($result)) {
             return $db->raiseError(null, null, null,
                 'sequence for autoincrement PK could not be dropped', __FUNCTION__);
         }
+        */
         //remove autoincrement trigger associated with the table
-        $table = $db->quote(strtoupper($table), 'text');
-        $trigger_name = $db->quote(strtoupper($table) . '_AUTOINCREMENT_PK', 'text');
-        $result = $db->exec("DELETE FROM RDB\$TRIGGERS WHERE UPPER(RDB\$RELATION_NAME)=$table AND UPPER(RDB\$TRIGGER_NAME)=$trigger_name");
+        $table = $this->conn->getDbh()->quote(strtoupper($table));
+        $trigger_name = $this->conn->getDbh()->quote(strtoupper($table) . '_AUTOINCREMENT_PK');
+        $result = $this->conn->getDbh()->exec("DELETE FROM RDB\$TRIGGERS WHERE UPPER(RDB\$RELATION_NAME)=$table AND UPPER(RDB\$TRIGGER_NAME)=$trigger_name");
+        
+        /**
         if (PEAR::isError($result)) {
             return $db->raiseError(null, null, null,
                 'trigger for autoincrement PK could not be dropped', __FUNCTION__);
         }
+        */
     }
     /**
      * create a new table
@@ -215,11 +220,10 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      */
     public function dropTable($name) {
         $result = $this->_dropAutoincrement($name);
-        if (PEAR::isError($result)) {
-            return $result;
-        }
         $result = parent::dropTable($name);
-        $this->_silentCommit();
+
+        //$this->_silentCommit();
+       
         return $result;
     }
     /**
@@ -417,7 +421,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      *                                    )
      * @return void
      */
-    public function createIndex($table, $name, $definition) {
+    public function createIndex($table, $name, array $definition) {
         $query = 'CREATE';
 
         $query_sort = '';
@@ -433,16 +437,17 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
                 }
             }
         }
-        $table = $db->quoteIdentifier($table, true);
-        $name  = $db->quoteIdentifier($db->getIndexName($name), true);
-        $query .= $query_sort. " INDEX $name ON $table";
+        $table = $this->conn->quoteIdentifier($table, true);
+        $name  = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
+        $query .= $query_sort. ' INDEX ' . $name . ' ON ' . $table;
         $fields = array();
         foreach (array_keys($definition['fields']) as $field) {
-            $fields[] = $db->quoteIdentifier($field, true);
+            $fields[] = $this->conn->quoteIdentifier($field, true);
         }
         $query .= ' ('.implode(', ', $fields) . ')';
-        $result = $db->exec($query);
-        $this->_silentCommit();
+
+        $result = $this->conn->getDbh()->exec($query);
+        // todo: $this->_silentCommit();
         return $result;
     }
     /**
@@ -520,9 +525,9 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      * @return void
      */
     public function dropSequence($seq_name) {
-        $sequence_name = $db->getSequenceName($seq_name);
-        $sequence_name = $db->quote($sequence_name, 'text');
+        $sequence_name = $this->conn->getSequenceName($seq_name);
+        $sequence_name = $this->conn->getDbh()->quote($sequence_name);
         $query = "DELETE FROM RDB\$GENERATORS WHERE UPPER(RDB\$GENERATOR_NAME)=$sequence_name";
-        return $db->exec($query);
+        return $this->conn->getDbh()->exec($query);
     }
 }

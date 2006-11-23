@@ -86,11 +86,13 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction {
             case 'READ COMMITTED':
             case 'REPEATABLE READ':
             case 'SERIALIZABLE':
-            break;
-                throw new Doctrine_Connection_Pgsql_Exception('Isolation level '.$isolation.' is not supported.');
+            
+            break;           
+            default:
+                throw new Doctrine_Transaction_Exception('Isolation level '.$isolation.' is not supported.');
         }
 
         $query = 'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL ' . $isolation;
-        return $this->dbh->query($query);
+        return $this->conn->getDbh()->query($query);
     }
 }

@@ -53,7 +53,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getTypeDeclaration($field) {
+    public function getNativeDeclaration(array $field) {
         switch ($field['type']) {
             case 'text':
                 $length = !empty($field['length'])
@@ -121,7 +121,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
      * @author Lukas Smith (PEAR MDB2 library)
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function mapNativeDatatype($field) {
+    public function getDoctrineDeclaration($field) {
         $db_type = strtolower($field['type']);
         $length = !empty($field['length']) ? $field['length'] : null;
         $unsigned = !empty($field['unsigned']) ? $field['unsigned'] : null;
@@ -274,7 +274,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableColumns($table) { 
+    public function listTableColumns($table) {
 
         $sql    = 'PRAGMA table_info(' . $table . ')';
         $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);

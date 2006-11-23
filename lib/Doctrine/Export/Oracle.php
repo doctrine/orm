@@ -154,41 +154,31 @@ END;
      * drop an existing autoincrement sequence + trigger
      *
      * @param string $table name of the table
-     * @return mixed        MDB2_OK on success, a MDB2 error on failure
-     * @access private
+     * @return void
      */
-    public function _dropAutoincrement($table) {
+    public function dropAutoincrement($table) {
         $table = strtoupper($table);
         $trigger_name = $table . '_AI_PK';
-        $trigger_name_quoted = $db->quote($trigger_name, 'text');
+        $trigger_name_quoted = $this->conn->getDbh()->quote($trigger_name);
         $query = 'SELECT trigger_name FROM user_triggers';
         $query.= ' WHERE trigger_name='.$trigger_name_quoted.' OR trigger_name='.strtoupper($trigger_name_quoted);
-        $trigger = $db->queryOne($query);
+        $trigger = $this->conn->fetchOne($query);
 
-        if ($trigger) {
+        if($trigger) {
             $trigger_name  = $db->quoteIdentifier($table . '_AI_PK', true);
             $trigger_sql = 'DROP TRIGGER ' . $trigger_name;
-            $result = $db->exec($trigger_sql);
-            if (PEAR::isError($result)) {
-                return $db->raiseError($result, null, null,
-                    'trigger for autoincrement PK could not be dropped', __FUNCTION__);
-            }
+            
+            // if throws exception, trigger for autoincrement PK could not be dropped
+            $this->conn->getDbh()->exec($trigger_sql);
 
-            $result = $db->manager->dropSequence($table);
-            if (PEAR::isError($result)) {
-                return $db->raiseError($result, null, null,
-                    'sequence for autoincrement PK could not be dropped', __FUNCTION__);
-            }
+            // if throws exception, sequence for autoincrement PK could not be dropped
+            $this->dropSequence($table);
 
-            $index_name = $table . '_AI_PK';
-            $result = $db->manager->dropConstraint($table, $index_name);
-            if (PEAR::isError($result)) {
-                return $db->raiseError($result, null, null,
-                    'primary key for autoincrement PK could not be dropped', __FUNCTION__);
-            }
+            $indexName = $table . '_AI_PK';
+
+            // if throws exception, primary key for autoincrement PK could not be dropped
+            $this->dropConstraint($table, $indexName);
         }
-
-        return MDB2_OK;
     }
     /**
      * create a new table
@@ -222,7 +212,7 @@ END;
      * @return mixed MDB2_OK on success, a MDB2 error on failure
      */
     public function createTable($name, $fields, $options = array()) {
-        $db->beginNestedTransaction();
+        //$db->beginNestedTransaction();
         $result = parent::createTable($name, $fields, $options);
         if (!PEAR::isError($result)) {
             foreach ($fields as $field_name => $field) {
@@ -231,7 +221,7 @@ END;
                 }
             }
         }
-        $db->completeNestedTransaction();
+        //$db->completeNestedTransaction();
         return $result;
     }
     /**
@@ -242,12 +232,10 @@ END;
      * @access public
      */
     public function dropTable($name) {
-        $db->beginNestedTransaction();
-        $result = $this->_dropAutoincrement($name);
-        if (!PEAR::isError($result)) {
-            $result = parent::dropTable($name);
-        }
-        $db->completeNestedTransaction();
+        //$db->beginNestedTransaction();
+        $result = $this->dropAutoincrement($name);
+        $result = parent::dropTable($name);
+        //$db->completeNestedTransaction();
         return $result;
     }
     /**
@@ -338,7 +326,7 @@ END;
      *                             actually perform them otherwise.
      * @return void
      */
-    public function alterTable($name, $changes, $check) {
+    public function alterTable($name, array $changes, $check) {
 
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
@@ -358,7 +346,7 @@ END;
             return MDB2_OK;
         }
 
-        $name = $db->quoteIdentifier($name, true);
+        $name = $this->conn->quoteIdentifier($name, true);
 
         if (!empty($changes['add']) && is_array($changes['add'])) {
             $fields = array();
@@ -416,25 +404,25 @@ END;
      * create sequence
      *
      * @param object $db database object that is extended by this class
-     * @param string $seq_name name of the sequence to be created
+     * @param string $seqName name of the sequence to be created
      * @param string $start start value of the sequence; default is 1
      * @return void
      */
-    public function createSequence($seq_name, $start = 1) {
-        $sequence_name = $db->quoteIdentifier($db->getSequenceName($seq_name), true);
-        $query = "CREATE SEQUENCE $sequence_name START WITH $start INCREMENT BY 1 NOCACHE";
-        $query.= ($start < 1 ? " MINVALUE $start" : '');
-        return $db->exec($query);
+    public function createSequence($seqName, $start = 1) {
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $query = 'CREATE SEQUENCE ' . $sequenceName . ' START WITH ' . $start . ' INCREMENT BY 1 NOCACHE';
+        $query.= ($start < 1 ? ' MINVALUE ' . $start : '');
+        return $this->conn->getDbh()->exec($query);
     }
     /**
      * drop existing sequence
      *
      * @param object $db database object that is extended by this class
-     * @param string $seq_name name of the sequence to be dropped
+     * @param string $seqName name of the sequence to be dropped
      * @return void
      */
-    public function dropSequence($seq_name) {
-        $sequence_name = $db->quoteIdentifier($db->getSequenceName($seq_name), true);
-        return $db->exec("DROP SEQUENCE $sequence_name");
+    public function dropSequence($seqName) {
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        return $this->conn->getDbh()->exec('DROP SEQUENCE ' . $sequenceName);
     }
 }

@@ -351,7 +351,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
      *      notnull
      *          Boolean flag that indicates whether this field is constrained
      *          to not be set to null.     
-     * @author  Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+     *
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
@@ -407,7 +407,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
                 return 'FLOAT8';
             case 'decimal':
                 $length = !empty($field['length']) ? $field['length'] : 18;
-                return 'NUMERIC('.$length.','.$db->options['decimal_places'].')';
+                return 'NUMERIC(' . $length . ',' . $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES) . ')';
             default:
                 throw new Doctrine_DataDict_Pgsql_Exception('Unknown field type '. $field['type']);
         }
@@ -416,7 +416,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
      * Maps a native array description of a field to a MDB2 datatype and length
      *
      * @param array  $field native field description
-     * @author  Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+     *
      * @return array containing the various possible types, length, sign, fixed
      */
     public function getDoctrineDeclaration(array $field) {

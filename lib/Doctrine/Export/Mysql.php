@@ -40,8 +40,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      * @return void
      */
     public function createDatabase($name) {
-        $query  = 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name);
-        $result = $this->dbh->query($query);
+        $query  = 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name, true);
+        $result = $this->conn->getDbh()->query($query);
     }
     /**
      * drop an existing database
@@ -52,7 +52,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      */
     public function dropDatabase($name) {
         $query  = 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
-        $this->dbh->query($query);
+        $this->conn->getDbh()->query($query);
     }
     /**
      * create a new table
@@ -223,6 +223,9 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      * @return boolean
      */
     public function alterTable($name, $changes, $check) {
+        if( ! $name)
+            throw new Doctrine_Export_Mysql_Exception('no valid table name specified');
+
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
                 case 'add':
@@ -232,7 +235,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
                 case 'name':
                 break;
                 default:
-                    throw new Doctrine_Export_Exception('change type "'.$changeName.'" not yet supported');
+                    throw new Doctrine_Export_Mysql_Exception('change type "'.$changeName.'" not yet supported');
             }
         }
 
@@ -339,8 +342,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
             throw new Doctrine_Export_Mysql_Exception('could not drop inconsistent sequence table');
         }
 
-        return $this->dbh->raiseError($res, null, null,
-            'could not create sequence table', __FUNCTION__);
+        throw new Doctrine_Mysql_Export_Exception('could not create sequence table');
     }
     /**
      * Get the stucture of a field into an array
@@ -378,7 +380,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      */
     public function createIndex($table, $name, array $definition) {
         $table  = $table;
-        $name   = $this->dbh->getIndexName($name);
+        $name   = $this->conn->getIndexName($name);
         $query  = 'CREATE INDEX ' . $name . ' ON ' . $table;
         $fields = array();
         foreach ($definition['fields'] as $field => $fieldinfo) {
@@ -389,7 +391,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
             }
         }
         $query .= ' ('. implode(', ', $fields) . ')';
-        return $this->dbh->query($query);
+
+        return $this->conn->getDbh()->query($query);
     }
     /**
      * drop existing index
@@ -400,8 +403,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      */
     public function dropIndex($table, $name) {
         $table  = $this->conn->quoteIdentifier($table, true);
-        $name   = $this->conn->quoteIdentifier($this->dbh->getIndexName($name), true);
-        return $this->dbh->query('DROP INDEX ' . $name . ' ON ' . $table);
+        $name   = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
+        return $this->conn->getDbh()->query('DROP INDEX ' . $name . ' ON ' . $table);
     }
     /**
      * dropTable
@@ -412,7 +415,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      */
     public function dropTable($table) {
         $table  = $this->conn->quoteIdentifier($table, true);
-        $this->dbh->query('DROP TABLE '.$table);
+        $this->conn->getDbh()->query('DROP TABLE ' . $table);
     }
 }
 ?>

@@ -19,11 +19,12 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * @package     Doctrine
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * 
  * Doctrine_Manager is the base component of all doctrine based projects. 
  * It opens and keeps track of all connections (database connections).
+ *
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0

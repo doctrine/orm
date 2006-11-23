@@ -130,25 +130,28 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
     
             if($this->transactionLevel == 0) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionCommit($this->conn);
-    
+                
+                /**
                 try {
                     $this->bulkDelete();
 
                 } catch(Exception $e) {
                     $this->rollback();
-    
+
                     throw new Doctrine_Connection_Transaction_Exception($e->__toString());
                 }
-    
-                if($tmp = $this->unitOfWork->getInvalid()) {
+                */
+                /**
+                if($tmp = $this->conn->unitOfWork->getInvalid()) {
                     $this->rollback();
-    
+
                     throw new Doctrine_Validator_Exception($tmp);
                 }
+                */
     
                 $this->conn->getDbh()->commit();
     
-                $this->unitOfWork->reset();
+                //$this->conn->unitOfWork->reset();
     
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this->conn);
             }
@@ -233,12 +236,12 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      *                  REPEATABLE READ (prevents nonrepeatable reads)
      *                  SERIALIZABLE (prevents phantom reads)
      *
-     * @throws Doctrine_Connection_Exception            if the feature is not supported by the driver
+     * @throws Doctrine_Transaction_Exception           if the feature is not supported by the driver
      * @throws PDOException                             if something fails at the PDO level
      * @return void
      */
     public function setIsolation($isolation) {
-        throw new Doctrine_Connection_Exception('Transaction isolation levels not supported by this driver.');
+        throw new Doctrine_Transaction_Exception('Transaction isolation levels not supported by this driver.');
     }
 
     /**
@@ -248,12 +251,12 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      *
      * note: some drivers may support setting the transaction isolation level 
      * but not fetching it
-     * 
-     * @throws Doctrine_Connection_Exception            if the feature is not supported by the driver
+     *
+     * @throws Doctrine_Transaction_Exception           if the feature is not supported by the driver
      * @throws PDOException                             if something fails at the PDO level
      * @return string                                   returns the current session transaction isolation level
      */
     public function getIsolation() {
-        throw new Doctrine_Connection_Exception('Fetching transaction isolation level not supported by this driver.');
+        throw new Doctrine_Transaction_Exception('Fetching transaction isolation level not supported by this driver.');
     }
 }

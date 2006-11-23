@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload(Doctrine_Exception);
+Doctrine::autoload('Doctrine_Exception');
 /**
  * Doctrine_Transaction_Exception
  *

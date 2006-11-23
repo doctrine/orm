@@ -32,11 +32,11 @@
 class Doctrine_Db_Event {
     const QUERY     = 1;
     const EXEC      = 2;
-    const EXECUTE   = 4;
-    const PREPARE   = 8;
-    const BEGIN     = 16;
-    const COMMIT    = 32;
-    const ROLLBACK  = 64;
+    const EXECUTE   = 3;
+    const PREPARE   = 4;
+    const BEGIN     = 5;
+    const COMMIT    = 6;
+    const ROLLBACK  = 7;
     protected $invoker;
 
     protected $query;
@@ -72,7 +72,7 @@ class Doctrine_Db_Event {
         return $this->invoker;
     }
     /**
-     * Get the elapsed time (in seconds) that the query ran.  If the query has
+     * Get the elapsed time (in microseconds) that the event ran.  If the event has
      * not yet ended, return false.
      *
      * @return mixed

@@ -52,7 +52,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
      */
     public function releaseSavePoint($savepoint) {
         $query = 'RELEASE SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -92,7 +92,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
                 throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . ' is not supported.');
         }
 
-        $query = "SET SESSION TRANSACTION ISOLATION LEVEL $isolation";
+        $query = 'SET SESSION TRANSACTION ISOLATION LEVEL ' . $isolation;
 
         return $this->conn->getDbh()->query($query);
     }
@@ -101,8 +101,8 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
      * 
      * @return string               returns the current session transaction isolation level
      */
-    public function getTransactionIsolation() {
+    public function getIsolation() {
         $ret = $this->conn->getDbh()->query('SELECT @@tx_isolation')->fetch(PDO::FETCH_NUM);
-        return $ret[0];
+        return current($ret);
     }
 }
