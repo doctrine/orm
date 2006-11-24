@@ -1,9 +1,14 @@
 <?php
 class Doctrine_DataDict_Pgsql_TestCase extends Doctrine_Driver_UnitTestCase {
+    public function __construct() {
+        parent::__construct('pgsql');
+    }
+
     public function getDeclaration($type) {
         return $this->dataDict->getDoctrineDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 2, 'fixed' => true));
     }
     public function testGetDoctrineDefinition() {
+
         $this->assertEqual($this->getDeclaration('smallint'), array(array('integer', 'boolean'), 2, false, null));
         $this->assertEqual($this->getDeclaration('int2'), array(array('integer', 'boolean'), 2, false, null));
 
