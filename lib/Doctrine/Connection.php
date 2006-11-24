@@ -273,11 +273,25 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         return $idx;
     }
-    public function getIndexName($idx) {
-        return $idx;
-    }
+    /**
+     * adds sequence name formatting to a sequence name
+     *
+     * @param string    name of the sequence
+     * @return string   formatted sequence name
+     */
     public function getSequenceName($sqn) {
-        return $sqn;
+        return sprintf($this->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT),
+            preg_replace('/[^a-z0-9_\$.]/i', '_', $sqn));
+    }
+    /**
+     * adds index name formatting to a index name
+     *
+     * @param string    name of the index
+     * @return string   formatted index name
+     */
+    public function getIndexName($idx) {
+        return sprintf($this->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT),
+            preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
     }
 
     /**
