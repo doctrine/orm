@@ -132,7 +132,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
         if (!empty($optionStrings)) {
             $query.= ' '.implode(' ', $optionStrings);
         }
-        return $this->dbh->query($query);
+        return $this->conn->getDbh()->query($query);
     }
     /**
      * alter an existing table
