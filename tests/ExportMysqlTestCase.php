@@ -16,11 +16,22 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_Driver_UnitTestCase {
     public function testCreateTableExecutesSql() {
         $name = 'mytable';
         
-        $fields = array('id' => array('type' => 'integer', 'unsigned' => 1));
-        
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1));
         $options = array('type' => 'foo');
         
-        //$this->export->createTable($name, $fields, $options);
+        $this->export->createTable($name, $fields, $options);
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id INT) ENGINE = foo');
+    }
+    public function testCreateTableSupportsAutoincPks() {
+        $name = 'mytable';
+        
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true));
+        $options = array('type' => 'foo');
+        
+        $this->export->createTable($name, $fields, $options);
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id INT) ENGINE = foo');
     }
     public function testCreateDatabaseExecutesSql() {
         $this->export->createDatabase('db');
@@ -35,8 +46,9 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_Driver_UnitTestCase {
 
     public function testDropIndexExecutesSql() {
         $this->export->dropIndex('sometable', 'relevancy');
-        
-        $this->assertEqual($this->adapter->pop(), 'DROP INDEX relevancy ON sometable');
+
+        $this->assertEqual($this->adapter->pop(), 'DROP INDEX relevancy_idx ON sometable');
     }
+
 }
 ?>

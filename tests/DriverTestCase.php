@@ -66,23 +66,41 @@ class Doctrine_Driver_UnitTestCase extends UnitTestCase {
     protected $transaction;
 
     public function __construct($driverName, $generic = false) {
+
         $this->driverName = $driverName;
         $this->generic    = $generic;
+    }
+    public function assertDeclarationType($type, $type2) {
+        $dec = $this->getDeclaration($type);
+        if( ! is_array($type2))
+            $type2 = array($type2);
+        $this->assertEqual($dec[0], $type2);
+    }
+    public function getDeclaration($type) {
+        return $this->dataDict->getDoctrineDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 1, 'fixed' => true));
     }
     public function init() {
         $this->adapter = new AdapterMock($this->driverName);
         $this->manager = Doctrine_Manager::getInstance();
         $this->manager->setDefaultAttributes();
         $this->conn = $this->manager->openConnection($this->adapter);
+
         if( ! $this->generic) {
             $this->export   = $this->conn->export;
 
+            $name = $this->adapter->getName();
+
             if($this->adapter->getName() == 'oci')
-                $tx = 'Doctrine_Transaction_Oracle'; 
-            else
-                $tx = 'Doctrine_Transaction_' . ucwords($this->adapter->getName());
+                $name = 'Oracle';
+            
+            $tx = 'Doctrine_Transaction_' . ucwords($name);
+            $dataDict = 'Doctrine_DataDict_' . ucwords($name);
+
             if(class_exists($tx))
-            $this->transaction = new $tx($this->conn);
+                $this->transaction = new $tx($this->conn);
+            if(class_exists($dataDict)) {
+                $this->dataDict = new $dataDict($this->conn);
+            }
             //$this->dataDict = $this->conn->dataDict;
         } else {
             $this->export   = new Doctrine_Export($this->conn);
