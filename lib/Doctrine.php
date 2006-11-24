@@ -40,51 +40,55 @@ final class Doctrine {
     /**
      * event listener attribute
      */
-    const ATTR_LISTENER         = 1;
+    const ATTR_LISTENER             = 1;
     /**
      * portability attribute
      */
-    const ATTR_PORTABILITY      = 9;
+    const ATTR_PORTABILITY          = 9;
     /**
      * quote identifier attribute
      */
-    const ATTR_QUOTE_IDENTIFIER = 3;
+    const ATTR_QUOTE_IDENTIFIER     = 3;
     /**
      * field case attribute
      */
-    const ATTR_FIELD_CASE       = 4;
+    const ATTR_FIELD_CASE           = 4;
     /**
      * index name format attribute
      */
-    const ATTR_IDXNAME_FORMAT   = 5;
+    const ATTR_IDXNAME_FORMAT       = 5;
     /**
      * sequence name format attribute
      */
-    const ATTR_SEQNAME_FORMAT   = 6;
+    const ATTR_SEQNAME_FORMAT       = 6;
     /**
      * sequence column name attribute
      */
-    const ATTR_SEQCOL_NAME      = 7;
+    const ATTR_SEQCOL_NAME          = 7;
     /**
      * validation attribute
      */
-    const ATTR_VLD              = 12;
+    const ATTR_VLD                  = 12;
     /**
      * collection key attribute
      */
-    const ATTR_COLL_KEY         = 15;
+    const ATTR_COLL_KEY             = 15;
     /**
      * query limit
      */
-    const ATTR_QUERY_LIMIT      = 17;
+    const ATTR_QUERY_LIMIT          = 17;
     /**
      * automatic length validations attribute
      */
-    const ATTR_AUTO_LENGTH_VLD  = 19;
+    const ATTR_AUTO_LENGTH_VLD      = 19;
     /**
      * automatic type validations attribute
      */
-    const ATTR_AUTO_TYPE_VLD    = 20;
+    const ATTR_AUTO_TYPE_VLD        = 20;
+    /**
+     * default table type attribute
+     */
+    const ATTR_DEFAULT_TABLE_TYPE   = 21;
     
     
     /** TODO: REMOVE THE FOLLOWING CONSTANTS AND UPDATE THE DOCS ! */
