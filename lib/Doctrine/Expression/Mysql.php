@@ -71,16 +71,15 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression {
                 $match = $field.'LIKE BINARY ';
                 break;
             default:
-                return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                    'not a supported operator type:'. $operator, __FUNCTION__);
+                throw new Doctrine_Expression_Mysql_Exception('not a supported operator type:'. $operator);
             }
         }
         $match.= "'";
         foreach ($pattern as $key => $value) {
             if ($key % 2) {
-                $match.= $value;
+                $match .= $value;
             } else {
-                $match.= $db->escapePattern($db->escape($value));
+                $match .= $db->escapePattern($db->escape($value));
             }
         }
         $match.= "'";
