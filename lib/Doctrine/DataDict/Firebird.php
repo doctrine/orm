@@ -166,6 +166,28 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict {
         return array($type, $length, $unsigned, $fixed);
     }
     /**
+     * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $charset   name of the charset
+     * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
+     *                 of a field declaration.
+     */
+    public function getCharsetFieldDeclaration($charset) {
+        return 'CHARACTER SET '.$charset;
+    }
+    /**
+     * Obtain DBMS specific SQL code portion needed to set the COLLATION
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $collation   name of the collation
+     * @return string  DBMS specific SQL code portion needed to set the COLLATION
+     *                 of a field declaration.
+     */
+    public function getCollationFieldDeclaration($collation) {
+        return 'COLLATE '.$collation;
+    }
+    /**
      * list all tables in the current database
      *
      * @return array        data array

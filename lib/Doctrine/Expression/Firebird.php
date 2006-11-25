@@ -44,10 +44,10 @@ class Doctrine_Expression_Firebird extends Doctrine_Expression {
     }
     /**
      * build string to define escape pattern string
-     *
+     *  
      * @return string define escape pattern
      */
-    public function patternEscapeString() {
-        return " ESCAPE '". $db->escape_pattern ."'";
+    function patternEscapeString() {
+        return " ESCAPE '". $this->conn->string_quoting['escape_pattern'] ."'";
     }
 }

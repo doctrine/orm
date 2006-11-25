@@ -38,5 +38,53 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression {
      */
     public function regexp() {
         return 'RLIKE';
+    }  
+    /**
+     * build a pattern matching string
+     *
+     * EXPERIMENTAL
+     *
+     * WARNING: this function is experimental and may change signature at
+     * any time until labelled as non-experimental
+     *
+     * @access public
+     *
+     * @param array $pattern even keys are strings, odd are patterns (% and _)
+     * @param string $operator optional pattern operator (LIKE, ILIKE and maybe others in the future)
+     * @param string $field optional field name that is being matched against
+     *                  (might be required when emulating ILIKE)
+     *
+     * @return string SQL pattern
+     */
+    public function matchPattern($pattern, $operator = null, $field = null) {
+        $match = '';
+        if (!is_null($operator)) {
+            $field = is_null($field) ? '' : $field.' ';
+            $operator = strtoupper($operator);
+            switch ($operator) {
+            // case insensitive
+            case 'ILIKE':
+                $match = $field.'LIKE ';
+                break;
+            // case sensitive
+            case 'LIKE':
+                $match = $field.'LIKE BINARY ';
+                break;
+            default:
+                return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                    'not a supported operator type:'. $operator, __FUNCTION__);
+            }
+        }
+        $match.= "'";
+        foreach ($pattern as $key => $value) {
+            if ($key % 2) {
+                $match.= $value;
+            } else {
+                $match.= $db->escapePattern($db->escape($value));
+            }
+        }
+        $match.= "'";
+        $match.= $this->patternEscapeString();
+        return $match;
     }
 }

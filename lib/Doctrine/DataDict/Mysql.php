@@ -267,6 +267,71 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
         return array($type, $length, $unsigned, $fixed);
     }
     /**
+     * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $charset   name of the charset
+     * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
+     *                 of a field declaration.
+     */
+    public function getCharsetFieldDeclaration($charset) {
+        return 'CHARACTER SET '.$charset;
+    }
+    /**
+     * Obtain DBMS specific SQL code portion needed to set the COLLATION
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $collation   name of the collation
+     * @return string  DBMS specific SQL code portion needed to set the COLLATION
+     *                 of a field declaration.
+     */
+    public function getCollationFieldDeclaration($collation) {
+        return 'COLLATE '.$collation;
+    }
+    /**
+     * Obtain DBMS specific SQL code portion needed to declare an integer type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param string  $name   name the field to be declared.
+     * @param string  $field  associative array with the name of the properties
+     *                        of the field being declared as array indexes.
+     *                        Currently, the types of supported field
+     *                        properties are as follows:
+     *
+     *                       unsigned
+     *                        Boolean flag that indicates whether the field
+     *                        should be declared as unsigned integer if
+     *                        possible.
+     *
+     *                       default
+     *                        Integer value to be used as default for this
+     *                        field.
+     *
+     *                       notnull
+     *                        Boolean flag that indicates whether this field is
+     *                        constrained to not be set to null.
+     * @return string  DBMS specific SQL code portion that should be used to
+     *                 declare the specified field.
+     */
+    public function getIntegerDeclaration($name, $field) {
+        $default = $autoinc = '';
+        if (!empty($field['autoincrement'])) {
+            $autoinc = ' AUTO_INCREMENT PRIMARY KEY';
+        } elseif (array_key_exists('default', $field)) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($field['notnull']) ? null : 0;
+            }
+            $default = ' DEFAULT '.$this->conn->getDbh()->quote($field['default']);
+        } elseif (empty($field['notnull'])) {
+            $default = ' DEFAULT NULL';
+        }
+
+        $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
+        $unsigned = empty($field['unsigned']) ? '' : ' UNSIGNED';
+        $name = $this->conn->quoteIdentifier($name, true);
+        return $name . ' ' . $this->getTypeDeclaration($field) . $unsigned . $default . $notnull . $autoinc;
+    }
+    /**
      * lists all databases
      *
      * @return array
