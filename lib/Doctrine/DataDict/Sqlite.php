@@ -29,7 +29,7 @@ Doctrine::autoload('Doctrine_DataDict');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
+class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
@@ -184,36 +184,38 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict {
                 if ($fixed !== false) {
                     $fixed = true;
                 }
-                break;
+            break;
             case 'date':
                 $type[] = 'date';
                 $length = null;
-                break;
+            break;
             case 'datetime':
             case 'timestamp':
                 $type[] = 'timestamp';
                 $length = null;
-                break;
+            break;
             case 'time':
                 $type[] = 'time';
                 $length = null;
-                break;
+            break;
             case 'float':
             case 'double':
             case 'real':
                 $type[] = 'float';
-                break;
+                $length = null;
+            break;
             case 'decimal':
             case 'numeric':
                 $type[] = 'decimal';
-                break;
+                $length = null;
+            break;
             case 'tinyblob':
             case 'mediumblob':
             case 'longblob':
             case 'blob':
                 $type[] = 'blob';
                 $length = null;
-                break;
+            break;
             case 'year':
                 $type[] = 'integer';
                 $type[] = 'date';

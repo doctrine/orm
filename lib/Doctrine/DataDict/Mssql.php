@@ -30,7 +30,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
+class Doctrine_DataDict_Mssql extends Doctrine_Connection_Module {
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.

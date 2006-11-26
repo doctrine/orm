@@ -158,7 +158,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
             case 'bfile':
                 $type[] = 'blob';
                 $length = null;
-                break;
+            break;
             case 'rowid':
             case 'urowid':
             default:

@@ -53,7 +53,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getTypeDeclaration($field) {
+    public function getNativeDeclaration($field) {
         switch ($field['type']) {
             case 'array':
             case 'object':
@@ -127,10 +127,9 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * Maps a native array description of a field to a MDB2 datatype and length
      *
      * @param array  $field native field description
-     * @author Lukas Smith (PEAR MDB2 library)
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function mapNativeDatatype($field) {
+    public function getDoctrineDeclaration($field) {
         $db_type = strtolower($field['type']);
         $db_type = strtok($db_type, '(), ');
         if ($db_type == 'national') {
@@ -328,8 +327,10 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
 
         $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
         $unsigned = empty($field['unsigned']) ? '' : ' UNSIGNED';
+
         $name = $this->conn->quoteIdentifier($name, true);
-        return $name . ' ' . $this->getTypeDeclaration($field) . $unsigned . $default . $notnull . $autoinc;
+
+        return $name . ' ' . $this->getNativeDeclaration($field) . $unsigned . $default . $notnull . $autoinc;
     }
     /**
      * lists all databases

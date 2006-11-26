@@ -29,7 +29,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
+class Doctrine_DataDict_Pgsql extends Doctrine_Connection_Module {
     /**
      * @param array $reservedKeyWords     an array of reserved keywords by pgsql
      */
