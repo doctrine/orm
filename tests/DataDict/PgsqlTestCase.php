@@ -5,10 +5,9 @@ class Doctrine_DataDict_Pgsql_TestCase extends Doctrine_Driver_UnitTestCase {
     }
 
     public function getDeclaration($type) {
-        return $this->dataDict->getDoctrineDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 2, 'fixed' => true));
+        return $this->dataDict->getPortableDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 2, 'fixed' => true));
     }
-    public function testGetDoctrineDefinition() {
-
+    public function testGetPortableDeclarationSupportsIntegers() {
         $this->assertEqual($this->getDeclaration('smallint'), array(array('integer', 'boolean'), 2, false, null));
         $this->assertEqual($this->getDeclaration('int2'), array(array('integer', 'boolean'), 2, false, null));
 
@@ -18,16 +17,16 @@ class Doctrine_DataDict_Pgsql_TestCase extends Doctrine_Driver_UnitTestCase {
         $this->assertEqual($this->getDeclaration('serial'), array(array('integer'), 4, false, null));
         $this->assertEqual($this->getDeclaration('serial4'), array(array('integer'), 4, false, null));
 
-
         $this->assertEqual($this->getDeclaration('bigint'), array(array('integer'), 8, false, null));
         $this->assertEqual($this->getDeclaration('int8'), array(array('integer'), 8, false, null));
         $this->assertEqual($this->getDeclaration('bigserial'), array(array('integer'), 8, false, null));
         $this->assertEqual($this->getDeclaration('serial8'), array(array('integer'), 8, false, null));
-
+    }
+    public function testGetPortableDeclarationSupportsBooleans() {
         $this->assertEqual($this->getDeclaration('bool'), array(array('boolean'), 1, false, null));
         $this->assertEqual($this->getDeclaration('boolean'), array(array('boolean'), 1, false, null));
-
     }
+
     public function testGetNativeDefinitionSupportsIntegerType() {
         $a = array('type' => 'integer', 'length' => 20, 'fixed' => false);
 
