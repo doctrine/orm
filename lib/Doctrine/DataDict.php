@@ -34,6 +34,7 @@ class Doctrine_DataDict {
     protected $dbh;
 
     public function __construct($dbh = null) {
+
         $file = Doctrine::getPath().DIRECTORY_SEPARATOR."Doctrine".DIRECTORY_SEPARATOR."adodb-hack".DIRECTORY_SEPARATOR."adodb.inc.php";
 
         if( ! file_exists($file))

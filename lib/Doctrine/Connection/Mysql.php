@@ -65,9 +65,26 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
                           'identifier_quoting'   => true,
                           'pattern_escaping'     => true
                           );
+    
+        $this->properties['string_quoting'] = array('start' => "'", 
+                                                    'end' => "'", 
+                                                    'escape' => '\\', 
+                                                    'escape_pattern' => '\\');
+
+        $this->properties['identifier_quoting'] = array('start' => '`',
+                                                        'end' => '`', 
+                                                        'escape' => '`');
+
+        $this->properties['sql_comments'] = array(
+                                            array('start' => '-- ', 'end' => "\n", 'escape' => false),
+                                            array('start' => '#', 'end' => "\n", 'escape' => false),
+                                            array('start' => '/*', 'end' => '*/', 'escape' => false),
+                                            );
+
+        $this->properties['varchar_max_length'] = 255;
 
         parent::__construct($manager, $adapter);
-    }    
+    }
     /**
      * Returns the next free id of a sequence
      *
@@ -103,7 +120,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
         $seqcolName = $this->quoteIdentifier($this->options['seqcol_name'], true);
         $query = 'SELECT MAX(' . $seqcolName . ') FROM ' . $sequenceName;
-        return $this->queryOne($query, 'integer');
+        return $this->fetchOne($query);
     }
     /**
      * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT

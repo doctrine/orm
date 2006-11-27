@@ -347,11 +347,102 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return string
      */
     public function getFieldDeclarationList(array $fields) {
-        foreach ($fields as $field_name => $field) {
-            $query = $this->conn->dataDict->getNativeDeclaration($field['type'], $field_name, $field);
-            $query_fields[] = $query;
+        foreach ($fields as $fieldName => $field) {
+            $query = $this->getDeclaration($fieldName, $field);
+
+            $queryFields[] = $query;
         }
-        return implode(', ', $query_fields);
+        return implode(', ', $queryFields);
+    }
+    /**
+     * Obtain DBMS specific SQL code portion needed to declare a generic type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param string $name   name the field to be declared.
+     * @param array  $field  associative array with the name of the properties
+     *      of the field being declared as array indexes. Currently, the types
+     *      of supported field properties are as follows:
+     *
+     *      length
+     *          Integer value that determines the maximum length of the text
+     *          field. If this argument is missing the field should be
+     *          declared to have the longest length allowed by the DBMS.
+     *
+     *      default
+     *          Text value to be used as default for this field.
+     *
+     *      notnull
+     *          Boolean flag that indicates whether this field is constrained
+     *          to not be set to null.
+     *      charset
+     *          Text value with the default CHARACTER SET for this field.
+     *      collation
+     *          Text value with the default COLLATION for this field.
+     * @return string  DBMS specific SQL code portion that should be used to
+     *      declare the specified field.
+     */
+    public function getDeclaration($name, $field) {
+
+        $default = '';
+        if(isset($field['default'])) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($field['notnull'])
+                    ? null : $this->valid_default_values[$field['type']];
+                if ($field['default'] === ''
+                    && ($db->options['portability'] & Doctrine::PORTABILITY_EMPTY_TO_NULL)
+                ) {
+                    $field['default'] = ' ';
+                }
+            }
+            $default = ' DEFAULT ' . $this->conn->getDbh()->quote($field['default']);
+        }
+        /**
+        TODO: is this really needed for portability? 
+        elseif(empty($field['notnull'])) {
+            $default = ' DEFAULT NULL';
+        }
+        */
+
+        $charset = empty($field['charset']) ? '' :
+            ' '.$this->getCharsetFieldDeclaration($field['charset']);
+        
+        $collation = empty($field['collation']) ? '' :
+            ' '.$this->getCollationFieldDeclaration($field['collation']);
+        
+        $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
+
+        $name = $this->conn->quoteIdentifier($name, true);
+
+        $method = 'get' . $field['type'] . 'Declaration';
+
+        if(method_exists($this->conn->dataDict, $method))
+            return $this->conn->dataDict->$method($name, $field);
+        else
+            $dec = $this->conn->dataDict->getNativeDeclaration($field);
+
+        return $name . ' ' . $dec . $charset . $default . $notnull . $collation;
+    }
+    /**
+     * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $charset   name of the charset
+     * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
+     *                 of a field declaration.
+     */
+    public function getCharsetFieldDeclaration($charset) {
+        return '';
+    }
+    /**
+     * Obtain DBMS specific SQL code portion needed to set the COLLATION
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $collation   name of the collation
+     * @return string  DBMS specific SQL code portion needed to set the COLLATION
+     *                 of a field declaration.
+     */
+    public function getCollationFieldDeclaration($collation) {
+        return '';
     }
     /**
      * export

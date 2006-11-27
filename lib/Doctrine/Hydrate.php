@@ -92,10 +92,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
     protected $pendingAggregates = array();
 
     protected $aggregateMap      = array();
-    
-    protected $shortAliases      = array();
-    
-    protected $shortAliasIndexes = array();
+
+    protected $aliasHandler;
     /**
      * @var array $parts            SQL query string parts
      */
@@ -120,6 +118,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
 
         $this->connection = $connection;
+        $this->aliasHandler = new Doctrine_Hydrate_Alias();
     }
     /**
      * getComponentAliases
@@ -235,8 +234,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         $this->joins            = array();
         $this->tableIndexes     = array();
         $this->tableAliases     = array();
-        $this->shortAliases     = array();
-        $this->shortAliasIndexes = array();
+        $this->aliasHandler->clear();
     }
     /**
      * getConnection
@@ -544,34 +542,14 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         return false;
     }
     public function getShortAliasIndex($alias) {
-        if( ! isset($this->shortAliasIndexes[$alias]))
-            return 0;
-        
-        return $this->shortAliasIndexes[$alias];
+        return $this->aliasHandler->getShortAliasIndex($alias);
     }
     public function generateShortAlias($tableName) {
-        $char   = strtolower(substr($tableName, 0, 1));
-
-        $alias  = $char;
-
-        if( ! isset($this->shortAliasIndexes[$alias]))
-            $this->shortAliasIndexes[$alias] = 1;
-
-        while(isset($this->shortAliases[$alias])) {
-            $alias = $char . ++$this->shortAliasIndexes[$alias];
-        }
-        $this->shortAliases[$alias] = $tableName;
-
-        return $alias;
+        return $this->aliasHandler->generateShortAlias($tableName);
     }
 
     public function getShortAlias($tableName) {
-        $alias = array_search($tableName, $this->shortAliases);
-
-        if($alias !== false)
-            return $alias;
-        
-        return $this->generateShortAlias($tableName);
+        return $this->aliasHandler->getShortAlias($tableName);
     }
     /**
      * applyInheritance

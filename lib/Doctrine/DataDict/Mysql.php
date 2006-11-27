@@ -29,7 +29,7 @@ Doctrine::autoload('Doctrine_DataDict');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
+class Doctrine_DataDict_Mysql extends Doctrine_Connection_Module {
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
@@ -55,6 +55,11 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      */
     public function getNativeDeclaration($field) {
         switch ($field['type']) {
+            case 'char':
+                $length = (! empty($field['length'])) ? $field['length'] : false;
+
+                return $length ? 'CHAR('.$length.')' : 'CHAR(255)';
+            case 'varchar':
             case 'array':
             case 'object':
             case 'string':
@@ -321,12 +326,15 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
                 $field['default'] = empty($field['notnull']) ? null : 0;
             }
             $default = ' DEFAULT '.$this->conn->getDbh()->quote($field['default']);
-        } elseif (empty($field['notnull'])) {
+        } 
+        /**
+        elseif (empty($field['notnull'])) {
             $default = ' DEFAULT NULL';
         }
+        */
 
-        $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
-        $unsigned = empty($field['unsigned']) ? '' : ' UNSIGNED';
+        $notnull  = (isset($field['notnull'])  && $field['notnull'])  ? ' NOT NULL' : '';
+        $unsigned = (isset($field['unsigned']) && $field['unsigned']) ? ' UNSIGNED' : '';
 
         $name = $this->conn->quoteIdentifier($name, true);
 

@@ -50,8 +50,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *                                          one of the following (true, false, 'emulated')
      */
     protected $supported        = array();
-
-    protected $options = array();
     /**
      * @var array $modules                      an array containing all modules
      *              transaction                 Doctrine_Transaction driver, handles savepoint and transaction isolation abstraction
@@ -75,6 +73,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                              'export'      => false,
                              'unitOfWork'  => false,
                              );
+    /** 
+     * @var array $properties               an array of connection properties
+     */
+    protected $properties = array();
     /**
      * @var array $availibleDrivers         an array containing all availible drivers
      */
@@ -145,7 +147,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                     $class = 'Doctrine_' . ucwords($name) . '_' . $this->getName();
                     $this->modules[$name] = new $class($this);
             }
-        }
+        } 
+        if(isset($this->properties[$name]))
+            return $this->properties[$name];
+
 
         return $this->modules[$name];
     }
@@ -206,9 +211,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
             return $str;
         }
-        return $str;
-        //$str = str_replace($this->identifier_quoting['end'], $this->identifier_quoting['escape'] . $this->identifier_quoting['end'], $str);
-        //return $this->identifier_quoting['start'] . $str . $this->identifier_quoting['end'];
+        $str = str_replace($this->properties['identifier_quoting']['end'], 
+                           $this->properties['identifier_quoting']['escape'] .
+                           $this->properties['identifier_quoting']['end'], $str);
+
+        return $this->properties['identifier_quoting']['start']
+               . $str . $this->properties['identifier_quoting']['end'];
     }
     /**
      * returns the manager that created this connection
@@ -291,7 +299,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function getIndexName($idx) {
         return sprintf($this->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT),
-            preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
+                preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
     }
 
     /**

@@ -65,8 +65,6 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
                           'pattern_escaping'        => true,
                           );
 
-        $this->options['multi_query'] = false;
-
         parent::__construct($manager, $adapter);
     }
     /**

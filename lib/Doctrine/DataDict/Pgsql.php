@@ -357,15 +357,15 @@ class Doctrine_DataDict_Pgsql extends Doctrine_Connection_Module {
      */
     public function getNativeDeclaration(array $field) {
         switch ($field['type']) {
+            case 'char':
             case 'string':
             case 'array':
             case 'object':
             case 'varchar':
-            case 'char':
-                $length = !empty($field['length'])
-                    ? $field['length'] : $db->options['default_text_field_length'];
+                $length = (isset($field['length']) && $field['length']) ? $field['length'] : null;
+                        // TODO:  $db->options['default_text_field_length'];
 
-                $fixed = !empty($field['fixed']) ? $field['fixed'] : false;
+                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
 
                 return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$db->options['default_text_field_length'].')')
                     : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
@@ -413,16 +413,16 @@ class Doctrine_DataDict_Pgsql extends Doctrine_Connection_Module {
         }
     }
     /**
-     * Maps a native array description of a field to a MDB2 datatype and length
+     * Maps a native array description of a field to a portable Doctrine datatype and length
      *
      * @param array  $field native field description
      *
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function getDoctrineDeclaration(array $field) {
+    public function getPortableDeclaration(array $field) {
 
         $length = $field['length'];
-        if ($length == '-1' && !empty($field['atttypmod'])) {
+        if ($length == '-1' && isset($field['atttypmod'])) {
             $length = $field['atttypmod'] - 4;
         }
         if ((int)$length <= 0) {

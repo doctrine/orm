@@ -343,8 +343,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $this->fetchModes       = array();
                 $this->tableIndexes     = array();
                 $this->tableAliases     = array();
-                $this->shortAliases     = array();
-                $this->shortAliasIndexes = array();
+                $this->aliasHandler->clear();
 
                 $class = "Doctrine_Query_".ucwords($name);
                 $parser = new $class($this);
@@ -621,8 +620,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             if(strpos($part, "'") !== false)
                 continue;
 
-            if(isset($this->shortAliases[$part])) {
-                $parts[$k] = $this->generateNewAlias($part);
+            if($this->aliasHandler->hasAliasFor($part)) {
+                $parts[$k] = $this->aliasHandler->generateNewAlias($part);
             }
 
             if(strpos($part, '.') !== false) {
@@ -631,7 +630,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $trimmed = ltrim($e[0], '( ');
                 $pos     = strpos($e[0], $trimmed);
 
-                $e[0] = substr($e[0], 0, $pos) . $this->generateNewAlias($trimmed);
+                $e[0] = substr($e[0], 0, $pos) . $this->aliasHandler->generateNewAlias($trimmed);
                 $parts[$k] = implode('.', $e);
             }
         }
@@ -639,7 +638,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         return $subquery;
     }
-    
+    /**
     public function generateNewAlias($alias) {
         if(isset($this->shortAliases[$alias])) {
             // generate a new alias
@@ -656,6 +655,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         
         return $alias;
     }
+    */
 
 
 
