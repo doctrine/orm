@@ -27,7 +27,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
+class Doctrine_DataDict_Oracle extends Doctrine_Connection_Module {
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
@@ -50,15 +50,19 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getTypeDeclaration(array $field) {
+    public function getNativeDeclaration(array $field) {
         switch ($field['type']) {
             case 'string':
             case 'array':
             case 'object':
             case 'gzip':
+            case 'char':
+            case 'varchar':
                 $length = !empty($field['length'])
-                    ? $field['length'] : $db->options['default_text_field_length'];
-                $fixed = !empty($field['fixed']) ? $field['fixed'] : false;
+                    ? $field['length'] : 16777215; // TODO: $db->options['default_text_field_length'];
+
+                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
+                
                 return $fixed ? 'CHAR('.$length.')' : 'VARCHAR2('.$length.')';
             case 'clob':
                 return 'CLOB';
@@ -86,10 +90,9 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
      *
      * @param array  $field native field description
      * @return array containing the various possible types, length, sign, fixed
-     * @author  Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
      * @throws Doctrine_DataDict_Oracle_Exception
      */
-    public function mapNativeDatatype(array $field) {
+    public function getPortableDeclaration(array $field) {
         $db_type = strtolower($field['type']);
         $type = array();
         $length = $unsigned = $fixed = null;
