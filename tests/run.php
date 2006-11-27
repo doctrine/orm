@@ -61,6 +61,9 @@ require_once('EnumTestCase.php');
 
 require_once('DataDictSqliteTestCase.php');
 require_once('DataDict/PgsqlTestCase.php');
+require_once('DataDict/SqliteTestCase.php');
+require_once('DataDict/MysqlTestCase.php'); 
+require_once('DataDict/OracleTestCase.php');
 
 require_once('ExportTestCase.php');
 require_once('ExportMysqlTestCase.php');
@@ -76,16 +79,30 @@ require_once('TransactionFirebirdTestCase.php');
 require_once('TransactionMssqlTestCase.php');
 require_once('TransactionSqliteTestCase.php');
 
+require_once('Connection/MysqlTestCase.php');
+
 require_once('CustomResultSetOrderTestCase.php');
 
 error_reporting(E_ALL);
 print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
- /**
-$test->addTestCase(new Doctrine_Configurable_TestCase());
+
+
+
+$test->addTestCase(new Doctrine_Connection_Mysql_TestCase());
 
 $test->addTestCase(new Doctrine_Export_Mysql_TestCase());
+
+$test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
+
+$test->addTestCase(new Doctrine_DataDict_Mysql_TestCase());
+
+$test->addTestCase(new Doctrine_DataDict_Oracle_TestCase());
+ /**
+$test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
+$test->addTestCase(new Doctrine_Configurable_TestCase());
+
 
 $test->addTestCase(new Doctrine_Export_Firebird_TestCase());
 
@@ -93,7 +110,6 @@ $test->addTestCase(new Doctrine_Export_Pgsql_TestCase());
 
 $test->addTestCase(new Doctrine_Export_Oracle_TestCase());
 
-$test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
 
 $test->addTestCase(new Doctrine_Transaction_TestCase());
 
@@ -108,7 +124,7 @@ $test->addTestCase(new Doctrine_Transaction_Firebird_TestCase());
 $test->addTestCase(new Doctrine_Transaction_Sqlite_TestCase());
 
 $test->addTestCase(new Doctrine_Transaction_Mssql_TestCase());
-*/
+/**
 $test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
 
 $test->addTestCase(new Doctrine_UnitOfWork_TestCase());
@@ -199,7 +215,7 @@ $test->addTestCase(new Doctrine_Query_Where_TestCase());
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Select_TestCase());
-
+*/
 
 
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
