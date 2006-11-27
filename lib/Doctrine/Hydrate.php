@@ -51,10 +51,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      */
     protected $joins       = array();
     /**
-     * @var array $data                         fetched data
-     */
-    protected $data        = array();
-    /**
      * @var array $params                       query input parameters
      */
     protected $params      = array();
@@ -92,7 +88,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
     protected $pendingAggregates = array();
 
     protected $aggregateMap      = array();
-
+    /**
+     * @var Doctrine_Hydrate_Alias $aliasHandler    
+     */
     protected $aliasHandler;
     /**
      * @var array $parts            SQL query string parts
@@ -229,7 +227,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 );
         $this->inheritanceApplied = false;
         $this->aggregate        = false;
-        $this->data             = array();
+
         $this->collections      = array();
         $this->joins            = array();
         $this->tableIndexes     = array();
@@ -540,16 +538,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 return true;
         }
         return false;
-    }
-    public function getShortAliasIndex($alias) {
-        return $this->aliasHandler->getShortAliasIndex($alias);
-    }
-    public function generateShortAlias($tableName) {
-        return $this->aliasHandler->generateShortAlias($tableName);
-    }
-
-    public function getShortAlias($tableName) {
-        return $this->aliasHandler->getShortAlias($tableName);
     }
     /**
      * applyInheritance

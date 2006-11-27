@@ -200,9 +200,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 		$having = $this->having;
 		$table  = reset($this->tables);
 
-		$q  = 'SELECT COUNT(DISTINCT ' . $this->getShortAlias($table->getTableName())
-            . '.' . $table->getIdentifier() 
-            . ') FROM ' . $table->getTableName() . ' ' . $this->getShortAlias($table->getTableName());
+		$q  = 'SELECT COUNT(DISTINCT ' . $this->aliasHandler->getShortAlias($table->getTableName())
+            . '.' . $table->getIdentifier()
+            . ') FROM ' . $table->getTableName() . ' ' . $this->aliasHandler->getShortAlias($table->getTableName());
 
 		foreach($join as $j) {
             $q .= ' '.implode(' ',$j);
@@ -528,7 +528,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     break;
                 }
 
-                $field    = $this->getShortAlias($table->getTableName()) . '.' . $table->getIdentifier();
+                $field    = $this->aliasHandler->getShortAlias($table->getTableName()) . '.' . $table->getIdentifier();
                 
                 // only append the subquery if it actually contains something
                 if($subquery !== '')
@@ -569,7 +569,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $k          = array_keys($this->tables);
         $table      = $this->tables[$k[0]];
 
-        $alias      = $this->getShortAlias($table->getTableName());
+        $alias      = $this->aliasHandler->getShortAlias($table->getTableName());
         $primaryKey = $alias . '.' . $table->getIdentifier();
 
         // initialize the base of the subquery
@@ -638,27 +638,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         return $subquery;
     }
-    /**
-    public function generateNewAlias($alias) {
-        if(isset($this->shortAliases[$alias])) {
-            // generate a new alias
-            $name = substr($alias, 0, 1);
-            $i    = ((int) substr($alias, 1));
-
-            if($i == 0)
-                $i = 1;
-
-            $newIndex  = ($this->shortAliasIndexes[$name] + $i);
-
-            return $name . $newIndex;
-        }
-        
-        return $alias;
-    }
-    */
-
-
-
     /**
      * query the database with DQL (Doctrine Query Language)
      *
@@ -1072,7 +1051,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     $table = $this->connection->getTable($name);
 
 
-                    $tname = $this->getShortAlias($table->getTableName());
+                    $tname = $this->aliasHandler->getShortAlias($table->getTableName());
 
                     if( ! isset($this->tableAliases[$currPath]))
                         $this->tableIndexes[$tname] = 1;
@@ -1093,7 +1072,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     if(isset($this->tableAliases[$prevPath])) {
                         $tname = $this->tableAliases[$prevPath];
                     } else
-                        $tname = $this->getShortAlias($table->getTableName());
+                        $tname = $this->aliasHandler->getShortAlias($table->getTableName());
 
 
                     $fk       = $table->getRelation($name);
@@ -1105,7 +1084,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     if(isset($this->tableAliases[$currPath])) {
                         $tname2 = $this->tableAliases[$currPath];
                     } else
-                        $tname2 = $this->generateShortAlias($original);
+                        $tname2 = $this->aliasHandler->generateShortAlias($original);
 
                     $aliasString = $original . ' ' . $tname2;
 
