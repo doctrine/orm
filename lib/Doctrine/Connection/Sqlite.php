@@ -64,13 +64,13 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
                           'identifier_quoting'   => true,
                           'pattern_escaping'     => false,
                           );
-
+        /**
         $this->options['base_transaction_name'] = '___php_MDB2_sqlite_auto_commit_off';
         $this->options['fixed_float'] = 0;
         $this->options['database_path'] = '';
         $this->options['database_extension'] = '';
         $this->options['server_version'] = '';
-
+        */
         parent::__construct($manager, $adapter);
     }
     /**
