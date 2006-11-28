@@ -65,34 +65,34 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      */
     public function _makeAutoincrement($name, $table, $start = null) {
         if (is_null($start)) {
-            $db->beginTransaction();
-            $query = 'SELECT MAX(' . $db->quoteIdentifier($name, true) . ') FROM ' . $db->quoteIdentifier($table, true);
+            $this->conn->beginTransaction();
+            $query = 'SELECT MAX(' . $this->conn->quoteIdentifier($name, true) . ') FROM ' . $this->conn->quoteIdentifier($table, true);
             $start = $this->db->queryOne($query, 'integer');
-            if (PEAR::isError($start)) {
-                return $start;
-            }
+
             ++$start;
-            $result = $db->manager->createSequence($table, $start);
-            $db->commit();
+            $result = $this->createSequence($table, $start);
+            $this->conn->commit();
         } else {
-            $result = $db->manager->createSequence($table, $start);
+            $result = $this->createSequence($table, $start);
         }
 
-        $sequence_name = $db->getSequenceName($table);
-        $trigger_name  = $db->quoteIdentifier($table . '_AUTOINCREMENT_PK', true);
+        $sequence_name = $this->conn->getSequenceName($table);
+        $trigger_name  = $this->conn->quoteIdentifier($table . '_AUTOINCREMENT_PK', true);
 
-        $table = $db->quoteIdentifier($table, true);
-        $name  = $db->quoteIdentifier($name,  true);
+        $table = $this->conn->quoteIdentifier($table, true);
+        $name  = $this->conn->quoteIdentifier($name,  true);
         
-        $trigger_sql = 'CREATE TRIGGER ' . $trigger_name . ' FOR ' . $table . '
+        $triggerSql = 'CREATE TRIGGER ' . $trigger_name . ' FOR ' . $table . '
                         ACTIVE BEFORE INSERT POSITION 0
                         AS
                         BEGIN
                         IF (NEW.' . $name . ' IS NULL OR NEW.' . $name . ' = 0) THEN
                             NEW.' . $name . ' = GEN_ID('.$sequence_name.', 1);
                         END';
-        $result = $db->exec($trigger_sql);
-        $this->_silentCommit();
+        $result = $this->conn->getDbh()->exec($triggerSql);
+
+        // TODO ? $this->_silentCommit();
+
         return $result;
     }
     /**
@@ -157,7 +157,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
     public function createTable($name, $fields, $options = array()) {
         parent::createTable($name, $fields, $options);
 
-        $this->_silentCommit();
+        // TODO ? $this->_silentCommit();
         foreach($fields as $field_name => $field) {
             if( ! empty($field['autoincrement'])) {
                 //create PK constraint
@@ -181,11 +181,6 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      * @return void
      */
     public function checkSupportedChanges(&$changes) {
-        $db =& $this->getDBInstance();
-        if (PEAR::isError($db)) {
-            return $db;
-        }
-
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
             case 'notnull':
@@ -472,10 +467,10 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      * @return void
      */
     public function createConstraint($table, $name, $definition) {
-        $table = $db->quoteIdentifier($table, true);
+        $table = $this->conn->quoteIdentifier($table, true);
 
         if (!empty($name)) {
-            $name = $db->quoteIdentifier($db->getIndexName($name), true);
+            $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
         }
         $query = "ALTER TABLE $table ADD";
         if (!empty($definition['primary'])) {
@@ -491,32 +486,28 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
         }
         $fields = array();
         foreach (array_keys($definition['fields']) as $field) {
-            $fields[] = $db->quoteIdentifier($field, true);
+            $fields[] = $this->conn->quoteIdentifier($field, true);
         }
         $query .= ' ('. implode(', ', $fields) . ')';
-        $result = $db->exec($query);
-        $this->_silentCommit();
+        $result = $this->conn->getDbh()->exec($query);
+        // TODO ? $this->_silentCommit();
         return $result;
     }
     /**
      * create sequence
      *
-     * @param string $seq_name name of the sequence to be created
+     * @param string $seqName name of the sequence to be created
      * @param string $start start value of the sequence; default is 1
      * @return void
      */
-    public function createSequence($seq_name, $start = 1) {
-        $sequence_name = $db->getSequenceName($seq_name);
-        if (PEAR::isError($result = $db->exec('CREATE GENERATOR '.$sequence_name))) {
-            return $result;
-        }
-        if (PEAR::isError($result = $db->exec('SET GENERATOR '.$sequence_name.' TO '.($start-1)))) {
-            if (PEAR::isError($err = $db->dropSequence($seq_name))) {
-                return $db->raiseError($result, null, null,
-                    'Could not setup sequence start value and then it was not possible to drop it', __FUNCTION__);
-            }
-        }
-        return $result;
+    public function createSequence($seqName, $start = 1) {
+        $sequenceName = $this->conn->getSequenceName($seqName);
+
+        $this->conn->getDbh()->exec('CREATE GENERATOR ' . $sequenceName);
+
+        $this->conn->getDbh()->exec('SET GENERATOR ' . $sequenceName . ' TO ' . ($start-1));
+
+        $this->dropSequence($seqName);
     }
     /**
      * drop existing sequence
