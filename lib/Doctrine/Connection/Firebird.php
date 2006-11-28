@@ -66,11 +66,13 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
                           'pattern_escaping'      => true
                           );
         // initialize all driver options
+        /**
         $this->options['DBA_username'] = false;
         $this->options['DBA_password'] = false;
         $this->options['database_path'] = '';
         $this->options['database_extension'] = '.gdb';
         $this->options['server_version'] = '';
+        */
         parent::__construct($manager, $adapter);
     }
     /**
