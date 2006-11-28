@@ -60,11 +60,45 @@ require_once('BooleanTestCase.php');
 require_once('EnumTestCase.php');
 
 require_once('DataDictSqliteTestCase.php');
-require_once('DataDict/PgsqlTestCase.php');
-require_once('DataDict/SqliteTestCase.php');
-require_once('DataDict/MysqlTestCase.php'); 
-require_once('DataDict/OracleTestCase.php');
 
+
+$drivers = array('Firebird',
+                               'Informix',
+                               'Mysql',
+                               'Mssql', 
+                               'Oracle', 
+                               'Pgsql', 
+                               'Sqlite'
+                               );
+                            
+foreach($drivers as $driver) {
+    require_once('DataDict/' . $driver . 'TestCase.php');
+}
+/**
+class Doctrine_Tester {
+    protected $drivers = array('Firebird',
+                               'Informix',
+                               'Mysql',
+                               'Mssql',
+                               'Oracle',
+                               'Pgsql',
+                               'Sqlite'
+                               );
+
+    public function loadModule($module) {
+        foreach($drivers as $driver) {
+            require_once($module . DIRECTORY_SEPARATOR . $driver . 'TestCase.php');
+        }
+    }
+    public function run($module) {
+        $this->loadModule($module);
+
+        foreach($drivers as $driver) {
+
+        }
+    }
+}
+*/
 require_once('ExportTestCase.php');
 require_once('ExportMysqlTestCase.php');
 require_once('ExportFirebirdTestCase.php');
@@ -94,11 +128,12 @@ $test->addTestCase(new Doctrine_Connection_Mysql_TestCase());
 
 $test->addTestCase(new Doctrine_Export_Mysql_TestCase());
 
-$test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
+foreach($drivers as $driver) {
+    $class = 'Doctrine_DataDict_' . $driver . '_TestCase'; 
+    
+    $test->addTestCase(new $class());
+}
 
-$test->addTestCase(new Doctrine_DataDict_Mysql_TestCase());
-
-$test->addTestCase(new Doctrine_DataDict_Oracle_TestCase());
  /**
 $test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
 $test->addTestCase(new Doctrine_Configurable_TestCase());
