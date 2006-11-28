@@ -562,7 +562,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_Connection_Module {
 
         if( ! empty($field['autoincrement'])) {
             $name = $this->conn->quoteIdentifier($name, true);
-            return $name.' '.$this->getTypeDeclaration($field);
+            return $name.' '.$this->getNativeDeclaration($field);
         }
 
         $default = '';
@@ -570,14 +570,18 @@ class Doctrine_DataDict_Pgsql extends Doctrine_Connection_Module {
             if ($field['default'] === '') {
                 $field['default'] = empty($field['notnull']) ? null : 0;
             }
-            $default = ' DEFAULT '.$this->quote($field['default'], 'integer');
-        } elseif (empty($field['notnull'])) {
+            $default = ' DEFAULT '.$this->conn->quote($field['default'], $field['type']);
+        } 
+        /** 
+        TODO: is this needed ?
+        elseif (empty($field['notnull'])) {
             $default = ' DEFAULT NULL';
         }
+        */
 
         $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
         $name = $this->conn->quoteIdentifier($name, true);
-        return $name . ' ' . $this->getTypeDeclaration($field) . $default . $notnull;
+        return $name . ' ' . $this->getNativeDeclaration($field) . $default . $notnull;
     }
     /**
      * listDatabases

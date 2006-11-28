@@ -253,6 +253,29 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $this->supported[$feature]);
     }
     /**
+     * quote
+     * 
+     * @param mixed $input
+     * @param string $type
+     * @return mixed
+     */
+    public function quote($input, $type = null) {
+        switch($type) {
+            case 'integer':
+                return $input;
+            case 'string':
+            case 'char':
+            case 'varchar':
+            case 'text':
+            case 'gzip':
+            case 'blob':
+            case 'clob':
+            case 'array':
+            case 'object':
+                return $this->dbh->quote($input);
+        }
+    }
+    /**
      * Removes any formatting in an sequence name using the 'seqname_format' option
      *
      * @param string $sqn string that containts name of a potential sequence

@@ -64,7 +64,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_Connection_Module {
             case 'object':
             case 'string':
                 if (empty($field['length']) && array_key_exists('default', $field)) {
-                    $field['length'] = $this->dbh->varchar_max_length;
+                    $field['length'] = $this->conn->varchar_max_length;
                 }
                 
                 $length = (! empty($field['length'])) ? $field['length'] : false;
@@ -124,7 +124,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_Connection_Module {
                 return 'DOUBLE';
             case 'decimal':
                 $length = !empty($field['length']) ? $field['length'] : 18;
-                return 'DECIMAL('.$length.','.$this->dbh->options['decimal_places'].')';
+                return 'DECIMAL(' . $length . ',' . 0 . ')'; //$this->dbh->options['decimal_places'] . ')';
         }
         return '';
     }
@@ -134,7 +134,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_Connection_Module {
      * @param array  $field native field description
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function getDoctrineDeclaration($field) {
+    public function getPortableDeclaration($field) {
         $db_type = strtolower($field['type']);
         $db_type = strtok($db_type, '(), ');
         if ($db_type == 'national') {

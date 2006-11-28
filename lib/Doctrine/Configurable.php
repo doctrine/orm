@@ -118,6 +118,7 @@ abstract class Doctrine_Configurable {
             case Doctrine::ATTR_QUERY_LIMIT:
             case Doctrine::ATTR_QUOTE_IDENTIFIER:
             case Doctrine::ATTR_PORTABILITY:
+            case Doctrine::ATTR_DEFAULT_TABLE_TYPE:
 
             break;
             case Doctrine::ATTR_SEQCOL_NAME:

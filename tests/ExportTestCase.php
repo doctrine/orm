@@ -23,7 +23,7 @@ class Doctrine_Export_TestCase extends Doctrine_Driver_UnitTestCase {
     public function testDropConstraintExecutesSql() {
         $this->export->dropConstraint('sometable', 'relevancy');
         
-        $this->assertEqual($this->adapter->pop(), 'ALTER TABLE sometable DROP CONSTRAINT relevancy');
+        $this->assertEqual($this->adapter->pop(), 'ALTER TABLE sometable DROP CONSTRAINT relevancy_idx');
     }
     public function testCreateIndexExecutesSql() {
         $this->export->createIndex('sometable', 'relevancy', array('fields' => array('title' => array(), 'content' => array())));
@@ -34,7 +34,7 @@ class Doctrine_Export_TestCase extends Doctrine_Driver_UnitTestCase {
     public function testDropIndexExecutesSql() {
         $this->export->dropIndex('sometable', 'relevancy');
         
-        $this->assertEqual($this->adapter->pop(), 'DROP INDEX relevancy');
+        $this->assertEqual($this->adapter->pop(), 'DROP INDEX relevancy_idx');
     }
     public function testDropTableExecutesSql() {
         $this->export->dropTable('sometable');

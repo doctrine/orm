@@ -98,11 +98,14 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
             'primary' => true,
             'fields' => array($name => true),
         );
-        $result = $db->manager->createConstraint($table, $index_name, $definition);
+        $result = $this->createConstraint($table, $index_name, $definition);
+
+        /**
         if (PEAR::isError($result)) {
             return $db->raiseError($result, null, null,
                 'primary key for autoincrement PK could not be created', __FUNCTION__);
         }
+        */
 
         if (is_null($start)) {
             $db->beginTransaction();
@@ -112,21 +115,22 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
                 return $start;
             }
             ++$start;
-            $result = $db->manager->createSequence($table, $start);
+            $result = $this->createSequence($table, $start);
             $db->commit();
         } else {
-            $result = $db->manager->createSequence($table, $start);
+            $result = $this->createSequence($table, $start);
         }
+        /**
         if (PEAR::isError($result)) {
             return $db->raiseError($result, null, null,
                 'sequence for autoincrement PK could not be created', __FUNCTION__);
         }
-        $sequence_name = $db->getSequenceName($table);
-        $trigger_name  = $db->quoteIdentifier($table . '_AI_PK', true);
-        $table = $db->quoteIdentifier($table, true);
-        $name  = $db->quoteIdentifier($name, true);
-        $trigger_sql = '
-CREATE TRIGGER '.$trigger_name.'
+        */
+        $sequence_name = $this->conn->getSequenceName($table);
+        $trigger_name  = $this->conn->quoteIdentifier($table . '_AI_PK', true);
+        $table = $this->conn->quoteIdentifier($table, true);
+        $name  = $this->conn->quoteIdentifier($name, true);
+        $trigger_sql = 'CREATE TRIGGER '.$trigger_name.'
    BEFORE INSERT
    ON '.$table.'
    FOR EACH ROW
@@ -148,7 +152,7 @@ BEGIN
    END IF;
 END;
 ';
-        return $db->exec($trigger_sql);
+        return $this->conn->getDbh()->exec($trigger_sql);
     }
     /**
      * drop an existing autoincrement sequence + trigger
@@ -209,27 +213,28 @@ END;
      *                        );
      * @param array $options  An associative array of table options:
      *
-     * @return mixed MDB2_OK on success, a MDB2 error on failure
+     * @return void
      */
     public function createTable($name, $fields, $options = array()) {
-        //$db->beginNestedTransaction();
+        $this->conn->beginTransaction();
+
         $result = parent::createTable($name, $fields, $options);
-        if (!PEAR::isError($result)) {
-            foreach ($fields as $field_name => $field) {
-                if (!empty($field['autoincrement'])) {
-                    $result = $this->_makeAutoincrement($field_name, $name);
-                }
+
+        foreach($fields as $field_name => $field) {
+            if(isset($field['autoincrement']) && $field['autoincrement']) {
+                $result = $this->_makeAutoincrement($field_name, $name);
             }
         }
-        //$db->completeNestedTransaction();
+
+        $this->conn->commit();
+
         return $result;
     }
     /**
      * drop an existing table
      *
      * @param string $name name of the table that should be dropped
-     * @return mixed MDB2_OK on success, a MDB2 error on failure
-     * @access public
+     * @return void
      */
     public function dropTable($name) {
         //$db->beginNestedTransaction();
@@ -337,7 +342,7 @@ END;
             case 'rename':
                 break;
             default:
-                return $db->raiseError(MDB2_ERROR_CANNOT_ALTER, null, null,
+                return $this->conn->raiseError(MDB2_ERROR_CANNOT_ALTER, null, null,
                     'change type "'.$change_name.'" not yet supported', __FUNCTION__);
             }
         }
@@ -351,9 +356,9 @@ END;
         if (!empty($changes['add']) && is_array($changes['add'])) {
             $fields = array();
             foreach ($changes['add'] as $field_name => $field) {
-                $fields[] = $db->getDeclaration($field['type'], $field_name, $field);
+                $fields[] = $this->conn->getDeclaration($field['type'], $field_name, $field);
             }
-            $result = $db->exec("ALTER TABLE $name ADD (". implode(', ', $fields).')');
+            $result = $this->conn->exec("ALTER TABLE $name ADD (". implode(', ', $fields).')');
             if (PEAR::isError($result)) {
                 return $result;
             }
@@ -362,9 +367,9 @@ END;
         if (!empty($changes['change']) && is_array($changes['change'])) {
             $fields = array();
             foreach ($changes['change'] as $field_name => $field) {
-                $fields[] = $field_name. ' ' . $db->getDeclaration($field['definition']['type'], '', $field['definition']);
+                $fields[] = $field_name. ' ' . $this->conn->getDeclaration($field['definition']['type'], '', $field['definition']);
             }
-            $result = $db->exec("ALTER TABLE $name MODIFY (". implode(', ', $fields).')');
+            $result = $this->conn->exec("ALTER TABLE $name MODIFY (". implode(', ', $fields).')');
             if (PEAR::isError($result)) {
                 return $result;
             }
@@ -372,9 +377,9 @@ END;
 
         if (!empty($changes['rename']) && is_array($changes['rename'])) {
             foreach ($changes['rename'] as $field_name => $field) {
-                $field_name = $db->quoteIdentifier($field_name, true);
-                $query = "ALTER TABLE $name RENAME COLUMN $field_name TO ".$db->quoteIdentifier($field['name']);
-                $result = $db->exec($query);
+                $field_name = $this->conn->quoteIdentifier($field_name, true);
+                $query = "ALTER TABLE $name RENAME COLUMN $field_name TO ".$this->conn->quoteIdentifier($field['name']);
+                $result = $this->conn->exec($query);
                 if (PEAR::isError($result)) {
                     return $result;
                 }
@@ -384,17 +389,17 @@ END;
         if (!empty($changes['remove']) && is_array($changes['remove'])) {
             $fields = array();
             foreach ($changes['remove'] as $field_name => $field) {
-                $fields[] = $db->quoteIdentifier($field_name, true);
+                $fields[] = $this->conn->quoteIdentifier($field_name, true);
             }
-            $result = $db->exec("ALTER TABLE $name DROP COLUMN ". implode(', ', $fields));
+            $result = $this->conn->exec("ALTER TABLE $name DROP COLUMN ". implode(', ', $fields));
             if (PEAR::isError($result)) {
                 return $result;
             }
         }
 
         if (!empty($changes['name'])) {
-            $change_name = $db->quoteIdentifier($changes['name'], true);
-            $result = $db->exec("ALTER TABLE $name RENAME TO ".$change_name);
+            $change_name = $this->conn->quoteIdentifier($changes['name'], true);
+            $result = $this->conn->exec("ALTER TABLE $name RENAME TO ".$change_name);
             if (PEAR::isError($result)) {
                 return $result;
             }

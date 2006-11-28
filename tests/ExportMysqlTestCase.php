@@ -23,9 +23,29 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_Driver_UnitTestCase {
 
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id INT UNSIGNED) ENGINE = MYISAM');
     }
-    public function testCreateTableSupportsAutoincPks() {
+    public function testCreateTableSupportsDefaultTableType() {
         $name = 'mytable';
         
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1));
+
+        $this->export->createTable($name, $fields);
+
+        // INNODB is the default type
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id INT UNSIGNED) ENGINE = INNODB');
+    }
+    public function testCreateTableSupportsMultiplePks() {
+        $name = 'mytable';
+        $fields  = array('name' => array('type' => 'char', 'length' => 10),
+                         'type' => array('type' => 'integer', 'length' => 3));
+                         
+        $options = array('primary' => array('name', 'type'));
+        $this->export->createTable($name, $fields, $options);
+        
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10), type MEDIUMINT, PRIMARY KEY(name, type)) ENGINE = INNODB');
+    }
+    public function testCreateTableSupportsAutoincPks() {
+        $name = 'mytable';
+
         $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true));
         $options = array('type' => 'INNODB');
         
@@ -58,7 +78,7 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_Driver_UnitTestCase {
         
         $fields  = array('id' => array('type' => 'varchar', 'length' => '100'));
         $options = array('type' => 'MYISAM');
-        
+
         $this->export->createTable($name, $fields, $options);
 
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id VARCHAR(100)) ENGINE = MYISAM');

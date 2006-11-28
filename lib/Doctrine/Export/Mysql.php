@@ -99,20 +99,20 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
         $query_fields = $this->getFieldDeclarationList($fields);
 
         if( ! empty($options['primary']))
-            $query_fields.= ', PRIMARY KEY (' . implode(', ', array_keys($options['primary'])) . ')';
+            $query_fields.= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
 
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $query_fields . ')';
 
         $optionStrings = array();
 
-        if( ! empty($options['comment']))
+        if(isset($options['comment']))
             $optionStrings['comment'] = 'COMMENT = '.$this->dbh->quote($options['comment'], 'text');
 
 
-        if( ! empty($options['charset'])) {
+        if(isset($options['charset'])) {
             $optionsSting['charset'] = 'DEFAULT CHARACTER SET '.$options['charset'];
-            if( ! empty($options['collate'])) {
+            if(isset($options['collate'])) {
                 $optionStrings['charset'].= ' COLLATE '.$options['collate'];
             }
         }
@@ -121,12 +121,12 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
 
         if (!empty($options['type'])) {
             $type = $options['type'];
-        } elseif ($this->dbh->options['default_table_type']) {
-            $type = $this->dbh->options['default_table_type'];
+        } else {
+            $type = $this->conn->getAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE);
         }
         
         if ($type) {
-            $optionStrings[] = "ENGINE = $type";
+            $optionStrings[] = 'ENGINE = ' . $type;
         }
 
         if (!empty($optionStrings)) {

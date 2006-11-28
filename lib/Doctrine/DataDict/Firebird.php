@@ -213,7 +213,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_Connection_Module {
      */
     public function listTableFields($table) {
         $table = $db->quote(strtoupper($table), 'text');
-        $query = "SELECT RDB\$FIELD_NAME FROM RDB\$RELATION_FIELDS WHERE UPPER(RDB\$RELATION_NAME)=$table";
+        $query = 'SELECT RDB\$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
 
         return $this->conn->fetchColumn($query);
     }
@@ -242,9 +242,9 @@ class Doctrine_DataDict_Firebird extends Doctrine_Connection_Module {
      * @return array            data array containing all views for given table
      */
     public function listTableViews($table) {
-        $query = 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS';
-        $table = $db->quote(strtoupper($table), 'text');
-        $query .= "WHERE UPPER(RDB\$RELATION_NAME)=$table";
+        $query  = 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS';
+        $table  = $db->quote(strtoupper($table), 'text');
+        $query .= 'WHERE UPPER(RDB\$RELATION_NAME) = ' . $table;
 
         return $this->conn->fetchColumn($query);
     }
@@ -274,7 +274,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_Connection_Module {
 
         if( ! is_null($table)) {
             $table = $db->quote(strtoupper($table), 'text');
-            $query .= "WHERE UPPER(RDB\$RELATION_NAME)=$table";
+            $query .= 'WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
         }
 
         return $this->conn->fetchColumn($query);

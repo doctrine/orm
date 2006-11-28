@@ -131,15 +131,15 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         if (empty($fields))
             throw new Doctrine_Export_Exception('no fields specified for table '.$name);
 
-        $query_fields = $this->getFieldDeclarationList($fields);
+        $queryFields = $this->getFieldDeclarationList($fields);
 
         if (!empty($options['primary'])) {
-            $query_fields.= ', PRIMARY KEY ('.implode(', ', array_keys($options['primary'])).')';
+            $queryFields.= ', PRIMARY KEY('.implode(', ', array_values($options['primary'])).')';
         }
 
-        $name  = $db->quoteIdentifier($name, true);
-        $query = "CREATE TABLE $name ($query_fields)";
-        return $db->exec($query);
+        $name  = $this->conn->quoteIdentifier($name, true);
+        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+        return $this->conn->getDbh()->exec($query);
     }
     /**
      * create sequence
@@ -385,7 +385,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
 
         $default = '';
         if(isset($field['default'])) {
-            if ($field['default'] === '') {
+            if($field['default'] === '') {
                 $field['default'] = empty($field['notnull'])
                     ? null : $this->valid_default_values[$field['type']];
                 if ($field['default'] === ''
@@ -394,7 +394,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
                     $field['default'] = ' ';
                 }
             }
-            $default = ' DEFAULT ' . $this->conn->getDbh()->quote($field['default']);
+
+            $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
         }
         /**
         TODO: is this really needed for portability? 

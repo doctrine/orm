@@ -43,7 +43,9 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      * @param PDO|Doctrine_Adapter $adapter     database handler
      */
     public function __construct(Doctrine_Manager $manager, $adapter) {
-        $adapter->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+        $adapter->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);  
+        
+        $this->setAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE, 'INNODB');
 
         $this->supported = array(
                           'sequences'            => 'emulated',
@@ -82,6 +84,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
                                             );
 
         $this->properties['varchar_max_length'] = 255;
+
 
         parent::__construct($manager, $adapter);
     }
