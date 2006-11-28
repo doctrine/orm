@@ -50,49 +50,56 @@ class Doctrine_DataDict_Mssql extends Doctrine_Connection_Module {
      *      notnull
      *          Boolean flag that indicates whether this field is constrained
      *          to not be set to null.
-     * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
+     *
      * @return      string      DBMS specific SQL code portion that should be used to
      *                          declare the specified field.
      */
-    public function getTypeDeclaration($field) {
+    public function getNativeDeclaration($field) {
         switch ($field['type']) {
-        case 'text':
-            $length = !empty($field['length'])
-                ? $field['length'] : false;
-            $fixed = !empty($field['fixed']) ? $field['fixed'] : false;
-            return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$db->options['default_text_field_length'].')')
-                : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
-        case 'clob':
-            if (!empty($field['length'])) {
-                $length = $field['length'];
-                if ($length <= 8000) {
-                    return 'VARCHAR('.$length.')';
+            case 'array':
+            case 'object':
+            case 'text':
+            case 'char':
+            case 'varchar':
+            case 'string':
+                $length = !empty($field['length'])
+                    ? $field['length'] : false;
+                
+                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
+
+                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$db->options['default_text_field_length'].')')
+                    : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
+            case 'clob':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 8000) {
+                        return 'VARCHAR('.$length.')';
+                    }
+                 }
+                 return 'TEXT';
+            case 'blob':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 8000) {
+                        return "VARBINARY($length)";
+                    }
                 }
-             }
-             return 'TEXT';
-        case 'blob':
-            if (!empty($field['length'])) {
-                $length = $field['length'];
-                if ($length <= 8000) {
-                    return "VARBINARY($length)";
-                }
-            }
-            return 'IMAGE';
-        case 'integer':
-            return 'INT';
-        case 'boolean':
-            return 'BIT';
-        case 'date':
-            return 'CHAR ('.strlen('YYYY-MM-DD').')';
-        case 'time':
-            return 'CHAR ('.strlen('HH:MM:SS').')';
-        case 'timestamp':
-            return 'CHAR ('.strlen('YYYY-MM-DD HH:MM:SS').')';
-        case 'float':
-            return 'FLOAT';
-        case 'decimal':
-            $length = !empty($field['length']) ? $field['length'] : 18;
-            return 'DECIMAL('.$length.','.$db->options['decimal_places'].')';
+                return 'IMAGE';
+            case 'integer':
+                return 'INT';
+            case 'boolean':
+                return 'BIT';
+            case 'date':
+                return 'CHAR(' . strlen('YYYY-MM-DD') . ')';
+            case 'time':
+                return 'CHAR(' . strlen('HH:MM:SS') . ')';
+            case 'timestamp':
+                return 'CHAR(' . strlen('YYYY-MM-DD HH:MM:SS') . ')';
+            case 'float':
+                return 'FLOAT';
+            case 'decimal':
+                $length = !empty($field['length']) ? $field['length'] : 18;
+                return 'DECIMAL('.$length.','.$db->options['decimal_places'].')';
         }
         return '';
     }
@@ -100,10 +107,9 @@ class Doctrine_DataDict_Mssql extends Doctrine_Connection_Module {
      * Maps a native array description of a field to a MDB2 datatype and length
      *
      * @param   array           $field native field description
-     * @author  Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
      * @return  array           containing the various possible types, length, sign, fixed
      */
-    public function mapNativeDatatype($field) {
+    public function getPortableDeclaration($field) {
         $db_type = preg_replace('/\d/','', strtolower($field['type']) );
         $length = $field['length'];
         if ((int)$length <= 0) {
@@ -154,7 +160,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_Connection_Module {
                 $length = null;
             break;
             default:
-                throw new Doctrine_DataDict_Mssql_Exception('mapNativeDatatype: unknown database attribute type: '.$db_type);
+                throw new Doctrine_DataDict_Mssql_Exception('unknown database attribute type: '.$db_type);
         }
 
         return array($type, $length, $unsigned, $fixed);

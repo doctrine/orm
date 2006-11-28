@@ -53,12 +53,19 @@ class Doctrine_DataDict_Firebird extends Doctrine_Connection_Module {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getTypeDeclaration($field) {
-        switch ($field['type']) {
+    public function getNativeDeclaration($field) {
+        switch($field['type']) {
+            case 'varchar':
+            case 'string':
+            case 'array':
+            case 'object':
+            case 'char':
             case 'text':
                 $length = !empty($field['length'])
-                    ? $field['length'] : $db->options['default_text_field_length'];
-                $fixed = !empty($field['fixed']) ? $field['fixed'] : false;
+                    ? $field['length'] : 16777215; // TODO: $db->options['default_text_field_length'];
+
+                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
+
                 return $fixed ? 'CHAR('.$length.')' : 'VARCHAR('.$length.')';
             case 'clob':
                 return 'BLOB SUB_TYPE 1';
@@ -83,12 +90,12 @@ class Doctrine_DataDict_Firebird extends Doctrine_Connection_Module {
         return '';
     }
     /**
-     * Maps a native array description of a field to a MDB2 datatype and length
+     * Maps a native array description of a field to a Doctrine datatype and length
      *
      * @param array  $field native field description
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function mapNativeDatatype($field) {
+    public function getPortableDeclaration($field) {
         $length = $field['length'];
 
         if((int) $length <= 0)
