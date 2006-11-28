@@ -58,7 +58,7 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
                           'identifier_quoting'   => true,
                           'pattern_escaping'     => true,
                           );
-
+        /**
         $this->options['DBA_username'] = false;
         $this->options['DBA_password'] = false;
         $this->options['database_name_prefix'] = false;
@@ -66,7 +66,7 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
         $this->options['default_tablespace'] = false;
         $this->options['default_text_field_length'] = 2000;
         $this->options['result_prefetching'] = false;
-        
+        */
         parent::__construct($manager, $adapter);
     }
     /**
