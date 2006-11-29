@@ -235,6 +235,102 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
             }
         }
     }
+    /**
+     * updates the given record
+     *
+     * @param Doctrine_Record $record
+     * @return boolean
+     */
+    public function update(Doctrine_Record $record) {
+        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreUpdate($record);
+
+        $array = $record->getPrepared();
+
+        if(empty($array))
+            return false;
+
+        $set   = array();
+        foreach($array as $name => $value):
+                $set[] = $name." = ?";
+
+                if($value instanceof Doctrine_Record) {
+                    switch($value->getState()):
+                        case Doctrine_Record::STATE_TCLEAN:
+                        case Doctrine_Record::STATE_TDIRTY:
+                            $record->save();
+                        default:
+                            $array[$name] = $value->getIncremented();
+                            $record->set($name, $value->getIncremented());
+                    endswitch;
+                }
+        endforeach;
+
+        $params   = array_values($array);
+        $id       = $record->obtainIdentifier();
+
+
+        if( ! is_array($id))
+            $id = array($id);
+
+        $id     = array_values($id);
+        $params = array_merge($params, $id);
+
+
+        $sql  = "UPDATE ".$record->getTable()->getTableName()." SET ".implode(", ",$set)." WHERE ".implode(" = ? AND ",$record->getTable()->getPrimaryKeys())." = ?";
+
+        $stmt = $this->conn->getDBH()->prepare($sql);
+        $stmt->execute($params);
+
+        $record->assignIdentifier(true);
+
+        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onUpdate($record);
+
+        return true;
+    }
+    /**
+     * inserts a record into database
+     *
+     * @param Doctrine_Record $record   record to be inserted
+     * @return boolean
+     */
+    public function insert(Doctrine_Record $record) {
+         // listen the onPreInsert event
+        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
+        
+        $array = $record->getPrepared();
+
+        if(empty($array))
+            return false;
+
+        $table     = $record->getTable();
+        $keys      = $table->getPrimaryKeys();
+            
+
+        $seq = $record->getTable()->getSequenceName();
+
+        if( ! empty($seq)) {
+            $id             = $this->nextId($seq);
+            $name           = $record->getTable()->getIdentifier();
+            $array[$name]   = $id;
+        }
+
+        $this->conn->insert($table->getTableName(), $array);
+
+        if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
+            $id = $this->conn->getDBH()->lastInsertID();
+
+            if( ! $id)
+                $id = $table->getMaxIdentifier();
+            
+            $record->assignIdentifier($id);
+        } else
+            $record->assignIdentifier(true);
+
+        // listen the onInsert event
+        $table->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
+
+        return true;
+    }
     public function getIterator() { }
 
     public function count() { }

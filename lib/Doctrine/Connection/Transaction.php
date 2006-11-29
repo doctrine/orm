@@ -64,16 +64,6 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
      */
     protected $invalid          = array();
     /**
-     * @var array $update                   two dimensional pending update list, the records in
-     *                                      this list will be updated when transaction is committed
-     */
-    protected $update           = array();
-    /**
-     * @var array $insert                   two dimensional pending insert list, the records in
-     *                                      this list will be inserted when transaction is committed
-     */
-    protected $insert           = array();
-    /**
      * @var array $delete                   two dimensional pending delete list, the records in
      *                                      this list will be deleted when transaction is committed
      */
@@ -164,6 +154,7 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
                 $this->rollback();
                 
                 $tmp = $this->invalid;
+
                 $this->invalid = array();
                 
                 throw new Doctrine_Validator_Exception($tmp);
@@ -327,29 +318,13 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
         return true;
     }
     /**
-     * adds record into pending insert list
-     * @param Doctrine_Record $record
-     */
-    public function addInsert(Doctrine_Record $record) {
-        $name = $record->getTable()->getComponentName();
-        $this->insert[$name][] = $record;
-    }
-    /**
-     * adds record into penging update list
-     * @param Doctrine_Record $record
-     */
-    public function addUpdate(Doctrine_Record $record) {
-        $name = $record->getTable()->getComponentName();
-        $this->update[$name][] = $record;
-    }
-    /**
      * adds record into pending delete list
      * @param Doctrine_Record $record
      */
     public function addDelete(Doctrine_Record $record) {
         $name = $record->getTable()->getComponentName();
         $this->delete[$name][] = $record;
-    } 
+    }
     /**
      * addInvalid
      * adds record into invalid records list
@@ -365,22 +340,7 @@ class Doctrine_Connection_Transaction implements Countable, IteratorAggregate {
         $this->invalid[] = $record;
         return true;
     }
-    /**
-     * returns the pending insert list
-     *
-     * @return array
-     */
-    public function getInserts() {
-        return $this->insert;
-    }
-    /**
-     * returns the pending update list
-     *
-     * @return array
-     */
-    public function getUpdates() {
-        return $this->update;
-    }
+
     /**
      * returns the pending delete list
      *

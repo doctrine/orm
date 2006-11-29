@@ -115,13 +115,12 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
         return '';
     }
     /**
-     * Maps a native array description of a field to a MDB2 datatype and length
+     * Maps a native array description of a field to Doctrine datatype and length
      *
      * @param array  $field native field description
-     * @author Lukas Smith (PEAR MDB2 library)
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function getDoctrineDeclaration($field) {
+    public function getPortableDeclaration($field) {
         $db_type = strtolower($field['type']);
         $length = !empty($field['length']) ? $field['length'] : null;
         $unsigned = !empty($field['unsigned']) ? $field['unsigned'] : null;

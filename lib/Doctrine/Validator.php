@@ -80,16 +80,10 @@ class Doctrine_Validator {
 
         $errorStack = $record->getErrorStack();
         
-        switch($record->getState()):
-            case Doctrine_Record::STATE_TDIRTY:
-            case Doctrine_Record::STATE_TCLEAN:
-                // all fields will be validated
-                $data = $record->getData();
-            break;
-            default:
-                // only the modified fields will be validated
-                $data = $record->getModified();
-        endswitch;
+        
+        // if record is transient all fields will be validated
+        // if record is persistent only the modified fields will be validated
+        $data = ($record->exists()) ? $record->getModified() : $record->getData();   
 
         $err      = array();
         foreach($data as $key => $value) {

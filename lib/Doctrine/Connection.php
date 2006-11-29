@@ -102,7 +102,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->dbh   = $adapter;
 
-        $this->modules['transaction']  = new Doctrine_Connection_Transaction($this);
+        //$this->modules['transaction']  = new Doctrine_Connection_Transaction($this);
         $this->modules['unitOfWork']   = new Doctrine_Connection_UnitOfWork($this);
 
         $this->setParent($manager);
@@ -782,11 +782,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         switch($record->getState()):
             case Doctrine_Record::STATE_TDIRTY:
-                $this->transaction->insert($record);
+                $this->unitOfWork->insert($record);
             break;
             case Doctrine_Record::STATE_DIRTY:
             case Doctrine_Record::STATE_PROXY:
-                $this->transaction->update($record);
+                $this->unitOfWork->update($record);
             break;
             case Doctrine_Record::STATE_CLEAN:
             case Doctrine_Record::STATE_TCLEAN:

@@ -35,7 +35,7 @@ class Doctrine_DataDict_Sqlite_TestCase extends Doctrine_Driver_UnitTestCase {
     public function testYearMapsToIntegerAndDate() {
          $this->assertDeclarationType('year', array('integer','date'));
     }
-    public function testSomething( ){
+    public function testSomething() {
         /**
 
         $this->assertEqual($this->getDeclaration('clob'), array(array('integer', 'boolean'), 1, false, null));

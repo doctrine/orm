@@ -47,6 +47,15 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      */
     protected $transactionLevel  = 0;
     /**
+     * @var array $invalid                  an array containing all invalid records within this transaction
+     */
+    protected $invalid          = array();
+    /**
+     * @var array $delete                   two dimensional pending delete list, the records in
+     *                                      this list will be deleted when transaction is committed
+     */
+    protected $delete           = array();
+    /**
      * getState
      * returns the state of this connection
      *
@@ -64,6 +73,67 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
             default:
                 return Doctrine_Transaction::STATE_BUSY;
         }
+    }
+    /**
+     * adds record into pending delete list
+     * @param Doctrine_Record $record
+     */
+    public function addDelete(Doctrine_Record $record) {
+        $name = $record->getTable()->getComponentName();
+        $this->delete[$name][] = $record;
+    } 
+    /**
+     * addInvalid
+     * adds record into invalid records list
+     *
+     * @param Doctrine_Record $record
+     * @return boolean        false if record already existed in invalid records list, 
+     *                        otherwise true
+     */
+    public function addInvalid(Doctrine_Record $record) {
+        if(in_array($record, $this->invalid))
+            return false;
+
+        $this->invalid[] = $record;
+        return true;
+    }
+
+    /**
+     * returns the pending delete list
+     *
+     * @return array
+     */
+    public function getDeletes() {
+        return $this->delete;
+    }
+    /**
+     * bulkDelete
+     * deletes all records from the pending delete list
+     *
+     * @return void
+     */
+    public function bulkDelete() {
+        foreach($this->delete as $name => $deletes) {
+            $record = false;
+            $ids    = array();
+            foreach($deletes as $k => $record) {
+                $ids[] = $record->getIncremented();
+                $record->assignIdentifier(false);
+            }
+            if($record instanceof Doctrine_Record) {
+                $params  = substr(str_repeat("?, ",count($ids)),0,-2);
+                
+                $query   = 'DELETE FROM '
+                         . $record->getTable()->getTableName() 
+                         . ' WHERE ' 
+                         . $record->getTable()->getIdentifier()
+                         . ' IN(' . $params . ')';
+
+                $this->conn->execute($query, $ids);
+            }
+
+        }
+        $this->delete = array();
     }
     /**
      * getTransactionLevel
@@ -87,7 +157,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @return integer                          current transaction nesting level
      */
     public function beginTransaction($savepoint = null) {
-        $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this->conn);
+
 
         if( ! is_null($savepoint)) {
             if($this->transactionLevel == 0)
@@ -95,13 +165,17 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
 
             $this->createSavePoint($savepoint);
         } else {
-            if($this->transactionLevel == 0) 
-                $this->conn->getDbh()->beginTransaction();
+            if($this->transactionLevel == 0) {
+                $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this->conn);
+
+                $this->conn->getDbh()->beginTransaction();  
+
+                $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this->conn);
+            }
         }
 
         $level = ++$this->transactionLevel;
 
-        $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this->conn);
 
         return $level;
     }
@@ -131,7 +205,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
             if($this->transactionLevel == 0) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionCommit($this->conn);
                 
-                /**
+
                 try {
                     $this->bulkDelete();
 
@@ -140,15 +214,15 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
 
                     throw new Doctrine_Connection_Transaction_Exception($e->__toString());
                 }
-                */
-                /**
-                if($tmp = $this->conn->unitOfWork->getInvalid()) {
+                if( ! empty($this->invalid)) {
                     $this->rollback();
+                    
+                    $tmp = $this->invalid;
+                    $this->invalid = array();
 
                     throw new Doctrine_Validator_Exception($tmp);
                 }
-                */
-    
+
                 $this->conn->getDbh()->commit();
     
                 //$this->conn->unitOfWork->reset();
@@ -172,15 +246,16 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @return void
      */
     public function rollback($savepoint = null) {
-        if($this->transactionLevel == 0)
-            throw new Doctrine_Transaction_Exception('Rollback cannot be done. There is no active transaction.');
+        //if($this->transactionLevel == 0)
+        //    throw new Doctrine_Transaction_Exception('Rollback cannot be done. There is no active transaction.');
 
         $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionRollback($this->conn);
 
         if ( ! is_null($savepoint)) {
             $this->rollbackSavePoint($savepoint);
         } else {
-            $this->unitOfWork->reset();
+            //$this->conn->unitOfWork->reset();
+            $this->deteles = array();
 
             $this->transactionLevel = 0;
 

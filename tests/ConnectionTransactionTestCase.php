@@ -168,7 +168,7 @@ class Doctrine_Connection_Transaction_TestCase extends Doctrine_UnitTestCase {
 
         $users->delete();
 
-        $this->assertEqual($listener->pop(), 'onPreDelete');
+        $this->assertEqual($listener->pop(), 'onDelete');
 
         $this->assertTrue($count, count($this->dbh));
 

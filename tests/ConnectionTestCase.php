@@ -224,7 +224,7 @@ class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($this->connection->getIterator() instanceof ArrayIterator);
     }
     public function testGetState() {
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_OPEN);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_SLEEP);
         $this->assertEqual(Doctrine_Lib::getConnectionStateAsString($this->connection->transaction->getState()), "open");
     }
     public function testGetTables() {
@@ -234,9 +234,9 @@ class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
     public function testTransactions() {
 
         $this->connection->beginTransaction();
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_ACTIVE);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_ACTIVE);
         $this->connection->commit();
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_OPEN);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_SLEEP);
 
         $this->connection->beginTransaction();
         
@@ -254,24 +254,24 @@ class Doctrine_ConnectionTestCase extends Doctrine_UnitTestCase {
     public function testRollback() {
         $this->connection->beginTransaction();
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),1);
-        $this->assertEqual($this->connection->transaction->getState(), Doctrine_Connection_Transaction::STATE_ACTIVE);
+        $this->assertEqual($this->connection->transaction->getState(), Doctrine_Transaction::STATE_ACTIVE);
         $this->connection->rollback();
-        $this->assertEqual($this->connection->transaction->getState(), Doctrine_Connection_Transaction::STATE_OPEN);
+        $this->assertEqual($this->connection->transaction->getState(), Doctrine_Transaction::STATE_SLEEP);
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
     }
     public function testNestedTransactions() {
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
         $this->connection->beginTransaction();
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),1);
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_ACTIVE);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_ACTIVE);
         $this->connection->beginTransaction();
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_BUSY);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_BUSY);
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),2);
         $this->connection->commit();
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_ACTIVE);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_ACTIVE);
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),1);
         $this->connection->commit();
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Connection_Transaction::STATE_OPEN);
+        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_SLEEP);
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
     }
 }

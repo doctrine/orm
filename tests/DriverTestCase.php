@@ -79,7 +79,7 @@ class Doctrine_Driver_UnitTestCase extends UnitTestCase {
         $this->assertEqual($dec[0], $type2);
     }
     public function getDeclaration($type) {
-        return $this->dataDict->getDoctrineDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 1, 'fixed' => true));
+        return $this->dataDict->getPortableDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 1, 'fixed' => true));
     }
     public function init() {
         $this->adapter = new AdapterMock($this->driverName);
