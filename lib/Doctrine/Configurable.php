@@ -76,12 +76,12 @@ abstract class Doctrine_Configurable {
             break;
             case Doctrine::ATTR_LOCKMODE:
                 if($this instanceof Doctrine_Connection) {
-                    if($this->transaction->getState() != Doctrine_Connection_Transaction::STATE_OPEN)
+                    if($this->transaction->getState() != Doctrine_Transaction::STATE_SLEEP)
                         throw new Doctrine_Exception("Couldn't set lockmode. There are transactions open.");
 
                 } elseif($this instanceof Doctrine_Manager) {
                     foreach($this as $connection) {
-                        if($connection->transaction->getState() != Doctrine_Connection_Transaction::STATE_OPEN)
+                        if($connection->transaction->getState() != Doctrine_Transaction::STATE_SLEEP)
                             throw new Doctrine_Exception("Couldn't set lockmode. There are transactions open.");
                     }
                 } else {
