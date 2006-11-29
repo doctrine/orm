@@ -19,10 +19,10 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
+ * Doctrine_Lib has not commonly used static functions, mostly for debugging purposes
+ *
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * 
- * Doctrine_Lib has not commonly used static functions, mostly for debugging purposes
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
@@ -76,16 +76,13 @@ class Doctrine_Lib {
      */
     public static function getConnectionStateAsString($state) {
         switch($state):
-            case Doctrine_Connection_Transaction::STATE_OPEN:
+            case Doctrine_Transaction::STATE_SLEEP:
                 return "open";
             break;
-            case Doctrine_Connection_Transaction::STATE_CLOSED:
-                return "closed";
-            break;
-            case Doctrine_Connection_Transaction::STATE_BUSY:
+            case Doctrine_Transaction::STATE_BUSY:
                 return "busy";
             break;
-            case Doctrine_Connection_Transaction::STATE_ACTIVE:
+            case Doctrine_Transaction::STATE_ACTIVE:
                 return "active";
             break;
         endswitch;
