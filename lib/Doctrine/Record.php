@@ -912,7 +912,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $conn = $this->_table->getConnection();
         }
 
-        $conn->replace($this->_table->getTableName(), $this->getPrepared(), $this->id);
+        return $conn->replace($this->_table->getTableName(), $this->getPrepared(), $this->id);
     }
     /**
      * returns an array of modified fields and associated values
