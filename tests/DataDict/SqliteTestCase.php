@@ -33,7 +33,7 @@ class Doctrine_DataDict_Sqlite_TestCase extends Doctrine_Driver_UnitTestCase {
         $this->assertDeclarationType('real', 'float');
     }
     public function testYearMapsToIntegerAndDate() {
-         $this->assertDeclarationType('year', array('integer','date'));
+        $this->assertDeclarationType('year', array('integer','date'));
     }
     public function testGetNativeDefinitionSupportsIntegerType() {
         $a = array('type' => 'integer', 'length' => 20, 'fixed' => false);

@@ -43,7 +43,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      * @param PDO|Doctrine_Adapter $adapter     database handler
      */
     public function __construct(Doctrine_Manager $manager, $adapter) {
-        $adapter->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);  
+        $adapter->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
         
         $this->setAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE, 'INNODB');
 
@@ -70,7 +70,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
     
         $this->properties['string_quoting'] = array('start' => "'", 
                                                     'end' => "'", 
-                                                    'escape' => '\\', 
+                                                    'escape' => '\\',
                                                     'escape_pattern' => '\\');
 
         $this->properties['identifier_quoting'] = array('start' => '`',
@@ -197,14 +197,14 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         for(reset($fields); $colnum < $count; next($fields), $colnum++) {
             $name = key($fields);
 
-            if ($colnum > 0) {
+            if($colnum > 0) {
                 $query .= ',';
                 $values.= ',';
             }
 
             $query .= $name;
 
-            if (isset($fields[$name]['null']) && $fields[$name]['null']) {
+            if(isset($fields[$name]['null']) && $fields[$name]['null']) {
                 $value = 'NULL';
             } else {
                 $type = isset($fields[$name]['type']) ? $fields[$name]['type'] : null;
@@ -213,15 +213,15 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
 
             $values .= $value;
 
-            if (isset($fields[$name]['key']) && $fields[$name]['key']) {
-                if ($value === 'NULL')
+            if(isset($fields[$name]['key']) && $fields[$name]['key']) {
+                if($value === 'NULL')
                     throw new Doctrine_Connection_Mysql_Exception('key value '.$name.' may not be NULL');
 
                 $keys++;
             }
         }
 
-        if ($keys == 0)
+        if($keys == 0)
             throw new Doctrine_Connection_Mysql_Exception('not specified which fields are keys');
 
 

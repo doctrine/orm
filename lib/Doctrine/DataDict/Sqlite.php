@@ -120,13 +120,13 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
      * @param array  $field native field description
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function getPortableDeclaration($field) {
-        $db_type = strtolower($field['type']);
-        $length = !empty($field['length']) ? $field['length'] : null;
-        $unsigned = !empty($field['unsigned']) ? $field['unsigned'] : null;
+    public function getPortableDeclaration(array $field) {
+        $dbType = strtolower($field['type']);
+        $length = ( ! empty($field['length'])) ? $field['length'] : null;
+        $unsigned = ( ! empty($field['unsigned'])) ? $field['unsigned'] : null;
         $fixed = null;
         $type = array();
-        switch ($db_type) {
+        switch ($dbType) {
             case 'boolean':
                 $type[] = 'boolean';
                 break;
@@ -177,7 +177,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
                     if (preg_match('/^(is|has)/', $field['name'])) {
                         $type = array_reverse($type);
                     }
-                } elseif (strstr($db_type, 'text')) {
+                } elseif (strstr($dbType, 'text')) {
                     $type[] = 'clob';
                 }
                 if ($fixed !== false) {
@@ -221,7 +221,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
                 $length = null;
                 break;
             default:
-                throw new Doctrine_DataDict_Sqlite_Exception('unknown database attribute type: '.$db_type);
+                throw new Doctrine_DataDict_Sqlite_Exception('unknown database attribute type: '.$dbType);
         }
 
         return array($type, $length, $unsigned, $fixed);
