@@ -445,11 +445,20 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     public function isLimitSubqueryUsed() {
         return $this->limitSubqueryUsed;
     }
-    
+    /**
+     * getQueryBase
+     * returns the base of the generated sql query
+     * On mysql driver special strategy has to be used for DELETE statements
+     *
+     * @return string       the base of the generated sql query
+     */
     public function getQueryBase() {
         switch($this->type) {
             case self::DELETE:
-                $q = 'DELETE FROM ';
+                if($this->conn->getName() == 'mysql')
+                    $q = 'DELETE '.end($this->tableAliases).' FROM ';
+                else
+                    $q = 'DELETE FROM ';
             break;
             case self::UPDATE:
                 $q = 'UPDATE ';
