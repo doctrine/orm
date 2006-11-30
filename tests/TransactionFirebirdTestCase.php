@@ -4,17 +4,17 @@ class Doctrine_Transaction_Firebird_TestCase extends Doctrine_Driver_UnitTestCas
         parent::__construct('firebird');
     }
     public function testCreateSavePointExecutesSql() {
-        $this->transaction->createSavePoint('mypoint');
-        
+        $this->transaction->beginTransaction('mypoint');
+
         $this->assertEqual($this->adapter->pop(), 'SAVEPOINT mypoint');
     }
     public function testReleaseSavePointExecutesSql() {
-        $this->transaction->releaseSavePoint('mypoint');
+        $this->transaction->commit('mypoint');
 
         $this->assertEqual($this->adapter->pop(), 'RELEASE SAVEPOINT mypoint');
     }
     public function testRollbackSavePointExecutesSql() {
-        $this->transaction->rollbackSavePoint('mypoint');
+        $this->transaction->rollback('mypoint');
 
         $this->assertEqual($this->adapter->pop(), 'ROLLBACK TO SAVEPOINT mypoint');
     }
@@ -46,7 +46,7 @@ class Doctrine_Transaction_Firebird_TestCase extends Doctrine_Driver_UnitTestCas
         $this->transaction->setIsolation('READ UNCOMMITTED');
         $this->transaction->setIsolation('READ COMMITTED');
         $this->transaction->setIsolation('REPEATABLE READ');
-        $this->transaction->setIsolation('SERIALIZABLE');                      
+        $this->transaction->setIsolation('SERIALIZABLE');
 
         $this->assertEqual($this->adapter->pop(), 'SET TRANSACTION ISOLATION LEVEL SNAPSHOT TABLE STABILITY');
         $this->assertEqual($this->adapter->pop(), 'SET TRANSACTION ISOLATION LEVEL SNAPSHOT');

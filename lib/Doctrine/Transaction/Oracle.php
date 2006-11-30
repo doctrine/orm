@@ -38,7 +38,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction {
      * @param string $savepoint     name of a savepoint to set
      * @return void
      */
-    public function createSavePoint($savepoint) {
+    protected function createSavePoint($savepoint) {
         $query = 'SAVEPOINT '.$savepoint;
         
         return $this->conn->getDbh()->query($query);
@@ -50,7 +50,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction {
      * @param string $savepoint     name of a savepoint to release
      * @return void
      */
-    public function releaseSavePoint($savepoint) {
+    protected function releaseSavePoint($savepoint) {
         // oracle doesn't support manual releasing of savepoints
         return true;
     }
@@ -61,7 +61,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction {
      * @param string $savepoint     name of a savepoint to rollback to
      * @return void
      */
-    public function rollbackSavePoint($savepoint) {
+    protected function rollbackSavePoint($savepoint) {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
         
         return $this->conn->getDbh()->query($query);

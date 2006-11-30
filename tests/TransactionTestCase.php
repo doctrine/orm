@@ -3,9 +3,10 @@ class Doctrine_Transaction_TestCase extends Doctrine_Driver_UnitTestCase {
     public function __construct() {
         parent::__construct('sqlite', true);
     }
+/**
     public function testCreateSavepointIsOnlyImplementedAtDriverLevel() {
         try {
-            $this->transaction->createSavePoint('point');
+            $this->transaction->beginTransaction('point');
             $this->fail();
         } catch(Doctrine_Transaction_Exception $e) {
             $this->pass();
@@ -13,15 +14,18 @@ class Doctrine_Transaction_TestCase extends Doctrine_Driver_UnitTestCase {
     }
     public function testReleaseSavepointIsOnlyImplementedAtDriverLevel() {
         try {
-            $this->transaction->releaseSavePoint('point');
+            $this->transaction->commit('point');
             $this->fail();
         } catch(Doctrine_Transaction_Exception $e) {
             $this->pass();
         }
     }
+*/
     public function testRollbackSavepointIsOnlyImplementedAtDriverLevel() {
         try {
-            $this->transaction->rollbackSavePoint('point');
+            $this->transaction->beginTransaction();
+
+            $this->transaction->rollback('point');
             $this->fail();
         } catch(Doctrine_Transaction_Exception $e) {
             $this->pass();
@@ -49,21 +53,11 @@ class Doctrine_Transaction_TestCase extends Doctrine_Driver_UnitTestCase {
     public function testGetStateReturnsStateConstant() {
         $this->assertEqual($this->transaction->getState(), Doctrine_Transaction::STATE_SLEEP);                                                  	
     }
-    public function testExceptionIsThrownWhenCommittingNotActiveTransaction() {
-        try {
-            $this->transaction->commit();
-            $this->fail();
-        } catch(Doctrine_Transaction_Exception $e) {
-            $this->pass();
-        }
+    public function testCommittingNotActiveTransactionReturnsFalse() {
+        $this->assertEqual($this->transaction->commit(), false);
     }
     public function testExceptionIsThrownWhenUsingRollbackOnNotActiveTransaction() {
-        try {
-            $this->transaction->rollback();
-            $this->fail();
-        } catch(Doctrine_Transaction_Exception $e) {
-            $this->pass();
-        }
+        $this->assertEqual($this->transaction->rollback(), false);
     }
     public function testBeginTransactionStartsNewTransaction() {
         $this->transaction->beginTransaction();  

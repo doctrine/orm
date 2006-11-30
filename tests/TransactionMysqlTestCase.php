@@ -4,17 +4,17 @@ class Doctrine_Transaction_Mysql_TestCase extends Doctrine_Driver_UnitTestCase {
         parent::__construct('mysql');
     }
     public function testCreateSavePointExecutesSql() {
-        $this->transaction->createSavePoint('mypoint');
-        
+        $this->transaction->beginTransaction('mypoint');
+
         $this->assertEqual($this->adapter->pop(), 'SAVEPOINT mypoint');
     }
     public function testReleaseSavePointExecutesSql() {
-        $this->transaction->releaseSavePoint('mypoint');
+        $this->transaction->commit('mypoint');
 
         $this->assertEqual($this->adapter->pop(), 'RELEASE SAVEPOINT mypoint');
     }
     public function testRollbackSavePointExecutesSql() {
-        $this->transaction->rollbackSavePoint('mypoint');
+        $this->transaction->rollback('mypoint');
 
         $this->assertEqual($this->adapter->pop(), 'ROLLBACK TO SAVEPOINT mypoint');
     }

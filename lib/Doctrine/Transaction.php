@@ -43,7 +43,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      */
     const STATE_BUSY        = 2;
     /**
-     * @var integer $transaction_level      the nesting level of transactions, used by transaction methods
+     * @var integer $transactionLevel      the nesting level of transactions, used by transaction methods
      */
     protected $transactionLevel  = 0;
     /**
@@ -55,6 +55,10 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      *                                      this list will be deleted when transaction is committed
      */
     protected $delete           = array();
+    /**
+     * @var array $savepoints               an array containing all savepoints
+     */
+    public $savePoints       = array();
     /**
      * getState
      * returns the state of this connection
@@ -148,27 +152,27 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * beginTransaction
      * Start a transaction or set a savepoint.
      *
+     * if trying to set a savepoint and there is no active transaction 
+     * a new transaction is being started
+     *
      * Listeners: onPreTransactionBegin, onTransactionBegin
      *
      * @param string $savepoint                 name of a savepoint to set
-     * @throws Doctrine_Transaction_Exception   if trying to create a savepoint and there
-     *                                          are no active transactions
-     *
      * @return integer                          current transaction nesting level
      */
     public function beginTransaction($savepoint = null) {
-
-
         if( ! is_null($savepoint)) {
-            if($this->transactionLevel == 0)
-                throw new Doctrine_Transaction_Exception('Savepoint cannot be created when changes are auto committed');
+            $this->beginTransaction();
+
+            $this->savePoints[] = $savepoint;
+
 
             $this->createSavePoint($savepoint);
         } else {
             if($this->transactionLevel == 0) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this->conn);
 
-                $this->conn->getDbh()->beginTransaction();  
+                $this->conn->getDbh()->beginTransaction();
 
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this->conn);
             }
@@ -189,18 +193,21 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      *
      * @param string $savepoint                 name of a savepoint to release
      * @throws Doctrine_Transaction_Exception   if the transaction fails at PDO level
-     * @throws Doctrine_Transaction_Exception   if there are no active transactions
      * @throws Doctrine_Validator_Exception     if the transaction fails due to record validations
-     * @return void
+     * @return boolean                          false if commit couldn't be performed, true otherwise
      */
     public function commit($savepoint = null) {
         if($this->transactionLevel == 0)
-            throw new Doctrine_Transaction_Exception('Commit/release savepoint cannot be done. There is no active transaction.');
+            return false;
+
+        $this->transactionLevel--;
 
         if ( ! is_null($savepoint)) {
+            $this->transactionLevel = $this->removeSavePoints($savepoint);
+
             $this->releaseSavePoint($savepoint);
         } else {
-            $this->transactionLevel--;
+
     
             if($this->transactionLevel == 0) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionCommit($this->conn);
@@ -230,6 +237,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this->conn);
             }
         }
+        return true;
     }
     /**
      * rollback
@@ -242,16 +250,18 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * eventlistener methods
      *
      * @param string $savepoint                 name of a savepoint to rollback to
-     * @throws Doctrine_Transaction_Exception   if there are no active transactions
-     * @return void
+     * @return boolean                          false if rollback couldn't be performed, true otherwise
      */
     public function rollback($savepoint = null) {
-        //if($this->transactionLevel == 0)
-        //    throw new Doctrine_Transaction_Exception('Rollback cannot be done. There is no active transaction.');
+        if($this->transactionLevel == 0)
+            return false;
 
         $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionRollback($this->conn);
 
-        if ( ! is_null($savepoint)) {
+        if( ! is_null($savepoint)) {
+
+            $this->transactionLevel = $this->removeSavePoints($savepoint);
+
             $this->rollbackSavePoint($savepoint);
         } else {
             //$this->conn->unitOfWork->reset();
@@ -262,6 +272,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
             $this->conn->getDbh()->rollback();
         }
         $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionRollback($this->conn);
+        
+        return true;
     }
     /**
      * releaseSavePoint
@@ -270,7 +282,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @param string $savepoint     name of a savepoint to create
      * @return void
      */
-    public function createSavePoint($savepoint) {
+    protected function createSavePoint($savepoint) {
         throw new Doctrine_Transaction_Exception('Savepoints not supported by this driver.');
     }
     /**
@@ -280,7 +292,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @param string $savepoint     name of a savepoint to release
      * @return void
      */
-    public function releaseSavePoint($savepoint) {
+    protected function releaseSavePoint($savepoint) {
         throw new Doctrine_Transaction_Exception('Savepoints not supported by this driver.');
     }
     /**
@@ -290,8 +302,26 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @param string $savepoint     name of a savepoint to rollback to
      * @return void
      */
-    public function rollbackSavePoint($savepoint) {
+    protected function rollbackSavePoint($savepoint) {
         throw new Doctrine_Transaction_Exception('Savepoints not supported by this driver.');
+    }
+    /**
+     * removeSavePoints
+     * removes a savepoint from the internal savePoints array of this transaction object
+     * and all its children savepoints
+     *
+     * @param sring $savepoint      name of the savepoint to remove
+     * @return integer              the current transaction level
+     */
+    private function removeSavePoints($savepoint) {
+        $i = array_search($savepoint, $this->savePoints);
+
+        $c = count($this->savePoints);
+
+        for($x = $i; $x < count($this->savePoints); $x++) {
+            unset($this->savePoints[$x]);
+        }
+        return ($c - $i);
     }
     /**
      * setIsolation

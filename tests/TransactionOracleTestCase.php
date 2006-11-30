@@ -4,15 +4,15 @@ class Doctrine_Transaction_Oracle_TestCase extends Doctrine_Driver_UnitTestCase 
         parent::__construct('oci');
     }
     public function testCreateSavePointExecutesSql() {
-        $this->transaction->createSavePoint('mypoint');
+        $this->transaction->beginTransaction('mypoint');
         
         $this->assertEqual($this->adapter->pop(), 'SAVEPOINT mypoint');
     }
     public function testReleaseSavePointAlwaysReturnsTrue() {
-        $this->assertEqual($this->transaction->releaseSavePoint('mypoint'), true);
+        $this->assertEqual($this->transaction->commit('mypoint'), true);
     }
     public function testRollbackSavePointExecutesSql() {
-        $this->transaction->rollbackSavePoint('mypoint');
+        $this->transaction->rollback('mypoint');
 
         $this->assertEqual($this->adapter->pop(), 'ROLLBACK TO SAVEPOINT mypoint');
     }

@@ -357,11 +357,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @throws Doctrine_Connection_Exception        if some of the key values was null
      * @throws Doctrine_Connection_Exception        if there were no key fields
      * @throws PDOException                         if something fails at PDO level
-     * @return void
+     * @return integer                              number of rows affected
      */
     public function replace($table, array $fields, array $keys) {
-        if( ! $this->supports('replace'))
-            throw new Doctrine_Connection_Exception('replace query is not supported');
+        //if( ! $this->supports('replace'))
+        //    throw new Doctrine_Connection_Exception('replace query is not supported');
 
 
         if(empty($keys))
