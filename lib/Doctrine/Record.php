@@ -854,7 +854,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * this method also saves the related components
      *
-     * @param Doctrine_Connection $conn
+     * @param Doctrine_Connection $conn                 optional connection parameter
      * @return void
      */
     public function save(Doctrine_Connection $conn = null) {
@@ -888,6 +888,31 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         //$this->saveAssociations();
 
         $conn->commit();
+    }
+    /**
+     * replace
+     * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
+     * query, except that if there is already a row in the table with the same
+     * key field values, the REPLACE query just updates its values instead of
+     * inserting a new row.
+     *
+     * The REPLACE type of query does not make part of the SQL standards. Since
+     * practically only MySQL and SQLIte implement it natively, this type of
+     * query isemulated through this method for other DBMS using standard types
+     * of queries inside a transaction to assure the atomicity of the operation.
+     *
+     * @param Doctrine_Connection $conn             optional connection parameter
+     * @throws Doctrine_Connection_Exception        if some of the key values was null
+     * @throws Doctrine_Connection_Exception        if there were no key fields
+     * @throws PDOException                         if something fails at PDO level
+     * @return integer                              number of rows affected
+     */
+    public function replace(Doctrine_Connection $conn = null) {
+        if ($conn === null) {
+            $conn = $this->_table->getConnection();
+        }
+
+        $conn->replace($this->_table->getTableName(), $this->getPrepared(), $this->id);
     }
     /**
      * returns an array of modified fields and associated values
