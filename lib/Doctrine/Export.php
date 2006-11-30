@@ -43,19 +43,20 @@ class Doctrine_Export extends Doctrine_Connection_Module {
     }
     /**
      * dropTable
+     * drop an existing table
      *
-     * @param string    $table              name of table that should be dropped from the database
+     * @param string $table           name of table that should be dropped from the database
      * @throws PDOException
      * @return void
      */
     public function dropTable($table) {
-        $this->conn->getDbh()->query('DROP TABLE '.$table);
+        $this->conn->getDbh()->query('DROP TABLE ' . $table);
     }
 
     /**
      * drop existing index
      *
-     * @param string    $table         name of table that should be used in method
+     * @param string    $table        name of table that should be used in method
      * @param string    $name         name of the index to be dropped
      * @return void
      */
@@ -233,6 +234,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
             $fields[] = $this->conn->quoteIdentifier($field);
         }
         $query .= ' ('. implode(', ', $fields) . ')';
+
         return $this->conn->getDbh()->query($query);
     }
 
@@ -331,18 +333,27 @@ class Doctrine_Export extends Doctrine_Connection_Module {
     /**
      * Get declaration of a number of field in bulk
      *
-     * @param string $fields  a multidimensional associative array.
+     * @param array $fields  a multidimensional associative array.
      *      The first dimension determines the field name, while the second
      *      dimension is keyed with the name of the properties
      *      of the field being declared as array indexes. Currently, the types
      *      of supported field properties are as follows:
      *
+     *      length
+     *          Integer value that determines the maximum length of the text
+     *          field. If this argument is missing the field should be
+     *          declared to have the longest length allowed by the DBMS.
+     *
      *      default
-     *          Boolean value to be used as default for this field.
+     *          Text value to be used as default for this field.
      *
      *      notnull
      *          Boolean flag that indicates whether this field is constrained
      *          to not be set to null.
+     *      charset
+     *          Text value with the default CHARACTER SET for this field.
+     *      collation
+     *          Text value with the default COLLATION for this field.
      *
      * @return string
      */
@@ -381,7 +392,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getDeclaration($name, $field) {
+    public function getDeclaration($name, array $field) {
 
         $default = '';
         if(isset($field['default'])) {

@@ -56,10 +56,16 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
     public function getNativeDeclaration(array $field) {
         switch ($field['type']) {
             case 'text':
-                $length = !empty($field['length'])
-                    ? $field['length'] : false;
-                $fixed = !empty($field['fixed']) ? $field['fixed'] : false;
-                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$db->options['default_text_field_length'].')')
+            case 'object':
+            case 'array':
+            case 'string':
+            case 'char':
+            case 'varchar':
+                $length = (isset($field['length']) && $field['length']) ? $field['length'] : null;
+
+                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
+
+                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$this->conn->getAttribute(Doctrine::ATTR_DEFAULT_TEXTFLD_LENGTH).')')
                     : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
             case 'clob':
                 if (!empty($field['length'])) {
@@ -85,6 +91,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
                     }
                 }
                 return 'LONGBLOB';
+            case 'enum':
             case 'integer':
                 if (!empty($field['length'])) {
                     $length = $field['length'];
@@ -106,8 +113,9 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
             case 'timestamp':
                 return 'DATETIME';
             case 'float':
-                return 'DOUBLE'.($db->options['fixed_float'] ? '('.
-                    ($db->options['fixed_float']+2).','.$db->options['fixed_float'].')' : '');
+            case 'double':
+                return 'DOUBLE';//($db->options['fixed_float'] ? '('.
+                    //($db->options['fixed_float']+2).','.$db->options['fixed_float'].')' : '');
             case 'decimal':
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'DECIMAL('.$length.','.$db->options['decimal_places'].')';
@@ -225,6 +233,53 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
         }
 
         return array($type, $length, $unsigned, $fixed);
+    }
+    /**
+     * Obtain DBMS specific SQL code portion needed to declare an integer type
+     * field to be used in statements like CREATE TABLE.
+     *
+     * @param string  $name   name the field to be declared.
+     * @param array  $field   associative array with the name of the properties
+     *                        of the field being declared as array indexes.
+     *                        Currently, the types of supported field
+     *                        properties are as follows:
+     *
+     *                       unsigned
+     *                        Boolean flag that indicates whether the field
+     *                        should be declared as unsigned integer if
+     *                        possible.
+     *
+     *                       default
+     *                        Integer value to be used as default for this
+     *                        field.
+     *
+     *                       notnull
+     *                        Boolean flag that indicates whether this field is
+     *                        constrained to not be set to null.
+     * @return string  DBMS specific SQL code portion that should be used to
+     *                 declare the specified field.
+     * @access protected
+     */
+    public function getIntegerDeclaration($name, array $field) {
+        $default = $autoinc = '';
+        if(isset($field['autoincrement']) && $field['autoincrement']) {
+            $autoinc = ' PRIMARY KEY AUTOINCREMENT';
+        } elseif (array_key_exists('default', $field)) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($field['notnull']) ? null : 0;
+            }
+            $default = ' DEFAULT '.$this->conn->quote($field['default'], $field['type']);
+        }/**
+        elseif (empty($field['notnull'])) {
+            $default = ' DEFAULT NULL';
+        }
+        */
+
+        $notnull  = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
+        $unsigned = (isset($field['unsigned']) && $field['unsigned']) ? ' UNSIGNED' : '';
+
+        $name = $this->conn->quoteIdentifier($name, true);
+        return $name . ' ' . $this->getNativeDeclaration($field) . $unsigned . $default . $notnull . $autoinc;
     }
     /**
      * lists all databases

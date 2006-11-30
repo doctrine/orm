@@ -58,9 +58,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     private $query;
     /**
-     * @var Doctrine_Connection $connection             Doctrine_Connection object that created this table
+     * @var Doctrine_Connection $conn                   Doctrine_Connection object that created this table
      */
-    private $connection;
+    private $conn;
     /**
      * @var string $name
      */
@@ -145,9 +145,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return void
      */
     public function __construct($name, Doctrine_Connection $conn) {
-        $this->connection = $conn;
+        $this->conn = $conn;
 
-        $this->setParent($this->connection);
+        $this->setParent($this->conn);
 
         $this->options['name'] = $name;
 
@@ -242,8 +242,18 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                  if($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
                     if(Doctrine_DataDict::isValidClassname($class->getName())) {
-                        $dict      = new Doctrine_DataDict($this->getConnection()->getDBH());
-                        $dict->createTable($this->options['tableName'], $this->columns);
+                        //$dict      = new Doctrine_DataDict($this->getConnection()->getDBH());
+                        try {
+                            $columns = array();
+                            foreach($this->columns as $name => $column) {
+                                $definition = $column[2];
+                                $definition['type'] = $column[1];
+                                $columns[$name] = $definition;
+                            }
+                            $this->conn->export->createTable($this->options['tableName'], $columns);
+                        } catch(Exception $e) {
+                        
+                        }
                     }
                 }
 
@@ -262,7 +272,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         $this->query     = "SELECT ".implode(", ",array_keys($this->columns))." FROM ".$this->getTableName();
 
         // check if an instance of this table is already initialized
-        if( ! $this->connection->addTable($this))
+        if( ! $this->conn->addTable($this))
             throw new Doctrine_Table_Exception();
             
         $this->repository = new Doctrine_Table_Repository($this);
@@ -598,7 +608,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return Doctrine_Connection
      */
     public function getConnection() {
-        return $this->connection;
+        return $this->conn;
     }
     /**
      * hasRelatedComponent
@@ -641,7 +651,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             $alias      = $name;
             $name       = $this->bound[$alias][3];
 
-            $table      = $this->connection->getTable($name);
+            $table      = $this->conn->getTable($name);
 
             if($component == $this->options['name'] || in_array($component, $this->parents)) {
 
@@ -694,7 +704,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                 if($e2[0] != $component)
                     throw new Doctrine_Table_Exception($e2[0] . ' doesn\'t match ' . $component);
 
-                $associationTable = $this->connection->getTable($e2[0]);
+                $associationTable = $this->conn->getTable($e2[0]);
 
                 if(count($fields) > 1) {
                     // SELF-REFERENCING THROUGH JOIN TABLE
@@ -791,7 +801,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
             $params = array_merge($id, array_values($this->options['inheritanceMap']));
 
-            $stmt  = $this->connection->execute($query,$params);
+            $stmt  = $this->conn->execute($query,$params);
 
             $this->data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -825,7 +835,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return Doctrine_Collection
      */
     public function findAll() {
-        $graph = new Doctrine_Query($this->connection);
+        $graph = new Doctrine_Query($this->conn);
         $users = $graph->query("FROM ".$this->options['name']);
         return $users;
     }
@@ -839,7 +849,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return Doctrine_Collection
      */
     public function findBySql($dql, array $params = array()) {
-        $q = new Doctrine_Query($this->connection);
+        $q = new Doctrine_Query($this->conn);
         $users = $q->query("FROM ".$this->options['name']." WHERE ".$dql, $params);
         return $users;
     }
@@ -901,7 +911,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
             $params = array_merge(array($id), array_values($this->options['inheritanceMap']));
 
-            $this->data = $this->connection->execute($query,$params)->fetch(PDO::FETCH_ASSOC);
+            $this->data = $this->conn->execute($query,$params)->fetch(PDO::FETCH_ASSOC);
 
             if($this->data === false)
                 return false;
@@ -914,7 +924,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return integer
      */
     public function count() {
-        $a = $this->connection->getDBH()->query("SELECT COUNT(1) FROM ".$this->options['tableName'])->fetch(PDO::FETCH_NUM);
+        $a = $this->conn->getDBH()->query("SELECT COUNT(1) FROM ".$this->options['tableName'])->fetch(PDO::FETCH_NUM);
         return current($a);
     }
     /**
@@ -934,12 +944,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     public function execute($query, array $array = array(), $limit = null, $offset = null) {
         $coll  = new Doctrine_Collection($this);
-        $query = $this->connection->modifyLimitQuery($query,$limit,$offset);
+        $query = $this->conn->modifyLimitQuery($query,$limit,$offset);
         if( ! empty($array)) {
-            $stmt = $this->connection->getDBH()->prepare($query);
+            $stmt = $this->conn->getDBH()->prepare($query);
             $stmt->execute($array);
         } else {
-            $stmt = $this->connection->getDBH()->query($query);
+            $stmt = $this->conn->getDBH()->query($query);
         }
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
@@ -1109,7 +1119,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      */
     final public function getMaxIdentifier() {
         $sql  = "SELECT MAX(".$this->getIdentifier().") FROM ".$this->getTableName();
-        $stmt = $this->connection->getDBH()->query($sql);
+        $stmt = $this->conn->getDBH()->query($sql);
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return isset($data[0])?$data[0]:1;
     }

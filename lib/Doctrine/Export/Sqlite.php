@@ -66,22 +66,22 @@ class Doctrine_Export_Sqlite extends Doctrine_Export {
      */
     public function createIndex($table, $name, array $definition) {
         $table = $this->conn->quoteIdentifier($table, true);
-        $name  = $this->dbh->getIndexName($name);
-        $query = "CREATE INDEX $name ON $table";
+        $name  = $this->conn->getIndexName($name);
+        $query = 'CREATE INDEX ' . $name . ' ON ' . $table;
         $fields = array();
-        foreach ($definition['fields'] as $field_name => $field) {
-            $field_string = $field_name;
-            if (!empty($field['sorting'])) {
+        foreach ($definition['fields'] as $fieldName => $field) {
+            $fieldString = $fieldName;
+            if(isset($field['sorting'])) {
                 switch ($field['sorting']) {
                 case 'ascending':
-                    $field_string.= ' ASC';
+                    $fieldString.= ' ASC';
                     break;
                 case 'descending':
-                    $field_string.= ' DESC';
+                    $fieldString.= ' DESC';
                     break;
                 }
             }
-            $fields[] = $field_string;
+            $fields[] = $fieldString;
         }
         $query .= ' ('.implode(', ', $fields) . ')';
         return $this->dbh->exec($query);
