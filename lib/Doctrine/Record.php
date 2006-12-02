@@ -116,7 +116,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private static $null;
     /**
-     * @var integer $oid                    object identifier
+     * @var integer $oid                    object identifier, each Record object has a unique object identifier
      */
     private $oid;
 
