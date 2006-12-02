@@ -134,7 +134,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function __construct($table = null, $isNewEntry = false) {
         if(isset($table) && $table instanceof Doctrine_Table) {
             $this->_table = $table;
-        $exists = !$isNewEntry;
+            $exists = ( ! $isNewEntry);
         } else {
             $this->_table = Doctrine_Manager::getInstance()->getCurrentConnection()->getTable(get_class($this));
             $exists = false;

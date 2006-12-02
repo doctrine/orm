@@ -374,5 +374,17 @@ final class Doctrine {
     public static function classify($tablename) {
         return preg_replace('~(_?)(_)([\w])~e', '"$1".strtoupper("$3")', ucfirst($tablename));
     }
+    /**
+     * checks for valid class name (uses camel case and underscores)
+     *
+     * @param string $classname
+     * @return boolean
+     */
+    public static function isValidClassname($classname) {
+        if(preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname))
+            throw new Doctrine_Exception("Class name is not valid. Use camel case and underscores (i.e My_PerfectClass).");
+
+        return true;
+    }
 }
 ?>
