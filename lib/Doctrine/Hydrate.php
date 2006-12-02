@@ -395,8 +395,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
                     $prev = $this->initRelated($prev, $name);
                         // aggregate values have numeric keys
-
-                        //if(isset($row[0])) {
+                        if(isset($row[0])) {
                             $path    = array_search($name, $this->tableAliases);
                             $alias   = $this->getPathAlias($path);
 
@@ -410,7 +409,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                 $prev[$name]->setAggregateValue($agg, $value);
                             }
 
-                        //}
+                        }
                     continue;
                 }
 
