@@ -14,6 +14,7 @@ class Doctrine_Transaction_Firebird_TestCase extends Doctrine_Driver_UnitTestCas
         $this->assertEqual($this->adapter->pop(), 'RELEASE SAVEPOINT mypoint');
     }
     public function testRollbackSavePointExecutesSql() {
+        $this->transaction->beginTransaction('mypoint');
         $this->transaction->rollback('mypoint');
 
         $this->assertEqual($this->adapter->pop(), 'ROLLBACK TO SAVEPOINT mypoint');

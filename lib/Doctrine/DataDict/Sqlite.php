@@ -60,6 +60,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
             case 'array':
             case 'string':
             case 'char':
+            case 'gzip':
             case 'varchar':
                 $length = (isset($field['length']) && $field['length']) ? $field['length'] : null;
 
@@ -93,19 +94,8 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
                 return 'LONGBLOB';
             case 'enum':
             case 'integer':
-                if (!empty($field['length'])) {
-                    $length = $field['length'];
-                    if ($length <= 2) {
-                        return 'SMALLINT';
-                    } elseif ($length == 3 || $length == 4) {
-                        return 'INTEGER';
-                    } elseif ($length > 4) {
-                        return 'BIGINT';
-                    }
-                }
-                return 'INTEGER';
             case 'boolean':
-                return 'BOOLEAN';
+                return 'INTEGER';
             case 'date':
                 return 'DATE';
             case 'time':
@@ -120,7 +110,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'DECIMAL('.$length.','.$db->options['decimal_places'].')';
         }
-        return '';
+        throw new Doctrine_DataDict_Sqlite_Exception('Unknown datatype ' . $field['type']);
     }
     /**
      * Maps a native array description of a field to Doctrine datatype and length
@@ -262,13 +252,16 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
      */
     public function getIntegerDeclaration($name, array $field) {
         $default = $autoinc = '';
+        $type    = $this->getNativeDeclaration($field);
+
         if(isset($field['autoincrement']) && $field['autoincrement']) {
             $autoinc = ' PRIMARY KEY AUTOINCREMENT';
-        } elseif (array_key_exists('default', $field)) {
+            $type    = 'INTEGER';
+        } elseif(array_key_exists('default', $field)) {
             if ($field['default'] === '') {
                 $field['default'] = empty($field['notnull']) ? null : 0;
             }
-            $default = ' DEFAULT '.$this->conn->quote($field['default'], $field['type']);
+            $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
         }/**
         elseif (empty($field['notnull'])) {
             $default = ' DEFAULT NULL';
@@ -279,7 +272,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_Connection_Module {
         $unsigned = (isset($field['unsigned']) && $field['unsigned']) ? ' UNSIGNED' : '';
 
         $name = $this->conn->quoteIdentifier($name, true);
-        return $name . ' ' . $this->getNativeDeclaration($field) . $unsigned . $default . $notnull . $autoinc;
+        return $name . ' ' . $type . $unsigned . $default . $notnull . $autoinc;
     }
     /**
      * lists all databases

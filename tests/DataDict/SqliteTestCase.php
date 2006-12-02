@@ -38,7 +38,7 @@ class Doctrine_DataDict_Sqlite_TestCase extends Doctrine_Driver_UnitTestCase {
     public function testGetNativeDefinitionSupportsIntegerType() {
         $a = array('type' => 'integer', 'length' => 20, 'fixed' => false);
 
-        $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'BIGINT');
+        $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'INTEGER');
 
         $a['length'] = 4;
 
@@ -46,7 +46,7 @@ class Doctrine_DataDict_Sqlite_TestCase extends Doctrine_Driver_UnitTestCase {
 
         $a['length'] = 2;
 
-        $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'SMALLINT');
+        $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'INTEGER');
     }
 
     public function testGetNativeDefinitionSupportsFloatType() {
@@ -57,7 +57,7 @@ class Doctrine_DataDict_Sqlite_TestCase extends Doctrine_Driver_UnitTestCase {
     public function testGetNativeDefinitionSupportsBooleanType() {
         $a = array('type' => 'boolean', 'fixed' => false);
 
-        $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'BOOLEAN');
+        $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'INTEGER');
     }
     public function testGetNativeDefinitionSupportsDateType() {
         $a = array('type' => 'date', 'fixed' => false);

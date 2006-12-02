@@ -34,7 +34,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /**
      * @var $dbh                                the database handler
      */
-    private $dbh;
+    protected $dbh;
     /**
      * @var array $tables                       an array containing all the initialized Doctrine_Table objects
      *                                          keys representing Doctrine_Table component names and values as Doctrine_Table objects
@@ -76,7 +76,20 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /** 
      * @var array $properties               an array of connection properties
      */
-    protected $properties = array();
+    protected $properties = array('sql_comments'        => array(array('start' => '--', 'end' => "\n", 'escape' => false),
+                                                                 array('start' => '/*', 'end' => '*/', 'escape' => false)
+                                                                 ),
+                                  'identifier_quoting'  => array('start' => '"', 
+                                                                 'end' => '"', 
+                                                                 'escape' => '"'
+                                                                 ),
+                                  'string_quoting'      => array('start' => "'",
+                                                                 'end' => "'",
+                                                                 'escape' => false,
+                                                                 'escape_pattern' => false
+                                                                 ),
+                                  'wildcards'           => array('%', '_')
+                                  );
     /**
      * @var array $availibleDrivers         an array containing all availible drivers
      */
@@ -254,15 +267,24 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
     /**
      * quote
+     * quotes given input parameter
      * 
-     * @param mixed $input
+     * @param mixed $input      parameter to be quoted
      * @param string $type
      * @return mixed
      */
     public function quote($input, $type = null) {
+        if($type == null) {
+            $type = gettype($input);
+        }
         switch($type) {
             case 'integer':
+            case 'enum':
+            case 'boolean':
                 return $input;
+            case 'array':
+            case 'object':
+                $input = serialize($input);
             case 'string':
             case 'char':
             case 'varchar':
@@ -270,8 +292,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             case 'gzip':
             case 'blob':
             case 'clob':
-            case 'array':
-            case 'object':
                 return $this->dbh->quote($input);
         }
     }

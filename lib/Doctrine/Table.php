@@ -247,12 +247,20 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                             $columns = array();
                             foreach($this->columns as $name => $column) {
                                 $definition = $column[2];
-                                $definition['type'] = $column[1];
+                                $definition['type'] = $column[0];
+                                $definition['length'] = $column[1];
+                                
+                                if($definition['type'] == 'enum' && isset($definition['default']))
+                                    $definition['default'] = $this->enumIndex($name, $definition['default']);
+
+                                if($definition['type'] == 'boolean' && isset($definition['default']))
+                                    $definition['default'] = (int) $definition['default'];
+
                                 $columns[$name] = $definition;
                             }
                             $this->conn->export->createTable($this->options['tableName'], $columns);
                         } catch(Exception $e) {
-                        
+
                         }
                     }
                 }

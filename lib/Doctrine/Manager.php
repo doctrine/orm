@@ -139,9 +139,12 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * connection
      * a short cut for Doctrine_Manager::getInstance()->openConnection($dbh);
      *
+     * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
+     * @param string $name                              name of the connection, if empty numeric key is used
+     * @throws Doctrine_Manager_Exception               if trying to bind a connection with an existing name
      * @return Doctrine_Connection
      */
-    public static function connection(PDO $dbh) {
+    public static function connection($adapter, $name = null) {
         return Doctrine_Manager::getInstance()->openConnection($dbh);
     }
     /**

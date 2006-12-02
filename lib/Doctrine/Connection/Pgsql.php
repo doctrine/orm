@@ -65,6 +65,14 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
                           'pattern_escaping'        => true,
                           );
 
+        $this->properties['string_quoting'] = array('start' => "'", 
+                                                    'end' => "'", 
+                                                    'escape' => "'",
+                                                    'escape_pattern' => '\\');
+
+        $this->properties['identifier_quoting'] = array('start' => '"',
+                                                        'end' => '"',
+                                                        'escape' => '"');
         parent::__construct($manager, $adapter);
     }
     /**
@@ -92,10 +100,9 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
      * Returns the current id of a sequence
      *
      * @param string $seq_name name of the sequence
-     * @return mixed MDB2 Error Object or id
-     * @access public
+     * @return integer
      */
-    function currId($sequence) {
+    public function currId($sequence) {
         $stmt = $this->dbh->query('SELECT last_value FROM '.$sequence);
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return $data[0];

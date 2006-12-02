@@ -200,16 +200,12 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
         if($this->transactionLevel == 0)
             return false;
 
-        $this->transactionLevel--;
-
         if ( ! is_null($savepoint)) {
             $this->transactionLevel = $this->removeSavePoints($savepoint);
 
             $this->releaseSavePoint($savepoint);
-        } else {
-
-    
-            if($this->transactionLevel == 0) {
+        } else {        
+            if($this->transactionLevel == 1) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionCommit($this->conn);
                 
 
@@ -237,6 +233,9 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this->conn);
             }
         }
+        
+        $this->transactionLevel--;
+
         return true;
     }
     /**

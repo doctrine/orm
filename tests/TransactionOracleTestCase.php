@@ -12,6 +12,7 @@ class Doctrine_Transaction_Oracle_TestCase extends Doctrine_Driver_UnitTestCase 
         $this->assertEqual($this->transaction->commit('mypoint'), true);
     }
     public function testRollbackSavePointExecutesSql() {
+        $this->transaction->beginTransaction('mypoint');
         $this->transaction->rollback('mypoint');
 
         $this->assertEqual($this->adapter->pop(), 'ROLLBACK TO SAVEPOINT mypoint');

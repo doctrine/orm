@@ -44,7 +44,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      */
     public function __construct(Doctrine_Manager $manager, $adapter) {
         $adapter->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-        
+
         $this->setAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE, 'INNODB');
 
         $this->supported = array(

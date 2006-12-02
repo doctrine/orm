@@ -63,19 +63,19 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
 
 
-        if($this->manager->count() > 0) {
-            $this->connection = $this->manager->getConnection(0);
+        try {
+            $this->connection = $this->manager->getConnection('main');
             $this->connection->evictTables();
             $this->dbh      = $this->connection->getDBH();
             $this->listener = $this->manager->getAttribute(Doctrine::ATTR_LISTENER);
 
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
-        } else {
+        } catch(Doctrine_Manager_Exception $e) {
             //$this->dbh     = Doctrine_Db::getConnection();
             $this->dbh       = Doctrine_Db::getConnection("sqlite::memory:");
             //$this->dbh      = new PDO("sqlite::memory:");
 
-            $this->connection  = $this->manager->openConnection($this->dbh);
+            $this->connection  = $this->manager->openConnection($this->dbh, 'main');
 
             $this->listener = new Doctrine_EventListener_Debugger();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
@@ -87,6 +87,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->prepareData();
 
         $this->valueHolder = new Doctrine_ValueHolder($this->connection->getTable('User'));
+
     }
     public function prepareTables() {
         foreach($this->tables as $name) {

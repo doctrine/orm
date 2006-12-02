@@ -84,6 +84,6 @@ class Doctrine_Export_Sqlite extends Doctrine_Export {
             $fields[] = $fieldString;
         }
         $query .= ' ('.implode(', ', $fields) . ')';
-        return $this->dbh->exec($query);
+        return $this->conn->getDbh()->exec($query);
     }
 }

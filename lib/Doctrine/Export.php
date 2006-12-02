@@ -140,6 +140,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
 
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+
         return $this->conn->getDbh()->exec($query);
     }
     /**
@@ -234,6 +235,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
             $fields[] = $this->conn->quoteIdentifier($field);
         }
         $query .= ' ('. implode(', ', $fields) . ')';
+
 
         return $this->conn->getDbh()->query($query);
     }
@@ -400,7 +402,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
                 $field['default'] = empty($field['notnull'])
                     ? null : $this->valid_default_values[$field['type']];
                 if ($field['default'] === ''
-                    && ($db->options['portability'] & Doctrine::PORTABILITY_EMPTY_TO_NULL)
+                    && ($conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
                 ) {
                     $field['default'] = ' ';
                 }

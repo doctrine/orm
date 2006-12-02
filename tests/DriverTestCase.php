@@ -23,6 +23,9 @@ class AdapterMock implements Doctrine_Adapter_Interface {
         
         return new AdapterStatementMock;
     }
+    public function getAll() {
+        return $this->queries;
+    }
     public function quote($input) {
         return "'" . addslashes($input) . "'";
     }

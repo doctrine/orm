@@ -104,6 +104,7 @@ require_once('ExportMysqlTestCase.php');
 require_once('ExportFirebirdTestCase.php');
 require_once('ExportPgsqlTestCase.php');
 require_once('ExportOracleTestCase.php');
+require_once('ExportSqliteTestCase.php');
 
 require_once('TransactionTestCase.php');
 require_once('TransactionMysqlTestCase.php');
@@ -122,7 +123,16 @@ print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
- /**
+/**
+$test->addTestCase(new Doctrine_Export_Sqlite_TestCase());
+
+foreach($drivers as $driver) {
+    $class = 'Doctrine_DataDict_' . $driver . '_TestCase';
+
+    $test->addTestCase(new $class());
+}
+
+
 $test->addTestCase(new Doctrine_Connection_Mysql_TestCase());
 
 $test->addTestCase(new Doctrine_Export_Mysql_TestCase());
@@ -133,16 +143,9 @@ $test->addTestCase(new Doctrine_Export_Pgsql_TestCase());
 
 $test->addTestCase(new Doctrine_Export_Firebird_TestCase());
 
-foreach($drivers as $driver) {
-    $class = 'Doctrine_DataDict_' . $driver . '_TestCase'; 
-    
-    $test->addTestCase(new $class());
-}
-
-
 
 $test->addTestCase(new Doctrine_Configurable_TestCase());
-
+*/
 
 
 
@@ -159,9 +162,16 @@ $test->addTestCase(new Doctrine_Transaction_Firebird_TestCase());
 
 $test->addTestCase(new Doctrine_Transaction_Sqlite_TestCase());
 
-$test->addTestCase(new Doctrine_Transaction_Mssql_TestCase());  */
+$test->addTestCase(new Doctrine_Transaction_Mssql_TestCase());
 
-$test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
+
+//$test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
+
+$test->addTestCase(new Doctrine_BooleanTestCase());
+
+$test->addTestCase(new Doctrine_TableTestCase());
+
+$test->addTestCase(new Doctrine_ValidatorTestCase());
 
 $test->addTestCase(new Doctrine_UnitOfWork_TestCase());
 
@@ -185,15 +195,12 @@ $test->addTestCase(new Doctrine_Record_State_TestCase());
 
 $test->addTestCase(new Doctrine_SchemaTestCase());
 
-$test->addTestCase(new Doctrine_ValidatorTestCase());
 
 $test->addTestCase(new Doctrine_EventListenerTestCase());
 
 $test->addTestCase(new Doctrine_Connection_Transaction_TestCase());
 
 $test->addTestCase(new Doctrine_AccessTestCase());
-
-$test->addTestCase(new Doctrine_TableTestCase());
 
 $test->addTestCase(new Doctrine_ManagerTestCase());
 
@@ -224,7 +231,6 @@ $test->addTestCase(new Doctrine_RelationAccessTestCase());
 
 $test->addTestCase(new Doctrine_CustomResultSetOrderTestCase());
 
-$test->addTestCase(new Doctrine_BooleanTestCase());
 
 //$test->addTestCase(new Doctrine_Record_Filter_TestCase());
 
