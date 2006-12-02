@@ -35,11 +35,11 @@
  */
 class Doctrine_Locking_Manager_Pessimistic {
     /**
-     * The datasource that is used by the locking manager
+     * The conn that is used by the locking manager
      *
      * @var Doctrine_Connection object
      */
-    private $_dataSource;
+    private $conn;
     /**
      * The database table name for the lock tracking
      */
@@ -51,21 +51,38 @@ class Doctrine_Locking_Manager_Pessimistic {
      * When the CREATE_TABLES attribute of the connection on which the manager
      * is supposed to work on is set to true, the locking table is created.
      *
-     * @param Doctrine_Connection $dataSource The database connection to use
+     * @param Doctrine_Connection $conn The database connection to use
      */
-    public function __construct(Doctrine_Connection $dataSource) {
-        $this->_dataSource = $dataSource;
-        
-        if ($this->_dataSource->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true) {
+    public function __construct(Doctrine_Connection $conn) {
+        $this->conn = $conn;
+
+        if ($this->conn->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true) {
             $columns = array();
-            $columns['object_type']        = array('string',  50, array('notnull' => true, 'primary' => true));
-            $columns['object_key']         = array('string', 250, array('notnull' => true, 'primary' => true));
-            $columns['user_ident']         = array('string',  50, array('notnull' => true));
-            $columns['timestamp_obtained'] = array('integer', 10, array('notnull' => true));
+            $columns['object_type']        = array('type'    => 'string',
+                                                   'length'  => 50,
+                                                   'notnull' => true,
+                                                   'primary' => true);
+
+            $columns['object_key']         = array('type'    => 'string',
+                                                   'length'  => 250,
+                                                   'notnull' => true,
+                                                   'primary' => true);
+
+            $columns['user_ident']         = array('type'    => 'string',  
+                                                   'length'  => 50, 
+                                                   'notnull' => true);
+
+            $columns['timestamp_obtained'] = array('type'    => 'integer', 
+                                                   'length'  => 10, 
+                                                   'notnull' => true);
             
-            $dataDict = new Doctrine_DataDict($this->_dataSource->getDBH());
-            $dataDict->createTable($this->_lockTable, $columns);
-        }        
+            $options = array('primary' => array('object_type', 'object_key'));
+            try {
+                $this->conn->export->createTable($this->_lockTable, $columns, $options);
+            } catch(Exception $e) {
+
+            }
+        }
     }
 
     /**
@@ -89,7 +106,7 @@ class Doctrine_Locking_Manager_Pessimistic {
         }
         
         try {
-            $dbh = $this->_dataSource->getDBH();
+            $dbh = $this->conn->getDBH();
             $dbh->beginTransaction();
             
             $stmt = $dbh->prepare("INSERT INTO $this->_lockTable
@@ -152,7 +169,7 @@ class Doctrine_Locking_Manager_Pessimistic {
         }
         
         try {
-            $dbh = $this->_dataSource->getDBH();
+            $dbh = $this->conn->getDbh();
             $stmt = $dbh->prepare("DELETE FROM $this->_lockTable WHERE
                                         object_type = :object_type AND
                                         object_key  = :object_key  AND
@@ -185,7 +202,7 @@ class Doctrine_Locking_Manager_Pessimistic {
         }
         
         try {
-            $dbh = $this->_dataSource->getDBH();
+            $dbh = $this->conn->getDbh();
             $stmt = $dbh->prepare("SELECT user_ident
                                    FROM $this->_lockTable
                                    WHERE object_type = :object_type AND object_key = :object_key");
@@ -233,20 +250,20 @@ class Doctrine_Locking_Manager_Pessimistic {
         $age = time() - $age;
         
         try {
-            $dbh = $this->_dataSource->getDBH(); 
-            $stmt = $dbh->prepare("DELETE FROM $this->_lockTable WHERE timestamp_obtained < :age"); 
-            $stmt->bindParam(':age', $age); 
-            $query = "DELETE FROM $this->_lockTable WHERE timestamp_obtained < :age"; 
-            if ($objectType) { 
-                $query .= " AND object_type = :object_type"; 
+            $dbh = $this->conn->getDbh();
+            $stmt = $dbh->prepare('DELETE FROM ' . $this->_lockTable . ' WHERE timestamp_obtained < :age');
+            $stmt->bindParam(':age', $age);
+            $query = 'DELETE FROM ' . $this->_lockTable . ' WHERE timestamp_obtained < :age';
+            if ($objectType) {
+                $query .= ' AND object_type = :object_type';
             }
-            if ($userIdent) { 
-                $query .= " AND user_ident = :user_ident"; 
-            } 
-            $stmt = $dbh->prepare($query); 
-            $stmt->bindParam(':age', $age); 
-            if ($objectType) { 
-                $stmt->bindParam(':object_type', $objectType); 
+            if ($userIdent) {
+                $query .= ' AND user_ident = :user_ident';
+            }
+            $stmt = $dbh->prepare($query);
+            $stmt->bindParam(':age', $age);
+            if ($objectType) {
+                $stmt->bindParam(':object_type', $objectType);
             }
             if ($userIdent) {
                 $stmt->bindParam(':user_ident', $userIdent); 

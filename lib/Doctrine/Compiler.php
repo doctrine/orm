@@ -36,7 +36,6 @@ class Doctrine_Compiler {
      */
     private static $classes = array(
                          'Access',
-                         'Adapter_Exception',
                          'Adapter_Interface',
                          'Doctrine',
                          'Configurable',
@@ -45,7 +44,6 @@ class Doctrine_Compiler {
                          'Connection',
                          'Connection_Exception',
                          'Connection_UnitOfWork',
-                         'Connection_Transaction',
                          'DB',
                          'DB_Exception',
                          'DB_EventListener',

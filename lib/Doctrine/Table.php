@@ -775,7 +775,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @return string
      */
     final public function getTableName() {
-        return $this->options['tableName'];
+        return $this->conn->quoteIdentifier($this->options['tableName']);
     }
     /**
      * create
