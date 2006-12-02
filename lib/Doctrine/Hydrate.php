@@ -405,7 +405,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                                 $agg = false;
 
                                 if(isset($this->pendingAggregates[$alias][$index]))
-                                    $agg = $this->pendingAggregates[$alias][$index][0];
+                                    $agg = $this->pendingAggregates[$alias][$index][3];
 
                                 $prev[$name]->setAggregateValue($agg, $value);
                             }
