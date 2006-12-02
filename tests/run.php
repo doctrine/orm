@@ -123,7 +123,7 @@ print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
-/**
+ /**
 $test->addTestCase(new Doctrine_Export_Sqlite_TestCase());
 
 foreach($drivers as $driver) {
@@ -131,6 +131,7 @@ foreach($drivers as $driver) {
 
     $test->addTestCase(new $class());
 }
+
 
 
 $test->addTestCase(new Doctrine_Connection_Mysql_TestCase());
@@ -145,9 +146,8 @@ $test->addTestCase(new Doctrine_Export_Firebird_TestCase());
 
 
 $test->addTestCase(new Doctrine_Configurable_TestCase());
-*/
 
-
+ */
 
 
 $test->addTestCase(new Doctrine_Transaction_TestCase());
@@ -164,8 +164,9 @@ $test->addTestCase(new Doctrine_Transaction_Sqlite_TestCase());
 
 $test->addTestCase(new Doctrine_Transaction_Mssql_TestCase());
 
+$test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
 
-//$test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
+$test->addTestCase(new Doctrine_PessimisticLockingTestCase());
 
 $test->addTestCase(new Doctrine_BooleanTestCase());
 
@@ -208,7 +209,6 @@ $test->addTestCase(new Doctrine_BatchIteratorTestCase());
 
 //$test->addTestCase(new Doctrine_Collection_Offset_TestCase());
 
-$test->addTestCase(new Doctrine_PessimisticLockingTestCase());
 
 $test->addTestCase(new Doctrine_ViewTestCase());
 

@@ -105,7 +105,7 @@ class Doctrine_Driver_UnitTestCase extends UnitTestCase {
                 $this->transaction = new $tx($this->conn);
             if(class_exists($dataDict)) {
                 $this->dataDict = new $dataDict($this->conn);
-            }
+            } 
             //$this->dataDict = $this->conn->dataDict;
         } else {
             $this->export   = new Doctrine_Export($this->conn);
