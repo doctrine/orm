@@ -201,6 +201,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $repository = $this->_table->getRepository();
             $repository->add($this);
         }
+        $this->construct();
     }
     /**
      * initNullObject
@@ -225,6 +226,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     public function setUp() { }
+    /**
+     * construct
+     * Empty tempalte method to provide concrete Record classes with the possibility
+     * to hook into the constructor procedure
+     *
+     * @return void
+     */
+    public function construct() { }
     /**
      * getOID
      * returns the object identifier
