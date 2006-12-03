@@ -579,6 +579,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $k          = array_keys($this->tables);
         $table      = $this->tables[$k[0]];
 
+        // get short alias
         $alias      = $this->aliasHandler->getShortAlias($table->getTableName());
         $primaryKey = $alias . '.' . $table->getIdentifier();
 
@@ -597,7 +598,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             }
         }
 
-        $subquery .= ' FROM ' . $table->getTableName() . ' ' . $alias;
+        $subquery .= ' FROM ' . $this->conn->quoteIdentifier($table->getTableName()) . ' ' . $alias;
 
         foreach($this->parts['join'] as $parts) {
             foreach($parts as $part) {
