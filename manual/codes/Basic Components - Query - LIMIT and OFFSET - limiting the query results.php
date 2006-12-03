@@ -1,11 +1,13 @@
 <?php
 
-// find the first ten users and their emails
+// find the first ten users and associated emails
 
-$coll = $conn->query("FROM User, User.Email LIMIT 10");
+$q = new Doctrine_Query();
+
+$coll = $q->from('User u LEFT JOIN u.Email e')->limit(10);
 
 // find the first ten users starting from the user number 5
 
-$coll = $conn->query("FROM User LIMIT 10 OFFSET 5");
+$coll = $q->from('User u')->limit(10)->offset(5);
 
 ?>

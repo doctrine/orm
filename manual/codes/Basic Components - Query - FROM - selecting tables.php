@@ -5,7 +5,7 @@ $coll = $q->from("FROM Group");
 
 // find all users and user emails
 
-$coll = $q->from("FROM User.Email");
+$coll = $q->from("FROM User u LEFT JOIN u.Email e");
 
 // find all users and user emails with only user name and
 // age + email address loaded
