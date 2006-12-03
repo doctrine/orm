@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Hydrate');
 /**
  * Doctrine_Query
  *
@@ -457,7 +458,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     public function getQueryBase() {
         switch($this->type) {
             case self::DELETE:
-                if($this->connection->getName() == 'mysql')
+                if($this->conn->getName() == 'mysql')
                     $q = 'DELETE '.end($this->tableAliases).' FROM ';
                 else
                     $q = 'DELETE FROM ';
@@ -501,15 +502,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         if($this->isDistinct())
             $str = 'DISTINCT ';
 
-        $q = 'SELECT '.$str.implode(", ",$this->parts["select"]).
-             ' FROM ';
         $q = $this->getQueryBase();
 
         $q .= $this->parts['from'];
 
         if( ! empty($this->parts['join'])) {
             foreach($this->parts['join'] as $part) {
-                $q .= " ".implode(' ', $part);
+                $q .= ' '.implode(' ', $part);
             }
         }
 
@@ -527,10 +526,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $subquery = $this->getLimitSubquery();
 
 
-                switch(strtolower($this->connection->getName())) {
+                switch(strtolower($this->conn->getName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
-                        $list     = $this->connection->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
+                        $list     = $this->conn->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
                         $subquery = implode(', ', $list);
                     break;
                     case 'pgsql':
@@ -555,7 +554,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(' ', $this->parts['orderby']):'';
 
         if($modifyLimit)
-            $q = $this->connection->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
+            $q = $this->conn->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
 
         // return to the previous state
         if( ! empty($string))
@@ -586,7 +585,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         // initialize the base of the subquery
         $subquery   = 'SELECT DISTINCT ' . $primaryKey;
 
-        if($this->connection->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'pgsql') {
+        if($this->conn->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'pgsql') {
             // pgsql needs the order by fields to be preserved in select clause
 
             foreach($this->parts['orderby'] as $part) {
@@ -623,7 +622,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $subquery .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(' ', $this->parts['orderby']):'';
 
         // add driver specific limit clause
-        $subquery = $this->connection->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
+        $subquery = $this->conn->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
 
         $parts = self::quoteExplode($subquery, ' ', "'", "'");
 
@@ -1059,7 +1058,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 if($key == 0) {
                     $currPath = substr($currPath,1);
 
-                    $table = $this->connection->getTable($name);
+                    $table = $this->conn->getTable($name);
 
 
                     $tname = $this->aliasHandler->getShortAlias($table->getTableName());
@@ -1068,7 +1067,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                         $this->tableIndexes[$tname] = 1;
 
 
-                    $this->parts["from"]           = $table->getTableName() . ' ' . $tname;
+                    $this->parts["from"]           = $this->conn->quoteIdentifier($table->getTableName()) . ' ' . $tname;
 
                     $this->tableAliases[$currPath] = $tname;
 
@@ -1097,7 +1096,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     } else
                         $tname2 = $this->aliasHandler->generateShortAlias($original);
 
-                    $aliasString = $original . ' ' . $tname2;
+                    $aliasString = $this->conn->quoteIdentifier($original) . ' ' . $tname2;
 
                     switch($mark) {
                         case ':':
@@ -1113,7 +1112,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     if( ! $fk->isOneToOne()) {
                        $this->needsSubquery = true;
                     }
-                    
+
                     if( ! $loadFields || $fk->getTable()->usesInheritanceMap()) {
                         $this->subqueryAliases[] = $tname2;
                     }
@@ -1126,16 +1125,17 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                         if( ! $loadFields) {
                             $this->subqueryAliases[] = $assocTableName;
                         }
-                        $this->parts["join"][$tname][$assocTableName] = $join.$assocTableName . ' ON ' .$tname  . '.' 
+                        $this->parts["join"][$tname][$assocTableName] = $join . $assocTableName . ' ON ' . $tname  . '.'
                                                                       . $table->getIdentifier() . ' = '
                                                                       . $assocTableName . '.' . $fk->getLocal();
 
-                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString    . ' ON ' .$tname2 . '.'
+                        $this->parts["join"][$tname][$tname2]         = $join . $aliasString    . ' ON ' . $tname2 . '.'
                                                                       . $table->getIdentifier() . ' = '
                                                                       . $assocTableName . '.' . $fk->getForeign();
 
                     } else {
-                        $this->parts["join"][$tname][$tname2]         = $join.$aliasString    . ' ON ' .$tname .  '.'
+                        $this->parts["join"][$tname][$tname2]         = $join . $aliasString
+                                                                      . ' ON ' . $tname .  '.'
                                                                       . $fk->getLocal() . ' = ' . $tname2 . '.' . $fk->getForeign();
                     }
 
@@ -1160,8 +1160,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     $this->tables[$tableName] = $table;
 
                     if($loadFields) {
-                        
+
                         $skip = false;
+
+                        if( ! empty($this->pendingFields))
+                            $skip = true;
+
                         if($componentAlias) {
                             $this->compAliases[$componentAlias] = $currPath;
 
@@ -1174,6 +1178,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                                 $skip = true;
                             }
                         }
+
                         if( ! $skip)
                             $this->parseFields($fullname, $tableName, $e2, $currPath);
                     }

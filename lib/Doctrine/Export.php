@@ -223,10 +223,44 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *                                            'last_login' => array()
      *                                        )
      *                                    )
-     * @throws PDOException
      * @return void
      */
     public function createIndex($table, $name, array $definition) {
+        return $this->conn->getDbh()->query($this->createIndexSql($table, $name, $definition));
+    }
+    /**
+     * Get the stucture of a field into an array
+     *
+     *
+     * @param string    $table         name of the table on which the index is to be created
+     * @param string    $name          name of the index to be created
+     * @param array     $definition    associative array that defines properties of the index to be created.
+     *                                 Currently, only one property named FIELDS is supported. This property
+     *                                 is also an associative with the names of the index fields as array
+     *                                 indexes. Each entry of this array is set to another type of associative
+     *                                 array that specifies properties of the index that are specific to
+     *                                 each field.
+     *
+     *                                 Currently, only the sorting property is supported. It should be used
+     *                                 to define the sorting direction of the index. It may be set to either
+     *                                 ascending or descending.
+     *
+     *                                 Not all DBMS support index sorting direction configuration. The DBMS
+     *                                 drivers of those that do not support it ignore this property. Use the
+     *                                 function supports() to determine whether the DBMS driver can manage indexes.
+     *
+     *                                 Example
+     *                                    array(
+     *                                        'fields' => array(
+     *                                            'user_name' => array(
+     *                                                'sorting' => 'ascending'
+     *                                            ),
+     *                                            'last_login' => array()
+     *                                        )
+     *                                    )
+     * @return string
+     */
+    public function createIndexSql($table, $name, array $definition) {
         $table  = $this->conn->quoteIdentifier($table);
         $name   = $this->conn->quoteIdentifier($name);
 
@@ -237,10 +271,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         }
         $query .= ' ('. implode(', ', $fields) . ')';
 
-
-        return $this->conn->getDbh()->query($query);
+        return $query;
     }
-
     /**
      * alter an existing table
      * (this method is implemented by the drivers)
@@ -331,6 +363,98 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return void
      */
     public function alterTable($name, array $changes, $check) {
+        $this->conn->getDbh()->query($this->alterTableSql($name, $changes, $check));
+    }
+    /**
+     * alter an existing table
+     * (this method is implemented by the drivers)
+     *
+     * @param string $name         name of the table that is intended to be changed.
+     * @param array $changes     associative array that contains the details of each type
+     *                             of change that is intended to be performed. The types of
+     *                             changes that are currently supported are defined as follows:
+     *
+     *                             name
+     *
+     *                                New name for the table.
+     *
+     *                            add
+     *
+     *                                Associative array with the names of fields to be added as
+     *                                 indexes of the array. The value of each entry of the array
+     *                                 should be set to another associative array with the properties
+     *                                 of the fields to be added. The properties of the fields should
+     *                                 be the same as defined by the MDB2 parser.
+     *
+     *
+     *                            remove
+     *
+     *                                Associative array with the names of fields to be removed as indexes
+     *                                 of the array. Currently the values assigned to each entry are ignored.
+     *                                 An empty array should be used for future compatibility.
+     *
+     *                            rename
+     *
+     *                                Associative array with the names of fields to be renamed as indexes
+     *                                 of the array. The value of each entry of the array should be set to
+     *                                 another associative array with the entry named name with the new
+     *                                 field name and the entry named Declaration that is expected to contain
+     *                                 the portion of the field declaration already in DBMS specific SQL code
+     *                                 as it is used in the CREATE TABLE statement.
+     *
+     *                            change
+     *
+     *                                Associative array with the names of the fields to be changed as indexes
+     *                                 of the array. Keep in mind that if it is intended to change either the
+     *                                 name of a field and any other properties, the change array entries
+     *                                 should have the new names of the fields as array indexes.
+     *
+     *                                The value of each entry of the array should be set to another associative
+     *                                 array with the properties of the fields to that are meant to be changed as
+     *                                 array entries. These entries should be assigned to the new values of the
+     *                                 respective properties. The properties of the fields should be the same
+     *                                 as defined by the MDB2 parser.
+     *
+     *                            Example
+     *                                array(
+     *                                    'name' => 'userlist',
+     *                                    'add' => array(
+     *                                        'quota' => array(
+     *                                            'type' => 'integer',
+     *                                            'unsigned' => 1
+     *                                        )
+     *                                    ),
+     *                                    'remove' => array(
+     *                                        'file_limit' => array(),
+     *                                        'time_limit' => array()
+     *                                    ),
+     *                                    'change' => array(
+     *                                        'name' => array(
+     *                                            'length' => '20',
+     *                                            'definition' => array(
+     *                                                'type' => 'text',
+     *                                                'length' => 20,
+     *                                            ),
+     *                                        )
+     *                                    ),
+     *                                    'rename' => array(
+     *                                        'sex' => array(
+     *                                            'name' => 'gender',
+     *                                            'definition' => array(
+     *                                                'type' => 'text',
+     *                                                'length' => 1,
+     *                                                'default' => 'M',
+     *                                            ),
+     *                                        )
+     *                                    )
+     *                                )
+     *
+     * @param boolean $check     indicates whether the function should just check if the DBMS driver
+     *                             can perform the requested table alterations if the value is true or
+     *                             actually perform them otherwise.
+     * @return string
+     */
+    public function alterTableSql($name, array $changes, $check) {
         throw new Doctrine_Export_Exception('Alter table not supported by this driver.');
     }
     /**

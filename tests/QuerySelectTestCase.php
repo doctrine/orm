@@ -17,7 +17,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($q->getQuery(), 'SELECT COUNT(e.id) AS e__0 FROM entity e WHERE (e.type = 0)');
     }
 
-    public function testMultipleAggregateFunctions() {
+    public function testSelectPartSupportsMultipleAggregateFunctions() {
         $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT MAX(u.id), MIN(u.name) FROM User u');

@@ -43,6 +43,7 @@ require_once('QuerySelectTestCase.php');
 require_once('QueryShortAliasesTestCase.php');
 require_once('QueryDeleteTestCase.php');
 require_once('QueryUpdateTestCase.php');
+require_once('QueryIdentifierQuotingTestCase.php');
 
 require_once('UnitOfWorkTestCase.php');
 
@@ -146,8 +147,8 @@ $test->addTestCase(new Doctrine_Export_Firebird_TestCase());
 
 
 $test->addTestCase(new Doctrine_Configurable_TestCase());
+          */
 
- */
 
 
 $test->addTestCase(new Doctrine_Transaction_TestCase());
@@ -258,6 +259,7 @@ $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Select_TestCase());
 
+$test->addTestCase(new Doctrine_Query_IdentifierQuoting_TestCase());
 
 
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());

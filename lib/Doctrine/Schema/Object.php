@@ -20,16 +20,9 @@
  */
 Doctrine::autoload('Doctrine_Access');
 /**
- * @package     Doctrine
- * @url         http://www.phpdoctrine.com
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
- * @author      Konsta Vesterinen
- * @version     $Id$
- */
-/**
  * class Doctrine_Schema_Object
  * Catches any non-property call from child classes and throws an exception.
+ *
  * @package     Doctrine
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
@@ -37,6 +30,7 @@ Doctrine::autoload('Doctrine_Access');
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  */
 abstract class Doctrine_Schema_Object extends Doctrine_Access implements IteratorAggregate, Countable {
 

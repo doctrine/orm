@@ -217,9 +217,9 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
                 $tableName = $table->getAliasName($component);
                 
 
-                $table = $this->connection->getTable($tableName);
+                $table = $this->conn->getTable($tableName);
             } else {
-                $table = $this->connection->getTable($component);
+                $table = $this->conn->getTable($component);
             }
             $this->tables[$alias]           = $table;
             $this->fetchModes[$alias]       = Doctrine::FETCH_IMMEDIATE;

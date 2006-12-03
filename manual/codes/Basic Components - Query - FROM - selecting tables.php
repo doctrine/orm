@@ -1,27 +1,24 @@
 <?php
-
-// find all users
-
-$coll = $conn->query("FROM User");
-
-// find all users with only their names (and primary keys) fetched
-
-$coll = $conn->query("FROM User(name)");
-
 // find all groups
 
-$coll = $conn->query("FROM Group");
+$coll = $q->from("FROM Group");
 
 // find all users and user emails
 
-$coll = $conn->query("FROM User.Email");
+$coll = $q->from("FROM User.Email");
 
-// find all users and user emails with only user name and 
+// find all users and user emails with only user name and
 // age + email address loaded
 
-$coll = $conn->query("FROM User(name, age).Email(address)");
+$coll = $q->select('u.name, u.age, e.address')
+          ->from('FROM User u')
+          ->leftJoin('u.Email e')
+          ->execute();
 
 // find all users, user email and user phonenumbers
 
-$coll = $conn->query("FROM User.Email, User.Phonenumber");
+$coll = $q->from('FROM User u')
+          ->leftJoin('u.Email e')
+          ->leftJoin('u.Phonenumber p')
+          ->execute();
 ?>

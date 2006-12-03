@@ -1,3 +1,18 @@
-DQL FROM -part is used for selecting tables as well as for selecting fields. Related components are selected either
-with colon-operator or dot-operator (See <a href="documentation.php?index=2.8.php">Relation operators</a>). <br \>You can place
-the selected fields in () -brackets (eg. 'FROM User(name, id)'). If you are about to select all fields you can simple use 'FROM User'.
+<?php ?>
+The FROM clause indicates the component or components from which to retrieve records.
+If you name more than one component, you are performing a join.
+For each table specified, you can optionally specify an alias. Doctrine_Query offers easy to use
+methods such as from(), addFrom(), leftJoin() and innerJoin() for managing the FROM part of your DQL query.
+
+<?php
+renderCode("<?php
+// find all users
+\$q = new Doctrine_Query();
+
+\$coll = \$q->from('User')->execute();
+
+// find all users with only their names (and primary keys) fetched
+
+\$coll = \$q->select('u.name')->('User u');
+?>");
+?>

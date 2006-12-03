@@ -74,10 +74,10 @@ class Doctrine_Export_Sqlite extends Doctrine_Export {
             if(isset($field['sorting'])) {
                 switch ($field['sorting']) {
                 case 'ascending':
-                    $fieldString.= ' ASC';
+                    $fieldString .= ' ASC';
                     break;
                 case 'descending':
-                    $fieldString.= ' DESC';
+                    $fieldString .= ' DESC';
                     break;
                 }
             }

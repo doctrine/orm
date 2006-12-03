@@ -1365,6 +1365,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         else
             $this->_table->setOption($name, $value);
     }
+    public function hasIndex($name ) {
+    
+    }
     /**
      * addListener
      *

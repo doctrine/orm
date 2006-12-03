@@ -31,6 +31,45 @@
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  */
 class Doctrine_DataDict extends Doctrine_Connection_Module {
+    /**
+     * Obtain an array of changes that may need to applied
+     *
+     * @param array $current new definition
+     * @param array  $previous old definition
+     * @return array  containing all changes that will need to be applied
+     */
+    public function compareDefinition($current, $previous) {
+        $type = !empty($current['type']) ? $current['type'] : null;
 
+        if (!method_exists($this, "_compare{$type}Definition")) {
+            return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                'type "'.$current['type'].'" is not yet supported', __FUNCTION__);
+        }
+
+        if (empty($previous['type']) || $previous['type'] != $type) {
+            return $current;
+        }
+
+        $change = $this->{"_compare{$type}Definition"}($current, $previous);
+
+        if ($previous['type'] != $type) {
+            $change['type'] = true;
+        }
+
+        $previous_notnull = !empty($previous['notnull']) ? $previous['notnull'] : false;
+        $notnull = !empty($current['notnull']) ? $current['notnull'] : false;
+        if ($previous_notnull != $notnull) {
+            $change['notnull'] = true;
+        }
+
+        $previous_default = array_key_exists('default', $previous) ? $previous['default'] :
+            ($previous_notnull ? '' : null);
+        $default = array_key_exists('default', $current) ? $current['default'] :
+            ($notnull ? '' : null);
+        if ($previous_default !== $default) {
+            $change['default'] = true;
+        }
+
+        return $change;
+    }
 }
-

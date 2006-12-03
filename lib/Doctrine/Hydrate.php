@@ -55,9 +55,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      */
     protected $params      = array();
     /**
-     * @var Doctrine_Connection $connection     Doctrine_Connection object
+     * @var Doctrine_Connection $conn           Doctrine_Connection object
      */
-    protected $connection;
+    protected $conn;
     /**
      * @var Doctrine_View $view                 Doctrine_View object
      */
@@ -115,7 +115,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         if( ! ($connection instanceof Doctrine_Connection))
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
 
-        $this->connection = $connection;
+        $this->conn = $connection;
         $this->aliasHandler = new Doctrine_Hydrate_Alias();
     }
     /**
@@ -240,7 +240,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @return Doctrine_Connection
      */
     public function getConnection() {
-        return $this->connection;
+        return $this->conn;
     }
     /**
      * setView
@@ -340,10 +340,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             $query = $this->view->getSelectSql();
 
         if($this->isLimitSubqueryUsed() && 
-           $this->connection->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) !== 'mysql')
+           $this->conn->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) !== 'mysql')
             $params = array_merge($params, $params);
 
-        $stmt  = $this->connection->execute($query, $params);
+        $stmt  = $this->conn->execute($query, $params);
 
         if($this->aggregate)
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
