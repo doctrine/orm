@@ -27,7 +27,7 @@ include("top.php");
 <li \>Database connection pooling with connection-record -registry
 <li \>Runtime configuration (no XML needed!)
 <li \>Very modular structure (only uses the needed features)
-<li \>The whole framework can be compiled into a single file
+<li \>The runtime components can be compiled into a single file
 <li \>Leveled configuration (attributes can be set at global, connection and table levels)
 </ul>
 <br \>
@@ -54,7 +54,7 @@ include("top.php");
 <li \>LIMIT / OFFSET emulation
 </ul>
 <br \>
-<b class='title'>OBJECT RELATIONAL MAPPING</b>:
+<b class='title'>OBJECT RELATIONAL MAPPING</b>
 <ul>
     <b class='title'>General features</b>
     <li \>Validators

@@ -33,8 +33,9 @@ font-family: Verdana, Arial, Helvetica;
 }
 
 table.dashed {
-border-style: solid;
+border-style: dashed;
 border-color: 116699;
+border-shadow: none;
 border-width: 1 px;
 }
 b.title {

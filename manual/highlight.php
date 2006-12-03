@@ -113,12 +113,22 @@ class PHP_Highlight
         // Inline
         if ($inline === false) {
             // Default colours from php.ini
+            /**
             $this->highlight = array(
                 'string'    => ini_get('highlight.string'),
                 'comment'   => ini_get('highlight.comment'),
                 'keyword'   => ini_get('highlight.keyword'),
                 'bg'        => ini_get('highlight.bg'),
                 'default'   => ini_get('highlight.default'),
+                'html'      => ini_get('highlight.html')
+            );
+            */
+            $this->highlight = array(
+                'string'    => "#cb0864",
+                'comment'   => "#888888",
+                'keyword'   => "#118994",
+                'bg'        => "#222222",
+                'default'   => "#000000",
                 'html'      => ini_get('highlight.html')
             );
             $this->span = '<span style="color: %s;">%s</span>';

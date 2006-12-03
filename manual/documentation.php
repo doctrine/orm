@@ -67,10 +67,10 @@ function renderCode($c = null) {
         $h->loadString($c);
 
         print "<table width=500 border=1 class='dashed' cellpadding=0 cellspacing=0>";
-        print "<tr><td>";
+        print "<tr><td><b>";
 
         $h->toHtml();
-        print "</td></tr>";
+        print "</b></td></tr>";
         print "</table>";
     }
 }
@@ -116,10 +116,12 @@ $menu = array("Getting started" =>
                                         "Composite",
                                         "Sequential")
                         ),
-           /**
+
            "Schema reference" =>
                         array(
                         "Data types" => array(
+                                        "Introduction",
+                                        "Type modifiers",
                                         "Boolean",
                                         "Integer",
                                         "Float",
@@ -129,13 +131,13 @@ $menu = array("Getting started" =>
                                         "Blob",
                                         "Clob",
                                         "Timestamp",
+                                        "Time",
                                         "Date",
                                         "Enum",
                                         "Gzip",
                         ),
 
                         ),
-           */
            "Basic Components" =>
                         array(
                         "Manager"
@@ -248,6 +250,8 @@ $menu = array("Getting started" =>
                         "Introduction",
                         "Levels of configuration",
                         "Setting attributes"    => array(
+                            "Portability",
+                            "Identifier quoting",
                             "Table creation",
                             "Fetching strategy",
                             "Batch size",
