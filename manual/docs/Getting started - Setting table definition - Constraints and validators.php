@@ -59,6 +59,39 @@ Following attributes are availible for columns
     </tr>
     <tr>
         <td class='title' valign='top'>
+            <b>zerofill</b>
+        </td>
+        <td class='title' valign='top'>
+            boolean zerofill
+        </td>
+        <td class='title' valign='top'>
+            Defines column as zerofilled column. Only supported by some drivers.
+        </td>
+    </tr>
+    <tr>
+        <td class='title' valign='top'>
+            <b>unsigned</b>
+        </td>
+        <td class='title' valign='top'>
+            boolean true
+        </td>
+        <td class='title' valign='top'>
+            Defines column with integer type as unsigned. Only supported by some drivers.
+        </td>
+    </tr>
+    <tr>
+        <td class='title' valign='top'>
+            <b>fixed</b>
+        </td>
+        <td class='title' valign='top'>
+            boolean true
+        </td>
+        <td class='title' valign='top'>
+            Defines string typed column as fixed length.
+        </td>
+    </tr>
+    <tr>
+        <td class='title' valign='top'>
             <b>enum</b>
         </td>
         <td class='title' valign='top'>
