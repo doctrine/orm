@@ -222,7 +222,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      *                           actually perform them otherwise.
      * @return boolean
      */
-    public function alterTable($name, $changes, $check) {
+    public function alterTable($name, array $changes, $check) {
         if( ! $name)
             throw new Doctrine_Export_Mysql_Exception('no valid table name specified');
 

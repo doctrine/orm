@@ -152,7 +152,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @param string    $start          start value of the sequence; default is 1
      * @return void
      */
-    public function createSequence($seqName, $start = 1) {
+    public function createSequence($seqName, $seqcolName, $start = 1) {
         throw new Doctrine_Export_Exception('Create sequence not supported by this driver.');
     }
 
