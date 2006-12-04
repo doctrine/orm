@@ -126,7 +126,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *
      * @return void
      */
-    public function createTable($name, array $fields, $options = array()) {
+    public function createTable($name, array $fields, array $options = array()) {
         if ( ! $name)
             throw new Doctrine_Export_Exception('no valid table name specified');
 
