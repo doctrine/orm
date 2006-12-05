@@ -37,10 +37,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     private $connections   = array();
     /**
-     * @var array $dataSourceNames an array containing all available data source names
-     */
-    private $dataSourceNames = array();
-    /**
      * @var integer $index          the incremented index
      */
     private $index      = 0;
@@ -213,26 +209,24 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @throws Doctrine_Manager_Exception   if trying to get a non-existent connection
      */
     public function getConnection($name) {   
-        if (!isset($this->connections[$name])) {
-            if (isset($this->dataSourceNames[$name])) {
-                $conn = Doctrine_Db::getConnection($this->dataSourceNames[$name]); // Establishes the connection
-                $this->openConnection($conn, $name);
-            } else {
-                throw new Doctrine_Manager_Exception("Unknown connection: $name");
-            }
-        }
+        if( ! isset($this->connections[$name]))
+            throw new Doctrine_Manager_Exception('Unknown connection: ' . $name);
+
         $this->currIndex = $name;
         return $this->connections[$name];
     }
-    
     /**
-     * Adds the dsn of a connection to the list of available data source names.
+     * bindComponent
+     * binds given component to given connection
+     * this means that when ever the given component uses a connection
+     * it will be using the bound connection instead of the current connection
      *
-     * @param string $dsn
-     * @param string $name
+     * @param string $componentName
+     * @param string $connectionName
+     * @return boolean
      */
-    public function addDSN($dsn, $name) {
-        $this->dataSourceNames[$name] = $dsn;
+    public function bindComponent($componentName, $connectionName) {
+
     }
     /**
      * closes the connection
