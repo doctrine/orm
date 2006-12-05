@@ -1059,6 +1059,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 if($key == 0) {
                     $currPath = substr($currPath,1);
 
+                    $this->conn = Doctrine_Manager::getInstance()
+                                  ->getConnectionForComponent($name);
+
                     $table = $this->conn->getTable($name);
 
 

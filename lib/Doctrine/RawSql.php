@@ -161,20 +161,20 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
             }
         }
 
-        $q = "SELECT ".implode(', ', $this->parts['select']);
+        $q = 'SELECT '.implode(', ', $this->parts['select']);
 
         $string = $this->applyInheritance();
         if( ! empty($string))
-            $this->parts["where"][] = $string;
+            $this->parts['where'][] = $string;
 
         $copy = $this->parts;
         unset($copy['select']);
 
-        $q .= ( ! empty($this->parts['from']))?" FROM ".implode(" ",$this->parts["from"]):'';
-        $q .= ( ! empty($this->parts['where']))?" WHERE ".implode(" AND ",$this->parts["where"]):'';
-        $q .= ( ! empty($this->parts['groupby']))?" GROUP BY ".implode(", ",$this->parts["groupby"]):'';
-        $q .= ( ! empty($this->parts['having']))?" HAVING ".implode(" ",$this->parts["having"]):'';
-        $q .= ( ! empty($this->parts['orderby']))?" ORDER BY ".implode(" ",$this->parts["orderby"]):'';
+        $q .= ( ! empty($this->parts['from']))?    ' FROM '     . implode(' ', $this->parts['from']) : '';
+        $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']) : '';
+        $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']) : '';
+        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' ', $this->parts['having']) : '';
+        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(' ', $this->parts['orderby']) : '';
 
         if( ! empty($string))
             array_pop($this->parts['where']);
@@ -212,7 +212,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
             else
                 $alias = $tableAlias;
 
-            if ($table) {
+            if($table) {
 
                 $tableName = $table->getAliasName($component);
                 

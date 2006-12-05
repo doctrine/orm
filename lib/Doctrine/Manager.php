@@ -243,7 +243,19 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             return $this->getConnection($this->bound[$componentName]);
 
         return $this->getCurrentConnection();
-    }  
+    }
+    /** 
+     * getTable
+     * this is the same as Doctrine_Connection::getTable() except
+     * that it works seamlessly in multi-server/connection environment
+     *
+     * @see Doctrine_Connection::getTable()
+     * @param string $componentName
+     * @return Doctrine_Table
+     */
+    public function getTable($componentName) {
+        return $this->getConnectionForComponent($componentName)->getTable($componentName);
+    }
     /**
      * closes the connection
      *
