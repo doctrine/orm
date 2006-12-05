@@ -37,6 +37,10 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     private $connections   = array();
     /**
+     * @var array $bound            an array containing all components that have a bound connection
+     */
+    private $bound          = array();
+    /**
      * @var integer $index          the incremented index
      */
     private $index      = 0;
@@ -47,7 +51,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     /**
      * @var string $root            root directory
      */
-    private $root; 
+    private $root;
     /**
      * @var Doctrine_Null $null     Doctrine_Null object, used for extremely fast null value checking
      */
@@ -226,8 +230,20 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return boolean
      */
     public function bindComponent($componentName, $connectionName) {
-
+        $this->bound[$componentName] = $connectionName;
     }
+    /**
+     * getConnectionForComponent
+     *
+     * @param string $componentName
+     * @return Doctrine_Connection
+     */
+    public function getConnectionForComponent($componentName = null) {
+        if(isset($this->bound[$componentName]))
+            return $this->getConnection($this->bound[$componentName]);
+
+        return $this->getCurrentConnection();
+    }  
     /**
      * closes the connection
      *
