@@ -89,6 +89,17 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         parent::__construct($manager, $adapter);
     }
     /**
+     * Set the charset on the current connection
+     *
+     * @param string    charset
+     *
+     * @return void
+     */
+    public function setCharset($charset) {
+        $query = 'SET NAMES '.$this->dbh->quote($charset);
+        $this->dbh->query($query);
+    }
+    /**
      * Returns the next free id of a sequence
      *
      * @param string $seq_name name of the sequence

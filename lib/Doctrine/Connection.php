@@ -450,13 +450,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * Set the charset on the current connection
      *
      * @param string    charset
-     * @param resource  connection handle
      *
-     * @throws Doctrine_Connection_Exception            if the feature is not supported by the driver
-     * @return true on success, MDB2 Error Object on failure
+     * @return void
      */
     public function setCharset($charset) {
-        throw new Doctrine_Connection_Exception('Altering charset not supported by this driver.');
     }
     /**
      * fetchAll
