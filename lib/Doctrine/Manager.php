@@ -137,7 +137,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * connection
-     * a short cut for Doctrine_Manager::getInstance()->openConnection($dbh);
+     * a short cut for Doctrine_Manager::getInstance()->openConnection($adapter, $name);
      *
      * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
      * @param string $name                              name of the connection, if empty numeric key is used
@@ -145,7 +145,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return Doctrine_Connection
      */
     public static function connection($adapter, $name = null) {
-        return Doctrine_Manager::getInstance()->openConnection($dbh);
+        return Doctrine_Manager::getInstance()->openConnection($adapter, $name);
     }
     /**
      * openConnection
