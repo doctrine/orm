@@ -144,8 +144,12 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @throws Doctrine_Manager_Exception               if trying to bind a connection with an existing name
      * @return Doctrine_Connection
      */
-    public static function connection($adapter, $name = null) {
-        return Doctrine_Manager::getInstance()->openConnection($adapter, $name);
+    public static function connection($adapter = null, $name = null) {
+        if($adapter == null) {
+            return Doctrine_Manager::getInstance()->getCurrentConnection();
+        } else {
+            return Doctrine_Manager::getInstance()->openConnection($adapter, $name);
+        }
     }
     /**
      * openConnection
