@@ -199,6 +199,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             case "informix":
                 $this->connections[$name] = new Doctrine_Connection_Informix($this, $adapter);
             break;
+            case "mock":
+                $this->connections[$name] = new Doctrine_Connection_Mock($this, $adapter);
+			break;            
             default:
                 throw new Doctrine_Manager_Exception('Unknown connection driver '. $adapter->getAttribute(PDO::ATTR_DRIVER_NAME));
         endswitch;
