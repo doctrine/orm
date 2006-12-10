@@ -86,6 +86,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
                 }
                 return 'IMAGE';
             case 'integer':
+            case 'enum':
                 return 'INT';
             case 'boolean':
                 return 'BIT';

@@ -97,6 +97,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
                 }
                 return 'LONGBLOB';
             case 'integer':
+            case 'enum':
                 if (!empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 1) {

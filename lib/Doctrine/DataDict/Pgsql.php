@@ -374,6 +374,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
                 return 'TEXT';
             case 'blob':
                 return 'BYTEA';
+            case 'enum':
             case 'integer':
                 if (!empty($field['autoincrement'])) {
                     if (!empty($field['length'])) {

@@ -72,6 +72,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict {
             case 'blob':
                 return 'BLOB SUB_TYPE 0';
             case 'integer':
+            case 'enum':
                 return 'INT';
             case 'boolean':
                 return 'SMALLINT';

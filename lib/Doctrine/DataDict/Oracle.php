@@ -69,6 +69,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
             case 'blob':
                 return 'BLOB';
             case 'integer':
+            case 'enum':
                 if (!empty($field['length'])) {
                     return 'NUMBER('.$field['length'].')';
                 }
