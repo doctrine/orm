@@ -197,6 +197,10 @@ final class Doctrine {
      */
     
     /**
+     * constant for no accessors
+     */
+    const ACCESSOR_NONE         = 0;
+    /**
      * constant for get accessors
      */
     const ACCESSOR_GET          = 1;
@@ -207,7 +211,7 @@ final class Doctrine {
     /**
      * constant for both accessors get and set
      */
-    const ACCESSOR_BOTH         = 4;
+    const ACCESSOR_BOTH         = 3;
     
     /**
      * PORTABILITY CONSTANTS
