@@ -116,13 +116,13 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
             // is there an offset?
             if (! $offset) {
                 // no offset, it's a simple TOP count
-                return $select . ' TOP ' . $count . substr($query, $length);
+                return $select . ' TOP ' . $limit . substr($query, $length);
             }
 
             // the total of the count **and** the offset, combined.
             // this will be used in the "internal" portion of the
             // hacked-up statement.
-            $total = $count + $offset;
+            $total = $limit + $offset;
 
             // build the "real" order for the external portion.
             $order = implode(',', $parts['order']);
@@ -135,13 +135,13 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
 
             // create a main statement that replaces the SELECT
             // with a SELECT TOP
-            $main = "\n$select TOP $total" . substr($query, $length) . "\n";
+            $main = $select . ' TOP ' . $total . substr($query, $length);
 
             // build the hacked-up statement.
             // do we really need the "as" aliases here?
-            $query = "SELECT * FROM ("
-                 . "SELECT TOP $count * FROM ($main) AS select_limit_rev ORDER BY $reverse"
-                 . ") AS select_limit ORDER BY $order";
+            $query = 'SELECT * FROM ('
+                   . 'SELECT TOP ' . $count . ' * FROM (' . $main . ') AS select_limit_rev ORDER BY '. $reverse
+                   . ') AS select_limit ORDER BY ' . $order;
 
         }
 
