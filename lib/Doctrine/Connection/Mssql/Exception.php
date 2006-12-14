@@ -31,4 +31,42 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  */
-class Doctrine_Connection_Mssql_Exception extends Doctrine_Connection_Exception { }
+class Doctrine_Connection_Mssql_Exception extends Doctrine_Connection_Exception { 
+    /**
+     * @var array $errorCodeMap         an array that is used for determining portable
+     *                                  error code from a native database error code
+     */
+    protected static $errorCodeMap = array(
+                                      110   => Doctrine::ERR_VALUE_COUNT_ON_ROW,
+                                      155   => Doctrine::ERR_NOSUCHFIELD,
+                                      170   => Doctrine::ERR_SYNTAX,
+                                      207   => Doctrine::ERR_NOSUCHFIELD,
+                                      208   => Doctrine::ERR_NOSUCHTABLE,
+                                      245   => Doctrine::ERR_INVALID_NUMBER,
+                                      515   => Doctrine::ERR_CONSTRAINT_NOT_NULL,
+                                      547   => Doctrine::ERR_CONSTRAINT,
+                                      1913  => Doctrine::ERR_ALREADY_EXISTS,
+                                      2627  => Doctrine::ERR_CONSTRAINT,
+                                      2714  => Doctrine::ERR_ALREADY_EXISTS,
+                                      3701  => Doctrine::ERR_NOSUCHTABLE,
+                                      8134  => Doctrine::ERR_DIVZERO,
+                                      );
+    /**
+     * This method checks if native error code/message can be 
+     * converted into a portable code and then adds this 
+     * portable error code to errorInfo array and returns the modified array
+     *
+     * the portable error code is added at the end of array
+     *
+     * @param array $errorInfo      error info array
+     * @since 1.0
+     * @return array
+     */
+    public function processErrorInfo(array $errorInfo) {
+        $code = $errorInfo[1];
+        if(isset(self::$errorCodeMap[$code]))
+            $errorInfo[3] = self::$errorCodeMap[$code];
+            
+        return $errorInfo;
+    }
+}
