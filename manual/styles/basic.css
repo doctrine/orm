@@ -3,7 +3,9 @@ margin:10px auto 0px auto;
 font-family: Verdana, Arial, Helvetica;
 text-decoration: none;
 }
-
+input.big {
+width: 400;
+}
 hr {
 color: A50A3D;
 }
@@ -37,6 +39,15 @@ border-style: dashed;
 border-color: 116699;
 border-shadow: none;
 border-width: 1 px;
+}
+table.error {
+border-style: dashed;
+border-color: red;
+border-shadow: none;
+border-width: 1 px;
+cellpadding: 0;
+cellspacing: 0;
+border-height: 1 px;
 }
 b.title {
 color: #A50A3D;

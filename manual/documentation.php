@@ -106,7 +106,6 @@ $menu = array("Getting started" =>
                                         "Constraints and validators",
                                         "Default values",
                                         "Enum emulation",
-
                                         ),
 
                         "Record identifiers" => array(
@@ -116,7 +115,13 @@ $menu = array("Getting started" =>
                                         "Composite",
                                         "Sequential")
                         ),
-
+           "Connection management" =>
+                        array(
+                        "Opening a new connection",
+                        "Lazy-connecting to database",
+                        "Managing connections",
+                        "Connection-component binding"
+                        ),
            "Schema reference" =>
                         array(
                         "Data types" => array(
@@ -136,6 +141,36 @@ $menu = array("Getting started" =>
                                         "Enum",
                                         "Gzip",
                         ),
+                        "Column attributes" => array(
+                                        "Introduction",
+                                        "Primary",
+                                        "Autoincrement",
+                                        "Default",
+                                        "Zerofill",
+                                        "Collation",
+                                        "Charset",
+                                        "Unsigned",
+                                        "Fixed",
+                                        "Enum",
+                                        "Unique",
+                                        "Nospace",
+                                        "Notblank",
+                                        "Notnull",
+                                        "Email",
+                                        "Date",
+                                        "Range",
+                                        "Numeric",
+                                        "Regexp",
+                                        "Ip",
+                                        "Usstate",
+                                        ),
+
+                        "Identifiers" => array(
+                                        "Introduction",
+                                        "Autoincremented",
+                                        "Natural",
+                                        "Composite",
+                                        "Sequential")
 
                         ),
            "Basic Components" =>
@@ -440,6 +475,21 @@ $menu = array("Getting started" =>
                             
                             ),
             */
+            "Connection modules" => array(
+                            "Export" => array("Introduction",
+                                              "Creating new table",
+                                              "Altering table"
+                                              ),
+                            "Import"    => array("Introduction",
+                                                 "Getting table info",
+                                                 "Getting foreign key info",
+                                                 "Getting view info",
+                                                ),
+                            "Util"      => array("Using explain"),
+                            "DataDict"  => array("Getting portable type",
+                                                "Getting database declaration",
+                                                "Reserved keywords"),
+                            ),
             "Technology" => array(
                 "Architecture",
                 "Design patterns used",
