@@ -320,7 +320,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
 
 
-        $method = "parse".ucwords($name);
+        $method = 'parse' . ucwords($name);
 
         switch($name) {
             case 'select':
@@ -399,48 +399,19 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         return $this->parts[$name];
     }
     /**
-     * sets a query part
+     * set
+     * sets a query SET part
+     * this method should only be used with UPDATE queries
      *
-     * @param $name         query part name
-     * @param $value        query part value
-     * @return boolean
+     * @param $name             name of the field
+     * @param $value            field value
+     * @return Doctrine_Query
      */
     public function set($name, $value) {
-                                       	/**
-
-        if(isset($this->parts[$name])) {
-            $method = "parse".ucwords($name);
-            switch($name):
-                case "where":
-                case "having":
-                    $this->parts[$name] = array($this->$method($value));
-                break;
-                case "limit":
-                case "offset":
-                    if($value == null)
-                        $value = false;
-
-                    $this->parts[$name] = $value;
-                break;
-                case "from":
-                    $this->parts['select']  = array();
-                    $this->parts['join']    = array();
-                    $this->joins            = array();
-                    $this->tables           = array();
-                    $this->fetchModes       = array();
-                    $this->tableIndexes     = array();
-                    $this->tableAliases     = array();
-                default:
-                    $this->parts[$name] = array();
-                    $this->$method($value);
-            endswitch;
-            
-            return true;
-        }
-        return false;
-        */
         $class = new Doctrine_Query_Set($this);
-        $class->parse($name, $value);
+        $this->parts['set'][] = $class->parse($name . ' = ' . $value);
+
+        return $this;
     }
     /**
      * @return boolean
@@ -510,6 +481,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             foreach($this->parts['join'] as $part) {
                 $q .= ' '.implode(' ', $part);
             }
+        }
+
+        if( ! empty($this->parts['set'])) {
+            $q .= ' SET ' . implode(', ', $this->parts['set']);
         }
 
         $string = $this->applyInheritance();
@@ -745,8 +720,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             $this->clear();
         
         $query = trim($query);
-        $query = str_replace("\n"," ",$query);
-        $query = str_replace("\r"," ",$query);
+        $query = str_replace("\n", ' ', $query);
+        $query = str_replace("\r", ' ', $query);
 
         $parts = $this->splitQuery($query);
 
@@ -756,7 +731,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 case 'DELETE':
                     $this->type = self::DELETE;
                 break;
-
                 case 'SELECT':
                     $this->type = self::SELECT;
                     $this->parseSelect($part);
@@ -766,27 +740,31 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     $k = 'FROM';
 
                 case 'FROM':
-                case 'SET':
-                    $class  = 'Doctrine_Query_'.ucwords(strtolower($k));
+                    $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
                     $parser = new $class($this);
                     $parser->parse($part);
                 break;
+                case 'SET':
+                    $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
+                    $parser = new $class($this);
+                    $this->parts['set'][] = $parser->parse($part);
+                break;
                 case 'GROUP':
                 case 'ORDER':
-                    $k .= "by";
+                    $k .= 'by';
                 case 'WHERE':
                 case 'HAVING':
-                    $class  = "Doctrine_Query_".ucwords(strtolower($k));
+                    $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
                     $parser = new $class($this);
 
                     $name = strtolower($k);
                     $this->parts[$name][] = $parser->parse($part);
                 break;
                 case 'LIMIT':
-                    $this->parts["limit"] = trim($part);
+                    $this->parts['limit'] = trim($part);
                 break;
                 case 'OFFSET':
-                    $this->parts["offset"] = trim($part);
+                    $this->parts['offset'] = trim($part);
                 break;
             }
         }

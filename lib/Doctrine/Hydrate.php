@@ -96,15 +96,16 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @var array $parts            SQL query string parts
      */
     protected $parts = array(
-        "select"    => array(),
-        "from"      => array(),
-        "join"      => array(),
-        "where"     => array(),
-        "groupby"   => array(),
-        "having"    => array(),
-        "orderby"   => array(),
-        "limit"     => false,
-        "offset"    => false,
+        'select'    => array(),
+        'from'      => array(),
+        'set'       => array(),
+        'join'      => array(),
+        'where'     => array(),
+        'groupby'   => array(),
+        'having'    => array(),
+        'orderby'   => array(),
+        'limit'     => false,
+        'offset'    => false,
         );
     /**
      * constructor

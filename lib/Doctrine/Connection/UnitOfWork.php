@@ -276,7 +276,10 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
         $params = array_merge($params, $id);
 
 
-        $sql  = "UPDATE ".$record->getTable()->getTableName()." SET ".implode(", ",$set)." WHERE ".implode(" = ? AND ",$record->getTable()->getPrimaryKeys())." = ?";
+        $sql  = 'UPDATE ' . $record->getTable()->getTableName() 
+              . ' SET ' . implode(', ', $set) 
+              . ' WHERE ' . implode(' = ? AND ', $record->getTable()->getPrimaryKeys()) 
+              . ' = ?';
 
         $stmt = $this->conn->getDBH()->prepare($sql);
         $stmt->execute($params);

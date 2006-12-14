@@ -1370,6 +1370,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function hasIndex($name ) {
     
     }
+    public function actsAsTree($treeImplName, $args) {
+
+    }
     /**
      * addListener
      *

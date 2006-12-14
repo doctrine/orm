@@ -585,8 +585,11 @@ class Doctrine_Export extends Doctrine_Connection_Module {
     }
     /**
      * export
+     * method for exporting Doctrine_Record classes to a schema
+     *
+     * @return void
      */
-    public function export() {
+    public static function export() {
         $parent = new ReflectionClass('Doctrine_Record');
         $conn   = Doctrine_Manager::getInstance()->getCurrentConnection();
         $old    = $conn->getAttribute(Doctrine::ATTR_CREATE_TABLES);

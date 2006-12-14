@@ -137,7 +137,12 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * connection
+     * 
+     * if the adapter parameter is set this method acts as
      * a short cut for Doctrine_Manager::getInstance()->openConnection($adapter, $name);
+     *
+     * if the adapter paramater is not set this method acts as 
+     * a short cut for Doctrine_Manager::getInstance()->getCurrentConnection()
      *
      * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
      * @param string $name                              name of the connection, if empty numeric key is used
@@ -150,7 +155,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         } else {
             return Doctrine_Manager::getInstance()->openConnection($adapter, $name);
         }
-    }
+    } 
     /**
      * openConnection
      * opens a new connection and saves it to Doctrine_Manager->connections

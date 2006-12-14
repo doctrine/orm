@@ -31,7 +31,23 @@
  */
 class Doctrine_Query_Set extends Doctrine_Query_Part {
     public function parse($dql) {
-        $e = Doctrine_Query::sqlExplode($dql, '=');
+        $parts = Doctrine_Query::sqlExplode($dql, ',');
+
+        $result = array();
+        foreach($parts as $part) {
+            $set = Doctrine_Query::sqlExplode($part, '=');
+
+            $e   = explode('.', trim($set[0]));
+            $field = array_pop($e);
+
+            $reference = implode('.', $e);
+
+            $alias     = $this->query->getTableAlias($reference);
+            
+            $result[]  = $alias . '.' . $field . ' = ' . $set[1];
+        }
+
+        return implode(', ', $result);
     }
 }
 ?>

@@ -314,7 +314,7 @@ final class Doctrine {
      * @param string $directory
      */
     public static function import($directory) {
-
+        Doctrine_Import::import();
     }
     /**
      * export
@@ -323,7 +323,7 @@ final class Doctrine {
      * @param string $directory
      */
     public static function export($directory) {
-                                              	
+        Doctrine_Export::export();
     }                                          	
     /**
      * compile

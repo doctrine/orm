@@ -37,7 +37,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
             $value     = implode('', $slice);
             $operator  = trim(substr($where, strlen($r), -strlen($value)));
 
-            $reference = implode(".",$a);
+            $reference = implode('.', $a);
             $count     = count($a);
 
 
@@ -51,7 +51,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
                 $values = Doctrine_Query::sqlExplode($value, ',');
 
                 $field      = array_pop($a);
-                $reference  = implode(".",$a);
+                $reference  = implode('.', $a);
                 $table      = $this->query->load($reference, false);
                 array_pop($a);
                 $reference2 = implode('.', $a);
@@ -189,7 +189,12 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
 
         return $operator . ' ('.$this->query->createSubquery()->parseQuery($sub, false)->getQuery() . ')';
     }
-
+    /**
+     * getOperator
+     *
+     * @param string $func
+     * @return string
+     */
     public function getOperator($func) {
         switch($func) {
             case 'contains':
@@ -206,7 +211,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
     }
 
     public function __toString() {
-        return ( ! empty($this->parts))?implode(" AND ", $this->parts):'';
+        return ( ! empty($this->parts))?implode(' AND ', $this->parts):'';
     }
 }
 
