@@ -1010,8 +1010,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     public function invokeSet(Doctrine_Record $record, $name, $value) {
         if( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) & Doctrine::ACCESSOR_SET))
             return $value;
+        
+        $prefix = $this->getAttribute(Doctrine::ATTR_ACCESSOR_PREFIX_SET);
+        if (!$prefix)
+            $prefix = 'set';
 
-        $method = 'set' . $name;
+        $method = $prefix . $name;
 
         if(method_exists($record, $method)) {
             return $record->$method($value);
@@ -1028,7 +1032,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         if( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) & Doctrine::ACCESSOR_GET))
             return $value;
 
-        $method = 'get' . $name;
+        $prefix = $this->getAttribute(Doctrine::ATTR_ACCESSOR_PREFIX_GET);
+        if (!$prefix)
+            $prefix = 'get';
+
+        $method = $prefix . $name;
 
         if(method_exists($record, $method)) {
             return $record->$method($value);

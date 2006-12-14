@@ -119,6 +119,8 @@ abstract class Doctrine_Configurable {
             case Doctrine::ATTR_QUOTE_IDENTIFIER:
             case Doctrine::ATTR_PORTABILITY:
             case Doctrine::ATTR_DEFAULT_TABLE_TYPE:
+            case Doctrine::ATTR_ACCESSOR_PREFIX_GET:
+            case Doctrine::ATTR_ACCESSOR_PREFIX_SET:
 
             break;
             case Doctrine::ATTR_SEQCOL_NAME:
@@ -203,7 +205,7 @@ abstract class Doctrine_Configurable {
     public function getAttribute($attribute) {
         $attribute = (int) $attribute;
 
-        if($attribute < 1 || $attribute > 21)
+        if($attribute < 1 || $attribute > 23)
             throw new Doctrine_Exception('Unknown attribute.');
 
         if( ! isset($this->attributes[$attribute])) {

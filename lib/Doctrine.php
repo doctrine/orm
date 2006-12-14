@@ -121,6 +121,14 @@ final class Doctrine {
      * accessor invoking attribute
      */
     const ATTR_ACCESSORS        = 18;
+    /**
+     * accessor invoking prefix get
+     */
+    const ATTR_ACCESSOR_PREFIX_GET        = 22;
+    /**
+     * accessor invoking prefix set
+     */
+    const ATTR_ACCESSOR_PREFIX_SET        = 23;
     
     
 
