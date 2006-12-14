@@ -21,7 +21,7 @@ SELECT u.*, p.* FROM User u, u.Phonenumber p
 </pre>
 </div>  
 
-<li \><i>INNER JOIN</i> produces a Cartesian product between two specified components (that is, each and every record in the first component is joined to each and every record in the second component).
+<li \><i>INNER JOIN</i> produces an intersection between two specified components (that is, each and every record in the first component is joined to each and every record in the second component).
 So basically <i>INNER JOIN</i> can be used when you want to efficiently fetch for example all users which have one or more phonenumbers.
 <div class='sql'>
 <pre>
