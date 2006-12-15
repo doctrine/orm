@@ -273,9 +273,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         foreach($names as $name) {
             if($count == 0) {
-                $this->parts["select"][] = $tablename . '.' . $name;
+                $this->parts['select'][] = $tablename . '.' . $name;
             } else {
-                $this->parts["select"][] = $tablename . '.' . $name . ' AS ' . $tablename . '__' . $name;
+                $this->parts['select'][] = $tablename . '.' . $name . ' AS ' . $tablename . '__' . $name;
             }
         }
     }
@@ -285,9 +285,29 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param strint $from
      */
     public function addFrom($from) {
-        $class = "Doctrine_Query_From";
+        $class = 'Doctrine_Query_From';
         $parser = new $class($this);
         $parser->parse($from);
+    }
+    /**
+     * leftJoin
+     *
+     * @param strint $join
+     */
+    public function leftJoin($join) {
+        $class = 'Doctrine_Query_From';
+        $parser = new $class($this);
+        $parser->parse('LEFT JOIN '. $join);
+    }
+    /**
+     * innerJoin
+     *
+     * @param strint $join
+     */
+    public function innerJoin($join) {
+        $class = 'Doctrine_Query_From';
+        $parser = new $class($this);
+        $parser->parse('INNER JOIN '. $join);
     }
     /**
      * addWhere
@@ -296,7 +316,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param mixed $params
      */
     public function addWhere($where, $params = array()) {
-        $class  = "Doctrine_Query_Where";
+        $class  = 'Doctrine_Query_Where';
         $parser = new $class($this);
         $this->parts['where'][] = $parser->parse($where);
 
