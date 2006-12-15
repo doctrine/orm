@@ -1,4 +1,5 @@
 <?php
+/**
 $str = "
 The following examples should give a hint of how DQL is converted into SQL.
 The classes used in here are the same as in chapter 14.1 (Users and groups are both entities etc).
@@ -52,4 +53,5 @@ foreach($e as $line) {
 }
 }
 renderQueries($str);
+*/
 ?>

@@ -18,7 +18,7 @@ $coll = $q->select('u.name, u.age, e.address')
 // find all users, user email and user phonenumbers
 
 $coll = $q->from('FROM User u')
-          ->leftJoin('u.Email e')
-          ->leftJoin('u.Phonenumber p')
+          ->innerJoin('u.Email e')
+          ->innerJoin('u.Phonenumber p')
           ->execute();
 ?>

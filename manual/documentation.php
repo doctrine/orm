@@ -92,261 +92,256 @@ function array2path($array, $path = '') {
 
    return $arrayValues;
 }
-$menu = array("Getting started" =>
+$menu = array('Getting started' =>
                         array(
-                        "Requirements",
-                        "Installation",
-                        "Compiling",
-                        "Starting new project",
-                        "Setting table definition" => array(
-                                        "Introduction",
-                                        "Table and class naming",
-                                        "Field(Column) naming",
-                                        "Data types and lengths",
-                                        "Constraints and validators",
-                                        "Default values",
-                                        "Enum emulation",
+                        'Requirements',
+                        'Installation',
+                        'Compiling',
+                        'Starting new project',
+                        'Setting table definition' => array(
+                                        'Introduction',
+                                        'Table and class naming',
+                                        'Field(Column) naming',
+                                        'Data types and lengths',
+                                        'Constraints and validators',
+                                        'Default values',
+                                        'Enum emulation',
                                         ),
 
-                        "Record identifiers" => array(
-                                        "Introduction",
-                                        "Autoincremented",
-                                        "Natural",
-                                        "Composite",
-                                        "Sequential")
+                        'Record identifiers' => array(
+                                        'Introduction',
+                                        'Autoincremented',
+                                        'Natural',
+                                        'Composite',
+                                        'Sequential')
                         ),
-           "Connection management" =>
+           'Connection management' =>
                         array(
-                        "Opening a new connection",
-                        "Lazy-connecting to database",
-                        "Managing connections",
-                        "Connection-component binding"
+                        'Opening a new connection',
+                        'Lazy-connecting to database',
+                        'Managing connections',
+                        'Connection-component binding'
                         ),
-           "Schema reference" =>
+           'Schema reference' =>
                         array(
-                        "Data types" => array(
-                                        "Introduction",
-                                        "Type modifiers",
-                                        "Boolean",
-                                        "Integer",
-                                        "Float",
-                                        "String",
-                                        "Array",
-                                        "Object",
-                                        "Blob",
-                                        "Clob",
-                                        "Timestamp",
-                                        "Time",
-                                        "Date",
-                                        "Enum",
-                                        "Gzip",
+                        'Data types' => array(
+                                        'Introduction',
+                                        'Type modifiers',
+                                        'Boolean',
+                                        'Integer',
+                                        'Float',
+                                        'String',
+                                        'Array',
+                                        'Object',
+                                        'Blob',
+                                        'Clob',
+                                        'Timestamp',
+                                        'Time',
+                                        'Date',
+                                        'Enum',
+                                        'Gzip',
                         ),
-                        "Column attributes" => array(
-                                        "Introduction",
-                                        "Primary",
-                                        "Autoincrement",
-                                        "Default",
-                                        "Zerofill",
-                                        "Collation",
-                                        "Charset",
-                                        "Unsigned",
-                                        "Fixed",
-                                        "Enum",
-                                        "Unique",
-                                        "Nospace",
-                                        "Notblank",
-                                        "Notnull",
-                                        "Email",
-                                        "Date",
-                                        "Range",
-                                        "Numeric",
-                                        "Regexp",
-                                        "Ip",
-                                        "Usstate",
+                        'Column attributes' => array(
+                                        'Introduction',
+                                        'Primary',
+                                        'Autoincrement',
+                                        'Default',
+                                        'Zerofill',
+                                        'Collation',
+                                        'Charset',
+                                        'Unsigned',
+                                        'Fixed',
+                                        'Enum',
+                                        'Unique',
+                                        'Nospace',
+                                        'Notblank',
+                                        'Notnull',
+                                        'Email',
+                                        'Date',
+                                        'Range',
+                                        'Numeric',
+                                        'Regexp',
+                                        'Ip',
+                                        'Usstate',
                                         ),
 
-                        "Identifiers" => array(
-                                        "Introduction",
-                                        "Autoincremented",
-                                        "Natural",
-                                        "Composite",
-                                        "Sequential")
+                        'Identifiers' => array(
+                                        'Introduction',
+                                        'Autoincremented',
+                                        'Natural',
+                                        'Composite',
+                                        'Sequential')
 
                         ),
-           "Basic Components" =>
+           'Basic Components' =>
                         array(
-                        "Manager"
-                                => array("Introduction",
-                                         "Opening a new connection",
-                                         "Managing connections"),
-                        "Record"
-                                => array("Introduction",
-                                         "Creating new records",
-                                         "Retrieving existing records",
-                                         "Accessing properties",
-                                         "Updating records",
-                                         "Deleting records",
-                                         "Getting record state",
-                                         "Getting object copy",
-                                         "Serializing",
-                                         "Checking Existence",
-                                         "Callbacks"),
-                        "Connection"
-                                => array("Introduction",
-                                         "Available drivers",
-                                         "Getting a table object",
-                                         "Flushing the connection",
-                                         "Querying the database",
-                                         "Getting connection state"),
+                        'Manager'
+                                => array('Introduction',
+                                         'Opening a new connection',
+                                         'Managing connections'),
+                        'Record'
+                                => array('Introduction',
+                                         'Creating new records',
+                                         'Retrieving existing records',
+                                         'Accessing properties',
+                                         'Updating records',
+                                         'Deleting records',
+                                         'Getting record state',
+                                         'Getting object copy',
+                                         'Serializing',
+                                         'Checking Existence',
+                                         'Callbacks'),
+                        'Connection'
+                                => array('Introduction',
+                                         'Available drivers',
+                                         'Getting a table object',
+                                         'Flushing the connection',
+                                         'Querying the database',
+                                         'Getting connection state'),
 
-                        "Collection"
-                                => array("Introduction",
-                                         "Accessing elements",
-                                         "Adding new elements",
-                                         "Getting collection count",
-                                         "Saving the collection",
-                                         "Deleting collection",
-                                         //"Fetching strategies",
-                                         "Key mapping",
-                                         "Loading related records",
-                                         "Collection expanding",
+                        'Collection'
+                                => array('Introduction',
+                                         'Accessing elements',
+                                         'Adding new elements',
+                                         'Getting collection count',
+                                         'Saving the collection',
+                                         'Deleting collection',
+                                         //'Fetching strategies',
+                                         'Key mapping',
+                                         'Loading related records',
+                                         'Collection expanding',
                                          ),
 
-                        "Table" => array("Introduction",
-                                         "Getting table information",
-                                         "Finder methods",
-                                         "Custom table classes",
-                                         "Custom finders",
-                                         "Getting relation objects"),
+                        'Table' => array('Introduction',
+                                         'Getting table information',
+                                         'Finder methods',
+                                         'Custom table classes',
+                                         'Custom finders',
+                                         'Getting relation objects'),
 
-                        "Query" => array("Introduction",
-                                         "FROM - selecting tables",
-                                         "LIMIT and OFFSET - limiting the query results",
-                                         "WHERE - setting query conditions",
-                                         "ORDER BY - sorting query results",
-                                         //"Fetching strategies",
-                                         //"Lazy property fetching",
-                                         "Method overloading",
-                                         "Relation operators",
-                                         "Bound parameters",
-                                         "Aggregate functions",
-                                         "DQL - SQL conversion"),
-                        "RawSql" => array(
-                                         "Introduction",
-                                         "Using SQL",
-                                         "Adding components",
-                                         "Method overloading"),
-                        "Db"     => array(
-                                         "Introduction",
-                                         "Connecting to a database",
-                                         "Using event listeners",
-                                         "Chaining listeners"),
+                        'Query' => array('Introduction',
+                                         'FROM - selecting tables',
+                                         'LIMIT and OFFSET - limiting the query results',
+                                         'WHERE - setting query conditions',
+                                         'HAVING conditions',
+                                         'ORDER BY - sorting query results',
+                                         ),
+                        'RawSql' => array(
+                                         'Introduction',
+                                         'Using SQL',
+                                         'Adding components',
+                                         'Method overloading'),
+                        'Db'     => array(
+                                         'Introduction',
+                                         'Connecting to a database',
+                                         'Using event listeners',
+                                         'Chaining listeners'),
                                          /**
-                        "Statement - <font color='red'>UNDER CONSTRUCTION</font>" => array("Introduction",
-                                             "Setting parameters",
-                                             "Getting parameters",
-                                             "Getting row count",
-                                             "Executing the statement"),
+                        'Statement - <font color='red'>UNDER CONSTRUCTION</font>' => array('Introduction',
+                                             'Setting parameters',
+                                             'Getting parameters',
+                                             'Getting row count',
+                                             'Executing the statement'),
                                             */
-                        "Exceptions" => array(
-                                    "Overview",
-                                    "List of exceptions"
+                        'Exceptions' => array(
+                                    'Overview',
+                                    'List of exceptions'
                                     )
                         ),
-           "Mapping object relations" =>
+           'Mapping object relations' =>
                         array(
-                        "Introduction",
-                        "Composites and aggregates",
-                        "Relation aliases",
-                        "Foreign key associations" => array(
-                                        "One-to-One",
-                                        "One-to-Many, Many-to-One",
-                                        "Tree structure"),
+                        'Introduction',
+                        'Composites and aggregates',
+                        'Relation aliases',
+                        'Foreign key associations' => array(
+                                        'One-to-One',
+                                        'One-to-Many, Many-to-One',
+                                        'Tree structure'),
 
-                        "Join table associations" => array(
-                                        "One-to-One",
-                                        "One-to-Many, Many-to-One",
-                                        "Many-to-Many",
-                                        "Self-referencing"),
-                        "Dealing with relations" => array(
-                                        "Creating related records",
-                                        "Retrieving related records",
-                                        "Updating related records",
-                                        "Deleting related records",
-                                        "Working with associations"),
-                        "Inheritance" =>
-                                        array("One table many classes",
-                                        "One table one class",
-                                        "Column aggregation"
+                        'Join table associations' => array(
+                                        'One-to-One',
+                                        'One-to-Many, Many-to-One',
+                                        'Many-to-Many',
+                                        'Self-referencing'),
+                        'Dealing with relations' => array(
+                                        'Creating related records',
+                                        'Retrieving related records',
+                                        'Updating related records',
+                                        'Deleting related records',
+                                        'Working with associations'),
+                        'Inheritance' =>
+                                        array('One table many classes',
+                                        'One table one class',
+                                        'Column aggregation'
                                         ),
                         ),
-           "Configuration" =>
+           'Configuration' =>
                         array(
-                        "Introduction",
-                        "Levels of configuration",
-                        "Setting attributes"    => array(
-                            "Portability",
-                            "Identifier quoting",
-                            "Table creation",
-                            "Fetching strategy",
-                            "Batch size",
-                            "Session lockmode",
-                            "Event listener",
-                            "Validation",
-                            "Offset collection limit"
+                        'Introduction',
+                        'Levels of configuration',
+                        'Setting attributes'    => array(
+                            'Portability',
+                            'Identifier quoting',
+                            'Table creation',
+                            'Fetching strategy',
+                            'Batch size',
+                            'Session lockmode',
+                            'Event listener',
+                            'Validation',
+                            'Offset collection limit'
                             )
                         ),
 
 
 
-           "Advanced components" => array(
-                      "Eventlisteners" =>
+           'Advanced components' => array(
+                      'Eventlisteners' =>
                                       array(
-                                      "Introduction",
-                                      "Creating new listener",
-                                      "List of events",
-                                      "Listening events",
-                                      "Chaining",
-                                      "AccessorInvoker",
-                                      "Creating a logger",
+                                      'Introduction',
+                                      'Creating new listener',
+                                      'List of events',
+                                      'Listening events',
+                                      'Chaining',
+                                      'AccessorInvoker',
+                                      'Creating a logger',
                                       ),
-                      "Validators" => array(
-                                      "Introduction",
-                                      "More Validation",
-                                      "Valid or Not Valid",
-                                      "List of predefined validators"
+                      'Validators' => array(
+                                      'Introduction',
+                                      'More Validation',
+                                      'Valid or Not Valid',
+                                      'List of predefined validators'
                                       ),
-                      "View"        => array(
-                                      "Intoduction",
-                                      "Managing views",
-                                      "Using views"
+                      'View'        => array(
+                                      'Intoduction',
+                                      'Managing views',
+                                      'Using views'
                                       ),
-                      "Cache"       => array(
-                                      "Introduction",
-                                      "Query cache"),
+                      'Cache'       => array(
+                                      'Introduction',
+                                      'Query cache'),
 
-                      "Locking Manager" => array(
-                                        "Introduction",
-                                        "Examples",
-                                        "Planned",
-                                        "Technical Details",
-                                        "Maintainer"),
+                      'Locking Manager' => array(
+                                        'Introduction',
+                                        'Examples',
+                                        'Planned',
+                                        'Technical Details',
+                                        'Maintainer'),
                       /**
-                      "Debugger" => array(
-                                        "Introduction",
-                                        "Debugging actions"),
-                      "Library" => array(
-                                        "Introduction",
-                                        "Using library functions"),
-                      "Iterator" => array(
-                                        "Introduction",
-                                        "BatchIterator",
-                                        "ExpandableIterator",
-                                        "OffsetIterator")
+                      'Debugger' => array(
+                                        'Introduction',
+                                        'Debugging actions'),
+                      'Library' => array(
+                                        'Introduction',
+                                        'Using library functions'),
+                      'Iterator' => array(
+                                        'Introduction',
+                                        'BatchIterator',
+                                        'ExpandableIterator',
+                                        'OffsetIterator')
                         */
                     ),
 
-           "DQL (Doctrine Query Language)" =>
+           'DQL (Doctrine Query Language)' =>
 
                             array(
                                   'Introduction',
@@ -386,154 +381,154 @@ $menu = array("Getting started" =>
                                   'Examples',
                                   'BNF'),
 
-           "Transactions" => array(
-                        "Introduction",
-                        "Unit of work",
-                        "Nesting",
-                        "Savepoints",
-                        "Locking strategies" =>
-                            array("Pessimistic locking",
-                                  "Optimistic locking"),
+           'Transactions' => array(
+                        'Introduction',
+                        'Unit of work',
+                        'Nesting',
+                        'Savepoints',
+                        'Locking strategies' =>
+                            array('Pessimistic locking',
+                                  'Optimistic locking'),
 
-                        "Lock modes",
-                        "Isolation levels",
-                        "Deadlocks",
+                        'Lock modes',
+                        'Isolation levels',
+                        'Deadlocks',
 
                         ),
-           "Native SQL" => array(
-                        "Scalar queries",
-                        "Component queries",
-                        "Fetching multiple components",
+           'Native SQL' => array(
+                        'Scalar queries',
+                        'Component queries',
+                        'Fetching multiple components',
                         ),
             /**
-            "Developer components" => array(
-                        "DataDict"  => array(
-                                        "Introduction",
-                                        "Usage"
+            'Developer components' => array(
+                        'DataDict'  => array(
+                                        'Introduction',
+                                        'Usage'
                                         ),
-                        "IndexGenerator" =>
+                        'IndexGenerator' =>
                                        array(
-                                        "Introduction",
-                                        "Usage"),
-                        "Relation"  => array(
-                                        "Introduction",
-                                        "Types of relations",
+                                        'Introduction',
+                                        'Usage'),
+                        'Relation'  => array(
+                                        'Introduction',
+                                        'Types of relations',
                                         ),
-                        "Null"      => array(
-                                        "Introduction",
-                                        "Extremely fast null value checking"
+                        'Null'      => array(
+                                        'Introduction',
+                                        'Extremely fast null value checking'
                                         ),
-                        "Access"    => array(
-                                        "Introduction",
-                                        "Usage"
+                        'Access'    => array(
+                                        'Introduction',
+                                        'Usage'
                                         ),
-                        "Configurable" => array(
-                                        "Introduction",
-                                        "Usage"
+                        'Configurable' => array(
+                                        'Introduction',
+                                        'Usage'
                                         ),
                         ),
             */
             /**
-            "Improving performance" => array(
-                            "Introduction",
-                            "Data types" =>
+            'Improving performance' => array(
+                            'Introduction',
+                            'Data types' =>
                                 array(
-                                    "Enum",
+                                    'Enum',
                                 ),
-                            "Primary keys" => array(
-                                "When to use surrogate primary keys",
+                            'Primary keys' => array(
+                                'When to use surrogate primary keys',
                             ),
-                            "Constraints" => array(
-                                "General tips",
-                                "Foreign keys",
-                                "Triggers",
+                            'Constraints' => array(
+                                'General tips',
+                                'Foreign keys',
+                                'Triggers',
                             ),
-                            "Data manipulation" => array(
-                                "INSERT queries",
-                                "UPDATE queries",
-                                "DELETE queries",
+                            'Data manipulation' => array(
+                                'INSERT queries',
+                                'UPDATE queries',
+                                'DELETE queries',
                             ),
-                            "Indexes" => array(
-                                "General tips",
-                                "Using compound indexes",
+                            'Indexes' => array(
+                                'General tips',
+                                'Using compound indexes',
                             ),
-                            "Transactions" => array(
-                                "General tips",
-                                "Locks",
-                                "Isolation",
+                            'Transactions' => array(
+                                'General tips',
+                                'Locks',
+                                'Isolation',
                             ),
-                            "Data fetching" => array(
-                                "General tips",
+                            'Data fetching' => array(
+                                'General tips',
                             ),
-                            "Normalization" => array(
+                            'Normalization' => array(
 
                             ),
-                            "Caching" => array(
-                                "General tips"
+                            'Caching' => array(
+                                'General tips'
                             ),
-                            "Performance monitoring" => array( "Using the database profiler") 
+                            'Performance monitoring' => array( 'Using the database profiler') 
                             
                             ),
             */
-            "Connection modules" => array(
-                            "Export" => array("Introduction",
-                                              "Creating new table",
-                                              "Altering table"
+            'Connection modules' => array(
+                            'Export' => array('Introduction',
+                                              'Creating new table',
+                                              'Altering table'
                                               ),
-                            "Import"    => array("Introduction",
-                                                 "Getting table info",
-                                                 "Getting foreign key info",
-                                                 "Getting view info",
+                            'Import'    => array('Introduction',
+                                                 'Getting table info',
+                                                 'Getting foreign key info',
+                                                 'Getting view info',
                                                 ),
-                            "Util"      => array("Using explain"),
-                            "DataDict"  => array("Getting portable type",
-                                                "Getting database declaration",
-                                                "Reserved keywords"),
+                            'Util'      => array('Using explain'),
+                            'DataDict'  => array('Getting portable type',
+                                                'Getting database declaration',
+                                                'Reserved keywords'),
                             ),
-            "Technology" => array(
-                "Architecture",
-                "Design patterns used",
-                "Speed",
-                "Internal optimizations" =>
+            'Technology' => array(
+                'Architecture',
+                'Design patterns used',
+                'Speed',
+                'Internal optimizations' =>
 
-                        array("DELETE",
-                              "INSERT",
-                              "UPDATE"),
+                        array('DELETE',
+                              'INSERT',
+                              'UPDATE'),
                 ),
-            "Real world examples" => array("User management system","Forum application","Album lister"),
+            'Real world examples' => array('User management system','Forum application','Album lister'),
             
-            "Coding standards" => array(
-                            "Overview" => 
+            'Coding standards' => array(
+                            'Overview' => 
                                 array(
-                                    "Scope",
-                                    "Goals"
+                                    'Scope',
+                                    'Goals'
                                     ),
-                            "PHP File Formatting" => array(
-                                    "General",
-                                    "Indentation",
-                                    "Maximum line length",
-                                    "Line termination"
-                                    ),
-
-                            "Naming Conventions" => array(
-                                    "Classes",
-                                    "Interfaces",
-                                    "Filenames",
-                                    "Functions and methods",
-                                    "Variables",
-                                    "Constants",
-                                    "Record columns",
+                            'PHP File Formatting' => array(
+                                    'General',
+                                    'Indentation',
+                                    'Maximum line length',
+                                    'Line termination'
                                     ),
 
+                            'Naming Conventions' => array(
+                                    'Classes',
+                                    'Interfaces',
+                                    'Filenames',
+                                    'Functions and methods',
+                                    'Variables',
+                                    'Constants',
+                                    'Record columns',
+                                    ),
 
-                            "Coding Style" => array(
-                                    "PHP code demarcation",
-                                    "Strings",
-                                    "Arrays",
-                                    "Classes",
-                                    "Functions and methods",
-                                    "Control statements",
-                                    "Inline documentation"
+
+                            'Coding Style' => array(
+                                    'PHP code demarcation',
+                                    'Strings',
+                                    'Arrays',
+                                    'Classes',
+                                    'Functions and methods',
+                                    'Control statements',
+                                    'Inline documentation'
                                     ),
                                 )
             );
