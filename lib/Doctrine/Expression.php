@@ -566,6 +566,24 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
         return $expression . ' IS NULL';
     }
     /**
+     * Returns SQL that checks if a expression is not null.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($q->expr->isNotNull('id'));
+     * </code>
+     *
+     * @param string $expression the expression that should be compared to null
+     * @return string logical expression
+     */
+    public function isNotNull($expression) {
+        $expression = $this->getIdentifier($expression);
+        return $expression . ' IS NOT NULL';
+    }
+    /**
      * Returns SQL that checks if an expression evaluates to a value between
      * two values.
      *
