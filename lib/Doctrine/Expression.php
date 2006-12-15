@@ -235,7 +235,6 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
             return 'SUBSTRING(' . $value . ' FROM ' . $from . ' FOR ' . $len . ')';
         }
     }
-
     /**
      * Returns a series of strings concatinated
      *
@@ -248,5 +247,351 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
         $args = func_get_args();
         $cols = $this->getIdentifiers($cols);
         return 'CONCAT(' . join(', ', $cols) . ')';
+    }
+    /**
+     * Returns the SQL for a logical not.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $e = $q->expr;
+     * $q->select('*')->from('table')
+     *   ->where($e->eq('id', $e->not('null'));
+     * </code>
+     *
+     * @return string a logical expression
+     */
+    public function not($expression) {
+        $expression = $this->getIdentifier($expression);
+        return 'NOT (' . $expression . ')';
+    }
+    /**
+     * Returns the SQL to perform the same mathematical operation over an array
+     * of values or expressions.
+     *
+     * basicMath() accepts an arbitrary number of parameters. Each parameter
+     * must contain a value or an expression or an array with values or
+     * expressions.
+     *
+     * @param string $type the type of operation, can be '+', '-', '*' or '/'.
+     * @param string|array(string)
+     * @return string an expression
+     */
+    private function basicMath($type, array $args) {
+        $args = func_get_args();
+        $elements = $this->getIdentifiers($elements);
+        if (count($elements) < 1)
+            return '';
+
+        if (count($elements) == 1) {
+            return $elements[0];
+        } else {
+            return '(' . join(' ' . $type . ' ', $elements) . ')';
+        }
+    }
+    /**
+     * Returns the SQL to add values or expressions together.
+     *
+     * add() accepts an arbitrary number of parameters. Each parameter
+     * must contain a value or an expression or an array with values or
+     * expressions.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $e = $q->expr;     
+     *
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($e->eq($e->add('id', 2), 12));
+     * </code>
+     *
+     * @param string|array(string)
+     * @return string an expression
+     */
+    public function add(array $args) {
+        return $this->basicMath('+', $args);
+    }
+
+    /**
+     * Returns the SQL to subtract values or expressions from eachother.
+     *
+     * subtract() accepts an arbitrary number of parameters. Each parameter
+     * must contain a value or an expression or an array with values or
+     * expressions.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $e = $q->expr;     
+     *
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($e->eq($e->sub('id', 2), 12));
+     * </code>
+     *
+     * @param string|array(string)
+     * @return string an expression
+     */
+    public function sub(array $args) {
+        return $this->basicMath('-', $args );
+    }
+
+    /**
+     * Returns the SQL to multiply values or expressions by eachother.
+     *
+     * multiply() accepts an arbitrary number of parameters. Each parameter
+     * must contain a value or an expression or an array with values or
+     * expressions.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $e = $q->expr;     
+     *
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($e->eq($e->mul('id', 2), 12));
+     * </code>
+     *
+     * @param string|array(string)
+     * @return string an expression
+     */
+    public function mul(array $args) {
+        return $this->basicMath('*', $args);
+    }
+
+    /**
+     * Returns the SQL to divide values or expressions by eachother.
+     *
+     * divide() accepts an arbitrary number of parameters. Each parameter
+     * must contain a value or an expression or an array with values or
+     * expressions.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $e = $q->expr;     
+     *
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($e->eq($e->div('id', 2), 12));
+     * </code>
+     *
+     * @param string|array(string)
+     * @return string an expression
+     */
+    public function div(array $args) {
+        $args = func_get_args();
+        return $this->basicMath('/', $args);
+    }
+
+    /**
+     * Returns the SQL to check if two values are equal.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($q->expr->eq('id', 1));
+     * </code>
+     *
+     * @param string $value1 logical expression to compare
+     * @param string $value2 logical expression to compare with
+     * @return string logical expression
+     */
+    public function eq($value1, $value2) {
+        $value1 = $this->getIdentifier($value1);
+        $value2 = $this->getIdentifier($value2);
+        return $value1 . ' = ' . $value2;
+    }
+
+    /**
+     * Returns the SQL to check if two values are unequal.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($q->expr->neq('id', 1));
+     * </code>
+     *
+     * @param string $value1 logical expression to compare
+     * @param string $value2 logical expression to compare with
+     * @return string logical expression
+     */
+    public function neq($value1, $value2) {
+        $value1 = $this->getIdentifier($value1);
+        $value2 = $this->getIdentifier($value2);
+        return $value1 . ' <> ' . $value2;
+    }
+
+    /**
+     * Returns the SQL to check if one value is greater than another value.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($q->expr->gt('id', 1));
+     * </code>
+     *
+     * @param string $value1 logical expression to compare
+     * @param string $value2 logical expression to compare with
+     * @return string logical expression
+     */
+    public function gt($value1, $value2) {
+        $value1 = $this->getIdentifier($value1);
+        $value2 = $this->getIdentifier($value2);
+        return $value1 . ' > ' . $value2;
+    }
+
+    /**
+     * Returns the SQL to check if one value is greater than or equal to
+     * another value.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($q->expr->gte('id', 1));
+     * </code>
+     *
+     * @param string $value1 logical expression to compare
+     * @param string $value2 logical expression to compare with
+     * @return string logical expression
+     */
+    public function gte($value1, $value2) {
+        $value1 = $this->getIdentifier($value1);
+        $value2 = $this->getIdentifier($value2);
+        return $value1 . ' >= ' . $value2;
+    }
+
+    /**
+     * Returns the SQL to check if one value is less than another value.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($q->expr->lt('id', 1));
+     * </code>
+     *
+     * @param string $value1        logical expression to compare
+     * @param string $value2        logical expression to compare with
+     * @return string logical expression
+     */
+    public function lt($value1, $value2) {
+        $value1 = $this->getIdentifier($value1);
+        $value2 = $this->getIdentifier($value2);
+        return $value1 . ' < ' . $value2;
+    }
+
+    /**
+     * Returns the SQL to check if one value is less than or equal to
+     * another value.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($q->expr->lte('id', 1));
+     * </code>
+     *
+     * @param string $value1        logical expression to compare
+     * @param string $value2        logical expression to compare with
+     * @return string logical expression
+     */
+    public function lte($value1, $value2) {
+        $value1 = $this->getIdentifier($value1);
+        $value2 = $this->getIdentifier($value2);
+        return $value1 . ' <= ' . $value2;
+    }
+
+    /**
+     * Returns the SQL to check if a value is one in a set of
+     * given values..
+     *
+     * in() accepts an arbitrary number of parameters. The first parameter
+     * must always specify the value that should be matched against. Successive
+     * must contain a logical expression or an array with logical expressions.
+     * These expressions will be matched against the first parameter.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($q->expr->in( 'id', array(1,2,3)));
+     * </code>
+     *
+     * @param string $column        the value that should be matched against
+     * @param string|array(string)  values that will be matched against $column
+     * @return string logical expression
+     */
+    public function in($column, $values) {
+        if( ! is_array($values))
+            $values = array($values);
+
+        $values = $this->getIdentifiers($values);
+        $column = $this->getIdentifier($column);
+
+        if(count($values) == 0)
+            throw new Doctrine_Expression_Exception('Values array for IN operator should not be empty.');
+
+        return $column . ' IN ( ' . join(', ', $values) . ' )';
+    }
+    /**
+     * Returns SQL that checks if a expression is null.
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($q->expr->isNull('id'));
+     * </code>
+     *
+     * @param string $expression the expression that should be compared to null
+     * @return string logical expression
+     */
+    public function isNull($expression) {
+        $expression = $this->getIdentifier($expression);
+        return $expression . ' IS NULL';
+    }
+    /**
+     * Returns SQL that checks if an expression evaluates to a value between
+     * two values.
+     *
+     * The parameter $expression is checked if it is between $value1 and $value2.
+     *
+     * Note: There is a slight difference in the way BETWEEN works on some databases.
+     * http://www.w3schools.com/sql/sql_between.asp. If you want complete database
+     * independence you should avoid using between().
+     *
+     * Example:
+     * <code>
+     * $q = new Doctrine_Query();
+     * $q->select('u.*')
+     *   ->from('User u')
+     *   ->where($q->expr->between('id', 1, 5));
+     * </code>
+     *
+     * @param string $expression the value to compare to
+     * @param string $value1 the lower value to compare with
+     * @param string $value2 the higher value to compare with
+     * @return string logical expression
+     */
+    public function between($expression, $value1, $value2) {
+        $expression = $this->getIdentifier($expression);
+        $value1 = $this->getIdentifier($value1);
+        $value2 = $this->getIdentifier($value2);
+        return $expression . ' BETWEEN ' .$value1 . ' AND ' . $value2;
     }
 }
