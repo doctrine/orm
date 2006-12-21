@@ -158,13 +158,9 @@ class Doctrine_Export_Mssql extends Doctrine_Export {
             case 'rename':
             case 'change':
             default:
-                return $db->raiseError(MDB2_ERROR_CANNOT_ALTER, null, null,
+                return $db->raiseError(Doctrine::ERR_CANNOT_ALTER, null, null,
                     'alterTable: change type "'.$change_name.'" not yet supported');
             }
-        }
-
-        if ($check) {
-            return MDB2_OK;
         }
 
         $query = '';
@@ -173,7 +169,7 @@ class Doctrine_Export_Mssql extends Doctrine_Export {
                 if ($query) {
                     $query.= ', ';
                 }
-                $query.= 'ADD ' . $db->getDeclaration($field['type'], $field_name, $field);
+                $query.= 'ADD ' . $this->conn->getDeclaration($field['type'], $field_name, $field);
             }
         }
 
@@ -182,7 +178,7 @@ class Doctrine_Export_Mssql extends Doctrine_Export {
                 if ($query) {
                     $query.= ', ';
                 }
-                $field_name = $db->quoteIdentifier($field_name, true);
+                $field_name = $this->conn->quoteIdentifier($field_name, true);
                 $query.= 'DROP COLUMN ' . $field_name;
             }
         }
@@ -191,8 +187,8 @@ class Doctrine_Export_Mssql extends Doctrine_Export {
             return MDB2_OK;
         }
 
-        $name = $db->quoteIdentifier($name, true);
-        return $db->exec("ALTER TABLE $name $query");
+        $name = $this->conn->quoteIdentifier($name, true);
+        return $this->conn->exec("ALTER TABLE $name $query");
     }
     /**
      * create sequence
@@ -235,6 +231,6 @@ class Doctrine_Export_Mssql extends Doctrine_Export {
      */
     public function dropSequence($seqName) {
         $sequenceName = $db->quoteIdentifier($db->getSequenceName($seqName), true);
-        return $db->exec('DROP TABLE ' . $sequenceName);
+        return $this->conn->exec('DROP TABLE ' . $sequenceName);
     }
 }

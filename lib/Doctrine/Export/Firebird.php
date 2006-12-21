@@ -89,7 +89,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
                         IF (NEW.' . $name . ' IS NULL OR NEW.' . $name . ' = 0) THEN
                             NEW.' . $name . ' = GEN_ID('.$sequence_name.', 1);
                         END';
-        $result = $this->conn->getDbh()->exec($triggerSql);
+        $result = $this->conn->exec($triggerSql);
 
         // TODO ? $this->_silentCommit();
 
@@ -114,7 +114,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
         //remove autoincrement trigger associated with the table
         $table = $this->conn->getDbh()->quote(strtoupper($table));
         $trigger_name = $this->conn->getDbh()->quote(strtoupper($table) . '_AUTOINCREMENT_PK');
-        $result = $this->conn->getDbh()->exec("DELETE FROM RDB\$TRIGGERS WHERE UPPER(RDB\$RELATION_NAME)=$table AND UPPER(RDB\$TRIGGER_NAME)=$trigger_name");
+        $result = $this->conn->exec("DELETE FROM RDB\$TRIGGERS WHERE UPPER(RDB\$RELATION_NAME)=$table AND UPPER(RDB\$TRIGGER_NAME)=$trigger_name");
         
         /**
         if (PEAR::isError($result)) {
@@ -441,7 +441,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
         }
         $query .= ' ('.implode(', ', $fields) . ')';
 
-        $result = $this->conn->getDbh()->exec($query);
+        $result = $this->conn->exec($query);
         // todo: $this->_silentCommit();
         return $result;
     }
@@ -489,7 +489,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
             $fields[] = $this->conn->quoteIdentifier($field, true);
         }
         $query .= ' ('. implode(', ', $fields) . ')';
-        $result = $this->conn->getDbh()->exec($query);
+        $result = $this->conn->exec($query);
         // TODO ? $this->_silentCommit();
         return $result;
     }
@@ -503,9 +503,9 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
     public function createSequence($seqName, $start = 1) {
         $sequenceName = $this->conn->getSequenceName($seqName);
 
-        $this->conn->getDbh()->exec('CREATE GENERATOR ' . $sequenceName);
+        $this->conn->exec('CREATE GENERATOR ' . $sequenceName);
 
-        $this->conn->getDbh()->exec('SET GENERATOR ' . $sequenceName . ' TO ' . ($start-1));
+        $this->conn->exec('SET GENERATOR ' . $sequenceName . ' TO ' . ($start-1));
 
         $this->dropSequence($seqName);
     }
@@ -519,6 +519,6 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
         $sequence_name = $this->conn->getSequenceName($seq_name);
         $sequence_name = $this->conn->getDbh()->quote($sequence_name);
         $query = "DELETE FROM RDB\$GENERATORS WHERE UPPER(RDB\$GENERATOR_NAME)=$sequence_name";
-        return $this->conn->getDbh()->exec($query);
+        return $this->conn->exec($query);
     }
 }

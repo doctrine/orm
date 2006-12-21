@@ -41,7 +41,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
      */
     public function createDatabase($name) {
         $query  = 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name);
-        $this->conn->getDbh()->query($query);
+        $this->conn->exec($query);
     }
     /**
      * drop an existing database
@@ -52,7 +52,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
      */
     public function dropDatabase($name) {
         $query  = 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
-        $this->conn->getDbh()->query($query);
+        $this->conn->exec($query);
     }
     /**
      * alter an existing table

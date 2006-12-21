@@ -3,6 +3,16 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_Driver_UnitTestCase {
     public function __construct() {
         parent::__construct('sqlite');
     }
+    public function testExportDoesntWorkWithExistingTable() {
+        $this->manager->setAttribute(Doctrine::ATTR_CREATE_TABLES, false);
+        $this->adapter->forceException('PDOException', 'table already exist', 123);
+
+        $reporter = $this->export->export('User');
+        
+        // Class name is not valid. Double underscores are not allowed
+
+        $this->assertEqual($reporter->pop(), array(E_ERROR, Doctrine::ERR_ALREADY_EXISTS));
+    }
     public function testCreateDatabaseDoesNotExecuteSql() {
         try {
             $this->export->createDatabase('db');

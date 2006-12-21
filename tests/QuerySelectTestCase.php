@@ -1,6 +1,6 @@
 <?php
 class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
-    public function prepareTables() { }
+
     public function testAggregateFunctionWithDistinctKeyword() {
         $q = new Doctrine_Query();
 
@@ -58,12 +58,13 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
         $q->parseQuery('SELECT u.id, COUNT(p.id) FROM User u, u.Phonenumber p GROUP BY u.id');
 
         $users = $q->execute();
-        
-        $this->assertEqual($users[0]->Phonenumber->getAggregateValue('COUNT'), 1);
-        $this->assertEqual($users[1]->Phonenumber->getAggregateValue('COUNT'), 3);
-        $this->assertEqual($users[2]->Phonenumber->getAggregateValue('COUNT'), 1);
-        $this->assertEqual($users[3]->Phonenumber->getAggregateValue('COUNT'), 1);
-        $this->assertEqual($users[4]->Phonenumber->getAggregateValue('COUNT'), 3);
+
+        $this->assertEqual($users[0]->Phonenumber[0]->COUNT, 1);
+        $this->assertEqual($users[1]->Phonenumber[0]->COUNT, 3);
+        $this->assertEqual($users[2]->Phonenumber[0]->COUNT, 1);
+        $this->assertEqual($users[3]->Phonenumber[0]->COUNT, 1);
+        $this->assertEqual($users[4]->Phonenumber[0]->COUNT, 3);
+
     }
 
     public function testAggregateFunctionValueHydrationWithAliases() {
@@ -73,14 +74,33 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
         $q->parseQuery('SELECT u.id, COUNT(p.id) count FROM User u, u.Phonenumber p GROUP BY u.id');
 
         $users = $q->execute();
-        
-        $this->assertEqual($users[0]->Phonenumber->getAggregateValue('count'), 1);
-        $this->assertEqual($users[1]->Phonenumber->getAggregateValue('count'), 3);
-        $this->assertEqual($users[2]->Phonenumber->getAggregateValue('count'), 1);
-        $this->assertEqual($users[3]->Phonenumber->getAggregateValue('count'), 1);
-        $this->assertEqual($users[4]->Phonenumber->getAggregateValue('count'), 3);
+
+        $this->assertEqual($users[0]->Phonenumber[0]->count, 1);
+        $this->assertEqual($users[1]->Phonenumber[0]->count, 3);
+        $this->assertEqual($users[2]->Phonenumber[0]->count, 1);
+        $this->assertEqual($users[3]->Phonenumber[0]->count, 1);
+        $this->assertEqual($users[4]->Phonenumber[0]->count, 3);
     }
     public function testMultipleAggregateFunctionValueHydrationWithAliases() {
+        $q = new Doctrine_Query();
+
+        $q->parseQuery('SELECT u.id, COUNT(p.id) count, MAX(p.phonenumber) max FROM User u, u.Phonenumber p GROUP BY u.id');
+
+        $users = $q->execute();
+        $this->assertEqual($users[0]->Phonenumber[0]->count, 1);
+        $this->assertEqual($users[1]->Phonenumber[0]->count, 3);
+        $this->assertEqual($users[2]->Phonenumber[0]->count, 1);
+        $this->assertEqual($users[3]->Phonenumber[0]->count, 1);
+        $this->assertEqual($users[4]->Phonenumber[0]->count, 3);
+
+        $this->assertEqual($users[0]->Phonenumber[0]->max, '123 123');
+        $this->assertEqual($users[1]->Phonenumber[0]->max, '789 789');
+        $this->assertEqual($users[2]->Phonenumber[0]->max, '123 123');
+        $this->assertEqual($users[3]->Phonenumber[0]->max, '111 222 333');
+        $this->assertEqual($users[4]->Phonenumber[0]->max, '444 555');
+    }
+    public function testMultipleAggregateFunctionValueHydrationWithAliasesAndCleanRecords() {
+        $this->connection->clear();
 
         $q = new Doctrine_Query();
 
@@ -88,18 +108,21 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase {
 
         $users = $q->execute();
 
-        $this->assertEqual($users[0]->Phonenumber->getAggregateValue('count'), 1);
-        $this->assertEqual($users[1]->Phonenumber->getAggregateValue('count'), 3);
-        $this->assertEqual($users[2]->Phonenumber->getAggregateValue('count'), 1);
-        $this->assertEqual($users[3]->Phonenumber->getAggregateValue('count'), 1);
-        $this->assertEqual($users[4]->Phonenumber->getAggregateValue('count'), 3);
+        $this->assertEqual($users[0]->Phonenumber[0]->state(), Doctrine_Record::STATE_TDIRTY);
 
-        $this->assertEqual($users[0]->Phonenumber->getAggregateValue('max'), '123 123');
-        $this->assertEqual($users[1]->Phonenumber->getAggregateValue('max'), '789 789');
-        $this->assertEqual($users[2]->Phonenumber->getAggregateValue('max'), '123 123');
-        $this->assertEqual($users[3]->Phonenumber->getAggregateValue('max'), '111 222 333');
-        $this->assertEqual($users[4]->Phonenumber->getAggregateValue('max'), '444 555');
+        $this->assertEqual($users[0]->Phonenumber[0]->count, 1);
+        $this->assertEqual($users[1]->Phonenumber[0]->count, 3);
+        $this->assertEqual($users[2]->Phonenumber[0]->count, 1);
+        $this->assertEqual($users[3]->Phonenumber[0]->count, 1);
+        $this->assertEqual($users[4]->Phonenumber[0]->count, 3);
+
+        $this->assertEqual($users[0]->Phonenumber[0]->max, '123 123');
+        $this->assertEqual($users[1]->Phonenumber[0]->max, '789 789');
+        $this->assertEqual($users[2]->Phonenumber[0]->max, '123 123');
+        $this->assertEqual($users[3]->Phonenumber[0]->max, '111 222 333');
+        $this->assertEqual($users[4]->Phonenumber[0]->max, '444 555');
     }
+
     public function testSingleComponentWithAsterisk() {
         $q = new Doctrine_Query();
 

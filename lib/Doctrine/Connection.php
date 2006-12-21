@@ -597,19 +597,63 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->dbh->query($query);
     }
     /**
+     * execute
      * @param string $query     sql query
      * @param array $params     query parameters
      *
-     * @return PDOStatement
+     * @return PDOStatement|Doctrine_Adapter_Statement
      */
     public function execute($query, array $params = array()) {
-        if( ! empty($params)) {
-            $stmt = $this->dbh->prepare($query);
-            $stmt->execute($params);
-            return $stmt;
-        } else {
-            return $this->dbh->query($query);
+        try {
+            if( ! empty($params)) {
+                $stmt = $this->dbh->prepare($query);
+                $stmt->execute($params);
+                return $stmt;
+            } else {
+                return $this->dbh->query($query);
+            }
+        } catch(Doctrine_Adapter_Exception $e) {
+            $this->rethrowException($e);
+        } catch(PDOException $e) {
+            $this->rethrowException($e);
         }
+    }
+    /**
+     * exec
+     * @param string $query     sql query
+     * @param array $params     query parameters
+     *
+     * @return PDOStatement|Doctrine_Adapter_Statement
+     */
+    public function exec($query, array $params = array()) {
+        try {
+            if( ! empty($params)) {
+                $stmt = $this->dbh->prepare($query);
+                $stmt->execute($params);
+                return $stmt;
+            } else {
+                return $this->dbh->exec($query);
+            }
+        } catch(Doctrine_Adapter_Exception $e) {
+        } catch(PDOException $e) { }
+
+        $this->rethrowException($e);
+    }
+    /**
+     * rethrowException
+     *
+     * @throws Doctrine_Connection_Exception
+     */
+    private function rethrowException(Exception $e) {
+        $name = 'Doctrine_Connection_' . $this->driverName . '_Exception';
+
+        $exc  = new $name($e->getMessage(), (int) $e->getCode());
+        if( ! is_array($e->errorInfo))
+            $e->errorInfo = array();
+            
+        $exc->errorInfo = $exc->processErrorInfo($e->errorInfo);
+
+        throw $exc;
     }
     /**
      * hasTable

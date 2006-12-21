@@ -387,31 +387,46 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                 }
  
                 if ( !isset($this->tables[$key]) )
-                    throw new Doctrine_Exception("No table named $key found.");
+                    throw new Doctrine_Exception('No table named ' . $key . ' found.');
 
                 $ids     = $this->tables[$key]->getIdentifier();
                 $name    = $key;
 
                 if($this->isIdentifiable($row, $ids)) {
+                    if($name !== $root) {
+                        $prev = $this->initRelated($prev, $name);
+                    }
+                    // aggregate values have numeric keys
+                    if(isset($row[0])) {
+                        $component = $this->tables[$name]->getComponentName();
+                        
+                        // if the collection already has objects, get the last object
+                        // otherwise create a new one where the aggregate values are being mapped
 
-                    $prev = $this->initRelated($prev, $name);
-                        // aggregate values have numeric keys
-                        if(isset($row[0])) {
-                            $path    = array_search($name, $this->tableAliases);
-                            $alias   = $this->getPathAlias($path);
+                        if($prev[$name]->count() > 0) {
+                            $record = $prev[$name]->getLast();
+                        } else {   
+                            $record = new $component();
+                            $prev[$name]->add($record);
+                        }
 
-                            // map each aggregate value
-                            foreach($row as $index => $value) {
-                                $agg = false;
+                        $path    = array_search($name, $this->tableAliases);
+                        $alias   = $this->getPathAlias($path);
 
-                                if(isset($this->pendingAggregates[$alias][$index]))
-                                    $agg = $this->pendingAggregates[$alias][$index][3];
+                        // map each aggregate value
+                        foreach($row as $index => $value) {
+                            $agg = false;
 
-                                $prev[$name]->setAggregateValue($agg, $value);
+                            if(isset($this->pendingAggregates[$alias][$index])) {
+                                $agg = $this->pendingAggregates[$alias][$index][3];
                             }
 
+                            $record->mapValue($agg, $value);
                         }
+                    }
+
                     continue;
+
                 }
 
 
@@ -419,13 +434,28 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
                             $previd[$name] = array();
 
                 if($previd[$name] !== $row) {
-                        // set internal data
+                    // set internal data
 
-                        $this->tables[$name]->setData($row);
+                    $this->tables[$name]->setData($row);
 
-                        // initialize a new record
-                        $record = $this->tables[$name]->getRecord();
+                    // initialize a new record
+                    $record = $this->tables[$name]->getRecord();
 
+                    // aggregate values have numeric keys
+                    if(isset($row[0])) {
+                        $path    = array_search($name, $this->tableAliases);
+                        $alias   = $this->getPathAlias($path);
+
+                        // map each aggregate value
+                        foreach($row as $index => $value) {
+                            $agg = false;
+
+                            if(isset($this->pendingAggregates[$alias][$index]))
+                                $agg = $this->pendingAggregates[$alias][$index][3];
+                            
+                            $record->mapValue($agg, $value);
+                        }
+                    }
 
                     if($name == $root) {
 
@@ -462,7 +492,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
     public function initRelated(array $prev, $name) {
         $pointer = $this->joins[$name];
         $path    = array_search($name, $this->tableAliases);
-        $tmp     = explode(".", $path);
+        $tmp     = explode('.', $path);
         $alias   = end($tmp);
 
         if( ! isset($prev[$pointer]) )

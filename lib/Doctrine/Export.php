@@ -51,7 +51,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return void
      */
     public function dropTable($table) {
-        $this->conn->getDbh()->query('DROP TABLE ' . $table);
+        $this->conn->execute('DROP TABLE ' . $table);
     }
 
     /**
@@ -63,7 +63,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      */
     public function dropIndex($table, $name) {
         $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
-        return $this->conn->getDbh()->exec('DROP INDEX ' . $name);
+        return $this->conn->exec('DROP INDEX ' . $name);
     }
     /**
      * drop existing constraint
@@ -76,7 +76,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
     public function dropConstraint($table, $name, $primary = false) {
         $table = $this->conn->quoteIdentifier($table, true);
         $name  = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
-        return $this->conn->getDbh()->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
+        return $this->conn->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
     }
     /**
      * drop existing sequence
@@ -142,7 +142,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
 
-        return $this->conn->getDbh()->exec($query);
+        return $this->conn->exec($query);
     }
     /**
      * create sequence
@@ -191,7 +191,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
             $fields[] = $this->conn->quoteIdentifier($field, true);
         }
         $query .= ' ('. implode(', ', $fields) . ')';
-        return $this->conn->getDbh()->exec($query);
+        return $this->conn->exec($query);
     }
     /**
      * Get the stucture of a field into an array
@@ -226,7 +226,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return void
      */
     public function createIndex($table, $name, array $definition) {
-        return $this->conn->getDbh()->query($this->createIndexSql($table, $name, $definition));
+        return $this->conn->execute($this->createIndexSql($table, $name, $definition));
     }
     /**
      * Get the stucture of a field into an array
@@ -363,7 +363,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return void
      */
     public function alterTable($name, array $changes, $check) {
-        $this->conn->getDbh()->query($this->alterTableSql($name, $changes, $check));
+        $this->conn->execute($this->alterTableSql($name, $changes, $check));
     }
     /**
      * alter an existing table
@@ -589,7 +589,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *
      * @return void
      */
-    public static function export() {
+    public static function exportAll() {
         $parent = new ReflectionClass('Doctrine_Record');
         $conn   = Doctrine_Manager::getInstance()->getCurrentConnection();
         $old    = $conn->getAttribute(Doctrine::ATTR_CREATE_TABLES);
@@ -603,5 +603,41 @@ class Doctrine_Export extends Doctrine_Connection_Module {
                 $obj = new $class();
         }
         $conn->setAttribute(Doctrine::ATTR_CREATE_TABLES, $old);
+    }
+    public function export($record) {
+        if( ! $record instanceof Doctrine_Record) 
+            $record = new $record();
+
+        $table = $record->getTable();
+        
+        $reporter = new Doctrine_Reporter();
+
+        if( ! Doctrine::isValidClassname($table->getComponentName())) {
+            $reporter->add(E_WARNING, Doctrine::ERR_CLASS_NAME);
+        }
+        
+        try {
+            $columns = array();
+            foreach($table->getColumns() as $name => $column) {
+                $definition = $column[2];
+                $definition['type'] = $column[0];
+                $definition['length'] = $column[1];
+
+                if($definition['type'] == 'enum' && isset($definition['default']))
+                    $definition['default'] = $table->enumIndex($name, $definition['default']);
+
+                if($definition['type'] == 'boolean' && isset($definition['default']))
+                    $definition['default'] = (int) $definition['default'];
+
+                $columns[$name] = $definition;
+            }
+            $this->createTable($table->getTableName(), $columns);
+
+        } catch(Doctrine_Connection_Exception $e) {
+
+            $reporter->add(E_ERROR, $e->getCode());
+        }  
+
+        return $reporter;
     }
 }

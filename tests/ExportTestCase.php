@@ -1,6 +1,6 @@
 <?php
 class Doctrine_Export_TestCase extends Doctrine_Driver_UnitTestCase {
-
+                                        	
 
     public function testCreateTableThrowsExceptionWithoutValidTableName() {
         try {

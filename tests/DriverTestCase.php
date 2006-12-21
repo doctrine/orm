@@ -4,6 +4,7 @@ class AdapterMock implements Doctrine_Adapter_Interface {
     
     private $queries = array();
     
+    private $exception = array();
 
     public function __construct($name) {
         $this->name = $name;
@@ -14,13 +15,25 @@ class AdapterMock implements Doctrine_Adapter_Interface {
     public function pop() {
         return array_pop($this->queries);
     }
-
+    public function forceException($name, $message, $code) {
+        $this->exception = array($name, $message, $code);
+    }
     public function prepare($prepareString){ 
         return new AdapterStatementMock;
     }
     public function query($queryString) {
         $this->queries[] = $queryString;
-        
+
+        $e    = $this->exception;
+
+        if( ! empty($e)) {
+            $name = $e[0];
+
+            $this->exception = array();
+
+            throw new $name($e[1], $e[2]);
+        }
+
         return new AdapterStatementMock;
     }
     public function getAll() {
@@ -31,7 +44,17 @@ class AdapterMock implements Doctrine_Adapter_Interface {
     }
     public function exec($statement) { 
         $this->queries[] = $statement;
-        
+
+        $e    = $this->exception;
+
+        if( ! empty($e)) {
+            $name = $e[0];
+
+            $this->exception = array();
+
+            throw new $name($e[1], $e[2]);
+        }
+
         return 0;
     }
     public function lastInsertId(){ }
@@ -105,7 +128,7 @@ class Doctrine_Driver_UnitTestCase extends UnitTestCase {
                 $this->transaction = new $tx($this->conn);
             if(class_exists($dataDict)) {
                 $this->dataDict = new $dataDict($this->conn);
-            } 
+            }
             //$this->dataDict = $this->conn->dataDict;
         } else {
             $this->export   = new Doctrine_Export($this->conn);

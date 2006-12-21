@@ -152,7 +152,7 @@ BEGIN
    END IF;
 END;
 ';
-        return $this->conn->getDbh()->exec($trigger_sql);
+        return $this->conn->exec($trigger_sql);
     }
     /**
      * drop an existing autoincrement sequence + trigger
@@ -173,7 +173,7 @@ END;
             $trigger_sql = 'DROP TRIGGER ' . $trigger_name;
             
             // if throws exception, trigger for autoincrement PK could not be dropped
-            $this->conn->getDbh()->exec($trigger_sql);
+            $this->conn->exec($trigger_sql);
 
             // if throws exception, sequence for autoincrement PK could not be dropped
             $this->dropSequence($table);
@@ -417,7 +417,7 @@ END;
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         $query = 'CREATE SEQUENCE ' . $sequenceName . ' START WITH ' . $start . ' INCREMENT BY 1 NOCACHE';
         $query.= ($start < 1 ? ' MINVALUE ' . $start : '');
-        return $this->conn->getDbh()->exec($query);
+        return $this->conn->exec($query);
     }
     /**
      * drop existing sequence
@@ -428,6 +428,6 @@ END;
      */
     public function dropSequence($seqName) {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
-        return $this->conn->getDbh()->exec('DROP SEQUENCE ' . $sequenceName);
+        return $this->conn->exec('DROP SEQUENCE ' . $sequenceName);
     }
 }

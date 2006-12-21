@@ -41,7 +41,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      */
     public function createDatabase($name) {
         $query  = 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name, true);
-        $result = $this->conn->getDbh()->query($query);
+        $result = $this->conn->exec($query);
     }
     /**
      * drop an existing database
@@ -52,7 +52,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      */
     public function dropDatabase($name) {
         $query  = 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
-        $this->conn->getDbh()->query($query);
+        $this->conn->exec($query);
     }
     /**
      * create a new table
@@ -132,7 +132,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
         if (!empty($optionStrings)) {
             $query.= ' '.implode(' ', $optionStrings);
         }
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->exec($query);
     }
     /**
      * alter an existing table
@@ -392,7 +392,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
         }
         $query .= ' ('. implode(', ', $fields) . ')';
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->exec($query);
     }
     /**
      * drop existing index
@@ -404,7 +404,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
     public function dropIndex($table, $name) {
         $table  = $this->conn->quoteIdentifier($table, true);
         $name   = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
-        return $this->conn->getDbh()->query('DROP INDEX ' . $name . ' ON ' . $table);
+        return $this->conn->exec('DROP INDEX ' . $name . ' ON ' . $table);
     }
     /**
      * dropTable
@@ -415,7 +415,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      */
     public function dropTable($table) {
         $table  = $this->conn->quoteIdentifier($table, true);
-        $this->conn->getDbh()->query('DROP TABLE ' . $table);
+        $this->conn->exec('DROP TABLE ' . $table);
     }
 }
 ?>

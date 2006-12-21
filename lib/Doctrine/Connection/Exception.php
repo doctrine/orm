@@ -68,7 +68,6 @@ class Doctrine_Connection_Exception extends Doctrine_Exception {
                 Doctrine::ERR_TRUNCATED          => 'truncated',
                 Doctrine::ERR_DEADLOCK           => 'deadlock detected',
                 );
-
     /**
      * Return a textual error message for a Doctrine error code
      *

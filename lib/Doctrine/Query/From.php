@@ -15,23 +15,36 @@ class Doctrine_Query_From extends Doctrine_Query_Part {
         $parts = Doctrine_Query::bracketExplode($str, 'JOIN');
 
         $operator = false;
+        
+        switch(trim($parts[0])) {
+            case 'INNER':
+                $operator = ':';
+            case 'LEFT':
+                array_shift($parts);
+        }
+
         $last = '';
 
         foreach($parts as $k => $part) {
             $part = trim($part);
-            $e    = explode(" ", $part);
+
+            if(empty($part)) {
+                continue;
+            }
+
+            $e    = explode(' ', $part);
 
             if(end($e) == 'INNER' || end($e) == 'LEFT')
                 $last = array_pop($e);
 
-            $part = implode(" ", $e);
+            $part = implode(' ', $e);
 
             foreach(Doctrine_Query::bracketExplode($part, ',') as $reference) {
                 $reference = trim($reference);
                 $e         = explode('.', $reference);
 
                 if($operator) {
-                    $reference = array_shift($e).$operator.implode('.', $e);
+                    $reference = array_shift($e) . $operator . implode('.', $e);
                 }
                 $table     = $this->query->load($reference);
             }                                              

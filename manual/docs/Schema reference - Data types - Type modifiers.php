@@ -29,7 +29,6 @@ Building upon the above, we can say that the modifiers alter the field definitio
 <br \><br \>
 Using the above example, we can also explore the default field operator. Default is set in the same way as the notnull operator to set a default value for the field. This value may be set in any character set that the DBMS supports for text fields, and any other valid data for the field's data type. In the above example, we have specified a valid time for the "Time" data type, '12:34:05'. Remember that when setting default dates and times, as well as datetimes, you should research and stay within the epoch of your chosen DBMS, otherwise you will encounter difficult to diagnose errors! 
 <br \><br \>
-Example 33-1. Example of the length modifier
 
 
 <?php
@@ -44,5 +43,5 @@ Example 33-1. Example of the length modifier
  
 
  <br \><br \>
-The above example will create a character varying field of length 12 characters in the database table. If the length definition is left out, MDB2 will create a length of the maximum allowable length for the data type specified, which may create a problem with some field types and indexing. Best practice is to define lengths for all or most of your fields. 
+The above example will create a character varying field of length 12 characters in the database table. If the length definition is left out, Doctrine will create a length of the maximum allowable length for the data type specified, which may create a problem with some field types and indexing. Best practice is to define lengths for all or most of your fields. 
 

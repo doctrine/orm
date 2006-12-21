@@ -33,6 +33,49 @@
  * @version     $Revision$
  */
 final class Doctrine {
+    /** 
+     * ERROR CONSTANTS
+     */
+    const ERR                       = -1;
+    const ERR_SYNTAX                = -2;
+    const ERR_CONSTRAINT            = -3;
+    const ERR_NOT_FOUND             = -4;
+    const ERR_ALREADY_EXISTS        = -5;
+    const ERR_UNSUPPORTED           = -6;
+    const ERR_MISMATCH              = -7;
+    const ERR_INVALID               = -8;
+    const ERR_NOT_CAPABLE           = -9;
+    const ERR_TRUNCATED             = -10;
+    const ERR_INVALID_NUMBER        = -11;
+    const ERR_INVALID_DATE          = -12;
+    const ERR_DIVZERO               = -13;
+    const ERR_NODBSELECTED          = -14;
+    const ERR_CANNOT_CREATE         = -15;
+    const ERR_CANNOT_DELETE         = -16;
+    const ERR_CANNOT_DROP           = -17;
+    const ERR_NOSUCHTABLE           = -18;
+    const ERR_NOSUCHFIELD           = -19;
+    const ERR_NEED_MORE_DATA        = -20;
+    const ERR_NOT_LOCKED            = -21;
+    const ERR_VALUE_COUNT_ON_ROW    = -22;
+    const ERR_INVALID_DSN           = -23;
+    const ERR_CONNECT_FAILED        = -24;
+    const ERR_EXTENSION_NOT_FOUND   = -25;
+    const ERR_NOSUCHDB              = -26;
+    const ERR_ACCESS_VIOLATION      = -27;
+    const ERR_CANNOT_REPLACE        = -28;
+    const ERR_CONSTRAINT_NOT_NULL   = -29;
+    const ERR_DEADLOCK              = -30;
+    const ERR_CANNOT_ALTER          = -31;
+    const ERR_MANAGER               = -32;
+    const ERR_MANAGER_PARSE         = -33;
+    const ERR_LOADMODULE            = -34;
+    const ERR_INSUFFICIENT_DATA     = -35;
+    /**
+     * class naming error
+     */
+    const ERR_CLASS_NAME            = -36;
+
     /**
      * ATTRIBUTE CONSTANTS
      */
@@ -353,11 +396,11 @@ final class Doctrine {
      * @return boolean
      */
     public static function autoload($classname) {
-        if(! self::$path)
-            self::$path = dirname(__FILE__);
-
         if(class_exists($classname))
             return false;
+
+        if(! self::$path)
+            self::$path = dirname(__FILE__);
 
         $class = self::$path.DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR,$classname) . '.php';
 
@@ -366,6 +409,7 @@ final class Doctrine {
 
 
         require_once($class);
+
         return true;
     }
     /**
@@ -394,7 +438,7 @@ final class Doctrine {
      */
     public static function isValidClassname($classname) {
         if(preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname))
-            throw new Doctrine_Exception("Class name is not valid. Use camel case and underscores (i.e My_PerfectClass).");
+            return false;
 
         return true;
     }

@@ -141,6 +141,7 @@ $menu = array('Getting started' =>
                                         'Enum',
                                         'Gzip',
                         ),
+/**
                         'Column attributes' => array(
                                         'Introduction',
                                         'Primary',
@@ -170,7 +171,7 @@ $menu = array('Getting started' =>
                                         'Autoincremented',
                                         'Natural',
                                         'Composite',
-                                        'Sequential')
+                                        'Sequential')*/
 
                         ),
            'Basic Components' =>

@@ -239,17 +239,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                             }
                         }
                 endswitch;
-
-                 if($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
+                
+                if($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
                     if(Doctrine::isValidClassname($class->getName())) {
-                        //$dict      = new Doctrine_DataDict($this->getConnection()->getDBH());
                         try {
                             $columns = array();
                             foreach($this->columns as $name => $column) {
                                 $definition = $column[2];
                                 $definition['type'] = $column[0];
                                 $definition['length'] = $column[1];
-                                
+
                                 if($definition['type'] == 'enum' && isset($definition['default']))
                                     $definition['default'] = $this->enumIndex($name, $definition['default']);
 
@@ -264,6 +263,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
                         }
                     }
                 }
+
 
             }
         } else {

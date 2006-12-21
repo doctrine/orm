@@ -74,24 +74,28 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * rather than the values of these protected variables
      */
     /**
-     * @var object Doctrine_Table $table    the factory that created this data access object
+     * @var object Doctrine_Table $_table   the factory that created this data access object
      */
     protected $_table;
     /**
-     * @var integer $id                     the primary keys of this object
+     * @var integer $_id                    the primary keys of this object
      */
     protected $_id           = array();
     /**
-     * @var array $data                     the record data
+     * @var array $_data                    the record data
      */
     protected $_data         = array();
     /**
-     * @var integer $state                  the state of this record
+     * @var array $_values                  the values array, aggregate values and such are mapped into this array
+     */
+    protected $_values       = array();
+    /**
+     * @var integer $_state                 the state of this record
      * @see STATE_* constants
      */
     protected $_state;
     /**
-     * @var array $modified                 an array containing properties that have been modified
+     * @var array $_modified                an array containing properties that have been modified
      */
     protected $_modified     = array();
     /**
@@ -723,6 +727,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if($name === $this->_table->getIdentifier())
             return null;
 
+        if(isset($this->_values[$lower]))
+            return $this->_values[$lower];
+
         $rel = $this->_table->getRelation($name);
 
         try {
@@ -734,7 +741,20 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         return $this->references[$name];
     }
-
+    /**
+     * mapValue
+     * This simple method is used for mapping values to $values property.
+     * Usually this method is used internally by Doctrine for the mapping of
+     * aggregate values.
+     *
+     * @param string $name                  the name of the mapped value
+     * @param mixed $value                  mixed value to be mapped
+     * @return void
+     */
+    public function mapValue($name, $value) {
+        $name = strtolower($name);
+        $this->_values[$name] = $value;
+    }
     /**
      * set
      * method for altering properties and Doctrine_Record references

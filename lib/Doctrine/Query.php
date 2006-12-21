@@ -283,31 +283,40 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * addFrom
      * 
      * @param strint $from
+     * @return Doctrine_Query
      */
     public function addFrom($from) {
         $class = 'Doctrine_Query_From';
         $parser = new $class($this);
         $parser->parse($from);
+
+        return $this;
     }
     /**
      * leftJoin
      *
      * @param strint $join
+     * @return Doctrine_Query
      */
     public function leftJoin($join) {
         $class = 'Doctrine_Query_From';
         $parser = new $class($this);
-        $parser->parse('LEFT JOIN '. $join);
+        $parser->parse('LEFT JOIN ' . $join);
+        
+        return $this;
     }
     /**
      * innerJoin
      *
      * @param strint $join
+     * @return Doctrine_Query
      */
     public function innerJoin($join) {
         $class = 'Doctrine_Query_From';
         $parser = new $class($this);
-        $parser->parse('INNER JOIN '. $join);
+        $parser->parse('INNER JOIN ' . $join);
+        
+        return $this;
     }
     /**
      * addWhere
