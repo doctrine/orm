@@ -224,6 +224,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 		if( ! empty($having)) 
 			$q .= ' HAVING ' . implode(' AND ',$having);
 
+        if( ! is_array($params))
+            $params = array($params);
+
         $params = array_merge($this->params, $params);
 
 		$a = $this->getConnection()->execute($q, $params)->fetch(PDO::FETCH_NUM);
@@ -533,6 +536,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 switch(strtolower($this->conn->getName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
+                        $params   = array_merge($this->params, $params);
                         $list     = $this->conn->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
                         $subquery = implode(', ', $list);
                     break;

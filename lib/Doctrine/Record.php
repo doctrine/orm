@@ -369,7 +369,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                                 $value = unserialize($tmp[$name]);
 
                                 if($value === false)
-                                    throw new Doctrine_Record_Exception("Unserialization of $name failed. ".var_dump(substr($tmp[$lower],0,30)."...",true));
+                                    throw new Doctrine_Record_Exception("Unserialization of $name failed.");
                             } else
                                 $value = $tmp[$name];
 

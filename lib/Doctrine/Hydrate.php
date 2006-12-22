@@ -322,6 +322,14 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
             $item = (int) $item;
     }
     /**
+     * setParams
+     *
+     * @param array $params
+     */
+    public function setParams(array $params = array()) {
+        $this->params = $params;
+    }
+    /**
      * execute
      * executes the dql query and populates all collections
      *
@@ -405,7 +413,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
 
                         if($prev[$name]->count() > 0) {
                             $record = $prev[$name]->getLast();
-                        } else {   
+                        } else {
                             $record = new $component();
                             $prev[$name]->add($record);
                         }

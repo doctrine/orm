@@ -5,6 +5,6 @@
 $users = $conn->query("SELECT u.*, COUNT(p.id) count FROM User u, u.Phonenumber p GROUP BY u.id");
 
 foreach($users as $user) {
-    print $user->name . ' has ' . $user->Phonenumber->getAggregateValue('count') . ' phonenumbers';
+    print $user->name . ' has ' . $user->Phonenumber[0]->count . ' phonenumbers';
 }
 ?>
