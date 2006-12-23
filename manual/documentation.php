@@ -327,6 +327,12 @@ $menu = array('Getting started' =>
                                         'Planned',
                                         'Technical Details',
                                         'Maintainer'),
+                      'Hook' => array(
+                                        'Introduction',
+                                        'Building queries',
+                                        'List of parsers',
+
+                         ),
                       /**
                       'Debugger' => array(
                                         'Introduction',

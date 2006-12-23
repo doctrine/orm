@@ -82,9 +82,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @var array $tableIndexes
      */
     protected $tableIndexes = array();
-    
-    protected $components   = array();
-    
+
     protected $pendingAggregates = array();
 
     protected $aggregateMap      = array();
@@ -144,6 +142,14 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         return $this->tableIndexes;
     }
     /**
+     * getTables
+     *
+     * @return array
+     */
+    public function getTables() {
+        return $this->tables;
+    }
+    /**
      * copyAliases
      *
      * @return void
@@ -160,7 +166,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         $s = array_search($path, $this->compAliases);
         if($s === false)
             return $path;
-    
+
         return $s;
     }
     /**
@@ -256,8 +262,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
     }
     /**
      * getView
+     * returns the view associated with this query object (if any)
      *
-     * @return Doctrine_View
+     * @return Doctrine_View        the view associated with this query object
      */
     public function getView() {
         return $this->view;
@@ -637,10 +644,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
              * parse the data into two-dimensional array
              */
             foreach($data as $key => $value):
-                $e = explode("__",$key);
+                $e = explode('__', $key);
 
-                $field     = strtolower( array_pop($e) );
-                $component = strtolower( implode("__",$e) );
+                $field     = strtolower(array_pop($e));
+                $component = strtolower(implode('__', $e));
 
                 $data[$component][$field] = $value;
 
@@ -656,10 +663,13 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * returns a Doctrine_Table for given name
      *
      * @param string $name              component name
-     * @return Doctrine_Table
+     * @return Doctrine_Table|boolean
      */
     public function getTable($name) {
-        return $this->tables[$name];
+        if(isset($this->tables[$name]))
+            return $this->tables[$name];
+
+        return false;
     }
     /**
      * @return string                   returns a string representation of this object

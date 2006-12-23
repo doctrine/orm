@@ -65,7 +65,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     private $relationStack     = array();
     
     private $isDistinct        = false;
-    
+    /**
+     * @var array $pendingFields
+     */
     private $pendingFields     = array();
     /**
      * @var integer $type                   the query type
@@ -102,13 +104,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     public function processPendingFields($componentAlias) {
         $tableAlias = $this->getTableAlias($componentAlias);
 
-
-        $componentPath  = $this->compAliases[$componentAlias];
-
-        if( ! isset($this->components[$componentPath])) 
+        if( ! isset($this->tables[$tableAlias]))
             throw new Doctrine_Query_Exception('Unknown component path '.$componentPath);
 
-        $table      = $this->components[$componentPath];
+        $table      = $this->tables[$tableAlias];
 
         if(isset($this->pendingFields[$componentAlias])) {
             $fields = $this->pendingFields[$componentAlias];
@@ -173,14 +172,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
     }
     public function processPendingAggregates($componentAlias) {
-        $tableAlias = $this->getTableAlias($componentAlias);
-        
-        $componentPath  = $this->compAliases[$componentAlias];
+        $tableAlias     = $this->getTableAlias($componentAlias);
 
-        if( ! isset($this->components[$componentPath]))
+        if( ! isset($this->tables[$tableAlias]))
             throw new Doctrine_Query_Exception('Unknown component path '.$componentPath);
 
-        $table      = $this->components[$componentPath];
+        $table      = $this->tables[$tableAlias];
 
         foreach($this->pendingAggregates[$componentAlias] as $args) {
             list($name, $arg, $distinct, $alias) = $args;
@@ -1145,7 +1142,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                                                                       . $assocTableName . '.' . $fk->getLocal();
 
                         $this->parts["join"][$tname][$tname2]         = $join . $aliasString    . ' ON ' . $tname2 . '.'
-                                                                      . $table->getIdentifier() . ' = '
+                                                                      . $fk->getTable()->getIdentifier() . ' = '
                                                                       . $assocTableName . '.' . $fk->getForeign();
 
                     } else {
@@ -1227,14 +1224,14 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         $fields = array();
 
-        if(strpos($fullName, "-") === false) {
+        if(strpos($fullName, '-') === false) {
             $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
 
             if(isset($exploded[1])) {
                 if(count($exploded) > 2) {
                     $fields = $this->parseAggregateValues($fullName, $tableName, $exploded, $currPath);
                 } elseif(count($exploded) == 2) {
-                    $fields = explode(",",substr($exploded[1],0,-1));
+                    $fields = explode(',',substr($exploded[1],0,-1));
                 }
             }
         } else {
@@ -1244,10 +1241,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
 
             if(isset($exploded[2])) {
-                if(substr_count($exploded[2], ")") > 1) {
+                if(substr_count($exploded[2], ')') > 1) {
 
                 } else {
-                    $fields = explode(",",substr($exploded[2],0,-1));
+                    $fields = explode(',', substr($exploded[2],0,-1));
                 }
             }
 
@@ -1263,27 +1260,27 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @return string
      */
     public function parseAggregateFunction($func,$reference) {
-        $pos = strpos($func,"(");
+        $pos = strpos($func, '(');
 
         if($pos !== false) {
             $funcs  = array();
 
             $name   = substr($func, 0, $pos);
             $func   = substr($func, ($pos + 1), -1);
-            $params = Doctrine_Query::bracketExplode($func, ",", "(", ")");
+            $params = Doctrine_Query::bracketExplode($func, ',', '(', ')');
 
             foreach($params as $k => $param) {
                 $params[$k] = $this->parseAggregateFunction($param,$reference);
             }
 
-            $funcs = $name."(".implode(", ", $params).")";
+            $funcs = $name . '(' . implode(', ', $params). ')';
 
             return $funcs;
 
         } else {
             if( ! is_numeric($func)) {
 
-                $func = $this->getTableAlias($reference).".".$func;
+                $func = $this->getTableAlias($reference).'.'.$func;
 
                 return $func;
             } else {
@@ -1297,7 +1294,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     public function parseAggregateValues($fullName, $tableName, array $exploded, $currPath) {
         $this->aggregate = true;
-        $pos    = strpos($fullName,"(");
+        $pos    = strpos($fullName, '(');
         $name   = substr($fullName, 0, $pos);
         $string = substr($fullName, ($pos + 1), -1);
 
@@ -1306,7 +1303,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             $func         = $this->parseAggregateFunction($value, $currPath);
             $exploded[$k] = $func;
 
-            $this->parts["select"][] = $exploded[$k];
+            $this->parts['select'][] = $exploded[$k];
         }
     }
 }

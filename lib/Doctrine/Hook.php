@@ -34,11 +34,37 @@ class Doctrine_Hook {
     /**
      * @var Doctrine_Query $query           the base query
      */
-    private $query;
+    protected $query;
     /**
      * @var array $joins                    the optional joins of the base query
      */
-    private $joins;
+    protected $joins;
+    /**
+     * @var array $hooks                    hooks array
+     */
+    protected $hooks        = array(
+                             'where',
+                             'orderby',
+                             'limit',
+                             'offset'
+                              );
+    /**
+     * @var array $params                   query parameters
+     */
+    protected $params       = array();
+    /**
+     * @var array $fieldParsers
+     */
+    protected $fieldParsers = array();
+
+    /**
+     * @var array $typeParsers
+     */
+    protected $typeParsers  = array(
+                              'char'      => 'Doctrine_Hook_WordLike',
+                              'string'    => 'Doctrine_Hook_WordLike',
+                              'integer'   => 'Doctrine_Hook_Integer',
+                              );
 
     /**
      * @param Doctrine_Query $query         the base query
@@ -51,16 +77,82 @@ class Doctrine_Hook {
             $this->query = $query;
         }
     }
+    public function buildQuery() {
+        $where  = array();
+        $from   = array();
+        $params = array();
+
+
+        $component = $this->table->getComponentName();
+
+        $data      = self::makeFlat($this->where);
+
+        foreach($data as $k => $v) {
+            if(trim($v) == '') {
+                unset($data[$k]);
+            }
+        }
+
+        $orderby = array();
+
+		if(isset($this->hooks['orderby'])) {
+			$e = explode(" ",$this->hooks['orderby']);
+
+			$orderComponent = $e[0];
+
+			if(in_array($orderComponent, $this->fields)) {
+				if(isset($e[1]) && ($e[1] == "ASC" || $e[1] == "DESC")) {
+					$orderby[] = $component.".".$e[0]." ".$e[1];
+				}
+			}
+			
+		}
+
+    }
+    public function getQuery() {
+        return $this->query;
+    }
     public function leftJoin($dql) {
 
     }
     public function innerJoin($dql) {
                                            	
     }
+    /**
+     * hookWhere
+     *
+     * @param array $params         an array of query where parameters
+     */
     public function hookWhere(array $params) {
+        foreach($params as $name => $value) {
+            $e = explode('.', $name);
+            
+            if(count($e) == 2) {
+                list($alias, $column) = $e;
 
+                $tableAlias = $this->query->getTableAlias($alias);
+                $table = $this->query->getTable($tableAlias);
+    
+                if($def = $table->getDefinitionOf($column)) {
+
+                    if(isset($this->typeParsers[$def[0]])) {
+                        $name   = $this->typeParsers[$def[0]];
+                        $parser = new $name;
+                    }
+
+                    $parser->parse($alias, $column, $value);
+
+                    $this->query->addWhere($parser->getCondition());
+                    $this->params += $parser->getParams();
+                }
+            }
+        }
+        $this->params += $params;
     }
-    public function hookOrderby(array $params) {
+    /**
+     * @param integer $limit
+     */
+    public function hookOrderby($params) {
 
     }
     /**
@@ -73,7 +165,7 @@ class Doctrine_Hook {
      * @param integer $offset
      */
     public function hookOffset($offset) {
-                                 	
+
     }
     public function setWhereHooks() {
                                     	
