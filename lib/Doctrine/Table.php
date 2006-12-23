@@ -335,7 +335,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param mixed $options
      * @return void
      */
-    final public function setColumn($name, $type, $length, $options = array()) {
+    final public function setColumn($name, $type, $length = null, $options = array()) {
         if(is_string($options)) 
             $options = explode('|', $options);
 
@@ -348,7 +348,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
             }
         }
         $name = strtolower($name);
-        $this->columns[$name] = array($type,$length,$options);
+        
+        if($length == null) 
+            $length = 2147483647;
+
+        $this->columns[$name] = array($type, $length, $options);
 
         if(isset($options['primary'])) {
             $this->primaryKeys[] = $name;
