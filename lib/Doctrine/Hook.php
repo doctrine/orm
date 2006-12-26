@@ -77,38 +77,6 @@ class Doctrine_Hook {
             $this->query = $query;
         }
     }
-    public function buildQuery() {
-        $where  = array();
-        $from   = array();
-        $params = array();
-
-
-        $component = $this->table->getComponentName();
-
-        $data      = self::makeFlat($this->where);
-
-        foreach($data as $k => $v) {
-            if(trim($v) == '') {
-                unset($data[$k]);
-            }
-        }
-
-        $orderby = array();
-
-		if(isset($this->hooks['orderby'])) {
-			$e = explode(" ",$this->hooks['orderby']);
-
-			$orderComponent = $e[0];
-
-			if(in_array($orderComponent, $this->fields)) {
-				if(isset($e[1]) && ($e[1] == "ASC" || $e[1] == "DESC")) {
-					$orderby[] = $component.".".$e[0]." ".$e[1];
-				}
-			}
-			
-		}
-
-    }
     public function getQuery() {
         return $this->query;
     }
@@ -120,19 +88,25 @@ class Doctrine_Hook {
     }
     /**
      * hookWhere
+     * builds DQL query where part from given parameter array
      *
-     * @param array $params         an array of query where parameters
+     * @param array $params         an associative array containing field 
+     *                              names and their values
+     * @return boolean              whether or not the hooking was
      */
-    public function hookWhere(array $params) {
+    public function hookWhere($params) {
+        if( ! is_array($params)) 
+            return false;
+
         foreach($params as $name => $value) {
             $e = explode('.', $name);
-            
+
             if(count($e) == 2) {
                 list($alias, $column) = $e;
 
                 $tableAlias = $this->query->getTableAlias($alias);
                 $table = $this->query->getTable($tableAlias);
-    
+
                 if($def = $table->getDefinitionOf($column)) {
 
                     if(isset($this->typeParsers[$def[0]])) {
@@ -148,29 +122,54 @@ class Doctrine_Hook {
             }
         }
         $this->params += $params;
+    
+        return true;
     }
     /**
-     * @param integer $limit
+     * hookOrderBy
+     * builds DQL query orderby part from given parameter array
+     *
+     * @param array $params         an array containing all fields which the built query
+     *                              should be ordered by
+     * @return boolean              whether or not the hooking was
      */
     public function hookOrderby($params) {
+        if( ! is_array($params)) 
+            return false;
 
+        foreach($params as $name) {
+            $e = explode(' ', $name);
+
+            $order = 'ASC';
+
+            if(count($e) > 1) {
+                $order = ($e[1] == 'DESC') ? 'DESC' : 'ASC';
+            }
+
+            $e = explode('.', $e[0]);
+
+            if(count($e) == 2) {
+                list($alias, $column) = $e;
+
+                $tableAlias = $this->query->getTableAlias($alias);
+                $table = $this->query->getTable($tableAlias);
+
+                if($def = $table->getDefinitionOf($column)) {
+                    $this->query->addOrderBy($alias . '.' . $column . ' ' . $order);
+                }
+            }
+        }
     }
     /**
      * @param integer $limit
      */
     public function hookLimit($limit) {
-
+        $this->query->limit((int) $limit);
     }
     /**
      * @param integer $offset
      */
     public function hookOffset($offset) {
-
-    }
-    public function setWhereHooks() {
-                                    	
-    }
-    public function setOrderByHooks() {
-                                    	
+        $this->query->offset((int) $offset);
     }
 }

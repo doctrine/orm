@@ -319,6 +319,19 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         return $this;
     }
     /**
+     * addOrderBy
+     *
+     * @param strint $orderby
+     * @return Doctrine_Query
+     */
+    public function addOrderBy($orderby) {
+        $class = 'Doctrine_Query_Orderby';
+        $parser = new $class($this);
+        $this->parts['orderby'][] = $parser->parse($orderby); 
+
+        return $this;
+    }
+    /**
      * addWhere
      *
      * @param string $where
@@ -555,8 +568,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']):'';
         $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']):'';
-        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' ', $this->parts['having']):'';
-        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(' ', $this->parts['orderby']):'';
+        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']):'';
+        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby']):'';
 
         if($modifyLimit)
             $q = $this->conn->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
@@ -624,8 +637,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         // all conditions must be preserved in subquery
         $subquery .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ',$this->parts['where']):'';
         $subquery .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ',$this->parts['groupby']):'';
-        $subquery .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' ',$this->parts['having']):'';
-        $subquery .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(' ', $this->parts['orderby']):'';
+        $subquery .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ',$this->parts['having']):'';
+        $subquery .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby']):'';
 
         // add driver specific limit clause
         $subquery = $this->conn->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
