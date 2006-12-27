@@ -183,28 +183,29 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $this->index++;
         }
         switch($adapter->getAttribute(PDO::ATTR_DRIVER_NAME)):
-            case "mysql":
+            case 'mysql':
                 $this->connections[$name] = new Doctrine_Connection_Mysql($this, $adapter);
             break;
-            case "sqlite":
+            case 'sqlite':
                 $this->connections[$name] = new Doctrine_Connection_Sqlite($this, $adapter);
             break;
-            case "pgsql":
+            case 'pgsql':
                 $this->connections[$name] = new Doctrine_Connection_Pgsql($this, $adapter);
             break;
-            case "oci":
+            case 'oci':
+            case 'oracle':
                 $this->connections[$name] = new Doctrine_Connection_Oracle($this, $adapter);
             break;
-            case "mssql":
+            case 'mssql':
                 $this->connections[$name] = new Doctrine_Connection_Mssql($this, $adapter);
             break;
-            case "firebird":
+            case 'firebird':
                 $this->connections[$name] = new Doctrine_Connection_Firebird($this, $adapter);
             break;
-            case "informix":
+            case 'informix':
                 $this->connections[$name] = new Doctrine_Connection_Informix($this, $adapter);
             break;
-            case "mock":
+            case 'mock':
                 $this->connections[$name] = new Doctrine_Connection_Mock($this, $adapter);
 			break;            
             default:

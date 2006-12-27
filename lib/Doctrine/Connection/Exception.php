@@ -67,18 +67,42 @@ class Doctrine_Connection_Exception extends Doctrine_Exception {
                 Doctrine::ERR_LOADMODULE         => 'error while including on demand module',
                 Doctrine::ERR_TRUNCATED          => 'truncated',
                 Doctrine::ERR_DEADLOCK           => 'deadlock detected',
-                );
+                );    
+    /**
+     * @see Doctrine::ERR_* constants
+     * @since 1.0
+     * @var integer $portableCode           portable error code
+     */
+    protected $portableCode;
+    /**
+     * getPortableCode
+     * returns portable error code
+     *
+     * @return integer      portable error code
+     */
+    public function getPortableCode() {
+        return $this->portableCode;
+    }
+    /**
+     * getPortableMessage
+     * returns portable error message
+     *
+     * @return string       portable error message
+     */
+    public function getPortableMessage() {
+        return self::errorMessage($this->portableCode);
+    }
     /**
      * Return a textual error message for a Doctrine error code
      *
      * @param   int|array   integer error code,
-                                null to get the current error code-message map,
-                                or an array with a new error code-message map
+     *                           null to get the current error code-message map,
+     *                           or an array with a new error code-message map
      *
      * @return  string  error message, or false if the error code was
      *                  not recognized
      */
-    public function errorMessage($value = null) {
+    public static function errorMessage($value = null) {
         return isset(self::$errorMessages[$value]) ?
            self::$errorMessages[$value] : self::$errorMessages[Doctrine::ERR];
     }

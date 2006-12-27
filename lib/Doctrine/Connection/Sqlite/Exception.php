@@ -50,26 +50,26 @@ class Doctrine_Connection_Sqlite_Exception extends Doctrine_Connection_Exception
                               '/^near ".*": syntax error$/'          => Doctrine::ERR_SYNTAX,
                               '/[0-9]+ values for [0-9]+ columns/i'  => Doctrine::ERR_VALUE_COUNT_ON_ROW,
                               );
-
     /**
-     * This method checks if native error code/message can be 
+     * This method checks if native error code/message can be
      * converted into a portable code and then adds this 
-     * portable error code to errorInfo array and returns the modified array
-     *
-     * the portable error code is added at the end of array
+     * portable error code to $portableCode field
      *
      * @param array $errorInfo      error info array
      * @since 1.0
-     * @return array
+     * @see Doctrine::ERR_* constants
+     * @see Doctrine_Connection::$portableCode
+     * @return boolean              whether or not the error info processing was successfull
+     *                              (the process is successfull if portable error code was found)
      */
     public function processErrorInfo(array $errorInfo) {
-        foreach (self::$errorRegexps as $regexp => $code) {
-            if (preg_match($regexp, $errorInfo[2])) {
-                $errorInfo[3] = $code;
-                break;
+        foreach(self::$errorRegexps as $regexp => $code) {
+            if(preg_match($regexp, $errorInfo[2])) {
+
+                $this->portableCode = $code;
+                return true;
             }
         }
-
-        return $errorInfo;
+        return false;
     }
 }

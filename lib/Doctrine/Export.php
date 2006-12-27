@@ -550,8 +550,6 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         
         $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
 
-        $name = $this->conn->quoteIdentifier($name, true);
-
         $method = 'get' . $field['type'] . 'Declaration';
 
         if(method_exists($this->conn->dataDict, $method))
@@ -559,7 +557,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         else
             $dec = $this->conn->dataDict->getNativeDeclaration($field);
 
-        return $name . ' ' . $dec . $charset . $default . $notnull . $collation;
+        return $this->conn->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $collation;
     }
     /**
      * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
@@ -613,7 +611,7 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         $reporter = new Doctrine_Reporter();
 
         if( ! Doctrine::isValidClassname($table->getComponentName())) {
-            $reporter->add(E_WARNING, Doctrine::ERR_CLASS_NAME);
+            $reporter->add(E_WARNING, 'Badly named class.');
         }
         
         try {
@@ -631,12 +629,12 @@ class Doctrine_Export extends Doctrine_Connection_Module {
 
                 $columns[$name] = $definition;
             }
+
             $this->createTable($table->getTableName(), $columns);
 
         } catch(Doctrine_Connection_Exception $e) {
-
             $reporter->add(E_ERROR, $e->getCode());
-        }  
+        }
 
         return $reporter;
     }

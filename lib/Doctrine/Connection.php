@@ -223,8 +223,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function quoteIdentifier($str, $checkOption = true) {
         if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
             return $str;
-        }
-        $str = str_replace($this->properties['identifier_quoting']['end'], 
+        }           
+        $str = str_replace($this->properties['identifier_quoting']['end'],
                            $this->properties['identifier_quoting']['escape'] .
                            $this->properties['identifier_quoting']['end'], $str);
 
@@ -613,10 +613,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 return $this->dbh->query($query);
             }
         } catch(Doctrine_Adapter_Exception $e) {
-            $this->rethrowException($e);
-        } catch(PDOException $e) {
-            $this->rethrowException($e);
-        }
+        } catch(PDOException $e) { }
+        
+        $this->rethrowException($e);
     }
     /**
      * exec
@@ -649,9 +648,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $exc  = new $name($e->getMessage(), (int) $e->getCode());
         if( ! is_array($e->errorInfo))
-            $e->errorInfo = array();
+            $e->errorInfo = array(null, null, null, null);
             
-        $exc->errorInfo = $exc->processErrorInfo($e->errorInfo);
+        $exc->processErrorInfo($e->errorInfo);
 
         throw $exc;
     }
@@ -702,7 +701,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * }
      * </code>
      *
-     * @return ArrayIterator
+     * @return ArrayIterator        SPL ArrayIterator object
      */
     public function getIterator() {
         return new ArrayIterator($this->tables);

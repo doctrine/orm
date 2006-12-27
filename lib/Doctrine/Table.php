@@ -257,6 +257,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
 
                                 $columns[$name] = $definition;
                             }
+
                             $this->conn->export->createTable($this->options['tableName'], $columns);
                         } catch(Exception $e) {
 

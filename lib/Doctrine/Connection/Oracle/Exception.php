@@ -57,21 +57,18 @@ class Doctrine_Connection_Oracle_Exception extends Doctrine_Connection_Exception
                                       2449 => Doctrine::ERR_CONSTRAINT,
                                       );
     /**
-     * This method checks if native error code/message can be 
+     * This method checks if native error code/message can be
      * converted into a portable code and then adds this 
-     * portable error code to errorInfo array and returns the modified array
+     * portable error code to $portableCode field
      *
      * the portable error code is added at the end of array
      *
      * @param array $errorInfo      error info array
      * @since 1.0
-     * @return array
      */
     public function processErrorInfo(array $errorInfo) {
         $code = $errorInfo[1];
         if(isset(self::$errorCodeMap[$code]))
-            $errorInfo[3] = self::$errorCodeMap[$code];
-            
-        return $errorInfo;
+            $this->portableCode = self::$errorCodeMap[$code];
     }
 }

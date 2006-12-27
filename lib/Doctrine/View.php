@@ -107,8 +107,8 @@ class Doctrine_View {
     public function create() {
         $sql = sprintf(self::CREATE, $this->name, $this->query->getQuery());
         try {
-            $this->conn->getDBH()->query($sql);
-        } catch(Exception $e) {
+            $this->conn->execute($sql);
+        } catch(Doctrine_Exception $e) {
             throw new Doctrine_View_Exception($e->__toString());
         }
     }
@@ -121,8 +121,8 @@ class Doctrine_View {
      */
     public function drop() {
         try {
-            $this->conn->getDBH()->query(sprintf(self::DROP, $this->name));
-        } catch(Exception $e) {
+            $this->conn->execute(sprintf(self::DROP, $this->name));
+        } catch(Doctrine_Exception $e) {
             throw new Doctrine_View_Exception($e->__toString());
         }
     }
