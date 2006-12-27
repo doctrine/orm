@@ -20,7 +20,7 @@ function autoload($class) {
     } else {
         $file   = str_replace('_', '', $file);
     }
-
+    print $file ."<br \>";
     // create a test case file if it doesn't exist
 
     if( ! file_exists($file)) {
