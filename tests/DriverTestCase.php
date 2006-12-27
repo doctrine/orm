@@ -15,7 +15,7 @@ class AdapterMock implements Doctrine_Adapter_Interface {
     public function pop() {
         return array_pop($this->queries);
     }
-    public function forceException($name, $message, $code) {
+    public function forceException($name, $message = '', $code = 0) {
         $this->exception = array($name, $message, $code);
     }
     public function prepare($prepareString){ 
@@ -69,7 +69,7 @@ class AdapterMock implements Doctrine_Adapter_Interface {
     public function errorInfo(){ }
     public function getAttribute($attribute) { 
         if($attribute == PDO::ATTR_DRIVER_NAME)
-            return $this->name;
+            return strtolower($this->name);
     }
     public function setAttribute($attribute, $value) {
                                    	
@@ -81,6 +81,9 @@ class AdapterStatementMock {
     }
     public function fetchAll($fetchMode) {
         return array();
+    }
+    public function execute() {
+        return true;
     }
 }
 class Doctrine_Driver_UnitTestCase extends UnitTestCase {
@@ -107,6 +110,9 @@ class Doctrine_Driver_UnitTestCase extends UnitTestCase {
     public function getDeclaration($type) {
         return $this->dataDict->getPortableDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 1, 'fixed' => true));
     }
+    public function setDriverName($driverName) {
+        $this->driverName = $driverName;
+    }
     public function init() {
         $this->adapter = new AdapterMock($this->driverName);
         $this->manager = Doctrine_Manager::getInstance();
@@ -123,7 +129,10 @@ class Doctrine_Driver_UnitTestCase extends UnitTestCase {
             
             $tx = 'Doctrine_Transaction_' . ucwords($name);
             $dataDict = 'Doctrine_DataDict_' . ucwords($name);
-
+            
+            $exc  = 'Doctrine_Connection_' . ucwords($name) . '_Exception';
+            
+            $this->exc = new $exc();
             if(class_exists($tx))
                 $this->transaction = new $tx($this->conn);
             if(class_exists($dataDict)) {

@@ -7,11 +7,11 @@ class Doctrine_Configurable_TestCase extends Doctrine_UnitTestCase {
 
     public function testGetIndexNameFormatAttribute() {
         // default index name format is %_idx
-        $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT), '%_idx');
+        $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT), '%s_idx');
     }
     public function testGetSequenceNameFormatAttribute() {
         // default sequence name format is %_seq
-        $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT), '%_seq');
+        $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT), '%s_seq');
     }
     public function testSetIndexNameFormatAttribute() {
         $this->manager->setAttribute(Doctrine::ATTR_IDXNAME_FORMAT, '%_index');
@@ -25,7 +25,7 @@ class Doctrine_Configurable_TestCase extends Doctrine_UnitTestCase {
     }
     public function testExceptionIsThrownWhenSettingIndexNameFormatAttributeAtTableLevel() {
         try {
-            $this->connection->getTable('Entity')->setAttribute(Doctrine::ATTR_IDXNAME_FORMAT, '%_idx');
+            $this->connection->getTable('Entity')->setAttribute(Doctrine::ATTR_IDXNAME_FORMAT, '%s_idx');
             $this->fail();
         } catch(Doctrine_Exception $e) {
             $this->pass();
@@ -33,7 +33,7 @@ class Doctrine_Configurable_TestCase extends Doctrine_UnitTestCase {
     }
     public function testExceptionIsThrownWhenSettingSequenceNameFormatAttributeAtTableLevel() {
         try {
-            $this->connection->getTable('Entity')->setAttribute(Doctrine::ATTR_SEQNAME_FORMAT, '%_seq');
+            $this->connection->getTable('Entity')->setAttribute(Doctrine::ATTR_SEQNAME_FORMAT, '%s_seq');
             $this->fail();
         } catch(Doctrine_Exception $e) {
             $this->pass();
@@ -86,6 +86,7 @@ class Doctrine_Configurable_TestCase extends Doctrine_UnitTestCase {
         $this->manager->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
 
         $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER), true);
+                $this->manager->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
     }
     public function testDefaultSequenceColumnNameAttributeValueIsId() {
         $this->assertEqual($this->manager->getAttribute(Doctrine::ATTR_SEQCOL_NAME), 'id');

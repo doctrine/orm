@@ -11,9 +11,16 @@ class Doctrine_Export_Reporter_TestCase extends Doctrine_Driver_UnitTestCase {
     }
     public function testExportChecksClassNaming() {
         $reporter = $this->export->export('BadLyNamed__Class');
-        
+
+        // Class name is not valid. Double underscores are not allowed
+
+        $this->assertEqual($reporter->pop(), array(E_WARNING, 'Badly named class.'));
+    }
+    public function testExportReportsExceptions() {
+
+        $reporter = $this->export->export('User');
         // Class name is not valid. Double underscores are not allowed
 
         $this->assertEqual($reporter->pop(), array(E_WARNING, Doctrine::ERR_CLASS_NAME));
-    } 
+    }
 }
