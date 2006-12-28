@@ -492,6 +492,12 @@ $menu = array('Getting started' =>
                                                 'Getting database declaration',
                                                 'Reserved keywords'),
                             ),
+            'Drivers' =>
+                array('Oracle' 
+                            => array('Making unsuported functions work'),
+                      'Mysql' 
+                            => array('Tips and tricks'),
+                      ),
             'Technology' => array(
                 'Architecture',
                 'Design patterns used',
@@ -537,7 +543,9 @@ $menu = array('Getting started' =>
                                     'Control statements',
                                     'Inline documentation'
                                     ),
-                                )
+                            'Testing' => array(
+                                    'Writing tests',
+                                ))
             );
 
 
