@@ -34,7 +34,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
     
     protected $sql = array(
                         'listDatabases' => 'SELECT datname FROM pg_database',
-                        'listFunctions' => "SELECT 
+                        'listFunctions' => "SELECT
                                                 proname
                                             FROM
                                                 pg_proc pr,
@@ -46,14 +46,14 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
                                                 AND pr.pronamespace IN
                                                     (SELECT oid FROM pg_namespace 
                                                      WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema'",
-                        'listSequences' => "SELECT 
+                        'listSequences' => "SELECT
                                                 relname 
                                             FROM 
                                                 pg_class 
                                             WHERE relkind = 'S' AND relnamespace IN
                                                 (SELECT oid FROM pg_namespace
                                                  WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema')",
-                        'listTables'    => "SELECT 
+                        'listTables'    => "SELECT
                                                 c.relname AS table_name
                                             FROM pg_class c, pg_user u
                                             WHERE c.relowner = u.usesysid 
@@ -68,27 +68,54 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
                                                 AND NOT EXISTS (SELECT 1 FROM pg_user WHERE usesysid = c.relowner)
                                                 AND c.relname !~ '^pg_'",
                         'listViews'     => 'SELECT viewname FROM pg_views',
-                        'listUsers'     => 'SELECT usename FROM pg_user'
-                        
+                        'listUsers'     => 'SELECT usename FROM pg_user',
+                        'listTableConstraints' => "SELECT
+                                                        relname
+                                                   FROM 
+                                                        pg_class 
+                                                   WHERE oid IN (
+                                                        SELECT indexrelid
+                                                        FROM pg_index, pg_class
+                                                        WHERE pg_class.relname = %s 
+                                                            AND pg_class.oid = pg_index.indrelid 
+                                                            AND (indisunique = 't' OR indisprimary = 't')
+                                                        )",
+                        'listTableIndexes'     => "SELECT
+                                                        relname
+                                                   FROM
+                                                        pg_class
+                                                   WHERE oid IN (
+                                                        SELECT indexrelid 
+                                                        FROM pg_index, pg_class
+                                                        WHERE pg_class.relname=%s 
+                                                            AND pg_class.oid=pg_index.indrelid 
+                                                            AND indisunique != 't' 
+                                                            AND indisprimary != 't'
+                                                        )",
+                        'listTableColumns'     => "SELECT
+                                                        a.attnum, 
+                                                        a.attname AS field, 
+                                                        t.typname AS type, 
+                                                        format_type(a.atttypid, a.atttypmod) AS complete_type,
+                                                        a.attnotnull AS isnotnull,
+                                                        (SELECT 't'
+                                                          FROM pg_index
+                                                          WHERE c.oid = pg_index.indrelid
+                                                          AND pg_index.indkey[0] = a.attnum
+                                                          AND pg_index.indisprimary = 't'
+                                                        ) AS pri,
+                                                        (SELECT pg_attrdef.adsrc
+                                                          FROM pg_attrdef
+                                                          WHERE c.oid = pg_attrdef.adrelid
+                                                          AND pg_attrdef.adnum=a.attnum
+                                                        ) AS default
+                                                  FROM pg_attribute a, pg_class c, pg_type t
+                                                  WHERE c.relname = %s
+                                                        AND a.attnum > 0
+                                                        AND a.attrelid = c.oid
+                                                        AND a.atttypid = t.oid
+                                                  ORDER BY a.attnum",
                         );
-
-    /**
-     * listDatabases
-     * lists all databases
-     *
-     * @return array
-     */
-    public function listDatabases() {
-        return $this->conn->fetchColumn($this->sql['listDatabases']);
-    }
-    /**
-     * lists all availible database functions
-     *
-     * @return array
-     */
-    public function listFunctions() {
-        return $this->conn->fetchColumn($this->sql['listFunctions']);
-    }
     /**
      * lists all database triggers
      *
@@ -99,25 +126,14 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
 
     }
     /**
-     * lists all database sequences
-     *
-     * @param string|null $database
-     * @return array
-     */
-    public function listSequences($database = null) {
-        return $this->conn->fetchColumn($this->sql['listSequences']);
-    }
-    /**
      * lists table constraints
      *
      * @param string $table     database table name
      * @return array
      */
     public function listTableConstraints($table) {
-        $table = $db->quote($table, 'text');
-        $subquery = "SELECT indexrelid FROM pg_index, pg_class";
-        $subquery.= " WHERE pg_class.relname=$table AND pg_class.oid=pg_index.indrelid AND (indisunique = 't' OR indisprimary = 't')";
-        $query = "SELECT relname FROM pg_class WHERE oid IN ($subquery)";
+        $table = $this->conn->quote($table);
+        $query = sprintf($this->sql['listTableConstraints'], $table);
         
         return $this->conn->fetchColumn($query);
     }
@@ -128,24 +144,8 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
      * @return array
      */
     public function listTableColumns($table) { 
-        $sql = "SELECT a.attnum, a.attname AS field, t.typname AS type, format_type(a.atttypid, a.atttypmod) AS complete_type, "
-             . "a.attnotnull AS isnotnull, "
-             . "( SELECT 't' "
-             . "FROM pg_index "
-             . "WHERE c.oid = pg_index.indrelid "
-             . "AND pg_index.indkey[0] = a.attnum "
-             . "AND pg_index.indisprimary = 't') AS pri, "
-             . "(SELECT pg_attrdef.adsrc "
-             . "FROM pg_attrdef "
-             . "WHERE c.oid = pg_attrdef.adrelid "
-             . "AND pg_attrdef.adnum=a.attnum) AS default "
-             . "FROM pg_attribute a, pg_class c, pg_type t "
-             . "WHERE c.relname = '" . $table . "' "
-             . "AND a.attnum > 0 "
-             . "AND a.attrelid = c.oid "
-             . "AND a.atttypid = t.oid "
-             . "ORDER BY a.attnum ";
-        $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+        $result = $this->dbh->query($this->sql['listTableColumns'])->fetchAll(PDO::FETCH_ASSOC);
         $columns     = array();
         foreach ($result as $key => $val) {
             if ($val['type'] === 'varchar') {
@@ -172,10 +172,8 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
      * @return array
      */
     public function listTableIndexes($table) {
-        $table = $db->quote($table, 'text');
-        $subquery = "SELECT indexrelid FROM pg_index, pg_class";
-        $subquery.= " WHERE pg_class.relname=$table AND pg_class.oid=pg_index.indrelid AND indisunique != 't' AND indisprimary != 't'";
-        $query    = "SELECT relname FROM pg_class WHERE oid IN ($subquery)";
+        $table = $this->conn->quote($table);
+        $query = sprintf($this->sql['listTableIndexes'], $table);
 
         return $this->conn->fetchColumn($query);
     }
@@ -205,22 +203,5 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
      */
     public function listTableViews($table) {
         return $this->conn->fetchColumn($query);
-    }
-    /**
-     * lists database users
-     *
-     * @return array
-     */
-    public function listUsers() {
-        return $this->conn->fetchColumn($this->sql['listUsers']);
-    }
-    /**
-     * lists database views
-     *
-     * @param string|null $database
-     * @return array
-     */
-    public function listViews($database = null) {
-        return $this->conn->fetchColumn($this->sql['listViews']);
     }
 }
