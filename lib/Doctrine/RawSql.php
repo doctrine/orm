@@ -155,7 +155,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
 
         foreach($this->tableAliases as $alias) {
             foreach($this->tables[$alias]->getPrimaryKeys() as $key) {
-                $field = $alias.".".$key;
+                $field = $alias . '.' . $key;
                 if( ! isset($this->parts["select"][$field]))
                     $this->parts["select"][$field] = $field." AS ".$alias."__".$key;
             }
@@ -175,6 +175,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
         $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']) : '';
         $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' ', $this->parts['having']) : '';
         $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(' ', $this->parts['orderby']) : '';
+        $q .= ( ! empty($this->parts['limit']))?   ' LIMIT ' . implode(' ', $this->parts['limit']) : '';
+        $q .= ( ! empty($this->parts['offset']))?  ' OFFSET ' . implode(' ', $this->parts['offset']) : '';
 
         if( ! empty($string))
             array_pop($this->parts['where']);
