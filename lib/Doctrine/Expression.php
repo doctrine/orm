@@ -31,6 +31,12 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Expression extends Doctrine_Connection_Module {
+    public function getIdentifier($column) {
+        return $column;
+    }
+    public function getIdentifiers($columns) {
+        return $columns;
+    }
     /**
      * regexp
      * returns the regular expression operator 
@@ -38,7 +44,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @return string
      */
     public function regexp() {
-        throw new Doctrine_Connection_Exception('Regular expression operator is not supported by this database driver.');                                    	
+        throw new Doctrine_Expression_Exception('Regular expression operator is not supported by this database driver.');                                    	
     }
     /**
      * Returns the average value of a column
@@ -131,7 +137,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $expression2
      * @return string
      */
-    public function round($column, $decimals) {
+    public function round($column, $decimals = 0) {
         $column = $this->getIdentifier($column);
 
         return 'ROUND(' . $column . ', ' . $decimals . ')';
@@ -190,7 +196,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $str       literal string
      * @return integer
      */
-    public function locate($substr, $str) {
+    public function locate($str, $substr) {
         return 'LOCATE(' . $str . ', ' . $substr . ')';
     }
     /**
@@ -243,9 +249,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      *
      * @param string|array(string) strings that will be concatinated.
      */
-    public function concat($arg1, $arg2) {
-        $args = func_get_args();
-        $cols = $this->getIdentifiers($cols);
+    public function concat(array $args) {
+        $cols = $this->getIdentifiers($args);
         return 'CONCAT(' . join(', ', $cols) . ')';
     }
     /**
@@ -263,7 +268,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      */
     public function not($expression) {
         $expression = $this->getIdentifier($expression);
-        return 'NOT (' . $expression . ')';
+        return 'NOT(' . $expression . ')';
     }
     /**
      * Returns the SQL to perform the same mathematical operation over an array
@@ -278,15 +283,14 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @return string an expression
      */
     private function basicMath($type, array $args) {
-        $args = func_get_args();
-        $elements = $this->getIdentifiers($elements);
+        $elements = $this->getIdentifiers($args);
         if (count($elements) < 1)
             return '';
 
         if (count($elements) == 1) {
             return $elements[0];
         } else {
-            return '(' . join(' ' . $type . ' ', $elements) . ')';
+            return '(' . implode(' ' . $type . ' ', $elements) . ')';
         }
     }
     /**
@@ -382,7 +386,6 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @return string an expression
      */
     public function div(array $args) {
-        $args = func_get_args();
         return $this->basicMath('/', $args);
     }
 
@@ -545,7 +548,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
         if(count($values) == 0)
             throw new Doctrine_Expression_Exception('Values array for IN operator should not be empty.');
 
-        return $column . ' IN ( ' . join(', ', $values) . ' )';
+        return $column . ' IN (' . implode(', ', $values) . ')';
     }
     /**
      * Returns SQL that checks if a expression is null.
