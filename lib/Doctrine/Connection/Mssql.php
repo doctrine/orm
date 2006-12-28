@@ -76,7 +76,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
      * @return string  quoted identifier string
      */
     public function quoteIdentifier($identifier, $checkOption = false) {
-        if ($check_option && ! $this->options['quote_identifier']) {
+        if ($checkOption && ! $this->options['quote_identifier']) {
             return $identifier;
         }
         return '[' . str_replace(']', ']]', $identifier) . ']';

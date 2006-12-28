@@ -64,9 +64,10 @@ class Doctrine_Connection_Mssql_Exception extends Doctrine_Connection_Exception 
      */
     public function processErrorInfo(array $errorInfo) {
         $code = $errorInfo[1];
-        if(isset(self::$errorCodeMap[$code]))
-            $errorInfo[3] = self::$errorCodeMap[$code];
-            
-        return $errorInfo;
+        if(isset(self::$errorCodeMap[$code])) {
+            $this->portableCode = self::$errorCodeMap[$code];
+            return true;
+        }
+        return false;
     }
 }
