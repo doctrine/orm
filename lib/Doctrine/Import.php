@@ -18,18 +18,13 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
-/**
- * @package     Doctrine
- * @url         http://www.phpdoctrine.com
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
- * @version     $Id$
+Doctrine::autoload('Doctrine_Connection_Module');
 /**
  * class Doctrine_Import
  * Main responsible of performing import operation. Delegates database schema
  * reading to a reader object and passes the result to a builder object which
  * builds a Doctrine data model.
+ *
  * @package     Doctrine
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
@@ -37,40 +32,112 @@
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  */
-class Doctrine_Import {
+class Doctrine_Import extends Doctrine_Connection_Module {
     /**
-     * @var Doctrine_Import_Reader $reader
-     */
-    private $reader;
-    /**
-     * @var Doctrine_Import_Builder $builder
-     */
-    private $builder;
-
-
-    /**
+     * lists all databases
      *
-     * @return 
-     * @access public
+     * @return array
      */
-    public function import( ) {
-        
+    public function listDatabases() {
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
     /**
+     * lists all availible database functions
      *
-     * @param Doctrine_Import_Reader reader      
-     * @return void
+     * @return array
      */
-    public function setReader(Doctrine_Import_Reader $reader) {
-        $this->reader = $reader;
+    public function listFunctions() {
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');    
     }
     /**
+     * lists all database triggers
      *
-     * @param Doctrine_Import_Builder builder      
-     * @return void
+     * @param string|null $database
+     * @return array
      */
-    public function setBuilder(Doctrine_Import_Builder $builder) {
-        $this->builder = $builder;
+    public function listTriggers($database = null) {
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
+    }
+    /**
+     * lists all database sequences
+     *
+     * @param string|null $database
+     * @return array
+     */
+    public function listSequences($database = null) { 
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
+    }
+    /**
+     * lists table constraints
+     *
+     * @param string $table     database table name
+     * @return array
+     */
+    public function listTableConstraints($table) {
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
+    }
+    /**
+     * lists table constraints
+     *
+     * @param string $table     database table name
+     * @return array
+     */
+    public function listTableColumns($table) { 
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
+    }
+    /**
+     * lists table constraints
+     *
+     * @param string $table     database table name
+     * @return array
+     */
+    public function listTableIndexes($table) {
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
+    }
+    /**
+     * lists tables
+     *
+     * @param string|null $database
+     * @return array
+     */
+    public function listTables($database = null) {
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
+    }
+    /**
+     * lists table triggers
+     *
+     * @param string $table     database table name
+     * @return array
+     */
+    public function listTableTriggers($table) { 
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
+    }
+    /**
+     * lists table views
+     *
+     * @param string $table     database table name
+     * @return array
+     */
+    public function listTableViews($table) {
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
+    }
+    /**
+     * lists database users
+     *
+     * @return array
+     */
+    public function listUsers() { 
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
+    }
+    /**
+     * lists database views
+     *
+     * @param string|null $database
+     * @return array
+     */
+    public function listViews($database = null) { 
+        throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
 }
