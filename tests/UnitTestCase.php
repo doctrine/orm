@@ -17,6 +17,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     protected $conn;
     protected $adapter;
     protected $export;
+    protected $expr;
     protected $dataDict;
     protected $transaction;
     
@@ -112,6 +113,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->export       = $this->connection->export;
             $this->transaction  = $this->connection->transaction;
             $this->dataDict     = $this->connection->dataDict;
+            $this->expr         = $this->connection->expression;
         }
         $this->unitOfWork = $this->connection->unitOfWork;
         $this->connection->setListener(new Doctrine_EventListener());
