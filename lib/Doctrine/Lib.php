@@ -137,19 +137,19 @@ class Doctrine_Lib {
         $e = explode("\n",$sql);
         $color = "367FAC";
         $l = $sql;
-        $l = str_replace("SELECT","<font color='$color'><b>SELECT</b></font><br \>  ",$l);
-        $l = str_replace("FROM","<font color='$color'><b>FROM</b></font><br \>",$l);
-        $l = str_replace("LEFT JOIN","<br \><font color='$color'><b>LEFT JOIN</b></font>",$l);
-        $l = str_replace("INNER JOIN","<br \><font color='$color'><b>INNER JOIN</b></font>",$l);
-        $l = str_replace("WHERE","<br \><font color='$color'><b>WHERE</b></font>",$l);
-        $l = str_replace("GROUP BY","<br \><font color='$color'><b>GROUP BY</b></font>",$l);
-        $l = str_replace("HAVING","<br \><font color='$color'><b>HAVING</b></font>",$l);
-        $l = str_replace("AS","<font color='$color'><b>AS</b></font><br \>  ",$l);
-        $l = str_replace("ON","<font color='$color'><b>ON</b></font>",$l);
-        $l = str_replace("ORDER BY","<font color='$color'><b>ORDER BY</b></font><br \>",$l);
-        $l = str_replace("LIMIT","<font color='$color'><b>LIMIT</b></font><br \>",$l);
-        $l = str_replace("OFFSET","<font color='$color'><b>OFFSET</b></font><br \>",$l);
-        $l = str_replace("  ","<dd>",$l);
+        $l = str_replace("SELECT ", "<font color='$color'><b>SELECT </b></font><br \>  ",$l);
+        $l = str_replace("FROM ", "<font color='$color'><b>FROM </b></font><br \>",$l);
+        $l = str_replace(" LEFT JOIN ", "<br \><font color='$color'><b> LEFT JOIN </b></font>",$l);
+        $l = str_replace(" INNER JOIN ", "<br \><font color='$color'><b> INNER JOIN </b></font>",$l);
+        $l = str_replace(" WHERE ", "<br \><font color='$color'><b> WHERE </b></font>",$l);
+        $l = str_replace(" GROUP BY ", "<br \><font color='$color'><b> GROUP BY </b></font>",$l);
+        $l = str_replace(" HAVING ", "<br \><font color='$color'><b> HAVING </b></font>",$l);
+        $l = str_replace(" AS ", "<font color='$color'><b> AS </b></font><br \>  ",$l);
+        $l = str_replace(" ON ", "<font color='$color'><b> ON </b></font>",$l);
+        $l = str_replace(" ORDER BY ", "<font color='$color'><b> ORDER BY </b></font><br \>",$l);
+        $l = str_replace(" LIMIT ", "<font color='$color'><b> LIMIT </b></font><br \>",$l);
+        $l = str_replace(" OFFSET ", "<font color='$color'><b> OFFSET </b></font><br \>",$l);
+        $l = str_replace("  ", "<dd>",$l);
         
         return $l;
     }

@@ -49,16 +49,16 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition {
      * @return string
      */
     final public function load($having) {
-        $e = Doctrine_Query::bracketExplode($having," ","(",")");
+        $e = Doctrine_Query::bracketExplode($having, ' ', '(', ')');
 
         $r = array_shift($e);
-        $t = explode("(",$r);
+        $t = explode('(', $r);
 
         $count = count($t);
         $r = $this->parseAggregateFunction($r);
         $operator  = array_shift($e);
-        $value     = implode(" ",$e);
-        $r .= " ".$operator." ".$value;
+        $value     = implode(' ', $e);
+        $r .= ' ' . $operator . ' ' . $value;
 
         return $r;
     }
@@ -68,7 +68,7 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition {
      * @return string
      */
     public function __toString() {
-        return ( ! empty($this->parts))?implode(" AND ", $this->parts):'';
+        return ( ! empty($this->parts))?implode(' AND ', $this->parts):'';
     }
 }
 

@@ -144,31 +144,40 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         $pos  = strpos($func, '(');
         $name = substr($func, 0, $pos);
-        switch($name) {
-            case 'MAX':
-            case 'MIN':
-            case 'COUNT':
-            case 'AVG':
-            case 'SUM':
-                $reference = substr($func, ($pos + 1), -1);
-                $e2    = explode(' ', $reference);
+
+
+        if(method_exists($this->conn->expression, $name)) {
+
+                $argStr = substr($func, ($pos + 1), -1);
                 
+                $args    = explode(',', $argStr);
+
+                $e2    = explode(' ', $args[0]);
+
                 $distinct = '';
                 if(count($e2) > 1) {
                     if(strtoupper($e2[0]) == 'DISTINCT')
                         $distinct  = 'DISTINCT ';
-                    
-                    $reference = $e2[1];
+
+                    $args[0] = $e2[1];
                 }
+                
 
-                $parts = explode('.', $reference);
 
+                $parts = explode('.', $args[0]);
+                $owner = $parts[0];
                 $alias = (isset($e[1])) ? $e[1] : $name;
 
-                $this->pendingAggregates[$parts[0]][] = array($name, $parts[1], $distinct, $alias);
-            break;
-            default:
-                throw new Doctrine_Query_Exception('Unknown aggregate function '.$name);
+                $e3    = explode('.', $alias);
+
+                if(count($e3) > 1) {
+                    $alias = $e3[1];
+                    $owner = $e3[0];
+                }
+
+                $this->pendingAggregates[$owner][] = array($name, $args, $distinct, $alias);
+        } else {
+            throw new Doctrine_Query_Exception('Unknown aggregate function '.$name);
         }
     }
     public function processPendingAggregates($componentAlias) {
@@ -179,10 +188,29 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         $table      = $this->tables[$tableAlias];
 
-        foreach($this->pendingAggregates[$componentAlias] as $args) {
-            list($name, $arg, $distinct, $alias) = $args;
+        foreach($this->pendingAggregates[$componentAlias] as $parts) {
+            list($name, $args, $distinct, $alias) = $parts;
+            
+            $arglist = array();
+            foreach($args as $arg) {
+                $e = explode('.', $arg);
 
-            $this->parts["select"][] = $name . '(' . $distinct . $tableAlias . '.' . $arg . ') AS ' . $tableAlias . '__' . count($this->aggregateMap);
+
+                if(count($e) > 1) {
+                    $tableAlias = $this->getTableAlias($e[0]);
+                    $table      = $this->tables[$tableAlias];
+                    
+                    if( ! $table->hasColumn($e[1])) {
+                        throw new Doctrine_Query_Exception('Unknown column ' . $e[1]);
+                    }
+
+                    $arglist[]  = $tableAlias . '.' . $e[1];
+                } else {
+                    $arglist[]  = $e[0];
+                }
+            }
+
+            $this->parts['select'][] = $name . '(' . $distinct . implode(', ', $arglist) . ') AS ' . $tableAlias . '__' . count($this->aggregateMap);
 
             $this->aggregateMap[] = $table;
         }

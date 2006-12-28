@@ -42,7 +42,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
 
 
 
-            $pos       = strpos($field, "(");
+            $pos       = strpos($field, '(');
 
             if($pos !== false) {
                 $func   = substr($field, 0, $pos);
@@ -209,7 +209,12 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
         }
         return $operator;
     }
-
+    /**
+     * __toString
+     * return string representation of this object
+     *
+     * @return string
+     */
     public function __toString() {
         return ( ! empty($this->parts))?implode(' AND ', $this->parts):'';
     }
