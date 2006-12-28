@@ -1,10 +1,56 @@
 <?php
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.com>.
+ */
+
+/**
+ * Doctrine_Connection_Pgsql_TestCase
+ *
+ * @package     Doctrine
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
+ */
 class Doctrine_Connection_Pgsql_TestCase extends Doctrine_UnitTestCase {
     public function __construct() {
         parent::__construct('pgsql');
     }
     public function testNoSuchTableErrorIsSupported() {
         $this->assertTrue($this->exc->processErrorInfo(array(0, 0, 'table test does not exist')));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHTABLE);
+    }
+    public function testNoSuchTableErrorIsSupported2() {
+        $this->assertTrue($this->exc->processErrorInfo(array(0, 0, 'relation does not exist')));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHTABLE);
+    }
+    public function testNoSuchTableErrorIsSupported3() {
+        $this->assertTrue($this->exc->processErrorInfo(array(0, 0, 'sequence does not exist')));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHTABLE);
+    }
+    public function testNoSuchTableErrorIsSupported4() {
+        $this->assertTrue($this->exc->processErrorInfo(array(0, 0, 'class xx not found')));
         
         $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHTABLE);
     }
@@ -43,101 +89,80 @@ class Doctrine_Connection_Pgsql_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_INVALID_NUMBER);
     }
-    /**
-                                    '/column .* (of relation .*)?does not exist/i'
-                                        => Doctrine::ERR_NOSUCHFIELD,
-                                    '/attribute .* not found|relation .* does not have attribute/i'
-                                        => Doctrine::ERR_NOSUCHFIELD,
-                                    '/column .* specified in USING clause does not exist in (left|right) table/i'
-                                        => Doctrine::ERR_NOSUCHFIELD,
-                                    '/(relation|sequence|table).*does not exist|class .* not found/i'
-                                        => Doctrine::ERR_NOSUCHTABLE,
-                                    '/index .* does not exist/'
-                                        => Doctrine::ERR_NOT_FOUND,
-                                    '/relation .* already exists/i'
-                                        => Doctrine::ERR_ALREADY_EXISTS,
-                                    '/(divide|division) by zero$/i'
-                                        => Doctrine::ERR_DIVZERO,
-                                    '/value too long for type character/i'
-                                        => Doctrine::ERR_INVALID,
-                                    '/permission denied/'
-                                        => Doctrine::ERR_ACCESS_VIOLATION,
-                                    '/violates [\w ]+ constraint/'
-                                        => Doctrine::ERR_CONSTRAINT,
-                                    '/referential integrity violation/'
-                                        => Doctrine::ERR_CONSTRAINT,
-                                    '/violates not-null constraint/'
-                                        => Doctrine::ERR_CONSTRAINT_NOT_NULL,
-                                    '/more expressions than target columns/i'
-                                        => Doctrine::ERR_VALUE_COUNT_ON_ROW,
-
-
-
     public function testNoSuchFieldErrorIsSupported() {
-        $this->exc->processErrorInfo(array(0, 904, ''));
+        $this->exc->processErrorInfo(array(0, 0, 'column name (of relation xx) does not exist'));
         
         $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHFIELD);
     }
+    public function testNoSuchFieldErrorIsSupported2() {
+        $this->exc->processErrorInfo(array(0, 0, 'attribute xx not found'));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHFIELD);
+    }
+    public function testNoSuchFieldErrorIsSupported3() {
+        $this->exc->processErrorInfo(array(0, 0, 'relation xx does not have attribute'));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHFIELD);
+    }
+    public function testNoSuchFieldErrorIsSupported4() {
+        $this->exc->processErrorInfo(array(0, 0, 'column xx specified in USING clause does not exist in left table'));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHFIELD);
+    }
+    public function testNoSuchFieldErrorIsSupported5() {
+        $this->exc->processErrorInfo(array(0, 0, 'column xx specified in USING clause does not exist in right table'));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHFIELD);
+    }
+    public function testNotFoundErrorIsSupported() {
+        $this->exc->processErrorInfo(array(0, 0, 'index xx does not exist/'));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOT_FOUND);
+    }
+    
+    public function testNotNullConstraintErrorIsSupported() {
+        $this->exc->processErrorInfo(array(0, 0, 'violates not-null constraint'));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_CONSTRAINT_NOT_NULL);
+    }
     public function testConstraintErrorIsSupported() {
-        $this->exc->processErrorInfo(array(0, 1, ''));
+        $this->exc->processErrorInfo(array(0, 0, 'referential integrity violation'));
         
         $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_CONSTRAINT);
     }
     public function testConstraintErrorIsSupported2() {
-        $this->exc->processErrorInfo(array(0, 2291, ''));
+        $this->exc->processErrorInfo(array(0, 0, 'violates xx constraint'));
         
         $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_CONSTRAINT);
-    }
-    public function testConstraintErrorIsSupported3() {
-        $this->exc->processErrorInfo(array(0, 2449, ''));
-        
-        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_CONSTRAINT);
-    }
-    public function testConstraintErrorIsSupported4() {
-        $this->exc->processErrorInfo(array(0, 2292, ''));
-        
-        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_CONSTRAINT);
-    }
-    public function testNoSuchTableErrorIsSupported4() {
-        $this->exc->processErrorInfo(array(0, 2289, ''));
-        
-        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHTABLE);
-    }
-
-    public function testDivZeroErrorIsSupported1() {
-        $this->exc->processErrorInfo(array(0, 1476, ''));
-        
-        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_DIVZERO);
-    }
-    public function testNotFoundErrorIsSupported() {
-        $this->exc->processErrorInfo(array(0, 1418, ''));
-        
-        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOT_FOUND);
-    }
-    public function testNotNullConstraintErrorIsSupported() {
-        $this->exc->processErrorInfo(array(0, 1400, ''));
-        
-        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_CONSTRAINT_NOT_NULL);
-    }
-    public function testNotNullConstraintErrorIsSupported2() {
-        $this->exc->processErrorInfo(array(0, 1407, ''));
-        
-        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_CONSTRAINT_NOT_NULL);
     }
     public function testInvalidErrorIsSupported() {
-        $this->exc->processErrorInfo(array(0, 1401, ''));
+        $this->exc->processErrorInfo(array(0, 0, 'value too long for type character'));
         
         $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_INVALID);
     }
     public function testAlreadyExistsErrorIsSupported() {
-        $this->exc->processErrorInfo(array(0, 955, ''));
+        $this->exc->processErrorInfo(array(0, 0, 'relation xx already exists'));
         
         $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_ALREADY_EXISTS);
     }
+    public function testDivZeroErrorIsSupported() {
+        $this->exc->processErrorInfo(array(0, 0, 'division by zero'));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_DIVZERO);
+    }
+    public function testDivZeroErrorIsSupported2() {
+        $this->exc->processErrorInfo(array(0, 0, 'divide by zero'));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_DIVZERO);
+    }
+    public function testAccessViolationErrorIsSupported() {
+        $this->exc->processErrorInfo(array(0, 0, 'permission denied'));
+        
+        $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_ACCESS_VIOLATION);
+    }
     public function testValueCountOnRowErrorIsSupported() {
-        $this->exc->processErrorInfo(array(0, 913, ''));
+        $this->exc->processErrorInfo(array(0, 0, 'more expressions than target columns'));
         
         $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_VALUE_COUNT_ON_ROW);
     }
-    */
 }
