@@ -31,9 +31,6 @@
  * @version     $Revision$
  */
 class Doctrine_Connection_Pgsql_TestCase extends Doctrine_UnitTestCase {
-    public function __construct() {
-        parent::__construct('pgsql');
-    }
     public function testNoSuchTableErrorIsSupported() {
         $this->assertTrue($this->exc->processErrorInfo(array(0, 0, 'table test does not exist')));
         
