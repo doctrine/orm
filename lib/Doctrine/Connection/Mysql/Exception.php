@@ -62,21 +62,21 @@ class Doctrine_Connection_Mysql_Exception extends Doctrine_Connection_Exception 
                                       1217 => Doctrine::ERR_CONSTRAINT,
                                       );
     /**
-     * This method checks if native error code/message can be 
+     * This method checks if native error code/message can be
      * converted into a portable code and then adds this 
-     * portable error code to errorInfo array and returns the modified array
-     *
-     * the portable error code is added at the end of array
+     * portable error code to $portableCode field
      *
      * @param array $errorInfo      error info array
      * @since 1.0
-     * @return array
+     * @return boolean              whether or not the error info processing was successfull
+     *                              (the process is successfull if portable error code was found)
      */
     public function processErrorInfo(array $errorInfo) {
         $code = $errorInfo[1];
-        if(isset(self::$errorCodeMap[$code]))
-            $errorInfo[3] = self::$errorCodeMap[$code];
-            
-        return $errorInfo;
+        if(isset(self::$errorCodeMap[$code])) {
+            $this->portableCode = self::$errorCodeMap[$code];
+            return true;
+        }
+        return false;
     }
 }
