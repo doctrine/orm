@@ -270,6 +270,14 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         return $this->view;
     }
     /**
+     * getParams
+     * 
+     * @return array
+     */
+    public function getParams() {
+        return $this->params;                           	
+    }
+    /**
      * getTableAlias
      *
      * @param string $path
