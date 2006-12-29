@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Access_TestCase
+ * Doctrine_DataDict_Firebird_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
