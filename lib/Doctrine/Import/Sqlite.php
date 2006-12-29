@@ -62,7 +62,26 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @return array
      */
     public function listSequences($database = null) { 
-    
+        $db =& $this->getDBInstance();
+        if (PEAR::isError($db)) {
+            return $db;
+        }
+
+        $query = "SELECT name FROM sqlite_master WHERE type='table' AND sql NOT NULL ORDER BY name";
+        $table_names = $db->queryCol($query);
+        if (PEAR::isError($table_names)) {
+            return $table_names;
+        }
+        $result = array();
+        foreach ($table_names as $table_name) {
+            if ($sqn = $this->_fixSequenceName($table_name, true)) {
+                $result[] = $sqn;
+            }
+        }
+        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            $result = array_map(($db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
+        }
+        return $result;
     }
     /**
      * lists table constraints
@@ -71,7 +90,38 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @return array
      */
     public function listTableConstraints($table) {
-    
+        $db =& $this->getDBInstance();
+        if (PEAR::isError($db)) {
+            return $db;
+        }
+
+        $table = $db->quote($table, 'text');
+        $query = "SELECT sql FROM sqlite_master WHERE type='index' AND ";
+        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            $query.= 'LOWER(tbl_name)='.strtolower($table);
+        } else {
+            $query.= "tbl_name=$table";
+        }
+        $query.= " AND sql NOT NULL ORDER BY name";
+        $indexes = $db->queryCol($query, 'text');
+        if (PEAR::isError($indexes)) {
+            return $indexes;
+        }
+
+        $result = array();
+        foreach ($indexes as $sql) {
+            if (preg_match("/^create unique index ([^ ]+) on /i", $sql, $tmp)) {
+                $index = $this->_fixIndexName($tmp[1]);
+                if (!empty($index)) {
+                    $result[$index] = true;
+                }
+            }
+        }
+
+        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            $result = array_change_key_case($result, $db->options['field_case']);
+        }
+        return array_keys($result);    
     }
     /**
      * lists table constraints

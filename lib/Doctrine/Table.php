@@ -1100,6 +1100,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     public function getColumnNames() {
         return array_keys($this->columns);
     }
+
     /**
      * getDefinitionOf
      *

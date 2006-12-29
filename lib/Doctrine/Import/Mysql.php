@@ -64,7 +64,22 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @return array
      */
     public function listSequences($database = null) { 
-    
+        $query = "SHOW TABLES";
+        if (!is_null($database)) {
+            $query .= " FROM $database";
+        }
+        $tableNames = $db->queryCol($query);
+
+        $result = array();
+        foreach ($tableNames as $tableName) {
+            if ($sqn = $this->_fixSequenceName($tableName, true)) {
+                $result[] = $sqn;
+            }
+        }
+        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            $result = array_map(($db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
+        }
+        return $result;
     }
     /**
      * lists table constraints
@@ -73,9 +88,48 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @return array
      */
     public function listTableConstraints($table) {
-    	$sql = 'select KCU.COLUMN_NAME as referencingColumn, TC.CONSTRAINT_NAME as constraintName, KCU.REFERENCED_TABLE_SCHEMA as referencedTableSchema, KCU.REFERENCED_TABLE_NAME as referencedTable, KCU.REFERENCED_COLUMN_NAME as referencedColumn from INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC inner JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE  KCU on TC.CONSTRAINT_NAME=KCU.CONSTRAINT_NAME and TC.TABLE_SCHEMA = KCU.TABLE_SCHEMA and TC.TABLE_NAME=KCU.TABLE_NAME WHERE  TC.TABLE_SCHEMA=database() AND TC.TABLE_NAME="'.$table.'" AND CONSTRAINT_TYPE="FOREIGN KEY"';
-	    
-        return $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $db =& $this->getDBInstance();
+        if (PEAR::isError($db)) {
+            return $db;
+        }
+
+        $key_name = 'Key_name';
+        $non_unique = 'Non_unique';
+        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            if ($db->options['field_case'] == CASE_LOWER) {
+                $key_name = strtolower($key_name);
+                $non_unique = strtolower($non_unique);
+            } else {
+                $key_name = strtoupper($key_name);
+                $non_unique = strtoupper($non_unique);
+            }
+        }
+
+        $table = $db->quoteIdentifier($table, true);
+        $query = "SHOW INDEX FROM $table";
+        $indexes = $db->queryAll($query, null, MDB2_FETCHMODE_ASSOC);
+        if (PEAR::isError($indexes)) {
+            return $indexes;
+        }
+
+        $result = array();
+        foreach ($indexes as $index_data) {
+            if (!$index_data[$non_unique]) {
+                if ($index_data[$key_name] !== 'PRIMARY') {
+                    $index = $this->_fixIndexName($index_data[$key_name]);
+                } else {
+                    $index = 'PRIMARY';
+                }
+                if (!empty($index)) {
+                    $result[$index] = true;
+                }
+            }
+        }
+
+        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            $result = array_change_key_case($result, $db->options['field_case']);
+        }
+        return array_keys($result);
     }
     /**
      * lists table constraints
@@ -112,8 +166,36 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableIndexes($table) {
-    
+    public function listTableIndexes($table) 
+    {
+        $key_name = 'Key_name';
+        $non_unique = 'Non_unique';
+        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            if ($db->options['field_case'] == CASE_LOWER) {
+                $key_name = strtolower($key_name);
+                $non_unique = strtolower($non_unique);
+            } else {
+                $key_name = strtoupper($key_name);
+                $non_unique = strtoupper($non_unique);
+            }
+        }
+
+        $table = $db->quoteIdentifier($table, true);
+        $query = "SHOW INDEX FROM $table";
+        $indexes = $db->queryAll($query, null, MDB2_FETCHMODE_ASSOC);
+
+
+        $result = array();
+        foreach ($indexes as $index_data) {
+            if ($index_data[$non_unique] && ($index = $this->_fixIndexName($index_data[$key_name]))) {
+                $result[$index] = true;
+            }
+        }
+
+        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            $result = array_change_key_case($result, $db->options['field_case']);
+        }
+        return array_keys($result);
     }
     /**
      * lists tables
@@ -121,7 +203,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTables($database = null) {
+    public function listTables($database = null) 
+    {
         $sql = 'SHOW TABLES';
         
         return $this->dbh->query($sql)->fetchAll(PDO::FETCH_COLUMN);
@@ -132,7 +215,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableTriggers($table) { 
+    public function listTableTriggers($table) 
+    {
     
     }
     /**
@@ -141,16 +225,18 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableViews($table) { 
-    
+    public function listTableViews($table) 
+    {
+
     }
     /**
      * lists database users
      *
      * @return array
      */
-    public function listUsers() { 
-    
+    public function listUsers() 
+    {
+        return $db->queryCol('SELECT DISTINCT USER FROM USER');
     }
     /**
      * lists database views
@@ -158,7 +244,19 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listViews($database = null) { 
-    
+    public function listViews($database = null) 
+    {
+        $query = 'SHOW FULL TABLES';
+        if (!is_null($database)) {
+            $query.= ' FROM ' . $database;
+        }
+        $query.= " WHERE Table_type = 'VIEW'";
+
+        $result = $db->queryCol($query);
+
+        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            $result = array_map(($db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
+        }
+        return $result;
     }
 }
