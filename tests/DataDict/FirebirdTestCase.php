@@ -37,7 +37,7 @@ class Doctrine_DataDict_Firebird_TestCase extends Doctrine_UnitTestCase {
     public function testGetCollationFieldDeclarationReturnsValidSql() {
         $this->assertEqual($this->dataDict->getCollationFieldDeclaration('xx'), 'COLLATE xx');
     }
-    public function testGetPortableTypeForUnknownDbTypeThrowsException() {
+    public function testGetPortableDeclarationForUnknownDbTypeThrowsException() {
         try {
             $this->dataDict->getPortableDeclaration(array('type' => 'unknown'));
             $this->fail();
@@ -45,77 +45,77 @@ class Doctrine_DataDict_Firebird_TestCase extends Doctrine_UnitTestCase {
             $this->pass();
         }
     }
-    public function testGetPortableTypeSupportsNativeDateType() {
+    public function testGetPortableDeclarationSupportsNativeDateType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'date'));
         
         $this->assertEqual($type, array(array('date'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeTimestampType() {
+    public function testGetPortableDeclarationSupportsNativeTimestampType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'timestamp'));
         
         $this->assertEqual($type, array(array('timestamp'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeTimeType() {
+    public function testGetPortableDeclarationSupportsNativeTimeType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'time'));
         
         $this->assertEqual($type, array(array('time'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeFloatType() {
+    public function testGetPortableDeclarationSupportsNativeFloatType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'float'));
 
         $this->assertEqual($type, array(array('float'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeDoubleType() {
+    public function testGetPortableDeclarationSupportsNativeDoubleType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'double'));
 
         $this->assertEqual($type, array(array('float'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeDoublePrecisionType() {
+    public function testGetPortableDeclarationSupportsNativeDoublePrecisionType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'double precision'));
 
         $this->assertEqual($type, array(array('float'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeDfloatType() {
+    public function testGetPortableDeclarationSupportsNativeDfloatType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'd_float'));
         
         $this->assertEqual($type, array(array('float'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeDecimalType() {
+    public function testGetPortableDeclarationSupportsNativeDecimalType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'decimal'));
         
         $this->assertEqual($type, array(array('decimal'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeNumericType() {
+    public function testGetPortableDeclarationSupportsNativeNumericType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'numeric'));
 
         $this->assertEqual($type, array(array('decimal'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeBlobType() {
+    public function testGetPortableDeclarationSupportsNativeBlobType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'blob'));
 
         $this->assertEqual($type, array(array('blob'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeVarcharType() {
+    public function testGetPortableDeclarationSupportsNativeVarcharType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'varchar'));
 
         $this->assertEqual($type, array(array('string'), null, null, false));
     }
-    public function testGetPortableTypeSupportsNativeCharType() {
+    public function testGetPortableDeclarationSupportsNativeCharType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'char'));
 
         $this->assertEqual($type, array(array('string'), null, null, true));
     }
-    public function testGetPortableTypeSupportsNativeCstringType() {
+    public function testGetPortableDeclarationSupportsNativeCstringType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'cstring'));
 
         $this->assertEqual($type, array(array('string'), null, null, true));
     }
-    public function testGetPortableTypeSupportsNativeBigintType() {
+    public function testGetPortableDeclarationSupportsNativeBigintType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'bigint'));
 
         $this->assertEqual($type, array(array('integer'), null, null, null));
     }
-    public function testGetPortableTypeSupportsNativeQuadType() {
+    public function testGetPortableDeclarationSupportsNativeQuadType() {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'quad'));
 
         $this->assertEqual($type, array(array('integer'), null, null, null));
