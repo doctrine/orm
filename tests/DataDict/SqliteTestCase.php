@@ -1,9 +1,5 @@
 <?php
-class Doctrine_DataDict_Sqlite_TestCase extends Doctrine_Driver_UnitTestCase {
-    public function __construct() {
-        parent::__construct('sqlite');
-    }
-
+class Doctrine_DataDict_Sqlite_TestCase extends Doctrine_UnitTestCase {
     public function testBooleanMapsToBooleanType() {
         $this->assertDeclarationType('boolean', 'boolean');
     }

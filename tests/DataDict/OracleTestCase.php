@@ -1,8 +1,6 @@
 <?php
-class Doctrine_DataDict_Oracle_TestCase extends Doctrine_Driver_UnitTestCase {
-    public function __construct() {
-        parent::__construct('oci');
-    }
+class Doctrine_DataDict_Oracle_TestCase extends Doctrine_UnitTestCase {
+
     public function testGetNativeDefinitionSupportsIntegerType() {
         $a = array('type' => 'integer', 'length' => 20, 'fixed' => false);
 

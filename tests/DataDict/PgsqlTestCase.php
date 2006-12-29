@@ -1,8 +1,6 @@
 <?php
-class Doctrine_DataDict_Pgsql_TestCase extends Doctrine_Driver_UnitTestCase {
-    public function __construct() {
-        parent::__construct('pgsql');
-    }
+class Doctrine_DataDict_Pgsql_TestCase extends Doctrine_UnitTestCase {
+
 
     public function getDeclaration($type) {
         return $this->dataDict->getPortableDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 2, 'fixed' => true));
