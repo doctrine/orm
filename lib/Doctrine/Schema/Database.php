@@ -38,7 +38,7 @@ Doctrine::autoload('Doctrine_Schema_Object');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Schema_Database extends Doctrine_Schema_Object {
-    
+
     protected $definition = array('name'        => null,
                                   'type'        => null,
                                   'charset'     => null,
@@ -54,15 +54,15 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
      * @access public
      */
     public function __clone( ) {
-        
+
     }
     /**
      *
-     * @return 
+     * @return
      * @access public
      */
     public function __toString( ) {
-        
+
     }
     /**
      *
@@ -70,7 +70,7 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
      * @access public
      */
     public function isValid( ) {
-        
+
     }
     /**
      *
@@ -78,7 +78,7 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
      * @access public
      */
     public function addTable( $table = null ) {
-        $this->childs[] = $table;   
+        $this->childs[] = $table;
     }
 
     /**

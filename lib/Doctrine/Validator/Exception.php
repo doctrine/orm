@@ -41,7 +41,7 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
     public function __construct(array $invalid) {
         $this->invalid = $invalid;
     }
-    
+
     public function getInvalidRecords() {
         return $this->invalid;
     }
@@ -49,7 +49,7 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
     public function getIterator() {
         return new ArrayIterator($this->invalid);
     }
-    
+
     public function count() {
         return count($this->invalid);
     }
@@ -63,4 +63,3 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
         return parent::__toString();
     }
 }
-

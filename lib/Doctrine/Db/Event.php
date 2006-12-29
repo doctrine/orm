@@ -40,7 +40,7 @@ class Doctrine_Db_Event {
     protected $invoker;
 
     protected $query;
-    
+
     protected $type;
 
     protected $startedMicrotime;
@@ -56,7 +56,7 @@ class Doctrine_Db_Event {
         return $this->query;
     }
     public function getType() {
-        return $this->type;                          	
+        return $this->type;
     }
 
     public function start() {
@@ -78,9 +78,9 @@ class Doctrine_Db_Event {
      * @return mixed
      */
     public function getElapsedSecs() {
-        if (is_null($this->endedMicrotime))
+        if (is_null($this->endedMicrotime)) {
             return false;
-
+        }
         return ($this->endedMicrotime - $this->startedMicrotime);
     }
 

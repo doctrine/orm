@@ -35,7 +35,7 @@ class Doctrine_Hook_WordLike extends Doctrine_Hook_Parser_Complex {
      * parse
      * Parses given field and field value to DQL condition
      * and parameters. This method should always return
-     * prepared statement conditions (conditions that use 
+     * prepared statement conditions (conditions that use
      * placeholders instead of literal values).
      *
      * @param string $alias     component alias
@@ -46,8 +46,8 @@ class Doctrine_Hook_WordLike extends Doctrine_Hook_Parser_Complex {
     public function parseSingle($alias, $field, $value) {
         $e2 = explode(' ',$value);
 
-        foreach($e2 as $v) {
-        	$v = trim($v);
+        foreach ($e2 as $v) {
+             $v = trim($v);
             $a[] = $alias. '.' . $field . ' LIKE ?';
             $this->params[] = $v . '%';
         }

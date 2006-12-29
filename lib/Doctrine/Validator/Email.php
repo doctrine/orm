@@ -41,14 +41,15 @@ class Doctrine_Validator_Email {
      * @return boolean
      */
     public function validate(Doctrine_Record $record, $key, $value, $args) {
-        if(empty($value)) 
+        if (empty($value)) {
             return true;
-
-        if(isset($args[0])) {
+        }
+        if (isset($args[0])) {
             $parts = explode("@", $value);
-            if(isset($parts[1]) && function_exists("checkdnsrr")) {
-                if( ! checkdnsrr($parts[1], "MX"))
+            if (isset($parts[1]) && function_exists("checkdnsrr")) {
+                if ( ! checkdnsrr($parts[1], "MX")) {
                     return false;
+                }
             }
         }
 
@@ -59,14 +60,15 @@ class Doctrine_Validator_Email {
         $domain_literal = "\\x5b($dtext|$quoted_pair)*\\x5d";
         $quoted_string = "\\x22($qtext|$quoted_pair)*\\x22";
         $domain_ref = $atom;
-        $sub_domain = "($domain_ref|$domain_literal)"; 
+        $sub_domain = "($domain_ref|$domain_literal)";
         $word = "($atom|$quoted_string)";
         $domain = "$sub_domain(\\x2e$sub_domain)+";
         /*
           following psudocode to allow strict checking - ask pookey about this if you're puzzled
-          
-          if ($this->getValidationOption('strict_checking') == true)
+
+          if ($this->getValidationOption('strict_checking') == true) {
               $domain = "$sub_domain(\\x2e$sub_domain)*";
+          }
         */
         $local_part = "$word(\\x2e$word)*";
         $addr_spec = "$local_part\\x40$domain";
@@ -75,4 +77,3 @@ class Doctrine_Validator_Email {
     }
 
 }
-

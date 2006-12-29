@@ -39,21 +39,23 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation {
      */
     public function processDiff(Doctrine_Record $record) {
         $alias = $this->getAlias();
-        
-        if($this->isOneToOne()) {
-            if($record->obtainOriginals($alias) && 
-               $record->obtainOriginals($alias)->obtainIdentifier() != $this->obtainReference($alias)->obtainIdentifier())
+
+        if ($this->isOneToOne()) {
+            if ($record->obtainOriginals($alias)
+               && $record->obtainOriginals($alias)->obtainIdentifier() != $this->obtainReference($alias)->obtainIdentifier()
+            ) {
                     $record->obtainOriginals($alias)->delete();
+            }
         } else {
-            if($record->hasReference($alias)) {
+            if ($record->hasReference($alias)) {
                 $new = $record->obtainReference($alias);
 
-                if( ! $record->obtainOriginals($alias))
+                if ( ! $record->obtainOriginals($alias)) {
                     $record->loadReference($alias);
-
+                }
                 $operations = Doctrine_Relation::getDeleteOperations($record->obtainOriginals($alias), $new);
 
-                foreach($operations as $r) {
+                foreach ($operations as $r) {
                     $r->delete();
                 }
 
@@ -72,8 +74,8 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation {
     public function fetchRelatedFor(Doctrine_Record $record) {
         $id = $record->get($this->local);
 
-        if($this->isOneToOne()) {
-            if(empty($id)) {
+        if ($this->isOneToOne()) {
+            if (empty($id)) {
                 $related = $this->table->create();
             } else {
                 $dql  = "FROM ".$this->table->getComponentName()." WHERE ".$this->table->getComponentName().".".$this->foreign." = ?";
@@ -84,7 +86,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation {
             $related->set($this->foreign, $record, false);
 
         } else {
-            if(empty($id)) {
+            if (empty($id)) {
                 $related = new Doctrine_Collection($this->table);
             } else {
                 $query      = $this->getRelationDql(1);

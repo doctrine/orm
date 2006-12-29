@@ -126,7 +126,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
     /**
      * constructor
-     * @param Doctrine_Table|null $table       a Doctrine_Table object or null, 
+     * @param Doctrine_Table|null $table       a Doctrine_Table object or null,
      *                                         if null the table object is retrieved from current connection
      *
      * @param boolean $isNewEntry              whether or not this record is transient
@@ -136,7 +136,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @throws Doctrine_Record_Exception       if the cleanData operation fails somehow
      */
     public function __construct($table = null, $isNewEntry = false) {
-        if(isset($table) && $table instanceof Doctrine_Table) {
+        if (isset($table) && $table instanceof Doctrine_Table) {
             $this->_table = $table;
             $exists = ( ! $isNewEntry);
         } else {
@@ -150,15 +150,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         // If not this record is only used for creating table definition and setting up
         // relations.
 
-        if($this->_table->getConnection()->hasTable($this->_table->getComponentName())) {
-
+        if ($this->_table->getConnection()->hasTable($this->_table->getComponentName())) {
             $this->oid = self::$index;
 
             self::$index++;
 
             $keys = $this->_table->getPrimaryKeys();
 
-            if( ! $exists) {
+            if ( ! $exists) {
                 // listen the onPreCreate event
                 $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onPreCreate($this);
             } else {
@@ -169,7 +168,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             // get the data array
             $this->_data = $this->_table->getData();
 
-
             // get the column count
             $count = count($this->_data);
 
@@ -178,12 +176,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
             $this->prepareIdentifiers($exists);
 
-            if( ! $exists) {
-
-                if($count > 0)
+            if ( ! $exists) {
+                if ($count > 0) {
                     $this->_state = Doctrine_Record::STATE_TDIRTY;
-                else
+                } else {
                     $this->_state = Doctrine_Record::STATE_TCLEAN;
+                }
 
                 // set the default values for this record
                 $this->setDefaultValues();
@@ -194,7 +192,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             } else {
                 $this->_state      = Doctrine_Record::STATE_CLEAN;
 
-                if($count < $this->_table->getColumnCount()) {
+                if ($count < $this->_table->getColumnCount()) {
                     $this->_state  = Doctrine_Record::STATE_PROXY;
                 }
 
@@ -255,13 +253,13 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return boolean                          whether or not this record passes all column validations
      */
     public function isValid() {
-        if( ! $this->_table->getAttribute(Doctrine::ATTR_VLD))
+        if ( ! $this->_table->getAttribute(Doctrine::ATTR_VLD)) {
             return true;
-        
+        }
         // Clear the stack from any previous errors.
         $this->_errorStack->clear();
-        
-        // Run validation process  
+
+        // Run validation process
         $validator = new Doctrine_Validator();
         $validator->validateRecord($this);
         $this->validate();
@@ -270,7 +268,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         } else {
             $this->validateOnUpdate();
         }
-        
+
         return $this->_errorStack->count() == 0 ? true : false;
     }
     /**
@@ -307,16 +305,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return boolean
      */
     public function setDefaultValues($overwrite = false) {
-        if( ! $this->_table->hasDefaultValues())
+        if ( ! $this->_table->hasDefaultValues()) {
             return false;
-            
-        foreach($this->_data as $column => $value) {
+        }
+        foreach ($this->_data as $column => $value) {
             $default = $this->_table->getDefaultValueOf($column);
 
-            if($default === null)
+            if ($default === null)
                 $default = self::$null;
 
-            if($value === self::$null || $overwrite) {
+            if ($value === self::$null || $overwrite) {
                 $this->_data[$column] = $default;
                 $this->_modified[]    = $column;
                 $this->_state = Doctrine_Record::STATE_TDIRTY;
@@ -342,7 +340,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * here column 'id' is removed since its auto-incremented primary key (read-only)
      *
-     * @throws Doctrine_Record_Exception        if unserialization of array/object typed column fails or 
+     * @throws Doctrine_Record_Exception        if unserialization of array/object typed column fails or
      *                                          if uncompression of gzip typed column fails
      *
      * @return integer
@@ -354,54 +352,52 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $count = 0;
 
-        foreach($this->_table->getColumnNames() as $name) {
+        foreach ($this->_table->getColumnNames() as $name) {
             $type = $this->_table->getTypeOf($name);
 
-            if( ! isset($tmp[$name])) {
+            if ( ! isset($tmp[$name])) {
                 $this->_data[$name] = self::$null;
             } else {
-                switch($type):
-                    case "array":
-                    case "object":
+                switch ($type) {
+                case "array":
+                case "object":
 
-                        if($tmp[$name] !== self::$null) {
-                            if(is_string($tmp[$name])) {
-                                $value = unserialize($tmp[$name]);
+                    if ($tmp[$name] !== self::$null) {
+                        if (is_string($tmp[$name])) {
+                            $value = unserialize($tmp[$name]);
 
-                                if($value === false)
-                                    throw new Doctrine_Record_Exception("Unserialization of $name failed.");
-                            } else
-                                $value = $tmp[$name];
-
-                            $this->_data[$name] = $value;
+                            if ($value === false)
+                                throw new Doctrine_Record_Exception("Unserialization of $name failed.");
+                        } else {
+                            $value = $tmp[$name];
                         }
+                        $this->_data[$name] = $value;
+                    }
                     break;
-                    case "gzip":
+                case "gzip":
 
-                        if($tmp[$name] !== self::$null) {
-                            $value = gzuncompress($tmp[$name]);
-                            
+                    if ($tmp[$name] !== self::$null) {
+                        $value = gzuncompress($tmp[$name]);
 
-                            if($value === false)
-                                throw new Doctrine_Record_Exception("Uncompressing of $name failed.");
+                        if ($value === false)
+                            throw new Doctrine_Record_Exception("Uncompressing of $name failed.");
 
-                            $this->_data[$name] = $value;
-                        }
+                        $this->_data[$name] = $value;
+                    }
                     break;
-                    case "enum":
-                        $this->_data[$name] = $this->_table->enumValue($name, $tmp[$name]);
+                case "enum":
+                    $this->_data[$name] = $this->_table->enumValue($name, $tmp[$name]);
                     break;
-                    default:
-                        $this->_data[$name] = $tmp[$name];
-                endswitch;
+                default:
+                    $this->_data[$name] = $tmp[$name];
+                };
                 $count++;
             }
         }
 
-
         return $count;
     }
-    /**       
+    /**
      * prepareIdentifiers
      * prepares identifiers for later use
      *
@@ -409,38 +405,40 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     private function prepareIdentifiers($exists = true) {
-        switch($this->_table->getIdentifierType()):
-            case Doctrine_Identifier::AUTO_INCREMENT:
-            case Doctrine_Identifier::SEQUENCE:
-                $name = $this->_table->getIdentifier();
+        switch ($this->_table->getIdentifierType()) {
+        case Doctrine_Identifier::AUTO_INCREMENT:
+        case Doctrine_Identifier::SEQUENCE:
+            $name = $this->_table->getIdentifier();
 
-                if($exists) {
-                    if(isset($this->_data[$name]) && $this->_data[$name] !== self::$null)
-                        $this->_id[$name] = $this->_data[$name];
-                }
-
-                unset($this->_data[$name]);
-
-            break;
-            case Doctrine_Identifier::NORMAL:
-                 $this->_id   = array();
-                 $name       = $this->_table->getIdentifier();
-
-                 if(isset($this->_data[$name]) && $this->_data[$name] !== self::$null)
+            if ($exists) {
+                if (isset($this->_data[$name]) && $this->_data[$name] !== self::$null) {
                     $this->_id[$name] = $this->_data[$name];
-            break;
-            case Doctrine_Identifier::COMPOSITE:
-                $names      = $this->_table->getIdentifier();
-
-
-                foreach($names as $name) {
-                    if($this->_data[$name] === self::$null)
-                        $this->_id[$name] = null;
-                    else
-                        $this->_id[$name] = $this->_data[$name];
                 }
+            }
+
+            unset($this->_data[$name]);
+
             break;
-        endswitch;
+        case Doctrine_Identifier::NORMAL:
+            $this->_id   = array();
+            $name       = $this->_table->getIdentifier();
+
+            if (isset($this->_data[$name]) && $this->_data[$name] !== self::$null) {
+                $this->_id[$name] = $this->_data[$name];
+            }
+            break;
+        case Doctrine_Identifier::COMPOSITE:
+            $names      = $this->_table->getIdentifier();
+
+            foreach ($names as $name) {
+                if ($this->_data[$name] === self::$null) {
+                    $this->_id[$name] = null;
+                } else {
+                    $this->_id[$name] = $this->_data[$name];
+                }
+            }
+            break;
+        };
     }
     /**
      * serialize
@@ -460,18 +458,18 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $name = $this->_table->getIdentifier();
         $this->_data = array_merge($this->_data, $this->_id);
 
-        foreach($this->_data as $k => $v) {
-            if($v instanceof Doctrine_Record)
+        foreach ($this->_data as $k => $v) {
+            if ($v instanceof Doctrine_Record)
                 unset($vars['_data'][$k]);
-            elseif($v === self::$null) {
+            elseif ($v === self::$null) {
                 unset($vars['_data'][$k]);
             } else {
-                switch($this->_table->getTypeOf($k)):
-                    case "array":
-                    case "object":
-                        $vars['_data'][$k] = serialize($vars['_data'][$k]);
+                switch ($this->_table->getTypeOf($k)) {
+                case "array":
+                case "object":
+                    $vars['_data'][$k] = serialize($vars['_data'][$k]);
                     break;
-                endswitch;
+                };
             }
         }
 
@@ -494,10 +492,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->_table = $connection->getTable(get_class($this));
 
-
         $array = unserialize($serialized);
 
-        foreach($array as $name => $values) {
+        foreach ($array as $name => $values) {
             $this->$name = $values;
         }
 
@@ -530,52 +527,52 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return null|integer
      */
     public function state($state = null) {
-        if($state == null) {
+        if ($state == null) {
             return $this->_state;
         }
         $err = false;
-        if(is_integer($state)) {
+        if (is_integer($state)) {
 
-            if($state >= 1 && $state <= 6)
+            if ($state >= 1 && $state <= 6) {
                 $this->_state = $state;
-            else
+            } else {
                 $err = true;
-
-        } elseif(is_string($state)) {
-            $upper = strtoupper($state);
-            switch($upper) {
-                case 'DIRTY':
-                case 'CLEAN':
-                case 'TDIRTY':
-                case 'TCLEAN':
-                case 'PROXY':
-                case 'DELETED':
-                    $this->_state = constant('Doctrine_Record::STATE_' . $upper);
-                break;
-                default:
-                    $err = true;
             }
-        } 
-        
-        if($err)
+        } elseif (is_string($state)) {
+            $upper = strtoupper($state);
+            switch ($upper) {
+            case 'DIRTY':
+            case 'CLEAN':
+            case 'TDIRTY':
+            case 'TCLEAN':
+            case 'PROXY':
+            case 'DELETED':
+                $this->_state = constant('Doctrine_Record::STATE_' . $upper);
+                break;
+            default:
+                $err = true;
+            }
+        }
+
+        if ($err)
             throw new Doctrine_Record_State_Exception('Unknown record state ' . $state);
     }
     /**
      * refresh
      * refresh internal data from the database
      *
-     * @throws Doctrine_Record_Exception        When the refresh operation fails (when the database row 
+     * @throws Doctrine_Record_Exception        When the refresh operation fails (when the database row
      *                                          this record represents does not exist anymore)
      * @return boolean
      */
     final public function refresh() {
         $id = $this->obtainIdentifier();
-        if( ! is_array($id))
+        if ( ! is_array($id)) {
             $id = array($id);
-
-        if(empty($id))
+        }
+        if (empty($id)) {
             return false;
-
+        }
         $id = array_values($id);
 
         $query          = $this->_table->getQuery()." WHERE ".implode(" = ? AND ",$this->_table->getPrimaryKeys())." = ?";
@@ -583,8 +580,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->_data     = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
-        if( ! $this->_data)
+        if ( ! $this->_data)
             throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist anymore');
 
         $this->_data     = array_change_key_case($this->_data, CASE_LOWER);
@@ -615,7 +611,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->prepareIdentifiers();
 
-        if($this->_id != $old)
+        if ($this->_id != $old)
             throw new Doctrine_Record_Exception("The refreshed primary key doesn't match the one in the record memory.", Doctrine::ERR_REFRESH);
 
         $this->_state    = Doctrine_Record::STATE_CLEAN;
@@ -652,10 +648,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
 
     public function rawGet($name) {
-        if( ! isset($this->_data[$name]))
+        if ( ! isset($this->_data[$name])) {
             throw new Doctrine_Record_Exception('Unknown property '. $name);
-
-        if($this->_data[$name] === self::$null)
+        }
+        if ($this->_data[$name] === self::$null)
             return null;
 
         return $this->_data[$name];
@@ -669,7 +665,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function load() {
         // only load the data from database if the Doctrine_Record is in proxy state
-        if($this->_state == Doctrine_Record::STATE_PROXY) {
+        if ($this->_state == Doctrine_Record::STATE_PROXY) {
             $this->refresh();
 
             $this->_state = Doctrine_Record::STATE_CLEAN;
@@ -688,53 +684,51 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return mixed
      */
     public function get($name, $invoke = true) {
-        
+
         $listener = $this->_table->getAttribute(Doctrine::ATTR_LISTENER);
         $value    = self::$null;
         $lower    = strtolower($name);
 
-        if(isset($this->_data[$lower])) {
-
+        if (isset($this->_data[$lower])) {
             // check if the property is null (= it is the Doctrine_Null object located in self::$null)
-            if($this->_data[$lower] === self::$null)
+            if ($this->_data[$lower] === self::$null) {
                 $this->load();
+            }
 
-
-            if($this->_data[$lower] === self::$null)
+            if ($this->_data[$lower] === self::$null) {
                 $value = null;
-            else
+            } else {
                 $value = $this->_data[$lower];
+            }
 
         }
 
-
-        if($value !== self::$null) {
-
+        if ($value !== self::$null) {
             $value = $this->_table->invokeGet($this, $name, $value);
 
-            if($invoke && $name !== $this->_table->getIdentifier())
+            if ($invoke && $name !== $this->_table->getIdentifier()) {
                 return $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onGetProperty($this, $name, $value);
-            else
+            } else {
                 return $value;
-
+            }
             return $value;
         }
 
-
-        if(isset($this->_id[$lower]))
+        if (isset($this->_id[$lower])) {
             return $this->_id[$lower];
-
-        if($name === $this->_table->getIdentifier())
+        }
+        if ($name === $this->_table->getIdentifier()) {
             return null;
-
-        if(isset($this->_values[$lower]))
+        }
+        if (isset($this->_values[$lower])) {
             return $this->_values[$lower];
-
+        }
         $rel = $this->_table->getRelation($name);
 
         try {
-            if( ! isset($this->references[$name]))
+            if ( ! isset($this->references[$name])) {
                 $this->loadReference($name);
+            }
         } catch(Doctrine_Table_Exception $e) {
             throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
         }
@@ -772,39 +766,38 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function set($name, $value, $load = true) {
         $lower = strtolower($name);
 
-        if(isset($this->_data[$lower])) {
-
-            if($value instanceof Doctrine_Record) {
+        if (isset($this->_data[$lower])) {
+            if ($value instanceof Doctrine_Record) {
                 $id = $value->getIncremented();
 
-                if($id !== null)
+                if ($id !== null)
                     $value = $id;
             }
 
-            if($load)
+            if ($load) {
                 $old = $this->get($lower, false);
-            else
+            } else {
                 $old = $this->_data[$lower];
+            }
 
-            if($old !== $value) {
-
+            if ($old !== $value) {
                 $value = $this->_table->invokeSet($this, $name, $value);
-                
+
                 $value = $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onSetProperty($this, $name, $value);
 
-                if($value === null)
+                if ($value === null)
                     $value = self::$null;
 
                 $this->_data[$lower] = $value;
                 $this->_modified[]   = $lower;
-                switch($this->_state):
-                    case Doctrine_Record::STATE_CLEAN:
-                        $this->_state = Doctrine_Record::STATE_DIRTY;
+                switch ($this->_state) {
+                case Doctrine_Record::STATE_CLEAN:
+                    $this->_state = Doctrine_Record::STATE_DIRTY;
                     break;
-                    case Doctrine_Record::STATE_TCLEAN:
-                        $this->_state = Doctrine_Record::STATE_TDIRTY;
+                case Doctrine_Record::STATE_TCLEAN:
+                    $this->_state = Doctrine_Record::STATE_TDIRTY;
                     break;
-                endswitch;
+                };
             }
         } else {
             try {
@@ -814,36 +807,36 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
         }
     }
-    
+
     public function coreSetRelated($name, $value) {
         $rel = $this->_table->getRelation($name);
 
         // one-to-many or one-to-one relation
-        if($rel instanceof Doctrine_Relation_ForeignKey ||
+        if ($rel instanceof Doctrine_Relation_ForeignKey ||
            $rel instanceof Doctrine_Relation_LocalKey) {
-            if( ! $rel->isOneToOne()) {
+            if ( ! $rel->isOneToOne()) {
                 // one-to-many relation found
-                if( ! ($value instanceof Doctrine_Collection))
+                if ( ! ($value instanceof Doctrine_Collection)) {
                     throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
-
+                }
                 $value->setReference($this,$rel);
             } else {
                 // one-to-one relation found
-                if( ! ($value instanceof Doctrine_Record))
+                if ( ! ($value instanceof Doctrine_Record)) {
                     throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record when setting one-to-one references.");
-
-                if($rel instanceof Doctrine_Relation_LocalKey) {
+                }
+                if ($rel instanceof Doctrine_Relation_LocalKey) {
                     $this->set($rel->getLocal(), $value, false);
                 } else {
                     $value->set($rel->getForeign(), $this, false);
                 }
             }
 
-        } elseif($rel instanceof Doctrine_Relation_Association) {
+        } elseif ($rel instanceof Doctrine_Relation_Association) {
             // join table relation found
-            if( ! ($value instanceof Doctrine_Collection))
+            if ( ! ($value instanceof Doctrine_Collection)) {
                 throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting many-to-many references.");
-        
+            }
         }
 
         $this->references[$name] = $value;
@@ -857,15 +850,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function contains($name) {
         $lower = strtolower($name);
 
-        if(isset($this->_data[$lower]))
+        if (isset($this->_data[$lower])) {
             return true;
-
-        if(isset($this->_id[$lower]))
+        }
+        if (isset($this->_id[$lower])) {
             return true;
-
-        if(isset($this->references[$name]))
+        }
+        if (isset($this->references[$name])) {
             return true;
-
+        }
         return false;
     }
     /**
@@ -873,9 +866,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     public function __unset($name) {
-        if(isset($this->_data[$name]))
+        if (isset($this->_data[$name])) {
             $this->_data[$name] = array();
-
+        }
         // todo: what to do with references ?
     }
     /**
@@ -894,7 +887,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
         $conn->beginTransaction();
 
-
         $saveLater = $conn->unitOfWork->saveRelated($this);
 
         if ($this->isValid()) {
@@ -903,11 +895,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $conn->transaction->addInvalid($this);
         }
 
-        foreach($saveLater as $fk) {
+        foreach ($saveLater as $fk) {
             $table   = $fk->getTable();
             $alias   = $this->_table->getAlias($table->getComponentName());
 
-            if(isset($this->references[$alias])) {
+            if (isset($this->references[$alias])) {
                 $obj = $this->references[$alias];
                 $obj->save();
             }
@@ -952,7 +944,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function getModified() {
         $a = array();
 
-        foreach($this->_modified as $k => $v) {
+        foreach ($this->_modified as $k => $v) {
             $a[$v] = $this->_data[$v];
         }
         return $a;
@@ -969,43 +961,43 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function getPrepared(array $array = array()) {
         $a = array();
 
-        if(empty($array))
+        if (empty($array)) {
             $array = $this->_modified;
-
-        foreach($array as $k => $v) {
+        }
+        foreach ($array as $k => $v) {
             $type = $this->_table->getTypeOf($v);
-            
-            if($this->_data[$v] === self::$null) {
+
+            if ($this->_data[$v] === self::$null) {
                 $a[$v] = null;
                 continue;
             }
 
-            switch($type) {
-                case 'array':
-                case 'object':
-                    $a[$v] = serialize($this->_data[$v]);
+            switch ($type) {
+            case 'array':
+            case 'object':
+                $a[$v] = serialize($this->_data[$v]);
                 break;
-                case 'gzip':
-                    $a[$v] = gzcompress($this->_data[$v],5);
+            case 'gzip':
+                $a[$v] = gzcompress($this->_data[$v],5);
                 break;
-                case 'boolean':
-                    $a[$v] = (int) $this->_data[$v];
+            case 'boolean':
+                $a[$v] = (int) $this->_data[$v];
+            break;
+            case 'enum':
+                $a[$v] = $this->_table->enumIndex($v,$this->_data[$v]);
                 break;
-                case 'enum':
-                    $a[$v] = $this->_table->enumIndex($v,$this->_data[$v]);
-                break;
-                default:
-                    if($this->_data[$v] instanceof Doctrine_Record)
-                        $this->_data[$v] = $this->_data[$v]->getIncremented();
+            default:
+                if ($this->_data[$v] instanceof Doctrine_Record)
+                    $this->_data[$v] = $this->_data[$v]->getIncremented();
 
-                    $a[$v] = $this->_data[$v];
+                $a[$v] = $this->_data[$v];
             }
         }
 
-        foreach($this->_table->getInheritanceMap() as $k => $v) {
+        foreach ($this->_table->getInheritanceMap() as $k => $v) {
             $old = $this->get($k, false);
 
-            if((string) $old !== (string) $v || $old === null) {
+            if ((string) $old !== (string) $v || $old === null) {
                 $a[$k] = $v;
                 $this->_data[$k] = $v;
             }
@@ -1024,7 +1016,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * alias for count()
-     * 
+     *
      * @return integer          the number of columns in this record
      */
     public function columnCount() {
@@ -1033,16 +1025,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * toArray
      * returns the record as an array
-     * 
+     *
      * @return array
      */
     public function toArray() {
         $a = array();
 
-        foreach($this as $column => $value) {
+        foreach ($this as $column => $value) {
             $a[$column] = $value;
         }
-        if($this->_table->getIdentifierType() == Doctrine_Identifier::AUTO_INCREMENT) {
+        if ($this->_table->getIdentifierType() == Doctrine_Identifier::AUTO_INCREMENT) {
             $i      = $this->_table->getIdentifier();
             $a[$i]  = $this->getIncremented();
         }
@@ -1064,8 +1056,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return boolean
      */
     public function hasRelation($name) {
-        if(isset($this->_data[$name]) || isset($this->_id[$name]))
+        if (isset($this->_data[$name]) || isset($this->_id[$name])) {
             return true;
+        }
         return $this->_table->hasRelation($name);
     }
     /**
@@ -1082,9 +1075,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return Doctrine_Collection|false
      */
     public function obtainOriginals($name) {
-        if(isset($this->originals[$name]))
+        if (isset($this->originals[$name])) {
             return $this->originals[$name];
-    
+        }
         return false;
     }
     /**
@@ -1110,9 +1103,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function copy() {
         $ret = $this->_table->create($this->_data);
         $modified = array();
-        foreach($this->_data as $key => $val)
-            if (!($val instanceof Doctrine_Null))
+        foreach ($this->_data as $key => $val) {
+            if (!($val instanceof Doctrine_Null)) {
                 $ret->_modified[] = $key;
+            }
+        }
         return $ret;
     }
     /**
@@ -1122,12 +1117,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     final public function assignIdentifier($id = false) {
-        if($id === false) {
+        if ($id === false) {
             $this->_id       = array();
             $this->cleanData();
             $this->_state    = Doctrine_Record::STATE_TCLEAN;
             $this->_modified = array();
-        } elseif($id === true) {
+        } elseif ($id === true) {
             $this->prepareIdentifiers(false);
             $this->_state    = Doctrine_Record::STATE_CLEAN;
             $this->_modified = array();
@@ -1164,7 +1159,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     final public function getIncremented() {
         $id = current($this->_id);
-        if($id === false)
+        if ($id === false)
             return null;
 
         return $id;
@@ -1190,14 +1185,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * obtainReference
-     * 
+     *
      * @param string $name
      * @throws Doctrine_Record_Exception        if trying to get an unknown related component
      */
     public function obtainReference($name) {
-        if(isset($this->references[$name]))
+        if (isset($this->references[$name])) {
             return $this->references[$name];
-    
+        }
         throw new Doctrine_Record_Exception("Unknown reference $name");
     }
     /**
@@ -1210,13 +1205,13 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function initReference(Doctrine_Collection $coll, Doctrine_Relation $connector) {
         $alias = $connector->getAlias();
 
-        if(isset($this->references[$alias]))
+        if (isset($this->references[$alias])) {
             return false;
-
-        if( ! $connector->isOneToOne()) {
-            if( ! ($connector instanceof Doctrine_Relation_Association))
+        }
+        if ( ! $connector->isOneToOne()) {
+            if ( ! ($connector instanceof Doctrine_Relation_Association)) {
                 $coll->setReference($this, $connector);
-
+            }
             $this->references[$alias] = $coll;
             $this->originals[$alias]  = clone $coll;
 
@@ -1224,9 +1219,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
         return false;
     }
-    
+
     public function lazyInitRelated(Doctrine_Collection $coll, Doctrine_Relation $connector) {
-                                      	
+
     }
     /**
      * addReference
@@ -1268,7 +1263,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     final public function loadReference($name) {
         $fk      = $this->_table->getRelation($name);
 
-        if($fk->isOneToOne()) {
+        if ($fk->isOneToOne()) {
             $this->references[$name] = $fk->fetchRelatedFor($this);
         } else {
             $coll = $fk->fetchRelatedFor($this);
@@ -1360,11 +1355,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return void
      */
     public function merge(array $values) {
-        foreach($this->_table->getColumnNames() as $value) {
+        foreach ($this->_table->getColumnNames() as $value) {
             try {
-                if(isset($values[$value]))
+                if (isset($values[$value])) {
                     $this->set($value, $values[$value]);
-            } catch(Exception $e) { 
+                }
+            } catch(Exception $e) {
                 // silence all exceptions
             }
         }
@@ -1373,7 +1369,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->_table->setAttribute($attr, $value);
     }
     public function setTableName($tableName) {
-        $this->_table->setTableName($tableName);                                            	
+        $this->_table->setTableName($tableName);
     }
     public function setInheritanceMap($map) {
         $this->_table->setOption('inheritanceMap', $map);
@@ -1382,13 +1378,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->_table->setEnumValues($column, $values);
     }
     public function option($name, $value = null) {
-        if($value == null)
+        if ($value == null) {
             $this->_table->getOption($name);
-        else
+        } else {
             $this->_table->setOption($name, $value);
+        }
     }
     public function hasIndex($name ) {
-    
+
     }
     public function actsAsTree($treeImplName, $args) {
 
@@ -1405,7 +1402,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * getListener
-     * 
+     *
      * @return Doctrine_Db_EventListener_Interface|Doctrine_Overloadable
      */
     public function getListener() {
@@ -1433,7 +1430,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $args = func_get_args();
         array_shift($args);
 
-        if(isset($args[0])) {
+        if (isset($args[0])) {
             $column = $args[0];
             $args[0] = $this->get($column);
 
@@ -1450,4 +1447,3 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return Doctrine_Lib::getRecordAsString($this);
     }
 }
-

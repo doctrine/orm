@@ -61,9 +61,9 @@ abstract class Doctrine_Query_Part extends Doctrine_Access {
     public function getQuery() {
         return $this->query;
     }
-    /** 
+    /**
      * add
-     * 
+     *
      * @param string $value
      * @return void
      */
@@ -75,6 +75,3 @@ abstract class Doctrine_Query_Part extends Doctrine_Access {
     public function get($name) { }
     public function set($name, $value) { }
 }
-
-
-

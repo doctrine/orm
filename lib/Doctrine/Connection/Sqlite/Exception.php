@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -31,7 +31,7 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  */
-class Doctrine_Connection_Sqlite_Exception extends Doctrine_Connection_Exception { 
+class Doctrine_Connection_Sqlite_Exception extends Doctrine_Connection_Exception {
     /**
      * @var array $errorRegexps         an array that is used for determining portable
      *                                  error code from a native database error message
@@ -52,7 +52,7 @@ class Doctrine_Connection_Sqlite_Exception extends Doctrine_Connection_Exception
                               );
     /**
      * This method checks if native error code/message can be
-     * converted into a portable code and then adds this 
+     * converted into a portable code and then adds this
      * portable error code to $portableCode field
      *
      * @param array $errorInfo      error info array
@@ -63,8 +63,8 @@ class Doctrine_Connection_Sqlite_Exception extends Doctrine_Connection_Exception
      *                              (the process is successfull if portable error code was found)
      */
     public function processErrorInfo(array $errorInfo) {
-        foreach(self::$errorRegexps as $regexp => $code) {
-            if(preg_match($regexp, $errorInfo[2])) {
+        foreach (self::$errorRegexps as $regexp => $code) {
+            if (preg_match($regexp, $errorInfo[2])) {
 
                 $this->portableCode = $code;
                 return true;

@@ -67,9 +67,9 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
     public function add(Doctrine_Record $record) {
         $oid = $record->getOID();
 
-        if(isset($this->registry[$oid]))
+        if (isset($this->registry[$oid])) {
             return false;
-
+        }
         $this->registry[$oid] = $record;
 
         return true;
@@ -80,9 +80,9 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
      * @throws Doctrine_Table_Repository_Exception
      */
     public function get($oid) {
-        if( ! isset($this->registry[$oid]))
+        if ( ! isset($this->registry[$oid])) {
             throw new Doctrine_Table_Repository_Exception("Unknown object identifier");
-
+        }
         return $this->registry[$oid];
     }
     /**
@@ -98,9 +98,9 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
      * @return boolean                      whether ot not the operation was successful
      */
     public function evict($oid) {
-        if( ! isset($this->registry[$oid]))
+        if ( ! isset($this->registry[$oid])) {
             return false;
-            
+        }
         unset($this->registry[$oid]);
         return true;
     }
@@ -109,9 +109,10 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
      */
     public function evictAll() {
         $evicted = 0;
-        foreach($this->registry as $oid=>$record) {
-            if($this->evict($oid))
+        foreach ($this->registry as $oid=>$record) {
+            if ($this->evict($oid)) {
                 $evicted++;
+            }
         }
         return $evicted;
     }
@@ -137,4 +138,3 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
         $this->table->findAll();
     }
 }
-

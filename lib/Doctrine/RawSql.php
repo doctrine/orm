@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -44,26 +44,26 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * @return Doctrine_RawSql
      */
     public function __call($name, $args) {
-        if( ! isset($this->parts[$name]))
+        if ( ! isset($this->parts[$name])) {
             throw new Doctrine_RawSql_Exception("Unknown overload method $name. Availible overload methods are ".implode(" ",array_keys($this->parts)));
-
-        if($name == 'select') {
+        }
+        if ($name == 'select') {
             preg_match_all('/{([^}{]*)}/U', $args[0], $m);
 
             $this->fields = $m[1];
             $this->parts["select"] = array();
-        } else
+        } else {
             $this->parts[$name][] = $args[0];
-
+        }
         return $this;
     }
     /**
      * get
      */
     public function get($name) {
-        if( ! isset($this->parts[$name]))
+        if ( ! isset($this->parts[$name])) {
             throw new Doctrine_RawSql_Exception('Unknown query part '.$name);
-            
+        }
         return $this->parts[$name];
     }
     /**
@@ -80,44 +80,46 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
 
         $e = Doctrine_Query::sqlExplode($query,' ');
 
-        foreach($e as $k => $part):
+        foreach ($e as $k => $part) {
             $low = strtolower($part);
-            switch(strtolower($part)):
-                case "select":
-                case "from":
-                case "where":
-                case "limit":
-                case "offset":
-                case "having":
+            switch (strtolower($part)) {
+            case "select":
+            case "from":
+            case "where":
+            case "limit":
+            case "offset":
+            case "having":
+                $p = $low;
+                if ( ! isset($parts[$low])) {
+                    $parts[$low] = array();
+                }
+                break;
+            case "order":
+            case "group":
+                $i = ($k + 1);
+                if (isset($e[$i]) && strtolower($e[$i]) === "by") {
                     $p = $low;
-                    if( ! isset($parts[$low]))
-                        $parts[$low] = array();
+                    $p .= "by";
+                    $parts[$low."by"] = array();
 
+                } else {
+                    $parts[$p][] = $part;
+                }
                 break;
-                case "order":
-                case "group":
-                    $i = ($k + 1);
-                    if(isset($e[$i]) && strtolower($e[$i]) === "by") {
-                        $p = $low;
-                        $p .= "by";
-                        $parts[$low."by"] = array();
-
-                    } else
-                        $parts[$p][] = $part;
-                break;
-                case "by":
-                    continue;
-                default:
-                    if( ! isset($parts[$p][0])) 
-                        $parts[$p][0] = $part;
-                    else
-                        $parts[$p][0] .= ' '.$part;
-            endswitch;
-        endforeach;
+            case "by":
+                continue;
+            default:
+                if ( ! isset($parts[$p][0])) {
+                    $parts[$p][0] = $part;
+                } else {
+                    $parts[$p][0] .= ' '.$part;
+                }
+            };
+        };
 
         $this->parts = $parts;
         $this->parts["select"] = array();
-        
+
         return $this;
     }
     /**
@@ -127,12 +129,12 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * @return string
      */
     public function getQuery() {
-        foreach($this->fields as $field) {
+        foreach ($this->fields as $field) {
             $e = explode(".", $field);
-            if( ! isset($e[1]))
+            if ( ! isset($e[1])) {
                 throw new Doctrine_RawSql_Exception("All selected fields in Sql query must be in format tableAlias.fieldName");
-
-            if( ! isset($this->tables[$e[0]])) {
+            }
+            if ( ! isset($this->tables[$e[0]])) {
                 try {
                     $this->addComponent($e[0], ucwords($e[0]));
                 } catch(Doctrine_Exception $exception) {
@@ -140,8 +142,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
                 }
             }
 
-            if($e[1] == '*') {
-                foreach($this->tables[$e[0]]->getColumnNames() as $name) {
+            if ($e[1] == '*') {
+                foreach ($this->tables[$e[0]]->getColumnNames() as $name) {
                     $field = $e[0].".".$name;
                     $this->parts["select"][$field] = $field." AS ".$e[0]."__".$name;
                 }
@@ -153,20 +155,21 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
 
         // force-add all primary key fields
 
-        foreach($this->tableAliases as $alias) {
-            foreach($this->tables[$alias]->getPrimaryKeys() as $key) {
+        foreach ($this->tableAliases as $alias) {
+            foreach ($this->tables[$alias]->getPrimaryKeys() as $key) {
                 $field = $alias . '.' . $key;
-                if( ! isset($this->parts["select"][$field]))
+                if ( ! isset($this->parts["select"][$field])) {
                     $this->parts["select"][$field] = $field." AS ".$alias."__".$key;
+                }
             }
         }
 
         $q = 'SELECT '.implode(', ', $this->parts['select']);
 
         $string = $this->applyInheritance();
-        if( ! empty($string))
+        if ( ! empty($string)) {
             $this->parts['where'][] = $string;
-
+        }
         $copy = $this->parts;
         unset($copy['select']);
 
@@ -178,9 +181,9 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
         $q .= ( ! empty($this->parts['limit']))?   ' LIMIT ' . implode(' ', $this->parts['limit']) : '';
         $q .= ( ! empty($this->parts['offset']))?  ' OFFSET ' . implode(' ', $this->parts['offset']) : '';
 
-        if( ! empty($string))
+        if ( ! empty($string)) {
             array_pop($this->parts['where']);
-
+        }
         return $q;
     }
     /**
@@ -204,20 +207,19 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
         $currPath = '';
         $table = null;
 
-        foreach($e as $k => $component) {
+        foreach ($e as $k => $component) {
             $currPath .= '.' . $component;
-            if($k == 0)
+            if ($k == 0)
                 $currPath = substr($currPath,1);
 
-            if(isset($this->tableAliases[$currPath]))
+            if (isset($this->tableAliases[$currPath])) {
                 $alias = $this->tableAliases[$currPath];
-            else
+            } else {
                 $alias = $tableAlias;
+            }
 
-            if($table) {
-
+            if ($table) {
                 $tableName = $table->getAliasName($component);
-                
 
                 $table = $this->conn->getTable($tableName);
             } else {
@@ -227,15 +229,14 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
             $this->fetchModes[$alias]       = Doctrine::FETCH_IMMEDIATE;
             $this->tableAliases[$currPath]  = $alias;
 
-            if($k !== 0)
+            if ($k !== 0) {
                 $this->joins[$alias]        = $prevAlias;
-
+            }
             $prevAlias = $alias;
             $prevPath  = $currPath;
         }
-        
+
         return $this;
     }
 
 }
-

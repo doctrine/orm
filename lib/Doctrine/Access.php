@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -41,9 +41,9 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @return Doctrine_Access
      */
     public function setArray(array $array) {
-        foreach($array as $k=>$v):
+        foreach ($array as $k=>$v) {
             $this->set($k,$v);
-        endforeach;
+        };
 
         return $this;
     }
@@ -72,9 +72,9 @@ abstract class Doctrine_Access implements ArrayAccess {
     }
     /**
      * __isset()
-     * 
+     *
      * @param string $name
-     * @since 1.0 
+     * @since 1.0
      * @return boolean          whether or not this object contains $name
      */
     public function __isset($name) {
@@ -82,13 +82,13 @@ abstract class Doctrine_Access implements ArrayAccess {
     }
     /**
      * __unset()
-     * 
+     *
      * @param string $name
      * @since 1.0
      * @return void
      */
     public function __unset($name) {
-        return $this->remove($name);                               	
+        return $this->remove($name);
     }
     /**
      * @param mixed $offset
@@ -114,10 +114,11 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @return void
      */
     public function offsetSet($offset, $value) {
-        if( ! isset($offset)) {
+        if ( ! isset($offset)) {
             $this->add($value);
-        } else
+        } else {
             $this->set($offset,$value);
+        }
     }
     /**
      * unset a given offset
@@ -128,4 +129,3 @@ abstract class Doctrine_Access implements ArrayAccess {
         return $this->remove($offset);
     }
 }
-

@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -35,8 +35,7 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName = 'Oracle';
-    
-    
+
     public function __construct(Doctrine_Manager $manager, $adapter) {
         $this->supported = array(
                           'sequences'            => true,
@@ -127,4 +126,3 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
         return $data[0];
     }
 }
-

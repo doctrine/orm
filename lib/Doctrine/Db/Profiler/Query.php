@@ -39,7 +39,6 @@ class Doctrine_Db_Profiler_Query {
      */
     protected $queryType = 0;
 
-
     protected $prepareTime;
 
     /**
@@ -54,7 +53,6 @@ class Doctrine_Db_Profiler_Query {
      */
     protected $endedMicrotime;
 
-
     /**
      * Class constructor.  A query is about to be started, save the query text ($query) and its
      * type (one of the Zend_Db_Profiler::* constants).
@@ -64,14 +62,14 @@ class Doctrine_Db_Profiler_Query {
      */
     public function __construct($query, $prepareTime = null) {
         $this->query = $query;
-        if($prepareTime !== null) {
+        if ($prepareTime !== null) {
             $this->prepareTime = $prepareTime;
         } else {
             $this->startedMicrotime = microtime(true);
         }
     }
     public function start() {
-        $this->startedMicrotime = microtime(true);                       	
+        $this->startedMicrotime = microtime(true);
     }
     /**
      * The query has ended.  Record the time so that the elapsed time can be determined later.
@@ -96,7 +94,6 @@ class Doctrine_Db_Profiler_Query {
         return ($this->endedMicrotime != null);
     }
 
-
     /**
      * Get the original SQL text of the query.
      *
@@ -105,7 +102,6 @@ class Doctrine_Db_Profiler_Query {
     public function getQuery() {
         return $this->query;
     }
-
 
     /**
      * Get the type of this query (one of the Zend_Db_Profiler::* constants)
@@ -129,4 +125,3 @@ class Doctrine_Db_Profiler_Query {
         return ($this->prepareTime + ($this->endedMicrotime - $this->startedMicrotime));
     }
 }
-

@@ -33,19 +33,19 @@
 abstract class Doctrine_Hook_Parser {
     protected $condition;
     protected $params = array();
-    
+
     public function getCondition() {
         return $this->condition;
     }
-    
+
     public function getParams() {
         return $this->params;
     }
     /**
      * parse
      * Parses given field and field value to DQL condition
-     * and parameters. This method should always return 
-     * prepared statement conditions (conditions that use 
+     * and parameters. This method should always return
+     * prepared statement conditions (conditions that use
      * placeholders instead of literal values).
      *
      * @param string $alias     component alias

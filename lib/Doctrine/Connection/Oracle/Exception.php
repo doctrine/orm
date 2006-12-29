@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -31,7 +31,7 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  */
-class Doctrine_Connection_Oracle_Exception extends Doctrine_Connection_Exception { 
+class Doctrine_Connection_Oracle_Exception extends Doctrine_Connection_Exception {
     /**
      * @var array $errorCodeMap         an array that is used for determining portable
      *                                  error code from a native database error code
@@ -58,7 +58,7 @@ class Doctrine_Connection_Oracle_Exception extends Doctrine_Connection_Exception
                                       );
     /**
      * This method checks if native error code/message can be
-     * converted into a portable code and then adds this 
+     * converted into a portable code and then adds this
      * portable error code to $portableCode field
      *
      * @param array $errorInfo      error info array
@@ -68,7 +68,7 @@ class Doctrine_Connection_Oracle_Exception extends Doctrine_Connection_Exception
      */
     public function processErrorInfo(array $errorInfo) {
         $code = $errorInfo[1];
-        if(isset(self::$errorCodeMap[$code])) {
+        if (isset(self::$errorCodeMap[$code])) {
             $this->portableCode = self::$errorCodeMap[$code];
             return true;
         }

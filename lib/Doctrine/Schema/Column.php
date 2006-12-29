@@ -52,9 +52,8 @@ class Doctrine_Schema_Column extends Doctrine_Schema_Object implements IteratorA
                                   'autoinc' => false
                                   );
 
-
     public function getName() {
-        return $this->definition['name'];                          	
+        return $this->definition['name'];
     }
     public function getType() {
         return $this->definition['type'];

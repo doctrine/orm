@@ -136,7 +136,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
 
         $description = array();
         $columns     = array();
-        foreach($result as $key => $val) {
+        foreach ($result as $key => $val) {
             $description = array(
                     'name'    => $val['name'],
                     'type'    => $val['type'],
@@ -159,7 +159,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
         $result  = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         $indexes = array();
-        foreach($result as $key => $val) {
+        foreach ($result as $key => $val) {
 
         }
     }
@@ -179,7 +179,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
         
         $data   = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        foreach($data as $table) {
+        foreach ($data as $table) {
             $tables[] = new Doctrine_Schema_Table(array('name' => $table));
         }
         return $tables;

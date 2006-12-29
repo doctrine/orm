@@ -182,9 +182,9 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
                 if (!empty($field['type'])) {
                     $server_info = $db->getServerVersion();
 
-                    if (is_array($server_info) && $server_info['major'] < 8)
+                    if (is_array($server_info) && $server_info['major'] < 8) {
                         throw new Doctrine_Export_Pgsql_Exception('changing column type for "'.$change_name.'\" requires PostgreSQL 8.0 or above');
-                    
+                    }
                     $query = "ALTER $field_name TYPE ".$db->datatype->getTypeDeclaration($field['definition']);
                     $this->dbh->query("ALTER TABLE $name $query");
                 }
@@ -214,4 +214,4 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
         }
     }
 }
-?>
+

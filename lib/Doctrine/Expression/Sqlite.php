@@ -73,7 +73,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
         return strpos($str, $substr);
     }
     public static function sha1Impl($str) {
-        return sha1($str);                                  	
+        return sha1($str);
     }
     public static function ltrimImpl($str) {
         return ltrim($str);
@@ -85,7 +85,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
         return trim($str);
     }
     /**
-     * returns the regular expression operator 
+     * returns the regular expression operator
      *
      * @return string
      */
@@ -94,7 +94,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
     }
     /**
      * soundex
-     * Returns a string to call a function to compute the 
+     * Returns a string to call a function to compute the
      * soundex encoding of a string
      *
      * The string "?000" is returned if the argument is NULL.
@@ -133,8 +133,8 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
     /**
      * return string to call a function to get a substring inside an SQL statement
      *
-     * Note: Not SQL92, but common functionality. 
-     * 
+     * Note: Not SQL92, but common functionality.
+     *
      * SQLite only supports the 2 parameter variant of this function
      *
      * @param string $value         an sql string literal or column name/alias
@@ -143,9 +143,9 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
      * @return string               SQL substring function with given parameters
      */
     public function substring($value, $position, $length = null) {
-        if($length !== null)
+        if ($length !== null) {
             return 'SUBSTR(' . $value . ', ' . $position . ', ' . $length . ')';
-
+        }
         return 'SUBSTR(' . $value . ', ' . $position . ', LENGTH(' . $value . '))';
     }
 }

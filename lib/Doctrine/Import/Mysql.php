@@ -143,7 +143,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
         $description = array();
         foreach ($result as $key => $val2) {
 	    $val = array();
-	    foreach(array_keys($val2) as $valKey){ // lowercase the key names
+	    foreach (array_keys($val2) as $valKey){ // lowercase the key names
 		$val[strtolower($valKey)] = $val2[$valKey];
 	    }
             $description = array(

@@ -45,7 +45,6 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
         if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
             throw new Doctrine_Export_Oracle_Exception('database creation is only supported if the "emulate_database" attribute is enabled');
 
-
         $username   = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
         $password   = $this->conn->dsn['password'] ? $this->conn->dsn['password'] : $name;
 
@@ -78,9 +77,8 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
     public function dropDatabase($name) 
     {
         if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
-            throw new Doctrine_Export_Oracle_Exception('database dropping is only supported if the 
+            throw new Doctrine_Export_Oracle_Exception('database dropping is only supported if the
                                                        "emulate_database" option is enabled');
-
 
         $username = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
 
@@ -174,10 +172,10 @@ END;
         $query.= ' WHERE trigger_name='.$trigger_name_quoted.' OR trigger_name='.strtoupper($trigger_name_quoted);
         $trigger = $this->conn->fetchOne($query);
 
-        if($trigger) {
+        if ($trigger) {
             $trigger_name  = $this->conn->quoteIdentifier($table . '_AI_PK', true);
             $trigger_sql = 'DROP TRIGGER ' . $trigger_name;
-            
+
             // if throws exception, trigger for autoincrement PK could not be dropped
             $this->conn->exec($trigger_sql);
 
@@ -227,8 +225,8 @@ END;
 
         $result = parent::createTable($name, $fields, $options);
 
-        foreach($fields as $field_name => $field) {
-            if(isset($field['autoincrement']) && $field['autoincrement']) {
+        foreach ($fields as $field_name => $field) {
+            if (isset($field['autoincrement']) && $field['autoincrement']) {
                 $result = $this->_makeAutoincrement($field_name, $name);
             }
         }

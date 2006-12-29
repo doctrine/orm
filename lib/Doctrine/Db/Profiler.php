@@ -58,24 +58,24 @@ class Doctrine_Db_Profiler implements Doctrine_Overloadable {
      */
     public function __call($m, $a) {
         // first argument should be an instance of Doctrine_Db_Event
-        if( ! ($a[0] instanceof Doctrine_Db_Event))
+        if ( ! ($a[0] instanceof Doctrine_Db_Event)) {
             throw new Doctrine_Db_Profiler_Exception("Couldn't listen event. Event should be an instance of Doctrine_Db_Event.");
+        }
 
         // event methods should start with 'on'
-        if(substr($m, 0, 2) !== 'on')
+        if (substr($m, 0, 2) !== 'on') {
             throw new Doctrine_Db_Profiler_Exception("Couldn't invoke listener $m.");
-            
-        if(substr($m, 2, 3) === 'Pre' && in_array(strtolower(substr($m, 3)), $this->listeners)) {
+        }
+        if (substr($m, 2, 3) === 'Pre' && in_array(strtolower(substr($m, 3)), $this->listeners)) {
             // pre-event listener found
             $a[0]->start();
         } else {
             // after-event listener found
             $a[0]->end();
         }
-        
+
         $this->events[] = $a[0];
     }
-
 
     /**
      * Get the Doctrine_Db_Event object for the last query that was run, regardless if it has

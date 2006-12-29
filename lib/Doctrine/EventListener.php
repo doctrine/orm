@@ -79,7 +79,7 @@ class Doctrine_EventListener implements Doctrine_EventListener_Interface {
 
     public function onTransactionBegin(Doctrine_Connection $connection) { }
     public function onPreTransactionBegin(Doctrine_Connection $connection) { }
-    
+
     public function onCollectionDelete(Doctrine_Collection $collection) { }
     public function onPreCollectionDelete(Doctrine_Collection $collection) { }
 }

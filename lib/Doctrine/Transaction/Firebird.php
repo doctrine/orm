@@ -40,7 +40,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
      */
     protected function createSavePoint($savepoint) {
         $query = 'SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -52,7 +52,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
      */
     protected function releaseSavePoint($savepoint) {
         $query = 'RELEASE SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -64,7 +64,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
      */
     protected function rollbackSavePoint($savepoint) {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -101,10 +101,10 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
             default:
                 throw new Doctrine_Transaction_Exception('isolation level is not supported: ' . $isolation);
         }
-        
+
         $rw = $wait = '';
 
-        if(isset($options['wait'])) {
+        if (isset($options['wait'])) {
             switch ($options['wait']) {
                 case 'WAIT':
                 case 'NO WAIT':
@@ -115,7 +115,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
             }
         }
 
-        if(isset($options['rw'])) {
+        if (isset($options['rw'])) {
             switch ($options['rw']) {
                 case 'READ ONLY':
                 case 'READ WRITE':

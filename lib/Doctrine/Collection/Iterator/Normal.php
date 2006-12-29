@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -38,4 +38,3 @@ class Doctrine_Collection_Iterator_Normal extends Doctrine_Collection_Iterator {
         return ($this->index < $this->count);
     }
 }
-

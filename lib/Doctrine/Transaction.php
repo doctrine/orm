@@ -68,15 +68,15 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @return integer          the connection state
      */
     public function getState() {
-        switch($this->transactionLevel) {
-            case 0:
-                return Doctrine_Transaction::STATE_SLEEP;
+        switch ($this->transactionLevel) {
+        case 0:
+            return Doctrine_Transaction::STATE_SLEEP;
             break;
-            case 1:
-                return Doctrine_Transaction::STATE_ACTIVE;
+        case 1:
+            return Doctrine_Transaction::STATE_ACTIVE;
             break;
-            default:
-                return Doctrine_Transaction::STATE_BUSY;
+        default:
+            return Doctrine_Transaction::STATE_BUSY;
         }
     }
     /**
@@ -86,19 +86,19 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
     public function addDelete(Doctrine_Record $record) {
         $name = $record->getTable()->getComponentName();
         $this->delete[$name][] = $record;
-    } 
+    }
     /**
      * addInvalid
      * adds record into invalid records list
      *
      * @param Doctrine_Record $record
-     * @return boolean        false if record already existed in invalid records list, 
+     * @return boolean        false if record already existed in invalid records list,
      *                        otherwise true
      */
     public function addInvalid(Doctrine_Record $record) {
-        if(in_array($record, $this->invalid))
+        if (in_array($record, $this->invalid)) {
             return false;
-
+        }
         $this->invalid[] = $record;
         return true;
     }
@@ -118,19 +118,19 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @return void
      */
     public function bulkDelete() {
-        foreach($this->delete as $name => $deletes) {
+        foreach ($this->delete as $name => $deletes) {
             $record = false;
             $ids    = array();
-            foreach($deletes as $k => $record) {
+            foreach ($deletes as $k => $record) {
                 $ids[] = $record->getIncremented();
                 $record->assignIdentifier(false);
             }
-            if($record instanceof Doctrine_Record) {
+            if ($record instanceof Doctrine_Record) {
                 $params  = substr(str_repeat("?, ",count($ids)),0,-2);
-                
+
                 $query   = 'DELETE FROM '
-                         . $record->getTable()->getTableName() 
-                         . ' WHERE ' 
+                         . $record->getTable()->getTableName()
+                         . ' WHERE '
                          . $record->getTable()->getIdentifier()
                          . ' IN(' . $params . ')';
 
@@ -153,7 +153,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * beginTransaction
      * Start a transaction or set a savepoint.
      *
-     * if trying to set a savepoint and there is no active transaction 
+     * if trying to set a savepoint and there is no active transaction
      * a new transaction is being started
      *
      * Listeners: onPreTransactionBegin, onTransactionBegin
@@ -162,15 +162,14 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @return integer                          current transaction nesting level
      */
     public function beginTransaction($savepoint = null) {
-        if( ! is_null($savepoint)) {
+        if ( ! is_null($savepoint)) {
             $this->beginTransaction();
 
             $this->savePoints[] = $savepoint;
 
-
             $this->createSavePoint($savepoint);
         } else {
-            if($this->transactionLevel == 0) {
+            if ($this->transactionLevel == 0) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this->conn);
 
                 $this->conn->getDbh()->beginTransaction();
@@ -181,14 +180,13 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
 
         $level = ++$this->transactionLevel;
 
-
         return $level;
     }
     /**
      * commit
      * Commit the database changes done during a transaction that is in
      * progress or release a savepoint. This function may only be called when
-     * auto-committing is disabled, otherwise it will fail. 
+     * auto-committing is disabled, otherwise it will fail.
      *
      * Listeners: onPreTransactionCommit, onTransactionCommit
      *
@@ -198,17 +196,16 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @return boolean                          false if commit couldn't be performed, true otherwise
      */
     public function commit($savepoint = null) {
-        if($this->transactionLevel == 0)
+        if ($this->transactionLevel == 0)
             return false;
 
         if ( ! is_null($savepoint)) {
             $this->transactionLevel = $this->removeSavePoints($savepoint);
 
             $this->releaseSavePoint($savepoint);
-        } else {        
-            if($this->transactionLevel == 1) {
+        } else {
+            if ($this->transactionLevel == 1) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionCommit($this->conn);
-                
 
                 try {
                     $this->bulkDelete();
@@ -218,9 +215,9 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
 
                     throw new Doctrine_Connection_Transaction_Exception($e->__toString());
                 }
-                if( ! empty($this->invalid)) {
+                if ( ! empty($this->invalid)) {
                     $this->rollback();
-                    
+
                     $tmp = $this->invalid;
                     $this->invalid = array();
 
@@ -228,13 +225,13 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
                 }
 
                 $this->conn->getDbh()->commit();
-    
+
                 //$this->conn->unitOfWork->reset();
-    
+
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionCommit($this->conn);
             }
         }
-        
+
         $this->transactionLevel--;
 
         return true;
@@ -253,13 +250,12 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @return boolean                          false if rollback couldn't be performed, true otherwise
      */
     public function rollback($savepoint = null) {
-        if($this->transactionLevel == 0)
+        if ($this->transactionLevel == 0)
             return false;
 
         $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionRollback($this->conn);
 
-        if( ! is_null($savepoint)) {
-
+        if ( ! is_null($savepoint)) {
             $this->transactionLevel = $this->removeSavePoints($savepoint);
 
             $this->rollbackSavePoint($savepoint);
@@ -272,7 +268,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
             $this->conn->getDbh()->rollback();
         }
         $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionRollback($this->conn);
-        
+
         return true;
     }
     /**
@@ -318,7 +314,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
 
         $c = count($this->savePoints);
 
-        for($x = $i; $x < count($this->savePoints); $x++) {
+        for ($x = $i; $x < count($this->savePoints); $x++) {
             unset($this->savePoints[$x]);
         }
         return ($c - $i);
@@ -354,7 +350,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      *
      * fetches the current session transaction isolation level
      *
-     * note: some drivers may support setting the transaction isolation level 
+     * note: some drivers may support setting the transaction isolation level
      * but not fetching it
      *
      * @throws Doctrine_Transaction_Exception           if the feature is not supported by the driver

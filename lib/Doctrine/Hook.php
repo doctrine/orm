@@ -30,7 +30,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hook { 
+class Doctrine_Hook {
     /**
      * @var Doctrine_Query $query           the base query
      */
@@ -70,10 +70,10 @@ class Doctrine_Hook {
      * @param Doctrine_Query $query         the base query
      */
     public function __construct($query) {
-        if(is_string($query)) {
+        if (is_string($query)) {
             $this->query = new Doctrine_Query();
             $this->query->parseQuery($query);
-        } elseif($query instanceof Doctrine_Query) {
+        } elseif ($query instanceof Doctrine_Query) {
             $this->query = $query;
         }
     }
@@ -84,32 +84,31 @@ class Doctrine_Hook {
 
     }
     public function innerJoin($dql) {
-                                           	
+
     }
     /**
      * hookWhere
      * builds DQL query where part from given parameter array
      *
-     * @param array $params         an associative array containing field 
+     * @param array $params         an associative array containing field
      *                              names and their values
      * @return boolean              whether or not the hooking was
      */
     public function hookWhere($params) {
-        if( ! is_array($params)) 
+        if ( ! is_array($params)) {
             return false;
-
-        foreach($params as $name => $value) {
+        }
+        foreach ($params as $name => $value) {
             $e = explode('.', $name);
 
-            if(count($e) == 2) {
+            if (count($e) == 2) {
                 list($alias, $column) = $e;
 
                 $tableAlias = $this->query->getTableAlias($alias);
                 $table = $this->query->getTable($tableAlias);
 
-                if($def = $table->getDefinitionOf($column)) {
-
-                    if(isset($this->typeParsers[$def[0]])) {
+                if ($def = $table->getDefinitionOf($column)) {
+                    if (isset($this->typeParsers[$def[0]])) {
                         $name   = $this->typeParsers[$def[0]];
                         $parser = new $name;
                     }
@@ -122,7 +121,7 @@ class Doctrine_Hook {
             }
         }
         $this->params += $params;
-    
+
         return true;
     }
     /**
@@ -134,27 +133,27 @@ class Doctrine_Hook {
      * @return boolean              whether or not the hooking was
      */
     public function hookOrderby($params) {
-        if( ! is_array($params)) 
+        if ( ! is_array($params)) {
             return false;
-
-        foreach($params as $name) {
+        }
+        foreach ($params as $name) {
             $e = explode(' ', $name);
 
             $order = 'ASC';
 
-            if(count($e) > 1) {
+            if (count($e) > 1) {
                 $order = ($e[1] == 'DESC') ? 'DESC' : 'ASC';
             }
 
             $e = explode('.', $e[0]);
 
-            if(count($e) == 2) {
+            if (count($e) == 2) {
                 list($alias, $column) = $e;
 
                 $tableAlias = $this->query->getTableAlias($alias);
                 $table = $this->query->getTable($tableAlias);
 
-                if($def = $table->getDefinitionOf($column)) {
+                if ($def = $table->getDefinitionOf($column)) {
                     $this->query->addOrderBy($alias . '.' . $column . ' ' . $order);
                 }
             }

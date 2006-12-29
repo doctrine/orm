@@ -47,11 +47,10 @@ class Doctrine_EventListener_Debugger extends Doctrine_EventListener {
     const EVENT_COLLDELETE      = 26;
     const EVENT_PRECOLLDELETE   = 27;
     private $debug;
-    
-    public function getMessages() {
-        return $this->debug;                              	
-    }
 
+    public function getMessages() {
+        return $this->debug;
+    }
 
     public function onLoad(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_LOAD);
@@ -60,18 +59,18 @@ class Doctrine_EventListener_Debugger extends Doctrine_EventListener {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_PRELOAD);
     }
 
-    public function onSleep(Doctrine_Record $record) { 
+    public function onSleep(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_SLEEP);
     }
 
-    public function onWakeUp(Doctrine_Record $record) { 
+    public function onWakeUp(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_WAKEUP);
     }
 
-    public function onUpdate(Doctrine_Record $record) { 
+    public function onUpdate(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_UPDATE);
     }
-    public function onPreUpdate(Doctrine_Record $record) { 
+    public function onPreUpdate(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_PREUPDATE);
     }
 
@@ -89,42 +88,42 @@ class Doctrine_EventListener_Debugger extends Doctrine_EventListener {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_PRESAVE);
     }
 
-    public function onInsert(Doctrine_Record $record) { 
+    public function onInsert(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_INSERT);
     }
-    public function onPreInsert(Doctrine_Record $record) { 
+    public function onPreInsert(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_PREINSERT);
     }
 
-    public function onDelete(Doctrine_Record $record) { 
+    public function onDelete(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_DELETE);
     }
-    public function onPreDelete(Doctrine_Record $record) { 
+    public function onPreDelete(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_PREDELETE);
     }
 
-    public function onEvict(Doctrine_Record $record) { 
+    public function onEvict(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_EVICT);
     }
-    public function onPreEvict(Doctrine_Record $record) { 
+    public function onPreEvict(Doctrine_Record $record) {
         $this->debug[] = new Doctrine_DebugMessage($record,self::EVENT_PREEVICT);
     }
 
-    public function onClose(Doctrine_Connection $connection) { 
+    public function onClose(Doctrine_Connection $connection) {
          $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_CLOSE);
     }
-    public function onPreClose(Doctrine_Connection $connection) { 
+    public function onPreClose(Doctrine_Connection $connection) {
          $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_PRECLOSE);
     }
 
-    public function onOpen(Doctrine_Connection $connection) { 
+    public function onOpen(Doctrine_Connection $connection) {
          $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_OPEN);
     }
 
-    public function onTransactionCommit(Doctrine_Connection $connection) { 
+    public function onTransactionCommit(Doctrine_Connection $connection) {
          $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_COMMIT);
     }
-    public function onPreTransactionCommit(Doctrine_Connection $connection) { 
+    public function onPreTransactionCommit(Doctrine_Connection $connection) {
         $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_PRECOMMIT);
     }
 
@@ -141,12 +140,11 @@ class Doctrine_EventListener_Debugger extends Doctrine_EventListener {
     public function onPreTransactionBegin(Doctrine_Connection $connection) {
         $this->debug[] = new Doctrine_DebugMessage($connection,self::EVENT_PREBEGIN);
     }
-    
-    public function onCollectionDelete(Doctrine_Collection $collection) { 
+
+    public function onCollectionDelete(Doctrine_Collection $collection) {
         $this->debug[] = new Doctrine_DebugMessage($collection,self::EVENT_COLLDELETE);
     }
     public function onPreCollectionDelete(Doctrine_Collection $collection) {
         $this->debug[] = new Doctrine_DebugMessage($collection,self::EVENT_PRECOLLDELETE);
     }
 }
-

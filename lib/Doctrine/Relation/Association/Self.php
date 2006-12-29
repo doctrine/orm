@@ -1,4 +1,4 @@
-<?php   
+<?php
 /*
  *  $Id$
  *
@@ -37,33 +37,31 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association {
      * @param integer $count
      * @return string
      */
-    public function getRelationDql($count, $context = 'record') {    
-        switch($context):
-            case 'record':
-                $sub    = 'SELECT '.$this->foreign.
-                          ' FROM '.$this->associationTable->getTableName().
-                          ' WHERE '.$this->local.
-                          ' = ?';
-                $sub2   = 'SELECT '.$this->local.
-                          ' FROM '.$this->associationTable->getTableName().
-                          ' WHERE '.$this->foreign.
-                          ' = ?';
+    public function getRelationDql($count, $context = 'record') {
+        switch ($context) {
+        case 'record':
+            $sub    = 'SELECT '.$this->foreign.
+                      ' FROM '.$this->associationTable->getTableName().
+                      ' WHERE '.$this->local.
+                      ' = ?';
+            $sub2   = 'SELECT '.$this->local.
+                      ' FROM '.$this->associationTable->getTableName().
+                      ' WHERE '.$this->foreign.
+                      ' = ?';
 
-
-                $dql  = 'FROM '.$this->table->getComponentName();
-                $dql .= '.'.$this->associationTable->getComponentName();
-                $dql .= ' WHERE '.$this->table->getComponentName().'.'.$this->table->getIdentifier().' IN ('.$sub.')';
-                $dql .= ' || '.$this->table->getComponentName().'.'.$this->table->getIdentifier().' IN ('.$sub2.')';
+            $dql  = 'FROM '.$this->table->getComponentName();
+            $dql .= '.'.$this->associationTable->getComponentName();
+            $dql .= ' WHERE '.$this->table->getComponentName().'.'.$this->table->getIdentifier().' IN ('.$sub.')';
+            $dql .= ' || '.$this->table->getComponentName().'.'.$this->table->getIdentifier().' IN ('.$sub2.')';
             break;
-            case 'collection':
-                $sub  = substr(str_repeat('?, ', $count),0,-2);
-                $dql  = 'FROM '.$this->associationTable->getComponentName().'.'.$this->table->getComponentName();
-                $dql .= ' WHERE '.$this->associationTable->getComponentName().'.'.$this->local.' IN ('.$sub.')';
-        endswitch;
+        case 'collection':
+            $sub  = substr(str_repeat('?, ', $count),0,-2);
+            $dql  = 'FROM '.$this->associationTable->getComponentName().'.'.$this->table->getComponentName();
+            $dql .= ' WHERE '.$this->associationTable->getComponentName().'.'.$this->local.' IN ('.$sub.')';
+        };
 
         return $dql;
     }
-    
 
     public function fetchRelatedFor(Doctrine_Record $record) {
         $id      = $record->getIncremented();
@@ -94,8 +92,8 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association {
                 );
         $q->addComponent($tableName,  $record->getTable()->getComponentName());
         $q->addComponent($assocTable, $record->getTable()->getComponentName(). '.' . $this->getAssociationFactory()->getComponentName());
-    
+
         return $q->execute(array($id, $id));
     }
 }
-?>
+

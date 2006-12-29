@@ -34,7 +34,7 @@ class Doctrine_Query_Set extends Doctrine_Query_Part {
         $parts = Doctrine_Query::sqlExplode($dql, ',');
 
         $result = array();
-        foreach($parts as $part) {
+        foreach ($parts as $part) {
             $set = Doctrine_Query::sqlExplode($part, '=');
 
             $e   = explode('.', trim($set[0]));
@@ -43,11 +43,11 @@ class Doctrine_Query_Set extends Doctrine_Query_Part {
             $reference = implode('.', $e);
 
             $alias     = $this->query->getTableAlias($reference);
-            
+
             $result[]  = $alias . '.' . $field . ' = ' . $set[1];
         }
 
         return implode(', ', $result);
     }
 }
-?>
+

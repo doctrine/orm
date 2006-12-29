@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -32,9 +32,9 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Connection_Pgsql_Exception extends Doctrine_Connection_Exception { 
+class Doctrine_Connection_Pgsql_Exception extends Doctrine_Connection_Exception {
     /**
-     * @var array $errorRegexps         an array that is used for determining portable 
+     * @var array $errorRegexps         an array that is used for determining portable
      *                                  error code from a native database error message
      */
     protected static $errorRegexps = array(
@@ -81,7 +81,7 @@ class Doctrine_Connection_Pgsql_Exception extends Doctrine_Connection_Exception 
                                 );
     /**
      * This method checks if native error code/message can be
-     * converted into a portable code and then adds this 
+     * converted into a portable code and then adds this
      * portable error code to $portableCode field
      *
      * the portable error code is added at the end of array

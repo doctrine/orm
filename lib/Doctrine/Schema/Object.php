@@ -39,31 +39,32 @@ abstract class Doctrine_Schema_Object extends Doctrine_Access implements Iterato
     protected $definition = array('name' => '');
 
     public function __construct(array $definition = array()) {
-        foreach($this->definition as $key => $val) {
-            if(isset($definition[$key])) 
+        foreach ($this->definition as $key => $val) {
+            if (isset($definition[$key])) {
                 $this->definition[$key] = $definition[$key];
+            }
         }
     }
 
     public function get($name) {
-        if( ! array_key_exists($name, $this->definition))
+        if ( ! array_key_exists($name, $this->definition)) {
             throw new Doctrine_Schema_Exception('Unknown definition '. $name);
-
+        }
         return $this->definition[$name];
 
     }
 
     public function set($name, $value) {
-        if( ! array_key_exists($name, $this->definition))
+        if ( ! array_key_exists($name, $this->definition)) {
             throw new Doctrine_Schema_Exception('Unknown definition '. $name);
-       
+        }
         $this->definition[$name] = $value;
     }
-    
+
     public function contains($name) {
         return array_key_exists($name, $this->definition);
     }
-    
+
     public function toArray() {
         return $this->definition;
     }
@@ -73,9 +74,9 @@ abstract class Doctrine_Schema_Object extends Doctrine_Access implements Iterato
      * @access public
      */
     public function count() {
-        if( ! empty($this->children))
+        if ( ! empty($this->children)) {
             return count($this->children);
-
+        }
         return count($this->definition);
     }
 
@@ -86,10 +87,9 @@ abstract class Doctrine_Schema_Object extends Doctrine_Access implements Iterato
      * @access public
      */
     public function getIterator() {
-        if( ! empty($this->children))
+        if ( ! empty($this->children)) {
             return new ArrayIterator($this->children);
-
+        }
         return new ArrayIterator($this->definition);
     }
 }
-

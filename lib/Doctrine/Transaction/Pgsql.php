@@ -31,7 +31,7 @@ Doctrine::autoload('Doctrine_Transaction');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Transaction_Pgsql extends Doctrine_Transaction { 
+class Doctrine_Transaction_Pgsql extends Doctrine_Transaction {
     /**
      * createSavepoint
      * creates a new savepoint
@@ -41,7 +41,7 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction {
      */
     protected function createSavePoint($savepoint) {
         $query = 'SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -53,7 +53,7 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction {
      */
     protected function releaseSavePoint($savepoint) {
         $query = 'RELEASE SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -65,7 +65,7 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction {
      */
     protected function rollbackSavePoint($savepoint) {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -86,8 +86,8 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction {
             case 'READ COMMITTED':
             case 'REPEATABLE READ':
             case 'SERIALIZABLE':
-            
-            break;           
+
+            break;
             default:
                 throw new Doctrine_Transaction_Exception('Isolation level '.$isolation.' is not supported.');
         }

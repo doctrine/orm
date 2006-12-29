@@ -71,7 +71,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export {
         $fields = array();
         foreach ($definition['fields'] as $fieldName => $field) {
             $fieldString = $fieldName;
-            if(isset($field['sorting'])) {
+            if (isset($field['sorting'])) {
                 switch ($field['sorting']) {
                 case 'ascending':
                     $fieldString .= ' ASC';

@@ -34,8 +34,8 @@ class Doctrine_Hook_Integer extends Doctrine_Hook_Parser_Complex {
     /**
      * parse
      * Parses given field and field value to DQL condition
-     * and parameters. This method should always return 
-     * prepared statement conditions (conditions that use 
+     * and parameters. This method should always return
+     * prepared statement conditions (conditions that use
      * placeholders instead of literal values).
      *
      * @param string $alias     component alias
@@ -46,15 +46,15 @@ class Doctrine_Hook_Integer extends Doctrine_Hook_Parser_Complex {
     public function parseSingle($alias, $field, $value) {
         $e = explode(' ', $value);
 
-        foreach($e as $v) {
-        	$v = trim($v);
+        foreach ($e as $v) {
+             $v = trim($v);
 
-        	$e2   = explode('-', $v);
+             $e2   = explode('-', $v);
 
             $name = $alias. '.' . $field;
 
-        	if(count($e2) == 1) {
-        	    // one '-' found
+             if (count($e2) == 1) {
+                 // one '-' found
 
                 $a[] = $name . ' = ?';
 
@@ -63,7 +63,7 @@ class Doctrine_Hook_Integer extends Doctrine_Hook_Parser_Complex {
                 // more than one '-' found
 
                 $a[] = '(' . $name . ' > ? AND ' . $name . ' < ?)';
-            
+
                 $this->params += array($e2[0], $e2[1]);
             }
 

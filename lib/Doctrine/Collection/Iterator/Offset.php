@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -33,5 +33,3 @@ Doctrine::autoload('Doctrine_Collection_Iterator');
 class Doctrine_Collection_Iterator_Offset extends Doctrine_Collection_Iterator {
     public function valid() { }
 }
-
-

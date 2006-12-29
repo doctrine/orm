@@ -45,4 +45,3 @@ class Doctrine_Validator_Creditcard {
     }
 
 }
-

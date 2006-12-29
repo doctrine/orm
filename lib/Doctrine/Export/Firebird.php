@@ -81,7 +81,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
 
         $table = $this->conn->quoteIdentifier($table, true);
         $name  = $this->conn->quoteIdentifier($name,  true);
-        
+
         $triggerSql = 'CREATE TRIGGER ' . $trigger_name . ' FOR ' . $table . '
                         ACTIVE BEFORE INSERT POSITION 0
                         AS
@@ -104,7 +104,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
     public function _dropAutoincrement($table) {
 
         $result = $this->dropSequence($table);
-        
+
         /**
         if (PEAR::isError($result)) {
             return $db->raiseError(null, null, null,
@@ -115,7 +115,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
         $table = $this->conn->getDbh()->quote(strtoupper($table));
         $trigger_name = $this->conn->getDbh()->quote(strtoupper($table) . '_AUTOINCREMENT_PK');
         $result = $this->conn->exec("DELETE FROM RDB\$TRIGGERS WHERE UPPER(RDB\$RELATION_NAME)=$table AND UPPER(RDB\$TRIGGER_NAME)=$trigger_name");
-        
+
         /**
         if (PEAR::isError($result)) {
             return $db->raiseError(null, null, null,
@@ -158,8 +158,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
         parent::createTable($name, $fields, $options);
 
         // TODO ? $this->_silentCommit();
-        foreach($fields as $field_name => $field) {
-            if( ! empty($field['autoincrement'])) {
+        foreach ($fields as $field_name => $field) {
+            if ( ! empty($field['autoincrement'])) {
                 //create PK constraint
                 $pk_definition = array(
                     'fields' => array($field_name => array()),
@@ -218,7 +218,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
         $result = parent::dropTable($name);
 
         //$this->_silentCommit();
-       
+
         return $result;
     }
     /**

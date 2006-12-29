@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -32,7 +32,7 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  * @author      Lorenzo Alberton <l.alberton@quipo.it> (PEAR MDB2 Interbase driver)
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  */
-class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Exception { 
+class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Exception {
     /**
      * @var array $errorCodeMap         an array that is used for determining portable
      *                                  error code from a native database error code
@@ -68,16 +68,16 @@ class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Excepti
                                     -924 => Doctrine::ERR_CONNECT_FAILED
                                     );
     /**
-     * @var array $errorRegexps         an array that is used for determining portable 
+     * @var array $errorRegexps         an array that is used for determining portable
      *                                  error code from a native database error message
      */
     protected static $errorRegexps = array(
                                     '/generator .* is not defined/'
                                         => Doctrine::ERR_SYNTAX,  // for compat. w ibase_errcode()
                                     '/table.*(not exist|not found|unknown)/i'
-                                        => Doctrine::ERR_NOSUCHTABLE,  
+                                        => Doctrine::ERR_NOSUCHTABLE,
                                     '/table .* already exists/i'
-                                        => Doctrine::ERR_ALREADY_EXISTS, 
+                                        => Doctrine::ERR_ALREADY_EXISTS,
                                     '/unsuccessful metadata update .* failed attempt to store duplicate value/i'
                                         => Doctrine::ERR_ALREADY_EXISTS,
                                     '/unsuccessful metadata update .* not found/i'
@@ -92,12 +92,12 @@ class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Excepti
                                         => Doctrine::ERR_ACCESS_VIOLATION,
                                     '/arithmetic exception, numeric overflow, or string truncation/i'
                                         => Doctrine::ERR_INVALID,
-                                    '/table unknown/i'                     
+                                    '/table unknown/i'
                                         => Doctrine::ERR_NOSUCHTABLE,
                                     );
     /**
-     * This method checks if native error code/message can be 
-     * converted into a portable code and then adds this 
+     * This method checks if native error code/message can be
+     * converted into a portable code and then adds this
      * portable error code to errorInfo array and returns the modified array
      *
      * the portable error code is added at the end of array
@@ -118,15 +118,15 @@ class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Excepti
             }
             */
 
-        foreach(self::$errorRegexps as $regexp => $code) {
+        foreach (self::$errorRegexps as $regexp => $code) {
             if (preg_match($regexp, $errorInfo[2])) {
                 $errorInfo[3] = $code;
                 break;
             }
         }
-        if(isset(self::$errorCodeMap[$errorInfo[1]]))
+        if (isset(self::$errorCodeMap[$errorInfo[1]])) {
             $errorInfo[3] = self::$errorCodeMap[$errorInfo[1]];
-
+        }
         return $errorInfo;
     }
 }

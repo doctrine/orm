@@ -55,52 +55,51 @@ class Doctrine_DataDict_Informix extends Doctrine_DataDict {
      */
     public function getNativeDeclaration($field) {
         switch ($field['type']) {
-            case 'char':
-            case 'varchar':
-            case 'array':
-            case 'object':
-            case 'string':
-                if (empty($field['length']) && array_key_exists('default', $field)) {
-                    $field['length'] = $this->conn->varchar_max_length;
-                }
-                
-                $length = (! empty($field['length'])) ? $field['length'] : false;
-                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
+        case 'char':
+        case 'varchar':
+        case 'array':
+        case 'object':
+        case 'string':
+            if (empty($field['length']) && array_key_exists('default', $field)) {
+                $field['length'] = $this->conn->varchar_max_length;
+            }
+            
+            $length = (! empty($field['length'])) ? $field['length'] : false;
+            $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
 
-                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR(255)')
-                    : ($length ? 'VARCHAR('.$length.')' : 'NVARCHAR');
-            case 'clob':
-                return 'TEXT';
-            case 'blob':
-                return 'BLOB';
-            case 'integer':
-                if (!empty($field['length'])) {
-                    $length = $field['length'];
-                    if ($length <= 1) {
-                        return 'SMALLINT';
-                    } elseif ($length == 2) {
-                        return 'SMALLINT';
-                    } elseif ($length == 3 || $length == 4) {
-                        return 'INTEGER';
-                    } elseif ($length > 4) {
-                        return 'DECIMAL(20)';
-                    }
+            return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR(255)')
+                : ($length ? 'VARCHAR('.$length.')' : 'NVARCHAR');
+        case 'clob':
+            return 'TEXT';
+        case 'blob':
+            return 'BLOB';
+        case 'integer':
+            if (!empty($field['length'])) {
+                $length = $field['length'];
+                if ($length <= 1) {
+                    return 'SMALLINT';
+                } elseif ($length == 2) {
+                    return 'SMALLINT';
+                } elseif ($length == 3 || $length == 4) {
+                    return 'INTEGER';
+                } elseif ($length > 4) {
+                    return 'DECIMAL(20)';
                 }
-                return 'INT';
-            case 'boolean':
-                return 'SMALLINT';
-            case 'date':
-                return 'DATE';
-            case 'time':
-                return 'DATETIME YEAR TO SECOND';
-            case 'timestamp':
-                return 'DATETIME';
-            case 'float':
-                return 'FLOAT';
-            case 'decimal':
-                return 'DECIMAL';
+            }
+            return 'INT';
+        case 'boolean':
+            return 'SMALLINT';
+        case 'date':
+            return 'DATE';
+        case 'time':
+            return 'DATETIME YEAR TO SECOND';
+        case 'timestamp':
+            return 'DATETIME';
+        case 'float':
+            return 'FLOAT';
+        case 'decimal':
+            return 'DECIMAL';
         }
         return '';
     }
-
 }

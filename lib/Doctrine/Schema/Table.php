@@ -38,7 +38,7 @@ Doctrine::autoload('Doctrine_Schema_Object');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable, IteratorAggregate {
-    
+
     protected $definition = array('name'        => '',
                                   'check'       => '',
                                   'charset'     => '',
@@ -53,7 +53,7 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable,
      * @access public
      */
     public function isValid( ) {
-        
+
     }
     /**
      * returns an array of Doctrine_Schema_Column objects
@@ -67,9 +67,9 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable,
      * @return Doctrine_Schema_Column|false
      */
     public function getColumn($name) {
-        if( ! isset($this->children[$name]))
+        if ( ! isset($this->children[$name])) {
             return false;
-            
+        }
         return $this->children[$name];
     }
     /**
@@ -92,15 +92,15 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable,
      *
     */
     public function setRelation(Doctrine_Schema_Relation $relation){
-         $this->relations[] = $relation;	
+         $this->relations[] = $relation;
     }
     /**
      * Return all the relations this table has with others
-     * 
+     *
      * @return array Array of Doctrine_Schema_Relation
     */
     public function getRelations(){
-    	return $this->relations;
+        return $this->relations;
     }
 
 }

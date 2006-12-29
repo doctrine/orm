@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -34,7 +34,7 @@ Doctrine::autoload('Doctrine_Access');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_ValueHolder extends Doctrine_Access implements Countable {
-    
+
     public $data = array();
 
     private $table;
@@ -42,15 +42,15 @@ class Doctrine_ValueHolder extends Doctrine_Access implements Countable {
     public function __construct(Doctrine_Table $table) {
         $this->table = $table;
     }
-    
+
     public function set($name, $value) {
         $this->data[$name] = $value;
     }
 
     public function get($name) {
-        if( ! isset($this->data[$name]))
+        if ( ! isset($this->data[$name])) {
             throw new Doctrine_Exception("Unknown property $name.");
-
+        }
         return $this->data[$name];
     }
     public function count() {
@@ -65,4 +65,3 @@ class Doctrine_ValueHolder extends Doctrine_Access implements Countable {
         throw new Doctrine_Exception("Method 'save' not availible on Doctrine_ValueHolder.");
     }
 }
-

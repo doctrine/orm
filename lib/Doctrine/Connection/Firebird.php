@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -95,7 +95,7 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
      * @return string modified  query
      */
     public function modifyLimitQuery($query, $limit, $offset) {
-        if($limit > 0) {
+        if ($limit > 0) {
             $query = preg_replace('/^([\s(])*SELECT(?!\s*FIRST\s*\d+)/i',
                 "SELECT FIRST $limit SKIP $offset", $query);
         }
@@ -112,4 +112,3 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
         return $data[0];
     }
 }
-

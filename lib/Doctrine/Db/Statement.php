@@ -29,11 +29,11 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Db_Statement extends PDOStatement { 
+class Doctrine_Db_Statement extends PDOStatement {
     protected $dbh;
 
     protected $querySequence;
-    
+
     protected $baseSequence;
 
     protected $executed = false;
@@ -53,7 +53,7 @@ class Doctrine_Db_Statement extends PDOStatement {
         return $this->queryString;
     }
     public function isExecuted($executed = null) {
-        if($executed === null)
+        if ($executed === null)
             return $this->executed;
 
         $this->executed = (bool) $executed;
@@ -67,8 +67,6 @@ class Doctrine_Db_Statement extends PDOStatement {
         $ret = parent::execute($params);
 
         $this->dbh->getListener()->onExecute($event);
-
-
 
         return $this;
     }

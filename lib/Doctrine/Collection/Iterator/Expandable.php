@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -32,15 +32,14 @@ Doctrine::autoload('Doctrine_Collection_Iterator');
  */
 class Doctrine_Collection_Iterator_Expandable extends Doctrine_Collection_Iterator {
     public function valid() {
-        if($this->index < $this->count)
+        if ($this->index < $this->count) {
             return true;
-        elseif($this->index == $this->count) {
-
+        } elseif ($this->index == $this->count) {
             $coll  = $this->collection->expand($this->index);
 
-            if($coll instanceof Doctrine_Collection) {
+            if ($coll instanceof Doctrine_Collection) {
                 $count = count($coll);
-                if($count > 0) {
+                if ($count > 0) {
                     $this->keys   = array_merge($this->keys, $coll->getKeys());
                     $this->count += $count;
                     return true;
@@ -51,4 +50,3 @@ class Doctrine_Collection_Iterator_Expandable extends Doctrine_Collection_Iterat
         }
     }
 }
-

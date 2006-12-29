@@ -41,7 +41,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
      * @var array $loaded           an array containing the loaded batches, keys representing the batch indexes
      */
     private $loaded = array();
-    
+
     public function __construct(Doctrine_Table $table) {
         parent::__construct($table);
         $this->batchSize = $this->getTable()->getAttribute(Doctrine::ATTR_BATCH_SIZE);
@@ -53,9 +53,9 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
      */
     public function setBatchSize($batchSize) {
         $batchSize = (int) $batchSize;
-        if($batchSize <= 0)
+        if ($batchSize <= 0) {
             return false;
-
+        }
         $this->batchSize = $batchSize;
         return true;
     }
@@ -68,47 +68,46 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
         return $this->batchSize;
     }
     /**
-     * load                                        
+     * load
      * loads a specified element, by loading the batch the element is part of
      *
      * @param Doctrine_Record $record              record to be loaded
      * @return boolean                             whether or not the load operation was successful
      */
     public function load(Doctrine_Record $record) {
-        if(empty($this->data))
+        if (empty($this->data)) {
             return false;
-
+        }
         $id  = $record->obtainIdentifier();
         $identifier = $this->table->getIdentifier();
-        foreach($this->data as $key => $v) {
-            if(is_object($v)) {
-                if($v->obtainIdentifier() == $id)
+        foreach ($this->data as $key => $v) {
+            if (is_object($v)) {
+                if ($v->obtainIdentifier() == $id) {
                     break;
-
-            } elseif(is_array($v[$identifier])) {
-                if($v[$identifier] == $id)
+                }
+            } elseif (is_array($v[$identifier])) {
+                if ($v[$identifier] == $id) {
                     break;
+                }
             }
         }
         $x = floor($key / $this->batchSize);
 
-        if( ! isset($this->loaded[$x])) {
-
+        if ( ! isset($this->loaded[$x])) {
             $e  = $x * $this->batchSize;
             $e2 = ($x + 1)* $this->batchSize;
 
             $a       = array();
             $proxies = array();
 
-            for($i = $e; $i < $e2 && $i < $this->count(); $i++):
-                if($this->data[$i] instanceof Doctrine_Record)
+            for ($i = $e; $i < $e2 && $i < $this->count(); $i++) {
+                if ($this->data[$i] instanceof Doctrine_Record) {
                     $id = $this->data[$i]->getIncremented();
-                elseif(is_array($this->data[$i]))
+                } elseif (is_array($this->data[$i])) {
                     $id = $this->data[$i][$identifier];
-
-
+                }
                 $a[$i] = $id;
-            endfor;
+            };
 
             $c = count($a);
 
@@ -120,14 +119,14 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
 
             $stmt  = $this->table->getConnection()->execute($query,array_values($a));
 
-             foreach($a as $k => $id) {
+             foreach ($a as $k => $id) {
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                if($row === false) 
+                if ($row === false) {
                     break;
-
+                }
                 $this->table->setData($row);
-                if(is_object($this->data[$k])) {
+                if (is_object($this->data[$k])) {
                     $this->data[$k]->factoryRefresh($this->table);
                 } else {
                     $this->data[$k] = $this->table->getRecord();
@@ -148,30 +147,27 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
      * @return object Doctrine_Record               record
      */
     public function get($key) {
-        if(isset($this->data[$key])) {
-            switch(gettype($this->data[$key])):
-                case "array":
-                    // Doctrine_Record didn't exist in cache
-                    $this->table->setData($this->data[$key]);
-                    $this->data[$key] = $this->table->getProxy();
+        if (isset($this->data[$key])) {
+            switch (gettype($this->data[$key])) {
+            case "array":
+                // Doctrine_Record didn't exist in cache
+                $this->table->setData($this->data[$key]);
+                $this->data[$key] = $this->table->getProxy();
 
-                    $this->data[$key]->addCollection($this);
+                $this->data[$key]->addCollection($this);
                 break;
-            endswitch;
+            };
         } else {
-
             $this->expand($key);
 
-            if( ! isset($this->data[$key]))
+            if ( ! isset($this->data[$key])) {
                 $this->data[$key] = $this->table->create();
-
+            }
         }
 
-
-        if(isset($this->reference_field))
+        if (isset($this->reference_field)) {
             $this->data[$key]->set($this->reference_field, $this->reference, false);
-
-
+        }
         return $this->data[$key];
     }
     /**
@@ -181,4 +177,3 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
         return new Doctrine_Collection_Iterator_Expandable($this);
     }
 }
-

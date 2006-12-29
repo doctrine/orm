@@ -30,7 +30,7 @@ Doctrine::autoload('Doctrine_Connection');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_Informix extends Doctrine_Connection { 
+class Doctrine_Connection_Informix extends Doctrine_Connection {
     /**
      * @var string $driverName                  the name of this connection driver
      */

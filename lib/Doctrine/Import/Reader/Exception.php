@@ -44,10 +44,4 @@ class Doctrine_Import_Reader_Exception
 
      /*** Attributes: ***/
 
-
-
-
-
-
 } // end of Doctrine_Import_Reader_Exception
-

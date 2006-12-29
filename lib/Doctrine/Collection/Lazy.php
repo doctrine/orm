@@ -1,7 +1,7 @@
 <?php
 require_once("Batch.php");
 /**
- * a collection of Doctrine_Record objects with lazy load strategy 
+ * a collection of Doctrine_Record objects with lazy load strategy
  * (batch load strategy with batch size 1)
  * @package     Doctrine
  * @category    Object Relational Mapping
@@ -14,7 +14,7 @@ require_once("Batch.php");
 class Doctrine_Collection_Lazy extends Doctrine_Collection_Batch {
     /**
      * constructor
-     * @param Doctrine_DQL_Parser $graph      
+     * @param Doctrine_DQL_Parser $graph
      * @param string $key
      */
     public function __construct(Doctrine_Table $table) {
@@ -22,4 +22,3 @@ class Doctrine_Collection_Lazy extends Doctrine_Collection_Batch {
         parent::setBatchSize(1);
     }
 }
-

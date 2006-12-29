@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -31,7 +31,7 @@ Doctrine::autoload("Doctrine_Connection_Common");
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common { 
+class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
     /**
      * @var string $driverName                  the name of this connection driver
      */
@@ -43,7 +43,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
      * @param PDO $pdo                          database handle
      */
     public function __construct(Doctrine_Manager $manager, $adapter) {
-        
+
         $this->supported = array(
                           'sequences'            => 'emulated',
                           'indexes'              => true,
@@ -96,4 +96,3 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
         return $data[0];
     }
 }
-

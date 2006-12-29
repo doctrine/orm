@@ -47,4 +47,3 @@ class Doctrine_Identifier {
      */
     const COMPOSITE      = 4;
 }
-

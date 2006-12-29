@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -39,12 +39,12 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
     }
     /**
      * regexp
-     * returns the regular expression operator 
+     * returns the regular expression operator
      *
      * @return string
      */
     public function regexp() {
-        throw new Doctrine_Expression_Exception('Regular expression operator is not supported by this database driver.');                                    	
+        throw new Doctrine_Expression_Exception('Regular expression operator is not supported by this database driver.');
     }
     /**
      * Returns the average value of a column
@@ -168,7 +168,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
     }
     /**
      * upper
-     * Returns the string $str with all characters changed to 
+     * Returns the string $str with all characters changed to
      * uppercase according to the current character set mapping.
      *
      * @param string $str       literal string or column name
@@ -179,7 +179,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
     }
     /**
      * lower
-     * Returns the string $str with all characters changed to 
+     * Returns the string $str with all characters changed to
      * lowercase according to the current character set mapping.
      *
      * @param string $str       literal string or column name
@@ -209,7 +209,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
     }
     /**
      * soundex
-     * Returns a string to call a function to compute the 
+     * Returns a string to call a function to compute the
      * soundex encoding of a string
      *
      * The string "?000" is returned if the argument is NULL.
@@ -223,8 +223,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
     /**
      * return string to call a function to get a substring inside an SQL statement
      *
-     * Note: Not SQL92, but common functionality. 
-     * 
+     * Note: Not SQL92, but common functionality.
+     *
      * SQLite only supports the 2 parameter variant of this function
      *
      * @param string $value         an sql string literal or column name/alias
@@ -284,9 +284,9 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      */
     private function basicMath($type, array $args) {
         $elements = $this->getIdentifiers($args);
-        if (count($elements) < 1)
+        if (count($elements) < 1) {
             return '';
-
+        }
         if (count($elements) == 1) {
             return $elements[0];
         } else {
@@ -303,7 +303,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * Example:
      * <code>
      * $q = new Doctrine_Query();
-     * $e = $q->expr;     
+     * $e = $q->expr;
      *
      * $q->select('u.*')
      *   ->from('User u')
@@ -327,7 +327,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * Example:
      * <code>
      * $q = new Doctrine_Query();
-     * $e = $q->expr;     
+     * $e = $q->expr;
      *
      * $q->select('u.*')
      *   ->from('User u')
@@ -351,7 +351,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * Example:
      * <code>
      * $q = new Doctrine_Query();
-     * $e = $q->expr;     
+     * $e = $q->expr;
      *
      * $q->select('u.*')
      *   ->from('User u')
@@ -375,7 +375,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * Example:
      * <code>
      * $q = new Doctrine_Query();
-     * $e = $q->expr;     
+     * $e = $q->expr;
      *
      * $q->select('u.*')
      *   ->from('User u')
@@ -539,15 +539,15 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @return string logical expression
      */
     public function in($column, $values) {
-        if( ! is_array($values))
+        if ( ! is_array($values)) {
             $values = array($values);
-
+        }
         $values = $this->getIdentifiers($values);
         $column = $this->getIdentifier($column);
 
-        if(count($values) == 0)
+        if (count($values) == 0) {
             throw new Doctrine_Expression_Exception('Values array for IN operator should not be empty.');
-
+        }
         return $column . ' IN (' . implode(', ', $values) . ')';
     }
     /**

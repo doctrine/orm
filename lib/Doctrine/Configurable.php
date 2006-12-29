@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -61,87 +61,90 @@ abstract class Doctrine_Configurable {
      * @return void
      */
     public function setAttribute($attribute,$value) {
-        switch($attribute):
-            case Doctrine::ATTR_BATCH_SIZE:
-                if($value < 0)
-                    throw new Doctrine_Exception("Batch size should be greater than or equal to zero");
+        switch ($attribute) {
+        case Doctrine::ATTR_BATCH_SIZE:
+            if ($value < 0) {
+                throw new Doctrine_Exception("Batch size should be greater than or equal to zero");
+            }
             break;
 
-            case Doctrine::ATTR_FETCHMODE:
-                 if($value < 0)
-                    throw new Doctrine_Exception("Unknown fetchmode. See Doctrine::FETCH_* constants.");
+        case Doctrine::ATTR_FETCHMODE:
+            if ($value < 0) {
+               throw new Doctrine_Exception("Unknown fetchmode. See Doctrine::FETCH_* constants.");
+            }
             break;
-            case Doctrine::ATTR_LISTENER:
-                $this->setEventListener($value);
+        case Doctrine::ATTR_LISTENER:
+            $this->setEventListener($value);
             break;
-            case Doctrine::ATTR_LOCKMODE:
-                if($this instanceof Doctrine_Connection) {
-                    if($this->transaction->getState() != Doctrine_Transaction::STATE_SLEEP)
+        case Doctrine::ATTR_LOCKMODE:
+            if ($this instanceof Doctrine_Connection) {
+                if ($this->transaction->getState() != Doctrine_Transaction::STATE_SLEEP) {
+                    throw new Doctrine_Exception("Couldn't set lockmode. There are transactions open.");
+                }
+            } elseif ($this instanceof Doctrine_Manager) {
+                foreach ($this as $connection) {
+                    if ($connection->transaction->getState() != Doctrine_Transaction::STATE_SLEEP) {
                         throw new Doctrine_Exception("Couldn't set lockmode. There are transactions open.");
-
-                } elseif($this instanceof Doctrine_Manager) {
-                    foreach($this as $connection) {
-                        if($connection->transaction->getState() != Doctrine_Transaction::STATE_SLEEP)
-                            throw new Doctrine_Exception("Couldn't set lockmode. There are transactions open.");
                     }
-                } else {
-                    throw new Doctrine_Exception("Lockmode attribute can only be set at the global or connection level.");
                 }
+            } else {
+                throw new Doctrine_Exception("Lockmode attribute can only be set at the global or connection level.");
+            }
             break;
-            case Doctrine::ATTR_CREATE_TABLES:
-                $value = (bool) $value;
+        case Doctrine::ATTR_CREATE_TABLES:
+            $value = (bool) $value;
             break;
-            case Doctrine::ATTR_ACCESSORS:
-                $accessors = array('none','get','set','both');
+        case Doctrine::ATTR_ACCESSORS:
+            $accessors = array('none','get','set','both');
 
-               // if( ! in_array($value,$accessors))
-               //     throw new Doctrine_Exception();
-
-            break;
-            case Doctrine::ATTR_COLL_LIMIT:
-                if($value < 1) {
-                    throw new Doctrine_Exception("Collection limit should be a value greater than or equal to 1.");
-                }
-            break;
-            case Doctrine::ATTR_COLL_KEY:
-                if( ! ($this instanceof Doctrine_Table)) 
-                    throw new Doctrine_Exception("This attribute can only be set at table level.");
-
-                if( ! $this->hasColumn($value)) 
-                    throw new Doctrine_Exception("Couldn't set collection key attribute. No such column '$value'");
-                    
+           // if ( ! in_array($value,$accessors)) {
+           //     throw new Doctrine_Exception();
+           // }
 
             break;
-            case Doctrine::ATTR_VLD:
-            case Doctrine::ATTR_AUTO_LENGTH_VLD:
-            case Doctrine::ATTR_AUTO_TYPE_VLD:
-            case Doctrine::ATTR_QUERY_LIMIT:
-            case Doctrine::ATTR_QUOTE_IDENTIFIER:
-            case Doctrine::ATTR_PORTABILITY:
-            case Doctrine::ATTR_DEFAULT_TABLE_TYPE:
-            case Doctrine::ATTR_ACCESSOR_PREFIX_GET:
-            case Doctrine::ATTR_ACCESSOR_PREFIX_SET:
+        case Doctrine::ATTR_COLL_LIMIT:
+            if ($value < 1) {
+                throw new Doctrine_Exception("Collection limit should be a value greater than or equal to 1.");
+            }
+            break;
+        case Doctrine::ATTR_COLL_KEY:
+            if ( ! ($this instanceof Doctrine_Table)) {
+                throw new Doctrine_Exception("This attribute can only be set at table level.");
+            }
+            if ( ! $this->hasColumn($value)) {
+                throw new Doctrine_Exception("Couldn't set collection key attribute. No such column '$value'");
+            }
+            break;
+        case Doctrine::ATTR_VLD:
+        case Doctrine::ATTR_AUTO_LENGTH_VLD:
+        case Doctrine::ATTR_AUTO_TYPE_VLD:
+        case Doctrine::ATTR_QUERY_LIMIT:
+        case Doctrine::ATTR_QUOTE_IDENTIFIER:
+        case Doctrine::ATTR_PORTABILITY:
+        case Doctrine::ATTR_DEFAULT_TABLE_TYPE:
+        case Doctrine::ATTR_ACCESSOR_PREFIX_GET:
+        case Doctrine::ATTR_ACCESSOR_PREFIX_SET:
 
             break;
-            case Doctrine::ATTR_SEQCOL_NAME:
-                if( ! is_string($value))
-                    throw new Doctrine_Exception('Sequence column name attribute only accepts string values');
-
+        case Doctrine::ATTR_SEQCOL_NAME:
+            if ( ! is_string($value)) {
+                throw new Doctrine_Exception('Sequence column name attribute only accepts string values');
+            }
             break;
-            case Doctrine::ATTR_FIELD_CASE:
-                if($value != 0 && $value != CASE_LOWER && $value != CASE_UPPER)
-                    throw new Doctrine_Exception('Field case attribute should be either 0, CASE_LOWER or CASE_UPPER constant.');
+        case Doctrine::ATTR_FIELD_CASE:
+            if ($value != 0 && $value != CASE_LOWER && $value != CASE_UPPER)
+                throw new Doctrine_Exception('Field case attribute should be either 0, CASE_LOWER or CASE_UPPER constant.');
             break;
-            case Doctrine::ATTR_SEQNAME_FORMAT:
-            case Doctrine::ATTR_IDXNAME_FORMAT:
-                if($this instanceof Doctrine_Table) {
-                    throw new Doctrine_Exception('Sequence / index name format attributes cannot be set'
-                                               . 'at table level (only at connection or global level).');
-                }
+        case Doctrine::ATTR_SEQNAME_FORMAT:
+        case Doctrine::ATTR_IDXNAME_FORMAT:
+            if ($this instanceof Doctrine_Table) {
+                throw new Doctrine_Exception('Sequence / index name format attributes cannot be set'
+                                           . 'at table level (only at connection or global level).');
+            }
             break;
-            default:
-                throw new Doctrine_Exception("Unknown attribute.");
-        endswitch;
+        default:
+            throw new Doctrine_Exception("Unknown attribute.");
+        };
 
         $this->attributes[$attribute] = $value;
 
@@ -160,23 +163,23 @@ abstract class Doctrine_Configurable {
      * @return Doctrine_Db
      */
     public function addListener($listener, $name = null) {
-        if( ! ($this->attributes[Doctrine::ATTR_LISTENER] instanceof Doctrine_EventListener_Chain))
+        if ( ! ($this->attributes[Doctrine::ATTR_LISTENER] instanceof Doctrine_EventListener_Chain)) {
             $this->attributes[Doctrine::ATTR_LISTENER] = new Doctrine_EventListener_Chain();
-
+        }
         $this->attributes[Doctrine::ATTR_LISTENER]->add($listener, $name);
-        
+
         return $this;
     }
     /**
      * getListener
-     * 
+     *
      * @return Doctrine_Db_EventListener_Interface|Doctrine_Overloadable
      */
     public function getListener() {
-        if( ! isset($this->attributes[Doctrine::ATTR_LISTENER])) {
-            if(isset($this->parent))
+        if ( ! isset($this->attributes[Doctrine::ATTR_LISTENER])) {
+            if (isset($this->parent)) {
                 return $this->parent->getListener();
-                
+            }
             return null;
         }
         return $this->attributes[Doctrine::ATTR_LISTENER];
@@ -188,10 +191,11 @@ abstract class Doctrine_Configurable {
      * @return Doctrine_Db
      */
     public function setListener($listener) {
-        if( ! ($listener instanceof Doctrine_EventListener_Interface) &&
-            ! ($listener instanceof Doctrine_Overloadable))
+        if ( ! ($listener instanceof Doctrine_EventListener_Interface)
+            && ! ($listener instanceof Doctrine_Overloadable)
+        ) {
             throw new Doctrine_Exception("Couldn't set eventlistener. EventListeners should implement either Doctrine_EventListener_Interface or Doctrine_Overloadable");
-
+        }
         $this->attributes[Doctrine::ATTR_LISTENER] = $listener;
 
         return $this;
@@ -205,13 +209,13 @@ abstract class Doctrine_Configurable {
     public function getAttribute($attribute) {
         $attribute = (int) $attribute;
 
-        if($attribute < 1 || $attribute > 23)
+        if ($attribute < 1 || $attribute > 23)
             throw new Doctrine_Exception('Unknown attribute.');
 
-        if( ! isset($this->attributes[$attribute])) {
-            if(isset($this->parent))
+        if ( ! isset($this->attributes[$attribute])) {
+            if (isset($this->parent)) {
                 return $this->parent->getAttribute($attribute);
-
+            }
             return null;
         }
         return $this->attributes[$attribute];
@@ -245,4 +249,3 @@ abstract class Doctrine_Configurable {
         return $this->parent;
     }
 }
-

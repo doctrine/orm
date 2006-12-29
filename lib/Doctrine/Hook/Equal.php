@@ -34,8 +34,8 @@ class Doctrine_Hook_Equal extends Doctrine_Hook_Parser {
     /**
      * parse
      * Parses given field and field value to DQL condition
-     * and parameters. This method should always return 
-     * prepared statement conditions (conditions that use 
+     * and parameters. This method should always return
+     * prepared statement conditions (conditions that use
      * placeholders instead of literal values).
      *
      * @param string $alias     component alias

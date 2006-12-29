@@ -11,15 +11,14 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition {
     private function parseAggregateFunction($func) {
         $pos = strpos($func,"(");
 
-        if($pos !== false) {
-
+        if ($pos !== false) {
             $funcs  = array();
 
             $name   = substr($func, 0, $pos);
             $func   = substr($func, ($pos + 1), -1);
             $params = Doctrine_Query::bracketExplode($func, ",", "(", ")");
 
-            foreach($params as $k => $param) {
+            foreach ($params as $k => $param) {
                 $params[$k] = $this->parseAggregateFunction($param);
             }
 
@@ -28,7 +27,7 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition {
             return $funcs;
 
         } else {
-            if( ! is_numeric($func)) {
+            if ( ! is_numeric($func)) {
                 $a = explode(".",$func);
                 $field     = array_pop($a);
                 $reference = implode(".",$a);
@@ -71,4 +70,3 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition {
         return ( ! empty($this->parts))?implode(' AND ', $this->parts):'';
     }
 }
-

@@ -66,17 +66,15 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
         $asf     = $this->getAssociationFactory();
         $alias   = $this->getAlias();
 
-        if($record->hasReference($alias)) {
-
+        if ($record->hasReference($alias)) {
             $new = $record->obtainReference($alias);
 
-            if( ! $record->obtainOriginals($alias))
+            if ( ! $record->obtainOriginals($alias)) {
                 $record->loadReference($alias);
-
-
+            }
             $operations = Doctrine_Relation::getDeleteOperations($record->obtainOriginals($alias), $new);
 
-            foreach($operations as $r) {
+            foreach ($operations as $r) {
                 $query = 'DELETE FROM ' . $asf->getTableName()
                        . ' WHERE '      . $this->getForeign() . ' = ?'
                        . ' AND '        . $this->getLocal()   . ' = ?';
@@ -85,8 +83,8 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
             }
 
             $operations = Doctrine_Relation::getInsertOperations($record->obtainOriginals($alias),$new);
-            
-            foreach($operations as $r) {
+
+            foreach ($operations as $r) {
                 $reldao = $asf->create();
                 $reldao->set($this->getForeign(), $r);
                 $reldao->set($this->getLocal(), $record);
@@ -102,24 +100,24 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
      * @param integer $count
      * @return string
      */
-    public function getRelationDql($count, $context = 'record') {    
-        switch($context):
-            case "record":
-                $sub    = 'SQL:SELECT ' . $this->foreign.
-                          ' FROM '  . $this->associationTable->getTableName().
-                          ' WHERE ' . $this->local.
-                          ' IN ('   . substr(str_repeat("?, ", $count),0,-2) . 
-                          ')';
+    public function getRelationDql($count, $context = 'record') {
+        switch ($context) {
+        case "record":
+            $sub    = 'SQL:SELECT ' . $this->foreign.
+                      ' FROM '  . $this->associationTable->getTableName().
+                      ' WHERE ' . $this->local.
+                      ' IN ('   . substr(str_repeat("?, ", $count),0,-2) .
+                      ')';
 
-                $dql  = "FROM ".$this->table->getComponentName();
-                $dql .= ".".$this->associationTable->getComponentName();
-                $dql .= " WHERE ".$this->table->getComponentName().".".$this->table->getIdentifier()." IN ($sub)";
+            $dql  = "FROM ".$this->table->getComponentName();
+            $dql .= ".".$this->associationTable->getComponentName();
+            $dql .= " WHERE ".$this->table->getComponentName().".".$this->table->getIdentifier()." IN ($sub)";
             break;
-            case "collection":
-                $sub  = substr(str_repeat("?, ", $count),0,-2);
-                $dql  = "FROM ".$this->associationTable->getComponentName().".".$this->table->getComponentName();
-                $dql .= " WHERE ".$this->associationTable->getComponentName().".".$this->local." IN ($sub)";
-        endswitch;
+        case "collection":
+            $sub  = substr(str_repeat("?, ", $count),0,-2);
+            $dql  = "FROM ".$this->associationTable->getComponentName().".".$this->table->getComponentName();
+            $dql .= " WHERE ".$this->associationTable->getComponentName().".".$this->local." IN ($sub)";
+        };
 
         return $dql;
     }
@@ -133,12 +131,11 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
      */
     public function fetchRelatedFor(Doctrine_Record $record) {
         $id      = $record->getIncremented();
-        if(empty($id))
+        if (empty($id)) {
             $coll = new Doctrine_Collection($this->table);
-        else
+        } else {
             $coll = Doctrine_Query::create()->parseQuery($this->getRelationDql(1))->execute(array($id));
-    
+        }
         return $coll;
     }
 }
-

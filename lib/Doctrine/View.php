@@ -45,7 +45,6 @@ class Doctrine_View {
      */
     const SELECT = 'SELECT * FROM %s';
 
-
     /**
      * @var string $name                the name of the view
      */
@@ -146,4 +145,3 @@ class Doctrine_View {
         return sprintf(self::SELECT, $this->name);
     }
 }
-

@@ -344,9 +344,9 @@ final class Doctrine {
      * @return string
      */
     public static function getPath() {
-        if(! self::$path)
+        if (! self::$path) {
             self::$path = dirname(__FILE__);
-
+        }
         return self::$path;
     }
     /**
@@ -358,7 +358,7 @@ final class Doctrine {
     public static function loadAll() {
         $classes = Doctrine_Compiler::getRuntimeClasses();
 
-        foreach($classes as $class) {
+        foreach ($classes as $class) {
             Doctrine::autoload($class);
         }
     }
@@ -379,7 +379,7 @@ final class Doctrine {
      */
     public static function export($directory) {
         Doctrine_Export::export();
-    }                                          	
+    }
     /**
      * compile
      * method for making a single file of most used doctrine runtime components
@@ -400,17 +400,17 @@ final class Doctrine {
      * @return boolean
      */
     public static function autoload($classname) {
-        if(class_exists($classname))
+        if (class_exists($classname)) {
             return false;
-
-        if(! self::$path)
+        }
+        if (! self::$path) {
             self::$path = dirname(__FILE__);
-
+        }
         $class = self::$path.DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR,$classname) . '.php';
 
-        if( ! file_exists($class))
+        if ( ! file_exists($class)) {
             return false;
-
+        }
 
         require_once($class);
 
@@ -441,7 +441,7 @@ final class Doctrine {
      * @return boolean
      */
     public static function isValidClassname($classname) {
-        if(preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname))
+        if (preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname))
             return false;
 
         return true;

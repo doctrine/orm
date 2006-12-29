@@ -52,16 +52,14 @@ class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
      */
     private $pdo;
 
-
     /**
      *
-     * @param object pdo      * @return 
+     * @param object pdo      * @return
      * @access public
      */
     public function setPdo( $pdo ) {
-        
-    } // end of member function setPdo
 
+    } // end of member function setPdo
 
     /**
      *
@@ -70,37 +68,34 @@ class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
      */
     public function read( )
     {
-	$dataDict = Doctrine_Manager::getInstance()->getCurrentConnection()->getDataDict();
-    	
-	$schema = new Doctrine_Schema(); /* @todo FIXME i am incomplete*/
-	$db = new Doctrine_Schema_Database();
-	$schema->addDatabase($db);
-	
-	$dbName = 'XXtest'; // @todo FIXME where should we get 
+        $dataDict = Doctrine_Manager::getInstance()->getCurrentConnection()->getDataDict();
 
-	$db->set("name",$dbName);
-	$tableNames = $dataDict->listTables();
-    foreach($tableNames as $tableName){	
-        $table = new Doctrine_Schema_Table();
-        $table->set("name",$tableName);
-        $tableColumns = $dataDict->listTableColumns($tableName);
-        foreach($tableColumns as $tableColumn){
-            $table->addColumn($tableColumn);
-        }
-        $db->addTable($table);
-        if ($fks = $dataDict->listTableConstraints($tableName)){
-            foreach($fks as $fk){
-                $relation = new Doctrine_Schema_Relation();
-                $relation->setRelationBetween($fk['referencingColumn'],$fk['referencedTable'],$fk['referencedColumn']);
-                $table->setRelation($relation);
+        $schema = new Doctrine_Schema(); /* @todo FIXME i am incomplete*/
+        $db = new Doctrine_Schema_Database();
+        $schema->addDatabase($db);
+
+        $dbName = 'XXtest'; // @todo FIXME where should we get
+
+        $db->set("name",$dbName);
+        $tableNames = $dataDict->listTables();
+        foreach ($tableNames as $tableName){
+            $table = new Doctrine_Schema_Table();
+            $table->set("name",$tableName);
+            $tableColumns = $dataDict->listTableColumns($tableName);
+            foreach ($tableColumns as $tableColumn){
+                $table->addColumn($tableColumn);
+            }
+            $db->addTable($table);
+            if ($fks = $dataDict->listTableConstraints($tableName)){
+                foreach ($fks as $fk){
+                    $relation = new Doctrine_Schema_Relation();
+                    $relation->setRelationBetween($fk['referencingColumn'],$fk['referencedTable'],$fk['referencedColumn']);
+                    $table->setRelation($relation);
+                }
             }
         }
+
+        return $schema;
     }
-
-	return $schema;
-    }
-
-
 
 } // end of Doctrine_Import_Reader_Db
-

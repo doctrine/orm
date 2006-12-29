@@ -90,29 +90,28 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      * @return void
      */
     public function createTable($name, array $fields, array $options = array()) {
-        if( ! $name)
+        if ( ! $name)
             throw new Doctrine_Export_Mysql_Exception('no valid table name specified');
 
-        if(empty($fields))
+        if (empty($fields)) {
             throw new Doctrine_Export_Mysql_Exception('no fields specified for table "'.$name.'"');
-
+        }
         $query_fields = $this->getFieldDeclarationList($fields);
 
-        if( ! empty($options['primary']))
+        if ( ! empty($options['primary'])) {
             $query_fields.= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
-
+        }
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $query_fields . ')';
 
         $optionStrings = array();
 
-        if(isset($options['comment']))
+        if (isset($options['comment'])) {
             $optionStrings['comment'] = 'COMMENT = '.$this->dbh->quote($options['comment'], 'text');
-
-
-        if(isset($options['charset'])) {
+        }
+        if (isset($options['charset'])) {
             $optionsSting['charset'] = 'DEFAULT CHARACTER SET '.$options['charset'];
-            if(isset($options['collate'])) {
+            if (isset($options['collate'])) {
                 $optionStrings['charset'].= ' COLLATE '.$options['collate'];
             }
         }
@@ -124,7 +123,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
         } else {
             $type = $this->conn->getAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE);
         }
-        
+
         if ($type) {
             $optionStrings[] = 'ENGINE = ' . $type;
         }
@@ -223,7 +222,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      * @return boolean
      */
     public function alterTable($name, array $changes, $check) {
-        if( ! $name)
+        if ( ! $name)
             throw new Doctrine_Export_Mysql_Exception('no valid table name specified');
 
         foreach ($changes as $changeName => $change) {
@@ -239,17 +238,17 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
             }
         }
 
-        if($check) {
+        if ($check) {
             return true;
         }
 
         $query = '';
-        if( ! empty($changes['name'])) {
+        if ( ! empty($changes['name'])) {
             $change_name = $this->conn->quoteIdentifier($changes['name'], true);
             $query .= 'RENAME TO ' . $change_name;
         }
 
-        if( ! empty($changes['add']) && is_array($changes['add'])) {
+        if ( ! empty($changes['add']) && is_array($changes['add'])) {
             foreach ($changes['add'] as $field_name => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -258,7 +257,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
             }
         }
 
-        if( ! empty($changes['remove']) && is_array($changes['remove'])) {
+        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
             foreach ($changes['remove'] as $field_name => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -269,13 +268,13 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
         }
 
         $rename = array();
-        if( ! empty($changes['rename']) && is_array($changes['rename'])) {
+        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
             foreach ($changes['rename'] as $field_name => $field) {
                 $rename[$field['name']] = $field_name;
             }
         }
 
-        if( ! empty($changes['change']) && is_array($changes['change'])) {
+        if ( ! empty($changes['change']) && is_array($changes['change'])) {
             foreach ($changes['change'] as $field_name => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -291,7 +290,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
             }
         }
 
-        if( ! empty($rename) && is_array($rename)) {
+        if ( ! empty($rename) && is_array($rename)) {
             foreach ($rename as $rename_name => $renamed_field) {
                 if ($query) {
                     $query.= ', ';
@@ -302,7 +301,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
             }
         }
 
-        if( ! $query) {
+        if ( ! $query) {
             return MDB2_OK;
         }
 
@@ -321,14 +320,13 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
         $query  = 'CREATE TABLE ' . $sequenceName
                 . ' (' . $seqcol_name . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
                 . $seqcol_name . '))'
-                . strlen($this->dbh->options['default_table_type']) ? ' TYPE = ' 
+                . strlen($this->dbh->options['default_table_type']) ? ' TYPE = '
                 . $this->dbh->options['default_table_type'] : '';
 
         $res    = $this->dbh->query($query);
 
         if ($start == 1)
             return true;
-
 
         $query  = 'INSERT INTO ' . $sequenceName
                 . ' (' . $seqcol_name . ') VALUES (' . ($start-1) . ')';
@@ -418,4 +416,4 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
         $this->conn->exec('DROP TABLE ' . $table);
     }
 }
-?>
+

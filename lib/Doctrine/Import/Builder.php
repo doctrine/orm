@@ -21,7 +21,7 @@
 
 /**
  * Doctrine_Import_Builder
- * Import builder is responsible of building Doctrine ActiveRecord classes 
+ * Import builder is responsible of building Doctrine ActiveRecord classes
  * based on a database schema.
  *
  * @package     Doctrine
@@ -34,30 +34,31 @@
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  */
 class Doctrine_Import_Builder {
-    
+
     private $path = '';
-    
+
     private $suffix = '.php';
 
     private static $tpl;
 
     public function __construct() {
-        if( ! isset(self::$tpl))
+        if ( ! isset(self::$tpl)) {
             self::$tpl = file_get_contents(Doctrine::getPath()
                        . DIRECTORY_SEPARATOR . 'Doctrine'
                        . DIRECTORY_SEPARATOR . 'Import'
                        . DIRECTORY_SEPARATOR . 'Builder'
                        . DIRECTORY_SEPARATOR . 'Record.tpl');
+        }
     }
 
     /**
      *
      * @param string path
-     * @return 
+     * @return
      * @access public
      */
     public function setTargetPath($path) {
-        if( ! file_exists($path)) {
+        if ( ! file_exists($path)) {
             mkdir($path, 0777);
         }
 
@@ -79,14 +80,13 @@ class Doctrine_Import_Builder {
         return $this->suffix;
     }
 
-
     public function buildRecord(Doctrine_Schema_Table $table) {
-        if (empty($this->path)) 
+        if (empty($this->path)) {
             throw new Doctrine_Import_Builder_Exception('No build target directory set.');
-
-        if (is_writable($this->path) === false) 
+        }
+        if (is_writable($this->path) === false) {
             throw new Doctrine_Import_Builder_Exception('Build target directory ' . $this->path . ' is not writable.');
-
+        }
         $created   = date('l dS \of F Y h:i:s A');
         $className = Doctrine::classify($table->get('name'));
         $fileName  = $this->path . DIRECTORY_SEPARATOR . $className . $this->suffix;
@@ -94,41 +94,42 @@ class Doctrine_Import_Builder {
 
         $i = 0;
 
-        foreach($table as $name => $column) {
-
+        foreach ($table as $name => $column) {
             $columns[$i] = '        $this->hasColumn(\'' . $column['name'] . '\', \'' . $column['type'] . '\'';
-            if($column['length'])
+            if ($column['length']) {
                 $columns[$i] .= ', ' . $column['length'];
-            else
+            } else {
                 $columns[$i] .= ', null';
-           
+            }
+
             $a = array();
-            
-            if($column['default']) {
+
+            if ($column['default']) {
                 $a[] = '\'default\' => ' . var_export($column['default'], true);
             }
-            if($column['notnull']) {
+            if ($column['notnull']) {
                 $a[] = '\'notnull\' => true';
             }
-            if($column['primary']) {
+            if ($column['primary']) {
                 $a[] = '\'primary\' => true';
             }
-            if($column['autoinc']) {
+            if ($column['autoinc']) {
                 $a[] = '\'autoincrement\' => true';
             }
-            if($column['unique']) {
+            if ($column['unique']) {
                 $a[] = '\'unique\' => true';
             }
 
-            if( ! empty($a))
+            if ( ! empty($a)) {
                 $columns[$i] .= ', ' . 'array(' . implode(',
 ', $a) . ')';
-
+            }
             $columns[$i] .= ');';
-            
-            if($i < (count($table) - 1))
+
+            if ($i < (count($table) - 1)) {
                 $columns[$i] .= '
 ';
+            }
             $i++;
         }
 
@@ -136,8 +137,7 @@ class Doctrine_Import_Builder {
 
         $bytes     = file_put_contents($fileName, $content);
 
-
-        if($bytes === false)
+        if ($bytes === false)
             throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $fileName);
     }
     /**
@@ -147,8 +147,8 @@ class Doctrine_Import_Builder {
      * @return void
      */
     public function build(Doctrine_Schema_Object $schema) {
-        foreach($schema->getDatabases() as $database){
-            foreach($database->getTables() as $table){
+        foreach ($schema->getDatabases() as $database){
+            foreach ($database->getTables() as $table){
                 $this->buildRecord($table);
             }
         }

@@ -59,10 +59,11 @@ class Doctrine_Db_Mock extends Doctrine_Db {
     {
       return true;
     }
-    
+
     public function getAttribute($attribute)
     {
-      if($attribute == PDO::ATTR_DRIVER_NAME)
-      	return 'mock';
+      if ($attribute == PDO::ATTR_DRIVER_NAME) {
+          return 'mock';
+        }
     }
 }

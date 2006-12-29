@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -40,24 +40,23 @@ class Doctrine_Connection_Db2 extends Doctrine_Connection {
      * @return string               the modified query
      */
     public function modifyLimitQuery($query, $limit, $offset) {
-  		if($limit <= 0)
-  			return $sql;
+        if ($limit <= 0)
+            return $sql;
 
-  		if($offset == 0) {
-  			return $sql . ' FETCH FIRST '. $count .' ROWS ONLY';
-  		} else {
-  			
-  			$sqlPieces = explode('from', $sql);
-  			$select = $sqlPieces[0];
-  			$table = $sqlPieces[1];
-  			
-  			$col = explode('select', $select);
+        if ($offset == 0) {
+            return $sql . ' FETCH FIRST '. $count .' ROWS ONLY';
+        } else {
+            $sqlPieces = explode('from', $sql);
+            $select = $sqlPieces[0];
+            $table = $sqlPieces[1];
 
-  			$sql = 'WITH OFFSET AS(' . $select . ', ROW_NUMBER() ' .
-  				   'OVER(ORDER BY ' . $col[1] . ') AS dctrn_rownum FROM ' . $table . ')' .
-  				   $select . 'FROM OFFSET WHERE dctrn_rownum BETWEEN ' . $offset .
-  			       'AND ' . ($offset + $count - 1);
-  			return $sql;
-  		}
+            $col = explode('select', $select);
+
+            $sql = 'WITH OFFSET AS(' . $select . ', ROW_NUMBER() ' .
+               'OVER(ORDER BY ' . $col[1] . ') AS dctrn_rownum FROM ' . $table . ')' .
+               $select . 'FROM OFFSET WHERE dctrn_rownum BETWEEN ' . $offset .
+                   'AND ' . ($offset + $count - 1);
+            return $sql;
+        }
     }
 }

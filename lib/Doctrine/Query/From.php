@@ -45,39 +45,39 @@ class Doctrine_Query_From extends Doctrine_Query_Part {
 
         $operator = false;
 
-        switch(trim($parts[0])) {
-            case 'INNER':
-                $operator = ':';
-            case 'LEFT':
-                array_shift($parts);
+        switch (trim($parts[0])) {
+        case 'INNER':
+            $operator = ':';
+        case 'LEFT':
+            array_shift($parts);
         }
 
         $last = '';
 
-        foreach($parts as $k => $part) {
+        foreach ($parts as $k => $part) {
             $part = trim($part);
 
-            if(empty($part)) {
+            if (empty($part)) {
                 continue;
             }
 
             $e    = explode(' ', $part);
 
-            if(end($e) == 'INNER' || end($e) == 'LEFT')
+            if (end($e) == 'INNER' || end($e) == 'LEFT') {
                 $last = array_pop($e);
-
+            }
             $part = implode(' ', $e);
 
-            foreach(Doctrine_Query::bracketExplode($part, ',') as $reference) {
+            foreach (Doctrine_Query::bracketExplode($part, ',') as $reference) {
                 $reference = trim($reference);
                 $e         = explode('.', $reference);
 
-                if($operator) {
+                if ($operator) {
                     $reference = array_shift($e) . $operator . implode('.', $e);
                 }
                 $table     = $this->query->load($reference);
-            }                                              
-            
+            }
+
             $operator = ($last == 'INNER') ? ':' : '.';
         }
     }
@@ -86,4 +86,3 @@ class Doctrine_Query_From extends Doctrine_Query_Part {
         return ( ! empty($this->parts))?implode(", ", $this->parts):'';
     }
 }
-

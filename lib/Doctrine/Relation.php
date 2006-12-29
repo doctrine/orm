@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -51,7 +51,6 @@ abstract class Doctrine_Relation {
      * constant for MANY_TO_MANY and ONE_TO_MANY composite relationships
      */
     const MANY_COMPOSITE        = 3;
-    
 
     /**
      * @var Doctrine_Table $table   foreign factory
@@ -155,7 +154,7 @@ abstract class Doctrine_Relation {
         return ($this->type == Doctrine_Relation::ONE_AGGREGATE ||
                 $this->type == Doctrine_Relation::ONE_COMPOSITE);
     }
-    /** 
+    /**
      * getRelationDql
      *
      * @param integer $count
@@ -165,7 +164,7 @@ abstract class Doctrine_Relation {
         $dql  = "FROM ".$this->table->getComponentName().
                 " WHERE ".$this->table->getComponentName(). '.' . $this->foreign.
                 " IN (".substr(str_repeat("?, ", $count),0,-2).")";
-        
+
         return $dql;
     }
     /**
@@ -188,21 +187,21 @@ abstract class Doctrine_Relation {
     public static function getDeleteOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
         $r = array();
 
-        foreach($old as $k => $record) {
+        foreach ($old as $k => $record) {
             $id = $record->getIncremented();
 
-            if(empty($id))
+            if (empty($id)) {
                 continue;
-
+            }
             $found = false;
-            foreach($new as $k2 => $record2) {
-                if($record2->getIncremented() === $record->getIncremented()) {
+            foreach ($new as $k2 => $record2) {
+                if ($record2->getIncremented() === $record->getIncremented()) {
                     $found = true;
                     break;
                 }
             }
 
-            if( ! $found)  {
+            if ( ! $found)  {
                 $r[] = $record;
                 unset($old[$k]);
             }
@@ -230,19 +229,19 @@ abstract class Doctrine_Relation {
     public static function getInsertOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
         $r = array();
 
-        foreach($new as $k => $record) {
+        foreach ($new as $k => $record) {
             $found = false;
 
             $id = $record->getIncremented();
-            if( ! empty($id)) {
-                foreach($old as $k2 => $record2) {
-                    if($record2->getIncremented() === $record->getIncremented()) {
+            if ( ! empty($id)) {
+                foreach ($old as $k2 => $record2) {
+                    if ($record2->getIncremented() === $record->getIncremented()) {
                         $found = true;
                         break;
                     }
                 }
             }
-            if( ! $found) {
+            if ( ! $found) {
                 $old[] = $record;
                 $r[] = $record;
             }
@@ -276,5 +275,3 @@ abstract class Doctrine_Relation {
         return implode("\n", $r);
     }
 }
-
-

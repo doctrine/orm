@@ -40,7 +40,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction {
      */
     protected function createSavePoint($savepoint) {
         $query = 'SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -63,7 +63,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction {
      */
     protected function rollbackSavePoint($savepoint) {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -79,17 +79,17 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction {
      * @return void
      */
     public function setIsolation($isolation) {
-        switch($isolation) {
-            case 'READ UNCOMMITTED':
-                $isolation = 'READ COMMITTED';
+        switch ($isolation) {
+        case 'READ UNCOMMITTED':
+            $isolation = 'READ COMMITTED';
             break;
-            case 'READ COMMITTED':
-            case 'REPEATABLE READ':
-            case 'SERIALIZABLE':
-                $isolation = 'SERIALIZABLE';
+        case 'READ COMMITTED':
+        case 'REPEATABLE READ':
+        case 'SERIALIZABLE':
+            $isolation = 'SERIALIZABLE';
             break;
-            default:
-                throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . ' is not supported.');
+        default:
+            throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . ' is not supported.');
         }
 
         $query = 'ALTER SESSION ISOLATION LEVEL ' . $isolation;

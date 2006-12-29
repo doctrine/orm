@@ -56,12 +56,12 @@ interface Doctrine_EventListener_Interface {
     public function onPreEvict(Doctrine_Record $record);
 
     public function onSleep(Doctrine_Record $record);
-    
+
     public function onWakeUp(Doctrine_Record $record);
-    
+
     public function onClose(Doctrine_Connection $connection);
     public function onPreClose(Doctrine_Connection $connection);
-    
+
     public function onOpen(Doctrine_Connection $connection);
 
     public function onTransactionCommit(Doctrine_Connection $connection);
@@ -72,7 +72,7 @@ interface Doctrine_EventListener_Interface {
 
     public function onTransactionBegin(Doctrine_Connection $connection);
     public function onPreTransactionBegin(Doctrine_Connection $connection);
-    
+
     public function onCollectionDelete(Doctrine_Collection $collection);
     public function onPreCollectionDelete(Doctrine_Collection $collection);
 }

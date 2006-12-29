@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -49,19 +49,17 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      * @param Doctrine_Connection|null $connection
      */
     public function __construct($connection = null) {
-        if( ! ($connection instanceof Doctrine_Connection)) 
+        if ( ! ($connection instanceof Doctrine_Connection)) {
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
-
+        }
         $this->session = $connection;
         $dir = 'cache';
 
         $this->path = $dir.DIRECTORY_SEPARATOR;
         $this->dbh  = new PDO("sqlite::memory:");
 
-
         try {
-            if($this->session->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true)
-            {
+            if ($this->session->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true) {
                 $columns = array();
                 $columns['query_md5']       = array('string', 32, 'notnull');
                 $columns['query_result']    = array('array', 100000, 'notnull');
@@ -127,7 +125,7 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
     }
     /**
      * delete
-     * returns whether or not the given 
+     * returns whether or not the given
      * query was succesfully deleted
      *
      * @param string $md5

@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -34,9 +34,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
     /**
      * buildFlushTree
      * builds a flush tree that is used in transactions
-     * 
+     *
      * The returned array has all the initialized components in
-     * 'correct' order. Basically this means that the records of those 
+     * 'correct' order. Basically this means that the records of those
      * components can be saved safely in the order specified by the returned array.
      *
      * @param array $tables
@@ -44,43 +44,43 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      */
     public function buildFlushTree(array $tables) {
         $tree = array();
-        foreach($tables as $k => $table) {
+        foreach ($tables as $k => $table) {
             $k = $k.$table;
-            if( ! ($table instanceof Doctrine_Table))
+            if ( ! ($table instanceof Doctrine_Table)) {
                 $table = $this->conn->getTable($table);
-
+            }
             $nm     = $table->getComponentName();
 
             $index  = array_search($nm,$tree);
 
-            if($index === false) {
+            if ($index === false) {
                 $tree[] = $nm;
                 $index  = max(array_keys($tree));
             }
 
             $rels = $table->getRelations();
-            
+
             // group relations
-            
-            foreach($rels as $key => $rel) {
-                if($rel instanceof Doctrine_Relation_ForeignKey) {
+
+            foreach ($rels as $key => $rel) {
+                if ($rel instanceof Doctrine_Relation_ForeignKey) {
                     unset($rels[$key]);
                     array_unshift($rels, $rel);
                 }
             }
 
-            foreach($rels as $rel) {
+            foreach ($rels as $rel) {
                 $name   = $rel->getTable()->getComponentName();
                 $index2 = array_search($name,$tree);
                 $type   = $rel->getType();
 
                 // skip self-referenced relations
-                if($name === $nm)
+                if ($name === $nm)
                     continue;
 
-                if($rel instanceof Doctrine_Relation_ForeignKey) {
-                    if($index2 !== false) {
-                        if($index2 >= $index)
+                if ($rel instanceof Doctrine_Relation_ForeignKey) {
+                    if ($index2 !== false) {
+                        if ($index2 >= $index)
                             continue;
 
                         unset($tree[$index]);
@@ -90,9 +90,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                         $tree[] = $name;
                     }
 
-                } elseif($rel instanceof Doctrine_Relation_LocalKey) {
-                    if($index2 !== false) {
-                        if($index2 <= $index)
+                } elseif ($rel instanceof Doctrine_Relation_LocalKey) {
+                    if ($index2 !== false) {
+                        if ($index2 <= $index)
                             continue;
 
                         unset($tree[$index2]);
@@ -101,20 +101,20 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                         array_unshift($tree,$name);
                         $index++;
                     }
-                } elseif($rel instanceof Doctrine_Relation_Association) {
+                } elseif ($rel instanceof Doctrine_Relation_Association) {
                     $t = $rel->getAssociationFactory();
                     $n = $t->getComponentName();
-                    
-                    if($index2 !== false)
+
+                    if ($index2 !== false)
                         unset($tree[$index2]);
-                    
+
                     array_splice($tree,$index, 0,$name);
                     $index++;
 
                     $index3 = array_search($n,$tree);
 
-                    if($index3 !== false) {
-                        if($index3 >= $index)
+                    if ($index3 !== false) {
+                        if ($index3 >= $index)
                             continue;
 
                         unset($tree[$index]);
@@ -137,29 +137,30 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      */
     public function saveRelated(Doctrine_Record $record) {
         $saveLater = array();
-        foreach($record->getReferences() as $k=>$v) {
+        foreach ($record->getReferences() as $k=>$v) {
             $fk = $record->getTable()->getRelation($k);
-            if($fk instanceof Doctrine_Relation_ForeignKey ||
+            if ($fk instanceof Doctrine_Relation_ForeignKey ||
                $fk instanceof Doctrine_Relation_LocalKey) {
-                if($fk->isComposite()) {
+                if ($fk->isComposite()) {
                     $local = $fk->getLocal();
                     $foreign = $fk->getForeign();
 
-                    if($record->getTable()->hasPrimaryKey($fk->getLocal())) {
-                        if( ! $record->exists())
+                    if ($record->getTable()->hasPrimaryKey($fk->getLocal())) {
+                        if ( ! $record->exists()) {
                             $saveLater[$k] = $fk;
-                        else
+                        } else {
                             $v->save();
+                        }
                     } else {
                         // ONE-TO-ONE relationship
                         $obj = $record->get($fk->getTable()->getComponentName());
 
-                        if($obj->getState() != Doctrine_Record::STATE_TCLEAN)
+                        if ($obj->getState() != Doctrine_Record::STATE_TCLEAN) {
                             $obj->save();
-
+                        }
                     }
                 }
-            } elseif($fk instanceof Doctrine_Relation_Association) {
+            } elseif ($fk instanceof Doctrine_Relation_Association) {
                 $v->save();
             }
         }
@@ -167,8 +168,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
     }
     /**
      * saveAssociations
-     * 
-     * this method takes a diff of one-to-many / many-to-many original and 
+     *
+     * this method takes a diff of one-to-many / many-to-many original and
      * current collections and applies the changes
      *
      * for example if original many-to-many related collection has records with
@@ -181,7 +182,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      * @return void
      */
     public function saveAssociations(Doctrine_Record $record) {
-        foreach($record->getTable()->getRelations() as $rel) {
+        foreach ($record->getTable()->getRelations() as $rel) {
             $table   = $rel->getTable();
             $alias   = $rel->getAlias();
 
@@ -196,18 +197,18 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      * @return void
      */
     public function deleteComposites(Doctrine_Record $record) {
-        foreach($record->getTable()->getRelations() as $fk) {
-            switch($fk->getType()):
-                case Doctrine_Relation::ONE_COMPOSITE:
-                case Doctrine_Relation::MANY_COMPOSITE:
-                    $obj = $record->get($fk->getAlias());
-                    $obj->delete();
+        foreach ($record->getTable()->getRelations() as $fk) {
+            switch ($fk->getType()) {
+            case Doctrine_Relation::ONE_COMPOSITE:
+            case Doctrine_Relation::MANY_COMPOSITE:
+                $obj = $record->get($fk->getAlias());
+                $obj->delete();
                 break;
-            endswitch;
+            };
         }
     }
     /**
-     * saveAll                      
+     * saveAll
      * persists all the pending records from all tables
      *
      * @throws PDOException         if something went wrong at database level
@@ -218,19 +219,19 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
         $tree = $this->buildFlushTree($this->conn->getTables());
 
         // save all records
-        foreach($tree as $name) {
+        foreach ($tree as $name) {
             $table = $this->conn->getTable($name);
 
-            foreach($table->getRepository() as $record) {
+            foreach ($table->getRepository() as $record) {
                 $this->conn->save($record);
             }
         }
-        
+
         // save all associations
-        foreach($tree as $name) {
+        foreach ($tree as $name) {
             $table = $this->conn->getTable($name);
 
-            foreach($table->getRepository() as $record) {
+            foreach ($table->getRepository() as $record) {
                 $this->saveAssociations($record);
             }
         }
@@ -246,39 +247,37 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
 
         $array = $record->getPrepared();
 
-        if(empty($array))
+        if (empty($array)) {
             return false;
-
+        }
         $set   = array();
-        foreach($array as $name => $value):
+        foreach ($array as $name => $value) {
                 $set[] = $name." = ?";
 
-                if($value instanceof Doctrine_Record) {
-                    switch($value->getState()):
-                        case Doctrine_Record::STATE_TCLEAN:
-                        case Doctrine_Record::STATE_TDIRTY:
-                            $record->save();
-                        default:
-                            $array[$name] = $value->getIncremented();
-                            $record->set($name, $value->getIncremented());
-                    endswitch;
+                if ($value instanceof Doctrine_Record) {
+                    switch ($value->getState()) {
+                    case Doctrine_Record::STATE_TCLEAN:
+                    case Doctrine_Record::STATE_TDIRTY:
+                        $record->save();
+                    default:
+                        $array[$name] = $value->getIncremented();
+                        $record->set($name, $value->getIncremented());
+                    };
                 }
-        endforeach;
+        };
 
         $params   = array_values($array);
         $id       = $record->obtainIdentifier();
 
-
-        if( ! is_array($id))
+        if ( ! is_array($id)) {
             $id = array($id);
-
+        }
         $id     = array_values($id);
         $params = array_merge($params, $id);
 
-
-        $sql  = 'UPDATE ' . $record->getTable()->getTableName() 
-              . ' SET ' . implode(', ', $set) 
-              . ' WHERE ' . implode(' = ? AND ', $record->getTable()->getPrimaryKeys()) 
+        $sql  = 'UPDATE ' . $record->getTable()->getTableName()
+              . ' SET ' . implode(', ', $set)
+              . ' WHERE ' . implode(' = ? AND ', $record->getTable()->getPrimaryKeys())
               . ' = ?';
 
         $stmt = $this->conn->getDBH()->prepare($sql);
@@ -299,19 +298,18 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
     public function insert(Doctrine_Record $record) {
          // listen the onPreInsert event
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
-        
+
         $array = $record->getPrepared();
 
-        if(empty($array))
+        if (empty($array)) {
             return false;
-
+        }
         $table     = $record->getTable();
         $keys      = $table->getPrimaryKeys();
-            
 
         $seq = $record->getTable()->getSequenceName();
 
-        if( ! empty($seq)) {
+        if ( ! empty($seq)) {
             $id             = $this->nextId($seq);
             $name           = $record->getTable()->getIdentifier();
             $array[$name]   = $id;
@@ -319,15 +317,16 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
 
         $this->conn->insert($table->getTableName(), $array);
 
-        if(count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
+        if (count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
             $id = $this->conn->getDBH()->lastInsertID();
 
-            if( ! $id)
+            if ( ! $id)
                 $id = $table->getMaxIdentifier();
-            
+
             $record->assignIdentifier($id);
-        } else
+        } else {
             $record->assignIdentifier(true);
+        }
 
         // listen the onInsert event
         $table->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);

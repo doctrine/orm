@@ -46,7 +46,6 @@ abstract class Doctrine_Import_Reader
 
      /*** Attributes: ***/
 
-
     /**
      *
      * @return Doctrine_Schema
@@ -55,9 +54,4 @@ abstract class Doctrine_Import_Reader
      */
     abstract public function read( );
 
-
-
-
-
 } // end of Doctrine_Import_Reader
-

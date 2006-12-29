@@ -31,9 +31,9 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Hydrate_Alias {
-    
+
     protected $shortAliases      = array();
-    
+
     protected $shortAliasIndexes = array();
 
     public function clear() {
@@ -42,12 +42,12 @@ class Doctrine_Hydrate_Alias {
     }
 
     public function generateNewAlias($alias) {
-        if(isset($this->shortAliases[$alias])) {
+        if (isset($this->shortAliases[$alias])) {
             // generate a new alias
             $name = substr($alias, 0, 1);
             $i    = ((int) substr($alias, 1));
 
-            if($i == 0)
+            if ($i == 0)
                 $i = 1;
 
             $newIndex  = ($this->shortAliasIndexes[$name] + $i);
@@ -62,9 +62,9 @@ class Doctrine_Hydrate_Alias {
         return (isset($this->shortAliases[$tableName]));
     }
     public function getShortAliasIndex($alias) {
-        if( ! isset($this->shortAliasIndexes[$alias]))
+        if ( ! isset($this->shortAliasIndexes[$alias])) {
             return 0;
-        
+        }
         return $this->shortAliasIndexes[$alias];
     }
     public function generateShortAlias($tableName) {
@@ -72,10 +72,10 @@ class Doctrine_Hydrate_Alias {
 
         $alias  = $char;
 
-        if( ! isset($this->shortAliasIndexes[$alias]))
+        if ( ! isset($this->shortAliasIndexes[$alias])) {
             $this->shortAliasIndexes[$alias] = 1;
-
-        while(isset($this->shortAliases[$alias])) {
+        }
+        while (isset($this->shortAliases[$alias])) {
             $alias = $char . ++$this->shortAliasIndexes[$alias];
         }
         $this->shortAliases[$alias] = $tableName;
@@ -86,9 +86,9 @@ class Doctrine_Hydrate_Alias {
     public function getShortAlias($tableName) {
         $alias = array_search($tableName, $this->shortAliases);
 
-        if($alias !== false)
+        if ($alias !== false) {
             return $alias;
-        
+        }
         return $this->generateShortAlias($tableName);
     }
 }

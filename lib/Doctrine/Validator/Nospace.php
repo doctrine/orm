@@ -42,4 +42,3 @@ class Doctrine_Validator_Nospace {
         return ($value === null || ! preg_match('/\s\t\r\n/',$value));
     }
 }
-

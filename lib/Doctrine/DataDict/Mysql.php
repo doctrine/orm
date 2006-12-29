@@ -133,82 +133,82 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
     public function getNativeDeclaration($field) 
     {
         switch ($field['type']) {
-            case 'char':
-                $length = (! empty($field['length'])) ? $field['length'] : false;
+        case 'char':
+            $length = (! empty($field['length'])) ? $field['length'] : false;
 
-                return $length ? 'CHAR('.$length.')' : 'CHAR(255)';
-            case 'varchar':
-            case 'array':
-            case 'object':
-            case 'string':
+            return $length ? 'CHAR('.$length.')' : 'CHAR(255)';
+        case 'varchar':
+        case 'array':
+        case 'object':
+        case 'string':
 
-                if ( ! isset($field['length'])) {
-                    if(array_key_exists('default', $field)) {
-                        $field['length'] = $this->conn->varchar_max_length;
-                    } else {
-                        $field['length'] = false;
-                    }
+            if ( ! isset($field['length'])) {
+                if (array_key_exists('default', $field)) {
+                    $field['length'] = $this->conn->varchar_max_length;
+                } else {
+                    $field['length'] = false;
                 }
+            }
 
-                $length = ($field['length'] < $this->conn->varchar_max_length) ? $field['length'] : false;
-                $fixed  = (isset($field['fixed'])) ? $field['fixed'] : false;
+            $length = ($field['length'] < $this->conn->varchar_max_length) ? $field['length'] : false;
+            $fixed  = (isset($field['fixed'])) ? $field['fixed'] : false;
 
-                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR(255)')
-                    : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
-            case 'clob':
-                if (!empty($field['length'])) {
-                    $length = $field['length'];
-                    if ($length <= 255) {
-                        return 'TINYTEXT';
-                    } elseif ($length <= 65532) {
-                        return 'TEXT';
-                    } elseif ($length <= 16777215) {
-                        return 'MEDIUMTEXT';
-                    }
+            return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR(255)')
+                : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
+        case 'clob':
+            if (!empty($field['length'])) {
+                $length = $field['length'];
+                if ($length <= 255) {
+                    return 'TINYTEXT';
+                } elseif ($length <= 65532) {
+                    return 'TEXT';
+                } elseif ($length <= 16777215) {
+                    return 'MEDIUMTEXT';
                 }
-                return 'LONGTEXT';
-            case 'blob':
-                if (!empty($field['length'])) {
-                    $length = $field['length'];
-                    if ($length <= 255) {
-                        return 'TINYBLOB';
-                    } elseif ($length <= 65532) {
-                        return 'BLOB';
-                    } elseif ($length <= 16777215) {
-                        return 'MEDIUMBLOB';
-                    }
+            }
+            return 'LONGTEXT';
+        case 'blob':
+            if (!empty($field['length'])) {
+                $length = $field['length'];
+                if ($length <= 255) {
+                    return 'TINYBLOB';
+                } elseif ($length <= 65532) {
+                    return 'BLOB';
+                } elseif ($length <= 16777215) {
+                    return 'MEDIUMBLOB';
                 }
-                return 'LONGBLOB';
-            case 'integer':
-            case 'enum':
-                if (!empty($field['length'])) {
-                    $length = $field['length'];
-                    if ($length <= 1) {
-                        return 'TINYINT';
-                    } elseif ($length == 2) {
-                        return 'SMALLINT';
-                    } elseif ($length == 3) {
-                        return 'MEDIUMINT';
-                    } elseif ($length == 4) {
-                        return 'INT';
-                    } elseif ($length > 4) {
-                        return 'BIGINT';
-                    }
+            }
+            return 'LONGBLOB';
+        case 'integer':
+        case 'enum':
+            if (!empty($field['length'])) {
+                $length = $field['length'];
+                if ($length <= 1) {
+                    return 'TINYINT';
+                } elseif ($length == 2) {
+                    return 'SMALLINT';
+                } elseif ($length == 3) {
+                    return 'MEDIUMINT';
+                } elseif ($length == 4) {
+                    return 'INT';
+                } elseif ($length > 4) {
+                    return 'BIGINT';
                 }
-                return 'INT';
-            case 'boolean':
-                return 'TINYINT(1)';
-            case 'date':
-                return 'DATE';
-            case 'time':
-                return 'TIME';
-            case 'timestamp':
-                return 'DATETIME';
-            case 'float':
-                return 'DOUBLE';
-            case 'decimal':
-                $length = !empty($field['length']) ? $field['length'] : 18;
-                return 'DECIMAL(' . $length . ',' . 0 . ')'; //$this->dbh->options['decimal_places'] . ')';
+            }
+            return 'INT';
+        case 'boolean':
+            return 'TINYINT(1)';
+        case 'date':
+            return 'DATE';
+        case 'time':
+            return 'TIME';
+        case 'timestamp':
+            return 'DATETIME';
+        case 'float':
+            return 'DOUBLE';
+        case 'decimal':
+            $length = !empty($field['length']) ? $field['length'] : 18;
+            return 'DECIMAL(' . $length . ',' . 0 . ')'; //$this->dbh->options['decimal_places'] . ')';
         }
         return '';
     }
@@ -234,122 +234,122 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
         $type = array();
         $unsigned = $fixed = null;
         switch ($dbType) {
-            case 'tinyint':
-                $type[] = 'integer';
+        case 'tinyint':
+            $type[] = 'integer';
+            $type[] = 'boolean';
+            if (preg_match('/^(is|has)/', $field['name'])) {
+                $type = array_reverse($type);
+            }
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            $length = 1;
+        break;
+        case 'smallint':
+            $type[] = 'integer';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            $length = 2;
+        break;
+        case 'mediumint':
+            $type[] = 'integer';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            $length = 3;
+        break;
+        case 'int':
+        case 'integer':
+            $type[] = 'integer';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            $length = 4;
+        break;
+        case 'bigint':
+            $type[] = 'integer';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+            $length = 8;
+        break;
+        case 'tinytext':
+        case 'mediumtext':
+        case 'longtext':
+        case 'text':
+        case 'text':
+        case 'varchar':
+            $fixed = false;
+        case 'string':
+        case 'char':
+            $type[] = 'text';
+            if ($length == '1') {
                 $type[] = 'boolean';
                 if (preg_match('/^(is|has)/', $field['name'])) {
                     $type = array_reverse($type);
                 }
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-                $length = 1;
-            break;
-            case 'smallint':
-                $type[] = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-                $length = 2;
-            break;
-            case 'mediumint':
-                $type[] = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-                $length = 3;
-            break;
-            case 'int':
-            case 'integer':
-                $type[] = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-                $length = 4;
-            break;
-            case 'bigint':
-                $type[] = 'integer';
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-                $length = 8;
-            break;
-            case 'tinytext':
-            case 'mediumtext':
-            case 'longtext':
-            case 'text':
-            case 'text':
-            case 'varchar':
-                $fixed = false;
-            case 'string':
-            case 'char':
-                $type[] = 'text';
-                if ($length == '1') {
+            } elseif (strstr($dbType, 'text')) {
+                $type[] = 'clob';
+                if ($decimal == 'binary') {
+                    $type[] = 'blob';
+                }
+            }
+            if ($fixed !== false) {
+                $fixed = true;
+            }
+        break;
+        case 'enum':
+            $type[] = 'text';
+            preg_match_all('/\'.+\'/U', $field['type'], $matches);
+            $length = 0;
+            $fixed = false;
+            if (is_array($matches)) {
+                foreach ($matches[0] as $value) {
+                    $length = max($length, strlen($value)-2);
+                }
+                if ($length == '1' && count($matches[0]) == 2) {
                     $type[] = 'boolean';
                     if (preg_match('/^(is|has)/', $field['name'])) {
                         $type = array_reverse($type);
                     }
-                } elseif (strstr($dbType, 'text')) {
-                    $type[] = 'clob';
-                    if ($decimal == 'binary') {
-                        $type[] = 'blob';
-                    }
                 }
-                if ($fixed !== false) {
-                    $fixed = true;
-                }
-            break;
-            case 'enum':
-                $type[] = 'text';
-                preg_match_all('/\'.+\'/U', $field['type'], $matches);
-                $length = 0;
-                $fixed = false;
-                if (is_array($matches)) {
-                    foreach ($matches[0] as $value) {
-                        $length = max($length, strlen($value)-2);
-                    }
-                    if ($length == '1' && count($matches[0]) == 2) {
-                        $type[] = 'boolean';
-                        if (preg_match('/^(is|has)/', $field['name'])) {
-                            $type = array_reverse($type);
-                        }
-                    }
-                }
-                $type[] = 'integer';
-            case 'set':
-                $fixed = false;
-                $type[] = 'text';
-                $type[] = 'integer';
-            break;
-            case 'date':
-                $type[] = 'date';
-                $length = null;
-            break;
-            case 'datetime':
-            case 'timestamp':
-                $type[] = 'timestamp';
-                $length = null;
-            break;
-            case 'time':
-                $type[] = 'time';
-                $length = null;
-            break;
-            case 'float':
-            case 'double':
-            case 'real':
-                $type[] = 'float';
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-            break;
-            case 'unknown':
-            case 'decimal':
-            case 'numeric':
-                $type[] = 'decimal';
-                $unsigned = preg_match('/ unsigned/i', $field['type']);
-            break;
-            case 'tinyblob':
-            case 'mediumblob':
-            case 'longblob':
-            case 'blob':
-                $type[] = 'blob';
-                $length = null;
-            break;
-            case 'year':
-                $type[] = 'integer';
-                $type[] = 'date';
-                $length = null;
-            break;
-            default:
-                throw new Doctrine_DataDict_Mysql_Exception('unknown database attribute type: '.$dbType);
+            }
+            $type[] = 'integer';
+        case 'set':
+            $fixed = false;
+            $type[] = 'text';
+            $type[] = 'integer';
+        break;
+        case 'date':
+            $type[] = 'date';
+            $length = null;
+        break;
+        case 'datetime':
+        case 'timestamp':
+            $type[] = 'timestamp';
+            $length = null;
+        break;
+        case 'time':
+            $type[] = 'time';
+            $length = null;
+        break;
+        case 'float':
+        case 'double':
+        case 'real':
+            $type[] = 'float';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+        break;
+        case 'unknown':
+        case 'decimal':
+        case 'numeric':
+            $type[] = 'decimal';
+            $unsigned = preg_match('/ unsigned/i', $field['type']);
+        break;
+        case 'tinyblob':
+        case 'mediumblob':
+        case 'longblob':
+        case 'blob':
+            $type[] = 'blob';
+            $length = null;
+        break;
+        case 'year':
+            $type[] = 'integer';
+            $type[] = 'date';
+            $length = null;
+        break;
+        default:
+            throw new Doctrine_DataDict_Mysql_Exception('unknown database attribute type: '.$dbType);
         }
 
         return array($type, $length, $unsigned, $fixed);

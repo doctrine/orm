@@ -104,13 +104,12 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
      * @return string
      */
     public function modifyLimitQuery($query, $limit, $offset, $isManip = false) {
-        if($limit > 0) {
-
+        if ($limit > 0) {
             // we need the starting SELECT clause for later
             $select = 'SELECT ';
-            if (preg_match('/^[[:space:]*SELECT[[:space:]]*DISTINCT/i', $query, $matches) == 1)
+            if (preg_match('/^[[:space:]*SELECT[[:space:]]*DISTINCT/i', $query, $matches) == 1) {
                 $select .= 'DISTINCT ';
-
+            }
             $length = strlen($select);
 
             // is there an offset?
@@ -168,4 +167,3 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
         return $this->queryOne($query);
     }
 }
-

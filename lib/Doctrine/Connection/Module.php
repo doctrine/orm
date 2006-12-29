@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -31,7 +31,7 @@
  */
 class Doctrine_Connection_Module {
     /**
-     * @var Doctrine_Connection $conn       Doctrine_Connection object, every connection 
+     * @var Doctrine_Connection $conn       Doctrine_Connection object, every connection
      *                                      module holds an instance of Doctrine_Connection
      */
     protected $conn;
@@ -44,11 +44,11 @@ class Doctrine_Connection_Module {
      *                                      module holds an instance of Doctrine_Connection
      */
     public function __construct($conn = null) {
-        if( ! ($conn instanceof Doctrine_Connection))
+        if ( ! ($conn instanceof Doctrine_Connection)) {
             $conn = Doctrine_Manager::getInstance()->getCurrentConnection();
-            
+        }
         $this->conn = $conn;
-        
+
         $e = explode('_', get_class($this));
 
         $this->moduleName = $e[1];
@@ -69,6 +69,6 @@ class Doctrine_Connection_Module {
      * @return string       the name of this module
      */
     public function getModuleName() {
-        return $this->moduleName;                                	
+        return $this->moduleName;
     }
 }

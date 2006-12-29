@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -65,8 +65,8 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
                           'pattern_escaping'        => true,
                           );
 
-        $this->properties['string_quoting'] = array('start' => "'", 
-                                                    'end' => "'", 
+        $this->properties['string_quoting'] = array('start' => "'",
+                                                    'end' => "'",
                                                     'escape' => "'",
                                                     'escape_pattern' => '\\');
 
@@ -119,23 +119,23 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
     public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false) {
         if ($limit > 0) {
             $query = rtrim($query);
-            
+
             if (substr($query, -1) == ';') {
                 $query = substr($query, 0, -1);
             }
-            
+
             if ($isManip) {
                 $manip = preg_replace('/^(DELETE FROM|UPDATE).*$/', '\\1', $query);
                 $from  = $match[2];
                 $where = $match[3];
-                $query = $manip . ' ' . $from . ' WHERE ctid=(SELECT ctid FROM ' 
+                $query = $manip . ' ' . $from . ' WHERE ctid=(SELECT ctid FROM '
                        . $from . ' ' . $where . ' LIMIT ' . $limit . ')';
 
             } else {
-                if($limit !== false) {
+                if ($limit !== false) {
                   $query .= ' LIMIT ' . $limit;
                 }
-                if($offset !== false) {
+                if ($offset !== false) {
                   $query .= ' OFFSET ' . $offset;
                 }
             }
@@ -153,12 +153,12 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
 
         $serverInfo = $this->fetchOne($query);
 
-        if( ! $native) {
+        if ( ! $native) {
             $tmp = explode('.', $server_info, 3);
-            
-            if(empty($tmp[2]) && isset($tmp[1])
-                && preg_match('/(\d+)(.*)/', $tmp[1], $tmp2)) {
 
+            if (empty($tmp[2]) && isset($tmp[1])
+                && preg_match('/(\d+)(.*)/', $tmp[1], $tmp2)
+            ) {
                 $serverInfo = array(
                     'major' => $tmp[0],
                     'minor' => $tmp2[1],

@@ -40,9 +40,11 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation {
     public function processDiff(Doctrine_Record $record) {
         $alias = $this->getAlias();
 
-        if($record->obtainOriginals($alias) &&
-           $record->obtainOriginals($alias)->obtainIdentifier() != $this->references[$alias]->obtainIdentifier())
+        if ($record->obtainOriginals($alias)
+           && $record->obtainOriginals($alias)->obtainIdentifier() != $this->references[$alias]->obtainIdentifier()
+        ) {
             $record->obtainOriginals($alias)->delete();
+        }
     }
     /**
      * fetchRelatedFor
@@ -55,15 +57,16 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation {
     public function fetchRelatedFor(Doctrine_Record $record) {
         $id      = $record->get($this->local);
 
-        if(empty($id))
+        if (empty($id)) {
             $related = $this->table->create();
-        else {
-            if( ! ($related = $this->table->find($id)))
+        } else {
+            if ( ! ($related = $this->table->find($id))) {
                 $related = $this->table->create();
+            }
         }
 
         $record->set($this->local, $related, false);
-        
+
         return $related;
     }
 }

@@ -130,9 +130,9 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         if ( ! $name)
             throw new Doctrine_Export_Exception('no valid table name specified');
 
-        if (empty($fields))
+        if (empty($fields)) {
             throw new Doctrine_Export_Exception('no fields specified for table '.$name);
-
+        }
         $queryFields = $this->getFieldDeclarationList($fields);
 
         if (!empty($options['primary'])) {
@@ -522,8 +522,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
     public function getDeclaration($name, array $field) {
 
         $default = '';
-        if(isset($field['default'])) {
-            if($field['default'] === '') {
+        if (isset($field['default'])) {
+            if ($field['default'] === '') {
                 $field['default'] = empty($field['notnull'])
                     ? null : $this->valid_default_values[$field['type']];
                 if ($field['default'] === ''
@@ -536,27 +536,27 @@ class Doctrine_Export extends Doctrine_Connection_Module {
             $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
         }
         /**
-        TODO: is this really needed for portability? 
-        elseif(empty($field['notnull'])) {
+        TODO: is this really needed for portability?
+        elseif (empty($field['notnull'])) {
             $default = ' DEFAULT NULL';
         }
         */
 
         $charset = empty($field['charset']) ? '' :
             ' '.$this->getCharsetFieldDeclaration($field['charset']);
-        
+
         $collation = empty($field['collation']) ? '' :
             ' '.$this->getCollationFieldDeclaration($field['collation']);
-        
+
         $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
 
         $method = 'get' . $field['type'] . 'Declaration';
 
-        if(method_exists($this->conn->dataDict, $method))
+        if (method_exists($this->conn->dataDict, $method)) {
             return $this->conn->dataDict->$method($name, $field);
-        else
+        } else {
             $dec = $this->conn->dataDict->getNativeDeclaration($field);
-
+        }
         return $this->conn->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $collation;
     }
     /**
@@ -593,40 +593,41 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         $old    = $conn->getAttribute(Doctrine::ATTR_CREATE_TABLES);
 
         $conn->setAttribute(Doctrine::ATTR_CREATE_TABLES, true);
-        
-        foreach(get_declared_classes() as $name) {
+
+        foreach (get_declared_classes() as $name) {
             $class = new ReflectionClass($name);
 
-            if($class->isSubclassOf($parent) && ! $class->isAbstract())
+            if ($class->isSubclassOf($parent) && ! $class->isAbstract()) {
                 $obj = new $class();
+            }
         }
         $conn->setAttribute(Doctrine::ATTR_CREATE_TABLES, $old);
     }
     public function export($record) {
-        if( ! $record instanceof Doctrine_Record) 
+        if ( ! $record instanceof Doctrine_Record)
             $record = new $record();
 
         $table = $record->getTable();
-        
+
         $reporter = new Doctrine_Reporter();
 
-        if( ! Doctrine::isValidClassname($table->getComponentName())) {
+        if ( ! Doctrine::isValidClassname($table->getComponentName())) {
             $reporter->add(E_WARNING, 'Badly named class.');
         }
-        
+
         try {
             $columns = array();
-            foreach($table->getColumns() as $name => $column) {
+            foreach ($table->getColumns() as $name => $column) {
                 $definition = $column[2];
                 $definition['type'] = $column[0];
                 $definition['length'] = $column[1];
 
-                if($definition['type'] == 'enum' && isset($definition['default']))
+                if ($definition['type'] == 'enum' && isset($definition['default'])) {
                     $definition['default'] = $table->enumIndex($name, $definition['default']);
-
-                if($definition['type'] == 'boolean' && isset($definition['default']))
+                }
+                if ($definition['type'] == 'boolean' && isset($definition['default'])) {
                     $definition['default'] = (int) $definition['default'];
-
+                }
                 $columns[$name] = $definition;
             }
 

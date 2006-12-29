@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -32,7 +32,7 @@
  */
 abstract class Doctrine_Collection_Iterator implements Iterator {
     /**
-     * @var Doctrine_Collection $collection         
+     * @var Doctrine_Collection $collection
      */
     protected $collection;
     /**
@@ -69,8 +69,9 @@ abstract class Doctrine_Collection_Iterator implements Iterator {
     public function rewind() {
         $this->index = 0;
         $i = $this->index;
-        if(isset($this->keys[$i]))
+        if (isset($this->keys[$i])) {
             $this->key   = $this->keys[$i];
+        }
     }
 
     /**
@@ -97,10 +98,8 @@ abstract class Doctrine_Collection_Iterator implements Iterator {
     public function next() {
         $this->index++;
         $i = $this->index;
-        if(isset($this->keys[$i]))
+        if (isset($this->keys[$i])) {
             $this->key   = $this->keys[$i];
+        }
     }
 }
-
-
-

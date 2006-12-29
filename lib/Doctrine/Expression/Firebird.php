@@ -44,7 +44,7 @@ class Doctrine_Expression_Firebird extends Doctrine_Expression {
     }
     /**
      * build string to define escape pattern string
-     *  
+     *
      * @return string define escape pattern
      */
     function patternEscapeString() {

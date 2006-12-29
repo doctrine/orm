@@ -52,38 +52,38 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
      */
     public function getNativeDeclaration(array $field) {
         switch ($field['type']) {
-            case 'string':
-            case 'array':
-            case 'object':
-            case 'gzip':
-            case 'char':
-            case 'varchar':
-                $length = !empty($field['length'])
-                    ? $field['length'] : 16777215; // TODO: $db->options['default_text_field_length'];
+        case 'string':
+        case 'array':
+        case 'object':
+        case 'gzip':
+        case 'char':
+        case 'varchar':
+            $length = !empty($field['length'])
+                ? $field['length'] : 16777215; // TODO: $db->options['default_text_field_length'];
 
-                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
-                
-                return $fixed ? 'CHAR('.$length.')' : 'VARCHAR2('.$length.')';
-            case 'clob':
-                return 'CLOB';
-            case 'blob':
-                return 'BLOB';
-            case 'integer':
-            case 'enum':
-                if (!empty($field['length'])) {
-                    return 'NUMBER('.$field['length'].')';
-                }
-                return 'INT';
-            case 'boolean':
-                return 'NUMBER(1)';
-            case 'date':
-            case 'time':
-            case 'timestamp':
-                return 'DATE';
-            case 'float':
-                return 'NUMBER';
-            case 'decimal':
-                return 'NUMBER(*,'.$db->options['decimal_places'].')';
+            $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
+
+            return $fixed ? 'CHAR('.$length.')' : 'VARCHAR2('.$length.')';
+        case 'clob':
+            return 'CLOB';
+        case 'blob':
+            return 'BLOB';
+        case 'integer':
+        case 'enum':
+            if (!empty($field['length'])) {
+                return 'NUMBER('.$field['length'].')';
+            }
+            return 'INT';
+        case 'boolean':
+            return 'NUMBER(1)';
+        case 'date':
+        case 'time':
+        case 'timestamp':
+            return 'DATE';
+        case 'float':
+            return 'NUMBER';
+        case 'decimal':
+            return 'NUMBER(*,'.$db->options['decimal_places'].')';
         }
     }
     /**
@@ -101,9 +101,46 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
             $length = $field['length'];
         }
         switch ($db_type) {
-            case 'integer':
-            case 'pls_integer':
-            case 'binary_integer':
+        case 'integer':
+        case 'pls_integer':
+        case 'binary_integer':
+            $type[] = 'integer';
+            if ($length == '1') {
+                $type[] = 'boolean';
+                if (preg_match('/^(is|has)/', $field['name'])) {
+                    $type = array_reverse($type);
+                }
+            }
+            break;
+        case 'varchar':
+        case 'varchar2':
+        case 'nvarchar2':
+            $fixed = false;
+        case 'char':
+        case 'nchar':
+            $type[] = 'text';
+            if ($length == '1') {
+                $type[] = 'boolean';
+                if (preg_match('/^(is|has)/', $field['name'])) {
+                    $type = array_reverse($type);
+                }
+            }
+            if ($fixed !== false) {
+                $fixed = true;
+            }
+            break;
+        case 'date':
+        case 'timestamp':
+            $type[] = 'timestamp';
+            $length = null;
+            break;
+        case 'float':
+            $type[] = 'float';
+            break;
+        case 'number':
+            if (!empty($field['scale'])) {
+                $type[] = 'decimal';
+            } else {
                 $type[] = 'integer';
                 if ($length == '1') {
                     $type[] = 'boolean';
@@ -111,62 +148,25 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
                         $type = array_reverse($type);
                     }
                 }
-                break;
-            case 'varchar':
-            case 'varchar2':
-            case 'nvarchar2':
-                $fixed = false;
-            case 'char':
-            case 'nchar':
-                $type[] = 'text';
-                if ($length == '1') {
-                    $type[] = 'boolean';
-                    if (preg_match('/^(is|has)/', $field['name'])) {
-                        $type = array_reverse($type);
-                    }
-                }
-                if ($fixed !== false) {
-                    $fixed = true;
-                }
-                break;
-            case 'date':
-            case 'timestamp':
-                $type[] = 'timestamp';
-                $length = null;
-                break;
-            case 'float':
-                $type[] = 'float';
-                break;
-            case 'number':
-                if (!empty($field['scale'])) {
-                    $type[] = 'decimal';
-                } else {
-                    $type[] = 'integer';
-                    if ($length == '1') {
-                        $type[] = 'boolean';
-                        if (preg_match('/^(is|has)/', $field['name'])) {
-                            $type = array_reverse($type);
-                        }
-                    }
-                }
-                break;
-            case 'long':
-                $type[] = 'text';
-            case 'clob':
-            case 'nclob':
-                $type[] = 'clob';
-                break;
-            case 'blob':
-            case 'raw':
-            case 'long raw':
-            case 'bfile':
-                $type[] = 'blob';
-                $length = null;
+            }
             break;
-            case 'rowid':
-            case 'urowid':
-            default:
-                throw new Doctrine_DataDict_Oracle_Exception('unknown database attribute type: '.$db_type);
+        case 'long':
+            $type[] = 'text';
+        case 'clob':
+        case 'nclob':
+            $type[] = 'clob';
+            break;
+        case 'blob':
+        case 'raw':
+        case 'long raw':
+        case 'bfile':
+            $type[] = 'blob';
+            $length = null;
+        break;
+        case 'rowid':
+        case 'urowid':
+        default:
+            throw new Doctrine_DataDict_Oracle_Exception('unknown database attribute type: '.$db_type);
         }
 
         return array($type, $length, $unsigned, $fixed);

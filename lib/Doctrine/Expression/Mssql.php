@@ -56,9 +56,9 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression {
      * @return string to call a function to get a substring
      */
     public function substring($value, $position, $length = null) {
-        if (!is_null($length))
+        if (!is_null($length)) {
             return "SUBSTRING($value, $position, $length)";
-
+        }
         return "SUBSTRING($value, $position, LEN($value) - $position + 1)";
     }
     /**

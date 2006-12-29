@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * 
+ *
  * Doctrine_Adapter
  *
  * @package     Doctrine
@@ -92,7 +92,7 @@ class Doctrine_Adapter {
     const FETCH_UNIQUE = 196608;
     const NULL_EMPTY_STRING = 1;
     const NULL_NATURAL = 0;
-    const NULL_TO_STRING		 = NULL;
+    const NULL_TO_STRING = NULL;
     const PARAM_BOOL = 5;
     const PARAM_INPUT_OUTPUT = -2147483648;
     const PARAM_INT = 1;

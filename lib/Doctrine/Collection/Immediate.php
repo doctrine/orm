@@ -12,10 +12,9 @@ Doctrine::autoload('Doctrine_Collection');
 class Doctrine_Collection_Immediate extends Doctrine_Collection {
     /**
      * @param Doctrine_DQL_Parser $graph
-     * @param integer $key              
+     * @param integer $key
      */
     public function __construct(Doctrine_Table $table) {
         parent::__construct($table);
     }
 }
-

@@ -109,7 +109,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import {
                    WHERE RDB$SYSTEM_FLAG IS NULL
                       OR RDB$SYSTEM_FLAG = 0';
 
-        if( ! is_null($table)) {
+        if ( ! is_null($table)) {
             $table = $db->quote(strtoupper($table), 'text');
             $query .= 'WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
         }

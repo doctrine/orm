@@ -50,9 +50,9 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
      * @access public
      */
     public $referencedColumn;
-    
+
     /**
-     * Table where the referred column lives 
+     * Table where the referred column lives
      * @access public
      *
     */
@@ -93,12 +93,11 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
      */
     public static $ACTION_SET_DEFAULT = 5;
 
-
     /**
      *
-     * @param Doctrine_Schema_Column referencing      
-     * @param Doctrine_Schema_Table referencedtable      
-     * @param Doctrine_Schema_Column referencedColumn      
+     * @param Doctrine_Schema_Column referencing
+     * @param Doctrine_Schema_Table referencedtable
+     * @param Doctrine_Schema_Column referencedColumn
      * @return
      * @access public
      */
@@ -111,13 +110,13 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
      * @return string
      */
     public function __toString( ) {
-    	return "Relation between '".$this->referencingColumn."' and '".$this->referencedTable."'.'".$this->referencingColumn."'";
+        return "Relation between '".$this->referencingColumn."' and '".$this->referencedTable."'.'".$this->referencingColumn."'";
     }
     /**
      *
      * @return bool
      */
     public function isValid( ) {
-        
+
     }
-} 
+}

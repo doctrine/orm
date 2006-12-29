@@ -43,16 +43,15 @@ class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, Itera
      */
     private $childs;
 
-
     /**
      *
-     * @param Doctrine_Schema_Database database      * @return 
+     * @param Doctrine_Schema_Database database      * @return
      * @access public
      */
     public function addDatabase( Doctrine_Schema_Database $database ) {
-         $this->childs[] = $database;      
+         $this->childs[] = $database;
     }
-    
+
     /**
      * Return the childs for this schema
      *
@@ -64,11 +63,11 @@ class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, Itera
     }
     /**
      *
-     * @return 
+     * @return
      * @access public
      */
     public function __toString( ) {
-        
+
     }
     /**
      *
@@ -76,6 +75,6 @@ class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, Itera
      * @access public
      */
     public function isValid( ) {
-        
+
     }
-} 
+}

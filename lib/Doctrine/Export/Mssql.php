@@ -209,7 +209,6 @@ class Doctrine_Export_Mssql extends Doctrine_Export {
             return true;
         }
 
-
         $query = 'SET IDENTITY_INSERT $sequence_name ON ' .
                  'INSERT INTO $sequence_name (' . $seqcol_name . ') VALUES ( ' . $start . ')';
         $res = $db->exec($query);

@@ -22,7 +22,7 @@ Doctrine::autoload('Doctrine_Access');
 
 /**
  * Doctrine_EventListener_Chain
- * this class represents a chain of different listeners, 
+ * this class represents a chain of different listeners,
  * useful for having multiple listeners listening the events at the same time
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -55,14 +55,14 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @return mixed
      */
     public function get($key) {
-        if( ! isset($this->listeners[$key]))
+        if ( ! isset($this->listeners[$key])) {
             return null;
-
+        }
         return $this->listeners[$key];
     }
     /**
      * set
-     * 
+     *
      * @param mixed $key
      * @param Doctrine_EventListener $listener
      * @return void
@@ -77,8 +77,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onLoad(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onLoad(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onLoad($record);
         }
     }
@@ -90,8 +90,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onPreLoad(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onPreLoad(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreLoad($record);
         }
     }
@@ -102,8 +102,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onSleep(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onSleep(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onSleep($record);
         }
     }
@@ -114,8 +114,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onWakeUp(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onWakeUp(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onWakeUp($record);
         }
     }
@@ -126,8 +126,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onUpdate(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onUpdate(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onUpdate($record);
         }
     }
@@ -138,8 +138,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onPreUpdate(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onPreUpdate(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreUpdate($record);
         }
     }
@@ -150,8 +150,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onCreate(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onCreate(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onCreate($record);
         }
     }
@@ -163,8 +163,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onPreCreate(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onPreCreate(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreCreate($record);
         }
     }
@@ -175,8 +175,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onSave(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onSave(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onSave($record);
         }
     }
@@ -187,8 +187,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onPreSave(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onPreSave(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreSave($record);
         }
     }
@@ -202,7 +202,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @return mixed
      */
     public function onGetProperty(Doctrine_Record $record, $property, $value) {
-        foreach($this->listeners as $listener) {
+        foreach ($this->listeners as $listener) {
             $value = $listener->onGetProperty($record, $property, $value);
         }
         return $value;
@@ -217,7 +217,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @return mixed
      */
     public function onSetProperty(Doctrine_Record $record, $property, $value) {
-        foreach($this->listeners as $listener) {
+        foreach ($this->listeners as $listener) {
             $value = $listener->onSetProperty($record, $property, $value);
         }
         return $value;
@@ -229,8 +229,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onInsert(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onInsert(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onInsert($record);
         }
     }
@@ -242,7 +242,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @return void
      */
     public function onPreInsert(Doctrine_Record $record) {
-        foreach($this->listeners as $listener) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreInsert($record);
         }
     }
@@ -253,8 +253,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onDelete(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onDelete(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onDelete($record);
         }
     }
@@ -265,8 +265,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onPreDelete(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onPreDelete(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreDelete($record);
         }
     }
@@ -277,8 +277,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onEvict(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onEvict(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onEvict($record);
         }
     }
@@ -289,8 +289,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Record $record
      * @return void
      */
-    public function onPreEvict(Doctrine_Record $record) { 
-        foreach($this->listeners as $listener) {
+    public function onPreEvict(Doctrine_Record $record) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreEvict($record);
         }
     }
@@ -302,7 +302,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @return void
      */
     public function onClose(Doctrine_Connection $connection) {
-        foreach($this->listeners as $listener) {
+        foreach ($this->listeners as $listener) {
             $listener->onClose($connection);
         }
     }
@@ -313,8 +313,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Connection $connection
      * @return void
      */
-    public function onPreClose(Doctrine_Connection $connection) { 
-        foreach($this->listeners as $listener) {
+    public function onPreClose(Doctrine_Connection $connection) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreClose($connection);
         }
     }
@@ -325,8 +325,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Connection $connection
      * @return void
      */
-    public function onOpen(Doctrine_Connection $connection) { 
-        foreach($this->listeners as $listener) {
+    public function onOpen(Doctrine_Connection $connection) {
+        foreach ($this->listeners as $listener) {
             $listener->onOpen($connection);
         }
     }
@@ -337,8 +337,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Connection $connection
      * @return void
      */
-    public function onTransactionCommit(Doctrine_Connection $connection) { 
-        foreach($this->listeners as $listener) {
+    public function onTransactionCommit(Doctrine_Connection $connection) {
+        foreach ($this->listeners as $listener) {
             $listener->onTransactionCommit($connection);
         }
     }
@@ -349,8 +349,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Connection $connection
      * @return void
      */
-    public function onPreTransactionCommit(Doctrine_Connection $connection) { 
-        foreach($this->listeners as $listener) {
+    public function onPreTransactionCommit(Doctrine_Connection $connection) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreTransactionCommit($connection);
         }
     }
@@ -361,8 +361,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Connection $connection
      * @return void
      */
-    public function onTransactionRollback(Doctrine_Connection $connection) { 
-        foreach($this->listeners as $listener) {
+    public function onTransactionRollback(Doctrine_Connection $connection) {
+        foreach ($this->listeners as $listener) {
             $listener->onTransactionRollback($connection);
         }
     }
@@ -373,8 +373,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Connection $connection
      * @return void
      */
-    public function onPreTransactionRollback(Doctrine_Connection $connection) { 
-        foreach($this->listeners as $listener) {
+    public function onPreTransactionRollback(Doctrine_Connection $connection) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreTransactionRollback($connection);
         }
     }
@@ -386,7 +386,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @return void
      */
     public function onTransactionBegin(Doctrine_Connection $connection) {
-        foreach($this->listeners as $listener) {
+        foreach ($this->listeners as $listener) {
             $listener->onTransactionBegin($connection);
         }
     }
@@ -397,8 +397,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Connection $connection
      * @return void
      */
-    public function onPreTransactionBegin(Doctrine_Connection $connection) { 
-        foreach($this->listeners as $listener) {
+    public function onPreTransactionBegin(Doctrine_Connection $connection) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreTransactionBegin($connection);
         }
     }
@@ -409,8 +409,8 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Collection $collection
      * @return void
      */
-    public function onCollectionDelete(Doctrine_Collection $collection) { 
-        foreach($this->listeners as $listener) {
+    public function onCollectionDelete(Doctrine_Collection $collection) {
+        foreach ($this->listeners as $listener) {
             $listener->onCollectionDelete($record);
         }
     }
@@ -421,10 +421,9 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Collection $collection
      * @return void
      */
-    public function onPreCollectionDelete(Doctrine_Collection $collection) { 
-        foreach($this->listeners as $listener) {
+    public function onPreCollectionDelete(Doctrine_Collection $collection) {
+        foreach ($this->listeners as $listener) {
             $listener->onPreCollectionDelete($collection);
         }
     }
 }
-

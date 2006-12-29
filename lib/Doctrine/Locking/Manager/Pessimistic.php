@@ -21,7 +21,7 @@
 /**
  * Offline locking of records comes in handy where you need to make sure that
  * a time-consuming task on a record or many records, which is spread over several
- * page requests can't be interfered by other users. 
+ * page requests can't be interfered by other users.
  *
  * @link        www.phpdoctrine.com
  * @author      Roman Borschel <roman@code-factory.org>
@@ -31,7 +31,7 @@
  * @since       1.0
  * @package     Doctrine
  * @category    Object Relational Mapping
- * @version     $Revision$ 
+ * @version     $Revision$
  */
 class Doctrine_Locking_Manager_Pessimistic {
     /**
@@ -47,7 +47,7 @@ class Doctrine_Locking_Manager_Pessimistic {
 
     /**
      * Constructs a new locking manager object
-     * 
+     *
      * When the CREATE_TABLES attribute of the connection on which the manager
      * is supposed to work on is set to true, the locking table is created.
      *
@@ -68,14 +68,14 @@ class Doctrine_Locking_Manager_Pessimistic {
                                                    'notnull' => true,
                                                    'primary' => true);
 
-            $columns['user_ident']         = array('type'    => 'string',  
-                                                   'length'  => 50, 
+            $columns['user_ident']         = array('type'    => 'string',
+                                                   'length'  => 50,
                                                    'notnull' => true);
 
-            $columns['timestamp_obtained'] = array('type'    => 'integer', 
-                                                   'length'  => 10, 
+            $columns['timestamp_obtained'] = array('type'    => 'integer',
+                                                   'length'  => 10,
                                                    'notnull' => true);
-            
+
             $options = array('primary' => array('object_type', 'object_key'));
             try {
                 $this->conn->export->createTable($this->_lockTable, $columns, $options);
@@ -97,18 +97,18 @@ class Doctrine_Locking_Manager_Pessimistic {
     public function getLock(Doctrine_Record $record, $userIdent) {
         $objectType = $record->getTable()->getComponentName();
         $key        = $record->obtainIdentifier();
-        
+
         $gotLock = false;
-        
+
         if (is_array($key)) {
             // Composite key
             $key = implode('|', $key);
         }
-        
+
         try {
             $dbh = $this->conn->getDBH();
             $dbh->beginTransaction();
-            
+
             $stmt = $dbh->prepare("INSERT INTO $this->_lockTable
                                           (object_type, object_key, user_ident, timestamp_obtained)
                                    VALUES (:object_type, :object_key, :user_ident, :ts_obtained)");
@@ -116,16 +116,16 @@ class Doctrine_Locking_Manager_Pessimistic {
             $stmt->bindParam(':object_key', $key);
             $stmt->bindParam(':user_ident', $userIdent);
             $stmt->bindParam(':ts_obtained', time());
-            
+
             try {
                 $stmt->execute();
                 $gotLock = true;
-            
+
             // we catch an Exception here instead of PDOException since we might also be catching Doctrine_Exception
             } catch(Exception $pkviolation) {
                 // PK violation occured => existing lock!
             }
-            
+
             if (!$gotLock) {
                 $lockingUserIdent = $this->_getLockingUserIdent($objectType, $key);
                 if ($lockingUserIdent !== null && $lockingUserIdent == $userIdent) {
@@ -142,12 +142,12 @@ class Doctrine_Locking_Manager_Pessimistic {
                     $stmt->execute();
                 }
             }
-            $dbh->commit();              
+            $dbh->commit();
         } catch (Exception $pdoe) {
             $dbh->rollback();
             throw new Doctrine_Locking_Exception($pdoe->getMessage());
         }
-        
+
         return $gotLock;
     }
 
@@ -162,12 +162,12 @@ class Doctrine_Locking_Manager_Pessimistic {
     public function releaseLock(Doctrine_Record $record, $userIdent) {
         $objectType = $record->getTable()->getComponentName();
         $key        = $record->obtainIdentifier();
-        
+
         if (is_array($key)) {
             // Composite key
             $key = implode('|', $key);
         }
-        
+
         try {
             $dbh = $this->conn->getDbh();
             $stmt = $dbh->prepare("DELETE FROM $this->_lockTable WHERE
@@ -178,10 +178,10 @@ class Doctrine_Locking_Manager_Pessimistic {
             $stmt->bindParam(':object_key', $key);
             $stmt->bindParam(':user_ident', $userIdent);
             $stmt->execute();
-            
+
             $count = $stmt->rowCount();
-            
-            return ($count > 0);            
+
+            return ($count > 0);
         } catch (PDOException $pdoe) {
             throw new Doctrine_Locking_Exception($pdoe->getMessage());
         }
@@ -200,7 +200,7 @@ class Doctrine_Locking_Manager_Pessimistic {
             // Composite key
             $key = implode('|', $key);
         }
-        
+
         try {
             $dbh = $this->conn->getDbh();
             $stmt = $dbh->prepare("SELECT user_ident
@@ -209,19 +209,19 @@ class Doctrine_Locking_Manager_Pessimistic {
             $stmt->bindParam(':object_type', $objectType);
             $stmt->bindParam(':object_key', $key);
             $success = $stmt->execute();
-            
+
             if (!$success) {
                 throw new Doctrine_Locking_Exception("Failed to determine locking user");
             }
-            
+
             $userIdent = $stmt->fetchColumn();
         } catch (PDOException $pdoe) {
             throw new Doctrine_Locking_Exception($pdoe->getMessage());
         }
-        
+
         return $userIdent;
     }
-    
+
     /**
      * Gets the identifier that identifies the owner of the lock on the given
      * record.
@@ -234,21 +234,21 @@ class Doctrine_Locking_Manager_Pessimistic {
         $key        = $lockedRecord->obtainIdentifier();
         return $this->_getLockingUserIdent($objectType, $key);
     }
-    
+
     /**
      * Releases locks older than a defined amount of seconds
-     * 
+     *
      * When called without parameters all locks older than 15 minutes are released.
      *
-     * @param  integer $age  The maximum valid age of locks in seconds 
-     * @param  string  $objectType  The type of the object (component name) 
-     * @param  mixed   $userIdent The unique identifier of the locking user 
+     * @param  integer $age  The maximum valid age of locks in seconds
+     * @param  string  $objectType  The type of the object (component name)
+     * @param  mixed   $userIdent The unique identifier of the locking user
      * @return integer The number of locks that have been released
      * @throws Doctrine_Locking_Exception If the release process failed due to database errors
      */
     public function releaseAgedLocks($age = 900, $objectType = null, $userIdent = null) {
         $age = time() - $age;
-        
+
         try {
             $dbh = $this->conn->getDbh();
             $stmt = $dbh->prepare('DELETE FROM ' . $this->_lockTable . ' WHERE timestamp_obtained < :age');
@@ -266,12 +266,12 @@ class Doctrine_Locking_Manager_Pessimistic {
                 $stmt->bindParam(':object_type', $objectType);
             }
             if ($userIdent) {
-                $stmt->bindParam(':user_ident', $userIdent); 
+                $stmt->bindParam(':user_ident', $userIdent);
             }
             $stmt->execute();
-            
+
             $count = $stmt->rowCount();
-            
+
             return $count;
         } catch (PDOException $pdoe) {
             throw new Doctrine_Locking_Exception($pdoe->getMessage());
@@ -279,6 +279,3 @@ class Doctrine_Locking_Manager_Pessimistic {
     }
 
 }
-
-
-

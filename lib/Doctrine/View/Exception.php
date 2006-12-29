@@ -30,4 +30,4 @@ Doctrine::autoload('Doctrine_View_Exception');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_View_Exception extends Doctrine_Exception { }   
+class Doctrine_View_Exception extends Doctrine_Exception { }

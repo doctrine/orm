@@ -52,10 +52,11 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
     public function md5($column) {
         $column = $this->getIdentifier($column);
 
-        if ($this->version > 7)
+        if ($this->version > 7) {
             return 'MD5(' . $column . ')';
-        else
+        } else {
             return 'encode(digest(' . $column .', md5), hex)';
+        }
     }
 
     /**
@@ -74,8 +75,9 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
         if ($len === null) {
             $len = $this->getIdentifier($len);
             return 'SUBSTR(' . $value . ', ' . $from . ')';
-        } else
+        } else {
             return 'SUBSTR(' . $value . ', ' . $from . ', ' . $len . ')';
+        }
     }
 
     /**

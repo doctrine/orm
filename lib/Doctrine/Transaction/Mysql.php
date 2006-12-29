@@ -40,7 +40,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
      */
     protected function createSavePoint($savepoint) {
         $query = 'SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -64,7 +64,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
      */
     protected function rollbackSavePoint($savepoint) {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
-        
+
         return $this->conn->getDbh()->query($query);
     }
     /**
@@ -86,7 +86,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
             case 'READ COMMITTED':
             case 'REPEATABLE READ':
             case 'SERIALIZABLE':
-            
+
             break;
             default:
                 throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . ' is not supported.');
@@ -98,7 +98,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
     }
     /**
      * getTransactionIsolation
-     * 
+     *
      * @return string               returns the current session transaction isolation level
      */
     public function getIsolation() {

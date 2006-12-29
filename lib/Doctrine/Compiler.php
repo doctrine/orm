@@ -127,17 +127,17 @@ class Doctrine_Compiler {
 
         $ret     = array();
 
-        foreach($classes as $class) {
-            if($class !== 'Doctrine')
+        foreach ($classes as $class) {
+            if ($class !== 'Doctrine')
                 $class = 'Doctrine_'.$class;
 
             $file  = $path.DIRECTORY_SEPARATOR.str_replace("_",DIRECTORY_SEPARATOR,$class).".php";
-            
+
             echo "Adding $file" . PHP_EOL;
 
-            if( ! file_exists($file))
+            if ( ! file_exists($file)) {
                 throw new Doctrine_Compiler_Exception("Couldn't compile $file. File $file does not exists.");
-
+            }
             Doctrine::autoload($class);
             $refl  = new ReflectionClass ( $class );
             $lines = file( $file );
@@ -154,15 +154,15 @@ class Doctrine_Compiler {
 
         if ($target == null) {
             $target = $path.DIRECTORY_SEPARATOR.'Doctrine.compiled.php';
-        }            
+        }
 
         // first write the 'compiled' data to a text file, so
         // that we can use php_strip_whitespace (which only works on files)
         $fp = @fopen($target, 'w');
         
-        if ($fp === false)
+        if ($fp === false) {
             throw new Doctrine_Compiler_Exception("Couldn't write compiled data. Failed to open $target");
-            
+        }
         fwrite($fp, "<?php".
                     " class InvalidKeyException extends Exception { }".
                     implode('', $ret)
@@ -171,8 +171,9 @@ class Doctrine_Compiler {
 
         $stripped = php_strip_whitespace($target);
         $fp = @fopen($target, 'w');
-        if ($fp === false)
+        if ($fp === false) {
             throw new Doctrine_Compiler_Exception("Couldn't write compiled data. Failed to open $file");
+        }
         fwrite($fp, $stripped);
         fclose($fp);
     }

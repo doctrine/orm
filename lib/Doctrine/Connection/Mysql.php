@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -67,14 +67,14 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
                           'identifier_quoting'   => true,
                           'pattern_escaping'     => true
                           );
-    
-        $this->properties['string_quoting'] = array('start' => "'", 
-                                                    'end' => "'", 
+
+        $this->properties['string_quoting'] = array('start' => "'",
+                                                    'end' => "'",
                                                     'escape' => '\\',
                                                     'escape_pattern' => '\\');
 
         $this->properties['identifier_quoting'] = array('start' => '`',
-                                                        'end' => '`', 
+                                                        'end' => '`',
                                                         'escape' => '`');
 
         $this->properties['sql_comments'] = array(
@@ -84,7 +84,6 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
                                             );
 
         $this->properties['varchar_max_length'] = 255;
-
 
         parent::__construct($manager, $adapter);
     }
@@ -118,7 +117,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
 
         $value = $this->dbh->lastInsertId();
 
-        if(is_numeric($value)) {
+        if (is_numeric($value)) {
             $query  = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
             $result = $this->dbh->query($query);
         }
@@ -205,17 +204,17 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
         $query = $values = '';
         $keys = $colnum = 0;
 
-        for(reset($fields); $colnum < $count; next($fields), $colnum++) {
+        for (reset($fields); $colnum < $count; next($fields), $colnum++) {
             $name = key($fields);
 
-            if($colnum > 0) {
+            if ($colnum > 0) {
                 $query .= ',';
                 $values.= ',';
             }
 
             $query .= $name;
 
-            if(isset($fields[$name]['null']) && $fields[$name]['null']) {
+            if (isset($fields[$name]['null']) && $fields[$name]['null']) {
                 $value = 'NULL';
             } else {
                 $type = isset($fields[$name]['type']) ? $fields[$name]['type'] : null;
@@ -224,18 +223,17 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
 
             $values .= $value;
 
-            if(isset($fields[$name]['key']) && $fields[$name]['key']) {
-                if($value === 'NULL')
+            if (isset($fields[$name]['key']) && $fields[$name]['key']) {
+                if ($value === 'NULL') {
                     throw new Doctrine_Connection_Mysql_Exception('key value '.$name.' may not be NULL');
-
+                }
                 $keys++;
             }
         }
 
-        if($keys == 0)
+        if ($keys == 0) {
             throw new Doctrine_Connection_Mysql_Exception('not specified which fields are keys');
-
-
+        }
         $query = 'REPLACE INTO ' . $table . ' (' . $query . ') VALUES (' . $values . ')';
 
         return $this->dbh->exec($query);

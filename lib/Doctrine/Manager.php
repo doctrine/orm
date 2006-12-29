@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -19,7 +19,7 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * 
+ *
  * Doctrine_Manager is the base component of all doctrine based projects. 
  * It opens and keeps track of all connections (database connections).
  *
@@ -85,7 +85,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     final public function setDefaultAttributes() {
         static $init = false;
-        if( ! $init) {
+        if ( ! $init) {
             $init = true;
             $attributes = array(
                         Doctrine::ATTR_FETCHMODE        => Doctrine::FETCH_IMMEDIATE,
@@ -104,10 +104,11 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_SEQCOL_NAME      => 'id',
                         Doctrine::ATTR_PORTABILITY      => Doctrine::PORTABILITY_ALL,
                         );
-            foreach($attributes as $attribute => $value) {
+            foreach ($attributes as $attribute => $value) {
                 $old = $this->getAttribute($attribute);
-                if($old === null)
+                if ($old === null) {
                     $this->setAttribute($attribute,$value);
+                }
             }
             return true;
         }
@@ -122,7 +123,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         return $this->root;
     }
     /**
-     * getInstance                  
+     * getInstance
      * returns an instance of this class
      * (this class uses the singleton pattern)
      *
@@ -130,9 +131,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     public static function getInstance() {
         static $instance;
-        if( ! isset($instance))
+        if ( ! isset($instance)) {
             $instance = new self();
-
+        }
         return $instance;
     }
     /**
@@ -150,7 +151,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return Doctrine_Connection
      */
     public static function connection($adapter = null, $name = null) {
-        if($adapter == null) {
+        if ($adapter == null) {
             return Doctrine_Manager::getInstance()->getCurrentConnection();
         } else {
             return Doctrine_Manager::getInstance()->openConnection($adapter, $name);
@@ -166,52 +167,51 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return Doctrine_Connection
      */
     public function openConnection($adapter, $name = null) {
-        if( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter)))
+        if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
             throw new Doctrine_Manager_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
-
+        }
 
         // initialize the default attributes
         $this->setDefaultAttributes();
 
-        if($name !== null) {
+        if ($name !== null) {
             $name = (string) $name;
-            if(isset($this->connections[$name]))
+            if (isset($this->connections[$name])) {
                 throw new Doctrine_Manager_Exception("Connection with $name already exists!");
-
+            }
         } else {
             $name = $this->index;
             $this->index++;
         }
-        switch($adapter->getAttribute(PDO::ATTR_DRIVER_NAME)):
-            case 'mysql':
-                $this->connections[$name] = new Doctrine_Connection_Mysql($this, $adapter);
+        switch ($adapter->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+        case 'mysql':
+            $this->connections[$name] = new Doctrine_Connection_Mysql($this, $adapter);
             break;
-            case 'sqlite':
-                $this->connections[$name] = new Doctrine_Connection_Sqlite($this, $adapter);
+        case 'sqlite':
+            $this->connections[$name] = new Doctrine_Connection_Sqlite($this, $adapter);
             break;
-            case 'pgsql':
-                $this->connections[$name] = new Doctrine_Connection_Pgsql($this, $adapter);
+        case 'pgsql':
+            $this->connections[$name] = new Doctrine_Connection_Pgsql($this, $adapter);
             break;
-            case 'oci':
-            case 'oracle':
-                $this->connections[$name] = new Doctrine_Connection_Oracle($this, $adapter);
+        case 'oci':
+        case 'oracle':
+            $this->connections[$name] = new Doctrine_Connection_Oracle($this, $adapter);
             break;
-            case 'mssql':
-                $this->connections[$name] = new Doctrine_Connection_Mssql($this, $adapter);
+        case 'mssql':
+            $this->connections[$name] = new Doctrine_Connection_Mssql($this, $adapter);
             break;
-            case 'firebird':
-                $this->connections[$name] = new Doctrine_Connection_Firebird($this, $adapter);
+        case 'firebird':
+            $this->connections[$name] = new Doctrine_Connection_Firebird($this, $adapter);
             break;
-            case 'informix':
-                $this->connections[$name] = new Doctrine_Connection_Informix($this, $adapter);
+        case 'informix':
+            $this->connections[$name] = new Doctrine_Connection_Informix($this, $adapter);
             break;
-            case 'mock':
-                $this->connections[$name] = new Doctrine_Connection_Mock($this, $adapter);
-			break;            
-            default:
-                throw new Doctrine_Manager_Exception('Unknown connection driver '. $adapter->getAttribute(PDO::ATTR_DRIVER_NAME));
-        endswitch;
-
+        case 'mock':
+            $this->connections[$name] = new Doctrine_Connection_Mock($this, $adapter);
+            break;
+        default:
+            throw new Doctrine_Manager_Exception('Unknown connection driver '. $adapter->getAttribute(PDO::ATTR_DRIVER_NAME));
+        };
 
         $this->currIndex = $name;
         return $this->connections[$name];
@@ -225,10 +225,10 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return object Doctrine_Connection
      * @throws Doctrine_Manager_Exception   if trying to get a non-existent connection
      */
-    public function getConnection($name) {   
-        if( ! isset($this->connections[$name]))
+    public function getConnection($name) {
+        if ( ! isset($this->connections[$name])) {
             throw new Doctrine_Manager_Exception('Unknown connection: ' . $name);
-
+        }
         $this->currIndex = $name;
         return $this->connections[$name];
     }
@@ -252,9 +252,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return Doctrine_Connection
      */
     public function getConnectionForComponent($componentName = null) {
-        if(isset($this->bound[$componentName]))
+        if (isset($this->bound[$componentName])) {
             return $this->getConnection($this->bound[$componentName]);
-
+        }
         return $this->getCurrentConnection();
     }
     /** 
@@ -298,9 +298,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     public function setCurrentConnection($key) {
         $key = (string) $key;
-        if( ! isset($this->connections[$key]))
+        if ( ! isset($this->connections[$key])) {
             throw new InvalidKeyException();
-        
+        }
         $this->currIndex = $key;
     }
     /**
@@ -330,9 +330,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     public function getCurrentConnection() {
         $i = $this->currIndex;
-        if( ! isset($this->connections[$i]))
+        if ( ! isset($this->connections[$i])) {
             throw new Doctrine_Connection_Exception();
-
+        }
         return $this->connections[$i];
     }
     /**
@@ -349,4 +349,3 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         return implode("\n",$r);
     }
 }
-

@@ -42,13 +42,12 @@ class Doctrine_Validator_Enum {
         $max = substr_count($args, '-');
         $int = (int) $value;
 
-        if($int != $value)
+        if ($int != $value) {
             return false;
-
-        if($int < 0 || $int > $max)
+        }
+        if ($int < 0 || $int > $max) {
             return false;
-            
+        }
         return true;
     }
 }
-

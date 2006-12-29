@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -38,4 +38,3 @@ class Doctrine_Table_Exception extends Doctrine_Exception {
         parent::__construct($message);
     }
 }
-

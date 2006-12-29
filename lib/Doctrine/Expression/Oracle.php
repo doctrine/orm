@@ -57,7 +57,7 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression {
      * @return string               SQL substring function with given parameters
      */
     public function substring($value, $position, $length = null) {
-        if($length !== null)
+        if ($length !== null)
             return "SUBSTR($value, $position, $length)";
 
         return "SUBSTR($value, $position)";

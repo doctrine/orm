@@ -41,27 +41,26 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part {
     public function parse($str) {
         $ret = array();
 
-        foreach(explode(',', trim($str)) as $r) {
+        foreach (explode(',', trim($str)) as $r) {
             $r = trim($r);
             $e = explode(' ', $r);
             $a = explode('.', $e[0]);
-    
-            if(count($a) > 1) {
+
+            if (count($a) > 1) {
                 $field     = array_pop($a);
                 $reference = implode('.', $a);
                 $name      = end($a);
 
-
                 $this->query->load($reference, false);
                 $alias     = $this->query->getTableAlias($reference);
-                
 
                 $tname     = $this->query->getTable($alias)->getTableName();
 
                 $r = $alias . '.' . $field;
 
-                if(isset($e[1]))
+                if (isset($e[1])) {
                     $r .= ' '.$e[1];
+                }
             }
             $ret[] = $r;
         }
@@ -72,4 +71,3 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part {
         return ( ! empty($this->parts))?implode(', ', $this->parts):'';
     }
 }
-

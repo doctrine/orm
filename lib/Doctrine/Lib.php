@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -36,23 +36,23 @@ class Doctrine_Lib {
      * @return string                       string representation of given state
      */
     public static function getRecordStateAsString($state) {
-        switch($state):
-            case Doctrine_Record::STATE_PROXY:
-                return "proxy";
+        switch ($state) {
+        case Doctrine_Record::STATE_PROXY:
+            return "proxy";
             break;
-            case Doctrine_Record::STATE_CLEAN:
-                return "persistent clean";
+        case Doctrine_Record::STATE_CLEAN:
+            return "persistent clean";
             break;
-            case Doctrine_Record::STATE_DIRTY:
-                return "persistent dirty";
+        case Doctrine_Record::STATE_DIRTY:
+            return "persistent dirty";
             break;
-            case Doctrine_Record::STATE_TDIRTY:
-                return "transient dirty";
+        case Doctrine_Record::STATE_TDIRTY:
+            return "transient dirty";
             break;
-            case Doctrine_Record::STATE_TCLEAN:
-                return "transient clean";
+        case Doctrine_Record::STATE_TCLEAN:
+            return "transient clean";
             break;
-        endswitch;
+        };
     }
     /**
      * returns a string representation of Doctrine_Record object
@@ -75,17 +75,17 @@ class Doctrine_Lib {
      * @param integer $state        connection state
      */
     public static function getConnectionStateAsString($state) {
-        switch($state):
-            case Doctrine_Transaction::STATE_SLEEP:
-                return "open";
+        switch ($state) {
+        case Doctrine_Transaction::STATE_SLEEP:
+            return "open";
             break;
-            case Doctrine_Transaction::STATE_BUSY:
-                return "busy";
+        case Doctrine_Transaction::STATE_BUSY:
+            return "busy";
             break;
-            case Doctrine_Transaction::STATE_ACTIVE:
-                return "active";
+        case Doctrine_Transaction::STATE_ACTIVE:
+            return "active";
             break;
-        endswitch;
+        };
     }
     /**
      * returns a string representation of Doctrine_Connection object
@@ -100,17 +100,18 @@ class Doctrine_Lib {
         $r[] = "Table in memory     : ".$connection->count();
 
         $queries = false;
-        if($connection->getDBH() instanceof Doctrine_Db) {
+        if ($connection->getDBH() instanceof Doctrine_Db) {
             $handler = "Doctrine Database Handler";
             $queries = count($connection->getDBH()->getQueries());
             $sum     = array_sum($connection->getDBH()->getExecTimes());
-        } elseif($connection->getDBH() instanceof PDO) {
+        } elseif ($connection->getDBH() instanceof PDO) {
             $handler = "PHP Native PDO Driver";
-        } else
+        } else {
             $handler = "Unknown Database Handler";
+        }
 
         $r[] = "DB Handler          : ".$handler;
-        if($queries) {
+        if ($queries) {
             $r[] = "Executed Queries    : ".$queries;
             $r[] = "Sum of Exec Times   : ".$sum;
         }
@@ -150,7 +151,7 @@ class Doctrine_Lib {
         $l = str_replace(" LIMIT ", "<font color='$color'><b> LIMIT </b></font><br \>",$l);
         $l = str_replace(" OFFSET ", "<font color='$color'><b> OFFSET </b></font><br \>",$l);
         $l = str_replace("  ", "<dd>",$l);
-        
+
         return $l;
     }
     /**
@@ -162,11 +163,10 @@ class Doctrine_Lib {
         $r[] = "<pre>";
         $r[] = get_class($collection);
 
-        foreach($collection as $key => $record) {
+        foreach ($collection as $key => $record) {
             $r[] = "Key : ".$key." ID : ".$record->obtainIdentifier();
         }
         $r[] = "</pre>";
         return implode("\n",$r);
     }
 }
-

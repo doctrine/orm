@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once("Part.php");
 
 class Doctrine_Query_Groupby extends Doctrine_Query_Part {
@@ -11,7 +11,7 @@ class Doctrine_Query_Groupby extends Doctrine_Query_Part {
      */
     final public function parse($str) {
         $r = array();
-        foreach(explode(",", $str) as $reference) {
+        foreach (explode(",", $str) as $reference) {
             $reference = trim($reference);
             $e     = explode(".",$reference);
             $field = array_pop($e);
@@ -27,4 +27,3 @@ class Doctrine_Query_Groupby extends Doctrine_Query_Part {
         return ( ! empty($this->parts))?implode(", ", $this->parts):'';
     }
 }
-
