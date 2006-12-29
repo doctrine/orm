@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Hook_Parser_Complex');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hook_Integer extends Doctrine_Hook_Parser_Complex {
+class Doctrine_Hook_Integer extends Doctrine_Hook_Parser_Complex
+{
     /**
      * parse
      * Parses given field and field value to DQL condition
@@ -43,7 +44,8 @@ class Doctrine_Hook_Integer extends Doctrine_Hook_Parser_Complex {
      * @param mixed $value      the value of the field
      * @return void
      */
-    public function parseSingle($alias, $field, $value) {
+    public function parseSingle($alias, $field, $value)
+    {
         $e = explode(' ', $value);
 
         foreach ($e as $v) {

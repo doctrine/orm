@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Transaction extends Doctrine_Connection_Module {
+class Doctrine_Transaction extends Doctrine_Connection_Module
+{
     /**
      * Doctrine_Transaction is in sleep state when it has no active transactions
      */
@@ -67,7 +68,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @see Doctrine_Connection_Transaction::STATE_* constants
      * @return integer          the connection state
      */
-    public function getState() {
+    public function getState()
+    {
         switch ($this->transactionLevel) {
         case 0:
             return Doctrine_Transaction::STATE_SLEEP;
@@ -83,7 +85,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * adds record into pending delete list
      * @param Doctrine_Record $record
      */
-    public function addDelete(Doctrine_Record $record) {
+    public function addDelete(Doctrine_Record $record)
+    {
         $name = $record->getTable()->getComponentName();
         $this->delete[$name][] = $record;
     }
@@ -95,7 +98,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @return boolean        false if record already existed in invalid records list,
      *                        otherwise true
      */
-    public function addInvalid(Doctrine_Record $record) {
+    public function addInvalid(Doctrine_Record $record)
+    {
         if (in_array($record, $this->invalid)) {
             return false;
         }
@@ -108,7 +112,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      *
      * @return array
      */
-    public function getDeletes() {
+    public function getDeletes()
+    {
         return $this->delete;
     }
     /**
@@ -117,7 +122,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      *
      * @return void
      */
-    public function bulkDelete() {
+    public function bulkDelete()
+    {
         foreach ($this->delete as $name => $deletes) {
             $record = false;
             $ids    = array();
@@ -146,7 +152,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      *
      * @return integer
      */
-    public function getTransactionLevel() {
+    public function getTransactionLevel()
+    {
         return $this->transactionLevel;
     }
     /**
@@ -161,7 +168,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @param string $savepoint                 name of a savepoint to set
      * @return integer                          current transaction nesting level
      */
-    public function beginTransaction($savepoint = null) {
+    public function beginTransaction($savepoint = null)
+    {
         if ( ! is_null($savepoint)) {
             $this->beginTransaction();
 
@@ -195,7 +203,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @throws Doctrine_Validator_Exception     if the transaction fails due to record validations
      * @return boolean                          false if commit couldn't be performed, true otherwise
      */
-    public function commit($savepoint = null) {
+    public function commit($savepoint = null)
+    {
         if ($this->transactionLevel == 0)
             return false;
 
@@ -249,7 +258,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @param string $savepoint                 name of a savepoint to rollback to
      * @return boolean                          false if rollback couldn't be performed, true otherwise
      */
-    public function rollback($savepoint = null) {
+    public function rollback($savepoint = null)
+    {
         if ($this->transactionLevel == 0)
             return false;
 
@@ -278,7 +288,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @param string $savepoint     name of a savepoint to create
      * @return void
      */
-    protected function createSavePoint($savepoint) {
+    protected function createSavePoint($savepoint)
+    {
         throw new Doctrine_Transaction_Exception('Savepoints not supported by this driver.');
     }
     /**
@@ -288,7 +299,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @param string $savepoint     name of a savepoint to release
      * @return void
      */
-    protected function releaseSavePoint($savepoint) {
+    protected function releaseSavePoint($savepoint)
+    {
         throw new Doctrine_Transaction_Exception('Savepoints not supported by this driver.');
     }
     /**
@@ -298,7 +310,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @param string $savepoint     name of a savepoint to rollback to
      * @return void
      */
-    protected function rollbackSavePoint($savepoint) {
+    protected function rollbackSavePoint($savepoint)
+    {
         throw new Doctrine_Transaction_Exception('Savepoints not supported by this driver.');
     }
     /**
@@ -309,7 +322,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @param sring $savepoint      name of the savepoint to remove
      * @return integer              the current transaction level
      */
-    private function removeSavePoints($savepoint) {
+    private function removeSavePoints($savepoint)
+    {
         $i = array_search($savepoint, $this->savePoints);
 
         $c = count($this->savePoints);
@@ -341,7 +355,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @throws PDOException                             if something fails at the PDO level
      * @return void
      */
-    public function setIsolation($isolation) {
+    public function setIsolation($isolation)
+    {
         throw new Doctrine_Transaction_Exception('Transaction isolation levels not supported by this driver.');
     }
 
@@ -357,7 +372,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module {
      * @throws PDOException                             if something fails at the PDO level
      * @return string                                   returns the current session transaction isolation level
      */
-    public function getIsolation() {
+    public function getIsolation()
+    {
         throw new Doctrine_Transaction_Exception('Fetching transaction isolation level not supported by this driver.');
     }
 }

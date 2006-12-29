@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_EventListener');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_EventListener_AccessorInvoker extends Doctrine_EventListener {
+class Doctrine_EventListener_AccessorInvoker extends Doctrine_EventListener
+{
     /**
      * @var boolean $lockGetCall        a simple variable to prevent recursion
      */
@@ -47,7 +48,8 @@ class Doctrine_EventListener_AccessorInvoker extends Doctrine_EventListener {
      * @param mixed $value
      * @return mixed
      */
-    public function onGetProperty(Doctrine_Record $record, $property, $value) {
+    public function onGetProperty(Doctrine_Record $record, $property, $value)
+    {
         $method = 'get' . ucwords($property);
 
         if (method_exists($record, $method) && ! $this->lockGetCall) {
@@ -67,7 +69,8 @@ class Doctrine_EventListener_AccessorInvoker extends Doctrine_EventListener {
      * @param mixed $value
      * @return mixed
      */
-    public function onSetProperty(Doctrine_Record $record, $property, $value) {
+    public function onSetProperty(Doctrine_Record $record, $property, $value)
+    {
         $method = 'set' . ucwords($property);
 
         if (method_exists($record, $method) && ! $this->lockSetCall) {

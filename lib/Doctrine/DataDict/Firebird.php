@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_DataDict');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Firebird extends Doctrine_DataDict {
+class Doctrine_DataDict_Firebird extends Doctrine_DataDict
+{
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
@@ -53,7 +54,8 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getNativeDeclaration($field) {
+    public function getNativeDeclaration($field)
+    {
         switch ($field['type']) {
         case 'varchar':
         case 'string':
@@ -96,7 +98,8 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict {
      * @param array  $field native field description
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function getPortableDeclaration($field) {
+    public function getPortableDeclaration($field)
+    {
         $length = $field['length'];
 
         if ((int) $length <= 0)
@@ -181,7 +184,8 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
      *                 of a field declaration.
      */
-    public function getCharsetFieldDeclaration($charset) {
+    public function getCharsetFieldDeclaration($charset)
+    {
         return 'CHARACTER SET '.$charset;
     }
     /**
@@ -192,7 +196,8 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion needed to set the COLLATION
      *                 of a field declaration.
      */
-    public function getCollationFieldDeclaration($collation) {
+    public function getCollationFieldDeclaration($collation)
+    {
         return 'COLLATE '.$collation;
     }
 }

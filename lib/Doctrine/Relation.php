@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Relation {
+abstract class Doctrine_Relation
+{
     /**
      * RELATION CONSTANTS
      */
@@ -80,7 +81,8 @@ abstract class Doctrine_Relation {
      * @param integer $type
      * @param string $alias
      */
-    public function __construct(Doctrine_Table $table, $local, $foreign, $type, $alias) {
+    public function __construct(Doctrine_Table $table, $local, $foreign, $type, $alias)
+    {
         $this->table    = $table;
         $this->local    = $local;
         $this->foreign  = $foreign;
@@ -93,7 +95,8 @@ abstract class Doctrine_Relation {
      *
      * @return string
      */
-    final public function getAlias() {
+    final public function getAlias()
+    {
         return $this->alias;
     }
     /**
@@ -103,7 +106,8 @@ abstract class Doctrine_Relation {
      * @see Doctrine_Relation MANY_* and ONE_* constants
      * @return integer
      */
-    final public function getType() {
+    final public function getType()
+    {
         return $this->type;
     }
     /**
@@ -112,7 +116,8 @@ abstract class Doctrine_Relation {
      *
      * @return object Doctrine_Table
      */
-    final public function getTable() {
+    final public function getTable()
+    {
         return $this->table;
     }
     /**
@@ -121,7 +126,8 @@ abstract class Doctrine_Relation {
      *
      * @return string
      */
-    final public function getLocal() {
+    final public function getLocal()
+    {
         return $this->local;
     }
     /**
@@ -131,7 +137,8 @@ abstract class Doctrine_Relation {
      *
      * @return string
      */
-    final public function getForeign() {
+    final public function getForeign()
+    {
         return $this->foreign;
     }
     /**
@@ -140,7 +147,8 @@ abstract class Doctrine_Relation {
      *
      * @return boolean
      */
-    final public function isComposite() {
+    final public function isComposite()
+    {
         return ($this->type == Doctrine_Relation::ONE_COMPOSITE ||
                 $this->type == Doctrine_Relation::MANY_COMPOSITE);
     }
@@ -150,7 +158,8 @@ abstract class Doctrine_Relation {
      *
      * @return boolean
      */
-    final public function isOneToOne() {
+    final public function isOneToOne()
+    {
         return ($this->type == Doctrine_Relation::ONE_AGGREGATE ||
                 $this->type == Doctrine_Relation::ONE_COMPOSITE);
     }
@@ -160,7 +169,8 @@ abstract class Doctrine_Relation {
      * @param integer $count
      * @return string
      */
-    public function getRelationDql($count) {
+    public function getRelationDql($count)
+    {
         $dql  = "FROM ".$this->table->getComponentName().
                 " WHERE ".$this->table->getComponentName(). '.' . $this->foreign.
                 " IN (".substr(str_repeat("?, ", $count),0,-2).")";
@@ -184,7 +194,8 @@ abstract class Doctrine_Relation {
      * @param Doctrine_Collection $new
      * @return array
      */
-    public static function getDeleteOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
+    public static function getDeleteOperations(Doctrine_Collection $old, Doctrine_Collection $new)
+    {
         $r = array();
 
         foreach ($old as $k => $record) {
@@ -226,7 +237,8 @@ abstract class Doctrine_Relation {
      * @param Doctrine_Collection $new
      * @return array
      */
-    public static function getInsertOperations(Doctrine_Collection $old, Doctrine_Collection $new) {
+    public static function getInsertOperations(Doctrine_Collection $old, Doctrine_Collection $new)
+    {
         $r = array();
 
         foreach ($new as $k => $record) {
@@ -263,7 +275,8 @@ abstract class Doctrine_Relation {
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         $r[] = "<pre>";
         $r[] = "Class       : ".get_class($this);
         $r[] = "Component   : ".$this->table->getComponentName();

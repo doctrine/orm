@@ -34,7 +34,7 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  */
-class Doctrine_Import extends Doctrine_Connection_Module 
+class Doctrine_Import extends Doctrine_Connection_Module
 {
     protected $sql = array();
     /**
@@ -42,7 +42,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      *
      * @return array
      */
-    public function listDatabases() 
+    public function listDatabases()
     {
         if ( ! isset($this->sql['listDatabases'])) {
             throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
@@ -55,7 +55,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      *
      * @return array
      */
-    public function listFunctions() 
+    public function listFunctions()
     {
         if ( ! isset($this->sql['listFunctions'])) {
             throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
@@ -69,7 +69,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param string|null $database
      * @return array
      */
-    public function listTriggers($database = null) 
+    public function listTriggers($database = null)
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
@@ -79,7 +79,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param string|null $database
      * @return array
      */
-    public function listSequences($database = null) 
+    public function listSequences($database = null)
     {
         if ( ! isset($this->sql['listSequences'])) {
             throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
@@ -93,7 +93,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param string $table     database table name
      * @return array
      */
-    public function listTableConstraints($table) 
+    public function listTableConstraints($table)
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
@@ -103,7 +103,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param string $table     database table name
      * @return array
      */
-    public function listTableColumns($table) 
+    public function listTableColumns($table)
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
@@ -113,7 +113,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param string $table     database table name
      * @return array
      */
-    public function listTableIndexes($table) 
+    public function listTableIndexes($table)
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
@@ -123,7 +123,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param string|null $database
      * @return array
      */
-    public function listTables($database = null) 
+    public function listTables($database = null)
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
@@ -133,7 +133,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param string $table     database table name
      * @return array
      */
-    public function listTableTriggers($table) 
+    public function listTableTriggers($table)
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
@@ -143,7 +143,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param string $table     database table name
      * @return array
      */
-    public function listTableViews($table) 
+    public function listTableViews($table)
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
@@ -152,7 +152,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      *
      * @return array
      */
-    public function listUsers() 
+    public function listUsers()
     {
         if ( ! isset($this->sql['listUsers'])) {
             throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
@@ -166,7 +166,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param string|null $database
      * @return array
      */
-    public function listViews($database = null) 
+    public function listViews($database = null)
     {
         if ( ! isset($this->sql['listViews'])) {
             throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');

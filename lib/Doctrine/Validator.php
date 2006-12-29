@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator {
+class Doctrine_Validator
+{
     /**
      * @var array $validators           an array of validator objects
      */
@@ -46,7 +47,8 @@ class Doctrine_Validator {
      * @param Doctrine_Null $null
      * @return void
      */
-    public static function initNullObject(Doctrine_Null $null) {
+    public static function initNullObject(Doctrine_Null $null)
+    {
         self::$null = $null;
     }
     /**
@@ -55,7 +57,8 @@ class Doctrine_Validator {
      * @param string $name
      * @return Doctrine_Validator_Interface
      */
-    public static function getValidator($name) {
+    public static function getValidator($name)
+    {
         if ( ! isset(self::$validators[$name])) {
             $class = "Doctrine_Validator_".ucwords(strtolower($name));
             if (class_exists($class)) {
@@ -74,7 +77,8 @@ class Doctrine_Validator {
      * @param Doctrine_Record $record
      * @return void
      */
-    public function validateRecord(Doctrine_Record $record) {
+    public function validateRecord(Doctrine_Record $record)
+    {
         $columns   = $record->getTable()->getColumns();
         $component = $record->getTable()->getComponentName();
 
@@ -176,7 +180,8 @@ class Doctrine_Validator {
      * Enter description here...
      *
      */
-    private function validateLength($column, $key, $value) {
+    private function validateLength($column, $key, $value)
+    {
         if ($column[0] == "array" || $column[0] == "object") {
             $length = strlen(serialize($value));
         } else {
@@ -193,7 +198,8 @@ class Doctrine_Validator {
      *
      * @return boolean
      */
-    public function hasErrors() {
+    public function hasErrors()
+    {
         return (count($this->stack) > 0);
     }
     /**
@@ -202,7 +208,8 @@ class Doctrine_Validator {
      * @param $doctrineType
      * @return string
      */
-    public static function phpType($doctrineType) {
+    public static function phpType($doctrineType)
+    {
         switch ($doctrineType) {
         case 'enum':
             return 'integer';
@@ -226,7 +233,8 @@ class Doctrine_Validator {
      * @param string $type
      * @return boolean
      */
-    public static function isValidType($var, $type) {
+    public static function isValidType($var, $type)
+    {
         if ($type == 'boolean')
             return true;
 
@@ -255,7 +263,8 @@ class Doctrine_Validator {
      * @param mixed $var
      * @return string
      */
-    public static function gettype($var) {
+    public static function gettype($var)
+    {
         $type = gettype($var);
         switch ($type) {
         case 'string':

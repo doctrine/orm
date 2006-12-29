@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Transaction');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Transaction_Mssql extends Doctrine_Transaction {
+class Doctrine_Transaction_Mssql extends Doctrine_Transaction
+{
     /**
      * Set the transacton isolation level.
      *

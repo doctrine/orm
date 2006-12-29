@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Collection_Iterator implements Iterator {
+abstract class Doctrine_Collection_Iterator implements Iterator
+{
     /**
      * @var Doctrine_Collection $collection
      */
@@ -56,7 +57,8 @@ abstract class Doctrine_Collection_Iterator implements Iterator {
      * constructor
      * @var Doctrine_Collection $collection
      */
-    public function __construct(Doctrine_Collection $collection) {
+    public function __construct(Doctrine_Collection $collection)
+    {
         $this->collection = $collection;
         $this->keys       = $this->collection->getKeys();
         $this->count      = $this->collection->count();
@@ -66,7 +68,8 @@ abstract class Doctrine_Collection_Iterator implements Iterator {
      *
      * @return void
      */
-    public function rewind() {
+    public function rewind()
+    {
         $this->index = 0;
         $i = $this->index;
         if (isset($this->keys[$i])) {
@@ -79,7 +82,8 @@ abstract class Doctrine_Collection_Iterator implements Iterator {
      *
      * @return integer
      */
-    public function key() {
+    public function key()
+    {
         return $this->key;
     }
     /**
@@ -87,7 +91,8 @@ abstract class Doctrine_Collection_Iterator implements Iterator {
      *
      * @return Doctrine_Record
      */
-    public function current() {
+    public function current()
+    {
         return $this->collection->get($this->key);
     }
     /**
@@ -95,7 +100,8 @@ abstract class Doctrine_Collection_Iterator implements Iterator {
      *
      * @return void
      */
-    public function next() {
+    public function next()
+    {
         $this->index++;
         $i = $this->index;
         if (isset($this->keys[$i])) {

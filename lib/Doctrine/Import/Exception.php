@@ -35,4 +35,5 @@ Doctrine::autoload('Doctrine_Exception');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Import_Exception extends Doctrine_Exception { }
+class Doctrine_Import_Exception extends Doctrine_Exception
+{ }

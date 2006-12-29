@@ -31,7 +31,8 @@ Doctrine::autoload('Doctrine_Connection');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Connection_Mssql extends Doctrine_Connection {
+class Doctrine_Connection_Mssql extends Doctrine_Connection
+{
     /**
      * @var string $driverName                  the name of this connection driver
      */
@@ -42,7 +43,8 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, $adapter) {
+    public function __construct(Doctrine_Manager $manager, $adapter)
+    {
         // initialize all driver options
         $this->supported = array(
                           'sequences'             => 'emulated',
@@ -75,7 +77,8 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
      *
      * @return string  quoted identifier string
      */
-    public function quoteIdentifier($identifier, $checkOption = false) {
+    public function quoteIdentifier($identifier, $checkOption = false)
+    {
         if ($checkOption && ! $this->options['quote_identifier']) {
             return $identifier;
         }
@@ -87,7 +90,8 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
      * @param string $sequence      name of the sequence
      * @return integer              the next value in the given sequence
      */
-    public function nextId($sequence) {
+    public function nextId($sequence)
+    {
         $this->query("INSERT INTO $sequence (vapor) VALUES (0)");
         $stmt = $this->query("SELECT @@IDENTITY FROM $sequence");
         $data = $stmt->fetch(PDO::FETCH_NUM);
@@ -103,7 +107,8 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
      * @link http://lists.bestpractical.com/pipermail/rt-devel/2005-June/007339.html
      * @return string
      */
-    public function modifyLimitQuery($query, $limit, $offset, $isManip = false) {
+    public function modifyLimitQuery($query, $limit, $offset, $isManip = false)
+    {
         if ($limit > 0) {
             // we need the starting SELECT clause for later
             $select = 'SELECT ';
@@ -154,7 +159,8 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection {
      * @param string $field name of the field into which a new row was inserted
      * @return integer
      */
-    public function lastInsertID($table = null, $field = null) {
+    public function lastInsertID($table = null, $field = null)
+    {
         $server_info = $this->getServerVersion();
         if (is_array($server_info)
             && !is_null($server_info['major'])

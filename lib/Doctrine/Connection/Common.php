@@ -10,7 +10,8 @@ Doctrine::autoload('Doctrine_Connection');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_Common extends Doctrine_Connection {
+class Doctrine_Connection_Common extends Doctrine_Connection
+{
     /**
      * Adds an driver-specific LIMIT clause to the query
      *
@@ -18,7 +19,8 @@ class Doctrine_Connection_Common extends Doctrine_Connection {
      * @param mixed $limit
      * @param mixed $offset
      */
-    public function modifyLimitQuery($query,$limit = false,$offset = false,$isManip=false) {
+    public function modifyLimitQuery($query,$limit = false,$offset = false,$isManip=false)
+    {
         if ($limit && $offset) {
             $query .= " LIMIT ".$limit." OFFSET ".$offset;
         } elseif ($limit && ! $offset) {

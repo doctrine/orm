@@ -30,8 +30,9 @@ Doctrine::autoload('Doctrine_Import');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Import_Pgsql extends Doctrine_Import {
-    
+class Doctrine_Import_Pgsql extends Doctrine_Import
+{
+
     protected $sql = array(
                         'listDatabases' => 'SELECT datname FROM pg_database',
                         'listFunctions' => "SELECT
@@ -44,19 +45,19 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
                                                 AND pr.proisagg = FALSE
                                                 AND tp.typname <> 'trigger'
                                                 AND pr.pronamespace IN
-                                                    (SELECT oid FROM pg_namespace 
+                                                    (SELECT oid FROM pg_namespace
                                                      WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema'",
                         'listSequences' => "SELECT
-                                                relname 
-                                            FROM 
-                                                pg_class 
+                                                relname
+                                            FROM
+                                                pg_class
                                             WHERE relkind = 'S' AND relnamespace IN
                                                 (SELECT oid FROM pg_namespace
                                                  WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema')",
                         'listTables'    => "SELECT
                                                 c.relname AS table_name
                                             FROM pg_class c, pg_user u
-                                            WHERE c.relowner = u.usesysid 
+                                            WHERE c.relowner = u.usesysid
                                                 AND c.relkind = 'r'
                                                 AND NOT EXISTS (SELECT 1 FROM pg_views WHERE viewname = c.relname)
                                                 AND c.relname !~ '^(pg_|sql_)'
@@ -71,13 +72,13 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
                         'listUsers'     => 'SELECT usename FROM pg_user',
                         'listTableConstraints' => "SELECT
                                                         relname
-                                                   FROM 
-                                                        pg_class 
+                                                   FROM
+                                                        pg_class
                                                    WHERE oid IN (
                                                         SELECT indexrelid
                                                         FROM pg_index, pg_class
-                                                        WHERE pg_class.relname = %s 
-                                                            AND pg_class.oid = pg_index.indrelid 
+                                                        WHERE pg_class.relname = %s
+                                                            AND pg_class.oid = pg_index.indrelid
                                                             AND (indisunique = 't' OR indisprimary = 't')
                                                         )",
                         'listTableIndexes'     => "SELECT
@@ -85,17 +86,17 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
                                                    FROM
                                                         pg_class
                                                    WHERE oid IN (
-                                                        SELECT indexrelid 
+                                                        SELECT indexrelid
                                                         FROM pg_index, pg_class
-                                                        WHERE pg_class.relname=%s 
-                                                            AND pg_class.oid=pg_index.indrelid 
-                                                            AND indisunique != 't' 
+                                                        WHERE pg_class.relname=%s
+                                                            AND pg_class.oid=pg_index.indrelid
+                                                            AND indisunique != 't'
                                                             AND indisprimary != 't'
                                                         )",
                         'listTableColumns'     => "SELECT
-                                                        a.attnum, 
-                                                        a.attname AS field, 
-                                                        t.typname AS type, 
+                                                        a.attnum,
+                                                        a.attname AS field,
+                                                        t.typname AS type,
                                                         format_type(a.atttypid, a.atttypmod) AS complete_type,
                                                         a.attnotnull AS isnotnull,
                                                         (SELECT 't'
@@ -122,7 +123,8 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTriggers($database = null) {
+    public function listTriggers($database = null)
+    {
 
     }
     /**
@@ -131,10 +133,11 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableConstraints($table) {
+    public function listTableConstraints($table)
+    {
         $table = $this->conn->quote($table);
         $query = sprintf($this->sql['listTableConstraints'], $table);
-        
+
         return $this->conn->fetchColumn($query);
     }
     /**
@@ -143,7 +146,8 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableColumns($table) { 
+    public function listTableColumns($table)
+    {
 
         $result = $this->dbh->query($this->sql['listTableColumns'])->fetchAll(PDO::FETCH_ASSOC);
         $columns     = array();
@@ -171,7 +175,8 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableIndexes($table) {
+    public function listTableIndexes($table)
+    {
         $table = $this->conn->quote($table);
         $query = sprintf($this->sql['listTableIndexes'], $table);
 
@@ -183,7 +188,8 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTables($database = null) {
+    public function listTables($database = null)
+    {
         return $this->dbh->query($this->sql['listTables'])->fetchAll(PDO::FETCH_ASSOC);
     }
     /**
@@ -192,8 +198,9 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableTriggers($table) { 
-    
+    public function listTableTriggers($table)
+    {
+
     }
     /**
      * list the views in the database that reference a given table
@@ -201,7 +208,8 @@ class Doctrine_Import_Pgsql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableViews($table) {
+    public function listTableViews($table)
+    {
         return $this->conn->fetchColumn($query);
     }
 }

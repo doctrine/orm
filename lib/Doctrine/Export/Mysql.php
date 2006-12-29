@@ -31,7 +31,8 @@ Doctrine::autoload('Doctrine_Export');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export_Mysql extends Doctrine_Export {
+class Doctrine_Export_Mysql extends Doctrine_Export
+{
    /**
      * create a new database
      *
@@ -39,7 +40,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      * @throws PDOException
      * @return void
      */
-    public function createDatabase($name) {
+    public function createDatabase($name)
+    {
         $query  = 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name, true);
         $result = $this->conn->exec($query);
     }
@@ -50,7 +52,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      * @throws PDOException
      * @access public
      */
-    public function dropDatabase($name) {
+    public function dropDatabase($name)
+    {
         $query  = 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
         $this->conn->exec($query);
     }
@@ -221,7 +224,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      *                           actually perform them otherwise.
      * @return boolean
      */
-    public function alterTable($name, array $changes, $check) {
+    public function alterTable($name, array $changes, $check)
+    {
         if ( ! $name)
             throw new Doctrine_Export_Mysql_Exception('no valid table name specified');
 
@@ -316,7 +320,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      * @param string    $start        start value of the sequence; default is 1
      * @return boolean
      */
-    public function createSequence($sequenceName, $seqcol_name, $start = 1) {
+    public function createSequence($sequenceName, $seqcol_name, $start = 1)
+    {
         $query  = 'CREATE TABLE ' . $sequenceName
                 . ' (' . $seqcol_name . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
                 . $seqcol_name . '))'
@@ -376,7 +381,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      * @throws PDOException
      * @return void
      */
-    public function createIndex($table, $name, array $definition) {
+    public function createIndex($table, $name, array $definition)
+    {
         $table  = $table;
         $name   = $this->conn->getIndexName($name);
         $query  = 'CREATE INDEX ' . $name . ' ON ' . $table;
@@ -399,7 +405,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      * @param string    $name           name of the index to be dropped
      * @return void
      */
-    public function dropIndex($table, $name) {
+    public function dropIndex($table, $name)
+    {
         $table  = $this->conn->quoteIdentifier($table, true);
         $name   = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
         return $this->conn->exec('DROP INDEX ' . $name . ' ON ' . $table);
@@ -411,7 +418,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export {
      * @throws PDOException
      * @return void
      */
-    public function dropTable($table) {
+    public function dropTable($table)
+    {
         $table  = $this->conn->quoteIdentifier($table, true);
         $this->conn->exec('DROP TABLE ' . $table);
     }

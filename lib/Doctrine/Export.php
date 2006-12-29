@@ -31,7 +31,8 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export extends Doctrine_Connection_Module {
+class Doctrine_Export extends Doctrine_Connection_Module
+{
     /**
      * drop an existing database
      * (this method is implemented by the drivers)
@@ -39,7 +40,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @param string $name name of the database that should be dropped
      * @return void
      */
-    public function dropDatabase($database) {
+    public function dropDatabase($database)
+    {
         throw new Doctrine_Export_Exception('Drop database not supported by this driver.');
     }
     /**
@@ -50,7 +52,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @throws PDOException
      * @return void
      */
-    public function dropTable($table) {
+    public function dropTable($table)
+    {
         $this->conn->execute('DROP TABLE ' . $table);
     }
 
@@ -61,7 +64,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @param string    $name         name of the index to be dropped
      * @return void
      */
-    public function dropIndex($table, $name) {
+    public function dropIndex($table, $name)
+    {
         $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
         return $this->conn->exec('DROP INDEX ' . $name);
     }
@@ -73,7 +77,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @param string    $primary      hint if the constraint is primary
      * @return void
      */
-    public function dropConstraint($table, $name, $primary = false) {
+    public function dropConstraint($table, $name, $primary = false)
+    {
         $table = $this->conn->quoteIdentifier($table, true);
         $name  = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
         return $this->conn->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
@@ -85,7 +90,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @param string    $seq_name     name of the sequence to be dropped
      * @return void
      */
-    public function dropSequence($name) {
+    public function dropSequence($name)
+    {
         throw new Doctrine_Export_Exception('Drop sequence not supported by this driver.');
     }
     /**
@@ -95,7 +101,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @param string $name name of the database that should be created
      * @return void
      */
-    public function createDatabase($database) {
+    public function createDatabase($database)
+    {
         throw new Doctrine_Export_Exception('Create database not supported by this driver.');
     }
     /**
@@ -152,7 +159,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @param string    $start          start value of the sequence; default is 1
      * @return void
      */
-    public function createSequence($seqName, $seqcolName, $start = 1) {
+    public function createSequence($seqName, $seqcolName, $start = 1)
+    {
         throw new Doctrine_Export_Exception('Create sequence not supported by this driver.');
     }
 
@@ -177,7 +185,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *                                    )
      * @return void
      */
-    public function createConstraint($table, $name, $definition) {
+    public function createConstraint($table, $name, $definition)
+    {
         $table = $this->conn->quoteIdentifier($table, true);
         $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
         $query = "ALTER TABLE $table ADD CONSTRAINT $name";
@@ -225,7 +234,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *                                    )
      * @return void
      */
-    public function createIndex($table, $name, array $definition) {
+    public function createIndex($table, $name, array $definition)
+    {
         return $this->conn->execute($this->createIndexSql($table, $name, $definition));
     }
     /**
@@ -260,7 +270,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *                                    )
      * @return string
      */
-    public function createIndexSql($table, $name, array $definition) {
+    public function createIndexSql($table, $name, array $definition)
+    {
         $table  = $this->conn->quoteIdentifier($table);
         $name   = $this->conn->quoteIdentifier($name);
 
@@ -362,7 +373,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *                             actually perform them otherwise.
      * @return void
      */
-    public function alterTable($name, array $changes, $check) {
+    public function alterTable($name, array $changes, $check)
+    {
         $this->conn->execute($this->alterTableSql($name, $changes, $check));
     }
     /**
@@ -454,7 +466,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *                             actually perform them otherwise.
      * @return string
      */
-    public function alterTableSql($name, array $changes, $check) {
+    public function alterTableSql($name, array $changes, $check)
+    {
         throw new Doctrine_Export_Exception('Alter table not supported by this driver.');
     }
     /**
@@ -484,7 +497,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *
      * @return string
      */
-    public function getFieldDeclarationList(array $fields) {
+    public function getFieldDeclarationList(array $fields)
+    {
         foreach ($fields as $fieldName => $field) {
             $query = $this->getDeclaration($fieldName, $field);
 
@@ -519,7 +533,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getDeclaration($name, array $field) {
+    public function getDeclaration($name, array $field)
+    {
 
         $default = '';
         if (isset($field['default'])) {
@@ -567,7 +582,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
      *                 of a field declaration.
      */
-    public function getCharsetFieldDeclaration($charset) {
+    public function getCharsetFieldDeclaration($charset)
+    {
         return '';
     }
     /**
@@ -578,7 +594,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      * @return string  DBMS specific SQL code portion needed to set the COLLATION
      *                 of a field declaration.
      */
-    public function getCollationFieldDeclaration($collation) {
+    public function getCollationFieldDeclaration($collation)
+    {
         return '';
     }
     /**
@@ -587,7 +604,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
      *
      * @return void
      */
-    public static function exportAll() {
+    public static function exportAll()
+    {
         $parent = new ReflectionClass('Doctrine_Record');
         $conn   = Doctrine_Manager::getInstance()->getCurrentConnection();
         $old    = $conn->getAttribute(Doctrine::ATTR_CREATE_TABLES);
@@ -603,7 +621,8 @@ class Doctrine_Export extends Doctrine_Connection_Module {
         }
         $conn->setAttribute(Doctrine::ATTR_CREATE_TABLES, $old);
     }
-    public function export($record) {
+    public function export($record)
+    {
         if ( ! $record instanceof Doctrine_Record)
             $record = new $record();
 

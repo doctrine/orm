@@ -31,7 +31,8 @@ Doctrine::autoload('Doctrine_Connection_Common');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
+class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
+{
     /**
      * @var string $driverName                  the name of this connection driver
      */
@@ -42,7 +43,8 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      * @param Doctrine_Manager $manager
      * @param PDO|Doctrine_Adapter $adapter     database handler
      */
-    public function __construct(Doctrine_Manager $manager, $adapter) {
+    public function __construct(Doctrine_Manager $manager, $adapter)
+    {
         $adapter->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 
         $this->setAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE, 'INNODB');
@@ -94,7 +96,8 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      *
      * @return void
      */
-    public function setCharset($charset) {
+    public function setCharset($charset)
+    {
         $query = 'SET NAMES '.$this->dbh->quote($charset);
         $this->dbh->query($query);
     }
@@ -110,7 +113,8 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      *
      * @return integer
      */
-    public function nextId($seqName, $ondemand = true) {
+    public function nextId($seqName, $ondemand = true)
+    {
         $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
         $seqcolName   = $this->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
         $query        = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
@@ -129,7 +133,8 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      * @param string $seq_name name of the sequence
      * @return integer
      */
-    public function currId($seqName) {
+    public function currId($seqName)
+    {
         $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
         $seqcolName = $this->quoteIdentifier($this->options['seqcol_name'], true);
         $query = 'SELECT MAX(' . $seqcolName . ') FROM ' . $sequenceName;
@@ -199,7 +204,8 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common {
      *
      * @return integer      the number of affected rows
      */
-    public function replace($table, array $fields, array $keys) {
+    public function replace($table, array $fields, array $keys)
+    {
         $count = count($fields);
         $query = $values = '';
         $keys = $colnum = 0;

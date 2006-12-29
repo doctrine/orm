@@ -30,11 +30,14 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression extends Doctrine_Connection_Module {
-    public function getIdentifier($column) {
+class Doctrine_Expression extends Doctrine_Connection_Module
+{
+    public function getIdentifier($column)
+    {
         return $column;
     }
-    public function getIdentifiers($columns) {
+    public function getIdentifiers($columns)
+    {
         return $columns;
     }
     /**
@@ -43,7 +46,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      *
      * @return string
      */
-    public function regexp() {
+    public function regexp()
+    {
         throw new Doctrine_Expression_Exception('Regular expression operator is not supported by this database driver.');
     }
     /**
@@ -52,7 +56,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $column    the column to use
      * @return string           generated sql including an AVG aggregate function
      */
-    public function avg($column) {
+    public function avg($column)
+    {
         $column = $this->getIdentifier($column);
         return 'AVG(' .  $column . ')';
     }
@@ -66,7 +71,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string|integer $column    the column to use
      * @return string                   generated sql including a COUNT aggregate function
      */
-    public function count($column) {
+    public function count($column)
+    {
         $column = $this->getIdentifier($column);
         return 'COUNT(' . $column . ')';
     }
@@ -77,7 +83,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $column    the column to use
      * @return string           generated sql including a MAX aggregate function
      */
-    public function max($column) {
+    public function max($column)
+    {
         $column = $this->getIdentifier($column);
         return 'MAX(' . $column . ')';
     }
@@ -88,7 +95,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $column the column to use
      * @return string
      */
-    public function min($column) {
+    public function min($column)
+    {
         $column = $this->getIdentifier($column);
         return 'MIN(' . $column . ')';
     }
@@ -99,7 +107,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $column the column to use
      * @return string
      */
-    public function sum($column) {
+    public function sum($column)
+    {
         $column = $this->getIdentifier($column);
         return 'SUM(' . $column . ')';
     }
@@ -113,7 +122,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      *
      * @return string
      */
-    public function md5($column) {
+    public function md5($column)
+    {
         $column = $this->getIdentifier($column);
         return 'MD5(' . $column . ')';
     }
@@ -125,7 +135,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $expression2
      * @return string
      */
-    public function length($column) {
+    public function length($column)
+    {
         $column = $this->getIdentifier($column);
         return 'LENGTH(' . $column . ')';
     }
@@ -137,7 +148,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $expression2
      * @return string
      */
-    public function round($column, $decimals = 0) {
+    public function round($column, $decimals = 0)
+    {
         $column = $this->getIdentifier($column);
 
         return 'ROUND(' . $column . ', ' . $decimals . ')';
@@ -151,7 +163,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $expression2
      * @return string
      */
-    public function mod($expression1, $expression2) {
+    public function mod($expression1, $expression2)
+    {
         $expression1 = $this->getIdentifier($expression1);
         $expression2 = $this->getIdentifier($expression2);
         return 'MOD(' . $expression1 . ', ' . $expression2 . ')';
@@ -163,7 +176,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $str       literal string or column name
      * @return string
      */
-    public function ltrim($str) {
+    public function ltrim($str)
+    {
         return 'LTRIM(' . $str . ')';
     }
     /**
@@ -174,7 +188,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $str       literal string or column name
      * @return string
      */
-    public function upper($str) {
+    public function upper($str)
+    {
         return 'UPPER(' . $str . ')';
     }
     /**
@@ -185,7 +200,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $str       literal string or column name
      * @return string
      */
-    public function lower($str) {
+    public function lower($str)
+    {
         return 'LOWER(' . $str . ')';
     }
     /**
@@ -196,7 +212,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $str       literal string
      * @return integer
      */
-    public function locate($str, $substr) {
+    public function locate($str, $substr)
+    {
         return 'LOCATE(' . $str . ', ' . $substr . ')';
     }
     /**
@@ -204,7 +221,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      *
      * @return string
      */
-    public function now() {
+    public function now()
+    {
         return 'NOW()';
     }
     /**
@@ -217,7 +235,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $value
      * @return string   SQL soundex function with given parameter
      */
-    public function soundex($value) {
+    public function soundex($value)
+    {
         throw new Doctrine_Expression_Exception('SQL soundex function not supported by this driver.');
     }
     /**
@@ -232,7 +251,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param integer $length       the substring portion length
      * @return string               SQL substring function with given parameters
      */
-    public function substring($value, $from, $len = null) {
+    public function substring($value, $from, $len = null)
+    {
         $value = $this->getIdentifier($value);
         if ($len === null)
             return 'SUBSTRING(' . $value . ' FROM ' . $from . ')';
@@ -249,7 +269,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      *
      * @param string|array(string) strings that will be concatinated.
      */
-    public function concat(array $args) {
+    public function concat(array $args)
+    {
         $cols = $this->getIdentifiers($args);
         return 'CONCAT(' . join(', ', $cols) . ')';
     }
@@ -266,7 +287,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      *
      * @return string a logical expression
      */
-    public function not($expression) {
+    public function not($expression)
+    {
         $expression = $this->getIdentifier($expression);
         return 'NOT(' . $expression . ')';
     }
@@ -282,7 +304,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string|array(string)
      * @return string an expression
      */
-    private function basicMath($type, array $args) {
+    private function basicMath($type, array $args)
+    {
         $elements = $this->getIdentifiers($args);
         if (count($elements) < 1) {
             return '';
@@ -313,7 +336,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string|array(string)
      * @return string an expression
      */
-    public function add(array $args) {
+    public function add(array $args)
+    {
         return $this->basicMath('+', $args);
     }
 
@@ -337,7 +361,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string|array(string)
      * @return string an expression
      */
-    public function sub(array $args) {
+    public function sub(array $args)
+    {
         return $this->basicMath('-', $args );
     }
 
@@ -361,7 +386,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string|array(string)
      * @return string an expression
      */
-    public function mul(array $args) {
+    public function mul(array $args)
+    {
         return $this->basicMath('*', $args);
     }
 
@@ -385,7 +411,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string|array(string)
      * @return string an expression
      */
-    public function div(array $args) {
+    public function div(array $args)
+    {
         return $this->basicMath('/', $args);
     }
 
@@ -404,7 +431,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $value2 logical expression to compare with
      * @return string logical expression
      */
-    public function eq($value1, $value2) {
+    public function eq($value1, $value2)
+    {
         $value1 = $this->getIdentifier($value1);
         $value2 = $this->getIdentifier($value2);
         return $value1 . ' = ' . $value2;
@@ -425,7 +453,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $value2 logical expression to compare with
      * @return string logical expression
      */
-    public function neq($value1, $value2) {
+    public function neq($value1, $value2)
+    {
         $value1 = $this->getIdentifier($value1);
         $value2 = $this->getIdentifier($value2);
         return $value1 . ' <> ' . $value2;
@@ -446,7 +475,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $value2 logical expression to compare with
      * @return string logical expression
      */
-    public function gt($value1, $value2) {
+    public function gt($value1, $value2)
+    {
         $value1 = $this->getIdentifier($value1);
         $value2 = $this->getIdentifier($value2);
         return $value1 . ' > ' . $value2;
@@ -468,7 +498,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $value2 logical expression to compare with
      * @return string logical expression
      */
-    public function gte($value1, $value2) {
+    public function gte($value1, $value2)
+    {
         $value1 = $this->getIdentifier($value1);
         $value2 = $this->getIdentifier($value2);
         return $value1 . ' >= ' . $value2;
@@ -489,7 +520,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $value2        logical expression to compare with
      * @return string logical expression
      */
-    public function lt($value1, $value2) {
+    public function lt($value1, $value2)
+    {
         $value1 = $this->getIdentifier($value1);
         $value2 = $this->getIdentifier($value2);
         return $value1 . ' < ' . $value2;
@@ -511,7 +543,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $value2        logical expression to compare with
      * @return string logical expression
      */
-    public function lte($value1, $value2) {
+    public function lte($value1, $value2)
+    {
         $value1 = $this->getIdentifier($value1);
         $value2 = $this->getIdentifier($value2);
         return $value1 . ' <= ' . $value2;
@@ -538,7 +571,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string|array(string)  values that will be matched against $column
      * @return string logical expression
      */
-    public function in($column, $values) {
+    public function in($column, $values)
+    {
         if ( ! is_array($values)) {
             $values = array($values);
         }
@@ -564,7 +598,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $expression the expression that should be compared to null
      * @return string logical expression
      */
-    public function isNull($expression) {
+    public function isNull($expression)
+    {
         $expression = $this->getIdentifier($expression);
         return $expression . ' IS NULL';
     }
@@ -582,7 +617,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $expression the expression that should be compared to null
      * @return string logical expression
      */
-    public function isNotNull($expression) {
+    public function isNotNull($expression)
+    {
         $expression = $this->getIdentifier($expression);
         return $expression . ' IS NOT NULL';
     }
@@ -609,7 +645,8 @@ class Doctrine_Expression extends Doctrine_Connection_Module {
      * @param string $value2 the higher value to compare with
      * @return string logical expression
      */
-    public function between($expression, $value1, $value2) {
+    public function between($expression, $value1, $value2)
+    {
         $expression = $this->getIdentifier($expression);
         $value1 = $this->getIdentifier($value1);
         $value2 = $this->getIdentifier($value2);

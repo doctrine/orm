@@ -30,7 +30,8 @@ Doctrine::autoload("Doctrine_Query_Part");
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query_From extends Doctrine_Query_Part {
+class Doctrine_Query_From extends Doctrine_Query_Part
+{
 
     /**
      * DQL FROM PARSER
@@ -39,7 +40,8 @@ class Doctrine_Query_From extends Doctrine_Query_Part {
      * @param string $str
      * @return void
      */
-    final public function parse($str) {
+    final public function parse($str)
+    {
         $str = trim($str);
         $parts = Doctrine_Query::bracketExplode($str, 'JOIN');
 
@@ -82,7 +84,8 @@ class Doctrine_Query_From extends Doctrine_Query_Part {
         }
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return ( ! empty($this->parts))?implode(", ", $this->parts):'';
     }
 }

@@ -30,4 +30,5 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_Informix_Exception extends Doctrine_Connection_Exception { }
+class Doctrine_Connection_Informix_Exception extends Doctrine_Connection_Exception
+{ }

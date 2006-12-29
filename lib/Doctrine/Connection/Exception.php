@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Exception');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_Exception extends Doctrine_Exception {
+class Doctrine_Connection_Exception extends Doctrine_Exception
+{
     /**
      * @var array $errorMessages        an array containing messages for portable error codes
      */
@@ -67,7 +68,7 @@ class Doctrine_Connection_Exception extends Doctrine_Exception {
                 Doctrine::ERR_LOADMODULE         => 'error while including on demand module',
                 Doctrine::ERR_TRUNCATED          => 'truncated',
                 Doctrine::ERR_DEADLOCK           => 'deadlock detected',
-                );    
+                );
     /**
      * @see Doctrine::ERR_* constants
      * @since 1.0
@@ -80,7 +81,8 @@ class Doctrine_Connection_Exception extends Doctrine_Exception {
      *
      * @return integer      portable error code
      */
-    public function getPortableCode() {
+    public function getPortableCode()
+    {
         return $this->portableCode;
     }
     /**
@@ -89,7 +91,8 @@ class Doctrine_Connection_Exception extends Doctrine_Exception {
      *
      * @return string       portable error message
      */
-    public function getPortableMessage() {
+    public function getPortableMessage()
+    {
         return self::errorMessage($this->portableCode);
     }
     /**
@@ -102,7 +105,8 @@ class Doctrine_Connection_Exception extends Doctrine_Exception {
      * @return  string  error message, or false if the error code was
      *                  not recognized
      */
-    public static function errorMessage($value = null) {
+    public static function errorMessage($value = null)
+    {
         return isset(self::$errorMessages[$value]) ?
            self::$errorMessages[$value] : self::$errorMessages[Doctrine::ERR];
     }

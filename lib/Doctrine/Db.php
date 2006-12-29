@@ -48,7 +48,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Interface {
+class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Interface
+{
     /**
      * @var array $instances        all the instances of this class
      */
@@ -91,7 +92,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param string $user          database username
      * @param string $pass          database password
      */
-    public function __construct($dsn, $user, $pass) {
+    public function __construct($dsn, $user, $pass)
+    {
         if ( ! isset($user)) {
             $a = self::parseDSN($dsn);
 
@@ -103,22 +105,26 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
         $this->listener = new Doctrine_Db_EventListener();
     }
 
-    public function nextQuerySequence() {
+    public function nextQuerySequence()
+    {
         return ++$this->querySequence;
     }
     /**
      * getQuerySequence
      */
-    public function getQuerySequence() {
+    public function getQuerySequence()
+    {
         return $this->querySequence;
     }
     /**
      * getDBH
      */
-    public function getDBH() {
+    public function getDBH()
+    {
         return $this->dbh;
     }
-    public function getOption($name) {
+    public function getOption($name)
+    {
         if ( ! array_key_exists($name, $this->options)) {
             throw new Doctrine_Db_Exception('Unknown option ' . $name);
         }
@@ -130,7 +136,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
      * @return Doctrine_Db
      */
-    public function addListener($listener, $name = null) {
+    public function addListener($listener, $name = null)
+    {
         if ( ! ($this->listener instanceof Doctrine_Db_EventListener_Chain)) {
             $this->listener = new Doctrine_Db_EventListener_Chain();
         }
@@ -143,7 +150,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return Doctrine_Db_EventListener_Interface|Doctrine_Overloadable
      */
-    public function getListener() {
+    public function getListener()
+    {
         return $this->listener;
     }
     /**
@@ -152,7 +160,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
      * @return Doctrine_Db
      */
-    public function setListener($listener) {
+    public function setListener($listener)
+    {
         if ( ! ($listener instanceof Doctrine_Db_EventListener_Interface)
             && ! ($listener instanceof Doctrine_Overloadable)
         ) {
@@ -169,7 +178,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return boolean
      */
-    public function connect() {
+    public function connect()
+    {
         if ($this->isConnected)
             return false;
 
@@ -188,7 +198,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return
      */
-    public static function getConnection($dsn = null, $username = null, $password = null) {
+    public static function getConnection($dsn = null, $username = null, $password = null)
+    {
         return new self($dsn, $username, $password);
     }
     /**
@@ -199,7 +210,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param string $name
      * @return string
      */
-    public static function driverName($name) {
+    public static function driverName($name)
+    {
         if (isset(self::$driverMap[$name])) {
             return self::$driverMap[$name];
         }
@@ -211,7 +223,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param string $dsn
      * @return array Parsed contents of DSN
      */
-    function parseDSN($dsn) {
+    function parseDSN($dsn)
+    {
         // silence any warnings
         $parts = @parse_url($dsn);
 
@@ -271,7 +284,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return void
      */
-    public static function clear() {
+    public static function clear()
+    {
         self::$instances = array();
     }
 
@@ -281,7 +295,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return integer
      */
-    public function errorCode() {
+    public function errorCode()
+    {
         return $this->dbh->errorCode();
     }
     /**
@@ -290,7 +305,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return array
      */
-    public function errorInfo() {
+    public function errorInfo()
+    {
         return $this->dbh->errorInfo();
     }
     /**
@@ -298,7 +314,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @param string $statement
      */
-    public function prepare($statement) {
+    public function prepare($statement)
+    {
         $this->connect();
 
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::PREPARE, $statement);
@@ -345,7 +362,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param string $input
      * @return string
      */
-    public function quote($input) {
+    public function quote($input)
+    {
         $this->connect();
 
         return $this->dbh->quote($input);
@@ -357,7 +375,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param string $statement
      * @return integer
      */
-    public function exec($statement) {
+    public function exec($statement)
+    {
         $this->connect();
 
         $args = func_get_args();
@@ -378,7 +397,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return integer
      */
-    public function lastInsertId() {
+    public function lastInsertId()
+    {
         $this->connect();
 
         return $this->dbh->lastInsertId();
@@ -388,7 +408,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return boolean
      */
-    public function beginTransaction() {
+    public function beginTransaction()
+    {
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::BEGIN);
 
         $this->listener->onPreBeginTransaction($event);
@@ -404,7 +425,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return boolean
      */
-    public function commit() {
+    public function commit()
+    {
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::COMMIT);
 
         $this->listener->onPreCommit($event);
@@ -420,7 +442,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return boolean
      */
-    public function rollBack() {
+    public function rollBack()
+    {
         $this->connect();
 
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::ROLLBACK);
@@ -438,7 +461,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param integer $attribute
      * @return mixed
      */
-    public function getAttribute($attribute) {
+    public function getAttribute($attribute)
+    {
         $this->connect();
 
         return $this->dbh->getAttribute($attribute);
@@ -446,7 +470,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
     /**
      * returns an array of available PDO drivers
      */
-    public static function getAvailableDrivers() {
+    public static function getAvailableDrivers()
+    {
         return PDO::getAvailableDrivers();
     }
     /**
@@ -457,7 +482,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param mixed $value
      * @return boolean
      */
-    public function setAttribute($attribute, $value) {
+    public function setAttribute($attribute, $value)
+    {
         $this->connect();
 
         $this->dbh->setAttribute($attribute, $value);
@@ -467,7 +493,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return ArrayIterator
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         if ($this->listener instanceof Doctrine_Db_Profiler)
             return $this->listener;
     }
@@ -477,7 +504,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      *
      * @return integer
      */
-    public function count() {
+    public function count()
+    {
         return $this->querySequence;
     }
 }

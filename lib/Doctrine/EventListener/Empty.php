@@ -9,4 +9,5 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_EventListener_Empty extends Doctrine_EventListener { }
+class Doctrine_EventListener_Empty extends Doctrine_EventListener
+{ }

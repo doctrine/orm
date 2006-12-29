@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Adapter {
+class Doctrine_Adapter
+{
     const ATTR_AUTOCOMMIT = 0;
     const ATTR_CASE = 8;
     const ATTR_CLIENT_VERSION = 5;

@@ -30,8 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator_Email {
-
+class Doctrine_Validator_Email
+{
     /**
      * @link http://iamcal.com/publish/articles/php/parsing_email/pdf/
      * @param Doctrine_Record $record
@@ -40,7 +40,8 @@ class Doctrine_Validator_Email {
      * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args) {
+    public function validate(Doctrine_Record $record, $key, $value, $args)
+    {
         if (empty($value)) {
             return true;
         }

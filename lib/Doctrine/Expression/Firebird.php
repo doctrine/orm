@@ -32,14 +32,16 @@ Doctrine::autoload('Doctrine_Expression');
  * @author      Lorenzo Alberton <l.alberton@quipo.it> (PEAR MDB2 Interbase driver)
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  */
-class Doctrine_Expression_Firebird extends Doctrine_Expression {
+class Doctrine_Expression_Firebird extends Doctrine_Expression
+{
     /**
      * return string for internal table used when calling only a function
      *
      * @return string for internal table used when calling only a function
      * @access public
      */
-    public function functionTable() {
+    public function functionTable()
+    {
         return ' FROM RDB$DATABASE';
     }
     /**
@@ -47,7 +49,8 @@ class Doctrine_Expression_Firebird extends Doctrine_Expression {
      *
      * @return string define escape pattern
      */
-    function patternEscapeString() {
+    function patternEscapeString()
+    {
         return " ESCAPE '". $this->conn->string_quoting['escape_pattern'] ."'";
     }
 }

@@ -31,7 +31,8 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Table extends Doctrine_Configurable implements Countable {
+class Doctrine_Table extends Doctrine_Configurable implements Countable
+{
     /**
      * @var array $data                                 temporary data which is then loaded into Doctrine_Record::$data
      */
@@ -141,7 +142,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @throws Doctrine_Table_Exception         if there is already an instance of this table
      * @return void
      */
-    public function __construct($name, Doctrine_Connection $conn) {
+    public function __construct($name, Doctrine_Connection $conn)
+    {
         $this->conn = $conn;
 
         $this->setParent($this->conn);
@@ -287,7 +289,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return Doctrine_Query
      */
-    public function createQuery() {
+    public function createQuery()
+    {
         return Doctrine_Query::create()->from($this->getComponentName());
     }
     /**
@@ -295,11 +298,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return Doctrine_Table_Repository
      */
-    public function getRepository() {
+    public function getRepository()
+    {
         return $this->repository;
     }
 
-    public function setOption($name, $value) {
+    public function setOption($name, $value)
+    {
         switch ($name) {
         case 'name':
         case 'tableName':
@@ -314,10 +319,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
         $this->options[$name] = $value;
     }
 
-    public function usesInheritanceMap() {
+    public function usesInheritanceMap()
+    {
         return ( ! empty($this->options['inheritanceMap']));
     }
-    public function getOption($name) {
+    public function getOption($name)
+    {
         if (isset($this->options[$name])) {
             return $this->options[$name];
         }
@@ -363,7 +370,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return boolean
      */
-    public function hasDefaultValues() {
+    public function hasDefaultValues()
+    {
         return $this->hasDefaultValues;
     }
     /**
@@ -373,7 +381,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $column
      * @return mixed
      */
-    public function getDefaultValueOf($column) {
+    public function getDefaultValueOf($column)
+    {
         $column = strtolower($column);
         if ( ! isset($this->columns[$column])) {
             throw new Doctrine_Table_Exception("Couldn't get default value. Column ".$column." doesn't exist.");
@@ -387,27 +396,31 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
     /**
      * @return mixed
      */
-    final public function getIdentifier() {
+    final public function getIdentifier()
+    {
         return $this->identifier;
     }
     /**
      * @return integer
      */
-    final public function getIdentifierType() {
+    final public function getIdentifierType()
+    {
         return $this->identifierType;
     }
     /**
      * hasColumn
      * @return boolean
      */
-    final public function hasColumn($name) {
+    final public function hasColumn($name)
+    {
         return isset($this->columns[$name]);
     }
     /**
      * @param mixed $key
      * @return void
      */
-    final public function setPrimaryKey($key) {
+    final public function setPrimaryKey($key)
+    {
         switch (gettype($key)) {
         case "array":
             $this->primaryKeys = array_values($key);
@@ -421,51 +434,59 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * returns all primary keys
      * @return array
      */
-    final public function getPrimaryKeys() {
+    final public function getPrimaryKeys()
+    {
         return $this->primaryKeys;
     }
     /**
      * @return boolean
      */
-    final public function hasPrimaryKey($key) {
+    final public function hasPrimaryKey($key)
+    {
         return in_array($key,$this->primaryKeys);
     }
     /**
      * @param $sequence
      * @return void
      */
-    final public function setSequenceName($sequence) {
+    final public function setSequenceName($sequence)
+    {
         $this->options['sequenceName'] = $sequence;
     }
     /**
      * @return string   sequence name
      */
-    final public function getSequenceName() {
+    final public function getSequenceName()
+    {
         return $this->options['sequenceName'];
     }
     /**
      * getParents
      */
-    final public function getParents() {
+    final public function getParents()
+    {
         return $this->parents;
     }
     /**
      * @return boolean
      */
-    final public function hasInheritanceMap() {
+    final public function hasInheritanceMap()
+    {
         return (empty($this->options['inheritanceMap']));
     }
     /**
      * @return array        inheritance map (array keys as fields)
      */
-    final public function getInheritanceMap() {
+    final public function getInheritanceMap()
+    {
         return $this->options['inheritanceMap'];
     }
     /**
      * return all composite paths in the form [component1].[component2]. . .[componentN]
      * @return array
      */
-    final public function getCompositePaths() {
+    final public function getCompositePaths()
+    {
         $array = array();
         $name  = $this->getComponentName();
         foreach ($this->bound as $k=>$a) {
@@ -495,7 +516,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return array
      */
-    public function getBounds() {
+    public function getBounds()
+    {
         return $this->bound;
     }
     /**
@@ -504,7 +526,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $name
      * @return array
      */
-    public function getBound($name) {
+    public function getBound($name)
+    {
         if ( ! isset($this->bound[$name])) {
             throw new Doctrine_Table_Exception('Unknown bound '.$name);
         }
@@ -516,7 +539,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $name
      * @return array
      */
-    public function getBoundForName($name, $component) {
+    public function getBoundForName($name, $component)
+    {
 
         foreach ($this->bound as $k => $bound) {
             $e = explode('.', $bound[0]);
@@ -533,7 +557,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $name
      * @return string
      */
-    public function getAlias($name) {
+    public function getAlias($name)
+    {
         if (isset($this->boundAliases[$name])) {
             return $this->boundAliases[$name];
         }
@@ -545,7 +570,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $alias
      * @return string
      */
-    public function getAliasName($alias) {
+    public function getAliasName($alias)
+    {
         if ($name = array_search($alias, $this->boundAliases)) {
             return $name;
         }
@@ -556,7 +582,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return void
      */
-    public function unbindAll() {
+    public function unbindAll()
+    {
         $this->bound        = array();
         $this->relations    = array();
         $this->boundAliases = array();
@@ -568,7 +595,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param $name
      * @return boolean
      */
-    public function unbind($name) {
+    public function unbind($name)
+    {
         if ( ! isset($this->bound[$name])) {
             return false;
         }
@@ -589,7 +617,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $field
      * @return void
      */
-    public function bind($name, $field, $type, $localKey) {
+    public function bind($name, $field, $type, $localKey)
+    {
         if (isset($this->relations[$name])) {
             unset($this->relations[$name]);
         }
@@ -609,27 +638,31 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * getComponentName
      * @return string                   the component name
      */
-    public function getComponentName() {
+    public function getComponentName()
+    {
         return $this->options['name'];
     }
     /**
      * @return Doctrine_Connection
      */
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->conn;
     }
     /**
      * hasRelatedComponent
      * @return boolean
      */
-    final public function hasRelatedComponent($name, $component) {
+    final public function hasRelatedComponent($name, $component)
+    {
          return (strpos($this->bound[$name][0], $component.'.') !== false);
     }
     /**
      * @param string $name              component name of which a foreign key object is bound
      * @return boolean
      */
-    final public function hasRelation($name) {
+    final public function hasRelation($name)
+    {
         if (isset($this->bound[$name])) {
             return true;
         }
@@ -646,7 +679,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $name              component name of which a foreign key object is bound
      * @return Doctrine_Relation
      */
-    final public function getRelation($name, $recursive = true) {
+    final public function getRelation($name, $recursive = true)
+    {
         $original = $name;
 
         if (isset($this->relations[$name])) {
@@ -749,7 +783,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return array
      */
-    final public function getRelations() {
+    final public function getRelations()
+    {
         $a = array();
         foreach ($this->bound as $k=>$v) {
             $this->getRelation($k);
@@ -763,7 +798,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param string $name              database table name
      * @return void
      */
-    final public function setTableName($name) {
+    final public function setTableName($name)
+    {
         $this->options['tableName'] = $name;
     }
 
@@ -772,7 +808,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return string
      */
-    final public function getTableName() {
+    final public function getTableName()
+    {
         return $this->options['tableName'];
     }
     /**
@@ -794,7 +831,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param $id                       database row id
      * @return Doctrine_Record|false    a record for given database identifier
      */
-    public function find($id) {
+    public function find($id)
+    {
         if ($id !== null) {
             if ( ! is_array($id)) {
                 $id = array($id);
@@ -823,7 +861,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param $where                    query where part to be modified
      * @return string                   query where part with column aggregation inheritance added
      */
-    final public function applyInheritance($where) {
+    final public function applyInheritance($where)
+    {
         if ( ! empty($this->options['inheritanceMap'])) {
             $a = array();
             foreach ($this->options['inheritanceMap'] as $field => $value) {
@@ -840,7 +879,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return Doctrine_Collection
      */
-    public function findAll() {
+    public function findAll()
+    {
         $graph = new Doctrine_Query($this->conn);
         $users = $graph->query("FROM ".$this->options['name']);
         return $users;
@@ -869,7 +909,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return void
      */
-    public function clear() {
+    public function clear()
+    {
         $this->identityMap = array();
     }
     /**
@@ -879,7 +920,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return Doctrine_Record
      */
-    public function getRecord() {
+    public function getRecord()
+    {
         $this->data = array_change_key_case($this->data, CASE_LOWER);
 
         $key = $this->getIdentifier();
@@ -910,7 +952,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param $id                       database row id
      * @throws Doctrine_Find_Exception
      */
-    final public function getProxy($id = null) {
+    final public function getProxy($id = null)
+    {
         if ($id !== null) {
             $query = "SELECT ".implode(", ",$this->primaryKeys)." FROM ".$this->getTableName()." WHERE ".implode(" = ? && ",$this->primaryKeys)." = ?";
             $query = $this->applyInheritance($query);
@@ -929,14 +972,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return integer
      */
-    public function count() {
+    public function count()
+    {
         $a = $this->conn->getDBH()->query("SELECT COUNT(1) FROM ".$this->options['tableName'])->fetch(PDO::FETCH_NUM);
         return current($a);
     }
     /**
      * @return Doctrine_Query                           a Doctrine_Query object
      */
-    public function getQueryObject() {
+    public function getQueryObject()
+    {
         $graph = new Doctrine_Query($this->getConnection());
         $graph->load($this->getComponentName());
         return $graph;
@@ -974,14 +1019,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param array $values
      * @return void
      */
-    final public function setEnumValues($field, array $values) {
+    final public function setEnumValues($field, array $values)
+    {
         $this->options['enumMap'][strtolower($field)] = $values;
     }
     /**
      * @param string $field
      * @return array
      */
-    final public function getEnumValues($field) {
+    final public function getEnumValues($field)
+    {
         if (isset($this->options['enumMap'][$field])) {
             return $this->options['enumMap'][$field];
         } else {
@@ -995,7 +1042,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param integer $index
      * @return mixed
      */
-    final public function enumValue($field, $index) {
+    final public function enumValue($field, $index)
+    {
         if ($index instanceof Doctrine_Null)
             return $index;
 
@@ -1006,7 +1054,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @param mixed $value
      */
-    public function invokeSet(Doctrine_Record $record, $name, $value) {
+    public function invokeSet(Doctrine_Record $record, $name, $value)
+    {
         if ( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) & Doctrine::ACCESSOR_SET)) {
             return $value;
         }
@@ -1027,7 +1076,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @param mixed $value
      */
-    public function invokeGet(Doctrine_Record $record, $name, $value) {
+    public function invokeGet(Doctrine_Record $record, $name, $value)
+    {
         if ( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) & Doctrine::ACCESSOR_GET)) {
             return $value;
         }
@@ -1050,7 +1100,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param mixed $value
      * @return mixed
      */
-    final public function enumIndex($field, $value) {
+    final public function enumIndex($field, $value)
+    {
         if ( ! isset($this->options['enumMap'][$field])) {
             $values = array();
         } else {
@@ -1064,7 +1115,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return string       ValueWrapper class name on success, false on failure
      */
-    public function getValueWrapperOf($column) {
+    public function getValueWrapperOf($column)
+    {
         if (isset($this->columns[$column][2]['wrapper'])) {
             return $this->columns[$column][2]['wrapper'];
         }
@@ -1075,7 +1127,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return integer      the number of columns in this table
      */
-    final public function getColumnCount() {
+    final public function getColumnCount()
+    {
         return $this->columnCount;
     }
 
@@ -1084,7 +1137,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return array
      */
-    final public function getColumns() {
+    final public function getColumns()
+    {
         return $this->columns;
     }
     /**
@@ -1092,7 +1146,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return array
      */
-    public function getColumnNames() {
+    public function getColumnNames()
+    {
         return array_keys($this->columns);
     }
 
@@ -1101,7 +1156,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return mixed        array on success, false on failure
      */
-    public function getDefinitionOf($column) {
+    public function getDefinitionOf($column)
+    {
         if (isset($this->columns[$column])) {
             return $this->columns[$column];
         }
@@ -1112,7 +1168,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return mixed        string on success, false on failure
      */
-    public function getTypeOf($column) {
+    public function getTypeOf($column)
+    {
         if (isset($this->columns[$column])) {
             return $this->columns[$column][0];
         }
@@ -1126,7 +1183,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      * @param array $data               internal data
      * @return void
      */
-    public function setData(array $data) {
+    public function setData(array $data)
+    {
         $this->data = $data;
     }
     /**
@@ -1134,7 +1192,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return integer
      */
-    final public function getMaxIdentifier() {
+    final public function getMaxIdentifier()
+    {
         $sql  = "SELECT MAX(".$this->getIdentifier().") FROM ".$this->getTableName();
         $stmt = $this->conn->getDBH()->query($sql);
         $data = $stmt->fetch(PDO::FETCH_NUM);
@@ -1145,7 +1204,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return string
      */
-    final public function getQuery() {
+    final public function getQuery()
+    {
         return $this->query;
     }
     /**
@@ -1154,7 +1214,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return array
      */
-    final public function getData() {
+    final public function getData()
+    {
         return $this->data;
     }
     /**
@@ -1162,7 +1223,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable {
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return Doctrine_Lib::getTableAsString($this);
     }
 }

@@ -31,7 +31,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Table_Repository implements Countable, IteratorAggregate {
+class Doctrine_Table_Repository implements Countable, IteratorAggregate
+{
     /**
      * @var object Doctrine_Table $table
      */
@@ -47,7 +48,8 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
      *
      * @param Doctrine_Table $table
      */
-    public function __construct(Doctrine_Table $table) {
+    public function __construct(Doctrine_Table $table)
+    {
         $this->table = $table;
     }
     /**
@@ -55,7 +57,8 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
      *
      * @return object Doctrine_Table
      */
-    public function getTable() {
+    public function getTable()
+    {
         return $this->table;
     }
     /**
@@ -64,7 +67,8 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
      * @param Doctrine_Record $record       record to be added into registry
      * @return boolean
      */
-    public function add(Doctrine_Record $record) {
+    public function add(Doctrine_Record $record)
+    {
         $oid = $record->getOID();
 
         if (isset($this->registry[$oid])) {
@@ -79,7 +83,8 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
      * @param integer $oid
      * @throws Doctrine_Table_Repository_Exception
      */
-    public function get($oid) {
+    public function get($oid)
+    {
         if ( ! isset($this->registry[$oid])) {
             throw new Doctrine_Table_Repository_Exception("Unknown object identifier");
         }
@@ -90,14 +95,16 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
      * Doctrine_Registry implements interface Countable
      * @return integer                      the number of records this registry has
      */
-    public function count() {
+    public function count()
+    {
         return count($this->registry);
     }
     /**
      * @param integer $oid                  object identifier
      * @return boolean                      whether ot not the operation was successful
      */
-    public function evict($oid) {
+    public function evict($oid)
+    {
         if ( ! isset($this->registry[$oid])) {
             return false;
         }
@@ -107,7 +114,8 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
     /**
      * @return integer                      number of records evicted
      */
-    public function evictAll() {
+    public function evictAll()
+    {
         $evicted = 0;
         foreach ($this->registry as $oid=>$record) {
             if ($this->evict($oid)) {
@@ -120,21 +128,24 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate {
      * getIterator
      * @return ArrayIterator
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return new ArrayIterator($this->registry);
     }
     /**
      * contains
      * @param integer $oid                  object identifier
      */
-    public function contains($oid) {
+    public function contains($oid)
+    {
         return isset($this->registry[$oid]);
     }
     /**
      * loadAll
      * @return void
      */
-    public function loadAll() {
+    public function loadAll()
+    {
         $this->table->findAll();
     }
 }

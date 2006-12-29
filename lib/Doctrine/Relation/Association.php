@@ -33,7 +33,8 @@ Doctrine::autoload('Doctrine_Relation');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Relation_Association extends Doctrine_Relation {
+class Doctrine_Relation_Association extends Doctrine_Relation
+{
     /**
      * @var Doctrine_Table $associationTable
      */
@@ -47,14 +48,16 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
      * @param integer $type                         type of relation
      * @see Doctrine_Table constants
      */
-    public function __construct(Doctrine_Table $table, Doctrine_Table $associationTable, $local, $foreign, $type, $alias) {
+    public function __construct(Doctrine_Table $table, Doctrine_Table $associationTable, $local, $foreign, $type, $alias)
+    {
         parent::__construct($table, $local, $foreign, $type, $alias);
         $this->associationTable = $associationTable;
     }
     /**
      * @return Doctrine_Table
      */
-    public function getAssociationFactory() {
+    public function getAssociationFactory()
+    {
         return $this->associationTable;
     }
     /**
@@ -62,7 +65,8 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
      *
      * @param Doctrine_Record
      */
-    public function processDiff(Doctrine_Record $record) {
+    public function processDiff(Doctrine_Record $record)
+    {
         $asf     = $this->getAssociationFactory();
         $alias   = $this->getAlias();
 
@@ -100,7 +104,8 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
      * @param integer $count
      * @return string
      */
-    public function getRelationDql($count, $context = 'record') {
+    public function getRelationDql($count, $context = 'record')
+    {
         switch ($context) {
         case "record":
             $sub    = 'SQL:SELECT ' . $this->foreign.
@@ -129,7 +134,8 @@ class Doctrine_Relation_Association extends Doctrine_Relation {
      * @param Doctrine_Record $record
      * @return Doctrine_Record|Doctrine_Collection
      */
-    public function fetchRelatedFor(Doctrine_Record $record) {
+    public function fetchRelatedFor(Doctrine_Record $record)
+    {
         $id      = $record->getIncremented();
         if (empty($id)) {
             $coll = new Doctrine_Collection($this->table);

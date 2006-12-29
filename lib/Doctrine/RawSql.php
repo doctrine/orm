@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Hydrate');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_RawSql extends Doctrine_Hydrate {
+class Doctrine_RawSql extends Doctrine_Hydrate
+{
     /**
      * @var array $fields
      */
@@ -43,7 +44,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * @param array $args
      * @return Doctrine_RawSql
      */
-    public function __call($name, $args) {
+    public function __call($name, $args)
+    {
         if ( ! isset($this->parts[$name])) {
             throw new Doctrine_RawSql_Exception("Unknown overload method $name. Availible overload methods are ".implode(" ",array_keys($this->parts)));
         }
@@ -60,7 +62,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
     /**
      * get
      */
-    public function get($name) {
+    public function get($name)
+    {
         if ( ! isset($this->parts[$name])) {
             throw new Doctrine_RawSql_Exception('Unknown query part '.$name);
         }
@@ -72,7 +75,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * @param string $query
      * @return Doctrine_RawSql
      */
-    public function parseQuery($query) {
+    public function parseQuery($query)
+    {
         preg_match_all('/{([^}{]*)}/U', $query, $m);
 
         $this->fields = $m[1];
@@ -128,7 +132,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      *
      * @return string
      */
-    public function getQuery() {
+    public function getQuery()
+    {
         foreach ($this->fields as $field) {
             $e = explode(".", $field);
             if ( ! isset($e[1])) {
@@ -191,7 +196,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      *
      * @return array
      */
-    public function getFields() {
+    public function getFields()
+    {
         return $this->fields;
     }
     /**
@@ -201,7 +207,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate {
      * @param string $componentName
      * @return Doctrine_RawSql
      */
-    public function addComponent($tableAlias, $componentName) {
+    public function addComponent($tableAlias, $componentName)
+    {
         $e = explode('.', $componentName);
 
         $currPath = '';

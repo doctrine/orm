@@ -29,15 +29,17 @@ Doctrine::autoload('Doctrine_Import');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Import_Mysql extends Doctrine_Import {
+class Doctrine_Import_Mysql extends Doctrine_Import
+{
     /**
      * lists all databases
      *
      * @return array
      */
-    public function listDatabases() {
+    public function listDatabases()
+    {
         $sql = 'SHOW DATABASES';
-        
+
         return $this->dbh->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
     /**
@@ -45,8 +47,9 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      *
      * @return array
      */
-    public function listFunctions() {
-    
+    public function listFunctions()
+    {
+
     }
     /**
      * lists all database triggers
@@ -54,7 +57,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTriggers($database = null) {
+    public function listTriggers($database = null)
+    {
 
     }
     /**
@@ -63,7 +67,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listSequences($database = null) { 
+    public function listSequences($database = null)
+    {
         $query = "SHOW TABLES";
         if (!is_null($database)) {
             $query .= " FROM $database";
@@ -87,7 +92,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableConstraints($table) {
+    public function listTableConstraints($table)
+    {
         $db =& $this->getDBInstance();
         if (PEAR::isError($db)) {
             return $db;
@@ -137,7 +143,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableColumns($table) { 
+    public function listTableColumns($table)
+    {
         $sql = "DESCRIBE $table";
         $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         $description = array();
@@ -166,7 +173,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableIndexes($table) 
+    public function listTableIndexes($table)
     {
         $key_name = 'Key_name';
         $non_unique = 'Non_unique';
@@ -203,10 +210,10 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTables($database = null) 
+    public function listTables($database = null)
     {
         $sql = 'SHOW TABLES';
-        
+
         return $this->dbh->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
     /**
@@ -215,9 +222,9 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableTriggers($table) 
+    public function listTableTriggers($table)
     {
-    
+
     }
     /**
      * lists table views
@@ -225,7 +232,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableViews($table) 
+    public function listTableViews($table)
     {
 
     }
@@ -234,7 +241,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      *
      * @return array
      */
-    public function listUsers() 
+    public function listUsers()
     {
         return $db->queryCol('SELECT DISTINCT USER FROM USER');
     }
@@ -244,7 +251,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listViews($database = null) 
+    public function listViews($database = null)
     {
         $query = 'SHOW FULL TABLES';
         if (!is_null($database)) {

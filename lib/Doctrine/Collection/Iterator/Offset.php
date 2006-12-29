@@ -30,6 +30,8 @@ Doctrine::autoload('Doctrine_Collection_Iterator');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Collection_Iterator_Offset extends Doctrine_Collection_Iterator {
-    public function valid() { }
+class Doctrine_Collection_Iterator_Offset extends Doctrine_Collection_Iterator
+{
+    public function valid()
+    { }
 }

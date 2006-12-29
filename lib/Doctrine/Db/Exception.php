@@ -30,6 +30,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Db_Exception extends Doctrine_Exception {
+class Doctrine_Db_Exception extends Doctrine_Exception
+{
 
 }

@@ -33,35 +33,42 @@ Doctrine::autoload('Doctrine_Access');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_ValueHolder extends Doctrine_Access implements Countable {
+class Doctrine_ValueHolder extends Doctrine_Access implements Countable
+{
 
     public $data = array();
 
     private $table;
 
-    public function __construct(Doctrine_Table $table) {
+    public function __construct(Doctrine_Table $table)
+    {
         $this->table = $table;
     }
 
-    public function set($name, $value) {
+    public function set($name, $value)
+    {
         $this->data[$name] = $value;
     }
 
-    public function get($name) {
+    public function get($name)
+    {
         if ( ! isset($this->data[$name])) {
             throw new Doctrine_Exception("Unknown property $name.");
         }
         return $this->data[$name];
     }
-    public function count() {
+    public function count()
+    {
         return count($this->data);
     }
 
-    public function delete() {
+    public function delete()
+    {
         throw new Doctrine_Exception("Method 'delete' not availible on Doctrine_ValueHolder.");
     }
 
-    public function save() {
+    public function save()
+    {
         throw new Doctrine_Exception("Method 'save' not availible on Doctrine_ValueHolder.");
     }
 }

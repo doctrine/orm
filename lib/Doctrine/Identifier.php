@@ -29,7 +29,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Identifier {
+class Doctrine_Identifier
+{
     /**
      * constant for auto_increment identifier
      */

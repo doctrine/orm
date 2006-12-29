@@ -29,7 +29,8 @@ Doctrine::autoload('Doctrine_Import');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Import_Informix extends Doctrine_Import {
+class Doctrine_Import_Informix extends Doctrine_Import
+{
 	protected static $sql = array(
                     'listTables'          => "SELECT tabname,tabtype FROM systables WHERE tabtype IN ('T','V') AND owner != 'informix'",
                     'listColumns'         => "SELECT c.colname, c.coltype, c.collength, d.default, c.colno

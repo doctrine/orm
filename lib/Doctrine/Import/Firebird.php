@@ -30,13 +30,15 @@ Doctrine::autoload('Doctrine_Import');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Import_Firebird extends Doctrine_Import {
+class Doctrine_Import_Firebird extends Doctrine_Import
+{
     /**
      * list all tables in the current database
      *
      * @return array        data array
      */
-    public function listTables() {
+    public function listTables()
+    {
         $query = 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE RDB$SYSTEM_FLAG=0 AND RDB$VIEW_BLR IS NULL';
 
         return $this->conn->fetchColumn($query);
@@ -48,7 +50,8 @@ class Doctrine_Import_Firebird extends Doctrine_Import {
      * @return mixed data array on success, a MDB2 error on failure
      * @access public
      */
-    public function listTableFields($table) {
+    public function listTableFields($table)
+    {
         $table = $db->quote(strtoupper($table), 'text');
         $query = 'SELECT RDB\$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
 
@@ -59,7 +62,8 @@ class Doctrine_Import_Firebird extends Doctrine_Import {
      *
      * @return array            data array containing all database users
      */
-    public function listUsers() {
+    public function listUsers()
+    {
         return $this->conn->fetchColumn('SELECT DISTINCT RDB$USER FROM RDB$USER_PRIVILEGES');
     }
     /**
@@ -67,7 +71,8 @@ class Doctrine_Import_Firebird extends Doctrine_Import {
      *
      * @return array            data array containing all database views
      */
-    public function listViews() {
+    public function listViews()
+    {
         $result = $db->queryCol('SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS');
 
         return $this->conn->fetchColumn($query);
@@ -78,7 +83,8 @@ class Doctrine_Import_Firebird extends Doctrine_Import {
      * @param string $table     table for which all references views should be found
      * @return array            data array containing all views for given table
      */
-    public function listTableViews($table) {
+    public function listTableViews($table)
+    {
         $query  = 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS';
         $table  = $db->quote(strtoupper($table), 'text');
         $query .= 'WHERE UPPER(RDB\$RELATION_NAME) = ' . $table;
@@ -90,7 +96,8 @@ class Doctrine_Import_Firebird extends Doctrine_Import {
      *
      * @return array              data array containing all availible functions
      */
-    public function listFunctions() {
+    public function listFunctions()
+    {
         $query = 'SELECT RDB$FUNCTION_NAME FROM RDB$FUNCTIONS WHERE RDB$SYSTEM_FLAG IS NULL';
 
         return $this->conn->fetchColumn($query);
@@ -103,7 +110,8 @@ class Doctrine_Import_Firebird extends Doctrine_Import {
      *                            previous database to query against.
      * @return array              data array containing all triggers for given table
      */
-    public function listTableTriggers($table = null) {
+    public function listTableTriggers($table = null)
+    {
         $query = 'SELECT RDB$TRIGGER_NAME
                     FROM RDB$TRIGGERS
                    WHERE RDB$SYSTEM_FLAG IS NULL

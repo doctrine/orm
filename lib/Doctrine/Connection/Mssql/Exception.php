@@ -31,7 +31,8 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  */
-class Doctrine_Connection_Mssql_Exception extends Doctrine_Connection_Exception {
+class Doctrine_Connection_Mssql_Exception extends Doctrine_Connection_Exception
+{
     /**
      * @var array $errorCodeMap         an array that is used for determining portable
      *                                  error code from a native database error code
@@ -61,7 +62,8 @@ class Doctrine_Connection_Mssql_Exception extends Doctrine_Connection_Exception 
      * @return boolean              whether or not the error info processing was successfull
      *                              (the process is successfull if portable error code was found)
      */
-    public function processErrorInfo(array $errorInfo) {
+    public function processErrorInfo(array $errorInfo)
+    {
         $code = $errorInfo[1];
         if (isset(self::$errorCodeMap[$code])) {
             $this->portableCode = self::$errorCodeMap[$code];

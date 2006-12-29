@@ -31,7 +31,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_View {
+class Doctrine_View
+{
     /**
      * SQL DROP constant
      */
@@ -63,7 +64,8 @@ class Doctrine_View {
      *
      * @param Doctrine_Query $query
      */
-    public function __construct(Doctrine_Query $query, $viewName) {
+    public function __construct(Doctrine_Query $query, $viewName)
+    {
         $this->name  = $viewName;
         $this->query = $query;
         $this->query->setView($this);
@@ -75,7 +77,8 @@ class Doctrine_View {
      *
      * @return Doctrine_Query
      */
-    public function getQuery() {
+    public function getQuery()
+    {
         return $this->query;
     }
     /**
@@ -84,7 +87,8 @@ class Doctrine_View {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
     /**
@@ -93,7 +97,8 @@ class Doctrine_View {
      *
      * @return Doctrine_Connection
      */
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->conn;
     }
     /**
@@ -103,7 +108,8 @@ class Doctrine_View {
      * @throws Doctrine_View_Exception
      * @return void
      */
-    public function create() {
+    public function create()
+    {
         $sql = sprintf(self::CREATE, $this->name, $this->query->getQuery());
         try {
             $this->conn->execute($sql);
@@ -118,7 +124,8 @@ class Doctrine_View {
      * @throws Doctrine_View_Exception
      * @return void
      */
-    public function drop() {
+    public function drop()
+    {
         try {
             $this->conn->execute(sprintf(self::DROP, $this->name));
         } catch(Doctrine_Exception $e) {
@@ -132,7 +139,8 @@ class Doctrine_View {
      *
      * @return Doctrine_Collection
      */
-    public function execute() {
+    public function execute()
+    {
         return $this->query->execute();
     }
     /**
@@ -141,7 +149,8 @@ class Doctrine_View {
      *
      * @return string
      */
-    public function getSelectSql() {
+    public function getSelectSql()
+    {
         return sprintf(self::SELECT, $this->name);
     }
 }

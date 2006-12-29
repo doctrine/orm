@@ -29,22 +29,31 @@
  * @since       1.0
  * @version     $Revision$
  */
-abstract class Doctrine_Adapter_Statement {
-    public function bindValue($no, $value) {
+abstract class Doctrine_Adapter_Statement
+{
+    public function bindValue($no, $value)
+    {
     }
-    public function fetch() {
+    public function fetch()
+    {
     }
-    public function nextRowset() {
+    public function nextRowset()
+    {
     }
-    public function execute() {
+    public function execute()
+    {
     }
-    public function errorCode() {
+    public function errorCode()
+    {
     }
-    public function errorInfo() {
+    public function errorInfo()
+    {
     }
-    public function rowCount() {
+    public function rowCount()
+    {
     }
-    public function setFetchMode($mode) {
+    public function setFetchMode($mode)
+    {
     }
     public function columnCount(){
     }

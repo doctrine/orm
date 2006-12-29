@@ -36,7 +36,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, IteratorAggregate {
+class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, IteratorAggregate
+{
     /**
      * Holds any number of databases contained in the schema
      * @access private
@@ -48,7 +49,8 @@ class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, Itera
      * @param Doctrine_Schema_Database database      * @return
      * @access public
      */
-    public function addDatabase( Doctrine_Schema_Database $database ) {
+    public function addDatabase( Doctrine_Schema_Database $database )
+    {
          $this->childs[] = $database;
     }
 
@@ -66,7 +68,8 @@ class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, Itera
      * @return
      * @access public
      */
-    public function __toString( ) {
+    public function __toString( )
+    {
 
     }
     /**
@@ -74,7 +77,8 @@ class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, Itera
      * @return bool
      * @access public
      */
-    public function isValid( ) {
+    public function isValid( )
+    {
 
     }
 }

@@ -30,13 +30,15 @@ Doctrine::autoload('Doctrine_Expression');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression_Mysql extends Doctrine_Expression {
+class Doctrine_Expression_Mysql extends Doctrine_Expression
+{
     /**
      * returns the regular expression operator
      *
      * @return string
      */
-    public function regexp() {
+    public function regexp()
+    {
         return 'RLIKE';
     }
     /**
@@ -56,7 +58,8 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression {
      *
      * @return string SQL pattern
      */
-    public function matchPattern($pattern, $operator = null, $field = null) {
+    public function matchPattern($pattern, $operator = null, $field = null)
+    {
         $match = '';
         if (!is_null($operator)) {
             $field = is_null($field) ? '' : $field.' ';

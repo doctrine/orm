@@ -31,13 +31,15 @@ Doctrine::autoload('Doctrine_Import');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Import_Mssql extends Doctrine_Import {
+class Doctrine_Import_Mssql extends Doctrine_Import
+{
     /**
      * lists all databases
      *
      * @return array
      */
-    public function listDatabases() {
+    public function listDatabases()
+    {
 
     }
     /**
@@ -45,8 +47,9 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      *
      * @return array
      */
-    public function listFunctions() {
-    
+    public function listFunctions()
+    {
+
     }
     /**
      * lists all database triggers
@@ -54,7 +57,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTriggers($database = null) {
+    public function listTriggers($database = null)
+    {
 
     }
     /**
@@ -63,7 +67,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listSequences($database = null) { 
+    public function listSequences($database = null)
+    {
         $query = "SELECT name FROM sysobjects WHERE xtype = 'U'";
         $table_names = $db->queryCol($query);
         if (PEAR::isError($table_names)) {
@@ -87,8 +92,9 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableConstraints($table) {
-    
+    public function listTableConstraints($table)
+    {
+
     }
     /**
      * lists table constraints
@@ -96,7 +102,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableColumns($table) { 
+    public function listTableColumns($table)
+    {
         $sql     = 'EXEC sp_columns @table_name = ' . $this->quoteIdentifier($table);
         $result  = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         $columns = array();
@@ -131,8 +138,9 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableIndexes($table) {
-    
+    public function listTableIndexes($table)
+    {
+
     }
     /**
      * lists tables
@@ -140,7 +148,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTables($database = null) {
+    public function listTables($database = null)
+    {
         $sql = "SELECT name FROM sysobjects WHERE type = 'U' ORDER BY name";
 
         return $this->dbh->fetchCol($sql);
@@ -151,7 +160,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableTriggers($table) { 
+    public function listTableTriggers($table)
+    {
         $table = $db->quote($table, 'text');
         $query = "SELECT name FROM sysobjects WHERE xtype = 'TR'";
         if (!is_null($table)) {
@@ -177,7 +187,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableViews($table) { 
+    public function listTableViews($table)
+    {
         $keyName = 'INDEX_NAME';
         $pkName = 'PK_NAME';
         if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
@@ -212,8 +223,9 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      *
      * @return array
      */
-    public function listUsers() { 
-    
+    public function listUsers()
+    {
+
     }
     /**
      * lists database views
@@ -221,7 +233,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listViews($database = null) { 
+    public function listViews($database = null)
+    {
         $query = "SELECT name FROM sysobjects WHERE xtype = 'V'";
 
         $result = $db->queryCol($query);

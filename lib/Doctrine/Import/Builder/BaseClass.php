@@ -37,5 +37,6 @@ Doctrine::autoload('Doctrine_Import_Builder');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Import_Builder_BaseClass extends Doctrine_Import_Builder {
+class Doctrine_Import_Builder_BaseClass extends Doctrine_Import_Builder
+{
 }

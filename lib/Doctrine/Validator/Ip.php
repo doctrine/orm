@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator_Ip {
+class Doctrine_Validator_Ip
+{
     /**
      * @param Doctrine_Record $record
      * @param string $key
@@ -38,7 +39,8 @@ class Doctrine_Validator_Ip {
      * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args) {
+    public function validate(Doctrine_Record $record, $key, $value, $args)
+    {
         return (bool) ip2long(str_replace("\0", '', $value));
     }
 }

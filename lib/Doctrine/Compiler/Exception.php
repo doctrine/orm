@@ -29,4 +29,5 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Compiler_Exception extends Doctrine_Exception { }
+class Doctrine_Compiler_Exception extends Doctrine_Exception
+{ }

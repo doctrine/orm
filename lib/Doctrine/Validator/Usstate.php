@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator_Usstate {
+class Doctrine_Validator_Usstate
+{
     private static $states = array (
                 "AK" =>	true,
                 "AL" => true,
@@ -86,7 +87,8 @@ class Doctrine_Validator_Usstate {
                 "WV" =>	true,
                 "WY" =>	true
             );
-    public function getStates() {
+    public function getStates()
+    {
         return self::$states;
     }
     /**
@@ -96,7 +98,8 @@ class Doctrine_Validator_Usstate {
      * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args) {
+    public function validate(Doctrine_Record $record, $key, $value, $args)
+    {
         return isset(self::$states[$value]);
     }
 }

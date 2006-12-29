@@ -30,8 +30,10 @@ Doctrine::autoload('Doctrine_Collection_Iterator');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Collection_Iterator_Expandable extends Doctrine_Collection_Iterator {
-    public function valid() {
+class Doctrine_Collection_Iterator_Expandable extends Doctrine_Collection_Iterator
+{
+    public function valid()
+    {
         if ($this->index < $this->count) {
             return true;
         } elseif ($this->index == $this->count) {

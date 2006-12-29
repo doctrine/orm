@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Hook_Parser');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hook_Equal extends Doctrine_Hook_Parser {
+class Doctrine_Hook_Equal extends Doctrine_Hook_Parser
+{
     /**
      * parse
      * Parses given field and field value to DQL condition
@@ -43,7 +44,8 @@ class Doctrine_Hook_Equal extends Doctrine_Hook_Parser {
      * @param mixed $value      the value of the field
      * @return void
      */
-    public function parse($alias, $field, $value) {
+    public function parse($alias, $field, $value)
+    {
         $this->params    = (array) $value;
         $this->condition = $alias . '.' . $field . ' = ?';
     }

@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Cache_Query_Sqlite implements Countable {
+class Doctrine_Cache_Query_Sqlite implements Countable
+{
     /**
      * doctrine cache
      */
@@ -48,7 +49,8 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      *
      * @param Doctrine_Connection|null $connection
      */
-    public function __construct($connection = null) {
+    public function __construct($connection = null)
+    {
         if ( ! ($connection instanceof Doctrine_Connection)) {
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
         }
@@ -81,7 +83,8 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      * @param integer $lifespan
      * @return void
      */
-    public function store($query, array $result, $lifespan) {
+    public function store($query, array $result, $lifespan)
+    {
         $sql    = "INSERT INTO ".self::CACHE_TABLE." (query_md5, query_result, expires) VALUES (?,?,?)";
         $stmt   = $this->dbh->prepare($sql);
         $params = array(md5($query), serialize($result), (time() + $lifespan));
@@ -93,7 +96,8 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      * @param string $md5
      * @return array
      */
-    public function fetch($md5) {
+    public function fetch($md5)
+    {
         $sql    = "SELECT query_result, expires FROM ".self::CACHE_TABLE." WHERE query_md5 = ?";
         $stmt   = $this->dbh->prepare($sql);
         $params = array($md5);
@@ -107,7 +111,8 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      *
      * @return integer
      */
-    public function deleteAll() {
+    public function deleteAll()
+    {
         $sql    = "DELETE FROM ".self::CACHE_TABLE;
         $stmt   = $this->dbh->query($sql);
         return $stmt->rowCount();
@@ -118,7 +123,8 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      *
      * @return integer
      */
-    public function deleteExpired() {
+    public function deleteExpired()
+    {
         $sql    = "DELETE FROM ".self::CACHE_TABLE." WHERE expired < ?";
         $stmt   = $this->dbh->prepare($sql);
         $stmt->execute(array(time()));
@@ -131,7 +137,8 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      * @param string $md5
      * @return boolean
      */
-    public function delete($md5) {
+    public function delete($md5)
+    {
         $sql    = "DELETE FROM ".self::CACHE_TABLE." WHERE query_md5 = ?";
         $stmt   = $this->dbh->prepare($sql);
         $params = array($md5);
@@ -143,7 +150,8 @@ class Doctrine_Cache_Query_Sqlite implements Countable {
      *
      * @return integer
      */
-    public function count() {
+    public function count()
+    {
         $stmt = $this->dbh->query("SELECT COUNT(*) FROM ".self::CACHE_TABLE);
         $data = $stmt->fetch(PDO::FETCH_NUM);
 

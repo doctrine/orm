@@ -31,13 +31,15 @@ Doctrine::autoload('Doctrine_Relation');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Relation_ForeignKey extends Doctrine_Relation {
+class Doctrine_Relation_ForeignKey extends Doctrine_Relation
+{
     /**
      * processDiff
      *
      * @param Doctrine_Record $record
      */
-    public function processDiff(Doctrine_Record $record) {
+    public function processDiff(Doctrine_Record $record)
+    {
         $alias = $this->getAlias();
 
         if ($this->isOneToOne()) {
@@ -71,7 +73,8 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation {
      * @param Doctrine_Record $record
      * @return Doctrine_Record|Doctrine_Collection
      */
-    public function fetchRelatedFor(Doctrine_Record $record) {
+    public function fetchRelatedFor(Doctrine_Record $record)
+    {
         $id = $record->get($this->local);
 
         if ($this->isOneToOne()) {

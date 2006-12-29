@@ -30,13 +30,15 @@ Doctrine::autoload('Doctrine_Connection');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_Oracle extends Doctrine_Connection {
+class Doctrine_Connection_Oracle extends Doctrine_Connection
+{
     /**
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName = 'Oracle';
 
-    public function __construct(Doctrine_Manager $manager, $adapter) {
+    public function __construct(Doctrine_Manager $manager, $adapter)
+    {
         $this->supported = array(
                           'sequences'            => true,
                           'indexes'              => true,
@@ -76,7 +78,8 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
      * @param integer $offset       start reading from given offset
      * @return string               the modified query
      */
-    public function modifyLimitQuery($query, $limit, $offset) {
+    public function modifyLimitQuery($query, $limit, $offset)
+    {
         /**
         $e      = explode("select ",strtolower($query));
         $e2     = explode(" from ",$e[1]);
@@ -107,7 +110,8 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
      * @throws PDOException         if something went wrong at database level
      * @return integer
      */
-    public function nextId($sequence) {
+    public function nextId($sequence)
+    {
         $stmt = $this->query('SELECT ' . $sequence . '.nextval FROM dual');
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return $data[0];
@@ -119,7 +123,8 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection {
      * @throws PDOException         if something went wrong at database level
      * @return mixed id
      */
-    public function currId($sequence) {
+    public function currId($sequence)
+    {
         $sequence = $this->quoteIdentifier($this->getSequenceName($sequence), true);
         $stmt = $this->query('SELECT ' . $sequence . '.currval FROM dual');
         $data = $stmt->fetch(PDO::FETCH_NUM);

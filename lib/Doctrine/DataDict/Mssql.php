@@ -31,11 +31,12 @@ Doctrine::autoload('Doctrine_DataDict');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
+class Doctrine_DataDict_Mssql extends Doctrine_DataDict
+{
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
-     * 
+     *
      * @param array $field  associative array with the name of the properties
      *      of the field being declared as array indexes. Currently, the types
      *      of supported field properties are as follows:
@@ -55,7 +56,8 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
      * @return      string      DBMS specific SQL code portion that should be used to
      *                          declare the specified field.
      */
-    public function getNativeDeclaration($field) {
+    public function getNativeDeclaration($field)
+    {
         switch ($field['type']) {
         case 'array':
         case 'object':
@@ -65,7 +67,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
         case 'string':
             $length = !empty($field['length'])
                 ? $field['length'] : false;
-            
+
             $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
 
             return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$db->options['default_text_field_length'].')')
@@ -111,7 +113,8 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict {
      * @param   array           $field native field description
      * @return  array           containing the various possible types, length, sign, fixed
      */
-    public function getPortableDeclaration($field) {
+    public function getPortableDeclaration($field)
+    {
         $db_type = preg_replace('/\d/','', strtolower($field['type']) );
         $length = $field['length'];
         if ((int)$length <= 0) {

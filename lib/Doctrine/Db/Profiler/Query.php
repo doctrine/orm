@@ -29,7 +29,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Db_Profiler_Query {
+class Doctrine_Db_Profiler_Query
+{
     /**
      * @var string      SQL query string or user comment, set by $query argument in constructor.
      */
@@ -60,7 +61,8 @@ class Doctrine_Db_Profiler_Query {
      * @param string $query
      * @param int $queryType
      */
-    public function __construct($query, $prepareTime = null) {
+    public function __construct($query, $prepareTime = null)
+    {
         $this->query = $query;
         if ($prepareTime !== null) {
             $this->prepareTime = $prepareTime;
@@ -68,7 +70,8 @@ class Doctrine_Db_Profiler_Query {
             $this->startedMicrotime = microtime(true);
         }
     }
-    public function start() {
+    public function start()
+    {
         $this->startedMicrotime = microtime(true);
     }
     /**
@@ -76,12 +79,14 @@ class Doctrine_Db_Profiler_Query {
      *
      * @return bool
      */
-    public function end() {
+    public function end()
+    {
         $this->endedMicrotime = microtime(true);
         return true;
     }
 
-    public function getPrepareTime() {
+    public function getPrepareTime()
+    {
         return $this->prepareTime;
     }
 
@@ -90,7 +95,8 @@ class Doctrine_Db_Profiler_Query {
      *
      * @return bool
      */
-    public function hasEnded() {
+    public function hasEnded()
+    {
         return ($this->endedMicrotime != null);
     }
 
@@ -99,7 +105,8 @@ class Doctrine_Db_Profiler_Query {
      *
      * @return string
      */
-    public function getQuery() {
+    public function getQuery()
+    {
         return $this->query;
     }
 
@@ -108,7 +115,8 @@ class Doctrine_Db_Profiler_Query {
      *
      * @return int
      */
-    public function getQueryType() {
+    public function getQueryType()
+    {
         return $this->queryType;
     }
     /**
@@ -117,7 +125,8 @@ class Doctrine_Db_Profiler_Query {
      *
      * @return mixed
      */
-    public function getElapsedSecs() {
+    public function getElapsedSecs()
+    {
         if (is_null($this->endedMicrotime) && ! $this->prepareTime) {
             return false;
         }

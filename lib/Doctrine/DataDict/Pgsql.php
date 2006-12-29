@@ -29,7 +29,8 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
+class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
+{
     /**
      * @param array $reservedKeyWords     an array of reserved keywords by pgsql
      */
@@ -329,7 +330,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
                                         'work',
                                         'write',
                                         'year',
-                                        'zone' 
+                                        'zone'
                                         );
 
     /**
@@ -350,12 +351,13 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
      *
      *      notnull
      *          Boolean flag that indicates whether this field is constrained
-     *          to not be set to null.     
+     *          to not be set to null.
      *
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getNativeDeclaration(array $field) {
+    public function getNativeDeclaration(array $field)
+    {
         switch ($field['type']) {
         case 'char':
         case 'string':
@@ -420,7 +422,8 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
      *
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function getPortableDeclaration(array $field) {
+    public function getPortableDeclaration(array $field)
+    {
 
         $length = $field['length'];
         if ($length == '-1' && isset($field['atttypmod'])) {
@@ -554,7 +557,8 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
      * @return string DBMS specific SQL code portion that should be used to
      *       declare the specified field.
      */
-    public function getIntegerDeclaration($name, $field) {
+    public function getIntegerDeclaration($name, $field)
+    {
         /**
         if (!empty($field['unsigned'])) {
             $db->warnings[] = "unsigned integer field \"$name\" is being declared as signed integer";
@@ -572,8 +576,8 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict {
                 $field['default'] = empty($field['notnull']) ? null : 0;
             }
             $default = ' DEFAULT '.$this->conn->quote($field['default'], $field['type']);
-        } 
-        /** 
+        }
+        /**
         TODO: is this needed ?
         elseif (empty($field['notnull'])) {
             $default = ' DEFAULT NULL';

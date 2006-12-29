@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Connection');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_Db2 extends Doctrine_Connection {
+class Doctrine_Connection_Db2 extends Doctrine_Connection
+{
     /**
      * Adds an driver-specific LIMIT clause to the query
      *
@@ -39,7 +40,8 @@ class Doctrine_Connection_Db2 extends Doctrine_Connection {
      * @param integer $offset       start reading from given offset
      * @return string               the modified query
      */
-    public function modifyLimitQuery($query, $limit, $offset) {
+    public function modifyLimitQuery($query, $limit, $offset)
+    {
         if ($limit <= 0)
             return $sql;
 

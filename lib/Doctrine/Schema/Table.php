@@ -37,7 +37,8 @@ Doctrine::autoload('Doctrine_Schema_Object');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable, IteratorAggregate {
+class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable, IteratorAggregate
+{
 
     protected $definition = array('name'        => '',
                                   'check'       => '',
@@ -52,7 +53,8 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable,
      * @return bool
      * @access public
      */
-    public function isValid( ) {
+    public function isValid( )
+    {
 
     }
     /**
@@ -60,13 +62,15 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable,
      *
      * @return array
      */
-    public function getColumns() {
+    public function getColumns()
+    {
         return $this->children;
     }
     /**
      * @return Doctrine_Schema_Column|false
      */
-    public function getColumn($name) {
+    public function getColumn($name)
+    {
         if ( ! isset($this->children[$name])) {
             return false;
         }
@@ -78,7 +82,8 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable,
      * @return Doctrine_Schema_Table
      * @access public
      */
-    public function addColumn(Doctrine_Schema_Column $column) {
+    public function addColumn(Doctrine_Schema_Column $column)
+    {
         $name = $column->get('name');
         $this->children[$name] = $column;
 

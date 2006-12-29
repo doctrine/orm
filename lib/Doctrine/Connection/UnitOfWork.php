@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implements IteratorAggregate, Countable {
+class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implements IteratorAggregate, Countable
+{
     /**
      * buildFlushTree
      * builds a flush tree that is used in transactions
@@ -42,7 +43,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      * @param array $tables
      * @return array
      */
-    public function buildFlushTree(array $tables) {
+    public function buildFlushTree(array $tables)
+    {
         $tree = array();
         foreach ($tables as $k => $table) {
             $k = $k.$table;
@@ -135,7 +137,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      * @throws PDOException         if something went wrong at database level
      * @param Doctrine_Record $record
      */
-    public function saveRelated(Doctrine_Record $record) {
+    public function saveRelated(Doctrine_Record $record)
+    {
         $saveLater = array();
         foreach ($record->getReferences() as $k=>$v) {
             $fk = $record->getTable()->getRelation($k);
@@ -181,7 +184,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      * @param Doctrine_Record $record
      * @return void
      */
-    public function saveAssociations(Doctrine_Record $record) {
+    public function saveAssociations(Doctrine_Record $record)
+    {
         foreach ($record->getTable()->getRelations() as $rel) {
             $table   = $rel->getTable();
             $alias   = $rel->getAlias();
@@ -196,7 +200,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      * @throws PDOException         if something went wrong at database level
      * @return void
      */
-    public function deleteComposites(Doctrine_Record $record) {
+    public function deleteComposites(Doctrine_Record $record)
+    {
         foreach ($record->getTable()->getRelations() as $fk) {
             switch ($fk->getType()) {
             case Doctrine_Relation::ONE_COMPOSITE:
@@ -214,7 +219,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      * @throws PDOException         if something went wrong at database level
      * @return void
      */
-    public function saveAll() {
+    public function saveAll()
+    {
         // get the flush tree
         $tree = $this->buildFlushTree($this->conn->getTables());
 
@@ -242,7 +248,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      * @param Doctrine_Record $record
      * @return boolean
      */
-    public function update(Doctrine_Record $record) {
+    public function update(Doctrine_Record $record)
+    {
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreUpdate($record);
 
         $array = $record->getPrepared();
@@ -295,7 +302,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
      * @param Doctrine_Record $record   record to be inserted
      * @return boolean
      */
-    public function insert(Doctrine_Record $record) {
+    public function insert(Doctrine_Record $record)
+    {
          // listen the onPreInsert event
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
 
@@ -333,7 +341,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
 
         return true;
     }
-    public function getIterator() { }
+    public function getIterator()
+    { }
 
-    public function count() { }
+    public function count()
+    { }
 }

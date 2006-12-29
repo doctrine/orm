@@ -1,7 +1,8 @@
 <?php
 require_once("Condition.php");
 
-class Doctrine_Query_Where extends Doctrine_Query_Condition {
+class Doctrine_Query_Where extends Doctrine_Query_Condition
+{
     /**
      * load
      * returns the parsed query part
@@ -9,7 +10,8 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
      * @param string $where
      * @return string
      */
-    public function load($where) {
+    public function load($where)
+    {
         $where = trim($where);
 
         $e     = Doctrine_Query::sqlExplode($where);
@@ -145,7 +147,8 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
      * @param string $value         literal value to be parsed
      * @return string
      */
-    public function parseLiteralValue($value) {
+    public function parseLiteralValue($value)
+    {
         // check that value isn't a string
         if (strpos($value, '\'') === false) {
             // parse booleans
@@ -177,7 +180,8 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
      * @param boolean $negation     whether or not to use the NOT keyword
      * @return string
      */
-    public function parseExists($where, $negation) {
+    public function parseExists($where, $negation)
+    {
         $operator = ($negation) ? 'EXISTS' : 'NOT EXISTS';
 
         $pos = strpos($where, '(');
@@ -195,7 +199,8 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
      * @param string $func
      * @return string
      */
-    public function getOperator($func) {
+    public function getOperator($func)
+    {
         switch ($func) {
         case 'contains':
             $operator = ' = ';
@@ -215,7 +220,8 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition {
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return ( ! empty($this->parts))?implode(' AND ', $this->parts):'';
     }
 }

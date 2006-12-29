@@ -30,11 +30,13 @@ Doctrine::autoload('Doctrine_Collection_Iterator');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Collection_Iterator_Normal extends Doctrine_Collection_Iterator {
+class Doctrine_Collection_Iterator_Normal extends Doctrine_Collection_Iterator
+{
     /**
      * @return boolean                          whether or not the iteration will continue
      */
-    public function valid() {
+    public function valid()
+    {
         return ($this->index < $this->count);
     }
 }

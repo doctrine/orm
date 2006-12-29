@@ -30,15 +30,18 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Hook_Parser {
+abstract class Doctrine_Hook_Parser
+{
     protected $condition;
     protected $params = array();
 
-    public function getCondition() {
+    public function getCondition()
+    {
         return $this->condition;
     }
 
-    public function getParams() {
+    public function getParams()
+    {
         return $this->params;
     }
     /**

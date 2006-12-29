@@ -30,7 +30,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable, IteratorAggregate {
+class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable, IteratorAggregate
+{
 
     /**
      * The errors of the error stack.
@@ -52,7 +53,8 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      * @param string $invalidFieldName
      * @param string $errorType
      */
-    public function add($invalidFieldName, $errorCode = 'general') {
+    public function add($invalidFieldName, $errorCode = 'general')
+    {
         $this->errors[$invalidFieldName][] = $errorCode;
     }
 
@@ -61,7 +63,8 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      *
      * @param string $fieldName
      */
-    public function remove($fieldName) {
+    public function remove($fieldName)
+    {
         if (isset($this->errors[$fieldName])) {
             unset($this->errors[$fieldName]);
         }
@@ -73,7 +76,8 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      * @param unknown_type $name
      * @return unknown
      */
-    public function get($fieldName) {
+    public function get($fieldName)
+    {
         return isset($this->errors[$fieldName]) ? $this->errors[$fieldName] : null;
     }
 
@@ -82,7 +86,8 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      *
      * @param unknown_type $name
      */
-    public function set($fieldName, $errorCode) {
+    public function set($fieldName, $errorCode)
+    {
         $this->add($fieldName, $errorCode);
     }
 
@@ -91,14 +96,16 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      *
      * @return unknown
      */
-    public function contains($fieldName) {
+    public function contains($fieldName)
+    {
         return array_key_exists($fieldName, $this->errors);
     }
 
     /**
      * Removes all errors from the stack.
      */
-    public function clear() {
+    public function clear()
+    {
         $this->errors = array();
     }
 
@@ -109,7 +116,8 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      *
      * @return unknown
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return new ArrayIterator($this->errors);
     }
 
@@ -120,7 +128,8 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      *
      * @return unknown
      */
-    public function count() {
+    public function count()
+    {
         return count($this->errors);
     }
 }

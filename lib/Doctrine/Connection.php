@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -30,7 +30,8 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (MDB2 library)
  */
-abstract class Doctrine_Connection extends Doctrine_Configurable implements Countable, IteratorAggregate {
+abstract class Doctrine_Connection extends Doctrine_Configurable implements Countable, IteratorAggregate
+{
     /**
      * @var $dbh                                the database handler
      */
@@ -45,8 +46,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     protected $driverName;
     /**
-     * @var array $supported                    an array containing all features this driver supports, 
-     *                                          keys representing feature names and values as 
+     * @var array $supported                    an array containing all features this driver supports,
+     *                                          keys representing feature names and values as
      *                                          one of the following (true, false, 'emulated')
      */
     protected $supported        = array();
@@ -73,14 +74,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                              'export'      => false,
                              'unitOfWork'  => false,
                              );
-    /** 
+    /**
      * @var array $properties               an array of connection properties
      */
     protected $properties = array('sql_comments'        => array(array('start' => '--', 'end' => "\n", 'escape' => false),
                                                                  array('start' => '/*', 'end' => '*/', 'escape' => false)
                                                                  ),
-                                  'identifier_quoting'  => array('start' => '"', 
-                                                                 'end' => '"', 
+                                  'identifier_quoting'  => array('start' => '"',
+                                                                 'end' => '"',
                                                                  'escape' => '"'
                                                                  ),
                                   'string_quoting'      => array('start' => "'",
@@ -109,7 +110,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param Doctrine_Manager $manager                 the manager object
      * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
      */
-    public function __construct(Doctrine_Manager $manager, $adapter) {
+    public function __construct(Doctrine_Manager $manager, $adapter)
+    {
         if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
             throw new Doctrine_Connection_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
         }
@@ -121,7 +123,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->setParent($manager);
 
         $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
-        $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);   
+        $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
     }
@@ -131,7 +133,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return string           the name of this driver
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->driverName;
     }
     /**
@@ -144,10 +147,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @see Doctrine_Transaction
      * @see Doctrine_Connection::$modules       all availible modules
      * @param string $name                      the name of the module to get
-     * @throws Doctrine_Connection_Exception    if trying to get an unknown module  
+     * @throws Doctrine_Connection_Exception    if trying to get an unknown module
      * @return Doctrine_Connection_Module       connection module
      */
-    public function __get($name) {
+    public function __get($name)
+    {
         if (isset($this->properties[$name]))
             return $this->properties[$name];
 
@@ -179,7 +183,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return  string  quoted string
      */
-    public function escapePattern($text) {
+    public function escapePattern($text)
+    {
         if ($this->string_quoting['escape_pattern']) {
             $text = str_replace($this->string_quoting['escape_pattern'], $this->string_quoting['escape_pattern'] . $this->string_quoting['escape_pattern'], $text);
             foreach ($this->wildcards as $wildcard) {
@@ -220,7 +225,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return string               quoted identifier string
      */
-    public function quoteIdentifier($str, $checkOption = true) {
+    public function quoteIdentifier($str, $checkOption = true)
+    {
         if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
             return $str;
         }
@@ -236,7 +242,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return Doctrine_Manager
      */
-    public function getManager() {
+    public function getManager()
+    {
         return $this->getParent();
     }
     /**
@@ -244,7 +251,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return PDO              the database handler
      */
-    public function getDbh() {
+    public function getDbh()
+    {
         return $this->dbh;
     }
     /**
@@ -252,7 +260,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @param
      */
-    public function driverName($name) {
+    public function driverName($name)
+    {
     }
     /**
      * supports
@@ -260,7 +269,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param string $feature   the name of the feature
      * @return boolean          whether or not this drivers supports given feature
      */
-    public function supports($feature) {
+    public function supports($feature)
+    {
         return (isset($this->supported[$feature])
             && ($this->supported[$feature] === 'emulated'
                 || $this->supported[$feature]
@@ -270,12 +280,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /**
      * quote
      * quotes given input parameter
-     * 
+     *
      * @param mixed $input      parameter to be quoted
      * @param string $type
      * @return mixed
      */
-    public function quote($input, $type = null) {
+    public function quote($input, $type = null)
+    {
         if ($type == null) {
             $type = gettype($input);
         }
@@ -303,7 +314,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param string $sqn string that containts name of a potential sequence
      * @return string name of the sequence with possible formatting removed
      */
-    public function fixSequenceName($sqn) {
+    public function fixSequenceName($sqn)
+    {
         $seqPattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)',  $this->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT)).'$/i';
         $seqName    = preg_replace($seqPattern, '\\1', $sqn);
 
@@ -318,7 +330,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param string $idx string that containts name of anl index
      * @return string name of the index with possible formatting removed
      */
-    public function fixIndexName($idx) {
+    public function fixIndexName($idx)
+    {
         $indexPattern   = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', $this->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT)).'$/i';
         $indexName      = preg_replace($indexPattern, '\\1', $idx);
         if ($indexName && ! strcasecmp($idx, $this->getIndexName($indexName))) {
@@ -332,7 +345,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param string    name of the sequence
      * @return string   formatted sequence name
      */
-    public function getSequenceName($sqn) {
+    public function getSequenceName($sqn)
+    {
         return sprintf($this->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT),
             preg_replace('/[^a-z0-9_\$.]/i', '_', $sqn));
     }
@@ -342,7 +356,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param string    name of the index
      * @return string   formatted index name
      */
-    public function getIndexName($idx) {
+    public function getIndexName($idx)
+    {
         return sprintf($this->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT),
                 preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
     }
@@ -381,7 +396,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @throws PDOException                         if something fails at PDO level
      * @return integer                              number of rows affected
      */
-    public function replace($table, array $fields, array $keys) {
+    public function replace($table, array $fields, array $keys)
+    {
         //if ( ! $this->supports('replace'))
         //    throw new Doctrine_Connection_Exception('replace query is not supported');
 
@@ -444,7 +460,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @throws PDOException     if something went wrong at database level
      * @return integer
      */
-    public function nextId($sequence) {
+    public function nextId($sequence)
+    {
         throw new Doctrine_Connection_Exception('NextId() for sequences not supported by this driver.');
     }
     /**
@@ -454,7 +471,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return void
      */
-    public function setCharset($charset) {
+    public function setCharset($charset)
+    {
     }
     /**
      * fetchAll
@@ -528,7 +546,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $params             prepared statement params
      * @return array
      */
-    public function fetchBoth($statement, array $params = array()) { 
+    public function fetchBoth($statement, array $params = array()) {
         return $this->query($statement, $params)->fetchAll(PDO::FETCH_BOTH);
     }
     /**
@@ -554,13 +572,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
     /**
      * query
-     * queries the database using Doctrine Query Language and returns 
+     * queries the database using Doctrine Query Language and returns
      * the first record found
      *
      * <code>
      * $user = $conn->queryOne('SELECT u.* FROM User u WHERE u.id = ?', array(1));
      *
-     * $user = $conn->queryOne('SELECT u.* FROM User u WHERE u.name LIKE ? AND u.password = ?', 
+     * $user = $conn->queryOne('SELECT u.* FROM User u WHERE u.name LIKE ? AND u.password = ?',
      *         array('someone', 'password')
      *         );
      * </code>
@@ -589,7 +607,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param integer $offset
      * @return PDOStatement
      */
-    public function select($query,$limit = 0,$offset = 0) {
+    public function select($query,$limit = 0,$offset = 0)
+    {
         if ($limit > 0 || $offset > 0) {
             $query = $this->modifyLimitQuery($query, $limit, $offset);
         }
@@ -613,7 +632,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             }
         } catch(Doctrine_Adapter_Exception $e) {
         } catch(PDOException $e) { }
-        
+
         $this->rethrowException($e);
     }
     /**
@@ -642,7 +661,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @throws Doctrine_Connection_Exception
      */
-    private function rethrowException(Exception $e) {
+    private function rethrowException(Exception $e)
+    {
         $name = 'Doctrine_Connection_' . $this->driverName . '_Exception';
 
         $exc  = new $name($e->getMessage(), (int) $e->getCode());
@@ -660,7 +680,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param mixed $name
      * @return boolean
      */
-    public function hasTable($name) {
+    public function hasTable($name)
+    {
         return isset($this->tables[$name]);
     }
     /**
@@ -669,7 +690,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param string $name              component name
      * @return object Doctrine_Table
      */
-    public function getTable($name) {
+    public function getTable($name)
+    {
         if (isset($this->tables[$name])) {
             return $this->tables[$name];
         }
@@ -686,11 +708,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return array
      */
-    public function getTables() {
+    public function getTables()
+    {
         return $this->tables;
     }
     /**
-     * returns an iterator that iterators through all 
+     * returns an iterator that iterators through all
      * initialized table objects
      *
      * <code>
@@ -701,7 +724,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return ArrayIterator        SPL ArrayIterator object
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return new ArrayIterator($this->tables);
     }
     /**
@@ -709,7 +733,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return integer
      */
-    public function count() {
+    public function count()
+    {
         return count($this->tables);
     }
     /**
@@ -719,7 +744,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param $objTable             a Doctrine_Table object to be added into registry
      * @return boolean
      */
-    public function addTable(Doctrine_Table $objTable) {
+    public function addTable(Doctrine_Table $objTable)
+    {
         $name = $objTable->getComponentName();
 
         if (isset($this->tables[$name])) {
@@ -736,18 +762,20 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param string $name          component name
      * @return Doctrine_Record      Doctrine_Record object
      */
-    public function create($name) {
+    public function create($name)
+    {
         return $this->getTable($name)->create();
     }
     /**
-     * flush                        
+     * flush
      * saves all the records from all tables
      * this operation is isolated using a transaction
      *
      * @throws PDOException         if something went wrong at database level
      * @return void
      */
-    public function flush() {
+    public function flush()
+    {
         $this->beginTransaction();
         $this->unitOfWork->saveAll();
         $this->commit();
@@ -758,7 +786,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return void
      */
-    public function clear() {
+    public function clear()
+    {
         foreach ($this->tables as $k => $table) {
             $table->getRepository()->evictAll();
             $table->clear();
@@ -770,7 +799,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return void
      */
-    public function evictTables() {
+    public function evictTables()
+    {
         $this->tables = array();
     }
     /**
@@ -779,7 +809,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return void
      */
-    public function close() {
+    public function close()
+    {
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreClose($this);
 
         $this->clear();
@@ -791,7 +822,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return integer
      */
-    public function getTransactionLevel() {
+    public function getTransactionLevel()
+    {
         return $this->transaction->getTransactionLevel();
     }
     /**
@@ -803,7 +835,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return void
      */
-    public function beginTransaction() {
+    public function beginTransaction()
+    {
         $this->transaction->beginTransaction();
     }
     /**
@@ -813,7 +846,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return void
      */
-    public function commit() {
+    public function commit()
+    {
         $this->transaction->commit();
     }
     /**
@@ -825,7 +859,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return void
      */
-    public function rollback() {
+    public function rollback()
+    {
         $this->transaction->rollback();
     }
     /**
@@ -834,7 +869,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param Doctrine_Record $record
      * @return void
      */
-    public function save(Doctrine_Record $record) {
+    public function save(Doctrine_Record $record)
+    {
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
 
         switch ($record->getState()) {
@@ -856,12 +892,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /**
      * deletes this data access object and all the related composites
      * this operation is isolated by a transaction
-     * 
+     *
      * this event can be listened by the onPreDelete and onDelete listeners
      *
      * @return boolean      true on success, false on failure
      */
-    public function delete(Doctrine_Record $record) {
+    public function delete(Doctrine_Record $record)
+    {
         if ( ! $record->exists()) {
             return false;
         }
@@ -883,7 +920,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * returns a string representation of this object
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return Doctrine_Lib::getConnectionAsString($this);
     }
 }

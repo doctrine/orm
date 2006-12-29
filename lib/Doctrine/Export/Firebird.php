@@ -32,14 +32,16 @@ Doctrine::autoload('Doctrine_Export');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export_Firebird extends Doctrine_Export {
+class Doctrine_Export_Firebird extends Doctrine_Export
+{
     /**
      * create a new database
      *
      * @param string $name  name of the database that should be created
      * @return void
      */
-    public function createDatabase($name) {
+    public function createDatabase($name)
+    {
         throw new Doctrine_Export_Firebird_Exception(
                 'PHP Interbase API does not support direct queries. You have to ' .
                 'create the db manually by using isql command or a similar program');
@@ -50,7 +52,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      * @param string $name  name of the database that should be dropped
      * @return void
      */
-    public  function dropDatabase($name) {
+    public  function dropDatabase($name)
+    {
         throw new Doctrine_Export_Firebird_Exception(
                 'PHP Interbase API does not support direct queries. You have ' .
                 'to drop the db manually by using isql command or a similar program');
@@ -63,7 +66,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      * @param string $start start value for the sequence
      * @return void
      */
-    public function _makeAutoincrement($name, $table, $start = null) {
+    public function _makeAutoincrement($name, $table, $start = null)
+    {
         if (is_null($start)) {
             $this->conn->beginTransaction();
             $query = 'SELECT MAX(' . $this->conn->quoteIdentifier($name, true) . ') FROM ' . $this->conn->quoteIdentifier($table, true);
@@ -101,7 +105,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      * @param string $table name of the table
      * @return void
      */
-    public function _dropAutoincrement($table) {
+    public function _dropAutoincrement($table)
+    {
 
         $result = $this->dropSequence($table);
 
@@ -180,7 +185,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      * @param string $name name of the database that should be dropped
      * @return void
      */
-    public function checkSupportedChanges(&$changes) {
+    public function checkSupportedChanges(&$changes)
+    {
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
             case 'notnull':
@@ -213,7 +219,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      * @return mixed MDB2_OK on success, a MDB2 error on failure
      * @access public
      */
-    public function dropTable($name) {
+    public function dropTable($name)
+    {
         $result = $this->_dropAutoincrement($name);
         $result = parent::dropTable($name);
 
@@ -309,7 +316,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      *                             actually perform them otherwise.
      * @return void
      */
-    public function alterTable($name, $changes, $check) {
+    public function alterTable($name, $changes, $check)
+    {
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
             case 'add':
@@ -416,7 +424,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      *                                    )
      * @return void
      */
-    public function createIndex($table, $name, array $definition) {
+    public function createIndex($table, $name, array $definition)
+    {
         $query = 'CREATE';
 
         $query_sort = '';
@@ -466,7 +475,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      *                                  )
      * @return void
      */
-    public function createConstraint($table, $name, $definition) {
+    public function createConstraint($table, $name, $definition)
+    {
         $table = $this->conn->quoteIdentifier($table, true);
 
         if (!empty($name)) {
@@ -500,7 +510,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      * @param string $start start value of the sequence; default is 1
      * @return void
      */
-    public function createSequence($seqName, $start = 1) {
+    public function createSequence($seqName, $start = 1)
+    {
         $sequenceName = $this->conn->getSequenceName($seqName);
 
         $this->conn->exec('CREATE GENERATOR ' . $sequenceName);
@@ -515,7 +526,8 @@ class Doctrine_Export_Firebird extends Doctrine_Export {
      * @param string $seq_name name of the sequence to be dropped
      * @return void
      */
-    public function dropSequence($seq_name) {
+    public function dropSequence($seq_name)
+    {
         $sequence_name = $this->conn->getSequenceName($seq_name);
         $sequence_name = $this->conn->getDbh()->quote($sequence_name);
         $query = "DELETE FROM RDB\$GENERATORS WHERE UPPER(RDB\$GENERATOR_NAME)=$sequence_name";

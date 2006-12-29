@@ -29,7 +29,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_Module {
+class Doctrine_Connection_Module
+{
     /**
      * @var Doctrine_Connection $conn       Doctrine_Connection object, every connection
      *                                      module holds an instance of Doctrine_Connection
@@ -43,7 +44,8 @@ class Doctrine_Connection_Module {
      * @param Doctrine_Connection $conn     Doctrine_Connection object, every connection
      *                                      module holds an instance of Doctrine_Connection
      */
-    public function __construct($conn = null) {
+    public function __construct($conn = null)
+    {
         if ( ! ($conn instanceof Doctrine_Connection)) {
             $conn = Doctrine_Manager::getInstance()->getCurrentConnection();
         }
@@ -59,7 +61,8 @@ class Doctrine_Connection_Module {
      *
      * @return Doctrine_Connection
      */
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->conn;
     }
     /**
@@ -68,7 +71,8 @@ class Doctrine_Connection_Module {
      *
      * @return string       the name of this module
      */
-    public function getModuleName() {
+    public function getModuleName()
+    {
         return $this->moduleName;
     }
 }

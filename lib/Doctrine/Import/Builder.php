@@ -33,7 +33,8 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  */
-class Doctrine_Import_Builder {
+class Doctrine_Import_Builder
+{
 
     private $path = '';
 
@@ -41,7 +42,8 @@ class Doctrine_Import_Builder {
 
     private static $tpl;
 
-    public function __construct() {
+    public function __construct()
+    {
         if ( ! isset(self::$tpl)) {
             self::$tpl = file_get_contents(Doctrine::getPath()
                        . DIRECTORY_SEPARATOR . 'Doctrine'
@@ -57,14 +59,16 @@ class Doctrine_Import_Builder {
      * @return
      * @access public
      */
-    public function setTargetPath($path) {
+    public function setTargetPath($path)
+    {
         if ( ! file_exists($path)) {
             mkdir($path, 0777);
         }
 
         $this->path = $path;
     }
-    public function getTargetPath() {
+    public function getTargetPath()
+    {
         return $this->path;
     }
     /**
@@ -73,14 +77,17 @@ class Doctrine_Import_Builder {
      * @return
      * @access public
      */
-    public function setFileSuffix($suffix) {
+    public function setFileSuffix($suffix)
+    {
         $this->suffix = $suffix;
     }
-    public function getFileSuffix() {
+    public function getFileSuffix()
+    {
         return $this->suffix;
     }
 
-    public function buildRecord(Doctrine_Schema_Table $table) {
+    public function buildRecord(Doctrine_Schema_Table $table)
+    {
         if (empty($this->path)) {
             throw new Doctrine_Import_Builder_Exception('No build target directory set.');
         }
@@ -146,7 +153,8 @@ class Doctrine_Import_Builder {
      * @throws Doctrine_Import_Exception
      * @return void
      */
-    public function build(Doctrine_Schema_Object $schema) {
+    public function build(Doctrine_Schema_Object $schema)
+    {
         foreach ($schema->getDatabases() as $database){
             foreach ($database->getTables() as $table){
                 $this->buildRecord($table);

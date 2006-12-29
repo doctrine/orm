@@ -32,4 +32,5 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-final class Doctrine_Null { }
+final class Doctrine_Null
+{ }

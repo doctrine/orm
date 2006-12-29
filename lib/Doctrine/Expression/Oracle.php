@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Expression');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression_Oracle extends Doctrine_Expression {
+class Doctrine_Expression_Oracle extends Doctrine_Expression
+{
     /**
      * Returns a series of strings concatinated
      *
@@ -40,7 +41,8 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression {
      * @param string $arg1, $arg2 ... $argN     strings that will be concatinated.
      * @return string
      */
-    public function concat($arg1, $arg2) {
+    public function concat($arg1, $arg2)
+    {
         $args = func_get_args();
 
         $cols = $this->getIdentifiers( $args );
@@ -56,7 +58,8 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression {
      * @param integer $length       the substring portion length
      * @return string               SQL substring function with given parameters
      */
-    public function substring($value, $position, $length = null) {
+    public function substring($value, $position, $length = null)
+    {
         if ($length !== null)
             return "SUBSTR($value, $position, $length)";
 
@@ -71,7 +74,8 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression {
      *
      * @return string to call a variable with the current timestamp
      */
-    public function now($type = 'timestamp') {
+    public function now($type = 'timestamp')
+    {
         switch ($type) {
         case 'date':
         case 'time':
@@ -85,7 +89,8 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression {
      *
      * @return string           an oracle SQL string that generates a float between 0 and 1
      */
-    function random() {
+    function random()
+    {
         return 'dbms_random.value';
     }
 }

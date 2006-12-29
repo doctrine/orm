@@ -31,7 +31,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Configurable {
+abstract class Doctrine_Configurable
+{
 
     /**
      * @var array $attributes               an array of containing all attributes
@@ -60,7 +61,8 @@ abstract class Doctrine_Configurable {
      * @throws Doctrine_Exception           if the value is invalid
      * @return void
      */
-    public function setAttribute($attribute,$value) {
+    public function setAttribute($attribute,$value)
+    {
         switch ($attribute) {
         case Doctrine::ATTR_BATCH_SIZE:
             if ($value < 0) {
@@ -153,7 +155,8 @@ abstract class Doctrine_Configurable {
      * @param Doctrine_EventListener $listener
      * @return void
      */
-    public function setEventListener($listener) {
+    public function setEventListener($listener)
+    {
         return $this->setListener($listener);
     }
     /**
@@ -162,7 +165,8 @@ abstract class Doctrine_Configurable {
      * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
      * @return Doctrine_Db
      */
-    public function addListener($listener, $name = null) {
+    public function addListener($listener, $name = null)
+    {
         if ( ! ($this->attributes[Doctrine::ATTR_LISTENER] instanceof Doctrine_EventListener_Chain)) {
             $this->attributes[Doctrine::ATTR_LISTENER] = new Doctrine_EventListener_Chain();
         }
@@ -175,7 +179,8 @@ abstract class Doctrine_Configurable {
      *
      * @return Doctrine_Db_EventListener_Interface|Doctrine_Overloadable
      */
-    public function getListener() {
+    public function getListener()
+    {
         if ( ! isset($this->attributes[Doctrine::ATTR_LISTENER])) {
             if (isset($this->parent)) {
                 return $this->parent->getListener();
@@ -190,7 +195,8 @@ abstract class Doctrine_Configurable {
      * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
      * @return Doctrine_Db
      */
-    public function setListener($listener) {
+    public function setListener($listener)
+    {
         if ( ! ($listener instanceof Doctrine_EventListener_Interface)
             && ! ($listener instanceof Doctrine_Overloadable)
         ) {
@@ -206,7 +212,8 @@ abstract class Doctrine_Configurable {
      * @param integer $attribute
      * @return mixed
      */
-    public function getAttribute($attribute) {
+    public function getAttribute($attribute)
+    {
         $attribute = (int) $attribute;
 
         if ($attribute < 1 || $attribute > 23)
@@ -226,7 +233,8 @@ abstract class Doctrine_Configurable {
      *
      * @return array
      */
-    public function getAttributes() {
+    public function getAttributes()
+    {
         return $this->attributes;
     }
     /**
@@ -236,7 +244,8 @@ abstract class Doctrine_Configurable {
      * @param Doctrine_Configurable $component
      * @return void
      */
-    public function setParent(Doctrine_Configurable $component) {
+    public function setParent(Doctrine_Configurable $component)
+    {
         $this->parent = $component;
     }
     /**
@@ -245,7 +254,8 @@ abstract class Doctrine_Configurable {
      *
      * @return Doctrine_Configurable
      */
-    public function getParent() {
+    public function getParent()
+    {
         return $this->parent;
     }
 }

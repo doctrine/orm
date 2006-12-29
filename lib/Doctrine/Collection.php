@@ -31,7 +31,8 @@ Doctrine::autoload("Doctrine_Access");
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Collection extends Doctrine_Access implements Countable, IteratorAggregate, Serializable {
+class Doctrine_Collection extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
+{
     /**
      * @var array $data                     an array containing the data access objects of this collection
      */
@@ -76,7 +77,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @param Doctrine_Table|string $table
      */
-    public function __construct($table) {
+    public function __construct($table)
+    {
         if ( ! ($table instanceof Doctrine_Table)) {
             $table = Doctrine_Manager::getInstance()
                         ->getCurrentConnection()
@@ -95,7 +97,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return void
      */
-    public static function initNullObject(Doctrine_Null $null) {
+    public static function initNullObject(Doctrine_Null $null)
+    {
         self::$null = $null;
     }
     /**
@@ -104,7 +107,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return Doctrine_Table
      */
-    public function getTable() {
+    public function getTable()
+    {
         return $this->table;
     }
     /**
@@ -114,7 +118,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $value
      * @return void
      */
-    public function setAggregateValue($name, $value) {
+    public function setAggregateValue($name, $value)
+    {
         $this->aggregateValues[$name] = $value;
     }
     /**
@@ -123,7 +128,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $name
      * @return mixed
      */
-    public function getAggregateValue($name) {
+    public function getAggregateValue($name)
+    {
         return $this->aggregateValues[$name];
     }
     /**
@@ -131,7 +137,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return array
      */
-    public function serialize() {
+    public function serialize()
+    {
         $vars = get_object_vars($this);
 
         unset($vars['reference']);
@@ -151,7 +158,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return void
      */
-    public function unserialize($serialized) {
+    public function unserialize($serialized)
+    {
         $manager    = Doctrine_Manager::getInstance();
         $connection    = $manager->getCurrentConnection();
 
@@ -177,7 +185,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * whether or not an offset batch has been expanded
      * @return boolean
      */
-    public function isExpanded($offset) {
+    public function isExpanded($offset)
+    {
         return isset($this->expanded[$offset]);
     }
     /**
@@ -186,7 +195,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * whether or not this collection is expandable
      * @return boolean
      */
-    public function isExpandable() {
+    public function isExpandable()
+    {
         return $this->expandable;
     }
     /**
@@ -195,7 +205,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $column
      * @return void
      */
-    public function setKeyColumn($column) {
+    public function setKeyColumn($column)
+    {
         $this->keyColumn = $column;
     }
     /**
@@ -204,7 +215,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return string
      */
-    public function getKeyColumn() {
+    public function getKeyColumn()
+    {
         return $this->column;
     }
     /**
@@ -212,13 +224,15 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return array
      */
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
     /**
      * @param array $data
      */
-    public function addData(array $data) {
+    public function addData(array $data)
+    {
         $this->data[] = $data;
     }
     /**
@@ -227,7 +241,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return mixed
      */
-    public function getFirst() {
+    public function getFirst()
+    {
         return reset($this->data);
     }
     /**
@@ -236,7 +251,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return mixed
      */
-    public function getLast() {
+    public function getLast()
+    {
         return end($this->data);
     }
     /**
@@ -245,7 +261,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return void
      */
-    public function setReference(Doctrine_Record $record,Doctrine_Relation $relation) {
+    public function setReference(Doctrine_Record $record,Doctrine_Relation $relation)
+    {
         $this->reference       = $record;
         $this->relation        = $relation;
 
@@ -273,7 +290,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return mixed
      */
-    public function getReference() {
+    public function getReference()
+    {
         return $this->reference;
     }
     /**
@@ -282,7 +300,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return boolean
      */
-    public function expand($key) {
+    public function expand($key)
+    {
         $where  = array();
         $params = array();
         $limit  = null;
@@ -402,7 +421,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param mixed $key
      * @return boolean
      */
-    public function remove($key) {
+    public function remove($key)
+    {
         if ( ! isset($this->data[$key])) {
             $this->expand($key);
             throw new InvalidKeyException();
@@ -420,14 +440,16 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param mixed $key
      * @return boolean
      */
-    public function contains($key) {
+    public function contains($key)
+    {
         return isset($this->data[$key]);
     }
     /**
      * @param mixed $key
      * @return object Doctrine_Record           return a specified record
      */
-    public function get($key) {
+    public function get($key)
+    {
         if ( ! isset($this->data[$key])) {
             $this->expand($key);
 
@@ -452,7 +474,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * @return array                an array containing all primary keys
      */
-    public function getPrimaryKeys() {
+    public function getPrimaryKeys()
+    {
         $list = array();
         $name = $this->table->getIdentifier();
 
@@ -469,7 +492,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * returns all keys
      * @return array
      */
-    public function getKeys() {
+    public function getKeys()
+    {
         return array_keys($this->data);
     }
     /**
@@ -479,7 +503,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return integer
      */
-    public function count() {
+    public function count()
+    {
         return count($this->data);
     }
     /**
@@ -488,7 +513,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param Doctrine_Record $record
      * @return void
      */
-    public function set($key, Doctrine_Record $record) {
+    public function set($key, Doctrine_Record $record)
+    {
         if (isset($this->reference_field)) {
             $record->set($this->reference_field, $this->reference, false);
         }
@@ -500,7 +526,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param string $key                          optional key for the record
      * @return boolean
      */
-    public function add(Doctrine_Record $record,$key = null) {
+    public function add(Doctrine_Record $record,$key = null)
+    {
         if (isset($this->reference_field)) {
             $record->set($this->reference_field, $this->reference, false);
         }
@@ -540,7 +567,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param mixed $name
      * @return boolean
      */
-    public function loadRelated($name = null) {
+    public function loadRelated($name = null)
+    {
         $query   = new Doctrine_Query($this->table->getConnection());
 
         if ( ! isset($name)) {
@@ -588,7 +616,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @param Doctrine_Collection $coll
      * @return void
      */
-    public function populateRelated($name, Doctrine_Collection $coll) {
+    public function populateRelated($name, Doctrine_Collection $coll)
+    {
         $rel     = $this->table->getRelation($name);
         $table   = $rel->getTable();
         $foreign = $rel->getForeign();
@@ -648,7 +677,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return Doctrine_Iterator_Normal
      */
-    public function getNormalIterator() {
+    public function getNormalIterator()
+    {
         return new Doctrine_Collection_Iterator_Normal($this);
     }
     /**
@@ -657,7 +687,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return void
      */
-    public function save(Doctrine_Connection $conn = null) {
+    public function save(Doctrine_Connection $conn = null)
+    {
         if ($conn == null) {
             $conn = $this->table->getConnection();
         }
@@ -676,7 +707,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return boolean
      */
-    public function delete(Doctrine_Connection $conn = null) {
+    public function delete(Doctrine_Connection $conn = null)
+    {
         if ($conn == null) {
             $conn = $this->table->getConnection();
         }
@@ -695,14 +727,16 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * getIterator
      * @return object ArrayIterator
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         $data = $this->data;
         return new ArrayIterator($data);
     }
     /**
      * returns a string representation of this object
      */
-    public function __toString() {
+    public function __toString()
+    {
         return Doctrine_Lib::getCollectionAsString($this);
     }
 }

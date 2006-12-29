@@ -32,7 +32,8 @@ Doctrine::autoload('Doctrine_Collection');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Collection_Batch extends Doctrine_Collection {
+class Doctrine_Collection_Batch extends Doctrine_Collection
+{
     /**
      * @var integer $batchSize      batch size
      */
@@ -42,7 +43,8 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
      */
     private $loaded = array();
 
-    public function __construct(Doctrine_Table $table) {
+    public function __construct(Doctrine_Table $table)
+    {
         parent::__construct($table);
         $this->batchSize = $this->getTable()->getAttribute(Doctrine::ATTR_BATCH_SIZE);
     }
@@ -51,7 +53,8 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
      * @param integer $batchSize    batch size
      * @return boolean
      */
-    public function setBatchSize($batchSize) {
+    public function setBatchSize($batchSize)
+    {
         $batchSize = (int) $batchSize;
         if ($batchSize <= 0) {
             return false;
@@ -64,7 +67,8 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
      *
      * @return integer
      */
-    public function getBatchSize() {
+    public function getBatchSize()
+    {
         return $this->batchSize;
     }
     /**
@@ -74,7 +78,8 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
      * @param Doctrine_Record $record              record to be loaded
      * @return boolean                             whether or not the load operation was successful
      */
-    public function load(Doctrine_Record $record) {
+    public function load(Doctrine_Record $record)
+    {
         if (empty($this->data)) {
             return false;
         }
@@ -146,7 +151,8 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
      * @param mixed $key                the key of the record
      * @return object Doctrine_Record               record
      */
-    public function get($key) {
+    public function get($key)
+    {
         if (isset($this->data[$key])) {
             switch (gettype($this->data[$key])) {
             case "array":
@@ -173,7 +179,8 @@ class Doctrine_Collection_Batch extends Doctrine_Collection {
     /**
      * @return Doctrine_Iterator
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return new Doctrine_Collection_Iterator_Expandable($this);
     }
 }

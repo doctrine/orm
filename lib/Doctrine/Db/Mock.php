@@ -29,7 +29,8 @@ Doctrine::autoload('Doctrine_Db');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Db_Mock extends Doctrine_Db {
+class Doctrine_Db_Mock extends Doctrine_Db
+{
     protected static $errorCodeMap = array(
                                       1004 => Doctrine::ERR_CANNOT_CREATE,
                                       1005 => Doctrine::ERR_CANNOT_CREATE,

@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hook {
+class Doctrine_Hook
+{
     /**
      * @var Doctrine_Query $query           the base query
      */
@@ -69,7 +70,8 @@ class Doctrine_Hook {
     /**
      * @param Doctrine_Query $query         the base query
      */
-    public function __construct($query) {
+    public function __construct($query)
+    {
         if (is_string($query)) {
             $this->query = new Doctrine_Query();
             $this->query->parseQuery($query);
@@ -77,13 +79,16 @@ class Doctrine_Hook {
             $this->query = $query;
         }
     }
-    public function getQuery() {
+    public function getQuery()
+    {
         return $this->query;
     }
-    public function leftJoin($dql) {
+    public function leftJoin($dql)
+    {
 
     }
-    public function innerJoin($dql) {
+    public function innerJoin($dql)
+    {
 
     }
     /**
@@ -94,7 +99,8 @@ class Doctrine_Hook {
      *                              names and their values
      * @return boolean              whether or not the hooking was
      */
-    public function hookWhere($params) {
+    public function hookWhere($params)
+    {
         if ( ! is_array($params)) {
             return false;
         }
@@ -132,7 +138,8 @@ class Doctrine_Hook {
      *                              should be ordered by
      * @return boolean              whether or not the hooking was
      */
-    public function hookOrderby($params) {
+    public function hookOrderby($params)
+    {
         if ( ! is_array($params)) {
             return false;
         }
@@ -162,13 +169,15 @@ class Doctrine_Hook {
     /**
      * @param integer $limit
      */
-    public function hookLimit($limit) {
+    public function hookLimit($limit)
+    {
         $this->query->limit((int) $limit);
     }
     /**
      * @param integer $offset
      */
-    public function hookOffset($offset) {
+    public function hookOffset($offset)
+    {
         $this->query->offset((int) $offset);
     }
 }

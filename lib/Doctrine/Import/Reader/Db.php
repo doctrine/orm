@@ -57,7 +57,8 @@ class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
      * @param object pdo      * @return
      * @access public
      */
-    public function setPdo( $pdo ) {
+    public function setPdo( $pdo )
+    {
 
     } // end of member function setPdo
 

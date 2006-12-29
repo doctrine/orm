@@ -37,7 +37,8 @@ Doctrine::autoload('Doctrine_Schema_Object');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Schema_Database extends Doctrine_Schema_Object {
+class Doctrine_Schema_Database extends Doctrine_Schema_Object
+{
 
     protected $definition = array('name'        => null,
                                   'type'        => null,
@@ -53,7 +54,8 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
      * @return
      * @access public
      */
-    public function __clone( ) {
+    public function __clone( )
+    {
 
     }
     /**
@@ -61,7 +63,8 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
      * @return
      * @access public
      */
-    public function __toString( ) {
+    public function __toString( )
+    {
 
     }
     /**
@@ -69,7 +72,8 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
      * @return bool
      * @access public
      */
-    public function isValid( ) {
+    public function isValid( )
+    {
 
     }
     /**
@@ -77,7 +81,8 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
      * @param Doctrine_Schema_Table table      * @return Doctrine_Schema_Table
      * @access public
      */
-    public function addTable( $table = null ) {
+    public function addTable( $table = null )
+    {
         $this->childs[] = $table;
     }
 
@@ -86,7 +91,8 @@ class Doctrine_Schema_Database extends Doctrine_Schema_Object {
      * @return array of Doctrine_Schema_Table
      *
      */
-    public function getTables() {
+    public function getTables()
+    {
         return $this->childs;
     }
 }

@@ -27,7 +27,8 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
+class Doctrine_DataDict_Oracle extends Doctrine_DataDict
+{
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
@@ -50,7 +51,8 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getNativeDeclaration(array $field) {
+    public function getNativeDeclaration(array $field)
+    {
         switch ($field['type']) {
         case 'string':
         case 'array':
@@ -93,7 +95,8 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict {
      * @return array containing the various possible types, length, sign, fixed
      * @throws Doctrine_DataDict_Oracle_Exception
      */
-    public function getPortableDeclaration(array $field) {
+    public function getPortableDeclaration(array $field)
+    {
         $db_type = strtolower($field['type']);
         $type = array();
         $length = $unsigned = $fixed = null;

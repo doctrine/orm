@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator_Unique {
+class Doctrine_Validator_Unique
+{
     /**
      * @param Doctrine_Record $record
      * @param string $key
@@ -38,7 +39,8 @@ class Doctrine_Validator_Unique {
      * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args) {
+    public function validate(Doctrine_Record $record, $key, $value, $args)
+    {
         $table = $record->getTable();
         $sql   = 'SELECT ' . $table->getIdentifier() . ' FROM ' . $table->getTableName() . ' WHERE ' . $key . ' = ?';
         $stmt  = $table->getConnection()->getDbh()->prepare($sql);

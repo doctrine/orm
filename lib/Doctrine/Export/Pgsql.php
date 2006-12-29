@@ -31,7 +31,8 @@ Doctrine::autoload('Doctrine_Export');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export_Pgsql extends Doctrine_Export {
+class Doctrine_Export_Pgsql extends Doctrine_Export
+{
    /**
      * create a new database
      *
@@ -39,7 +40,8 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
      * @throws PDOException
      * @return void
      */
-    public function createDatabase($name) {
+    public function createDatabase($name)
+    {
         $query  = 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name);
         $this->conn->exec($query);
     }
@@ -50,7 +52,8 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
      * @throws PDOException
      * @access public
      */
-    public function dropDatabase($name) {
+    public function dropDatabase($name)
+    {
         $query  = 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
         $this->conn->exec($query);
     }
@@ -143,7 +146,8 @@ class Doctrine_Export_Pgsql extends Doctrine_Export {
      * @throws PDOException
      * @return boolean
      */
-    public function alterTable($name, $changes, $check) {
+    public function alterTable($name, $changes, $check)
+    {
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
                 case 'add':

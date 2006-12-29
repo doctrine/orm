@@ -30,4 +30,5 @@ Doctrine::autoload('Doctrine_Expression');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression_Informix extends Doctrine_Expression { }
+class Doctrine_Expression_Informix extends Doctrine_Expression
+{ }

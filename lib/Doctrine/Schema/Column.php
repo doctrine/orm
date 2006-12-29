@@ -37,7 +37,8 @@ Doctrine::autoload('Doctrine_Schema_Object');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Schema_Column extends Doctrine_Schema_Object implements IteratorAggregate {
+class Doctrine_Schema_Column extends Doctrine_Schema_Object implements IteratorAggregate
+{
     /**
      * column definitions
      * @var array $definition
@@ -52,22 +53,28 @@ class Doctrine_Schema_Column extends Doctrine_Schema_Object implements IteratorA
                                   'autoinc' => false
                                   );
 
-    public function getName() {
+    public function getName()
+    {
         return $this->definition['name'];
     }
-    public function getType() {
+    public function getType()
+    {
         return $this->definition['type'];
     }
-    public function isUnique() {
+    public function isUnique()
+    {
         return $this->definition['unique'];
     }
-    public function isPrimaryKey() {
+    public function isPrimaryKey()
+    {
         return $this->definition['primary'];
     }
-    public function defaultValue() {
+    public function defaultValue()
+    {
         return $this->definition['default'];
     }
-    public function isNotNull() {
+    public function isNotNull()
+    {
         return $this->definition['notnull'];
     }
 }

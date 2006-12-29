@@ -55,10 +55,12 @@ class Doctrine_Import_Reader_Xml_Propel extends Doctrine_Import_Reader
      * @param string xml      * @return
      * @access public
      */
-    public function setXml( $xml ) {
+    public function setXml( $xml )
+    {
 
     } // end of member function setXml
 
-    public function read() { }
+    public function read()
+    { }
 
 } // end of Doctrine_Import_Reader_Xml_Propel

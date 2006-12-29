@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator_Enum {
+class Doctrine_Validator_Enum
+{
     /**
      * @param Doctrine_Record $record
      * @param string $key
@@ -38,7 +39,8 @@ class Doctrine_Validator_Enum {
      * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args) {
+    public function validate(Doctrine_Record $record, $key, $value, $args)
+    {
         $max = substr_count($args, '-');
         $int = (int) $value;
 

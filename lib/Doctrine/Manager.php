@@ -20,7 +20,7 @@
  */
 /**
  *
- * Doctrine_Manager is the base component of all doctrine based projects. 
+ * Doctrine_Manager is the base component of all doctrine based projects.
  * It opens and keeps track of all connections (database connections).
  *
  * @package     Doctrine
@@ -31,7 +31,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Manager extends Doctrine_Configurable implements Countable, IteratorAggregate {
+class Doctrine_Manager extends Doctrine_Configurable implements Countable, IteratorAggregate
+{
     /**
      * @var array $connections      an array containing all the opened connections
      */
@@ -62,7 +63,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * this is private constructor (use getInstance to get an instance of this class)
      */
-    private function __construct() {
+    private function __construct()
+    {
         $this->root = dirname(__FILE__);
         $this->null = new Doctrine_Null;
 
@@ -74,7 +76,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     /**
      * @return Doctrine_Null
      */
-    final public function getNullObject() {
+    final public function getNullObject()
+    {
         return $this->null;
     }
     /**
@@ -83,7 +86,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return boolean
      */
-    final public function setDefaultAttributes() {
+    final public function setDefaultAttributes()
+    {
         static $init = false;
         if ( ! $init) {
             $init = true;
@@ -119,7 +123,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return string
      */
-    final public function getRoot() {
+    final public function getRoot()
+    {
         return $this->root;
     }
     /**
@@ -129,7 +134,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return Doctrine_Manager
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         static $instance;
         if ( ! isset($instance)) {
             $instance = new self();
@@ -138,11 +144,11 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     }
     /**
      * connection
-     * 
+     *
      * if the adapter parameter is set this method acts as
      * a short cut for Doctrine_Manager::getInstance()->openConnection($adapter, $name);
      *
-     * if the adapter paramater is not set this method acts as 
+     * if the adapter paramater is not set this method acts as
      * a short cut for Doctrine_Manager::getInstance()->getCurrentConnection()
      *
      * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
@@ -150,13 +156,14 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @throws Doctrine_Manager_Exception               if trying to bind a connection with an existing name
      * @return Doctrine_Connection
      */
-    public static function connection($adapter = null, $name = null) {
+    public static function connection($adapter = null, $name = null)
+    {
         if ($adapter == null) {
             return Doctrine_Manager::getInstance()->getCurrentConnection();
         } else {
             return Doctrine_Manager::getInstance()->openConnection($adapter, $name);
         }
-    } 
+    }
     /**
      * openConnection
      * opens a new connection and saves it to Doctrine_Manager->connections
@@ -166,7 +173,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @throws Doctrine_Manager_Exception               if trying to bind a connection with an existing name
      * @return Doctrine_Connection
      */
-    public function openConnection($adapter, $name = null) {
+    public function openConnection($adapter, $name = null)
+    {
         if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
             throw new Doctrine_Manager_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
         }
@@ -216,7 +224,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         $this->currIndex = $name;
         return $this->connections[$name];
     }
-    public function openSession(PDO $pdo, $name = null) {
+    public function openSession(PDO $pdo, $name = null)
+    {
         return $this->openConnection($pdo, $name);
     }
     /**
@@ -225,7 +234,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return object Doctrine_Connection
      * @throws Doctrine_Manager_Exception   if trying to get a non-existent connection
      */
-    public function getConnection($name) {
+    public function getConnection($name)
+    {
         if ( ! isset($this->connections[$name])) {
             throw new Doctrine_Manager_Exception('Unknown connection: ' . $name);
         }
@@ -242,7 +252,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @param string $connectionName
      * @return boolean
      */
-    public function bindComponent($componentName, $connectionName) {
+    public function bindComponent($componentName, $connectionName)
+    {
         $this->bound[$componentName] = $connectionName;
     }
     /**
@@ -251,13 +262,14 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @param string $componentName
      * @return Doctrine_Connection
      */
-    public function getConnectionForComponent($componentName = null) {
+    public function getConnectionForComponent($componentName = null)
+    {
         if (isset($this->bound[$componentName])) {
             return $this->getConnection($this->bound[$componentName]);
         }
         return $this->getCurrentConnection();
     }
-    /** 
+    /**
      * getTable
      * this is the same as Doctrine_Connection::getTable() except
      * that it works seamlessly in multi-server/connection environment
@@ -266,7 +278,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @param string $componentName
      * @return Doctrine_Table
      */
-    public function getTable($componentName) {
+    public function getTable($componentName)
+    {
         return $this->getConnectionForComponent($componentName)->getTable($componentName);
     }
     /**
@@ -275,7 +288,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @param Doctrine_Connection $connection
      * @return void
      */
-    public function closeConnection(Doctrine_Connection $connection) {
+    public function closeConnection(Doctrine_Connection $connection)
+    {
         $connection->close();
         unset($connection);
     }
@@ -285,7 +299,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return array
      */
-    public function getConnections() {
+    public function getConnections()
+    {
         return $this->connections;
     }
     /**
@@ -296,7 +311,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @throws InvalidKeyException
      * @return void
      */
-    public function setCurrentConnection($key) {
+    public function setCurrentConnection($key)
+    {
         $key = (string) $key;
         if ( ! isset($this->connections[$key])) {
             throw new InvalidKeyException();
@@ -309,7 +325,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return integer
      */
-    public function count() {
+    public function count()
+    {
         return count($this->connections);
     }
     /**
@@ -318,7 +335,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return ArrayIterator
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return new ArrayIterator($this->connections);
     }
     /**
@@ -328,7 +346,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @throws Doctrine_Connection_Exception       if there are no open connections
      * @return Doctrine_Connection
      */
-    public function getCurrentConnection() {
+    public function getCurrentConnection()
+    {
         $i = $this->currIndex;
         if ( ! isset($this->connections[$i])) {
             throw new Doctrine_Connection_Exception();
@@ -341,7 +360,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         $r[] = "<pre>";
         $r[] = "Doctrine_Manager";
         $r[] = "Connections : ".count($this->connections);

@@ -30,14 +30,16 @@ Doctrine::autoload('Doctrine_Relation_Association');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association {
+class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
+{
     /**
      * getRelationDql
      *
      * @param integer $count
      * @return string
      */
-    public function getRelationDql($count, $context = 'record') {
+    public function getRelationDql($count, $context = 'record')
+    {
         switch ($context) {
         case 'record':
             $sub    = 'SELECT '.$this->foreign.
@@ -63,7 +65,8 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association {
         return $dql;
     }
 
-    public function fetchRelatedFor(Doctrine_Record $record) {
+    public function fetchRelatedFor(Doctrine_Record $record)
+    {
         $id      = $record->getIncremented();
 
         $q = new Doctrine_RawSql();

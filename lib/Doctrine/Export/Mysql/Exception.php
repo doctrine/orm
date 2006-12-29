@@ -30,4 +30,5 @@ Doctrine::autoload('Doctrine_Export_Exception');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Export_Mysql_Exception extends Doctrine_Export_Exception { }
+class Doctrine_Export_Mysql_Exception extends Doctrine_Export_Exception
+{ }

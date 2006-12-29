@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator_Regexp {
+class Doctrine_Validator_Regexp
+{
     /**
      * @param Doctrine_Record $record
      * @param string $key
@@ -38,7 +39,8 @@ class Doctrine_Validator_Regexp {
      * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args) {
+    public function validate(Doctrine_Record $record, $key, $value, $args)
+    {
         if (is_array($args)) {
             foreach ($args as $regexp) {
                 if ( ! preg_match($args, $value)) {

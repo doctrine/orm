@@ -1,14 +1,16 @@
 <?php
 require_once("Condition.php");
 
-class Doctrine_Query_Having extends Doctrine_Query_Condition {
+class Doctrine_Query_Having extends Doctrine_Query_Condition
+{
     /**
      * DQL Aggregate Function parser
      *
      * @param string $func
      * @return mixed
      */
-    private function parseAggregateFunction($func) {
+    private function parseAggregateFunction($func)
+    {
         $pos = strpos($func,"(");
 
         if ($pos !== false) {
@@ -47,7 +49,8 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition {
      * @param string $having
      * @return string
      */
-    final public function load($having) {
+    final public function load($having)
+    {
         $e = Doctrine_Query::bracketExplode($having, ' ', '(', ')');
 
         $r = array_shift($e);
@@ -66,7 +69,8 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition {
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return ( ! empty($this->parts))?implode(' AND ', $this->parts):'';
     }
 }

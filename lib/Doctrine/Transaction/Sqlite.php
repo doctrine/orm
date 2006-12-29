@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Transaction');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Transaction_Sqlite extends Doctrine_Transaction {
+class Doctrine_Transaction_Sqlite extends Doctrine_Transaction
+{
     /**
      * Set the transacton isolation level.
      *
@@ -43,7 +44,8 @@ class Doctrine_Transaction_Sqlite extends Doctrine_Transaction {
      * @throws Doctrine_Transaction_Exception       if using unknown isolation level
      * @return void
      */
-    public function setIsolation($isolation) {
+    public function setIsolation($isolation)
+    {
         switch ($isolation) {
             case 'READ UNCOMMITTED':
                 $isolation = 0;

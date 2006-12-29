@@ -1,5 +1,6 @@
 <?php
-class Doctrine_Record_Iterator extends ArrayIterator {
+class Doctrine_Record_Iterator extends ArrayIterator
+{
     /**
      * @var Doctrine_Record $record
      */
@@ -13,7 +14,8 @@ class Doctrine_Record_Iterator extends ArrayIterator {
      *
      * @param Doctrine_Record $record
      */
-    public function __construct(Doctrine_Record $record) {
+    public function __construct(Doctrine_Record $record)
+    {
         $this->record = $record;
         parent::__construct($record->getData());
     }
@@ -22,7 +24,8 @@ class Doctrine_Record_Iterator extends ArrayIterator {
      *
      * @param Doctrine_Null $null
      */
-    public static function initNullObject(Doctrine_Null $null) {
+    public static function initNullObject(Doctrine_Null $null)
+    {
         self::$null = $null;
     }
     /**
@@ -30,7 +33,8 @@ class Doctrine_Record_Iterator extends ArrayIterator {
      *
      * @return mixed
      */
-    public function current() {
+    public function current()
+    {
         $value = parent::current();
 
         if ($value === self::$null) {

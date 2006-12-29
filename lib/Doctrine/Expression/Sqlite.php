@@ -30,14 +30,16 @@ Doctrine::autoload('Doctrine_Expression');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression_Sqlite extends Doctrine_Expression {
+class Doctrine_Expression_Sqlite extends Doctrine_Expression
+{
     /**
      * Returns the md5 sum of the data that SQLite's md5() function receives.
      *
      * @param mixed $data
      * @return string
      */
-    public static function md5Impl($data) {
+    public static function md5Impl($data)
+    {
         return md5($data);
     }
     /**
@@ -47,7 +49,8 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
      * @param integer $divisor
      * @return string
      */
-    public static function modImpl($dividend, $divisor) {
+    public static function modImpl($dividend, $divisor)
+    {
         return $dividend % $divisor;
     }
 
@@ -56,7 +59,8 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
      *
      * @return string
      */
-    public static function concatImpl() {
+    public static function concatImpl()
+    {
         $args = func_get_args();
         return join( '', $args );
     }
@@ -69,19 +73,24 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
      * @param string $str       literal string
      * @return string
      */
-    public static function locateImpl($substr, $str) {
+    public static function locateImpl($substr, $str)
+    {
         return strpos($str, $substr);
     }
-    public static function sha1Impl($str) {
+    public static function sha1Impl($str)
+    {
         return sha1($str);
     }
-    public static function ltrimImpl($str) {
+    public static function ltrimImpl($str)
+    {
         return ltrim($str);
     }
-    public static function rtrimImpl($str) {
+    public static function rtrimImpl($str)
+    {
         return rtrim($str);
     }
-    public static function trimImpl($str) {
+    public static function trimImpl($str)
+    {
         return trim($str);
     }
     /**
@@ -89,7 +98,8 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
      *
      * @return string
      */
-    public function regexp() {
+    public function regexp()
+    {
         return 'RLIKE';
     }
     /**
@@ -102,7 +112,8 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
      * @param string $value
      * @return string   SQL soundex function with given parameter
      */
-    public function soundex($value) {
+    public function soundex($value)
+    {
         return 'SOUNDEX(' . $value . ')';
     }
     /**
@@ -111,7 +122,8 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
      *
      * @return string       sqlite function as string
      */
-    public function now($type = 'timestamp') {
+    public function now($type = 'timestamp')
+    {
         switch ($type) {
         case 'time':
             return 'time(\'now\')';
@@ -127,7 +139,8 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
      *
      * @return string to generate float between 0 and 1
      */
-    public function random() {
+    public function random()
+    {
         return '((RANDOM() + 2147483648) / 4294967296)';
     }
     /**
@@ -142,7 +155,8 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression {
      * @param integer $length       the substring portion length
      * @return string               SQL substring function with given parameters
      */
-    public function substring($value, $position, $length = null) {
+    public function substring($value, $position, $length = null)
+    {
         if ($length !== null) {
             return 'SUBSTR(' . $value . ', ' . $position . ', ' . $length . ')';
         }

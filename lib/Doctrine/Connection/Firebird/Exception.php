@@ -32,7 +32,8 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  * @author      Lorenzo Alberton <l.alberton@quipo.it> (PEAR MDB2 Interbase driver)
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  */
-class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Exception {
+class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Exception
+{
     /**
      * @var array $errorCodeMap         an array that is used for determining portable
      *                                  error code from a native database error code
@@ -106,7 +107,8 @@ class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Excepti
      * @since 1.0
      * @return array
      */
-    public function processErrorInfo(array $errorInfo) {
+    public function processErrorInfo(array $errorInfo)
+    {
             /**
             // todo: are the following lines needed?
             // memo for the interbase php module hackers: we need something similar

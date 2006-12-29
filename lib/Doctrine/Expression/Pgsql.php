@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Expression');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression_Pgsql extends Doctrine_Expression {
+class Doctrine_Expression_Pgsql extends Doctrine_Expression
+{
     /**
      * Returns the md5 sum of a field.
      *
@@ -49,7 +50,8 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
      *
      * @return string
      */
-    public function md5($column) {
+    public function md5($column)
+    {
         $column = $this->getIdentifier($column);
 
         if ($this->version > 7) {
@@ -69,7 +71,8 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
      * @param int $len extract this amount of characters.
      * @return string sql that extracts part of a string.
      */
-    public function substring($value, $from, $len = null) {
+    public function substring($value, $from, $len = null)
+    {
         $value = $this->getIdentifier($value);
 
         if ($len === null) {
@@ -89,7 +92,8 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
      * @param string|array(string) strings that will be concatinated.
      * @return string
      */
-    public function concat($arg1, $arg2) {
+    public function concat($arg1, $arg2)
+    {
         $args = func_get_args();
         $cols = $this->getIdentifiers($cols);
 
@@ -100,7 +104,8 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
      *
      * @return string           the regular expression operator
      */
-    public function regexp() {
+    public function regexp()
+    {
         return 'SIMILAR TO';
     }
     /**
@@ -109,7 +114,8 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
      * @return return string to generate float between 0 and 1
      * @access public
      */
-    public function random() {
+    public function random()
+    {
         return 'RANDOM()';
     }
     /**
@@ -129,7 +135,8 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression {
      *
      * @return string SQL pattern
      */
-    public function matchPattern($pattern, $operator = null, $field = null) {
+    public function matchPattern($pattern, $operator = null, $field = null)
+    {
         $match = '';
         if (!is_null($operator)) {
             $field = is_null($field) ? '' : $field.' ';

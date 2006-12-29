@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Connection');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_Informix extends Doctrine_Connection {
+class Doctrine_Connection_Informix extends Doctrine_Connection
+{
     /**
      * @var string $driverName                  the name of this connection driver
      */
@@ -41,7 +42,8 @@ class Doctrine_Connection_Informix extends Doctrine_Connection {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, $adapter) {
+    public function __construct(Doctrine_Manager $manager, $adapter)
+    {
         // initialize all driver options
 
         parent::__construct($manager, $adapter);

@@ -31,7 +31,8 @@ Doctrine::autoload("Doctrine_Connection_Common");
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
+class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
+{
     /**
      * @var string $driverName                  the name of this connection driver
      */
@@ -42,7 +43,8 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, $adapter) {
+    public function __construct(Doctrine_Manager $manager, $adapter)
+    {
         // initialize all driver options
         $this->supported = array(
                           'sequences'               => true,
@@ -82,7 +84,8 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
      *
      * @return void
      */
-    public function setCharset($charset) {
+    public function setCharset($charset)
+    {
         $query = 'SET NAMES '.$this->dbh->quote($charset);
         $this->dbh->query($query);
     }
@@ -91,7 +94,8 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
      * @param string $sequence
      * @return integer
      */
-    public function nextId($sequence) {
+    public function nextId($sequence)
+    {
         $stmt = $this->dbh->query("SELECT NEXTVAL('$sequence')");
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return $data[0];
@@ -102,7 +106,8 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
      * @param string $seq_name name of the sequence
      * @return integer
      */
-    public function currId($sequence) {
+    public function currId($sequence)
+    {
         $stmt = $this->dbh->query('SELECT last_value FROM '.$sequence);
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return $data[0];
@@ -116,7 +121,8 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
      * @param boolean $isManip      if the query is a DML query
      * @return string               modified query
      */
-    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false) {
+    public function modifyLimitQuery($query, $limit = false, $offset = false, $isManip = false)
+    {
         if ($limit > 0) {
             $query = rtrim($query);
 
@@ -148,7 +154,8 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common {
      * @param string $native    determines if the raw version string should be returned
      * @return array|string     an array or string with version information
      */
-    public function getServerVersion($native = false) {
+    public function getServerVersion($native = false)
+    {
         $query = 'SHOW SERVER_VERSION';
 
         $serverInfo = $this->fetchOne($query);

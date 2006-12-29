@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Expression');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression_Mssql extends Doctrine_Expression {
+class Doctrine_Expression_Mssql extends Doctrine_Expression
+{
     /**
      * Return string to call a variable with the current timestamp inside an SQL statement
      * There are three special variables for current date and time:
@@ -41,7 +42,8 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression {
      * @return string to call a variable with the current timestamp
      * @access public
      */
-    public function now($type = 'timestamp') {
+    public function now($type = 'timestamp')
+    {
         switch ($type) {
         case 'time':
         case 'date':
@@ -55,7 +57,8 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression {
      *
      * @return string to call a function to get a substring
      */
-    public function substring($value, $position, $length = null) {
+    public function substring($value, $position, $length = null)
+    {
         if (!is_null($length)) {
             return "SUBSTRING($value, $position, $length)";
         }
@@ -70,7 +73,8 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression {
      * @return string to concatenate two strings
      * @access public
      **/
-    function concat($arg1, $arg2) {
+    function concat($arg1, $arg2)
+    {
         $args = func_get_args();
         return '(' . implode(' + ', $args) . ')';
     }

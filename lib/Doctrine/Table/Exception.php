@@ -31,7 +31,8 @@ Doctrine::autoload('Doctrine_Exception');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Table_Exception extends Doctrine_Exception {
+class Doctrine_Table_Exception extends Doctrine_Exception
+{
     public function __construct($message = "Couldn't initialize table. One instance of this
                             table already exists. Always use Doctrine_Session::getTable(\$name)
                             to get on instance of a Doctrine_Table.") {

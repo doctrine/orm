@@ -32,7 +32,8 @@ Doctrine::autoload('Doctrine_Access');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  */
-abstract class Doctrine_Schema_Object extends Doctrine_Access implements IteratorAggregate, Countable {
+abstract class Doctrine_Schema_Object extends Doctrine_Access implements IteratorAggregate, Countable
+{
 
     protected $children   = array();
 
@@ -46,7 +47,8 @@ abstract class Doctrine_Schema_Object extends Doctrine_Access implements Iterato
         }
     }
 
-    public function get($name) {
+    public function get($name)
+    {
         if ( ! array_key_exists($name, $this->definition)) {
             throw new Doctrine_Schema_Exception('Unknown definition '. $name);
         }
@@ -54,18 +56,21 @@ abstract class Doctrine_Schema_Object extends Doctrine_Access implements Iterato
 
     }
 
-    public function set($name, $value) {
+    public function set($name, $value)
+    {
         if ( ! array_key_exists($name, $this->definition)) {
             throw new Doctrine_Schema_Exception('Unknown definition '. $name);
         }
         $this->definition[$name] = $value;
     }
 
-    public function contains($name) {
+    public function contains($name)
+    {
         return array_key_exists($name, $this->definition);
     }
 
-    public function toArray() {
+    public function toArray()
+    {
         return $this->definition;
     }
     /**
@@ -73,7 +78,8 @@ abstract class Doctrine_Schema_Object extends Doctrine_Access implements Iterato
      * @return int
      * @access public
      */
-    public function count() {
+    public function count()
+    {
         if ( ! empty($this->children)) {
             return count($this->children);
         }
@@ -86,7 +92,8 @@ abstract class Doctrine_Schema_Object extends Doctrine_Access implements Iterato
      * @return ArrayIterator
      * @access public
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         if ( ! empty($this->children)) {
             return new ArrayIterator($this->children);
         }

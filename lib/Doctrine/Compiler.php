@@ -30,7 +30,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Compiler {
+class Doctrine_Compiler
+{
     /**
      * @var array $classes          an array containing all runtime classes of Doctrine framework
      */
@@ -109,7 +110,8 @@ class Doctrine_Compiler {
      *
      * @return array
      */
-    public static function getRuntimeClasses() {
+    public static function getRuntimeClasses()
+    {
         return self::$classes;
     }
     /**
@@ -120,7 +122,8 @@ class Doctrine_Compiler {
      * @throws Doctrine_Compiler_Exception      if something went wrong during the compile operation
      * @return void
      */
-    public static function compile($target = null) {
+    public static function compile($target = null)
+    {
         $path = Doctrine::getPath();
 
         $classes = self::$classes;
@@ -159,7 +162,7 @@ class Doctrine_Compiler {
         // first write the 'compiled' data to a text file, so
         // that we can use php_strip_whitespace (which only works on files)
         $fp = @fopen($target, 'w');
-        
+
         if ($fp === false) {
             throw new Doctrine_Compiler_Exception("Couldn't write compiled data. Failed to open $target");
         }

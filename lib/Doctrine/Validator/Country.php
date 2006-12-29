@@ -30,7 +30,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator_Country {
+class Doctrine_Validator_Country
+{
     private static $countries = array(
         "ad" =>	"Andorra",
         "ae" =>	"United Arab Emirates",
@@ -278,7 +279,8 @@ class Doctrine_Validator_Country {
     /**
      * @return array
      */
-    public static function getCountries() {
+    public static function getCountries()
+    {
         return self::$countries;
     }
     /**
@@ -288,7 +290,8 @@ class Doctrine_Validator_Country {
      * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args) {
+    public function validate(Doctrine_Record $record, $key, $value, $args)
+    {
         $value = strtolower($value);
         return isset(self::$countries[$value]);
     }

@@ -29,13 +29,15 @@ Doctrine::autoload('Doctrine_Import');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Import_Sqlite extends Doctrine_Import {
+class Doctrine_Import_Sqlite extends Doctrine_Import
+{
     /**
      * lists all databases
      *
      * @return array
      */
-    public function listDatabases() {
+    public function listDatabases()
+    {
 
     }
     /**
@@ -43,8 +45,9 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      *
      * @return array
      */
-    public function listFunctions() {
-    
+    public function listFunctions()
+    {
+
     }
     /**
      * lists all database triggers
@@ -52,7 +55,8 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTriggers($database = null) {
+    public function listTriggers($database = null)
+    {
 
     }
     /**
@@ -61,7 +65,8 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listSequences($database = null) { 
+    public function listSequences($database = null)
+    {
         $db =& $this->getDBInstance();
         if (PEAR::isError($db)) {
             return $db;
@@ -89,7 +94,8 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableConstraints($table) {
+    public function listTableConstraints($table)
+    {
         $db =& $this->getDBInstance();
         if (PEAR::isError($db)) {
             return $db;
@@ -121,7 +127,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
         if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
             $result = array_change_key_case($result, $db->options['field_case']);
         }
-        return array_keys($result);    
+        return array_keys($result);
     }
     /**
      * lists table constraints
@@ -129,7 +135,8 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableColumns($table) {
+    public function listTableColumns($table)
+    {
 
         $sql    = 'PRAGMA table_info(' . $table . ')';
         $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
@@ -154,7 +161,8 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableIndexes($table) {
+    public function listTableIndexes($table)
+    {
         $sql     =  'PRAGMA index_list(' . $table . ')';
         $result  = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -169,14 +177,15 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTables($database = null) {
+    public function listTables($database = null)
+    {
         $sql = "SELECT name FROM sqlite_master WHERE type = 'table' "
              . "UNION ALL SELECT name FROM sqlite_temp_master "
              . "WHERE type = 'table' ORDER BY name";
 
         $tables = array();
         $stmt   = $this->dbh->query($sql);
-        
+
         $data   = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         foreach ($data as $table) {
@@ -190,8 +199,9 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableTriggers($table) { 
-    
+    public function listTableTriggers($table)
+    {
+
     }
     /**
      * lists table views
@@ -199,16 +209,18 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableViews($table) { 
-    
+    public function listTableViews($table)
+    {
+
     }
     /**
      * lists database users
      *
      * @return array
      */
-    public function listUsers() { 
-    
+    public function listUsers()
+    {
+
     }
     /**
      * lists database views
@@ -216,8 +228,9 @@ class Doctrine_Import_Sqlite extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listViews($database = null) { 
-    
+    public function listViews($database = null)
+    {
+
     }
 }
 

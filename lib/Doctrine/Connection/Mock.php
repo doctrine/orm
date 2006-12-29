@@ -31,7 +31,8 @@ Doctrine::autoload('Doctrine_Connection_Common');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Connection_Mock extends Doctrine_Connection_Common {
+class Doctrine_Connection_Mock extends Doctrine_Connection_Common
+{
     /**
      * @var string $driverName                  the name of this connection driver
      */
@@ -42,7 +43,8 @@ class Doctrine_Connection_Mock extends Doctrine_Connection_Common {
      * @param Doctrine_Manager $manager
      * @param PDO|Doctrine_Adapter $adapter     database handler
      */
-    public function __construct(Doctrine_Manager $manager, $adapter) {
+    public function __construct(Doctrine_Manager $manager, $adapter)
+    {
 
     }
 }

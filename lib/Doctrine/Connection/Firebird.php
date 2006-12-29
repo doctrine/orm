@@ -32,7 +32,8 @@ Doctrine::autoload('Doctrine_Connection');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Connection_Firebird extends Doctrine_Connection {
+class Doctrine_Connection_Firebird extends Doctrine_Connection
+{
     /**
      * @var string $driverName                  the name of this connection driver
      */
@@ -43,7 +44,8 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, $adapter) {
+    public function __construct(Doctrine_Manager $manager, $adapter)
+    {
 
         $this->supported = array(
                           'sequences'             => true,
@@ -82,7 +84,8 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
      *
      * @return void
      */
-    public function setCharset($charset) {
+    public function setCharset($charset)
+    {
         $query = 'SET NAMES '.$this->dbh->quote($charset);
         $this->dbh->query($query);
     }
@@ -94,7 +97,8 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
      * @param integer $offset   start reading from given offset
      * @return string modified  query
      */
-    public function modifyLimitQuery($query, $limit, $offset) {
+    public function modifyLimitQuery($query, $limit, $offset)
+    {
         if ($limit > 0) {
             $query = preg_replace('/^([\s(])*SELECT(?!\s*FIRST\s*\d+)/i',
                 "SELECT FIRST $limit SKIP $offset", $query);
@@ -106,7 +110,8 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection {
      * @param string $sequence
      * @return integer
      */
-    public function getNextID($sequence) {
+    public function getNextID($sequence)
+    {
         $stmt = $this->query('SELECT UNIQUE FROM ' . $sequence);
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return $data[0];

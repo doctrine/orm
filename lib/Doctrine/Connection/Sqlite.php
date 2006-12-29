@@ -31,7 +31,8 @@ Doctrine::autoload("Doctrine_Connection_Common");
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
+class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
+{
     /**
      * @var string $driverName                  the name of this connection driver
      */
@@ -42,7 +43,8 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
      * @param Doctrine_Manager $manager
      * @param PDO $pdo                          database handle
      */
-    public function __construct(Doctrine_Manager $manager, $adapter) {
+    public function __construct(Doctrine_Manager $manager, $adapter)
+    {
 
         $this->supported = array(
                           'sequences'            => 'emulated',
@@ -76,7 +78,8 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
     /**
      * initializes database functions missing in sqlite
      */
-    public function initFunctions() {
+    public function initFunctions()
+    {
         $this->dbh->sqliteCreateFunction('md5',    array('Doctrine_Expression_Sqlite', 'md5Impl'), 1);
         $this->dbh->sqliteCreateFunction('mod',    array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
         $this->dbh->sqliteCreateFunction('concat', array('Doctrine_Expression_Sqlite', 'concatImpl'));
@@ -88,7 +91,8 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common {
      * @param string $seq_name  name of the sequence
      * @return integer          the current id in the given sequence
      */
-    public function currId($sequence) {
+    public function currId($sequence)
+    {
         $sequence = $this->quoteIdentifier($sequence, true);
         $seqColumn = $this->quoteIdentifier($this->options['seqcol_name'], true);
         $stmt = $this->dbh->query('SELECT MAX(' . $seqColumn . ') FROM ' . $sequence);

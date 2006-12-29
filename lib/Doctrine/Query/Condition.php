@@ -1,7 +1,8 @@
 <?php
 Doctrine::autoload("Doctrine_Query_Part");
 
-abstract class Doctrine_Query_Condition extends Doctrine_Query_Part {
+abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
+{
     /**
      * DQL CONDITION PARSER
      * parses the where/having part of the query string
@@ -10,7 +11,8 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part {
      * @param string $str
      * @return string
      */
-    final public function parse($str) {
+    final public function parse($str)
+    {
         $tmp = trim($str);
 
         $parts = Doctrine_Query::bracketExplode($str, array(' \&\& ', ' AND '), '(', ')');

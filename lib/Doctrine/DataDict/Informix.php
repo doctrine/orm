@@ -29,7 +29,8 @@ Doctrine::autoload('Doctrine_DataDict');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Informix extends Doctrine_DataDict {
+class Doctrine_DataDict_Informix extends Doctrine_DataDict
+{
     /**
      * Obtain DBMS specific SQL code portion needed to declare an text type
      * field to be used in statements like CREATE TABLE.
@@ -53,7 +54,8 @@ class Doctrine_DataDict_Informix extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getNativeDeclaration($field) {
+    public function getNativeDeclaration($field)
+    {
         switch ($field['type']) {
         case 'char':
         case 'varchar':
@@ -63,7 +65,7 @@ class Doctrine_DataDict_Informix extends Doctrine_DataDict {
             if (empty($field['length']) && array_key_exists('default', $field)) {
                 $field['length'] = $this->conn->varchar_max_length;
             }
-            
+
             $length = (! empty($field['length'])) ? $field['length'] : false;
             $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
 

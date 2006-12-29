@@ -30,7 +30,8 @@ Doctrine::autoload("Doctrine_Access");
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Query_Part extends Doctrine_Access {
+abstract class Doctrine_Query_Part extends Doctrine_Access
+{
     /**
      * @var Doctrine_Query $query           the query object associated with this parser
      */
@@ -46,19 +47,22 @@ abstract class Doctrine_Query_Part extends Doctrine_Access {
     /**
      * @param Doctrine_Query $query         the query object associated with this parser
      */
-    public function __construct(Doctrine_Query $query) {
+    public function __construct(Doctrine_Query $query)
+    {
         $this->query = $query;
     }
     /**
      * @return string $name                 the name of this parser
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
     /**
      * @return Doctrine_Query $query        the query object associated with this parser
      */
-    public function getQuery() {
+    public function getQuery()
+    {
         return $this->query;
     }
     /**
@@ -67,11 +71,14 @@ abstract class Doctrine_Query_Part extends Doctrine_Access {
      * @param string $value
      * @return void
      */
-    public function add($value) {
+    public function add($value)
+    {
         $method = "parse".$this->name;
         $this->query->$method($value);
     }
 
-    public function get($name) { }
-    public function set($name, $value) { }
+    public function get($name)
+    { }
+    public function set($name, $value)
+    { }
 }

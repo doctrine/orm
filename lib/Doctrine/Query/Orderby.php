@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Query_Part');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query_Orderby extends Doctrine_Query_Part {
+class Doctrine_Query_Orderby extends Doctrine_Query_Part
+{
     /**
      * DQL ORDER BY PARSER
      * parses the order by part of the query string
@@ -38,7 +39,8 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part {
      * @param string $str
      * @return void
      */
-    public function parse($str) {
+    public function parse($str)
+    {
         $ret = array();
 
         foreach (explode(',', trim($str)) as $r) {
@@ -67,7 +69,8 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part {
 
         return implode(', ', $ret);
     }
-    public function __toString() {
+    public function __toString()
+    {
         return ( ! empty($this->parts))?implode(', ', $this->parts):'';
     }
 }

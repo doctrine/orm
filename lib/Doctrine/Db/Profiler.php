@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Overloadable');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Db_Profiler implements Doctrine_Overloadable {
+class Doctrine_Db_Profiler implements Doctrine_Overloadable
+{
     /**
      * @param array $listeners      an array containing all availible listeners
      */
@@ -56,7 +57,8 @@ class Doctrine_Db_Profiler implements Doctrine_Overloadable {
      * @see Doctrine_Db_EventListener
      * @return void
      */
-    public function __call($m, $a) {
+    public function __call($m, $a)
+    {
         // first argument should be an instance of Doctrine_Db_Event
         if ( ! ($a[0] instanceof Doctrine_Db_Event)) {
             throw new Doctrine_Db_Profiler_Exception("Couldn't listen event. Event should be an instance of Doctrine_Db_Event.");
@@ -83,7 +85,8 @@ class Doctrine_Db_Profiler implements Doctrine_Overloadable {
      *
      * @return Doctrine_Db_Event
      */
-    public function lastEvent() {
+    public function lastEvent()
+    {
         if (empty($this->events)) {
             return false;
         }

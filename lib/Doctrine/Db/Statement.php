@@ -29,7 +29,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Db_Statement extends PDOStatement {
+class Doctrine_Db_Statement extends PDOStatement
+{
     protected $dbh;
 
     protected $querySequence;
@@ -38,28 +39,34 @@ class Doctrine_Db_Statement extends PDOStatement {
 
     protected $executed = false;
 
-    protected function __construct($dbh) {
+    protected function __construct($dbh)
+    {
         $this->dbh = $dbh;
         $this->baseSequence  = $this->querySequence = $this->dbh->getQuerySequence();
     }
 
-    public function getQuerySequence() {
+    public function getQuerySequence()
+    {
         return $this->querySequence;
     }
-    public function getBaseSequence() {
+    public function getBaseSequence()
+    {
         return $this->baseSequence;
     }
-    public function getQuery() {
+    public function getQuery()
+    {
         return $this->queryString;
     }
-    public function isExecuted($executed = null) {
+    public function isExecuted($executed = null)
+    {
         if ($executed === null)
             return $this->executed;
 
         $this->executed = (bool) $executed;
     }
 
-    public function execute(array $params = null) {
+    public function execute(array $params = null)
+    {
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::EXECUTE, $this->queryString);
 
         $this->dbh->getListener()->onPreExecute($event);

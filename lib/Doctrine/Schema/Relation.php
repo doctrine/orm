@@ -37,7 +37,8 @@ Doctrine::autoload('Doctrine_Schema_Object');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
+class Doctrine_Schema_Relation extends Doctrine_Schema_Object
+{
 
     /**
      * Column that refers to another table
@@ -101,7 +102,8 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
      * @return
      * @access public
      */
-    public function setRelationBetween( $referencingColumn, $referencedTable, $referencedColumn ) {
+    public function setRelationBetween( $referencingColumn, $referencedTable, $referencedColumn )
+    {
         $this->referencingColumn = $referencingColumn;
         $this->referencedTable = $referencedTable;
         $this->referencedColumn = $referencedColumn;
@@ -109,14 +111,16 @@ class Doctrine_Schema_Relation extends Doctrine_Schema_Object {
     /**
      * @return string
      */
-    public function __toString( ) {
+    public function __toString( )
+    {
         return "Relation between '".$this->referencingColumn."' and '".$this->referencedTable."'.'".$this->referencingColumn."'";
     }
     /**
      *
      * @return bool
      */
-    public function isValid( ) {
+    public function isValid( )
+    {
 
     }
 }

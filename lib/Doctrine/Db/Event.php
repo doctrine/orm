@@ -29,7 +29,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Db_Event {
+class Doctrine_Db_Event
+{
     const QUERY     = 1;
     const EXEC      = 2;
     const EXECUTE   = 3;
@@ -47,28 +48,35 @@ class Doctrine_Db_Event {
 
     protected $endedMicrotime;
 
-    public function __construct($invoker, $type, $query = null) {
+    public function __construct($invoker, $type, $query = null)
+    {
         $this->invoker = $invoker;
         $this->type    = $type;
         $this->query   = $query;
     }
-    public function getQuery() {
+    public function getQuery()
+    {
         return $this->query;
     }
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
-    public function start() {
+    public function start()
+    {
         $this->startedMicrotime = microtime(true);
     }
-    public function hasEnded() {
+    public function hasEnded()
+    {
         return ($this->endedMicrotime != null);
     }
-    public function end() {
+    public function end()
+    {
         $this->endedMicrotime = microtime(true);
     }
-    public function getInvoker() {
+    public function getInvoker()
+    {
         return $this->invoker;
     }
     /**
@@ -77,7 +85,8 @@ class Doctrine_Db_Event {
      *
      * @return mixed
      */
-    public function getElapsedSecs() {
+    public function getElapsedSecs()
+    {
         if (is_null($this->endedMicrotime)) {
             return false;
         }

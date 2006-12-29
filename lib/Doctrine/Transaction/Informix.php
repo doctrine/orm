@@ -30,4 +30,5 @@ Doctrine::autoload('Doctrine_Transaction');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Transaction_Informix extends Doctrine_Transaction { }
+class Doctrine_Transaction_Informix extends Doctrine_Transaction
+{ }

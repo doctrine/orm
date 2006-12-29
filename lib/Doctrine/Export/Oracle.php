@@ -31,7 +31,8 @@ Doctrine::autoload('Doctrine_Export');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export_Oracle extends Doctrine_Export {
+class Doctrine_Export_Oracle extends Doctrine_Export
+{
     /**
      * create a new database
      *
@@ -40,7 +41,7 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
      * @return mixed MDB2_OK on success, a MDB2 error on failure
      * @access public
      */
-    public function createDatabase($name) 
+    public function createDatabase($name)
     {
         if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
             throw new Doctrine_Export_Oracle_Exception('database creation is only supported if the "emulate_database" attribute is enabled');
@@ -74,7 +75,7 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
      * @return mixed MDB2_OK on success, a MDB2 error on failure
      * @access public
      */
-    public function dropDatabase($name) 
+    public function dropDatabase($name)
     {
         if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
             throw new Doctrine_Export_Oracle_Exception('database dropping is only supported if the
@@ -93,7 +94,7 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
      * @return mixed        MDB2_OK on success, a MDB2 error on failure
      * @access private
      */
-    public function _makeAutoincrement($name, $table, $start = 1) 
+    public function _makeAutoincrement($name, $table, $start = 1)
     {
         $table = strtoupper($table);
         $index_name  = $table . '_AI_PK';
@@ -163,7 +164,7 @@ END;
      * @param string $table name of the table
      * @return void
      */
-    public function dropAutoincrement($table) 
+    public function dropAutoincrement($table)
     {
         $table = strtoupper($table);
         $trigger_name = $table . '_AI_PK';
@@ -219,7 +220,7 @@ END;
      *
      * @return void
      */
-    public function createTable($name, $fields, $options = array()) 
+    public function createTable($name, $fields, $options = array())
     {
         $this->conn->beginTransaction();
 
@@ -241,7 +242,7 @@ END;
      * @param string $name name of the table that should be dropped
      * @return void
      */
-    public function dropTable($name) 
+    public function dropTable($name)
     {
         //$this->conn->beginNestedTransaction();
         $result = $this->dropAutoincrement($name);
@@ -337,7 +338,7 @@ END;
      *                             actually perform them otherwise.
      * @return void
      */
-    public function alterTable($name, array $changes, $check) 
+    public function alterTable($name, array $changes, $check)
     {
 
         foreach ($changes as $changeName => $change) {
@@ -420,7 +421,8 @@ END;
      * @param string $start start value of the sequence; default is 1
      * @return void
      */
-    public function createSequence($seqName, $start = 1) {
+    public function createSequence($seqName, $start = 1)
+    {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         $query = 'CREATE SEQUENCE ' . $sequenceName . ' START WITH ' . $start . ' INCREMENT BY 1 NOCACHE';
         $query.= ($start < 1 ? ' MINVALUE ' . $start : '');
@@ -433,7 +435,8 @@ END;
      * @param string $seqName name of the sequence to be dropped
      * @return void
      */
-    public function dropSequence($seqName) {
+    public function dropSequence($seqName)
+    {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         return $this->conn->exec('DROP SEQUENCE ' . $sequenceName);
     }

@@ -30,14 +30,16 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator_Notnull {
+class Doctrine_Validator_Notnull
+{
     /**
      * @param Doctrine_Record $record
      * @param string $key
      * @param mixed $value
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value) {
+    public function validate(Doctrine_Record $record, $key, $value)
+    {
         if ($value === null || $value === '') {
             return false;
         }

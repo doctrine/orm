@@ -29,7 +29,8 @@ Doctrine::autoload('Doctrine_DataDict');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
+class Doctrine_DataDict_Mysql extends Doctrine_DataDict
+{
     protected $keywords = array(
                           'ADD', 'ALL', 'ALTER',
                           'ANALYZE', 'AND', 'AS',
@@ -130,7 +131,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getNativeDeclaration($field) 
+    public function getNativeDeclaration($field)
     {
         switch ($field['type']) {
         case 'char':
@@ -218,7 +219,8 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @param array  $field native field description
      * @return array containing the various possible types, length, sign, fixed
      */
-    public function getPortableDeclaration(array $field) {
+    public function getPortableDeclaration(array $field)
+    {
         $dbType = strtolower($field['type']);
         $dbType = strtok($dbType, '(), ');
         if ($dbType == 'national') {
@@ -362,7 +364,8 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion needed to set the CHARACTER SET
      *                 of a field declaration.
      */
-    public function getCharsetFieldDeclaration($charset) {
+    public function getCharsetFieldDeclaration($charset)
+    {
         return 'CHARACTER SET '.$charset;
     }
     /**
@@ -373,7 +376,8 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion needed to set the COLLATION
      *                 of a field declaration.
      */
-    public function getCollationFieldDeclaration($collation) {
+    public function getCollationFieldDeclaration($collation)
+    {
         return 'COLLATE '.$collation;
     }
     /**
@@ -401,7 +405,8 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion that should be used to
      *                 declare the specified field.
      */
-    public function getIntegerDeclaration($name, $field) {
+    public function getIntegerDeclaration($name, $field)
+    {
         $default = $autoinc = '';
         if (!empty($field['autoincrement'])) {
             $autoinc = ' AUTO_INCREMENT PRIMARY KEY';
@@ -410,7 +415,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
                 $field['default'] = empty($field['notnull']) ? null : 0;
             }
             $default = ' DEFAULT '.$this->conn->getDbh()->quote($field['default']);
-        } 
+        }
         /**
         elseif (empty($field['notnull'])) {
             $default = ' DEFAULT NULL';

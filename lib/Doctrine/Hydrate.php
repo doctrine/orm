@@ -32,7 +32,8 @@ Doctrine::autoload('Doctrine_Access');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Hydrate extends Doctrine_Access {
+abstract class Doctrine_Hydrate extends Doctrine_Access
+{
     /**
      * @var array $fetchmodes                   an array containing all fetchmodes
      */
@@ -110,7 +111,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @param Doctrine_Connection|null $connection
      */
-    public function __construct($connection = null) {
+    public function __construct($connection = null)
+    {
         if ( ! ($connection instanceof Doctrine_Connection)) {
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
         }
@@ -122,7 +124,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return array
      */
-    public function getComponentAliases() {
+    public function getComponentAliases()
+    {
         return $this->compAliases;
     }
     /**
@@ -130,7 +133,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return array
      */
-    public function getTableAliases() {
+    public function getTableAliases()
+    {
         return $this->tableAliases;
     }
     /**
@@ -138,7 +142,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return array
      */
-    public function getTableIndexes() {
+    public function getTableIndexes()
+    {
         return $this->tableIndexes;
     }
     /**
@@ -146,7 +151,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return array
      */
-    public function getTables() {
+    public function getTables()
+    {
         return $this->tables;
     }
     /**
@@ -154,7 +160,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return void
      */
-    public function copyAliases(Doctrine_Hydrate $query) {
+    public function copyAliases(Doctrine_Hydrate $query)
+    {
         $this->compAliases  = $query->getComponentAliases();
         $this->tableAliases = $query->getTableAliases();
         $this->tableIndexes = $query->getTableIndexes();
@@ -162,7 +169,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
         return $this;
     }
 
-    public function getPathAlias($path) {
+    public function getPathAlias($path)
+    {
         $s = array_search($path, $this->compAliases);
         if ($s === false)
             return $path;
@@ -174,7 +182,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return Doctrine_Hydrate
      */
-    public function createSubquery() {
+    public function createSubquery()
+    {
         $class = get_class($this);
         $obj   = new $class();
 
@@ -194,7 +203,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return boolean
      */
-    public function isLimitSubqueryUsed() {
+    public function isLimitSubqueryUsed()
+    {
         return false;
     }
 
@@ -203,7 +213,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @param $name
      */
-    public function remove($name) {
+    public function remove($name)
+    {
         if (isset($this->parts[$name])) {
             if ($name == "limit" || $name == "offset") {
                 $this->parts[$name] = false;
@@ -219,7 +230,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return void
      */
-    protected function clear() {
+    protected function clear()
+    {
         $this->fetchModes   = array();
         $this->tables       = array();
         $this->parts = array(
@@ -247,7 +259,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return Doctrine_Connection
      */
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->conn;
     }
     /**
@@ -258,7 +271,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param Doctrine_View $view       database view
      * @return void
      */
-    public function setView(Doctrine_View $view) {
+    public function setView(Doctrine_View $view)
+    {
         $this->view = $view;
     }
     /**
@@ -267,15 +281,17 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return Doctrine_View        the view associated with this query object
      */
-    public function getView() {
+    public function getView()
+    {
         return $this->view;
     }
     /**
      * getParams
-     * 
+     *
      * @return array
      */
-    public function getParams() {
+    public function getParams()
+    {
         return $this->params;                           	
     }
     /**
@@ -284,7 +300,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param string $path
      * @return string
      */
-    final public function getTableAlias($path) {
+    final public function getTableAlias($path)
+    {
         if (isset($this->compAliases[$path])) {
             $path = $this->compAliases[$path];
         }
@@ -299,7 +316,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @parma string $name              component name
      * @param integer $index
      */
-    private function getCollection($name) {
+    private function getCollection($name)
+    {
         $table = $this->tables[$name];
         if ( ! isset($this->fetchModes[$name])) {
             return new Doctrine_Collection($table);
@@ -333,7 +351,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param mixed $item
      * @return void
      */
-    public static function convertBoolean(&$item) {
+    public static function convertBoolean(&$item)
+    {
         if (is_bool($item)) {
             $item = (int) $item;
         }
@@ -512,7 +531,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param string $name
      * @return array
      */
-    public function initRelated(array $prev, $name) {
+    public function initRelated(array $prev, $name)
+    {
         $pointer = $this->joins[$name];
         $path    = array_search($name, $this->tableAliases);
         $tmp     = explode('.', $path);
@@ -543,7 +563,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param string $name
      * @return array
      */
-    public function addRelated(array $prev, $name, Doctrine_Record $record) {
+    public function addRelated(array $prev, $name, Doctrine_Record $record)
+    {
         $pointer = $this->joins[$name];
 
         $path    = array_search($name, $this->tableAliases);
@@ -581,7 +602,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param mixed $ids
      * @return boolean
      */
-    public function isIdentifiable(array $row, $ids) {
+    public function isIdentifiable(array $row, $ids)
+    {
         if (is_array($ids)) {
             foreach ($ids as $id) {
                 if ($row[$id] == null)
@@ -600,7 +622,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      *
      * @return string
      */
-    public function applyInheritance() {
+    public function applyInheritance()
+    {
         // get the inheritance maps
         $array = array();
 
@@ -647,7 +670,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param PDOStatement $stmt
      * @return array
      */
-    public function parseData(PDOStatement $stmt) {
+    public function parseData(PDOStatement $stmt)
+    {
         $array = array();
 
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -676,7 +700,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
      * @param string $name              component name
      * @return Doctrine_Table|boolean
      */
-    public function getTable($name) {
+    public function getTable($name)
+    {
         if (isset($this->tables[$name])) {
             return $this->tables[$name];
         }
@@ -685,7 +710,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access {
     /**
      * @return string                   returns a string representation of this object
      */
-    public function __toString() {
+    public function __toString()
+    {
         return Doctrine_Lib::formatSql($this->getQuery());
     }
 }

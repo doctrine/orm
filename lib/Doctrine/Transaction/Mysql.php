@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Transaction');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
+class Doctrine_Transaction_Mysql extends Doctrine_Transaction
+{
     /**
      * createSavepoint
      * creates a new savepoint
@@ -38,7 +39,8 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
      * @param string $savepoint     name of a savepoint to set
      * @return void
      */
-    protected function createSavePoint($savepoint) {
+    protected function createSavePoint($savepoint)
+    {
         $query = 'SAVEPOINT '.$savepoint;
 
         return $this->conn->getDbh()->query($query);
@@ -50,7 +52,8 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
      * @param string $savepoint     name of a savepoint to release
      * @return void
      */
-    protected function releaseSavePoint($savepoint) {
+    protected function releaseSavePoint($savepoint)
+    {
         $query = 'RELEASE SAVEPOINT '.$savepoint;
 
         return $this->conn->getDbh()->query($query);
@@ -62,7 +65,8 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
      * @param string $savepoint     name of a savepoint to rollback to
      * @return void
      */
-    protected function rollbackSavePoint($savepoint) {
+    protected function rollbackSavePoint($savepoint)
+    {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
 
         return $this->conn->getDbh()->query($query);
@@ -80,7 +84,8 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
      * @throws PDOException                             if something fails at the PDO level
      * @return void
      */
-    public function setIsolation($isolation) {
+    public function setIsolation($isolation)
+    {
         switch ($isolation) {
             case 'READ UNCOMMITTED':
             case 'READ COMMITTED':
@@ -101,7 +106,8 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction {
      *
      * @return string               returns the current session transaction isolation level
      */
-    public function getIsolation() {
+    public function getIsolation()
+    {
         $ret = $this->conn->getDbh()->query('SELECT @@tx_isolation')->fetch(PDO::FETCH_NUM);
         return current($ret);
     }

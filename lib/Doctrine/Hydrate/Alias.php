@@ -30,18 +30,21 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrate_Alias {
+class Doctrine_Hydrate_Alias
+{
 
     protected $shortAliases      = array();
 
     protected $shortAliasIndexes = array();
 
-    public function clear() {
+    public function clear()
+    {
         $this->shortAliases = array();
         $this->shortAliasIndexes = array();
     }
 
-    public function generateNewAlias($alias) {
+    public function generateNewAlias($alias)
+    {
         if (isset($this->shortAliases[$alias])) {
             // generate a new alias
             $name = substr($alias, 0, 1);
@@ -58,16 +61,19 @@ class Doctrine_Hydrate_Alias {
         return $alias;
     }
 
-    public function hasAliasFor($tableName) {
+    public function hasAliasFor($tableName)
+    {
         return (isset($this->shortAliases[$tableName]));
     }
-    public function getShortAliasIndex($alias) {
+    public function getShortAliasIndex($alias)
+    {
         if ( ! isset($this->shortAliasIndexes[$alias])) {
             return 0;
         }
         return $this->shortAliasIndexes[$alias];
     }
-    public function generateShortAlias($tableName) {
+    public function generateShortAlias($tableName)
+    {
         $char   = strtolower(substr($tableName, 0, 1));
 
         $alias  = $char;
@@ -83,7 +89,8 @@ class Doctrine_Hydrate_Alias {
         return $alias;
     }
 
-    public function getShortAlias($tableName) {
+    public function getShortAlias($tableName)
+    {
         $alias = array_search($tableName, $this->shortAliases);
 
         if ($alias !== false) {

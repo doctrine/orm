@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Transaction');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
+class Doctrine_Transaction_Firebird extends Doctrine_Transaction
+{
     /**
      * createSavepoint
      * creates a new savepoint
@@ -38,7 +39,8 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
      * @param string $savepoint     name of a savepoint to set
      * @return void
      */
-    protected function createSavePoint($savepoint) {
+    protected function createSavePoint($savepoint)
+    {
         $query = 'SAVEPOINT '.$savepoint;
 
         return $this->conn->getDbh()->query($query);
@@ -50,7 +52,8 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
      * @param string $savepoint     name of a savepoint to release
      * @return void
      */
-    protected function releaseSavePoint($savepoint) {
+    protected function releaseSavePoint($savepoint)
+    {
         $query = 'RELEASE SAVEPOINT '.$savepoint;
 
         return $this->conn->getDbh()->query($query);
@@ -62,7 +65,8 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction {
      * @param string $savepoint     name of a savepoint to rollback to
      * @return void
      */
-    protected function rollbackSavePoint($savepoint) {
+    protected function rollbackSavePoint($savepoint)
+    {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
 
         return $this->conn->getDbh()->query($query);

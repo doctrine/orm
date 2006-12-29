@@ -32,14 +32,16 @@ Doctrine::autoload('Doctrine_Export');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export_Mssql extends Doctrine_Export {
+class Doctrine_Export_Mssql extends Doctrine_Export
+{
   /**
      * create a new database
      *
      * @param string $name name of the database that should be created
      * @return void
      */
-    public function createDatabase($name) {
+    public function createDatabase($name)
+    {
         $name = $db->quoteIdentifier($name, true);
         $query = "CREATE DATABASE $name";
         if ($db->options['database_device']) {
@@ -55,7 +57,8 @@ class Doctrine_Export_Mssql extends Doctrine_Export {
      * @param string $name name of the database that should be dropped
      * @return void
      */
-    public function dropDatabase($name) {
+    public function dropDatabase($name)
+    {
         $name = $db->quoteIdentifier($name, true);
         return $db->standaloneQuery("DROP DATABASE $name", null, true);
     }
@@ -147,7 +150,8 @@ class Doctrine_Export_Mssql extends Doctrine_Export {
      *                             actually perform them otherwise.
      * @return void
      */
-    public function alterTable($name, $changes, $check) {
+    public function alterTable($name, $changes, $check)
+    {
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
             case 'add':
@@ -197,7 +201,8 @@ class Doctrine_Export_Mssql extends Doctrine_Export {
      * @param string    $start        start value of the sequence; default is 1
      * @return void
      */
-    public function createSequence($seq_name, $start = 1) {
+    public function createSequence($seq_name, $start = 1)
+    {
         $sequence_name = $db->quoteIdentifier($db->getSequenceName($seq_name), true);
         $seqcol_name = $db->quoteIdentifier($db->options['seqcol_name'], true);
         $query = "CREATE TABLE $sequence_name ($seqcol_name " .
@@ -228,7 +233,8 @@ class Doctrine_Export_Mssql extends Doctrine_Export {
      * @param string $seqName      name of the sequence to be dropped
      * @return void
      */
-    public function dropSequence($seqName) {
+    public function dropSequence($seqName)
+    {
         $sequenceName = $db->quoteIdentifier($db->getSequenceName($seqName), true);
         return $this->conn->exec('DROP TABLE ' . $sequenceName);
     }

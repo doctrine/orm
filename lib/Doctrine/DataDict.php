@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -27,10 +27,11 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>       
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  */
-class Doctrine_DataDict extends Doctrine_Connection_Module {
+class Doctrine_DataDict extends Doctrine_Connection_Module
+{
     /**
      * Obtain an array of changes that may need to applied
      *
@@ -38,7 +39,8 @@ class Doctrine_DataDict extends Doctrine_Connection_Module {
      * @param array  $previous old definition
      * @return array  containing all changes that will need to be applied
      */
-    public function compareDefinition($current, $previous) {
+    public function compareDefinition($current, $previous)
+    {
         $type = !empty($current['type']) ? $current['type'] : null;
 
         if (!method_exists($this, "_compare{$type}Definition")) {

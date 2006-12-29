@@ -33,7 +33,8 @@
  * @category    Object Relational Mapping
  * @version     $Revision$
  */
-class Doctrine_Locking_Manager_Pessimistic {
+class Doctrine_Locking_Manager_Pessimistic
+{
     /**
      * The conn that is used by the locking manager
      *
@@ -53,7 +54,8 @@ class Doctrine_Locking_Manager_Pessimistic {
      *
      * @param Doctrine_Connection $conn The database connection to use
      */
-    public function __construct(Doctrine_Connection $conn) {
+    public function __construct(Doctrine_Connection $conn)
+    {
         $this->conn = $conn;
 
         if ($this->conn->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true) {
@@ -94,7 +96,8 @@ class Doctrine_Locking_Manager_Pessimistic {
      *                  holds a lock on this record
      * @throws Doctrine_Locking_Exception  If the locking failed due to database errors
      */
-    public function getLock(Doctrine_Record $record, $userIdent) {
+    public function getLock(Doctrine_Record $record, $userIdent)
+    {
         $objectType = $record->getTable()->getComponentName();
         $key        = $record->obtainIdentifier();
 
@@ -159,7 +162,8 @@ class Doctrine_Locking_Manager_Pessimistic {
      * @return boolean  TRUE if a lock was released, FALSE if no lock was released
      * @throws Doctrine_Locking_Exception If the release procedure failed due to database errors
      */
-    public function releaseLock(Doctrine_Record $record, $userIdent) {
+    public function releaseLock(Doctrine_Record $record, $userIdent)
+    {
         $objectType = $record->getTable()->getComponentName();
         $key        = $record->obtainIdentifier();
 
@@ -195,7 +199,8 @@ class Doctrine_Locking_Manager_Pessimistic {
      * @return mixed  The unique user identifier for the specified lock
      * @throws Doctrine_Locking_Exception If the query failed due to database errors
      */
-    private function _getLockingUserIdent($objectType, $key) {
+    private function _getLockingUserIdent($objectType, $key)
+    {
         if (is_array($key)) {
             // Composite key
             $key = implode('|', $key);
@@ -229,7 +234,8 @@ class Doctrine_Locking_Manager_Pessimistic {
      * @param Doctrine_Record $lockedRecord  The record.
      * @return mixed The unique user identifier that identifies the owner of the lock.
      */
-    public function getLockOwner($lockedRecord) {
+    public function getLockOwner($lockedRecord)
+    {
         $objectType = $lockedRecord->getTable()->getComponentName();
         $key        = $lockedRecord->obtainIdentifier();
         return $this->_getLockingUserIdent($objectType, $key);
@@ -246,7 +252,8 @@ class Doctrine_Locking_Manager_Pessimistic {
      * @return integer The number of locks that have been released
      * @throws Doctrine_Locking_Exception If the release process failed due to database errors
      */
-    public function releaseAgedLocks($age = 900, $objectType = null, $userIdent = null) {
+    public function releaseAgedLocks($age = 900, $objectType = null, $userIdent = null)
+    {
         $age = time() - $age;
 
         try {

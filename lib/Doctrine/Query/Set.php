@@ -29,8 +29,10 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query_Set extends Doctrine_Query_Part {
-    public function parse($dql) {
+class Doctrine_Query_Set extends Doctrine_Query_Part
+{
+    public function parse($dql)
+    {
         $parts = Doctrine_Query::sqlExplode($dql, ',');
 
         $result = array();

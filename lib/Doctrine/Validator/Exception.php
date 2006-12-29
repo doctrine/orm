@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Exception');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Validator_Exception extends Doctrine_Exception implements Countable, IteratorAggregate {
+class Doctrine_Validator_Exception extends Doctrine_Exception implements Countable, IteratorAggregate
+{
     /**
      * @var array $invalid
      */
@@ -38,19 +39,23 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
     /**
      * @param Doctrine_Validator $validator
      */
-    public function __construct(array $invalid) {
+    public function __construct(array $invalid)
+    {
         $this->invalid = $invalid;
     }
 
-    public function getInvalidRecords() {
+    public function getInvalidRecords()
+    {
         return $this->invalid;
     }
 
-    public function getIterator() {
+    public function getIterator()
+    {
         return new ArrayIterator($this->invalid);
     }
 
-    public function count() {
+    public function count()
+    {
         return count($this->invalid);
     }
     /**
@@ -58,7 +63,8 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
 
         return parent::__toString();
     }

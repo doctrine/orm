@@ -31,7 +31,8 @@ Doctrine::autoload('Doctrine_Export');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export_Sqlite extends Doctrine_Export {
+class Doctrine_Export_Sqlite extends Doctrine_Export
+{
     /**
      * Get the stucture of a field into an array
      *
@@ -64,7 +65,8 @@ class Doctrine_Export_Sqlite extends Doctrine_Export {
      * @throws PDOException
      * @return void
      */
-    public function createIndex($table, $name, array $definition) {
+    public function createIndex($table, $name, array $definition)
+    {
         $table = $this->conn->quoteIdentifier($table, true);
         $name  = $this->conn->getIndexName($name);
         $query = 'CREATE INDEX ' . $name . ' ON ' . $table;

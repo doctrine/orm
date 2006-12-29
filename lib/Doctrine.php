@@ -32,8 +32,9 @@
  * @since       1.0
  * @version     $Revision$
  */
-final class Doctrine {
-    /** 
+final class Doctrine
+{
+    /**
      * ERROR CONSTANTS
      */
     const ERR                       = -1;
@@ -137,7 +138,7 @@ final class Doctrine {
     const ATTR_DEF_TABLESPACE       = 32;
     const ATTR_EMULATE_DATABASE     = 33;
     const ATTR_DB_NAME_FORMAT       = 34;
-    
+
     /** TODO: REMOVE THE FOLLOWING CONSTANTS AND UPDATE THE DOCS ! */
 
     /**
@@ -176,8 +177,8 @@ final class Doctrine {
      * accessor invoking prefix set
      */
     const ATTR_ACCESSOR_PREFIX_SET        = 23;
-    
-    
+
+
 
     /**
      * LIMIT CONSTANTS
@@ -234,14 +235,14 @@ final class Doctrine {
     /**
      * FETCH RECORD
      *
-     * Specifies that the fetch method shall return Doctrine_Record 
+     * Specifies that the fetch method shall return Doctrine_Record
      * objects as the elements of the result set.
      *
      * This is the default fetchmode.
      */
     const FETCH_RECORD          = 2;
     /**
-     * FETCH ARRAY                      
+     * FETCH ARRAY
      */
 
     const FETCH_ARRAY           = 3;
@@ -250,7 +251,7 @@ final class Doctrine {
     /**
      * ACCESSOR CONSTANTS
      */
-    
+
     /**
      * constant for no accessors
      */
@@ -267,7 +268,7 @@ final class Doctrine {
      * constant for both accessors get and set
      */
     const ACCESSOR_BOTH         = 3;
-    
+
     /**
      * PORTABILITY CONSTANTS
      */
@@ -330,7 +331,8 @@ final class Doctrine {
     /**
      * constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         throw new Doctrine_Exception('Doctrine is static class. No instances can be created.');
     }
     /**
@@ -343,7 +345,8 @@ final class Doctrine {
      *
      * @return string
      */
-    public static function getPath() {
+    public static function getPath()
+    {
         if (! self::$path) {
             self::$path = dirname(__FILE__);
         }
@@ -355,7 +358,8 @@ final class Doctrine {
      *
      * @return void
      */
-    public static function loadAll() {
+    public static function loadAll()
+    {
         $classes = Doctrine_Compiler::getRuntimeClasses();
 
         foreach ($classes as $class) {
@@ -368,7 +372,8 @@ final class Doctrine {
      *
      * @param string $directory
      */
-    public static function import($directory) {
+    public static function import($directory)
+    {
         Doctrine_Import::import();
     }
     /**
@@ -377,7 +382,8 @@ final class Doctrine {
      *
      * @param string $directory
      */
-    public static function export($directory) {
+    public static function export($directory)
+    {
         Doctrine_Export::export();
     }
     /**
@@ -389,7 +395,8 @@ final class Doctrine {
      * @throws Doctrine_Exception
      * @return void
      */
-    public static function compile() {
+    public static function compile()
+    {
         Doctrine_Compiler::compile();
     }
     /**
@@ -399,7 +406,8 @@ final class Doctrine {
      * @param string $classname
      * @return boolean
      */
-    public static function autoload($classname) {
+    public static function autoload($classname)
+    {
         if (class_exists($classname)) {
             return false;
         }
@@ -422,7 +430,8 @@ final class Doctrine {
      * @param string $classname
      * @return string
      */
-    public static function tableize($classname) {
+    public static function tableize($classname)
+    {
          return strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $classname));
     }
     /**
@@ -431,7 +440,8 @@ final class Doctrine {
      * @param string $tablename
      * @return string
      */
-    public static function classify($tablename) {
+    public static function classify($tablename)
+    {
         return preg_replace('~(_?)(_)([\w])~e', '"$1".strtoupper("$3")', ucfirst($tablename));
     }
     /**
@@ -440,7 +450,8 @@ final class Doctrine {
      * @param string $classname
      * @return boolean
      */
-    public static function isValidClassname($classname) {
+    public static function isValidClassname($classname)
+    {
         if (preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname))
             return false;
 

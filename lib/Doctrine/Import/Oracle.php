@@ -28,13 +28,14 @@ Doctrine::autoload('Doctrine_Import');
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Import_Oracle extends Doctrine_Import {
+class Doctrine_Import_Oracle extends Doctrine_Import
+{
     /**
      * lists all databases
      *
      * @return array
      */
-    public function listDatabases() 
+    public function listDatabases()
     {
         if ( ! $this->conn->options['emulate_database']) {
             return $this->conn->raiseError(Doctrine::ERROR_UNSUPPORTED, null, null,
@@ -65,7 +66,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import {
      *
      * @return array
      */
-    public function listFunctions() 
+    public function listFunctions()
     {
         $query = "SELECT name FROM sys.user_source WHERE line = 1 AND type = 'FUNCTION'";
         $result = $this->conn->queryCol($query);
@@ -83,7 +84,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTriggers($database = null) 
+    public function listTriggers($database = null)
     {
 
     }
@@ -93,7 +94,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listSequences($database = null) 
+    public function listSequences($database = null)
     {
         $query = "SELECT sequence_name FROM sys.user_sequences";
         $tableNames = $this->conn->queryCol($query);
@@ -113,7 +114,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableConstraints($table) 
+    public function listTableConstraints($table)
     {
 
         $table = $this->conn->quote($table, 'text');
@@ -142,7 +143,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableColumns($table) 
+    public function listTableColumns($table)
     {
 
         $table = $this->conn->quote($table, 'text');
@@ -163,7 +164,8 @@ class Doctrine_Import_Oracle extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableIndexes($table) {
+    public function listTableIndexes($table)
+    {
 
         $table = $this->conn->quote($table, 'text');
         $query = 'SELECT index_name name FROM user_indexes';
@@ -192,7 +194,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listTables($database = null) 
+    public function listTables($database = null)
     {
 
         $query = 'SELECT table_name FROM sys.user_tables';
@@ -211,9 +213,9 @@ class Doctrine_Import_Oracle extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableTriggers($table) 
+    public function listTableTriggers($table)
     {
-    
+
     }
     /**
      * lists table views
@@ -221,16 +223,16 @@ class Doctrine_Import_Oracle extends Doctrine_Import {
      * @param string $table     database table name
      * @return array
      */
-    public function listTableViews($table) 
+    public function listTableViews($table)
     {
-    
+
     }
     /**
      * lists database users
      *
      * @return array
      */
-    public function listUsers() 
+    public function listUsers()
     {
 
         if ($this->conn->options['emulate_database'] && $this->conn->options['database_name_prefix']) {
@@ -249,7 +251,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import {
      * @param string|null $database
      * @return array
      */
-    public function listViews($database = null) 
+    public function listViews($database = null)
     {
         $query = 'SELECT view_name FROM sys.user_views';
         $result = $this->conn->queryCol($query);

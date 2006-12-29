@@ -32,7 +32,8 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Access implements ArrayAccess {
+abstract class Doctrine_Access implements ArrayAccess
+{
     /**
      * setArray
      *
@@ -40,7 +41,8 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @since 1.0
      * @return Doctrine_Access
      */
-    public function setArray(array $array) {
+    public function setArray(array $array)
+    {
         foreach ($array as $k=>$v) {
             $this->set($k,$v);
         };
@@ -56,7 +58,8 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @since 1.0
      * @return void
      */
-    public function __set($name,$value) {
+    public function __set($name,$value)
+    {
         $this->set($name,$value);
     }
     /**
@@ -67,7 +70,8 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @since 1.0
      * @return mixed
      */
-    public function __get($name) {
+    public function __get($name)
+    {
         return $this->get($name);
     }
     /**
@@ -77,7 +81,8 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @since 1.0
      * @return boolean          whether or not this object contains $name
      */
-    public function __isset($name) {
+    public function __isset($name)
+    {
         return $this->contains($name);
     }
     /**
@@ -87,14 +92,16 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @since 1.0
      * @return void
      */
-    public function __unset($name) {
+    public function __unset($name)
+    {
         return $this->remove($name);
     }
     /**
      * @param mixed $offset
      * @return boolean          whether or not this object contains $offset
      */
-    public function offsetExists($offset) {
+    public function offsetExists($offset)
+    {
         return $this->contains($offset);
     }
     /**
@@ -103,7 +110,8 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @param mixed $offset
      * @return mixed
      */
-    public function offsetGet($offset) {
+    public function offsetGet($offset)
+    {
         return $this->get($offset);
     }
     /**
@@ -113,7 +121,8 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @param mixed $value
      * @return void
      */
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value)
+    {
         if ( ! isset($offset)) {
             $this->add($value);
         } else {
@@ -125,7 +134,8 @@ abstract class Doctrine_Access implements ArrayAccess {
      * @see set, offsetSet, __set
      * @param mixed $offset
      */
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset)
+    {
         return $this->remove($offset);
     }
 }

@@ -29,13 +29,15 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Lib {
+class Doctrine_Lib
+{
     /**
      * @param integer $state                the state of record
      * @see Doctrine_Record::STATE_* constants
      * @return string                       string representation of given state
      */
-    public static function getRecordStateAsString($state) {
+    public static function getRecordStateAsString($state)
+    {
         switch ($state) {
         case Doctrine_Record::STATE_PROXY:
             return "proxy";
@@ -59,7 +61,8 @@ class Doctrine_Lib {
      * @param Doctrine_Record $record
      * @return string
      */
-    public static function getRecordAsString(Doctrine_Record $record) {
+    public static function getRecordAsString(Doctrine_Record $record)
+    {
         $r[] = "<pre>";
         $r[] = "Component  : ".$record->getTable()->getComponentName();
         $r[] = "ID         : ".$record->obtainIdentifier();
@@ -74,7 +77,8 @@ class Doctrine_Lib {
      * returns a given connection state as string
      * @param integer $state        connection state
      */
-    public static function getConnectionStateAsString($state) {
+    public static function getConnectionStateAsString($state)
+    {
         switch ($state) {
         case Doctrine_Transaction::STATE_SLEEP:
             return "open";
@@ -92,7 +96,8 @@ class Doctrine_Lib {
      * @param Doctrine_Connection $connection
      * @return string
      */
-    public static function getConnectionAsString(Doctrine_Connection $connection) {
+    public static function getConnectionAsString(Doctrine_Connection $connection)
+    {
         $r[] = "<pre>";
         $r[] = "Doctrine_Connection object";
         $r[] = "State               : ".Doctrine_Lib::getConnectionStateAsString($connection->getTransaction()->getState());
@@ -124,7 +129,8 @@ class Doctrine_Lib {
      * @param Doctrine_Table $table
      * @return string
      */
-    public static function getTableAsString(Doctrine_Table $table) {
+    public static function getTableAsString(Doctrine_Table $table)
+    {
         $r[] = "<pre>";
         $r[] = "Component   : ".$table->getComponentName();
         $r[] = "Table       : ".$table->getTableName();
@@ -134,7 +140,8 @@ class Doctrine_Lib {
     /**
      * @return string
      */
-    public static function formatSql($sql) {
+    public static function formatSql($sql)
+    {
         $e = explode("\n",$sql);
         $color = "367FAC";
         $l = $sql;
@@ -159,7 +166,8 @@ class Doctrine_Lib {
      * @param Doctrine_Collection $collection
      * @return string
      */
-    public static function getCollectionAsString(Doctrine_Collection $collection) {
+    public static function getCollectionAsString(Doctrine_Collection $collection)
+    {
         $r[] = "<pre>";
         $r[] = get_class($collection);
 

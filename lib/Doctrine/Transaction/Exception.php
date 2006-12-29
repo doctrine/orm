@@ -30,4 +30,5 @@ Doctrine::autoload('Doctrine_Exception');
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  */
-class Doctrine_Transaction_Exception extends Doctrine_Exception { }
+class Doctrine_Transaction_Exception extends Doctrine_Exception
+{ }
