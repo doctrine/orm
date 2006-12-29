@@ -182,7 +182,10 @@ class Doctrine_Validator
      */
     private function validateLength($column, $key, $value)
     {
-        if ($column[0] == "array" || $column[0] == "object") {
+        if($column[0] == "timestamp") {
+            return true;
+        }   
+        else if ($column[0] == "array" || $column[0] == "object") {
             $length = strlen(serialize($value));
         } else {
             $length = strlen($value);
