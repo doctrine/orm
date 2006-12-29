@@ -136,13 +136,13 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
         switch ($field['type']) {
             case 'char':
                 $length = (! empty($field['length'])) ? $field['length'] : false;
-    
+
                 return $length ? 'CHAR('.$length.')' : 'CHAR(255)';
             case 'varchar':
             case 'array':
             case 'object':
             case 'string':
-    
+
                 if ( ! isset($field['length'])) {
                     if (array_key_exists('default', $field)) {
                         $field['length'] = $this->conn->varchar_max_length;
@@ -150,10 +150,10 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                         $field['length'] = false;
                     }
                 }
-    
+
                 $length = ($field['length'] < $this->conn->varchar_max_length) ? $field['length'] : false;
                 $fixed  = (isset($field['fixed'])) ? $field['fixed'] : false;
-    
+
                 return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR(255)')
                     : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
             case 'clob':

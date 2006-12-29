@@ -68,7 +68,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                     case 'regexp':
                     case 'like':
                         $operator = $this->getOperator($func);
-    
+
                         if (empty($relation)) {
                             throw new Doctrine_Query_Exception('DQL functions contains/regexp/like can only be used for fields of related components');
                         }

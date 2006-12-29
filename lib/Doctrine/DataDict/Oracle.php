@@ -62,9 +62,9 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
             case 'varchar':
                 $length = !empty($field['length'])
                     ? $field['length'] : 16777215; // TODO: $db->options['default_text_field_length'];
-    
+
                 $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
-    
+
                 return $fixed ? 'CHAR('.$length.')' : 'VARCHAR2('.$length.')';
             case 'clob':
                 return 'CLOB';

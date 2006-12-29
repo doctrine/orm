@@ -252,7 +252,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
                     $parts['database'] = ':memory:';
                     $parts['dsn']      = 'sqlite::memory:';
                 }
-    
+
                 break;
             case 'mysql':
             case 'informix':

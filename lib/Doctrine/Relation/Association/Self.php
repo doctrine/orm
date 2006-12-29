@@ -50,7 +50,7 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
                           ' FROM '.$this->associationTable->getTableName().
                           ' WHERE '.$this->foreign.
                           ' = ?';
-    
+
                 $dql  = 'FROM '.$this->table->getComponentName();
                 $dql .= '.'.$this->associationTable->getComponentName();
                 $dql .= ' WHERE '.$this->table->getComponentName().'.'.$this->table->getIdentifier().' IN ('.$sub.')';

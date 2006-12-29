@@ -59,11 +59,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param boolean $limitSubqueryUsed
      */
     private $limitSubqueryUsed = false;
-    
+
     private $tableStack;
-    
+
     private $relationStack     = array();
-    
+
     private $isDistinct        = false;
     /**
      * @var array $pendingFields
@@ -82,22 +82,22 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      *
      * @return Doctrine_Query
      */
-    public static function create() 
+    public static function create()
     {
         return new Doctrine_Query();
     }
-    
-    public function getTableStack() 
+
+    public function getTableStack()
     {
         return $this->tableStack;
     }
-    
-    public function getRelationStack() 
+
+    public function getRelationStack()
     {
         return $this->relationStack;
     }
-    
-    public function isDistinct($distinct = null) 
+
+    public function isDistinct($distinct = null)
     {
         if(isset($distinct))
             $this->isDistinct = (bool) $distinct;
@@ -105,7 +105,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         return $this->isDistinct;
     }
 
-    public function processPendingFields($componentAlias) 
+    public function processPendingFields($componentAlias)
     {
         $tableAlias = $this->getTableAlias($componentAlias);
 
@@ -127,7 +127,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
 
     }
-    public function parseSelect($dql) 
+    public function parseSelect($dql)
     {
         $refs = Doctrine_Query::bracketExplode($dql, ',');
 
@@ -144,7 +144,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             }
         }
     }
-    public function parseAggregateFunction2($func) 
+    public function parseAggregateFunction2($func)
     {
         $e    = Doctrine_Query::bracketExplode($func, ' ');
         $func = $e[0];
@@ -156,7 +156,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         if(method_exists($this->conn->expression, $name)) {
 
                 $argStr = substr($func, ($pos + 1), -1);
-                
+
                 $args    = explode(',', $argStr);
 
                 $e2    = explode(' ', $args[0]);
@@ -168,7 +168,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
                     $args[0] = $e2[1];
                 }
-                
+
 
 
                 $parts = explode('.', $args[0]);
@@ -187,7 +187,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             throw new Doctrine_Query_Exception('Unknown aggregate function '.$name);
         }
     }
-    public function processPendingAggregates($componentAlias) 
+    public function processPendingAggregates($componentAlias)
     {
         $tableAlias     = $this->getTableAlias($componentAlias);
 
@@ -198,7 +198,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         foreach($this->pendingAggregates[$componentAlias] as $parts) {
             list($name, $args, $distinct, $alias) = $parts;
-            
+
             $arglist = array();
             foreach($args as $arg) {
                 $e = explode('.', $arg);
@@ -207,7 +207,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 if(count($e) > 1) {
                     $tableAlias = $this->getTableAlias($e[0]);
                     $table      = $this->tables[$tableAlias];
-                    
+
                     if( ! $table->hasColumn($e[1])) {
                         throw new Doctrine_Query_Exception('Unknown column ' . $e[1]);
                     }
@@ -229,7 +229,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param array $params
 	 * @return integer
      */
-	public function count($params = array()) 
+	public function count($params = array())
     {
 		$this->remove('select');
 		$join  = $this->join;
@@ -255,7 +255,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $q .= ' WHERE (' . $string . ')';
         }
 			
-		if( ! empty($having)) 
+		if( ! empty($having))
 			$q .= ' HAVING ' . implode(' AND ',$having);
 
         if( ! is_array($params))
@@ -267,7 +267,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 		return $a[0];		
 	}
     /**
-     * loadFields      
+     * loadFields
      * loads fields for a given table and
      * constructs a little bit of sql for every field
      *
@@ -279,7 +279,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param array $names                          fields to be loaded (only used in lazy property loading)
      * @return void
      */
-    protected function loadFields(Doctrine_Table $table, $fetchmode, array $names, $cpath) 
+    protected function loadFields(Doctrine_Table $table, $fetchmode, array $names, $cpath)
     {
         $name = $table->getComponentName();
 
@@ -301,7 +301,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             default:
                 throw new Doctrine_Exception("Unknown fetchmode.");
         endswitch;
-        
+
         $component          = $table->getComponentName();
         $tablename          = $this->tableAliases[$cpath];
 
@@ -319,11 +319,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     }
     /**
      * addFrom
-     * 
+     *
      * @param strint $from
      * @return Doctrine_Query
      */
-    public function addFrom($from) 
+    public function addFrom($from)
     {
         $class = 'Doctrine_Query_From';
         $parser = new $class($this);
@@ -337,12 +337,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param strint $join
      * @return Doctrine_Query
      */
-    public function leftJoin($join) 
+    public function leftJoin($join)
     {
         $class = 'Doctrine_Query_From';
         $parser = new $class($this);
         $parser->parse('LEFT JOIN ' . $join);
-        
+
         return $this;
     }
     /**
@@ -351,12 +351,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param strint $join
      * @return Doctrine_Query
      */
-    public function innerJoin($join) 
+    public function innerJoin($join)
     {
         $class = 'Doctrine_Query_From';
         $parser = new $class($this);
         $parser->parse('INNER JOIN ' . $join);
-        
+
         return $this;
     }
     /**
@@ -365,11 +365,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param strint $orderby
      * @return Doctrine_Query
      */
-    public function addOrderBy($orderby) 
+    public function addOrderBy($orderby)
     {
         $class = 'Doctrine_Query_Orderby';
         $parser = new $class($this);
-        $this->parts['orderby'][] = $parser->parse($orderby); 
+        $this->parts['orderby'][] = $parser->parse($orderby);
 
         return $this;
     }
@@ -379,7 +379,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param string $where
      * @param mixed $params
      */
-    public function addWhere($where, $params = array()) 
+    public function addWhere($where, $params = array())
     {
         $class  = 'Doctrine_Query_Where';
         $parser = new $class($this);
@@ -398,7 +398,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param array $args
      * @return void
      */
-    public function __call($name, $args) 
+    public function __call($name, $args)
     {
         $name = strtolower($name);
 
@@ -407,8 +407,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         switch($name) {
             case 'select':
                 $this->type = self::SELECT;
-                
-                if( ! isset($args[0])) 
+
+                if( ! isset($args[0]))
                     throw new Doctrine_Query_Exception('Empty select part');
 
                 $this->parseSelect($args[0]);
@@ -461,7 +461,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             default:
                 $this->parts[$name] = array();
                 $this->$method($args[0]);
-                    
+
             throw new Doctrine_Query_Exception("Unknown overload method");
         }
 
@@ -474,7 +474,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param $name         query part name
      * @return mixed
      */
-    public function get($name) 
+    public function get($name)
     {
         if( ! isset($this->parts[$name]))
             return false;
@@ -490,7 +490,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param $value            field value
      * @return Doctrine_Query
      */
-    public function set($name, $value) 
+    public function set($name, $value)
     {
         $class = new Doctrine_Query_Set($this);
         $this->parts['set'][] = $class->parse($name . ' = ' . $value);
@@ -510,7 +510,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      *
      * @return string       the base of the generated sql query
      */
-    public function getQueryBase() 
+    public function getQueryBase()
     {
         switch($this->type) {
             case self::DELETE:
@@ -534,11 +534,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * builds the sql query from the given parameters and applies things such as
      * column aggregation inheritance and limit subqueries if needed
      *
-     * @param array $params             an array of prepared statement params (needed only in mysql driver 
+     * @param array $params             an array of prepared statement params (needed only in mysql driver
      *                                  when limit subquery algorithm is used)
      * @return string                   the built sql query
      */
-    public function getQuery($params = array()) 
+    public function getQuery($params = array())
     {
         if(empty($this->parts["select"]) || empty($this->parts["from"]))
             return false;
@@ -601,7 +601,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 }
 
                 $field    = $this->aliasHandler->getShortAlias($table->getTableName()) . '.' . $table->getIdentifier();
-                
+
                 // only append the subquery if it actually contains something
                 if($subquery !== '')
                     array_unshift($this->parts['where'], $field. ' IN (' . $subquery . ')');
@@ -629,13 +629,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     /**
      * this is method is used by the record limit algorithm
      *
-     * when fetching one-to-many, many-to-many associated data with LIMIT clause 
+     * when fetching one-to-many, many-to-many associated data with LIMIT clause
      * an additional subquery is needed for limiting the number of returned records instead
      * of limiting the number of sql result set rows
      *
      * @return string       the limit subquery
      */
-    public function getLimitSubquery() 
+    public function getLimitSubquery()
     {
         $k          = array_keys($this->tables);
         $table      = $this->tables[$k[0]];
@@ -667,7 +667,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 if(substr($part,0,9) === 'LEFT JOIN') {
                     $e = explode(' ', $part);
 
-                    if( ! in_array($e[3], $this->subqueryAliases) && 
+                    if( ! in_array($e[3], $this->subqueryAliases) &&
                         ! in_array($e[2], $this->subqueryAliases)) {
                         continue;
                     }
@@ -701,7 +701,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
             if(strpos($part, '.') !== false) {
                 $e = explode('.', $part);
-                
+
                 $trimmed = ltrim($e[0], '( ');
                 $pos     = strpos($e[0], $trimmed);
 
@@ -719,7 +719,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param string $query                 DQL query
      * @param array $params                 parameters
      */
-    public function query($query,$params = array()) 
+    public function query($query,$params = array())
     {
         $this->parseQuery($query);
 
@@ -743,7 +743,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * represent different query part names and values are
      * arrays splitted using sqlExplode method
      *
-     * example: 
+     * example:
      *
      * parameter:
      *      $query = "SELECT u.* FROM User u WHERE u.name LIKE ?"
@@ -756,7 +756,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @throws Doctrine_Query_Exception     if some generic parsing error occurs
      * @return array                        an array containing the query string parts
      */
-    public function splitQuery($query) 
+    public function splitQuery($query)
     {
         $e = self::sqlExplode($query, ' ');
 
@@ -806,11 +806,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @throws Doctrine_Query_Exception     if some generic parsing error occurs
      * @return Doctrine_Query
      */
-    public function parseQuery($query, $clear = true) 
+    public function parseQuery($query, $clear = true)
     {
         if($clear)
             $this->clear();
-        
+
         $query = trim($query);
         $query = str_replace("\n", ' ', $query);
         $query = str_replace("\r", ' ', $query);
@@ -860,7 +860,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 break;
             }
         }
-        
+
         return $this;
     }
     /**
@@ -870,7 +870,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param string $str
      * @return void
      */
-    final public function parseOrderBy($str) 
+    final public function parseOrderBy($str)
     {
         $parser = new Doctrine_Query_Part_Orderby($this);
         return $parser->parse($str);
@@ -881,7 +881,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param string $mode
      * @return integer
      */
-    final public function parseFetchMode($mode) 
+    final public function parseFetchMode($mode)
     {
         switch(strtolower($mode)):
             case "i":
@@ -915,7 +915,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param string $e1        the first bracket, usually '('
      * @param string $e2        the second bracket, usually ')'
      */
-    public static function bracketTrim($str,$e1 = '(',$e2 = ')') 
+    public static function bracketTrim($str,$e1 = '(',$e2 = ')')
     {
         if(substr($str,0,1) == $e1 && substr($str,-1) == $e2)
             return substr($str,1,-1);
@@ -926,15 +926,15 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * bracketExplode
      *
      * example:
-     * 
+     *
      * parameters:
      *      $str = (age < 20 AND age > 18) AND email LIKE 'John@example.com'
      *      $d = ' AND '
-     *      $e1 = '(' 
+     *      $e1 = '('
      *      $e2 = ')'
      *
      * would return an array:
-     *      array("(age < 20 AND age > 18)", 
+     *      array("(age < 20 AND age > 18)",
      *            "email LIKE 'John@example.com'")
      *
      * @param string $str
@@ -943,7 +943,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param string $e2        the second bracket, usually ')'
      *
      */
-    public static function bracketExplode($str, $d = ' ', $e1 = '(', $e2 = ')') 
+    public static function bracketExplode($str, $d = ' ', $e1 = '(', $e2 = ')')
     {
         if(is_array($d)) {
             $a = preg_split('/('.implode('|', $d).')/', $str);
@@ -972,7 +972,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * quoteExplode
      *
      * example:
-     * 
+     *
      * parameters:
      *      $str = email LIKE 'John@example.com'
      *      $d = ' AND '
@@ -985,7 +985,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param string $str
      * @param string $d         the delimeter which explodes the string
      */
-    public static function quoteExplode($str, $d = ' ') 
+    public static function quoteExplode($str, $d = ' ')
     {
         if(is_array($d)) {
             $a = preg_split('/('.implode('|', $d).')/', $str);
@@ -1026,9 +1026,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      *      $e2  = ')'
      *
      * would return an array:
-     *      array('(age < 20 AND age > 18)', 
+     *      array('(age < 20 AND age > 18)',
      *            'name',
-     *            'LIKE', 
+     *            'LIKE',
      *            'John Doe')
      *
      * @param string $str
@@ -1038,7 +1038,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      *
      * @return array
      */
-    public static function sqlExplode($str, $d = ' ', $e1 = '(', $e2 = ')') 
+    public static function sqlExplode($str, $d = ' ', $e1 = '(', $e2 = ')')
     {
         if(is_array($d)) {
             $str = preg_split('/('.implode('|', $d).')/', $str);
@@ -1057,7 +1057,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
                 if(substr($term[$i],0,1) == "(") {
                     if($s1 == $s2) {
-                        $i++;       
+                        $i++;
                     }
                 } else {
                     if( ! (substr_count($term[$i], "'") & 1) &&
@@ -1090,7 +1090,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param string $tableName
      * @return string
      */
-    public function generateAlias($tableName) 
+    public function generateAlias($tableName)
     {
         if(isset($this->tableIndexes[$tableName])) {
             return $tableName.++$this->tableIndexes[$tableName];
@@ -1108,7 +1108,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @throws Doctrine_Query_Exception
      * @return Doctrine_Table
      */
-    final public function load($path, $loadFields = true) 
+    final public function load($path, $loadFields = true)
     {
         $tmp            = explode(' ',$path);
         $componentAlias = (count($tmp) > 1) ? end($tmp) : false;
@@ -1237,7 +1237,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
                     $this->relationStack[] = $fk;
                 }
-                
+
                 $this->components[$currPath] = $table;
 
                 $this->tableStack[] = $table;
@@ -1294,7 +1294,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param string $currPath
      * @return void
      */
-    final public function parseFields($fullName, $tableName, array $exploded, $currPath) 
+    final public function parseFields($fullName, $tableName, array $exploded, $currPath)
     {
         $table = $this->tables[$tableName];
 
@@ -1330,12 +1330,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     }
     /**
      * parseAggregateFunction
-     * 
+     *
      * @param string $func
      * @param string $reference
      * @return string
      */
-    public function parseAggregateFunction($func,$reference) 
+    public function parseAggregateFunction($func,$reference)
     {
         $pos = strpos($func, '(');
 
@@ -1369,7 +1369,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     /**
      * parseAggregateValues
      */
-    public function parseAggregateValues($fullName, $tableName, array $exploded, $currPath) 
+    public function parseAggregateValues($fullName, $tableName, array $exploded, $currPath)
     {
         $this->aggregate = true;
         $pos    = strpos($fullName, '(');

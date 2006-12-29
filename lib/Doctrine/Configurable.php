@@ -69,7 +69,7 @@ abstract class Doctrine_Configurable
                     throw new Doctrine_Exception("Batch size should be greater than or equal to zero");
                 }
                 break;
-    
+
             case Doctrine::ATTR_FETCHMODE:
                 if ($value < 0) {
                    throw new Doctrine_Exception("Unknown fetchmode. See Doctrine::FETCH_* constants.");
@@ -98,11 +98,11 @@ abstract class Doctrine_Configurable
                 break;
             case Doctrine::ATTR_ACCESSORS:
                 $accessors = array('none','get','set','both');
-    
+
                // if ( ! in_array($value,$accessors)) {
                //     throw new Doctrine_Exception();
                // }
-    
+
                 break;
             case Doctrine::ATTR_COLL_LIMIT:
                 if ($value < 1) {
@@ -126,7 +126,7 @@ abstract class Doctrine_Configurable
             case Doctrine::ATTR_DEFAULT_TABLE_TYPE:
             case Doctrine::ATTR_ACCESSOR_PREFIX_GET:
             case Doctrine::ATTR_ACCESSOR_PREFIX_SET:
-    
+
                 break;
             case Doctrine::ATTR_SEQCOL_NAME:
                 if ( ! is_string($value)) {

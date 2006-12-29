@@ -105,7 +105,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate
                         $p = $low;
                         $p .= "by";
                         $parts[$low."by"] = array();
-    
+
                     } else {
                         $parts[$p][] = $part;
                     }

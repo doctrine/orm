@@ -321,17 +321,17 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 if ( ! $this->expandable) {
                     return false;
                 }
-    
+
                 if ( ! isset($this->reference)) {
                     return false;
                 }
-    
+
                 $id = $this->reference->obtainIdentifier();
-    
+
                 if (empty($id)) {
                     return false;
                 }
-    
+
                 switch (get_class($this)) {
                     case "Doctrine_Collection_Immediate":
                         $fields = implode(", ",$this->table->getColumnNames());

@@ -159,7 +159,7 @@ class Doctrine_Collection_Batch extends Doctrine_Collection
                     // Doctrine_Record didn't exist in cache
                     $this->table->setData($this->data[$key]);
                     $this->data[$key] = $this->table->getProxy();
-    
+
                     $this->data[$key]->addCollection($this);
                     break;
             };

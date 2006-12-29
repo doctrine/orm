@@ -67,9 +67,9 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
             case 'string':
                 $length = !empty($field['length'])
                     ? $field['length'] : false;
-    
+
                 $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
-    
+
                 return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$db->options['default_text_field_length'].')')
                     : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
             case 'clob':

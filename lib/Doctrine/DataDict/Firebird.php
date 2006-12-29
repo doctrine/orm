@@ -65,9 +65,9 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
             case 'text':
                 $length = !empty($field['length'])
                     ? $field['length'] : 16777215; // TODO: $db->options['default_text_field_length'];
-    
+
                 $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
-    
+
                 return $fixed ? 'CHAR('.$length.')' : 'VARCHAR('.$length.')';
             case 'clob':
                 return 'BLOB SUB_TYPE 1';

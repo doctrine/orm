@@ -65,9 +65,9 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
             case 'gzip':
             case 'varchar':
                 $length = (isset($field['length']) && $field['length']) ? $field['length'] : null;
-    
+
                 $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
-    
+
                 return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$this->conn->getAttribute(Doctrine::ATTR_DEFAULT_TEXTFLD_LENGTH).')')
                     : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
             case 'clob':

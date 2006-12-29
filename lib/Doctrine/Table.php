@@ -196,7 +196,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                                                     )
                                                               )
                                                         ), $this->columns);
-    
+
                         $this->primaryKeys[] = 'id';
                         $this->identifier = 'id';
                         $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
@@ -206,19 +206,19 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                         if (count($this->primaryKeys) > 1) {
                             $this->identifier = $this->primaryKeys;
                             $this->identifierType = Doctrine_Identifier::COMPOSITE;
-    
+
                         } else {
                             foreach ($this->primaryKeys as $pk) {
                                 $e = $this->columns[$pk][2];
-    
+
                                 $found = false;
-    
+
                                 foreach ($e as $option => $value) {
                                     if ($found)
                                         break;
-    
+
                                     $e2 = explode(":",$option);
-    
+
                                     switch (strtolower($e2[0])) {
                                         case "autoincrement":
                                             $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
