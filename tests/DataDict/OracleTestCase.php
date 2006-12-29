@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_DataDict_Mysql_TestCase
+ * Doctrine_DataDict_Oracle_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
