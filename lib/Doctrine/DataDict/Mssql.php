@@ -59,51 +59,51 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
     public function getNativeDeclaration($field)
     {
         switch ($field['type']) {
-        case 'array':
-        case 'object':
-        case 'text':
-        case 'char':
-        case 'varchar':
-        case 'string':
-            $length = !empty($field['length'])
-                ? $field['length'] : false;
-
-            $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
-
-            return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$db->options['default_text_field_length'].')')
-                : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
-        case 'clob':
-            if (!empty($field['length'])) {
-                $length = $field['length'];
-                if ($length <= 8000) {
-                    return 'VARCHAR('.$length.')';
+            case 'array':
+            case 'object':
+            case 'text':
+            case 'char':
+            case 'varchar':
+            case 'string':
+                $length = !empty($field['length'])
+                    ? $field['length'] : false;
+    
+                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
+    
+                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$db->options['default_text_field_length'].')')
+                    : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
+            case 'clob':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 8000) {
+                        return 'VARCHAR('.$length.')';
+                    }
+                 }
+                 return 'TEXT';
+            case 'blob':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 8000) {
+                        return "VARBINARY($length)";
+                    }
                 }
-             }
-             return 'TEXT';
-        case 'blob':
-            if (!empty($field['length'])) {
-                $length = $field['length'];
-                if ($length <= 8000) {
-                    return "VARBINARY($length)";
-                }
-            }
-            return 'IMAGE';
-        case 'integer':
-        case 'enum':
-            return 'INT';
-        case 'boolean':
-            return 'BIT';
-        case 'date':
-            return 'CHAR(' . strlen('YYYY-MM-DD') . ')';
-        case 'time':
-            return 'CHAR(' . strlen('HH:MM:SS') . ')';
-        case 'timestamp':
-            return 'CHAR(' . strlen('YYYY-MM-DD HH:MM:SS') . ')';
-        case 'float':
-            return 'FLOAT';
-        case 'decimal':
-            $length = !empty($field['length']) ? $field['length'] : 18;
-            return 'DECIMAL('.$length.','.$db->options['decimal_places'].')';
+                return 'IMAGE';
+            case 'integer':
+            case 'enum':
+                return 'INT';
+            case 'boolean':
+                return 'BIT';
+            case 'date':
+                return 'CHAR(' . strlen('YYYY-MM-DD') . ')';
+            case 'time':
+                return 'CHAR(' . strlen('HH:MM:SS') . ')';
+            case 'timestamp':
+                return 'CHAR(' . strlen('YYYY-MM-DD HH:MM:SS') . ')';
+            case 'float':
+                return 'FLOAT';
+            case 'decimal':
+                $length = !empty($field['length']) ? $field['length'] : 18;
+                return 'DECIMAL('.$length.','.$db->options['decimal_places'].')';
         }
         return '';
     }
@@ -124,48 +124,48 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
         // todo: unsigned handling seems to be missing
         $unsigned = $fixed = null;
         switch ($db_type) {
-        case 'bit':
-            $type[0] = 'boolean';
-        break;
-        case 'int':
-            $type[0] = 'integer';
-        break;
-        case 'datetime':
-            $type[0] = 'timestamp';
-        break;
-        case 'float':
-        case 'real':
-        case 'numeric':
-            $type[0] = 'float';
-        break;
-        case 'decimal':
-        case 'money':
-            $type[0] = 'decimal';
-        break;
-        case 'text':
-        case 'varchar':
-            $fixed = false;
-        case 'char':
-            $type[0] = 'text';
-            if ($length == '1') {
-                $type[] = 'boolean';
-                if (preg_match('/^[is|has]/', $field['name'])) {
-                    $type = array_reverse($type);
+            case 'bit':
+                $type[0] = 'boolean';
+            break;
+            case 'int':
+                $type[0] = 'integer';
+            break;
+            case 'datetime':
+                $type[0] = 'timestamp';
+            break;
+            case 'float':
+            case 'real':
+            case 'numeric':
+                $type[0] = 'float';
+            break;
+            case 'decimal':
+            case 'money':
+                $type[0] = 'decimal';
+            break;
+            case 'text':
+            case 'varchar':
+                $fixed = false;
+            case 'char':
+                $type[0] = 'text';
+                if ($length == '1') {
+                    $type[] = 'boolean';
+                    if (preg_match('/^[is|has]/', $field['name'])) {
+                        $type = array_reverse($type);
+                    }
+                } elseif (strstr($db_type, 'text')) {
+                    $type[] = 'clob';
                 }
-            } elseif (strstr($db_type, 'text')) {
-                $type[] = 'clob';
-            }
-            if ($fixed !== false) {
-                $fixed = true;
-            }
-        break;
-        case 'image':
-        case 'varbinary':
-            $type[] = 'blob';
-            $length = null;
-        break;
-        default:
-            throw new Doctrine_DataDict_Mssql_Exception('unknown database attribute type: '.$db_type);
+                if ($fixed !== false) {
+                    $fixed = true;
+                }
+            break;
+            case 'image':
+            case 'varbinary':
+                $type[] = 'blob';
+                $length = null;
+            break;
+            default:
+                throw new Doctrine_DataDict_Mssql_Exception('unknown database attribute type: '.$db_type);
         }
 
         return array($type, $length, $unsigned, $fixed);

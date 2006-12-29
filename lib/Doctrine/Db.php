@@ -247,33 +247,33 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
             throw new Doctrine_Db_Exception('Driver '.$parts['scheme'].' not availible or extension not loaded');
         }
         switch ($parts['scheme']) {
-        case 'sqlite':
-            if (isset($parts['host']) && $parts['host'] == ':memory') {
-                $parts['database'] = ':memory:';
-                $parts['dsn']      = 'sqlite::memory:';
-            }
-
-            break;
-        case 'mysql':
-        case 'informix':
-        case 'oci8':
-        case 'mssql':
-        case 'firebird':
-        case 'pgsql':
-        case 'odbc':
-            if ( ! isset($parts['path']) || $parts['path'] == '/') {
-                throw new Doctrine_Db_Exception('No database availible in data source name');
-            }
-            if (isset($parts['path'])) {
-                $parts['database'] = substr($parts['path'], 1);
-            }
-            if ( ! isset($parts['host'])) {
-                throw new Doctrine_Db_Exception('No hostname set in data source name');
-            }
-            $parts['dsn'] = $parts["scheme"].":host=".$parts["host"].";dbname=".$parts["database"];
-            break;
-        default:
-            throw new Doctrine_Db_Exception('Unknown driver '.$parts['scheme']);
+            case 'sqlite':
+                if (isset($parts['host']) && $parts['host'] == ':memory') {
+                    $parts['database'] = ':memory:';
+                    $parts['dsn']      = 'sqlite::memory:';
+                }
+    
+                break;
+            case 'mysql':
+            case 'informix':
+            case 'oci8':
+            case 'mssql':
+            case 'firebird':
+            case 'pgsql':
+            case 'odbc':
+                if ( ! isset($parts['path']) || $parts['path'] == '/') {
+                    throw new Doctrine_Db_Exception('No database availible in data source name');
+                }
+                if (isset($parts['path'])) {
+                    $parts['database'] = substr($parts['path'], 1);
+                }
+                if ( ! isset($parts['host'])) {
+                    throw new Doctrine_Db_Exception('No hostname set in data source name');
+                }
+                $parts['dsn'] = $parts["scheme"].":host=".$parts["host"].";dbname=".$parts["database"];
+                break;
+            default:
+                throw new Doctrine_Db_Exception('Unknown driver '.$parts['scheme']);
         }
 
         return $parts;

@@ -64,24 +64,24 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 $stack      = $this->query->getTableStack();
 
                 switch ($func) {
-                case 'contains':
-                case 'regexp':
-                case 'like':
-                    $operator = $this->getOperator($func);
-
-                    if (empty($relation)) {
-                        throw new Doctrine_Query_Exception('DQL functions contains/regexp/like can only be used for fields of related components');
-                    }
-                    $where = array();
-                    foreach ($values as $value) {
-                        $where[] = $alias.'.'.$relation->getLocal().
-                          ' IN (SELECT '.$relation->getForeign().
-                          ' FROM '.$relation->getTable()->getTableName().' WHERE '.$field.$operator.$value.')';
-                    }
-                    $where = implode(' AND ', $where);
-                    break;
-                default:
-                    throw new Doctrine_Query_Exception('Unknown DQL function: '.$func);
+                    case 'contains':
+                    case 'regexp':
+                    case 'like':
+                        $operator = $this->getOperator($func);
+    
+                        if (empty($relation)) {
+                            throw new Doctrine_Query_Exception('DQL functions contains/regexp/like can only be used for fields of related components');
+                        }
+                        $where = array();
+                        foreach ($values as $value) {
+                            $where[] = $alias.'.'.$relation->getLocal().
+                              ' IN (SELECT '.$relation->getForeign().
+                              ' FROM '.$relation->getTable()->getTableName().' WHERE '.$field.$operator.$value.')';
+                        }
+                        $where = implode(' AND ', $where);
+                        break;
+                    default:
+                        throw new Doctrine_Query_Exception('Unknown DQL function: '.$func);
                 }
             } else {
                 $table     = $this->query->load($reference, false);
@@ -124,15 +124,15 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 }
 
                 switch ($operator) {
-                case '<':
-                case '>':
-                case '=':
-                case '!=':
-                    if ($enumIndex !== false) {
-                        $value  = $enumIndex;
-                    }
-                default:
-                    $where      = $alias.'.'.$field.' '.$operator.' '.$value;
+                    case '<':
+                    case '>':
+                    case '=':
+                    case '!=':
+                        if ($enumIndex !== false) {
+                            $value  = $enumIndex;
+                        }
+                    default:
+                        $where      = $alias.'.'.$field.' '.$operator.' '.$value;
                 }
             }
         }
@@ -202,15 +202,15 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
     public function getOperator($func)
     {
         switch ($func) {
-        case 'contains':
-            $operator = ' = ';
-            break;
-        case 'regexp':
-            $operator = $this->query->getConnection()->getRegexpOperator();
-            break;
-        case 'like':
-            $operator = ' LIKE ';
-            break;
+            case 'contains':
+                $operator = ' = ';
+                break;
+            case 'regexp':
+                $operator = $this->query->getConnection()->getRegexpOperator();
+                break;
+            case 'like':
+                $operator = ' LIKE ';
+                break;
         }
         return $operator;
     }

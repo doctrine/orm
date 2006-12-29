@@ -308,37 +308,37 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $offset = null;
 
         switch (get_class($this)) {
-        case "Doctrine_Collection_Offset":
-            $limit  = $this->getLimit();
-            $offset = (floor($key / $limit) * $limit);
+            case "Doctrine_Collection_Offset":
+                $limit  = $this->getLimit();
+                $offset = (floor($key / $limit) * $limit);
 
-            if ( ! $this->expandable && isset($this->expanded[$offset])) {
-                return false;
-            }
-            $fields = implode(", ",$this->table->getColumnNames());
-            break;
-        default:
-            if ( ! $this->expandable) {
-                return false;
-            }
-
-            if ( ! isset($this->reference)) {
-                return false;
-            }
-
-            $id = $this->reference->obtainIdentifier();
-
-            if (empty($id)) {
-                return false;
-            }
-
-            switch (get_class($this)) {
-            case "Doctrine_Collection_Immediate":
+                if ( ! $this->expandable && isset($this->expanded[$offset])) {
+                    return false;
+                }
                 $fields = implode(", ",$this->table->getColumnNames());
                 break;
             default:
-                $fields = implode(", ",$this->table->getPrimaryKeys());
-            };
+                if ( ! $this->expandable) {
+                    return false;
+                }
+    
+                if ( ! isset($this->reference)) {
+                    return false;
+                }
+    
+                $id = $this->reference->obtainIdentifier();
+    
+                if (empty($id)) {
+                    return false;
+                }
+    
+                switch (get_class($this)) {
+                    case "Doctrine_Collection_Immediate":
+                        $fields = implode(", ",$this->table->getColumnNames());
+                        break;
+                    default:
+                        $fields = implode(", ",$this->table->getPrimaryKeys());
+                    };
          };
 
         if (isset($this->relation)) {

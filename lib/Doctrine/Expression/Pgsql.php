@@ -142,17 +142,17 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression
             $field = is_null($field) ? '' : $field.' ';
             $operator = strtoupper($operator);
             switch ($operator) {
-            // case insensitive
-            case 'ILIKE':
-                $match = $field.'ILIKE ';
-                break;
-            // case sensitive
-            case 'LIKE':
-                $match = $field.'LIKE ';
-                break;
-            default:
-                return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                    'not a supported operator type:'. $operator, __FUNCTION__);
+                // case insensitive
+                case 'ILIKE':
+                    $match = $field.'ILIKE ';
+                    break;
+                // case sensitive
+                case 'LIKE':
+                    $match = $field.'LIKE ';
+                    break;
+                default:
+                    return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                        'not a supported operator type:'. $operator, __FUNCTION__);
             }
         }
         $match.= "'";

@@ -154,16 +154,16 @@ class Doctrine_Export_Mssql extends Doctrine_Export
     {
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
-            case 'add':
-                break;
-            case 'remove':
-                break;
-            case 'name':
-            case 'rename':
-            case 'change':
-            default:
-                return $db->raiseError(Doctrine::ERR_CANNOT_ALTER, null, null,
-                    'alterTable: change type "'.$change_name.'" not yet supported');
+                case 'add':
+                    break;
+                case 'remove':
+                    break;
+                case 'name':
+                case 'rename':
+                case 'change':
+                default:
+                    return $db->raiseError(Doctrine::ERR_CANNOT_ALTER, null, null,
+                        'alterTable: change type "'.$change_name.'" not yet supported');
             }
         }
 

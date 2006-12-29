@@ -155,7 +155,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
                 case 'change':
                 case 'name':
                 case 'rename':
-                break;
+                    break;
                 default:
                     throw new Doctrine_Export_Pgsql_Exception('change type "'.$change_name.'\" not yet supported');
             }

@@ -65,16 +65,16 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression
             $field = is_null($field) ? '' : $field.' ';
             $operator = strtoupper($operator);
             switch ($operator) {
-            // case insensitive
-            case 'ILIKE':
-                $match = $field.'LIKE ';
-                break;
-            // case sensitive
-            case 'LIKE':
-                $match = $field.'LIKE BINARY ';
-                break;
-            default:
-                throw new Doctrine_Expression_Mysql_Exception('not a supported operator type:'. $operator);
+                // case insensitive
+                case 'ILIKE':
+                    $match = $field.'LIKE ';
+                    break;
+                // case sensitive
+                case 'LIKE':
+                    $match = $field.'LIKE BINARY ';
+                    break;
+                default:
+                    throw new Doctrine_Expression_Mysql_Exception('not a supported operator type:'. $operator);
             }
         }
         $match.= "'";

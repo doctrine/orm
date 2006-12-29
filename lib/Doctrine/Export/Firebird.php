@@ -189,25 +189,25 @@ class Doctrine_Export_Firebird extends Doctrine_Export
     {
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
-            case 'notnull':
-                return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                    'it is not supported changes to field not null constraint', __FUNCTION__);
-            case 'default':
-                return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                    'it is not supported changes to field default value', __FUNCTION__);
-            case 'length':
-                /*
-                return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                    'it is not supported changes to field default length', __FUNCTION__);
-                */
-            case 'unsigned':
-            case 'type':
-            case 'declaration':
-            case 'definition':
-                break;
-            default:
-                return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                    'it is not supported change of type' . $change_name, __FUNCTION__);
+                case 'notnull':
+                    return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                        'it is not supported changes to field not null constraint', __FUNCTION__);
+                case 'default':
+                    return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                        'it is not supported changes to field default value', __FUNCTION__);
+                case 'length':
+                    /*
+                    return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                        'it is not supported changes to field default length', __FUNCTION__);
+                    */
+                case 'unsigned':
+                case 'type':
+                case 'declaration':
+                case 'definition':
+                    break;
+                default:
+                    return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                        'it is not supported change of type' . $change_name, __FUNCTION__);
             }
         }
         return MDB2_OK;
@@ -320,20 +320,20 @@ class Doctrine_Export_Firebird extends Doctrine_Export
     {
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
-            case 'add':
-            case 'remove':
-            case 'rename':
-                break;
-            case 'change':
-                foreach ($changes['change'] as $field) {
-                    if (PEAR::isError($err = $this->checkSupportedChanges($field))) {
-                        return $err;
+                case 'add':
+                case 'remove':
+                case 'rename':
+                    break;
+                case 'change':
+                    foreach ($changes['change'] as $field) {
+                        if (PEAR::isError($err = $this->checkSupportedChanges($field))) {
+                            return $err;
+                        }
                     }
-                }
-                break;
-            default:
-                return $db->raiseError(MDB2_ERROR_CANNOT_ALTER, null, null,
-                    'change type ' . $change_name . ' not yet supported', __FUNCTION__);
+                    break;
+                default:
+                    return $db->raiseError(MDB2_ERROR_CANNOT_ALTER, null, null,
+                        'change type ' . $change_name . ' not yet supported', __FUNCTION__);
             }
         }
         if ($check) {
@@ -432,12 +432,12 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         foreach ($definition['fields'] as $field) {
             if (!strcmp($query_sort, '') && isset($field['sorting'])) {
                 switch ($field['sorting']) {
-                case 'ascending':
-                    $query_sort = ' ASC';
-                    break;
-                case 'descending':
-                    $query_sort = ' DESC';
-                    break;
+                    case 'ascending':
+                        $query_sort = ' ASC';
+                        break;
+                    case 'descending':
+                        $query_sort = ' DESC';
+                        break;
                 }
             }
         }

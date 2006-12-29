@@ -107,21 +107,21 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     public function getRelationDql($count, $context = 'record')
     {
         switch ($context) {
-        case "record":
-            $sub    = 'SQL:SELECT ' . $this->foreign.
-                      ' FROM '  . $this->associationTable->getTableName().
-                      ' WHERE ' . $this->local.
-                      ' IN ('   . substr(str_repeat("?, ", $count),0,-2) .
-                      ')';
-
-            $dql  = "FROM ".$this->table->getComponentName();
-            $dql .= ".".$this->associationTable->getComponentName();
-            $dql .= " WHERE ".$this->table->getComponentName().".".$this->table->getIdentifier()." IN ($sub)";
-            break;
-        case "collection":
-            $sub  = substr(str_repeat("?, ", $count),0,-2);
-            $dql  = "FROM ".$this->associationTable->getComponentName().".".$this->table->getComponentName();
-            $dql .= " WHERE ".$this->associationTable->getComponentName().".".$this->local." IN ($sub)";
+            case "record":
+                $sub    = 'SQL:SELECT ' . $this->foreign.
+                          ' FROM '  . $this->associationTable->getTableName().
+                          ' WHERE ' . $this->local.
+                          ' IN ('   . substr(str_repeat("?, ", $count),0,-2) .
+                          ')';
+    
+                $dql  = "FROM ".$this->table->getComponentName();
+                $dql .= ".".$this->associationTable->getComponentName();
+                $dql .= " WHERE ".$this->table->getComponentName().".".$this->table->getIdentifier()." IN ($sub)";
+                break;
+            case "collection":
+                $sub  = substr(str_repeat("?, ", $count),0,-2);
+                $dql  = "FROM ".$this->associationTable->getComponentName().".".$this->table->getComponentName();
+                $dql .= " WHERE ".$this->associationTable->getComponentName().".".$this->local." IN ($sub)";
         };
 
         return $dql;

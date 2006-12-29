@@ -187,55 +187,55 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     $this->options['tableName'] = Doctrine::tableize($class->getName());
                 }
                 switch (count($this->primaryKeys)) {
-                case 0:
-                    $this->columns = array_merge(array('id' =>
-                                                    array('integer',
-                                                          20,
-                                                          array('autoincrement' => true,
-                                                                'primary'       => true
-                                                                )
-                                                          )
-                                                    ), $this->columns);
-
-                    $this->primaryKeys[] = 'id';
-                    $this->identifier = 'id';
-                    $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
-                    $this->columnCount++;
-                    break;
-                default:
-                    if (count($this->primaryKeys) > 1) {
-                        $this->identifier = $this->primaryKeys;
-                        $this->identifierType = Doctrine_Identifier::COMPOSITE;
-
-                    } else {
-                        foreach ($this->primaryKeys as $pk) {
-                            $e = $this->columns[$pk][2];
-
-                            $found = false;
-
-                            foreach ($e as $option => $value) {
-                                if ($found)
-                                    break;
-
-                                $e2 = explode(":",$option);
-
-                                switch (strtolower($e2[0])) {
-                                case "autoincrement":
-                                    $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
-                                    $found = true;
-                                    break;
-                                case "seq":
-                                    $this->identifierType = Doctrine_Identifier::SEQUENCE;
-                                    $found = true;
-                                    break;
-                                };
+                    case 0:
+                        $this->columns = array_merge(array('id' =>
+                                                        array('integer',
+                                                              20,
+                                                              array('autoincrement' => true,
+                                                                    'primary'       => true
+                                                                    )
+                                                              )
+                                                        ), $this->columns);
+    
+                        $this->primaryKeys[] = 'id';
+                        $this->identifier = 'id';
+                        $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
+                        $this->columnCount++;
+                        break;
+                    default:
+                        if (count($this->primaryKeys) > 1) {
+                            $this->identifier = $this->primaryKeys;
+                            $this->identifierType = Doctrine_Identifier::COMPOSITE;
+    
+                        } else {
+                            foreach ($this->primaryKeys as $pk) {
+                                $e = $this->columns[$pk][2];
+    
+                                $found = false;
+    
+                                foreach ($e as $option => $value) {
+                                    if ($found)
+                                        break;
+    
+                                    $e2 = explode(":",$option);
+    
+                                    switch (strtolower($e2[0])) {
+                                        case "autoincrement":
+                                            $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
+                                            $found = true;
+                                            break;
+                                        case "seq":
+                                            $this->identifierType = Doctrine_Identifier::SEQUENCE;
+                                            $found = true;
+                                            break;
+                                        };
+                                }
+                                if ( ! isset($this->identifierType)) {
+                                    $this->identifierType = Doctrine_Identifier::NORMAL;
+                                }
+                                $this->identifier = $pk;
                             }
-                            if ( ! isset($this->identifierType)) {
-                                $this->identifierType = Doctrine_Identifier::NORMAL;
-                            }
-                            $this->identifier = $pk;
                         }
-                    }
                 };
 
                 if ($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
@@ -306,15 +306,15 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function setOption($name, $value)
     {
         switch ($name) {
-        case 'name':
-        case 'tableName':
-            break;
-        case 'enumMap':
-        case 'inheritanceMap':
-            if ( ! is_array($value)) {
-                throw new Doctrine_Table_Exception($name.' should be an array.');
-            }
-            break;
+            case 'name':
+            case 'tableName':
+                break;
+            case 'enumMap':
+            case 'inheritanceMap':
+                if ( ! is_array($value)) {
+                    throw new Doctrine_Table_Exception($name.' should be an array.');
+                }
+                break;
         }
         $this->options[$name] = $value;
     }
@@ -422,12 +422,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     final public function setPrimaryKey($key)
     {
         switch (gettype($key)) {
-        case "array":
-            $this->primaryKeys = array_values($key);
-            break;
-        case "string":
-            $this->primaryKeys[] = $key;
-            break;
+            case "array":
+                $this->primaryKeys = array_values($key);
+                break;
+            case "string":
+                $this->primaryKeys[] = $key;
+                break;
         };
     }
     /**
@@ -491,20 +491,20 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $name  = $this->getComponentName();
         foreach ($this->bound as $k=>$a) {
             try {
-            $fk = $this->getRelation($k);
-            switch ($fk->getType()) {
-            case Doctrine_Relation::ONE_COMPOSITE:
-            case Doctrine_Relation::MANY_COMPOSITE:
-                $n = $fk->getTable()->getComponentName();
-                $array[] = $name.".".$n;
-                $e = $fk->getTable()->getCompositePaths();
-                if ( ! empty($e)) {
-                    foreach ($e as $name) {
-                        $array[] = $name.".".$n.".".$name;
-                    }
-                }
-                break;
-            };
+                $fk = $this->getRelation($k);
+                switch ($fk->getType()) {
+                    case Doctrine_Relation::ONE_COMPOSITE:
+                    case Doctrine_Relation::MANY_COMPOSITE:
+                        $n = $fk->getTable()->getComponentName();
+                        $array[] = $name.".".$n;
+                        $e = $fk->getTable()->getCompositePaths();
+                        if ( ! empty($e)) {
+                            foreach ($e as $name) {
+                                $array[] = $name.".".$n.".".$name;
+                            }
+                        }
+                        break;
+                };
             } catch(Doctrine_Table_Exception $e) {
 
             }

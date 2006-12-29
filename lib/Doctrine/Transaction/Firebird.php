@@ -92,16 +92,16 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
         switch ($isolation) {
             case 'READ UNCOMMITTED':
                 $nativeIsolation = 'READ COMMITTED RECORD_VERSION';
-            break;
+                break;
             case 'READ COMMITTED':
                 $nativeIsolation = 'READ COMMITTED NO RECORD_VERSION';
-            break;
+                break;
             case 'REPEATABLE READ':
                 $nativeIsolation = 'SNAPSHOT';
-            break;
+                break;
             case 'SERIALIZABLE':
                 $nativeIsolation = 'SNAPSHOT TABLE STABILITY';
-            break;
+                break;
             default:
                 throw new Doctrine_Transaction_Exception('isolation level is not supported: ' . $isolation);
         }
@@ -124,7 +124,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
                 case 'READ ONLY':
                 case 'READ WRITE':
                     $rw = ' ' . $options['rw'];
-                break;
+                    break;
                 default:
                     throw new Doctrine_Transaction_Exception('wait option is not supported: ' . $options['rw']);
             }

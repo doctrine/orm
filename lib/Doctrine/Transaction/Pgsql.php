@@ -91,8 +91,7 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction
             case 'READ COMMITTED':
             case 'REPEATABLE READ':
             case 'SERIALIZABLE':
-
-            break;
+                break;
             default:
                 throw new Doctrine_Transaction_Exception('Isolation level '.$isolation.' is not supported.');
         }

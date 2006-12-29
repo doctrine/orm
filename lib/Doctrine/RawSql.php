@@ -87,37 +87,37 @@ class Doctrine_RawSql extends Doctrine_Hydrate
         foreach ($e as $k => $part) {
             $low = strtolower($part);
             switch (strtolower($part)) {
-            case "select":
-            case "from":
-            case "where":
-            case "limit":
-            case "offset":
-            case "having":
-                $p = $low;
-                if ( ! isset($parts[$low])) {
-                    $parts[$low] = array();
-                }
-                break;
-            case "order":
-            case "group":
-                $i = ($k + 1);
-                if (isset($e[$i]) && strtolower($e[$i]) === "by") {
+                case "select":
+                case "from":
+                case "where":
+                case "limit":
+                case "offset":
+                case "having":
                     $p = $low;
-                    $p .= "by";
-                    $parts[$low."by"] = array();
-
-                } else {
-                    $parts[$p][] = $part;
-                }
-                break;
-            case "by":
-                continue;
-            default:
-                if ( ! isset($parts[$p][0])) {
-                    $parts[$p][0] = $part;
-                } else {
-                    $parts[$p][0] .= ' '.$part;
-                }
+                    if ( ! isset($parts[$low])) {
+                        $parts[$low] = array();
+                    }
+                    break;
+                case "order":
+                case "group":
+                    $i = ($k + 1);
+                    if (isset($e[$i]) && strtolower($e[$i]) === "by") {
+                        $p = $low;
+                        $p .= "by";
+                        $parts[$low."by"] = array();
+    
+                    } else {
+                        $parts[$p][] = $part;
+                    }
+                    break;
+                case "by":
+                    continue;
+                default:
+                    if ( ! isset($parts[$p][0])) {
+                        $parts[$p][0] = $part;
+                    } else {
+                        $parts[$p][0] .= ' '.$part;
+                    }
             };
         };
 

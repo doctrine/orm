@@ -77,11 +77,11 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression
     public function now($type = 'timestamp')
     {
         switch ($type) {
-        case 'date':
-        case 'time':
-        case 'timestamp':
-        default:
-            return 'TO_CHAR(CURRENT_TIMESTAMP, \'YYYY-MM-DD HH24:MI:SS\')';
+            case 'date':
+            case 'time':
+            case 'timestamp':
+            default:
+                return 'TO_CHAR(CURRENT_TIMESTAMP, \'YYYY-MM-DD HH24:MI:SS\')';
         }
     }
     /**

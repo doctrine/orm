@@ -45,11 +45,11 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression
     public function now($type = 'timestamp')
     {
         switch ($type) {
-        case 'time':
-        case 'date':
-        case 'timestamp':
-        default:
-            return 'GETDATE()';
+            case 'time':
+            case 'date':
+            case 'timestamp':
+            default:
+                return 'GETDATE()';
         }
     }
     /**

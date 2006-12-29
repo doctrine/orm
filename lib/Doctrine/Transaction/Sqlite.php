@@ -49,12 +49,12 @@ class Doctrine_Transaction_Sqlite extends Doctrine_Transaction
         switch ($isolation) {
             case 'READ UNCOMMITTED':
                 $isolation = 0;
-            break;
+                break;
             case 'READ COMMITTED':
             case 'REPEATABLE READ':
             case 'SERIALIZABLE':
                 $isolation = 1;
-            break;
+                break;
             default:
                 throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . 'is not supported.');
         }

@@ -48,10 +48,10 @@ class Doctrine_Query_From extends Doctrine_Query_Part
         $operator = false;
 
         switch (trim($parts[0])) {
-        case 'INNER':
-            $operator = ':';
-        case 'LEFT':
-            array_shift($parts);
+            case 'INNER':
+                $operator = ':';
+            case 'LEFT':
+                array_shift($parts);
         }
 
         $last = '';

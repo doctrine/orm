@@ -373,37 +373,35 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->_data[$name] = self::$null;
             } else {
                 switch ($type) {
-                case "array":
-                case "object":
-
-                    if ($tmp[$name] !== self::$null) {
-                        if (is_string($tmp[$name])) {
-                            $value = unserialize($tmp[$name]);
-
-                            if ($value === false)
-                                throw new Doctrine_Record_Exception("Unserialization of $name failed.");
-                        } else {
-                            $value = $tmp[$name];
+                    case "array":
+                    case "object":
+                        if ($tmp[$name] !== self::$null) {
+                            if (is_string($tmp[$name])) {
+                                $value = unserialize($tmp[$name]);
+    
+                                if ($value === false)
+                                    throw new Doctrine_Record_Exception("Unserialization of $name failed.");
+                            } else {
+                                $value = $tmp[$name];
+                            }
+                            $this->_data[$name] = $value;
                         }
-                        $this->_data[$name] = $value;
-                    }
-                    break;
-                case "gzip":
-
-                    if ($tmp[$name] !== self::$null) {
-                        $value = gzuncompress($tmp[$name]);
-
-                        if ($value === false)
-                            throw new Doctrine_Record_Exception("Uncompressing of $name failed.");
-
-                        $this->_data[$name] = $value;
-                    }
-                    break;
-                case "enum":
-                    $this->_data[$name] = $this->_table->enumValue($name, $tmp[$name]);
-                    break;
-                default:
-                    $this->_data[$name] = $tmp[$name];
+                        break;
+                    case "gzip":
+                        if ($tmp[$name] !== self::$null) {
+                            $value = gzuncompress($tmp[$name]);
+    
+                            if ($value === false)
+                                throw new Doctrine_Record_Exception("Uncompressing of $name failed.");
+    
+                            $this->_data[$name] = $value;
+                        }
+                        break;
+                    case "enum":
+                        $this->_data[$name] = $this->_table->enumValue($name, $tmp[$name]);
+                        break;
+                    default:
+                        $this->_data[$name] = $tmp[$name];
                 };
                 $count++;
             }
@@ -421,38 +419,38 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     private function prepareIdentifiers($exists = true)
     {
         switch ($this->_table->getIdentifierType()) {
-        case Doctrine_Identifier::AUTO_INCREMENT:
-        case Doctrine_Identifier::SEQUENCE:
-            $name = $this->_table->getIdentifier();
-
-            if ($exists) {
+            case Doctrine_Identifier::AUTO_INCREMENT:
+            case Doctrine_Identifier::SEQUENCE:
+                $name = $this->_table->getIdentifier();
+    
+                if ($exists) {
+                    if (isset($this->_data[$name]) && $this->_data[$name] !== self::$null) {
+                        $this->_id[$name] = $this->_data[$name];
+                    }
+                }
+    
+                unset($this->_data[$name]);
+    
+                break;
+            case Doctrine_Identifier::NORMAL:
+                $this->_id   = array();
+                $name       = $this->_table->getIdentifier();
+    
                 if (isset($this->_data[$name]) && $this->_data[$name] !== self::$null) {
                     $this->_id[$name] = $this->_data[$name];
                 }
-            }
-
-            unset($this->_data[$name]);
-
-            break;
-        case Doctrine_Identifier::NORMAL:
-            $this->_id   = array();
-            $name       = $this->_table->getIdentifier();
-
-            if (isset($this->_data[$name]) && $this->_data[$name] !== self::$null) {
-                $this->_id[$name] = $this->_data[$name];
-            }
-            break;
-        case Doctrine_Identifier::COMPOSITE:
-            $names      = $this->_table->getIdentifier();
-
-            foreach ($names as $name) {
-                if ($this->_data[$name] === self::$null) {
-                    $this->_id[$name] = null;
-                } else {
-                    $this->_id[$name] = $this->_data[$name];
+                break;
+            case Doctrine_Identifier::COMPOSITE:
+                $names      = $this->_table->getIdentifier();
+    
+                foreach ($names as $name) {
+                    if ($this->_data[$name] === self::$null) {
+                        $this->_id[$name] = null;
+                    } else {
+                        $this->_id[$name] = $this->_data[$name];
+                    }
                 }
-            }
-            break;
+                break;
         };
     }
     /**
@@ -475,16 +473,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->_data = array_merge($this->_data, $this->_id);
 
         foreach ($this->_data as $k => $v) {
-            if ($v instanceof Doctrine_Record)
+            if ($v instanceof Doctrine_Record) {
                 unset($vars['_data'][$k]);
-            elseif ($v === self::$null) {
+            } elseif ($v === self::$null) {
                 unset($vars['_data'][$k]);
             } else {
                 switch ($this->_table->getTypeOf($k)) {
-                case "array":
-                case "object":
-                    $vars['_data'][$k] = serialize($vars['_data'][$k]);
-                    break;
+                    case "array":
+                    case "object":
+                        $vars['_data'][$k] = serialize($vars['_data'][$k]);
+                        break;
                 };
             }
         }
@@ -560,16 +558,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         } elseif (is_string($state)) {
             $upper = strtoupper($state);
             switch ($upper) {
-            case 'DIRTY':
-            case 'CLEAN':
-            case 'TDIRTY':
-            case 'TCLEAN':
-            case 'PROXY':
-            case 'DELETED':
-                $this->_state = constant('Doctrine_Record::STATE_' . $upper);
-                break;
-            default:
-                $err = true;
+                case 'DIRTY':
+                case 'CLEAN':
+                case 'TDIRTY':
+                case 'TCLEAN':
+                case 'PROXY':
+                case 'DELETED':
+                    $this->_state = constant('Doctrine_Record::STATE_' . $upper);
+                    break;
+                default:
+                    $err = true;
             }
         }
 
@@ -819,12 +817,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->_data[$lower] = $value;
                 $this->_modified[]   = $lower;
                 switch ($this->_state) {
-                case Doctrine_Record::STATE_CLEAN:
-                    $this->_state = Doctrine_Record::STATE_DIRTY;
-                    break;
-                case Doctrine_Record::STATE_TCLEAN:
-                    $this->_state = Doctrine_Record::STATE_TDIRTY;
-                    break;
+                    case Doctrine_Record::STATE_CLEAN:
+                        $this->_state = Doctrine_Record::STATE_DIRTY;
+                        break;
+                    case Doctrine_Record::STATE_TCLEAN:
+                        $this->_state = Doctrine_Record::STATE_TDIRTY;
+                        break;
                 };
             }
         } else {
@@ -1007,24 +1005,24 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
 
             switch ($type) {
-            case 'array':
-            case 'object':
-                $a[$v] = serialize($this->_data[$v]);
+                case 'array':
+                case 'object':
+                    $a[$v] = serialize($this->_data[$v]);
+                    break;
+                case 'gzip':
+                    $a[$v] = gzcompress($this->_data[$v],5);
+                    break;
+                case 'boolean':
+                    $a[$v] = (int) $this->_data[$v];
                 break;
-            case 'gzip':
-                $a[$v] = gzcompress($this->_data[$v],5);
-                break;
-            case 'boolean':
-                $a[$v] = (int) $this->_data[$v];
-            break;
-            case 'enum':
-                $a[$v] = $this->_table->enumIndex($v,$this->_data[$v]);
-                break;
-            default:
-                if ($this->_data[$v] instanceof Doctrine_Record)
-                    $this->_data[$v] = $this->_data[$v]->getIncremented();
-
-                $a[$v] = $this->_data[$v];
+                case 'enum':
+                    $a[$v] = $this->_table->enumIndex($v,$this->_data[$v]);
+                    break;
+                default:
+                    if ($this->_data[$v] instanceof Doctrine_Record)
+                        $this->_data[$v] = $this->_data[$v]->getIncremented();
+    
+                    $a[$v] = $this->_data[$v];
             }
         }
 

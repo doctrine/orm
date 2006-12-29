@@ -323,23 +323,23 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
             return new Doctrine_Collection($table);
         }
         switch ($this->fetchModes[$name]) {
-        case Doctrine::FETCH_BATCH:
-            $coll = new Doctrine_Collection_Batch($table);
-            break;
-        case Doctrine::FETCH_LAZY:
-            $coll = new Doctrine_Collection_Lazy($table);
-            break;
-        case Doctrine::FETCH_OFFSET:
-            $coll = new Doctrine_Collection_Offset($table);
-            break;
-        case Doctrine::FETCH_IMMEDIATE:
-            $coll = new Doctrine_Collection_Immediate($table);
-            break;
-        case Doctrine::FETCH_LAZY_OFFSET:
-            $coll = new Doctrine_Collection_LazyOffset($table);
-            break;
-        default:
-            throw new Doctrine_Exception("Unknown fetchmode");
+            case Doctrine::FETCH_BATCH:
+                $coll = new Doctrine_Collection_Batch($table);
+                break;
+            case Doctrine::FETCH_LAZY:
+                $coll = new Doctrine_Collection_Lazy($table);
+                break;
+            case Doctrine::FETCH_OFFSET:
+                $coll = new Doctrine_Collection_Offset($table);
+                break;
+            case Doctrine::FETCH_IMMEDIATE:
+                $coll = new Doctrine_Collection_Immediate($table);
+                break;
+            case Doctrine::FETCH_LAZY_OFFSET:
+                $coll = new Doctrine_Collection_LazyOffset($table);
+                break;
+            default:
+                throw new Doctrine_Exception("Unknown fetchmode");
         };
 
         return $coll;

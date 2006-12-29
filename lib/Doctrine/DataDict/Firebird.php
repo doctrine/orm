@@ -57,38 +57,38 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
     public function getNativeDeclaration($field)
     {
         switch ($field['type']) {
-        case 'varchar':
-        case 'string':
-        case 'array':
-        case 'object':
-        case 'char':
-        case 'text':
-            $length = !empty($field['length'])
-                ? $field['length'] : 16777215; // TODO: $db->options['default_text_field_length'];
-
-            $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
-
-            return $fixed ? 'CHAR('.$length.')' : 'VARCHAR('.$length.')';
-        case 'clob':
-            return 'BLOB SUB_TYPE 1';
-        case 'blob':
-            return 'BLOB SUB_TYPE 0';
-        case 'integer':
-        case 'enum':
-            return 'INT';
-        case 'boolean':
-            return 'SMALLINT';
-        case 'date':
-            return 'DATE';
-        case 'time':
-            return 'TIME';
-        case 'timestamp':
-            return 'TIMESTAMP';
-        case 'float':
-            return 'DOUBLE PRECISION';
-        case 'decimal':
-            $length = !empty($field['length']) ? $field['length'] : 18;
-            return 'DECIMAL('.$length.','.$db->options['decimal_places'].')';
+            case 'varchar':
+            case 'string':
+            case 'array':
+            case 'object':
+            case 'char':
+            case 'text':
+                $length = !empty($field['length'])
+                    ? $field['length'] : 16777215; // TODO: $db->options['default_text_field_length'];
+    
+                $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
+    
+                return $fixed ? 'CHAR('.$length.')' : 'VARCHAR('.$length.')';
+            case 'clob':
+                return 'BLOB SUB_TYPE 1';
+            case 'blob':
+                return 'BLOB SUB_TYPE 0';
+            case 'integer':
+            case 'enum':
+                return 'INT';
+            case 'boolean':
+                return 'SMALLINT';
+            case 'date':
+                return 'DATE';
+            case 'time':
+                return 'TIME';
+            case 'timestamp':
+                return 'TIMESTAMP';
+            case 'float':
+                return 'DOUBLE PRECISION';
+            case 'decimal':
+                $length = !empty($field['length']) ? $field['length'] : 18;
+                return 'DECIMAL('.$length.','.$db->options['decimal_places'].')';
         }
         return '';
     }
@@ -129,7 +129,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
                         $type = array_reverse($type);
                     }
                 }
-            break;
+                break;
             case 'varchar':
                 $fixed = false;
             case 'char':
@@ -144,15 +144,15 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
                 if ($fixed !== false) {
                     $fixed = true;
                 }
-            break;
+                break;
             case 'date':
                 $type[] = 'date';
                 $length = null;
-            break;
+                break;
             case 'timestamp':
                 $type[] = 'timestamp';
                 $length = null;
-            break;
+                break;
             case 'time':
                 $type[] = 'time';
                 $length = null;

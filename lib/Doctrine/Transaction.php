@@ -71,14 +71,14 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     public function getState()
     {
         switch ($this->transactionLevel) {
-        case 0:
-            return Doctrine_Transaction::STATE_SLEEP;
-            break;
-        case 1:
-            return Doctrine_Transaction::STATE_ACTIVE;
-            break;
-        default:
-            return Doctrine_Transaction::STATE_BUSY;
+            case 0:
+                return Doctrine_Transaction::STATE_SLEEP;
+                break;
+            case 1:
+                return Doctrine_Transaction::STATE_ACTIVE;
+                break;
+            default:
+                return Doctrine_Transaction::STATE_BUSY;
         }
     }
     /**

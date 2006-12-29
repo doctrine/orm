@@ -236,7 +236,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 case 'change':
                 case 'rename':
                 case 'name':
-                break;
+                    break;
                 default:
                     throw new Doctrine_Export_Mysql_Exception('change type "'.$changeName.'" not yet supported');
             }

@@ -160,13 +160,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         if ($this->modules[$name] === false) {
             switch ($name) {
-            case 'unitOfWork':
-                $this->modules[$name] = new Doctrine_Connection_UnitOfWork($this);
-                break;
-            default:
-                $class = 'Doctrine_' . ucwords($name) . '_' . $this->getName();
-                $this->modules[$name] = new $class($this);
-            }
+                case 'unitOfWork':
+                    $this->modules[$name] = new Doctrine_Connection_UnitOfWork($this);
+                    break;
+                default:
+                    $class = 'Doctrine_' . ucwords($name) . '_' . $this->getName();
+                    $this->modules[$name] = new $class($this);
+                }
         }
 
         return $this->modules[$name];
@@ -291,21 +291,21 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             $type = gettype($input);
         }
         switch ($type) {
-        case 'integer':
-        case 'enum':
-        case 'boolean':
-            return $input;
-        case 'array':
-        case 'object':
-            $input = serialize($input);
-        case 'string':
-        case 'char':
-        case 'varchar':
-        case 'text':
-        case 'gzip':
-        case 'blob':
-        case 'clob':
-            return $this->dbh->quote($input);
+            case 'integer':
+            case 'enum':
+            case 'boolean':
+                return $input;
+            case 'array':
+            case 'object':
+                $input = serialize($input);
+            case 'string':
+            case 'char':
+            case 'varchar':
+            case 'text':
+            case 'gzip':
+            case 'blob':
+            case 'clob':
+                return $this->dbh->quote($input);
         }
     }
     /**
@@ -874,17 +874,17 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
 
         switch ($record->getState()) {
-        case Doctrine_Record::STATE_TDIRTY:
-            $this->unitOfWork->insert($record);
-            break;
-        case Doctrine_Record::STATE_DIRTY:
-        case Doctrine_Record::STATE_PROXY:
-            $this->unitOfWork->update($record);
-            break;
-        case Doctrine_Record::STATE_CLEAN:
-        case Doctrine_Record::STATE_TCLEAN:
-            // do nothing
-            break;
+            case Doctrine_Record::STATE_TDIRTY:
+                $this->unitOfWork->insert($record);
+                break;
+            case Doctrine_Record::STATE_DIRTY:
+            case Doctrine_Record::STATE_PROXY:
+                $this->unitOfWork->update($record);
+                break;
+            case Doctrine_Record::STATE_CLEAN:
+            case Doctrine_Record::STATE_TCLEAN:
+                // do nothing
+                break;
         };
 
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);

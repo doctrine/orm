@@ -56,8 +56,7 @@ class Doctrine_Transaction_Mssql extends Doctrine_Transaction
             case 'REPEATABLE READ':
             case 'SERIALIZABLE':
             case 'SNAPSHOT':
-
-            break;
+                break;
             default:
                 throw new Doctrine_Transaction_Exception('isolation level is not supported: ' . $isolation);
         }

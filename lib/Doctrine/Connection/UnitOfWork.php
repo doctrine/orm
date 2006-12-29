@@ -204,11 +204,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
     {
         foreach ($record->getTable()->getRelations() as $fk) {
             switch ($fk->getType()) {
-            case Doctrine_Relation::ONE_COMPOSITE:
-            case Doctrine_Relation::MANY_COMPOSITE:
-                $obj = $record->get($fk->getAlias());
-                $obj->delete();
-                break;
+                case Doctrine_Relation::ONE_COMPOSITE:
+                case Doctrine_Relation::MANY_COMPOSITE:
+                    $obj = $record->get($fk->getAlias());
+                    $obj->delete();
+                    break;
             };
         }
     }
@@ -263,12 +263,12 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
 
                 if ($value instanceof Doctrine_Record) {
                     switch ($value->getState()) {
-                    case Doctrine_Record::STATE_TCLEAN:
-                    case Doctrine_Record::STATE_TDIRTY:
-                        $record->save();
-                    default:
-                        $array[$name] = $value->getIncremented();
-                        $record->set($name, $value->getIncremented());
+                        case Doctrine_Record::STATE_TCLEAN:
+                        case Doctrine_Record::STATE_TDIRTY:
+                            $record->save();
+                        default:
+                            $array[$name] = $value->getIncremented();
+                            $record->set($name, $value->getIncremented());
                     };
                 }
         };

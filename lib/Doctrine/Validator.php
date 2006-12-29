@@ -211,18 +211,18 @@ class Doctrine_Validator
     public static function phpType($doctrineType)
     {
         switch ($doctrineType) {
-        case 'enum':
-            return 'integer';
-        case 'blob':
-        case 'clob':
-        case 'mbstring':
-        case 'timestamp':
-        case 'date':
-        case 'gzip':
-            return 'string';
-            break;
-        default:
-            return $doctrineType;
+            case 'enum':
+                return 'integer';
+            case 'blob':
+            case 'clob':
+            case 'mbstring':
+            case 'timestamp':
+            case 'date':
+            case 'gzip':
+                return 'string';
+                break;
+            default:
+                return $doctrineType;
         }
     }
     /**
@@ -242,19 +242,19 @@ class Doctrine_Validator
         $type      = self::phpType($type);
 
         switch ($looseType) {
-        case 'float':
-        case 'double':
-        case 'integer':
-            if ($type == 'string' || $type == 'float')
+            case 'float':
+            case 'double':
+            case 'integer':
+                if ($type == 'string' || $type == 'float')
+                    return true;
+            case 'string':
+            case 'array':
+            case 'object':
+                return ($type === $looseType);
+                break;
+            case 'NULL':
                 return true;
-        case 'string':
-        case 'array':
-        case 'object':
-            return ($type === $looseType);
-            break;
-        case 'NULL':
-            return true;
-            break;
+                break;
         };
     }
     /**
@@ -267,17 +267,17 @@ class Doctrine_Validator
     {
         $type = gettype($var);
         switch ($type) {
-        case 'string':
-            if (preg_match("/^[0-9]+$/",$var)) {
-                return 'integer';
-            } elseif (is_numeric($var)) {
-                return 'float';
-            } else {
+            case 'string':
+                if (preg_match("/^[0-9]+$/",$var)) {
+                    return 'integer';
+                } elseif (is_numeric($var)) {
+                    return 'float';
+                } else {
+                    return $type;
+                }
+                break;
+            default:
                 return $type;
-            }
-            break;
-        default:
-            return $type;
         };
     }
 }

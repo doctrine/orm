@@ -85,16 +85,16 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction
     public function setIsolation($isolation)
     {
         switch ($isolation) {
-        case 'READ UNCOMMITTED':
-            $isolation = 'READ COMMITTED';
-            break;
-        case 'READ COMMITTED':
-        case 'REPEATABLE READ':
-        case 'SERIALIZABLE':
-            $isolation = 'SERIALIZABLE';
-            break;
-        default:
-            throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . ' is not supported.');
+            case 'READ UNCOMMITTED':
+                $isolation = 'READ COMMITTED';
+                break;
+            case 'READ COMMITTED':
+            case 'REPEATABLE READ':
+            case 'SERIALIZABLE':
+                $isolation = 'SERIALIZABLE';
+                break;
+            default:
+                throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . ' is not supported.');
         }
 
         $query = 'ALTER SESSION ISOLATION LEVEL ' . $isolation;

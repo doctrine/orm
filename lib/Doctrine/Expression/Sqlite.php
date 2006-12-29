@@ -125,13 +125,13 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression
     public function now($type = 'timestamp')
     {
         switch ($type) {
-        case 'time':
-            return 'time(\'now\')';
-        case 'date':
-            return 'date(\'now\')';
-        case 'timestamp':
-        default:
-            return 'datetime(\'now\')';
+            case 'time':
+                return 'time(\'now\')';
+            case 'date':
+                return 'date(\'now\')';
+            case 'timestamp':
+            default:
+                return 'datetime(\'now\')';
         }
     }
     /**

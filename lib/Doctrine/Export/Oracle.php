@@ -343,15 +343,15 @@ END;
 
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
-            case 'add':
-            case 'remove':
-            case 'change':
-            case 'name':
-            case 'rename':
-                break;
-            default:
-                return $this->conn->raiseError(MDB2_ERROR_CANNOT_ALTER, null, null,
-                    'change type "'.$changeName.'" not yet supported', __FUNCTION__);
+                case 'add':
+                case 'remove':
+                case 'change':
+                case 'name':
+                case 'rename':
+                    break;
+                default:
+                    return $this->conn->raiseError(MDB2_ERROR_CANNOT_ALTER, null, null,
+                        'change type "'.$changeName.'" not yet supported', __FUNCTION__);
             }
         }
 
