@@ -134,82 +134,82 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
     public function getNativeDeclaration($field)
     {
         switch ($field['type']) {
-        case 'char':
-            $length = (! empty($field['length'])) ? $field['length'] : false;
-
-            return $length ? 'CHAR('.$length.')' : 'CHAR(255)';
-        case 'varchar':
-        case 'array':
-        case 'object':
-        case 'string':
-
-            if ( ! isset($field['length'])) {
-                if (array_key_exists('default', $field)) {
-                    $field['length'] = $this->conn->varchar_max_length;
-                } else {
-                    $field['length'] = false;
+            case 'char':
+                $length = (! empty($field['length'])) ? $field['length'] : false;
+    
+                return $length ? 'CHAR('.$length.')' : 'CHAR(255)';
+            case 'varchar':
+            case 'array':
+            case 'object':
+            case 'string':
+    
+                if ( ! isset($field['length'])) {
+                    if (array_key_exists('default', $field)) {
+                        $field['length'] = $this->conn->varchar_max_length;
+                    } else {
+                        $field['length'] = false;
+                    }
                 }
-            }
-
-            $length = ($field['length'] < $this->conn->varchar_max_length) ? $field['length'] : false;
-            $fixed  = (isset($field['fixed'])) ? $field['fixed'] : false;
-
-            return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR(255)')
-                : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
-        case 'clob':
-            if (!empty($field['length'])) {
-                $length = $field['length'];
-                if ($length <= 255) {
-                    return 'TINYTEXT';
-                } elseif ($length <= 65532) {
-                    return 'TEXT';
-                } elseif ($length <= 16777215) {
-                    return 'MEDIUMTEXT';
+    
+                $length = ($field['length'] < $this->conn->varchar_max_length) ? $field['length'] : false;
+                $fixed  = (isset($field['fixed'])) ? $field['fixed'] : false;
+    
+                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR(255)')
+                    : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
+            case 'clob':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 255) {
+                        return 'TINYTEXT';
+                    } elseif ($length <= 65532) {
+                        return 'TEXT';
+                    } elseif ($length <= 16777215) {
+                        return 'MEDIUMTEXT';
+                    }
                 }
-            }
-            return 'LONGTEXT';
-        case 'blob':
-            if (!empty($field['length'])) {
-                $length = $field['length'];
-                if ($length <= 255) {
-                    return 'TINYBLOB';
-                } elseif ($length <= 65532) {
-                    return 'BLOB';
-                } elseif ($length <= 16777215) {
-                    return 'MEDIUMBLOB';
+                return 'LONGTEXT';
+            case 'blob':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 255) {
+                        return 'TINYBLOB';
+                    } elseif ($length <= 65532) {
+                        return 'BLOB';
+                    } elseif ($length <= 16777215) {
+                        return 'MEDIUMBLOB';
+                    }
                 }
-            }
-            return 'LONGBLOB';
-        case 'integer':
-        case 'enum':
-            if (!empty($field['length'])) {
-                $length = $field['length'];
-                if ($length <= 1) {
-                    return 'TINYINT';
-                } elseif ($length == 2) {
-                    return 'SMALLINT';
-                } elseif ($length == 3) {
-                    return 'MEDIUMINT';
-                } elseif ($length == 4) {
-                    return 'INT';
-                } elseif ($length > 4) {
-                    return 'BIGINT';
+                return 'LONGBLOB';
+            case 'integer':
+            case 'enum':
+                if (!empty($field['length'])) {
+                    $length = $field['length'];
+                    if ($length <= 1) {
+                        return 'TINYINT';
+                    } elseif ($length == 2) {
+                        return 'SMALLINT';
+                    } elseif ($length == 3) {
+                        return 'MEDIUMINT';
+                    } elseif ($length == 4) {
+                        return 'INT';
+                    } elseif ($length > 4) {
+                        return 'BIGINT';
+                    }
                 }
-            }
-            return 'INT';
-        case 'boolean':
-            return 'TINYINT(1)';
-        case 'date':
-            return 'DATE';
-        case 'time':
-            return 'TIME';
-        case 'timestamp':
-            return 'DATETIME';
-        case 'float':
-            return 'DOUBLE';
-        case 'decimal':
-            $length = !empty($field['length']) ? $field['length'] : 18;
-            return 'DECIMAL(' . $length . ',' . 0 . ')'; //$this->dbh->options['decimal_places'] . ')';
+                return 'INT';
+            case 'boolean':
+                return 'TINYINT(1)';
+            case 'date':
+                return 'DATE';
+            case 'time':
+                return 'TIME';
+            case 'timestamp':
+                return 'DATETIME';
+            case 'float':
+                return 'DOUBLE';
+            case 'decimal':
+                $length = !empty($field['length']) ? $field['length'] : 18;
+                return 'DECIMAL(' . $length . ',' . 0 . ')'; //$this->dbh->options['decimal_places'] . ')';
         }
         return '';
     }

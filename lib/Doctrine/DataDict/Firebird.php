@@ -107,71 +107,72 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
 
         $type = array();
         $unsigned = $fixed = null;
-        $db_type = strtolower($field['type']);
+        $dbType = strtolower($field['type']);
         $field['field_sub_type'] = !empty($field['field_sub_type'])
             ? strtolower($field['field_sub_type']) : null;
-        switch ($db_type) {
-        case 'smallint':
-        case 'integer':
-        case 'int64':
-            //these may be 'numeric' or 'decimal'
-            if (isset($field['field_sub_type'])) {
-                $field['type'] = $field['field_sub_type'];
-                return $this->mapNativeDatatype($field);
-            }
-        case 'bigint':
-        case 'quad':
-            $type[] = 'integer';
-            if ($length == '1') {
-                $type[] = 'boolean';
-                if (preg_match('/^(is|has)/', $field['name'])) {
-                    $type = array_reverse($type);
+
+        switch ($dbType) {
+            case 'smallint':
+            case 'integer':
+            case 'int64':
+                //these may be 'numeric' or 'decimal'
+                if (isset($field['field_sub_type'])) {
+                    $field['type'] = $field['field_sub_type'];
+                    return $this->getPortableDeclaration($field);
                 }
-            }
-            break;
-        case 'varchar':
-            $fixed = false;
-        case 'char':
-        case 'cstring':
-            $type[] = 'text';
-            if ($length == '1') {
-                $type[] = 'boolean';
-                if (preg_match('/^(is|has)/', $field['name'])) {
-                    $type = array_reverse($type);
+            case 'bigint':
+            case 'quad':
+                $type[] = 'integer';
+                if ($length == '1') {
+                    $type[] = 'boolean';
+                    if (preg_match('/^(is|has)/', $field['name'])) {
+                        $type = array_reverse($type);
+                    }
                 }
-            }
-            if ($fixed !== false) {
-                $fixed = true;
-            }
             break;
-        case 'date':
-            $type[] = 'date';
-            $length = null;
+            case 'varchar':
+                $fixed = false;
+            case 'char':
+            case 'cstring':
+                $type[] = 'text';
+                if ($length == '1') {
+                    $type[] = 'boolean';
+                    if (preg_match('/^(is|has)/', $field['name'])) {
+                        $type = array_reverse($type);
+                    }
+                }
+                if ($fixed !== false) {
+                    $fixed = true;
+                }
             break;
-        case 'timestamp':
-            $type[] = 'timestamp';
-            $length = null;
+            case 'date':
+                $type[] = 'date';
+                $length = null;
             break;
-        case 'time':
-            $type[] = 'time';
-            $length = null;
+            case 'timestamp':
+                $type[] = 'timestamp';
+                $length = null;
             break;
-        case 'float':
-        case 'double':
-        case 'double precision':
-        case 'd_float':
-            $type[] = 'float';
-            break;
-        case 'decimal':
-        case 'numeric':
-            $type[] = 'decimal';
-            break;
-        case 'blob':
-            $type[] = ($field['field_sub_type'] == 'text') ? 'clob' : 'blob';
-            $length = null;
-            break;
-        default:
-            throw new Doctrine_DataDict_Firebird_Exception('unknown database attribute type: '.$db_type);
+            case 'time':
+                $type[] = 'time';
+                $length = null;
+                break;
+            case 'float':
+            case 'double':
+            case 'double precision':
+            case 'd_float':
+                $type[] = 'float';
+                break;
+            case 'decimal':
+            case 'numeric':
+                $type[] = 'decimal';
+                break;
+            case 'blob':
+                $type[] = ($field['field_sub_type'] == 'text') ? 'clob' : 'blob';
+                $length = null;
+                break;
+            default:
+                throw new Doctrine_DataDict_Firebird_Exception('unknown database attribute type: '.$dbType);
         }
 
         return array($type, $length, $unsigned, $fixed);
