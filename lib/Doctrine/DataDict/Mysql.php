@@ -130,7 +130,8 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
-    public function getNativeDeclaration($field) {
+    public function getNativeDeclaration($field) 
+    {
         switch ($field['type']) {
             case 'char':
                 $length = (! empty($field['length'])) ? $field['length'] : false;
@@ -140,12 +141,17 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict {
             case 'array':
             case 'object':
             case 'string':
-                if (empty($field['length']) && array_key_exists('default', $field)) {
-                    $field['length'] = $this->conn->varchar_max_length;
+
+                if ( ! isset($field['length'])) {
+                    if(array_key_exists('default', $field)) {
+                        $field['length'] = $this->conn->varchar_max_length;
+                    } else {
+                        $field['length'] = false;
+                    }
                 }
-                
-                $length = (! empty($field['length'])) ? $field['length'] : false;
-                $fixed  = (! empty($field['fixed'])) ? $field['fixed'] : false;
+
+                $length = ($field['length'] < $this->conn->varchar_max_length) ? $field['length'] : false;
+                $fixed  = (isset($field['fixed'])) ? $field['fixed'] : false;
 
                 return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR(255)')
                     : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');

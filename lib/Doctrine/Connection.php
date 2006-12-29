@@ -148,8 +148,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return Doctrine_Connection_Module       connection module
      */
     public function __get($name) {
+        if(isset($this->properties[$name]))
+            return $this->properties[$name];
+
         if( ! isset($this->modules[$name]))
-            throw new Doctrine_Connection_Exception('Unknown module ' . $name);
+            throw new Doctrine_Connection_Exception('Unknown module / property ' . $name);
 
         if($this->modules[$name] === false) {
             switch($name) {
@@ -160,10 +163,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                     $class = 'Doctrine_' . ucwords($name) . '_' . $this->getName();
                     $this->modules[$name] = new $class($this);
             }
-        } 
-        if(isset($this->properties[$name]))
-            return $this->properties[$name];
-
+        }
 
         return $this->modules[$name];
     }
@@ -223,7 +223,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function quoteIdentifier($str, $checkOption = true) {
         if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
             return $str;
-        }           
+        }
         $str = str_replace($this->properties['identifier_quoting']['end'],
                            $this->properties['identifier_quoting']['escape'] .
                            $this->properties['identifier_quoting']['end'], $str);

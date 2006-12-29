@@ -76,6 +76,11 @@ class Doctrine_DataDict_Mysql_TestCase extends Doctrine_Driver_UnitTestCase {
 
         $this->assertEqual($this->dataDict->GetNativeDeclaration($a), 'TEXT');
     }
+    public function testGetNativeDeclarationSupportsStringTypeWithLongLength() {
+        $a = array('type' => 'string', 'length' => 2000);
+
+        $this->assertEqual($this->dataDict->GetNativeDeclaration($a), 'TEXT');
+    }
     public function testGetNativeDeclarationSupportsArrayType2() {
         $a = array('type' => 'array');
 

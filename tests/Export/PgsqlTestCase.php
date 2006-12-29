@@ -2,7 +2,6 @@
 class Doctrine_Export_Pgsql_TestCase extends Doctrine_UnitTestCase {
     public function testCreateDatabaseExecutesSql() {
         $this->export->createDatabase('db');
-
         $this->assertEqual($this->adapter->pop(), 'CREATE DATABASE db');
     }
     public function testDropDatabaseExecutesSql() {

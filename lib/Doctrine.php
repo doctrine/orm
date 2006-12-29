@@ -132,7 +132,11 @@ final class Doctrine {
      * default table type attribute
      */
     const ATTR_DEFAULT_TABLE_TYPE   = 21;
-    
+    const ATTR_DEF_TEXT_LENGTH      = 30;
+    const ATTR_DEF_VARCHAR_LENGTH   = 31;
+    const ATTR_DEF_TABLESPACE       = 32;
+    const ATTR_EMULATE_DATABASE     = 33;
+    const ATTR_DB_NAME_FORMAT       = 34;
     
     /** TODO: REMOVE THE FOLLOWING CONSTANTS AND UPDATE THE DOCS ! */
 

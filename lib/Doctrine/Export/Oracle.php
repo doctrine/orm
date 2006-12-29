@@ -40,26 +40,28 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
      * @return mixed MDB2_OK on success, a MDB2 error on failure
      * @access public
      */
-    public function createDatabase($name) {
-        if (!$db->options['emulate_database'])
-            throw new Doctrine_Export_Oracle_Exception('database creation is only supported if the "emulate_database" option is enabled');
+    public function createDatabase($name) 
+    {
+        if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
+            throw new Doctrine_Export_Oracle_Exception('database creation is only supported if the "emulate_database" attribute is enabled');
 
 
-        $username = $db->options['database_name_prefix'].$name;
-        $password = $db->dsn['password'] ? $db->dsn['password'] : $name;
-        $tablespace = $db->options['default_tablespace']
-            ? ' DEFAULT TABLESPACE '.$db->options['default_tablespace'] : '';
+        $username   = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
+        $password   = $this->conn->dsn['password'] ? $this->conn->dsn['password'] : $name;
 
-        $query = 'CREATE USER '.$username.' IDENTIFIED BY '.$password.$tablespace;
-        $result = $db->standaloneQuery($query, null, true);
+        $tablespace = $this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT)
+                    ? ' DEFAULT TABLESPACE '.$this->conn->options['default_tablespace'] : '';
 
-        $query = 'GRANT CREATE SESSION, CREATE TABLE, UNLIMITED TABLESPACE, CREATE SEQUENCE, CREATE TRIGGER TO '.$username;
-        $result = $db->standaloneQuery($query, null, true);
+        $query  = 'CREATE USER ' . $username . ' IDENTIFIED BY ' . $password . $tablespace;
+        $result = $this->conn->query($query);
+
+        $query = 'GRANT CREATE SESSION, CREATE TABLE, UNLIMITED TABLESPACE, CREATE SEQUENCE, CREATE TRIGGER TO ' . $username;
+        $result = $this->conn->query($query);
         if (PEAR::isError($result)) {
             $query = 'DROP USER '.$username.' CASCADE';
-            $result2 = $db->standaloneQuery($query, null, true);
+            $result2 = $this->conn->query($query);
             if (PEAR::isError($result2)) {
-                return $db->raiseError($result2, null, null,
+                return $this->conn->raiseError($result2, null, null,
                     'could not setup the database user', __FUNCTION__);
             }
             return $result;
@@ -68,19 +70,21 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
     /**
      * drop an existing database
      *
-     * @param object $db database object that is extended by this class
+     * @param object $this->conn database object that is extended by this class
      * @param string $name name of the database that should be dropped
      * @return mixed MDB2_OK on success, a MDB2 error on failure
      * @access public
      */
-    public function dropDatabase($name) {
-        if (!$db->options['emulate_database'])
+    public function dropDatabase($name) 
+    {
+        if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
             throw new Doctrine_Export_Oracle_Exception('database dropping is only supported if the 
                                                        "emulate_database" option is enabled');
 
 
-        $username = $db->options['database_name_prefix'].$name;
-        return $db->standaloneQuery('DROP USER '.$username.' CASCADE', null, true);
+        $username = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
+
+        return $this->conn->query('DROP USER ' . $username . ' CASCADE');
     }
     /**
      * add an autoincrement sequence + trigger
@@ -91,7 +95,8 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
      * @return mixed        MDB2_OK on success, a MDB2 error on failure
      * @access private
      */
-    public function _makeAutoincrement($name, $table, $start = 1) {
+    public function _makeAutoincrement($name, $table, $start = 1) 
+    {
         $table = strtoupper($table);
         $index_name  = $table . '_AI_PK';
         $definition = array(
@@ -102,27 +107,27 @@ class Doctrine_Export_Oracle extends Doctrine_Export {
 
         /**
         if (PEAR::isError($result)) {
-            return $db->raiseError($result, null, null,
+            return $this->conn->raiseError($result, null, null,
                 'primary key for autoincrement PK could not be created', __FUNCTION__);
         }
         */
 
         if (is_null($start)) {
-            $db->beginTransaction();
-            $query = 'SELECT MAX(' . $db->quoteIdentifier($name, true) . ') FROM ' . $db->quoteIdentifier($table, true);
+            $this->conn->beginTransaction();
+            $query = 'SELECT MAX(' . $this->conn->quoteIdentifier($name, true) . ') FROM ' . $this->conn->quoteIdentifier($table, true);
             $start = $this->db->queryOne($query, 'integer');
             if (PEAR::isError($start)) {
                 return $start;
             }
             ++$start;
             $result = $this->createSequence($table, $start);
-            $db->commit();
+            $this->conn->commit();
         } else {
             $result = $this->createSequence($table, $start);
         }
         /**
         if (PEAR::isError($result)) {
-            return $db->raiseError($result, null, null,
+            return $this->conn->raiseError($result, null, null,
                 'sequence for autoincrement PK could not be created', __FUNCTION__);
         }
         */
@@ -160,7 +165,8 @@ END;
      * @param string $table name of the table
      * @return void
      */
-    public function dropAutoincrement($table) {
+    public function dropAutoincrement($table) 
+    {
         $table = strtoupper($table);
         $trigger_name = $table . '_AI_PK';
         $trigger_name_quoted = $this->conn->getDbh()->quote($trigger_name);
@@ -169,7 +175,7 @@ END;
         $trigger = $this->conn->fetchOne($query);
 
         if($trigger) {
-            $trigger_name  = $db->quoteIdentifier($table . '_AI_PK', true);
+            $trigger_name  = $this->conn->quoteIdentifier($table . '_AI_PK', true);
             $trigger_sql = 'DROP TRIGGER ' . $trigger_name;
             
             // if throws exception, trigger for autoincrement PK could not be dropped
@@ -215,7 +221,8 @@ END;
      *
      * @return void
      */
-    public function createTable($name, $fields, $options = array()) {
+    public function createTable($name, $fields, $options = array()) 
+    {
         $this->conn->beginTransaction();
 
         $result = parent::createTable($name, $fields, $options);
@@ -236,11 +243,12 @@ END;
      * @param string $name name of the table that should be dropped
      * @return void
      */
-    public function dropTable($name) {
-        //$db->beginNestedTransaction();
+    public function dropTable($name) 
+    {
+        //$this->conn->beginNestedTransaction();
         $result = $this->dropAutoincrement($name);
         $result = parent::dropTable($name);
-        //$db->completeNestedTransaction();
+        //$this->conn->completeNestedTransaction();
         return $result;
     }
     /**
@@ -331,10 +339,11 @@ END;
      *                             actually perform them otherwise.
      * @return void
      */
-    public function alterTable($name, array $changes, $check) {
+    public function alterTable($name, array $changes, $check) 
+    {
 
-        foreach ($changes as $change_name => $change) {
-            switch ($change_name) {
+        foreach ($changes as $changeName => $change) {
+            switch ($changeName) {
             case 'add':
             case 'remove':
             case 'change':
@@ -343,7 +352,7 @@ END;
                 break;
             default:
                 return $this->conn->raiseError(MDB2_ERROR_CANNOT_ALTER, null, null,
-                    'change type "'.$change_name.'" not yet supported', __FUNCTION__);
+                    'change type "'.$changeName.'" not yet supported', __FUNCTION__);
             }
         }
 
@@ -408,7 +417,7 @@ END;
     /**
      * create sequence
      *
-     * @param object $db database object that is extended by this class
+     * @param object $this->conn database object that is extended by this class
      * @param string $seqName name of the sequence to be created
      * @param string $start start value of the sequence; default is 1
      * @return void
@@ -422,7 +431,7 @@ END;
     /**
      * drop existing sequence
      *
-     * @param object $db database object that is extended by this class
+     * @param object $this->conn database object that is extended by this class
      * @param string $seqName name of the sequence to be dropped
      * @return void
      */
