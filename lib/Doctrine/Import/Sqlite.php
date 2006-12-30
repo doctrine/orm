@@ -67,11 +67,6 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
      */
     public function listSequences($database = null)
     {
-        $db =& $this->getDBInstance();
-        if (PEAR::isError($db)) {
-            return $db;
-        }
-
         $query = "SELECT name FROM sqlite_master WHERE type='table' AND sql NOT NULL ORDER BY name";
         $table_names = $db->queryCol($query);
         if (PEAR::isError($table_names)) {
@@ -96,11 +91,6 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
      */
     public function listTableConstraints($table)
     {
-        $db =& $this->getDBInstance();
-        if (PEAR::isError($db)) {
-            return $db;
-        }
-
         $table = $db->quote($table, 'text');
         $query = "SELECT sql FROM sqlite_master WHERE type='index' AND ";
         if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
