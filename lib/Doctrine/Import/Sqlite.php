@@ -129,7 +129,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
     {
 
         $sql    = 'PRAGMA table_info(' . $table . ')';
-        $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $result = $this->conn->fetchAll($sql);
 
         $description = array();
         $columns     = array();
@@ -141,7 +141,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
                     'default' => $val['dflt_value'],
                     'primary' => (bool) $val['pk'],
                     );
-            $columns[$val['name']] = new Doctrine_Schema_Column($description);
+            $columns[$val['name']] = $description;
         }
         return $columns;
     }

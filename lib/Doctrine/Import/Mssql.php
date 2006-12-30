@@ -105,7 +105,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     public function listTableColumns($table)
     {
         $sql     = 'EXEC sp_columns @table_name = ' . $this->quoteIdentifier($table);
-        $result  = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $result  = $this->conn->fetchAssoc($sql);
         $columns = array();
 
         foreach ($result as $key => $val) {
@@ -127,7 +127,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
                 'default' => $val['column_def'],
                 'primary' => (strtolower($identity) == 'identity'),
             );
-            $columns[$val['column_name']] = new Doctrine_Schema_Column($description);
+            $columns[$val['column_name']] = $description;
         }
 
         return $columns;

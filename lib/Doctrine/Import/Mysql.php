@@ -31,17 +31,15 @@ Doctrine::autoload('Doctrine_Import');
  */
 class Doctrine_Import_Mysql extends Doctrine_Import
 {
-    /**
-     * lists all databases
-     *
-     * @return array
-     */
-    public function listDatabases()
-    {
-        $sql = 'SHOW DATABASES';
+    protected $sql  = array(
+                            'showDatabases'   => 'SHOW DATABASES',
+                            'listTableFields' => 'DESCRIBE %s',
+                            'listSequences'   => 'SHOW TABLES',
+                            'listTables'      => 'SHOW TABLES',
+                            'listUsers'       => 'SELECT DISTINCT USER FROM USER',
+                            'listViews'       => "SHOW FULL TABLES %sWHERE Table_type = 'VIEW'",
 
-        return $this->dbh->query($sql)->fetchAll(PDO::FETCH_COLUMN);
-    }
+                            );
     /**
      * lists all availible database functions
      *
@@ -73,16 +71,13 @@ class Doctrine_Import_Mysql extends Doctrine_Import
         if (!is_null($database)) {
             $query .= " FROM $database";
         }
-        $tableNames = $db->queryCol($query);
+        $tableNames = $this->conn->fetchColumn($query);
 
         $result = array();
         foreach ($tableNames as $tableName) {
             if ($sqn = $this->_fixSequenceName($tableName, true)) {
                 $result[] = $sqn;
             }
-        }
-        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
-            $result = array_map(($db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
         }
         return $result;
     }
@@ -94,11 +89,6 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      */
     public function listTableConstraints($table)
     {
-        $db =& $this->getDBInstance();
-        if (PEAR::isError($db)) {
-            return $db;
-        }
-
         $key_name = 'Key_name';
         $non_unique = 'Non_unique';
         if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
@@ -114,9 +104,6 @@ class Doctrine_Import_Mysql extends Doctrine_Import
         $table = $db->quoteIdentifier($table, true);
         $query = "SHOW INDEX FROM $table";
         $indexes = $db->queryAll($query, null, MDB2_FETCHMODE_ASSOC);
-        if (PEAR::isError($indexes)) {
-            return $indexes;
-        }
 
         $result = array();
         foreach ($indexes as $index_data) {
@@ -132,7 +119,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
             }
         }
 
-        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
             $result = array_change_key_case($result, $db->options['field_case']);
         }
         return array_keys($result);
@@ -145,23 +132,22 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      */
     public function listTableColumns($table)
     {
-        $sql = "DESCRIBE $table";
-        $result = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $sql = 'DESCRIBE ' . $table;
+        $result = $this->conn->fetchAssoc($sql);
         $description = array();
-        foreach ($result as $key => $val2) {
-	    $val = array();
-	    foreach (array_keys($val2) as $valKey){ // lowercase the key names
-		$val[strtolower($valKey)] = $val2[$valKey];
-	    }
+        foreach ($result as $key => $val) {
+
+            array_change_key_case($val, CASE_LOWER);
+
             $description = array(
                 'name'    => $val['field'],
                 'type'    => $val['type'],
                 'primary' => (strtolower($val['key']) == 'pri'),
                 'default' => $val['default'],
                 'notnull' => (bool) ($val['null'] != 'YES'),
-                'autoinc' => (bool) (strpos($val['extra'], 'auto_increment') > -1),
+                'autoinc' => (bool) (strpos($val['extra'], 'auto_increment') !== false),
             );
-            $columns[$val['field']] = new Doctrine_Schema_Column($description);
+            $columns[$val['field']] = $description;
         }
 
 
@@ -212,9 +198,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      */
     public function listTables($database = null)
     {
-        $sql = 'SHOW TABLES';
-
-        return $this->dbh->query($sql)->fetchAll(PDO::FETCH_COLUMN);
+        return $this->conn->fetchColumn($this->sql['listTables']);
     }
     /**
      * lists table triggers
@@ -237,15 +221,6 @@ class Doctrine_Import_Mysql extends Doctrine_Import
 
     }
     /**
-     * lists database users
-     *
-     * @return array
-     */
-    public function listUsers()
-    {
-        return $db->queryCol('SELECT DISTINCT USER FROM USER');
-    }
-    /**
      * lists database views
      *
      * @param string|null $database
@@ -253,17 +228,10 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      */
     public function listViews($database = null)
     {
-        $query = 'SHOW FULL TABLES';
         if (!is_null($database)) {
-            $query.= ' FROM ' . $database;
-        }
-        $query.= " WHERE Table_type = 'VIEW'";
+            $query = sprintf($this->sql['listViews'], ' FROM ' . $database);
+        } 
 
-        $result = $db->queryCol($query);
-
-        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
-            $result = array_map(($db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
-        }
-        return $result;
+        return $this->conn->fetchColumn($query);
     }
 }

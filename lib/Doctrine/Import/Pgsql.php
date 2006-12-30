@@ -165,7 +165,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
                 'default' => $val['default'],
                 'primary' => ($val['pri'] == 't'),
             );
-            $columns[$val['field']] = new Doctrine_Schema_Column($description);
+            $columns[$val['field']] = $description;
         }
         return $columns;
     }

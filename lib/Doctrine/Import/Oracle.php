@@ -145,16 +145,18 @@ class Doctrine_Import_Oracle extends Doctrine_Import
      */
     public function listTableColumns($table)
     {
+        $table  = strtoupper($table);
+        $sql    = "SELECT column_name, data_type, data_length, nullable, data_default from all_tab_columns WHERE table_name='$table' ORDER BY column_name";
+        $result = $this->conn->fetchAssoc($sql);
 
-        $table = $this->conn->quote($table, 'text');
-        $query = 'SELECT column_name FROM user_tab_columns';
-        $query.= ' WHERE table_name='.$table.' OR table_name='.strtoupper($table).' ORDER BY column_id';
-        $result = $this->conn->queryCol($query);
-
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE
-            && $this->conn->options['field_case'] == CASE_LOWER
-        ) {
-            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
+        foreach($result as $val) {
+			$descr[$val['column_name']] = array(
+               'name'    => $val['column_name'],
+               'notnull' => (bool) ($val['nullable'] === 'N'), // nullable is N when mandatory
+               'type'    => $val['data_type'],
+               'default' => $val['data_default'],
+               'length'  => $val['data_length']
+            );
         }
         return $result;
     }
