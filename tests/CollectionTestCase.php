@@ -85,6 +85,16 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
 
         $this->connection->clear();
     }
+    public function testOffsetGetWithNullArgumentReturnsNewRecord() 
+    {
+        $coll = new Doctrine_Collection('User');
+        $this->assertEqual($coll->count(), 0);
+
+        $coll[]->name = 'zYne';
+
+        $this->assertEqual($coll->count(), 1);
+        $this->assertEqual($coll[0]->name, 'zYne');
+    }
 
     public function testLoadRelatedForNormalAssociation() {
         $resource = new Doctrine_Collection('Resource');

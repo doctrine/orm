@@ -203,6 +203,15 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     public function getConnection() {
         return $this->connection;
     }
+    public function assertDeclarationType($type, $type2) {
+        $dec = $this->getDeclaration($type);
+        if( ! is_array($type2))
+            $type2 = array($type2);
+        $this->assertEqual($dec[0], $type2);
+    }
+    public function getDeclaration($type) {
+        return $this->dataDict->getPortableDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 1, 'fixed' => true));
+    }
     public function clearCache() {
         foreach($this->tables as $name) {
             $table = $this->connection->getTable($name);

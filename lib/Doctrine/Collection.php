@@ -425,7 +425,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         if ( ! isset($this->data[$key])) {
             $this->expand($key);
-            throw new InvalidKeyException();
+            
+            throw new Doctrine_Collection_Exception('Unknown key ' . $key);
         }
 
         $removed = $this->data[$key];
@@ -437,7 +438,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * contains
      * whether or not this collection contains a specified element
      *
-     * @param mixed $key
+     * @param mixed $key                    the key of the element
      * @return boolean
      */
     public function contains($key)
@@ -445,11 +446,37 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return isset($this->data[$key]);
     }
     /**
-     * @param mixed $key
-     * @return object Doctrine_Record           return a specified record
+     * get
+     * returns a record for given key
+     *
+     * There are two special cases:
+     *
+     * 1. if null is given as a key a new record is created and attached
+     * at the end of the collection
+     *
+     * 2. if given key does not exist, then a new record is create and attached
+     * to the given key
+     *
+     * Collection also maps referential information to newly created records
+     *
+     * @param mixed $key                    the key of the element
+     * @return Doctrine_Record              return a specified record
      */
     public function get($key)
     {
+    	if($key === null) {
+    	    $record = $this->table->create();
+            
+            if (isset($this->reference_field)) {
+                $record->set($this->reference_field, $this->reference, false);
+            }
+
+            $this->data[] = $record;
+            
+            return $record;
+    	}
+
+
         if ( ! isset($this->data[$key])) {
             $this->expand($key);
 
