@@ -43,7 +43,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction
     {
         $query = 'SAVEPOINT '.$savepoint;
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
     /**
      * releaseSavePoint
@@ -68,7 +68,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction
     {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
     /**
      * Set the transacton isolation level.
@@ -98,6 +98,6 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction
         }
 
         $query = 'ALTER SESSION ISOLATION LEVEL ' . $isolation;
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
 }

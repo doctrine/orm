@@ -43,7 +43,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction
     {
         $query = 'SAVEPOINT '.$savepoint;
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
     /**
      * releaseSavePoint
@@ -56,7 +56,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction
     {
         $query = 'RELEASE SAVEPOINT '.$savepoint;
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
     /**
      * rollbackSavePoint
@@ -69,7 +69,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction
     {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
     /**
      * Set the transacton isolation level.
@@ -98,7 +98,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction
 
         $query = 'SET SESSION TRANSACTION ISOLATION LEVEL ' . $isolation;
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
     /**
      * getTransactionIsolation
@@ -107,7 +107,7 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction
      */
     public function getIsolation()
     {
-        $ret = $this->conn->getDbh()->query('SELECT @@tx_isolation')->fetch(PDO::FETCH_NUM);
+        $ret = $this->conn->execute('SELECT @@tx_isolation')->fetch(PDO::FETCH_NUM);
         return current($ret);
     }
 }

@@ -43,7 +43,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
     {
         $query = 'SAVEPOINT '.$savepoint;
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
     /**
      * releaseSavePoint
@@ -56,7 +56,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
     {
         $query = 'RELEASE SAVEPOINT '.$savepoint;
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
     /**
      * rollbackSavePoint
@@ -69,7 +69,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
     {
         $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
     /**
      * Set the transacton isolation level.
@@ -132,6 +132,6 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
 
         $query = 'SET TRANSACTION' . $rw . $wait .' ISOLATION LEVEL ' . $nativeIsolation;
 
-        $this->conn->getDbh()->query($query);
+        $this->conn->execute($query);
     }
 }

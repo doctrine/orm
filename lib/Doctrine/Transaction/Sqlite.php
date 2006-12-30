@@ -61,6 +61,6 @@ class Doctrine_Transaction_Sqlite extends Doctrine_Transaction
 
         $query = 'PRAGMA read_uncommitted = '.$isolation;
 
-        return $this->conn->getDbh()->query($query);
+        return $this->conn->execute($query);
     }
 }

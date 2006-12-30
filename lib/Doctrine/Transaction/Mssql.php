@@ -63,6 +63,6 @@ class Doctrine_Transaction_Mssql extends Doctrine_Transaction
 
         $query = 'SET TRANSACTION ISOLATION LEVEL ' . $isolation;
 
-        $this->conn->getDbh()->query($query);
+        $this->conn->execute($query);
     }
 }
