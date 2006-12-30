@@ -30,8 +30,10 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_DataDict_Mssql_TestCase extends Doctrine_UnitTestCase {
-    public function testGetPortableDeclarationForUnknownNativeTypeThrowsException() {
+class Doctrine_DataDict_Mssql_TestCase extends Doctrine_UnitTestCase 
+{
+    public function testGetPortableDeclarationForUnknownNativeTypeThrowsException() 
+    {
         try {
             $this->dataDict->getPortableDeclaration(array('type' => 'some_unknown_type'));
             $this->fail();
@@ -39,25 +41,28 @@ class Doctrine_DataDict_Mssql_TestCase extends Doctrine_UnitTestCase {
             $this->pass();
         }
     }
-    public function testGetPortableDeclarationSupportsNativeBitType() {
+    public function testGetPortableDeclarationSupportsNativeBitType() 
+    {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'bit'));
         
         $this->assertEqual($type, array(array('boolean'), null, null, null));
     }
-    public function testGetPortableDeclarationSupportsNativeStringTypes() {
+    public function testGetPortableDeclarationSupportsNativeStringTypes() 
+    {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'text'));
 
         $this->assertEqual($type, array(array('string', 'clob'), null, null, null));
 
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'char', 'length' => 1));
-        
+
         $this->assertEqual($type, array(array('string', 'boolean'), 1, null, true));
 
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'varchar', 'length' => 1));
         
         $this->assertEqual($type, array(array('string', 'boolean'), 1, null, false));
     }
-    public function testGetPortableDeclarationSupportsNativeBlobTypes() {
+    public function testGetPortableDeclarationSupportsNativeBlobTypes() 
+    {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'image'));
         
         $this->assertEqual($type, array(array('blob'), null, null, null));
@@ -66,7 +71,8 @@ class Doctrine_DataDict_Mssql_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($type, array(array('blob'), null, null, null));
     }
-    public function testGetPortableDeclarationSupportsNativeIntegerTypes() {
+    public function testGetPortableDeclarationSupportsNativeIntegerTypes() 
+    {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'int'));
         
         $this->assertEqual($type, array(array('integer'), null, null, null));
@@ -75,12 +81,14 @@ class Doctrine_DataDict_Mssql_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual($type, array(array('integer', 'boolean'), 1, null, null));
     }
-    public function testGetPortableDeclarationSupportsNativeTimestampType() {
+    public function testGetPortableDeclarationSupportsNativeTimestampType() 
+    {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'datetime'));
         
         $this->assertEqual($type, array(array('timestamp'), null, null, null));
     }
-    public function testGetPortableDeclarationSupportsNativeDecimalTypes() {
+    public function testGetPortableDeclarationSupportsNativeDecimalTypes() 
+    {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'decimal'));
 
         $this->assertEqual($type, array(array('decimal'), null, null, null));
@@ -89,7 +97,8 @@ class Doctrine_DataDict_Mssql_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($type, array(array('decimal'), null, null, null));
     }
-    public function testGetPortableDeclarationSupportsNativeFloatTypes() {
+    public function testGetPortableDeclarationSupportsNativeFloatTypes() 
+    {
         $type = $this->dataDict->getPortableDeclaration(array('type' => 'float'));
 
         $this->assertEqual($type, array(array('float'), null, null, null));
@@ -102,7 +111,8 @@ class Doctrine_DataDict_Mssql_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($type, array(array('float'), null, null, null));
     }
-    public function testGetNativeDefinitionSupportsIntegerType() {
+    public function testGetNativeDefinitionSupportsIntegerType() 
+    {
         $a = array('type' => 'integer', 'length' => 20, 'fixed' => false);
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'INT');
@@ -116,67 +126,80 @@ class Doctrine_DataDict_Mssql_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'INT');
     }
 
-    public function testGetNativeDefinitionSupportsFloatType() {
+    public function testGetNativeDefinitionSupportsFloatType() 
+    {
         $a = array('type' => 'float', 'length' => 20, 'fixed' => false);
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'FLOAT');
     }
-    public function testGetNativeDefinitionSupportsBooleanType() {
+    public function testGetNativeDefinitionSupportsBooleanType() 
+    {
         $a = array('type' => 'boolean', 'fixed' => false);
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'BIT');
     }
-    public function testGetNativeDefinitionSupportsDateType() {
+    public function testGetNativeDefinitionSupportsDateType() 
+    {
         $a = array('type' => 'date', 'fixed' => false);
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'CHAR(10)');
     }
-    public function testGetNativeDefinitionSupportsTimestampType() {
+    public function testGetNativeDefinitionSupportsTimestampType() 
+    {
         $a = array('type' => 'timestamp', 'fixed' => false);
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'CHAR(19)');
     }
-    public function testGetNativeDefinitionSupportsTimeType() {
+    public function testGetNativeDefinitionSupportsTimeType() 
+    {
         $a = array('type' => 'time', 'fixed' => false);
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'CHAR(8)');
     }
-    public function testGetNativeDefinitionSupportsClobType() {
+    public function testGetNativeDefinitionSupportsClobType() 
+    {
         $a = array('type' => 'clob');
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'TEXT');
     }
-    public function testGetNativeDefinitionSupportsBlobType() {
+    public function testGetNativeDefinitionSupportsBlobType() 
+    {
         $a = array('type' => 'blob');
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'IMAGE');
     }
-    public function testGetNativeDefinitionSupportsCharType() {
+    public function testGetNativeDefinitionSupportsCharType() 
+    {
         $a = array('type' => 'char', 'length' => 10);
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'CHAR(10)');
     }
-    public function testGetNativeDefinitionSupportsVarcharType() {
+    public function testGetNativeDefinitionSupportsVarcharType() 
+    {
         $a = array('type' => 'varchar', 'length' => 10);
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'VARCHAR(10)');
     }
-    public function testGetNativeDefinitionSupportsArrayType() {
+    public function testGetNativeDefinitionSupportsArrayType() 
+    {
         $a = array('type' => 'array', 'length' => 40);
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'VARCHAR(40)');
     }
-    public function testGetNativeDefinitionSupportsStringType() {
+    public function testGetNativeDefinitionSupportsStringType() 
+    {
         $a = array('type' => 'string');
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'TEXT');
     }
-    public function testGetNativeDefinitionSupportsArrayType2() {
+    public function testGetNativeDefinitionSupportsArrayType2() 
+    {
         $a = array('type' => 'array');
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'TEXT');
     }
-    public function testGetNativeDefinitionSupportsObjectType() {
+    public function testGetNativeDefinitionSupportsObjectType() 
+    {
         $a = array('type' => 'object');
 
         $this->assertEqual($this->dataDict->getNativeDeclaration($a), 'TEXT');
