@@ -123,10 +123,14 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
     public function getPortableDeclaration(array $field)
     {
         $dbType = strtolower($field['type']);
-        $length = ( ! empty($field['length'])) ? $field['length'] : null;
-        $unsigned = ( ! empty($field['unsigned'])) ? $field['unsigned'] : null;
+        $length = (isset($field['length'])) ? $field['length'] : null;
+        $unsigned = (isset($field['unsigned'])) ? $field['unsigned'] : null;
         $fixed = null;
         $type = array();
+        
+        if( ! isset($field['name']))
+            $field['name'] = '';
+
         switch ($dbType) {
             case 'boolean':
                 $type[] = 'boolean';

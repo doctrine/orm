@@ -100,16 +100,16 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
      */
     public function getPortableDeclaration($field)
     {
-        $length = $field['length'];
-
-        if ((int) $length <= 0)
-            $length = null;
+        $length  = (isset($field['length']) && $field['length'] > 0) ? $field['length'] : null;
 
         $type = array();
         $unsigned = $fixed = null;
         $dbType = strtolower($field['type']);
         $field['field_sub_type'] = !empty($field['field_sub_type'])
             ? strtolower($field['field_sub_type']) : null;
+        
+        if( ! isset($field['name']))
+            $field['name'] = '';
 
         switch ($dbType) {
             case 'smallint':
@@ -134,7 +134,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
                 $fixed = false;
             case 'char':
             case 'cstring':
-                $type[] = 'text';
+                $type[] = 'string';
                 if ($length == '1') {
                     $type[] = 'boolean';
                     if (preg_match('/^(is|has)/', $field['name'])) {

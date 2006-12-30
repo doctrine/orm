@@ -226,7 +226,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
         if ($dbType == 'national') {
             $dbType = strtok('(), ');
         }
-        if (!empty($field['length'])) {
+        if (isset($field['length'])) {
             $length = $field['length'];
             $decimal = '';
         } else {
@@ -235,6 +235,10 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
         }
         $type = array();
         $unsigned = $fixed = null;
+        
+        if( ! isset($field['name']))
+            $field['name'] = '';
+
         switch ($dbType) {
             case 'tinyint':
                 $type[] = 'integer';
@@ -275,7 +279,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                 $fixed = false;
             case 'string':
             case 'char':
-                $type[] = 'text';
+                $type[] = 'string';
                 if ($length == '1') {
                     $type[] = 'boolean';
                     if (preg_match('/^(is|has)/', $field['name'])) {
@@ -353,6 +357,9 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
             default:
                 throw new Doctrine_DataDict_Mysql_Exception('unknown database attribute type: '.$dbType);
         }
+
+        $length = ((int) $length == 0) ? null : (int) $length;
+
 
         return array($type, $length, $unsigned, $fixed);
     }

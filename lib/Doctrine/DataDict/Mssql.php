@@ -116,19 +116,24 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
     public function getPortableDeclaration($field)
     {
         $db_type = preg_replace('/\d/','', strtolower($field['type']) );
-        $length = $field['length'];
-        if ((int)$length <= 0) {
-            $length = null;
-        }
+        $length  = (isset($field['length']) && $field['length'] > 0) ? $field['length'] : null;
+
         $type = array();
         // todo: unsigned handling seems to be missing
         $unsigned = $fixed = null;
+        
+        if( ! isset($field['name']))
+            $field['name'] = '';
+
         switch ($db_type) {
             case 'bit':
                 $type[0] = 'boolean';
             break;
             case 'int':
                 $type[0] = 'integer';
+                if($length == 1) {
+                    $type[] = 'boolean';
+                }
             break;
             case 'datetime':
                 $type[0] = 'timestamp';
@@ -146,7 +151,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
             case 'varchar':
                 $fixed = false;
             case 'char':
-                $type[0] = 'text';
+                $type[0] = 'string';
                 if ($length == '1') {
                     $type[] = 'boolean';
                     if (preg_match('/^[is|has]/', $field['name'])) {
@@ -167,6 +172,8 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
             default:
                 throw new Doctrine_DataDict_Mssql_Exception('unknown database attribute type: '.$db_type);
         }
+
+
 
         return array($type, $length, $unsigned, $fixed);
     }

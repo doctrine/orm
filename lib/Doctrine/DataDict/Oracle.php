@@ -103,6 +103,10 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
         if (!empty($field['length'])) {
             $length = $field['length'];
         }
+
+        if( ! isset($field['name']))
+            $field['name'] = '';
+
         switch ($db_type) {
             case 'integer':
             case 'pls_integer':
@@ -121,7 +125,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
                 $fixed = false;
             case 'char':
             case 'nchar':
-                $type[] = 'text';
+                $type[] = 'string';
                 if ($length == '1') {
                     $type[] = 'boolean';
                     if (preg_match('/^(is|has)/', $field['name'])) {
@@ -154,7 +158,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
                 }
                 break;
             case 'long':
-                $type[] = 'text';
+                $type[] = 'string';
             case 'clob':
             case 'nclob':
                 $type[] = 'clob';

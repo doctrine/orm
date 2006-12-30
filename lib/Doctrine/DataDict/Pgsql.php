@@ -425,7 +425,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
     public function getPortableDeclaration(array $field)
     {
 
-        $length = $field['length'];
+        $length = (isset($field['length'])) ? $field['length'] : null;
         if ($length == '-1' && isset($field['atttypmod'])) {
             $length = $field['atttypmod'] - 4;
         }
@@ -434,7 +434,13 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
         }
         $type = array();
         $unsigned = $fixed = null;
-        switch (strtolower($field['type'])) {
+
+        if( ! isset($field['name']))
+            $field['name'] = '';
+
+        $db_type = strtolower($field['type']);
+
+        switch ($db_type) {
             case 'smallint':
             case 'int2':
                 $type[] = 'integer';
@@ -475,7 +481,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
             case 'unknown':
             case 'char':
             case 'bpchar':
-                $type[] = 'text';
+                $type[] = 'string';
                 if ($length == '1') {
                     $type[] = 'boolean';
                     if (preg_match('/^(is|has)/', $field['name'])) {
