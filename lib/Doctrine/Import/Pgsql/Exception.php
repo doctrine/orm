@@ -18,9 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Exception');
+Doctrine::autoload('Doctrine_Import_Exception');
 /**
- * class Doctrine_Import_Exception
+ * Doctrine_Import_Pgsql_Exception
  *
  * @package     Doctrine
  * @category    Object Relational Mapping
@@ -30,5 +30,5 @@ Doctrine::autoload('Doctrine_Exception');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Import_Exception extends Doctrine_Exception
+class Doctrine_Import_Pgsql_Exception extends Doctrine_Import_Exception
 { }
