@@ -58,14 +58,36 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 // DATABASE ABSTRACTION tests
 
-$test->addTestCase(new Doctrine_Connection_Firebird_TestCase());
-$test->addTestCase(new Doctrine_Connection_Informix_TestCase());
-$test->addTestCase(new Doctrine_Connection_Mysql_TestCase());
-$test->addTestCase(new Doctrine_Connection_Mssql_TestCase());
+// Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Connection_Sqlite_TestCase());
+$test->addTestCase(new Doctrine_Connection_Mssql_TestCase()); 
+$test->addTestCase(new Doctrine_Connection_Mysql_TestCase());
+$test->addTestCase(new Doctrine_Connection_Firebird_TestCase());
+$test->addTestCase(new Doctrine_Connection_Informix_TestCase());
 
+// Transaction module (FULLY TESTED)
+$test->addTestCase(new Doctrine_Transaction_TestCase());
+$test->addTestCase(new Doctrine_Transaction_Firebird_TestCase());
+$test->addTestCase(new Doctrine_Transaction_Informix_TestCase());
+$test->addTestCase(new Doctrine_Transaction_Mysql_TestCase());
+$test->addTestCase(new Doctrine_Transaction_Mssql_TestCase());
+$test->addTestCase(new Doctrine_Transaction_Pgsql_TestCase());
+$test->addTestCase(new Doctrine_Transaction_Oracle_TestCase());
+$test->addTestCase(new Doctrine_Transaction_Sqlite_TestCase());
+
+// DataDict module (FULLY TESTED)
+$test->addTestCase(new Doctrine_DataDict_TestCase());
+$test->addTestCase(new Doctrine_DataDict_Firebird_TestCase());
+$test->addTestCase(new Doctrine_DataDict_Informix_TestCase());
+$test->addTestCase(new Doctrine_DataDict_Mysql_TestCase());
+$test->addTestCase(new Doctrine_DataDict_Mssql_TestCase());
+$test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
+$test->addTestCase(new Doctrine_DataDict_Oracle_TestCase());
+$test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
+
+// Export module (not yet fully tested)
 $test->addTestCase(new Doctrine_Export_TestCase());
 $test->addTestCase(new Doctrine_Export_Reporter_TestCase());
 $test->addTestCase(new Doctrine_Export_Firebird_TestCase());
@@ -76,15 +98,7 @@ $test->addTestCase(new Doctrine_Export_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Export_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Export_Sqlite_TestCase());
 
-$test->addTestCase(new Doctrine_Transaction_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Firebird_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Informix_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Mysql_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Mssql_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Pgsql_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Oracle_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Sqlite_TestCase());
-
+// Import module (not yet fully tested)
 //$test->addTestCase(new Doctrine_Import_TestCase());
 $test->addTestCase(new Doctrine_Import_Firebird_TestCase());
 $test->addTestCase(new Doctrine_Import_Informix_TestCase());
@@ -94,6 +108,7 @@ $test->addTestCase(new Doctrine_Import_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Import_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Import_Sqlite_TestCase());
 
+// Expression module (not yet fully tested)
 $test->addTestCase(new Doctrine_Expression_TestCase());
 $test->addTestCase(new Doctrine_Expression_Firebird_TestCase());
 $test->addTestCase(new Doctrine_Expression_Informix_TestCase());
@@ -114,8 +129,8 @@ $test->addTestCase(new Doctrine_Table_TestCase());
 
 $test->addTestCase(new Doctrine_UnitOfWork_TestCase());
 $test->addTestCase(new Doctrine_Connection_Transaction_TestCase());
-$test->addTestCase(new Doctrine_Collection_TestCase());
 
+$test->addTestCase(new Doctrine_Collection_TestCase());
 
 // Relation handling
 $test->addTestCase(new Doctrine_Relation_TestCase());
@@ -174,9 +189,9 @@ $test->addTestCase(new Doctrine_Query_IdentifierQuoting_TestCase());
 $test->addTestCase(new Doctrine_Query_Update_TestCase());
 $test->addTestCase(new Doctrine_Query_AggregateValue_TestCase());
 $test->addTestCase(new Doctrine_Query_Select_TestCase());
-
-
-
+$test->addTestCase(new Doctrine_Query_Expression_TestCase());
+$test->addTestCase(new Doctrine_Query_Having_TestCase());
+$test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
