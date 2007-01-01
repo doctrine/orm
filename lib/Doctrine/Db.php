@@ -92,7 +92,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param string $user          database username
      * @param string $pass          database password
      */
-    public function __construct($dsn, $user, $pass)
+    public function __construct($dsn, $user = null, $pass = null)
     {
         if ( ! isset($user)) {
             $a = self::parseDSN($dsn);
