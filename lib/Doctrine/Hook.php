@@ -79,6 +79,11 @@ class Doctrine_Hook
             $this->query = $query;
         }
     }
+    /**
+     * getQuery
+     *
+     * @return Doctrine_Query       returns the query object associated with this hook
+     */
     public function getQuery()
     {
         return $this->query;

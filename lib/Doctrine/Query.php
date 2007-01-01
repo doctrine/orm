@@ -1110,6 +1110,16 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     final public function load($path, $loadFields = true)
     {
+                
+        // parse custom join conditions
+        $e = explode(' ON ', $path);
+        
+        $joinCondition = '';
+        if(count($e) > 1) {
+            $joinCondition = ' AND ' . $e[1];
+            $path = $e[0];
+        }
+
         $tmp            = explode(' ',$path);
         $componentAlias = (count($tmp) > 1) ? end($tmp) : false;
 
@@ -1217,12 +1227,14 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
                         $this->parts["join"][$tname][$tname2]         = $join . $aliasString    . ' ON ' . $tname2 . '.'
                                                                       . $fk->getTable()->getIdentifier() . ' = '
-                                                                      . $assocTableName . '.' . $fk->getForeign();
+                                                                      . $assocTableName . '.' . $fk->getForeign()
+                                                                      . $joinCondition;
 
                     } else {
                         $this->parts["join"][$tname][$tname2]         = $join . $aliasString
                                                                       . ' ON ' . $tname .  '.'
-                                                                      . $fk->getLocal() . ' = ' . $tname2 . '.' . $fk->getForeign();
+                                                                      . $fk->getLocal() . ' = ' . $tname2 . '.' . $fk->getForeign()
+                                                                      . $joinCondition;
                     }
 
 
