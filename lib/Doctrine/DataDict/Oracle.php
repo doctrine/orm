@@ -104,8 +104,9 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
             $length = $field['length'];
         }
 
-        if( ! isset($field['name']))
+        if ( ! isset($field['name'])) {
             $field['name'] = '';
+        }
 
         switch ($db_type) {
             case 'integer':

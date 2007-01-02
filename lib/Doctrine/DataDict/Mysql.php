@@ -235,9 +235,10 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
         }
         $type = array();
         $unsigned = $fixed = null;
-        
-        if( ! isset($field['name']))
+
+        if ( ! isset($field['name'])) {
             $field['name'] = '';
+        }
 
         switch ($dbType) {
             case 'tinyint':

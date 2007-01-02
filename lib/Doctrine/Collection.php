@@ -425,7 +425,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         if ( ! isset($this->data[$key])) {
             $this->expand($key);
-            
+
             throw new Doctrine_Collection_Exception('Unknown key ' . $key);
         }
 
@@ -464,15 +464,15 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function get($key)
     {
-    	if($key === null) {
+    	if ($key === null) {
     	    $record = $this->table->create();
-            
+
             if (isset($this->reference_field)) {
                 $record->set($this->reference_field, $this->reference, false);
             }
 
             $this->data[] = $record;
-            
+
             return $record;
     	}
 

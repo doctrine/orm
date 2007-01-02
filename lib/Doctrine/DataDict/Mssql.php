@@ -121,8 +121,8 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
         $type = array();
         // todo: unsigned handling seems to be missing
         $unsigned = $fixed = null;
-        
-        if( ! isset($field['name']))
+
+        if ( ! isset($field['name']))
             $field['name'] = '';
 
         switch ($db_type) {
@@ -131,7 +131,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
             break;
             case 'int':
                 $type[0] = 'integer';
-                if($length == 1) {
+                if ($length == 1) {
                     $type[] = 'boolean';
                 }
             break;

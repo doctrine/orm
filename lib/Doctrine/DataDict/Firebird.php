@@ -107,9 +107,10 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
         $dbType = strtolower($field['type']);
         $field['field_sub_type'] = !empty($field['field_sub_type'])
             ? strtolower($field['field_sub_type']) : null;
-        
-        if( ! isset($field['name']))
+
+        if ( ! isset($field['name'])) {
             $field['name'] = '';
+        }
 
         switch ($dbType) {
             case 'smallint':

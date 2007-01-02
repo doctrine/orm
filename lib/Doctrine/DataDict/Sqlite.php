@@ -127,9 +127,10 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
         $unsigned = (isset($field['unsigned'])) ? $field['unsigned'] : null;
         $fixed = null;
         $type = array();
-        
-        if( ! isset($field['name']))
+
+        if ( ! isset($field['name'])) {
             $field['name'] = '';
+        }
 
         switch ($dbType) {
             case 'boolean':
