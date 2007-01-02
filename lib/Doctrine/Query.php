@@ -514,7 +514,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     {
         switch($this->type) {
             case self::DELETE:
-                if($this->conn->getName() == 'mysql')
+                if($this->conn->getName() == 'Mysql')
                     $q = 'DELETE '.end($this->tableAliases).' FROM ';
                 else
                     $q = 'DELETE FROM ';
