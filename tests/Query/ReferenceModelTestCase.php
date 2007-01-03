@@ -10,6 +10,7 @@ class Doctrine_Query_ReferenceModel_TestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
         $this->connection->clear();
     }
+
     public function testInitializeData() {
         $query = new Doctrine_Query($this->connection);
 
@@ -38,12 +39,12 @@ class Doctrine_Query_ReferenceModel_TestCase extends Doctrine_UnitTestCase {
 
         $this->connection->clear();
     }
+
     public function testSelfReferencingWithNestedOrderBy() {
         $query = new Doctrine_Query();
         
         $query->from("Forum_Category.Subcategory.Subcategory");
         $query->orderby("Forum_Category.id ASC, Forum_Category.Subcategory.name DESC");
-
 
         $coll = $query->execute();
         
@@ -90,6 +91,7 @@ class Doctrine_Query_ReferenceModel_TestCase extends Doctrine_UnitTestCase {
         $query->from("Forum_Category.Parent.Parent")->where("Forum_Category.name LIKE 'Sub%Sub%'");
         $coll = $query->execute();
 
+
         $count = count($this->dbh);
         $this->assertEqual($coll->count(), 4);
         $this->assertEqual($coll[0]->name, "Sub 1 Sub 1");
@@ -116,7 +118,8 @@ class Doctrine_Query_ReferenceModel_TestCase extends Doctrine_UnitTestCase {
     public function testSelfReferencingWithNestingAndMultipleConditions() {
         $query = new Doctrine_Query();
         $query->from("Forum_Category.Parent, Forum_Category.Subcategory")->where("Forum_Category.name = 'Sub 1' || Forum_Category.name = 'Sub 2'");
-        
+
+
         $coll = $query->execute();
         
         $count = count($this->dbh);

@@ -192,6 +192,7 @@ $test->addTestCase(new Doctrine_Query_AggregateValue_TestCase());
 $test->addTestCase(new Doctrine_Query_Select_TestCase());
 $test->addTestCase(new Doctrine_Query_Expression_TestCase());
 $test->addTestCase(new Doctrine_Query_Having_TestCase());
+
 $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 
 // Cache tests

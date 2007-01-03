@@ -73,4 +73,39 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
 
         return '(' . $r . ')';
     }
+    /**
+     * parses a literal value and returns the parsed value
+     *
+     * boolean literals are parsed to integers
+     * components are parsed to associated table aliases
+     *
+     * @param string $value         literal value to be parsed
+     * @return string
+     */
+    public function parseLiteralValue($value)
+    {
+        // check that value isn't a string
+        if (strpos($value, '\'') === false) {
+            // parse booleans
+            if ($value == 'true')
+                $value = 1;
+            elseif ($value == 'false')
+                $value = 0;
+
+            $a = explode('.', $value);
+
+            if (count($a) > 1) {
+            // either a float or a component..
+
+                if ( ! is_numeric($a[0])) {
+                    // a component found
+                    $value = $this->query->getTableAlias($a[0]). '.' . $a[1];
+                }
+            }
+        } else {
+            // string literal found
+        }
+
+        return $value;
+    }
 }

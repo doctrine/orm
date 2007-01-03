@@ -65,6 +65,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     private $relationStack     = array();
 
     private $isDistinct        = false;
+    
+    private $neededTables      = array();
     /**
      * @var array $pendingFields
      */
@@ -125,6 +127,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         foreach($fields as $name) {
             $this->parts["select"][] = $tableAlias . '.' .$name . ' AS ' . $tableAlias . '__' . $name;
         }
+        
+        $this->neededTables[] = $tableAlias;
 
     }
     public function parseSelect($dql)
@@ -221,6 +225,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             $this->parts['select'][] = $name . '(' . $distinct . implode(', ', $arglist) . ') AS ' . $tableAlias . '__' . count($this->aggregateMap);
 
             $this->aggregateMap[] = $table;
+            $this->neededTables[] = $tableAlias;
         }
     }
 	/**
@@ -562,12 +567,54 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $q = $this->getQueryBase();
 
         $q .= $this->parts['from'];
+        /**
+        var_dump($this->pendingFields);
+        var_dump($this->subqueryAliases);  */
+        //var_dump($this->parts['join']);
 
+        foreach($this->parts['join'] as $parts) {
+            foreach($parts as $part) {
+                // preserve LEFT JOINs only if needed
+
+                if(substr($part, 0,9) === 'LEFT JOIN') {
+                    $e = explode(' ', $part);
+
+                    $aliases = array_merge($this->subqueryAliases, 
+                                array_keys($this->neededTables));
+
+
+                    if( ! in_array($e[3], $aliases) &&
+                        ! in_array($e[2], $aliases) &&
+
+                        ! empty($this->pendingFields)) {
+                        continue;
+                    }
+
+                }
+
+                $e = explode(' ON ', $part);
+                
+                // we can always be sure that the first join condition exists
+                $e2 = explode(' AND ', $e[1]);
+
+                $part = $e[0] . ' ON '
+                      . array_shift($e2);
+                      
+                if( ! empty($e2)) {
+                    $parser = new Doctrine_Query_JoinCondition($this);
+                    $part  .= ' AND ' . $parser->parse(implode(' AND ', $e2));
+                }
+
+                $q .= ' ' . $part;
+            }
+        }
+        /**
         if( ! empty($this->parts['join'])) {
             foreach($this->parts['join'] as $part) {
                 $q .= ' '.implode(' ', $part);
             }
         }
+        */
 
         if( ! empty($this->parts['set'])) {
             $q .= ' SET ' . implode(', ', $this->parts['set']);
@@ -1202,36 +1249,37 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                             $join = 'LEFT JOIN ';
                         break;
                         default:
-                            throw new Doctrine_Exception("Unknown operator '$mark'");
+                            throw new Doctrine_Query_Exception("Unknown operator '$mark'");
                     }
 
                     if( ! $fk->isOneToOne()) {
                        $this->needsSubquery = true;
                     }
 
-                    if( ! $loadFields || $fk->getTable()->usesInheritanceMap()) {
+                    if( ! $loadFields || $fk->getTable()->usesInheritanceMap() || $joinCondition) {
                         $this->subqueryAliases[] = $tname2;
                     }
+
 
                     if($fk instanceof Doctrine_Relation_Association) {
                         $asf = $fk->getAssociationFactory();
 
                         $assocTableName = $asf->getTableName();
 
-                        if( ! $loadFields) {
+                        if( ! $loadFields || $joinCondition) {
                             $this->subqueryAliases[] = $assocTableName;
                         }
-                        $this->parts["join"][$tname][$assocTableName] = $join . $assocTableName . ' ON ' . $tname  . '.'
+                        $this->parts['join'][$tname][$assocTableName] = $join . $assocTableName . ' ON ' . $tname  . '.'
                                                                       . $table->getIdentifier() . ' = '
                                                                       . $assocTableName . '.' . $fk->getLocal();
 
-                        $this->parts["join"][$tname][$tname2]         = $join . $aliasString    . ' ON ' . $tname2 . '.'
+                        $this->parts['join'][$tname][$tname2]         = $join . $aliasString    . ' ON ' . $tname2 . '.'
                                                                       . $fk->getTable()->getIdentifier() . ' = '
                                                                       . $assocTableName . '.' . $fk->getForeign()
                                                                       . $joinCondition;
 
                     } else {
-                        $this->parts["join"][$tname][$tname2]         = $join . $aliasString
+                        $this->parts['join'][$tname][$tname2]         = $join . $aliasString
                                                                       . ' ON ' . $tname .  '.'
                                                                       . $fk->getLocal() . ' = ' . $tname2 . '.' . $fk->getForeign()
                                                                       . $joinCondition;
