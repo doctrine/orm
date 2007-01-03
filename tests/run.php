@@ -136,6 +136,7 @@ $test->addTestCase(new Doctrine_Collection_TestCase());
 $test->addTestCase(new Doctrine_Relation_TestCase());
 $test->addTestCase(new Doctrine_Relation_Access_TestCase());
 $test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
+$test->addTestCase(new Doctrine_TreeStructure_TestCase());
 
 
 // Datatypes
