@@ -136,7 +136,6 @@ $test->addTestCase(new Doctrine_Collection_TestCase());
 $test->addTestCase(new Doctrine_Relation_TestCase());
 $test->addTestCase(new Doctrine_Relation_Access_TestCase());
 $test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
-$test->addTestCase(new Doctrine_TreeStructure_TestCase());
 
 
 // Datatypes
@@ -192,9 +191,10 @@ $test->addTestCase(new Doctrine_Query_AggregateValue_TestCase());
 $test->addTestCase(new Doctrine_Query_Select_TestCase());
 $test->addTestCase(new Doctrine_Query_Expression_TestCase());
 $test->addTestCase(new Doctrine_Query_Having_TestCase());
-
 $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 
+
+$test->addTestCase(new Doctrine_TreeStructure_TestCase());
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());

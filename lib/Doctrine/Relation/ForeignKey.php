@@ -81,14 +81,18 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
             if (empty($id)) {
                 $related = $this->table->create();
             } else {
-                $dql  = "FROM ".$this->table->getComponentName()." WHERE ".$this->table->getComponentName().".".$this->foreign." = ?";
+                $dql  = 'FROM ' . $this->table->getComponentName()
+                      . ' WHERE ' . $this->table->getComponentName()
+                      . '.' . $this->foreign . ' = ?';
+
                 $coll = $this->table->getConnection()->query($dql, array($id));
                 $related = $coll[0];
             }
 
             $related->set($this->foreign, $record, false);
 
-        } else {
+        } else {    
+
             if (empty($id)) {
                 $related = new Doctrine_Collection($this->table);
             } else {

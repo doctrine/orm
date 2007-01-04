@@ -1315,10 +1315,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     final public function loadReference($name)
     {
+
         $fk      = $this->_table->getRelation($name);
 
         if ($fk->isOneToOne()) {
             $this->references[$name] = $fk->fetchRelatedFor($this);
+
         } else {
             $coll = $fk->fetchRelatedFor($this);
 
@@ -1344,7 +1346,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $fkField
      * @return void
      */
-    final public function ownsMany($componentName,$foreignKey, $localKey = null)
+    final public function ownsMany($componentName, $foreignKey, $localKey = null)
     {
         $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_COMPOSITE, $localKey);
     }
@@ -1355,7 +1357,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $fkField
      * @return void
      */
-    final public function hasOne($componentName,$foreignKey, $localKey = null)
+    final public function hasOne($componentName, $foreignKey, $localKey = null)
     {
         $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_AGGREGATE, $localKey);
     }
@@ -1366,7 +1368,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $fkField
      * @return void
      */
-    final public function hasMany($componentName,$foreignKey, $localKey = null)
+    final public function hasMany($componentName, $foreignKey, $localKey = null)
     {
         $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_AGGREGATE, $localKey);
     }

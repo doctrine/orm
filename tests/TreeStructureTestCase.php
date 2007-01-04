@@ -3,8 +3,12 @@ class TreeLeaf extends Doctrine_Record
 {
     public function setTableDefinition()
     {
+    	$this->hasColumn('name', 'string');
         $this->hasColumn('parent_id', 'integer');
-        $this->hasOne('TreeLeaf as Parent', 'TreeLeaf.parent_id', 'id');
+    }
+    public function setUp() 
+    {
+        $this->hasOne('TreeLeaf as Parent', 'TreeLeaf.parent_id');
         $this->hasMany('TreeLeaf as Children', 'TreeLeaf.parent_id');
     }
 }
@@ -27,6 +31,18 @@ class Doctrine_TreeStructure_TestCase extends Doctrine_UnitTestCase
         }
     }
 
+    public function testLocalAndForeignKeysAreSetCorrectly() {
+        $component = new TreeLeaf();
+
+        $rel = $component->getTable()->getRelation('Parent');
+        $this->assertEqual($rel->getLocal(), 'parent_id');
+        $this->assertEqual($rel->getForeign(), 'id');
+
+        $rel = $component->getTable()->getRelation('Children');
+        $this->assertEqual($rel->getLocal(), 'id');
+        $this->assertEqual($rel->getForeign(), 'parent_id');
+    }
+
     public function testTreeLeafRelationships() 
     {
         /* structure:
@@ -42,22 +58,26 @@ class Doctrine_TreeStructure_TestCase extends Doctrine_UnitTestCase
          */
 
         $o1 = new TreeLeaf();
-        $o1->Parent = null;
+        $o1->name = 'o1';
         $o1->save();
 
         $o2 = new TreeLeaf();
+        $o2->name   = 'o2';
         $o2->Parent = $o1;
         $o2->save();
 
         $o3 = new TreeLeaf();
+        $o3->name   = 'o3';
         $o3->Parent = $o1;
         $o3->save();
 
-        $o1->refresh();
+        //$o1->refresh();
 
         $o4 = new TreeLeaf();
+        $o4->name = 'o4';
         $o4->save();
 
+        $o1->Children;
         $this->assertFalse(isset($o1->Parent));
         $this->assertTrue(count($o1->Children) == 2);
         $this->assertTrue(count($o1->get('Children')) == 2);

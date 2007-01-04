@@ -171,9 +171,9 @@ abstract class Doctrine_Relation
      */
     public function getRelationDql($count)
     {
-        $dql  = "FROM ".$this->table->getComponentName().
-                " WHERE ".$this->table->getComponentName(). '.' . $this->foreign.
-                " IN (".substr(str_repeat("?, ", $count),0,-2).")";
+        $dql  = 'FROM ' . $this->table->getComponentName()
+              . ' WHERE ' . $this->table->getComponentName() . '.' . $this->foreign
+              . ' IN (' . substr(str_repeat('?, ', $count), 0, -2) . ')';
 
         return $dql;
     }

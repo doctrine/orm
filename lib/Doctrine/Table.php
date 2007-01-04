@@ -699,16 +699,27 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 // ONE-TO-ONE
                 if ($type == Doctrine_Relation::ONE_COMPOSITE ||
                    $type == Doctrine_Relation::ONE_AGGREGATE) {
+                    // tree structure parent relation found
+
                     if ( ! isset($local)) {
                         $local = $table->getIdentifier();
                     }
                     $relation = new Doctrine_Relation_LocalKey($table, $foreign, $local, $type, $alias);
                 } else {
+                    // tree structure children relation found
+
+                    if ( ! isset($local)) {
+                        $tmp = $table->getIdentifier();
+                    }
+                    $local   = $foreign;
+                    $foreign = $tmp;
+
                     $relation = new Doctrine_Relation_ForeignKey($table, $foreign, $local, $type, $alias);
                 }
 
             } elseif ($component == $name ||
                     ($component == $alias)) {     //  && ($name == $this->options['name'] || in_array($name,$this->parents))
+
 
                 if ( ! isset($local)) {
                     $local = $this->identifier;
