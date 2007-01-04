@@ -51,15 +51,15 @@
 class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Interface
 {
     /**
-     * @var array $instances        all the instances of this class
+     * @var array $instances            all the instances of this class
      */
     protected static $instances   = array();
     /**
-     * @var array $isConnected      whether or not a connection has been established
+     * @var array $isConnected          whether or not a connection has been established
      */
     protected $isConnected        = false;
     /**
-     * @var PDO $dbh                the database handler
+     * @var PDO $dbh                    the database handler
      */
     protected $dbh;
     /**
@@ -69,6 +69,12 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
                                           'username' => null,
                                           'password' => null,
                                           );
+    /**
+     * @var array $pendingAttributes    An array of pending attributes. When setting attributes
+     *                                  no connection is needed. When connected all the pending
+     *                                  attributes are passed to the underlying PDO instance.
+     */
+    protected $pendingAttributes  = array();
     /**
      * @var Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
      *                              listener for listening events
@@ -186,6 +192,11 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
         $this->dbh = new PDO($this->options['dsn'], $this->options['username'], $this->options['password']);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array("Doctrine_Db_Statement", array($this)));
+        
+        foreach($this->pendingAttributes as $attr => $value) {
+            $this->dbh->setAttribute($attr, $value);
+        }
+
         $this->isConnected = true;
         return true;
     }
@@ -275,6 +286,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
             default:
                 throw new Doctrine_Db_Exception('Unknown driver '.$parts['scheme']);
         }
+        $this->pendingAttributes[PDO::ATTR_DRIVER_NAME] = $parts['scheme'];
 
         return $parts;
     }
@@ -463,9 +475,15 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      */
     public function getAttribute($attribute)
     {
-        $this->connect();
-
-        return $this->dbh->getAttribute($attribute);
+        if ($this->isConnected) {
+            return $this->dbh->getAttribute($attribute);
+        } else {
+            if ( ! isset($this->pendingAttributes[$attribute])) {
+                throw new Doctrine_Db_Exception('Attribute ' . $attribute . ' not found.');
+            }
+            
+            return $this->pendingAttributes[$attribute];
+        }
     }
     /**
      * returns an array of available PDO drivers
@@ -484,9 +502,11 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      */
     public function setAttribute($attribute, $value)
     {
-        $this->connect();
-
-        $this->dbh->setAttribute($attribute, $value);
+        if ($this->isConnected) {
+            $this->dbh->setAttribute($attribute, $value);
+        } else {
+            $this->pendingAttributes[$attribute] = $value;
+        }
     }
     /**
      * getIterator
