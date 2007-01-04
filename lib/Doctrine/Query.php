@@ -1023,8 +1023,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * parameters:
      *      $str = email LIKE 'John@example.com'
      *      $d = ' AND '
-     *      $e1 = '('
-     *      $e2 = ')'
      *
      * would return an array:
      *      array("email", "LIKE", "'John@example.com'")

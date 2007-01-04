@@ -54,17 +54,22 @@ class Doctrine_Hook
      */
     protected $params       = array();
     /**
-     * @var array $fieldParsers
+     * @var array $fieldParsers             custom field parsers array
+     *                                      keys as field names in the format componentAlias.FieldName
+     *                                      values as parser names / objects
      */
     protected $fieldParsers = array();
 
     /**
-     * @var array $typeParsers
+     * @var array $typeParsers              type parsers array
+     *                                      keys as type names and values as parser names / objects
      */
     protected $typeParsers  = array(
                               'char'      => 'Doctrine_Hook_WordLike',
                               'string'    => 'Doctrine_Hook_WordLike',
                               'integer'   => 'Doctrine_Hook_Integer',
+                              'time'      => 'Doctrine_Hook_Time',
+                              'date'      => 'Doctrine_Hook_Date',
                               );
 
     /**
@@ -88,13 +93,25 @@ class Doctrine_Hook
     {
         return $this->query;
     }
-    public function leftJoin($dql)
+    /**
+     * setTypeParser
+     *
+     * @param string $type              type name
+     * @param string|object $parser     parser name or custom parser object
+     */
+    public function setTypeParser($type, $parser) 
     {
-
+        $this->typeParsers[$type] = $parser;
     }
-    public function innerJoin($dql)
+    /**
+     * setFieldParser
+     *
+     * @param string $field             field name
+     * @param string|object $parser     parser name or custom parser object
+     */
+    public function setFieldParser($field, $parser)
     {
-
+        $this->fieldParsers[$field] = $parser;
     }
     /**
      * hookWhere

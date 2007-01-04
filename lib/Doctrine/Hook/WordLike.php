@@ -46,12 +46,20 @@ class Doctrine_Hook_WordLike extends Doctrine_Hook_Parser_Complex
      */
     public function parseSingle($alias, $field, $value)
     {
-        $e2 = explode(' ',$value);
+        if (strpos($value, "'") !== false) {
+            $value = Doctrine_Query::bracketTrim($value, "'", "'");
+        
+            $a[]   = $alias . '.' . $field . ' LIKE ?';
+            $this->params[] = $value . '%';
 
-        foreach ($e2 as $v) {
-             $v = trim($v);
-            $a[] = $alias. '.' . $field . ' LIKE ?';
-            $this->params[] = $v . '%';
+        } else {
+            $e2 = explode(' ',$value);
+    
+            foreach ($e2 as $v) {
+                $v = trim($v);
+                $a[] = $alias . '.' . $field . ' LIKE ?';
+                $this->params[] = $v . '%';
+            }
         }
         return implode(' OR ', $a);
     }

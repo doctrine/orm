@@ -133,10 +133,12 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *
      * @return void
      */
-    public function createTable($name, array $fields, array $options = array()) {
-        if ( ! $name)
+    public function createTable($name, array $fields, array $options = array()) 
+    {
+        if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');
-
+        }
+        
         if (empty($fields)) {
             throw new Doctrine_Export_Exception('no fields specified for table '.$name);
         }
@@ -148,7 +150,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
-
+        print $query."<br \>";
         return $this->conn->exec($query);
     }
     /**
@@ -653,7 +655,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $this->createTable($table->getTableName(), $columns);
 
         } catch(Doctrine_Connection_Exception $e) {
-            $reporter->add(E_ERROR, $e->getCode());
+            $reporter->add(E_ERROR, $e->getMessage());
         }
 
         return $reporter;

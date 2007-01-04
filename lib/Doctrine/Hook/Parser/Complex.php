@@ -58,33 +58,27 @@ abstract class Doctrine_Hook_Parser_Complex extends Doctrine_Hook_Parser
      */
     public function parseClause($alias, $field, $value)
     {
-        $parts = Doctrine_Query::bracketExplode($value, ' AND ', '(', ')');
+        $parts = Doctrine_Query::quoteExplode($value, ' AND ');
 
         if (count($parts) > 1) {
             $ret = array();
             foreach ($parts as $part) {
-                $part = Doctrine_Query::bracketTrim($part, '(', ')');
                 $ret[] = $this->parseSingle($alias, $field, $part);
             }
 
             $r = implode(' AND ', $ret);
         } else {
-            $parts = Doctrine_Query::bracketExplode($value, ' OR ', '(', ')');
+            $parts = Doctrine_Query::quoteExplode($value, ' OR ');
             if (count($parts) > 1) {
                 $ret = array();
                 foreach ($parts as $part) {
-                    $part = Doctrine_Query::bracketTrim($part, '(', ')');
                     $ret[] = $this->parseClause($alias, $field, $part);
                 }
 
                 $r = implode(' OR ', $ret);
             } else {
-                if (substr($parts[0],0,1) == '(' && substr($parts[0],-1) == ')') {
-                    return $this->parseClause(substr($parts[0],1,-1));
-                } else {
-                    $ret = $this->parseSingle($alias, $field, $parts[0]);
-                    return $ret;
-                }
+                $ret = $this->parseSingle($alias, $field, $parts[0]);
+                return $ret;
             }
         }
         return '(' . $r . ')';
