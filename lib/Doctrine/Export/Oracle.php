@@ -53,19 +53,16 @@ class Doctrine_Export_Oracle extends Doctrine_Export
                     ? ' DEFAULT TABLESPACE '.$this->conn->options['default_tablespace'] : '';
 
         $query  = 'CREATE USER ' . $username . ' IDENTIFIED BY ' . $password . $tablespace;
-        $result = $this->conn->query($query);
+        $result = $this->conn->exec($query);
 
-        $query = 'GRANT CREATE SESSION, CREATE TABLE, UNLIMITED TABLESPACE, CREATE SEQUENCE, CREATE TRIGGER TO ' . $username;
-        $result = $this->conn->query($query);
-        if (PEAR::isError($result)) {
+        try {
+            $query = 'GRANT CREATE SESSION, CREATE TABLE, UNLIMITED TABLESPACE, CREATE SEQUENCE, CREATE TRIGGER TO ' . $username;
+            $result = $this->conn->exec($query);
+        } catch (Exception $e) {
             $query = 'DROP USER '.$username.' CASCADE';
-            $result2 = $this->conn->query($query);
-            if (PEAR::isError($result2)) {
-                return $this->conn->raiseError($result2, null, null,
-                    'could not setup the database user', __FUNCTION__);
-            }
-            return $result;
+            $result2 = $this->conn->exec($query);
         }
+        return true;
     }
     /**
      * drop an existing database
@@ -83,7 +80,7 @@ class Doctrine_Export_Oracle extends Doctrine_Export
 
         $username = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
 
-        return $this->conn->query('DROP USER ' . $username . ' CASCADE');
+        return $this->conn->exec('DROP USER ' . $username . ' CASCADE');
     }
     /**
      * add an autoincrement sequence + trigger
@@ -104,32 +101,18 @@ class Doctrine_Export_Oracle extends Doctrine_Export
         );
         $result = $this->createConstraint($table, $index_name, $definition);
 
-        /**
-        if (PEAR::isError($result)) {
-            return $this->conn->raiseError($result, null, null,
-                'primary key for autoincrement PK could not be created', __FUNCTION__);
-        }
-        */
-
         if (is_null($start)) {
             $this->conn->beginTransaction();
             $query = 'SELECT MAX(' . $this->conn->quoteIdentifier($name, true) . ') FROM ' . $this->conn->quoteIdentifier($table, true);
-            $start = $this->db->queryOne($query, 'integer');
-            if (PEAR::isError($start)) {
-                return $start;
-            }
+            $start = $this->conn->fetchOne($query);
+
             ++$start;
             $result = $this->createSequence($table, $start);
             $this->conn->commit();
         } else {
             $result = $this->createSequence($table, $start);
         }
-        /**
-        if (PEAR::isError($result)) {
-            return $this->conn->raiseError($result, null, null,
-                'sequence for autoincrement PK could not be created', __FUNCTION__);
-        }
-        */
+
         $sequence_name = $this->conn->getSequenceName($table);
         $trigger_name  = $this->conn->quoteIdentifier($table . '_AI_PK', true);
         $table = $this->conn->quoteIdentifier($table, true);
@@ -350,13 +333,12 @@ END;
                 case 'rename':
                     break;
                 default:
-                    return $this->conn->raiseError(MDB2_ERROR_CANNOT_ALTER, null, null,
-                        'change type "'.$changeName.'" not yet supported', __FUNCTION__);
+                    throw new Doctrine_Export_Oracle_Exception('change type "'.$changeName.'" not yet supported');
             }
         }
 
         if ($check) {
-            return MDB2_OK;
+            return false;
         }
 
         $name = $this->conn->quoteIdentifier($name, true);
@@ -367,9 +349,6 @@ END;
                 $fields[] = $this->conn->getDeclaration($field['type'], $field_name, $field);
             }
             $result = $this->conn->exec("ALTER TABLE $name ADD (". implode(', ', $fields).')');
-            if (PEAR::isError($result)) {
-                return $result;
-            }
         }
 
         if (!empty($changes['change']) && is_array($changes['change'])) {
@@ -378,9 +357,6 @@ END;
                 $fields[] = $field_name. ' ' . $this->conn->getDeclaration($field['definition']['type'], '', $field['definition']);
             }
             $result = $this->conn->exec("ALTER TABLE $name MODIFY (". implode(', ', $fields).')');
-            if (PEAR::isError($result)) {
-                return $result;
-            }
         }
 
         if (!empty($changes['rename']) && is_array($changes['rename'])) {
@@ -388,9 +364,6 @@ END;
                 $field_name = $this->conn->quoteIdentifier($field_name, true);
                 $query = "ALTER TABLE $name RENAME COLUMN $field_name TO ".$this->conn->quoteIdentifier($field['name']);
                 $result = $this->conn->exec($query);
-                if (PEAR::isError($result)) {
-                    return $result;
-                }
             }
         }
 
@@ -400,17 +373,11 @@ END;
                 $fields[] = $this->conn->quoteIdentifier($field_name, true);
             }
             $result = $this->conn->exec("ALTER TABLE $name DROP COLUMN ". implode(', ', $fields));
-            if (PEAR::isError($result)) {
-                return $result;
-            }
         }
 
         if (!empty($changes['name'])) {
             $change_name = $this->conn->quoteIdentifier($changes['name'], true);
             $result = $this->conn->exec("ALTER TABLE $name RENAME TO ".$change_name);
-            if (PEAR::isError($result)) {
-                return $result;
-            }
         }
     }
     /**

@@ -71,7 +71,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         if (is_null($start)) {
             $this->conn->beginTransaction();
             $query = 'SELECT MAX(' . $this->conn->quoteIdentifier($name, true) . ') FROM ' . $this->conn->quoteIdentifier($table, true);
-            $start = $this->db->queryOne($query, 'integer');
+            $start = $this->conn->fetchOne($query, 'integer');
 
             ++$start;
             $result = $this->createSequence($table, $start);
@@ -110,23 +110,10 @@ class Doctrine_Export_Firebird extends Doctrine_Export
 
         $result = $this->dropSequence($table);
 
-        /**
-        if (PEAR::isError($result)) {
-            return $db->raiseError(null, null, null,
-                'sequence for autoincrement PK could not be dropped', __FUNCTION__);
-        }
-        */
         //remove autoincrement trigger associated with the table
-        $table = $this->conn->getDbh()->quote(strtoupper($table));
-        $trigger_name = $this->conn->getDbh()->quote(strtoupper($table) . '_AUTOINCREMENT_PK');
-        $result = $this->conn->exec("DELETE FROM RDB\$TRIGGERS WHERE UPPER(RDB\$RELATION_NAME)=$table AND UPPER(RDB\$TRIGGER_NAME)=$trigger_name");
-
-        /**
-        if (PEAR::isError($result)) {
-            return $db->raiseError(null, null, null,
-                'trigger for autoincrement PK could not be dropped', __FUNCTION__);
-        }
-        */
+        $table = $this->conn->quote(strtoupper($table));
+        $trigger_name = $this->conn->quote(strtoupper($table) . '_AUTOINCREMENT_PK');
+        return $this->conn->exec("DELETE FROM RDB\$TRIGGERS WHERE UPPER(RDB\$RELATION_NAME)=$table AND UPPER(RDB\$TRIGGER_NAME)=$trigger_name");
     }
     /**
      * create a new table
@@ -190,15 +177,12 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
                 case 'notnull':
-                    return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                        'it is not supported changes to field not null constraint', __FUNCTION__);
+                    throw new Doctrine_DataDict_Firebird_Exception('it is not supported changes to field not null constraint');
                 case 'default':
-                    return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                        'it is not supported changes to field default value', __FUNCTION__);
+                    throw new Doctrine_DataDict_Firebird_Exception('it is not supported changes to field default value');
                 case 'length':
                     /*
-                    return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                        'it is not supported changes to field default length', __FUNCTION__);
+                    return throw new Doctrine_DataDict_Firebird_Exception('it is not supported changes to field default length');
                     */
                 case 'unsigned':
                 case 'type':
@@ -206,11 +190,10 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                 case 'definition':
                     break;
                 default:
-                    return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                        'it is not supported change of type' . $change_name, __FUNCTION__);
+                    throw new Doctrine_DataDict_Firebird_Exception('it is not supported change of type' . $change_name);
             }
         }
-        return MDB2_OK;
+        return true;
     }
     /**
      * drop an existing table
@@ -326,18 +309,15 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                     break;
                 case 'change':
                     foreach ($changes['change'] as $field) {
-                        if (PEAR::isError($err = $this->checkSupportedChanges($field))) {
-                            return $err;
-                        }
+                        $this->checkSupportedChanges($field);
                     }
                     break;
                 default:
-                    return $db->raiseError(MDB2_ERROR_CANNOT_ALTER, null, null,
-                        'change type ' . $change_name . ' not yet supported', __FUNCTION__);
+                    throw new Doctrine_DataDict_Firebird_Exception('change type ' . $change_name . ' not yet supported');
             }
         }
         if ($check) {
-            return MDB2_OK;
+            return true;
         }
         $query = '';
         if (!empty($changes['add']) && is_array($changes['add'])) {
@@ -345,7 +325,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                 if ($query) {
                     $query.= ', ';
                 }
-                $query.= 'ADD ' . $db->getDeclaration($field['type'], $field_name, $field, $name);
+                $query.= 'ADD ' . $this->conn->getDeclaration($field['type'], $field_name, $field, $name);
             }
         }
 
@@ -354,7 +334,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                 if ($query) {
                     $query.= ', ';
                 }
-                $field_name = $db->quoteIdentifier($field_name, true);
+                $field_name = $this->conn->quoteIdentifier($field_name, true);
                 $query.= 'DROP ' . $field_name;
             }
         }
@@ -364,32 +344,30 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                 if ($query) {
                     $query.= ', ';
                 }
-                $field_name = $db->quoteIdentifier($field_name, true);
-                $query.= 'ALTER ' . $field_name . ' TO ' . $db->quoteIdentifier($field['name'], true);
+                $field_name = $this->conn->quoteIdentifier($field_name, true);
+                $query.= 'ALTER ' . $field_name . ' TO ' . $this->conn->quoteIdentifier($field['name'], true);
             }
         }
 
         if (!empty($changes['change']) && is_array($changes['change'])) {
             // missing support to change DEFAULT and NULLability
             foreach ($changes['change'] as $field_name => $field) {
-                if (PEAR::isError($err = $this->checkSupportedChanges($field))) {
-                    return $err;
-                }
+                $this->checkSupportedChanges($field);
                 if ($query) {
                     $query.= ', ';
                 }
-                $db->loadModule('Datatype', null, true);
-                $field_name = $db->quoteIdentifier($field_name, true);
-                $query.= 'ALTER ' . $field_name.' TYPE ' . $db->datatype->getTypeDeclaration($field['definition']);
+                $this->conn->loadModule('Datatype', null, true);
+                $field_name = $this->conn->quoteIdentifier($field_name, true);
+                $query.= 'ALTER ' . $field_name.' TYPE ' . $this->conn->datatype->getTypeDeclaration($field['definition']);
             }
         }
 
         if (!strlen($query)) {
-            return MDB2_OK;
+            return false;
         }
 
-        $name = $db->quoteIdentifier($name, true);
-        $result = $db->exec("ALTER TABLE $name $query");
+        $name = $this->conn->quoteIdentifier($name, true);
+        $result = $this->conn->exec("ALTER TABLE $name $query");
         $this->_silentCommit();
         return $result;
     }
@@ -529,7 +507,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
     public function dropSequence($seq_name)
     {
         $sequence_name = $this->conn->getSequenceName($seq_name);
-        $sequence_name = $this->conn->getDbh()->quote($sequence_name);
+        $sequence_name = $this->conn->quote($sequence_name);
         $query = "DELETE FROM RDB\$GENERATORS WHERE UPPER(RDB\$GENERATOR_NAME)=$sequence_name";
         return $this->conn->exec($query);
     }

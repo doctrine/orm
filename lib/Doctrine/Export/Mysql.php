@@ -306,11 +306,11 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
 
         if ( ! $query) {
-            return MDB2_OK;
+            return false;
         }
 
         $name = $this->conn->quoteIdentifier($name, true);
-        return $this->dbh->query("ALTER TABLE $name $query");
+        return $this->conn->exec("ALTER TABLE $name $query");
     }
     /**
      * create sequence
@@ -328,7 +328,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 . strlen($this->dbh->options['default_table_type']) ? ' TYPE = '
                 . $this->dbh->options['default_table_type'] : '';
 
-        $res    = $this->dbh->query($query);
+        $res    = $this->conn->exec($query);
 
         if ($start == 1)
             return true;
@@ -336,11 +336,11 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         $query  = 'INSERT INTO ' . $sequenceName
                 . ' (' . $seqcol_name . ') VALUES (' . ($start-1) . ')';
 
-        $res    = $this->dbh->query($query);
+        $res    = $this->conn->exec($query);
 
         // Handle error
         try {
-            $result = $this->dbh->query('DROP TABLE ' . $sequenceName);
+            $result = $this->conn->exec('DROP TABLE ' . $sequenceName);
         } catch(Exception $e) {
             throw new Doctrine_Export_Mysql_Exception('could not drop inconsistent sequence table');
         }

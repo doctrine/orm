@@ -42,14 +42,14 @@ class Doctrine_Export_Mssql extends Doctrine_Export
      */
     public function createDatabase($name)
     {
-        $name = $db->quoteIdentifier($name, true);
+        $name = $this->conn->quoteIdentifier($name, true);
         $query = "CREATE DATABASE $name";
-        if ($db->options['database_device']) {
-            $query.= ' ON '.$db->options['database_device'];
-            $query.= $db->options['database_size'] ? '=' .
-                     $db->options['database_size'] : '';
+        if ($this->conn->options['database_device']) {
+            $query.= ' ON '.$this->conn->options['database_device'];
+            $query.= $this->conn->options['database_size'] ? '=' .
+                     $this->conn->options['database_size'] : '';
         }
-        return $db->standaloneQuery($query, null, true);
+        return $this->conn->standaloneQuery($query, null, true);
     }
     /**
      * drop an existing database
@@ -59,8 +59,8 @@ class Doctrine_Export_Mssql extends Doctrine_Export
      */
     public function dropDatabase($name)
     {
-        $name = $db->quoteIdentifier($name, true);
-        return $db->standaloneQuery("DROP DATABASE $name", null, true);
+        $name = $this->conn->quoteIdentifier($name, true);
+        return $this->conn->standaloneQuery("DROP DATABASE $name", null, true);
     }
     /**
      * alter an existing table
@@ -162,7 +162,7 @@ class Doctrine_Export_Mssql extends Doctrine_Export
                 case 'rename':
                 case 'change':
                 default:
-                    return $db->raiseError(Doctrine::ERR_CANNOT_ALTER, null, null,
+                    return $this->conn->raiseError(Doctrine::ERR_CANNOT_ALTER, null, null,
                         'alterTable: change type "'.$change_name.'" not yet supported');
             }
         }
@@ -188,7 +188,7 @@ class Doctrine_Export_Mssql extends Doctrine_Export
         }
 
         if (!$query) {
-            return MDB2_OK;
+            return false;
         }
 
         $name = $this->conn->quoteIdentifier($name, true);
@@ -203,29 +203,25 @@ class Doctrine_Export_Mssql extends Doctrine_Export
      */
     public function createSequence($seq_name, $start = 1)
     {
-        $sequence_name = $db->quoteIdentifier($db->getSequenceName($seq_name), true);
-        $seqcol_name = $db->quoteIdentifier($db->options['seqcol_name'], true);
+        $sequence_name = $this->conn->quoteIdentifier($this->conn->getSequenceName($seq_name), true);
+        $seqcol_name = $this->conn->quoteIdentifier($this->conn->options['seqcol_name'], true);
         $query = "CREATE TABLE $sequence_name ($seqcol_name " .
                  "INT PRIMARY KEY CLUSTERED IDENTITY($start,1) NOT NULL)";
 
-        $res = $db->exec($query);
+        $res = $this->conn->exec($query);
 
         if ($start == 1) {
             return true;
         }
 
-        $query = 'SET IDENTITY_INSERT $sequence_name ON ' .
-                 'INSERT INTO $sequence_name (' . $seqcol_name . ') VALUES ( ' . $start . ')';
-        $res = $db->exec($query);
-
-        $result = $db->exec("DROP TABLE $sequence_name");
-        if (PEAR::isError($result)) {
-            return $db->raiseError($result, null, null,
-                'createSequence: could not drop inconsistent sequence table');
+        try {
+            $query = 'SET IDENTITY_INSERT $sequence_name ON ' .
+                     'INSERT INTO $sequence_name (' . $seqcol_name . ') VALUES ( ' . $start . ')';
+            $res = $this->conn->exec($query);
+        } catch (Exception $e) {
+            $result = $this->conn->exec("DROP TABLE $sequence_name");
         }
-
-        return $db->raiseError($res, null, null,
-            'createSequence: could not create sequence table');
+        return true;
     }
     /**
      * This function drops an existing sequence
@@ -235,7 +231,7 @@ class Doctrine_Export_Mssql extends Doctrine_Export
      */
     public function dropSequence($seqName)
     {
-        $sequenceName = $db->quoteIdentifier($db->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         return $this->conn->exec('DROP TABLE ' . $sequenceName);
     }
 }

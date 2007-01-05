@@ -167,8 +167,8 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
 
         if (!empty($changes['add']) && is_array($changes['add'])) {
             foreach ($changes['add'] as $field_name => $field) {
-                $query = 'ADD ' . $db->getDeclaration($field['type'], $field_name, $field);
-                $this->dbh->query("ALTER TABLE $name $query");
+                $query = 'ADD ' . $this->conn->getDeclaration($field['type'], $field_name, $field);
+                $this->conn->exec("ALTER TABLE $name $query");
             }
         }
 
@@ -176,7 +176,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
             foreach ($changes['remove'] as $field_name => $field) {
                 $field_name = $this->conn->quoteIdentifier($field_name, true);
                 $query = 'DROP ' . $field_name;
-                $this->dbh->query("ALTER TABLE $name $query");
+                $this->conn->exec("ALTER TABLE $name $query");
             }
         }
 
@@ -184,21 +184,21 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
             foreach ($changes['change'] as $field_name => $field) {
                 $field_name = $this->conn->quoteIdentifier($field_name, true);
                 if (!empty($field['type'])) {
-                    $server_info = $db->getServerVersion();
+                    $server_info = $this->conn->getServerVersion();
 
                     if (is_array($server_info) && $server_info['major'] < 8) {
                         throw new Doctrine_Export_Pgsql_Exception('changing column type for "'.$change_name.'\" requires PostgreSQL 8.0 or above');
                     }
-                    $query = "ALTER $field_name TYPE ".$db->datatype->getTypeDeclaration($field['definition']);
-                    $this->dbh->query("ALTER TABLE $name $query");
+                    $query = "ALTER $field_name TYPE ".$this->conn->datatype->getTypeDeclaration($field['definition']);
+                    $this->conn->exec("ALTER TABLE $name $query");
                 }
                 if (array_key_exists('default', $field)) {
-                    $query = "ALTER $field_name SET DEFAULT ".$db->quote($field['definition']['default'], $field['definition']['type']);
-                    $this->dbh->query("ALTER TABLE $name $query");
+                    $query = "ALTER $field_name SET DEFAULT ".$this->conn->quote($field['definition']['default'], $field['definition']['type']);
+                    $this->conn->exec("ALTER TABLE $name $query");
                 }
                 if (!empty($field['notnull'])) {
                     $query = "ALTER $field_name ".($field['definition']['notnull'] ? "SET" : "DROP").' NOT NULL';
-                    $this->dbh->query("ALTER TABLE $name $query");
+                    $this->conn->exec("ALTER TABLE $name $query");
 
                 }
             }
@@ -207,14 +207,14 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         if (!empty($changes['rename']) && is_array($changes['rename'])) {
             foreach ($changes['rename'] as $field_name => $field) {
                 $field_name = $this->conn->quoteIdentifier($field_name, true);
-                $this->dbh->query("ALTER TABLE $name RENAME COLUMN $field_name TO ".$this->conn->quoteIdentifier($field['name'], true));
+                $this->conn->exec("ALTER TABLE $name RENAME COLUMN $field_name TO ".$this->conn->quoteIdentifier($field['name'], true));
             }
         }
 
         $name = $this->conn->quoteIdentifier($name, true);
         if (!empty($changes['name'])) {
             $change_name = $this->conn->quoteIdentifier($changes['name'], true);
-            $this->dbh->query("ALTER TABLE $name RENAME TO ".$change_name);
+            $this->conn->exec("ALTER TABLE $name RENAME TO ".$change_name);
         }
     }
 }
