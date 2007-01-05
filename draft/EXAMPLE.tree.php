@@ -1,7 +1,7 @@
 <?php
 /*please note that this is a very DRAFT and basic example of how you can use the different functions available in the tree implentation*/
 
-require_once("/Users/joesimms/projects/doctrine/trunk/lib/Doctrine.php");
+require_once("../lib/Doctrine.php");
  
 // autoloading objects, modified function to search drafts folder first, should run this test script from the drafts folder
 function __autoload($classname) {
