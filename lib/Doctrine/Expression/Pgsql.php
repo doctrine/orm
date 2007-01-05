@@ -151,8 +151,7 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression
                     $match = $field.'LIKE ';
                     break;
                 default:
-                    return $db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
-                        'not a supported operator type:'. $operator, __FUNCTION__);
+                    throw new Doctrine_Expression_Pgsql_Exception('not a supported operator type:'. $operator);
             }
         }
         $match.= "'";
@@ -160,7 +159,7 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression
             if ($key % 2) {
                 $match.= $value;
             } else {
-                $match.= $db->escapePattern($db->escape($value));
+                $match.= $this->conn->escapePattern($this->conn->escape($value));
             }
         }
         $match.= "'";

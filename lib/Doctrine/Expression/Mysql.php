@@ -82,7 +82,7 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression
             if ($key % 2) {
                 $match .= $value;
             } else {
-                $match .= $db->escapePattern($db->escape($value));
+                $match .= $this->conn->escapePattern($this->conn->escape($value));
             }
         }
         $match.= "'";
