@@ -150,7 +150,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
-        print $query."<br \>";
+
         return $this->conn->exec($query);
     }
     /**
