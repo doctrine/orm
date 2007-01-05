@@ -66,7 +66,7 @@ $test->addTestCase(new Doctrine_Connection_Mssql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Mysql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Firebird_TestCase());
 $test->addTestCase(new Doctrine_Connection_Informix_TestCase());
-/**
+
 // Transaction module (FULLY TESTED)
 $test->addTestCase(new Doctrine_Transaction_TestCase());
 $test->addTestCase(new Doctrine_Transaction_Firebird_TestCase());
@@ -195,7 +195,7 @@ $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 
 
 $test->addTestCase(new Doctrine_TreeStructure_TestCase());
-*/
+
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
@@ -288,16 +288,7 @@ if(isset($cache)) {
 </pre>
 <h3>Queries</h3>
 <pre>
-<?php
-$dbh = Doctrine_Manager::getInstance()->getCurrentConnection()->getDBH();
-$a   = $dbh->getQueries();
 
-print "Executed queries: ".count($a)."\n";
-
-foreach($a as $query) {
-    print $query."\n";
-}
-?>
 </pre>
 </body>
 </html>
