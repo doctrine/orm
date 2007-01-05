@@ -1,5 +1,14 @@
 <?php
 class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
+    public function testWordLikeParserSupportsHyphens() {
+        $parser = new Doctrine_Hook_WordLike();
+        
+        $parser->parse('u', 'name', "'some guy' OR zYne");
+
+        $this->assertEqual($parser->getCondition(), '(u.name LIKE ? OR u.name LIKE ?)');
+        $this->assertEqual($parser->getParams(), array('some guy%', 'zYne%'));
+    }
+
     public function testHookOrderbyAcceptsArray() {
         $hook = new Doctrine_Hook('SELECT u.name FROM User u LEFT JOIN u.Phonenumber p');
 
@@ -53,9 +62,10 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($hook->getQuery()->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)');
 
     }
+
     public function testEqualParserUsesEqualOperator() {
         $parser = new Doctrine_Hook_Equal();
-        
+
         $parser->parse('u', 'name', 'zYne');
         
         $this->assertEqual($parser->getCondition(), 'u.name = ?');
@@ -95,5 +105,6 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($parser->getCondition(), '((m.year > ? AND m.year < ?) OR m.year = ?)');
         $this->assertEqual($parser->getParams(), array('1998', '2000', '2001'));
     }
+
 }
 ?>

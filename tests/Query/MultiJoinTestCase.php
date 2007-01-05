@@ -47,19 +47,18 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual(count($user->Album[0]->Song), 0);
         $this->assertEqual(count($user->Album[1]->Song), 2);
-
     }
-
     public function testMultipleOneToManyFetching() {
         $this->connection->clear();
 
         $query = new Doctrine_Query();
 
         $users = $query->query("FROM User.Album.Song, User.Phonenumber WHERE User.id IN (4,5)");
-        
+
         $this->assertEqual($users->count(), 2);
 
         $this->assertEqual($users[0]->id, 4);
+
         $this->assertEqual($users[0]->Album[0]->name, 'Damage Done');
         $this->assertEqual($users[0]->Album[0]->Song[0]->title, 'Damage Done');
         $this->assertEqual($users[0]->Album[0]->Song[1]->title, 'The Treason Wall');

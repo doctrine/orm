@@ -13,10 +13,4 @@ class Doctrine_Export_Reporter_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($reporter->pop(), array(E_WARNING, 'Badly named class.'));
     }
-    public function testExportReportsExceptions() {
-
-        $reporter = $this->export->export('User');
-        // Class name is not valid. Double underscores are not allowed
-
-    }
 }

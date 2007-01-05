@@ -38,7 +38,7 @@ class Doctrine_Connection_Pgsql_TestCase extends Doctrine_UnitTestCase {
     }
     public function testNoSuchTableErrorIsSupported2() {
         $this->assertTrue($this->exc->processErrorInfo(array(0, 0, 'relation does not exist')));
-        
+
         $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_NOSUCHTABLE);
     }
     public function testNoSuchTableErrorIsSupported3() {

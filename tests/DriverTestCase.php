@@ -86,6 +86,7 @@ class AdapterStatementMock {
         return true;
     }
 }
+
 class Doctrine_Driver_UnitTestCase extends UnitTestCase {
     protected $driverName = false;
     protected $generic = false;

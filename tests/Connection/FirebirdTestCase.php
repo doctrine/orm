@@ -1,8 +1,6 @@
 <?php
-class Doctrine_Connection_Firebird_TestCase extends Doctrine_Driver_UnitTestCase {
-    public function __construct() {
-        parent::__construct('sqlite');
-    }
+class Doctrine_Connection_Firebird_TestCase extends Doctrine_UnitTestCase {
+    /**
     public function testNoSuchTableErrorIsSupported() {
         $this->exc->processErrorInfo(array(0,0, 'no such table: test1'));
         
@@ -58,4 +56,5 @@ class Doctrine_Connection_Firebird_TestCase extends Doctrine_Driver_UnitTestCase
         
         $this->assertEqual($this->exc->getPortableCode(), Doctrine::ERR_VALUE_COUNT_ON_ROW);
     }
+    */
 }
