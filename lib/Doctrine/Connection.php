@@ -319,7 +319,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $seqPattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)',  $this->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT)).'$/i';
         $seqName    = preg_replace($seqPattern, '\\1', $sqn);
 
-        if ($seqName && ! strcasecmp($sqn, $db->getSequenceName($seqName))) {
+        if ($seqName && ! strcasecmp($sqn, $this->getSequenceName($seqName))) {
             return $seqName;
         }
         return $sqn;
@@ -419,7 +419,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
 
         $query          = 'DELETE FROM '. $table . ' WHERE ' . implode(' AND ', $condition);
-        $affectedRows   = $this->dbh->exec($query);
+        $affectedRows   = $this->exec($query);
 
         $this->insert($table, $values);
 
@@ -525,7 +525,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $result = $this->query($statement, $params)->fetchAll(PDO::FETCH_COLUMN);
 
         if ($this->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_map(($db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
+            $result = array_map(($this->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
         }
         return $result;
     }
