@@ -114,7 +114,7 @@ class Doctrine_Cache_Query_Sqlite implements Countable
     public function deleteAll()
     {
         $sql    = "DELETE FROM ".self::CACHE_TABLE;
-        $stmt   = $this->dbh->query($sql);
+        $stmt   = $this->dbh->exec($sql);
         return $stmt->rowCount();
     }
     /**
