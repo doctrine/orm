@@ -32,5 +32,59 @@ Doctrine::autoload('Doctrine_Sequence');
  */
 class Doctrine_Sequence_Oracle extends Doctrine_Sequence
 {
-
+    /**
+     * Returns the next free id of a sequence
+     *
+     * @param string $seqName   name of the sequence
+     * @param bool              when true missing sequences are automatic created
+     *
+     * @return integer          next id in the given sequence
+     */
+    public function nextID($seqName, $ondemand = true)
+    {
+        $sequence_name = $this->quoteIdentifier($this->getSequenceName($seq_name), true);
+        $query = "SELECT $sequence_name.nextval FROM DUAL";
+        $this->expectError(MDB2_ERROR_NOSUCHTABLE);
+        $result = $this->queryOne($query, 'integer');
+        $this->popExpect();
+        if (PEAR::isError($result)) {
+            if ($ondemand && $result->getCode() == MDB2_ERROR_NOSUCHTABLE) {
+                $this->loadModule('Manager', null, true);
+                $result = $this->manager->createSequence($seq_name);
+                if (PEAR::isError($result)) {
+                    return $result;
+                }
+                return $this->nextId($seq_name, false);
+            }
+        }
+        return $result;
+    }
+    /**
+     * Returns the autoincrement ID if supported or $id or fetches the current
+     * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
+     *
+     * @param   string  name of the table into which a new row was inserted
+     * @param   string  name of the field into which a new row was inserted
+     */
+    public function lastInsertID($table = null, $field = null)
+    {
+        $seq = $table.(empty($field) ? '' : '_'.$field);
+        $sequence_name = $this->quoteIdentifier($this->getSequenceName($seq), true);
+        return $this->queryOne("SELECT $sequence_name.currval", 'integer');
+    }
+    /**
+     * Returns the current id of a sequence
+     *
+     * @param string $seqName   name of the sequence
+     *
+     * @return integer          current id in the given sequence
+     */
+    public function currID($seqName)
+    {
+        $sequence_name = $this->getSequenceName($seq_name);
+        $query = 'SELECT (last_number-1) FROM user_sequences';
+        $query.= ' WHERE sequence_name='.$this->quote($sequence_name, 'text');
+        $query.= ' OR sequence_name='.$this->quote(strtoupper($sequence_name), 'text');
+        return $this->queryOne($query, 'integer');
+    }
 }
