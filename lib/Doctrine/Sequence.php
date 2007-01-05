@@ -51,8 +51,6 @@ class Doctrine_Sequence extends Doctrine_Connection_Module
      *
      * @param   string  name of the table into which a new row was inserted
      * @param   string  name of the field into which a new row was inserted
-     *
-     * @return  mixed   MDB2 Error Object or id
      */
     public function lastInsertID($table = null, $field = null)
     {
