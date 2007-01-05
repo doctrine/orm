@@ -67,7 +67,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
                           'pattern_escaping'     => false,
                           );
         /**
-        $this->options['base_transaction_name'] = '___php_MDB2_sqlite_auto_commit_off';
+        $this->options['base_transaction_name'] = '___php_Doctrine_sqlite_auto_commit_off';
         $this->options['fixed_float'] = 0;
         $this->options['database_path'] = '';
         $this->options['database_extension'] = '';
@@ -95,8 +95,6 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
     {
         $sequence = $this->quoteIdentifier($sequence, true);
         $seqColumn = $this->quoteIdentifier($this->options['seqcol_name'], true);
-        $stmt = $this->dbh->query('SELECT MAX(' . $seqColumn . ') FROM ' . $sequence);
-        $data = $stmt->fetch(PDO::FETCH_NUM);
-        return $data[0];
+        return $this->fetchOne('SELECT MAX(' . $seqColumn . ') FROM ' . $sequence);
     }
 }

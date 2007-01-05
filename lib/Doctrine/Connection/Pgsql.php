@@ -87,7 +87,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
     public function setCharset($charset)
     {
         $query = 'SET NAMES '.$this->dbh->quote($charset);
-        $this->dbh->query($query);
+        $this->exec($query);
     }
     /**
      * returns the next value in the given sequence
@@ -96,9 +96,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
      */
     public function nextId($sequence)
     {
-        $stmt = $this->dbh->query("SELECT NEXTVAL('$sequence')");
-        $data = $stmt->fetch(PDO::FETCH_NUM);
-        return $data[0];
+        return $this->fetchOne("SELECT NEXTVAL('$sequence')");
     }
     /**
      * Returns the current id of a sequence
@@ -108,9 +106,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
      */
     public function currId($sequence)
     {
-        $stmt = $this->dbh->query('SELECT last_value FROM '.$sequence);
-        $data = $stmt->fetch(PDO::FETCH_NUM);
-        return $data[0];
+        return $this->fetcOne('SELECT last_value FROM '.$sequence);
     }
     /**
      * Changes a query string for various DBMS specific reasons

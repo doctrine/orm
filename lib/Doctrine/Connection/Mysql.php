@@ -99,7 +99,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
     public function setCharset($charset)
     {
         $query = 'SET NAMES '.$this->dbh->quote($charset);
-        $this->dbh->query($query);
+        $this->exec($query);
     }
     /**
      * Returns the next free id of a sequence
@@ -118,12 +118,12 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
         $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
         $seqcolName   = $this->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
         $query        = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
-
+        $result = $this->exec($query);
         $value = $this->dbh->lastInsertId();
 
         if (is_numeric($value)) {
             $query  = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
-            $result = $this->dbh->query($query);
+            $result = $this->exec($query);
         }
         return $value;
     }
@@ -242,6 +242,6 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
         }
         $query = 'REPLACE INTO ' . $table . ' (' . $query . ') VALUES (' . $values . ')';
 
-        return $this->dbh->exec($query);
+        return $this->exec($query);
     }
 }

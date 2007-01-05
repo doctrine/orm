@@ -92,10 +92,17 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
      */
     public function nextId($sequence)
     {
-        $this->query("INSERT INTO $sequence (vapor) VALUES (0)");
-        $stmt = $this->query("SELECT @@IDENTITY FROM $sequence");
-        $data = $stmt->fetch(PDO::FETCH_NUM);
-        return $data[0];
+        $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
+        $seqcolName   = $this->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $query        = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (0)';
+        $result = $this->exec($query);
+        $value = $this->dbh->lastInsertId();
+
+        if (is_numeric($value)) {
+            $query  = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
+            $result = $this->exec($query);
+        }
+        return $value;
     }
     /**
      * Adds an adapter-specific LIMIT clause to the SELECT statement.
@@ -170,6 +177,6 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
                     $query = "SELECT @@IDENTITY";
         }
 
-        return $this->queryOne($query);
+        return $this->fetchOne($query);
     }
 }

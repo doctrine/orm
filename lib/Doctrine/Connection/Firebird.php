@@ -87,7 +87,7 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection
     public function setCharset($charset)
     {
         $query = 'SET NAMES '.$this->dbh->quote($charset);
-        $this->dbh->query($query);
+        $this->exec($query);
     }
     /**
      * Adds an driver-specific LIMIT clause to the query
@@ -110,10 +110,8 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection
      * @param string $sequence
      * @return integer
      */
-    public function getNextID($sequence)
+    public function nextId($sequence)
     {
-        $stmt = $this->query('SELECT UNIQUE FROM ' . $sequence);
-        $data = $stmt->fetch(PDO::FETCH_NUM);
-        return $data[0];
+        return $this->fetchOne('SELECT UNIQUE FROM ' . $sequence);
     }
 }

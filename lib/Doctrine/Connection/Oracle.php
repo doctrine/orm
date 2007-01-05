@@ -112,9 +112,7 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection
      */
     public function nextId($sequence)
     {
-        $stmt = $this->query('SELECT ' . $sequence . '.nextval FROM dual');
-        $data = $stmt->fetch(PDO::FETCH_NUM);
-        return $data[0];
+        return $this->fetchOne('SELECT ' . $sequence . '.nextval FROM dual');
     }
     /**
      * Returns the current id of a sequence
@@ -126,8 +124,6 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection
     public function currId($sequence)
     {
         $sequence = $this->quoteIdentifier($this->getSequenceName($sequence), true);
-        $stmt = $this->query('SELECT ' . $sequence . '.currval FROM dual');
-        $data = $stmt->fetch(PDO::FETCH_NUM);
-        return $data[0];
+        return $this->fetchOne('SELECT ' . $sequence . '.currval FROM dual');
     }
 }
