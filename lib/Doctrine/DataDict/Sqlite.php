@@ -106,11 +106,11 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
                 return 'DATETIME';
             case 'float':
             case 'double':
-                return 'DOUBLE';//($db->options['fixed_float'] ? '('.
-                    //($db->options['fixed_float']+2).','.$db->options['fixed_float'].')' : '');
+                return 'DOUBLE';//($this->conn->options['fixed_float'] ? '('.
+                    //($this->conn->options['fixed_float']+2).','.$this->conn->options['fixed_float'].')' : '');
             case 'decimal':
                 $length = !empty($field['length']) ? $field['length'] : 18;
-                return 'DECIMAL('.$length.','.$db->options['decimal_places'].')';
+                return 'DECIMAL('.$length.','.$this->conn->options['decimal_places'].')';
         }
         throw new Doctrine_DataDict_Sqlite_Exception('Unknown datatype ' . $field['type']);
     }

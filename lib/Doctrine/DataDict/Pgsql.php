@@ -365,11 +365,11 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
             case 'object':
             case 'varchar':
                 $length = (isset($field['length']) && $field['length']) ? $field['length'] : null;
-                        // TODO:  $db->options['default_text_field_length'];
+                        // TODO:  $this->conn->options['default_text_field_length'];
 
                 $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
 
-                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$db->options['default_text_field_length'].')')
+                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$this->conn->options['default_text_field_length'].')')
                     : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
 
             case 'clob':
@@ -568,7 +568,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
     {
         /**
         if (!empty($field['unsigned'])) {
-            $db->warnings[] = "unsigned integer field \"$name\" is being declared as signed integer";
+            $this->conn->warnings[] = "unsigned integer field \"$name\" is being declared as signed integer";
         }
         */
 

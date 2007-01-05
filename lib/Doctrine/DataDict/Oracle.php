@@ -61,7 +61,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
             case 'char':
             case 'varchar':
                 $length = !empty($field['length'])
-                    ? $field['length'] : 16777215; // TODO: $db->options['default_text_field_length'];
+                    ? $field['length'] : 16777215; // TODO: $this->conn->options['default_text_field_length'];
 
                 $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
 
@@ -85,7 +85,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
             case 'float':
                 return 'NUMBER';
             case 'decimal':
-                return 'NUMBER(*,'.$db->options['decimal_places'].')';
+                return 'NUMBER(*,'.$this->conn->options['decimal_places'].')';
         }
     }
     /**
