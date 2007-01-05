@@ -32,5 +32,57 @@ Doctrine::autoload('Doctrine_Sequence');
  */
 class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
 {
-
+    /**
+     * Returns the next free id of a sequence
+     *
+     * @param string $seqName   name of the sequence
+     * @param bool              when true missing sequences are automatic created
+     *
+     * @return integer          next id in the given sequence
+     */
+    public function nextID($seqName, $ondemand = true)
+    {
+        $sequence_name = $this->quoteIdentifier($this->getSequenceName($seq_name), true);
+        $query = "SELECT NEXTVAL('$sequence_name')";
+        $this->expectError(MDB2_ERROR_NOSUCHTABLE);
+        $result = $this->queryOne($query, 'integer');
+        $this->popExpect();
+        if (PEAR::isError($result)) {
+            if ($ondemand && $result->getCode() == MDB2_ERROR_NOSUCHTABLE) {
+                $this->loadModule('Manager', null, true);
+                $result = $this->manager->createSequence($seq_name);
+                if (PEAR::isError($result)) {
+                    return $this->raiseError($result, null, null,
+                        'on demand sequence could not be created', __FUNCTION__);
+                }
+                return $this->nextId($seq_name, false);
+            }
+        }
+        return $result;
+    }
+    /**
+     * Returns the autoincrement ID if supported or $id or fetches the current
+     * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
+     *
+     * @param   string  name of the table into which a new row was inserted
+     * @param   string  name of the field into which a new row was inserted
+     */
+    public function lastInsertID($table = null, $field = null)
+    {
+        $seq = $table.(empty($field) ? '' : '_'.$field);
+        $sequence_name = $this->getSequenceName($seq);
+        return $this->queryOne("SELECT currval('$sequence_name')", 'integer');
+    }
+    /**
+     * Returns the current id of a sequence
+     *
+     * @param string $seqName   name of the sequence
+     *
+     * @return integer          current id in the given sequence
+     */
+    public function currID($seqName)
+    {
+        $sequence_name = $this->quoteIdentifier($this->getSequenceName($seq_name), true);
+        return $this->queryOne("SELECT last_value FROM $sequence_name", 'integer');
+    }
 }
