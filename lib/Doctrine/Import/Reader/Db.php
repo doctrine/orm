@@ -77,7 +77,7 @@ class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
 
         $dbName = 'XXtest'; // @todo FIXME where should we get
 
-        $db->set("name",$dbName);
+        $this->conn->set("name",$dbName);
         $tableNames = $dataDict->listTables();
         foreach ($tableNames as $tableName){
             $table = new Doctrine_Schema_Table();
@@ -86,7 +86,7 @@ class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
             foreach ($tableColumns as $tableColumn){
                 $table->addColumn($tableColumn);
             }
-            $db->addTable($table);
+            $this->conn->addTable($table);
             if ($fks = $dataDict->listTableConstraints($tableName)){
                 foreach ($fks as $fk){
                     $relation = new Doctrine_Schema_Relation();

@@ -69,7 +69,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listFunctions()
     {
         $query = "SELECT name FROM sys.user_source WHERE line = 1 AND type = 'FUNCTION'";
-        $result = $this->conn->queryCol($query);
+        $result = $this->conn->fetchColumn($query);
 
         if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE
             && $this->conn->options['field_case'] == CASE_LOWER
@@ -97,7 +97,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listSequences($database = null)
     {
         $query = "SELECT sequence_name FROM sys.user_sequences";
-        $tableNames = $this->conn->queryCol($query);
+        $tableNames = $this->conn->fetchColumn($query);
 
         $result = array();
         foreach ($tableNames as $tableName) {
@@ -120,7 +120,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         $table = $this->conn->quote($table, 'text');
         $query = 'SELECT index_name name FROM user_constraints';
         $query.= ' WHERE table_name='.$table.' OR table_name='.strtoupper($table);
-        $constraints = $this->conn->queryCol($query);
+        $constraints = $this->conn->fetchColumn($query);
 
         $result = array();
         foreach ($constraints as $constraint) {
@@ -150,7 +150,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         $result = $this->conn->fetchAssoc($sql);
 
         foreach($result as $val) {
-			$descr[$val['column_name']] = array(
+            $descr[$val['column_name']] = array(
                'name'    => $val['column_name'],
                'notnull' => (bool) ($val['nullable'] === 'N'), // nullable is N when mandatory
                'type'    => $val['data_type'],
@@ -168,12 +168,11 @@ class Doctrine_Import_Oracle extends Doctrine_Import
      */
     public function listTableIndexes($table)
     {
-
         $table = $this->conn->quote($table, 'text');
         $query = 'SELECT index_name name FROM user_indexes';
         $query.= ' WHERE table_name='.$table.' OR table_name='.strtoupper($table);
         $query.= ' AND generated=' .$this->conn->quote('N', 'text');
-        $indexes = $this->conn->queryCol($query, 'text');
+        $indexes = $this->conn->fetchColumn($query);
 
         $result = array();
         foreach ($indexes as $index) {
@@ -198,9 +197,8 @@ class Doctrine_Import_Oracle extends Doctrine_Import
      */
     public function listTables($database = null)
     {
-
         $query = 'SELECT table_name FROM sys.user_tables';
-        $result = $this->conn->queryCol($query);
+        $result = $this->conn->fetchColumn($query);
 
         if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE
             && $this->conn->options['field_case'] == CASE_LOWER
@@ -236,7 +234,6 @@ class Doctrine_Import_Oracle extends Doctrine_Import
      */
     public function listUsers()
     {
-
         if ($this->conn->options['emulate_database'] && $this->conn->options['database_name_prefix']) {
             $query = 'SELECT SUBSTR(username, ';
             $query.= (strlen($this->conn->options['database_name_prefix'])+1);
@@ -245,7 +242,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         } else {
             $query = 'SELECT username FROM sys.dba_users';
         }
-        return $this->conn->queryCol($query);
+        return $this->conn->fetchColumn($query);
     }
     /**
      * lists database views
@@ -256,7 +253,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listViews($database = null)
     {
         $query = 'SELECT view_name FROM sys.user_views';
-        $result = $this->conn->queryCol($query);
+        $result = $this->conn->fetchColumn($query);
 
         if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE
             && $this->conn->options['field_case'] == CASE_LOWER

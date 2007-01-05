@@ -68,18 +68,16 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
     public function listSequences($database = null)
     {
         $query = "SELECT name FROM sqlite_master WHERE type='table' AND sql NOT NULL ORDER BY name";
-        $table_names = $db->queryCol($query);
-        if (PEAR::isError($table_names)) {
-            return $table_names;
-        }
+        $table_names = $this->conn->fetchColumn($query);
+
         $result = array();
         foreach ($table_names as $table_name) {
             if ($sqn = $this->_fixSequenceName($table_name, true)) {
                 $result[] = $sqn;
             }
         }
-        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
-            $result = array_map(($db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
         }
         return $result;
     }
@@ -91,18 +89,15 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
      */
     public function listTableConstraints($table)
     {
-        $table = $db->quote($table, 'text');
+        $table = $this->conn->quote($table, 'text');
         $query = "SELECT sql FROM sqlite_master WHERE type='index' AND ";
-        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
             $query.= 'LOWER(tbl_name)='.strtolower($table);
         } else {
             $query.= "tbl_name=$table";
         }
         $query.= " AND sql NOT NULL ORDER BY name";
-        $indexes = $db->queryCol($query, 'text');
-        if (PEAR::isError($indexes)) {
-            return $indexes;
-        }
+        $indexes = $this->conn->fetchColumn($query);
 
         $result = array();
         foreach ($indexes as $sql) {
@@ -114,8 +109,8 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
             }
         }
 
-        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
-            $result = array_change_key_case($result, $db->options['field_case']);
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_change_key_case($result, $this->conn->options['field_case']);
         }
         return array_keys($result);
     }

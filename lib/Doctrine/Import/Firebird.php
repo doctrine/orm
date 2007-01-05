@@ -52,7 +52,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
      */
     public function listTableFields($table)
     {
-        $table = $db->quote(strtoupper($table), 'text');
+        $table = $this->conn->quote(strtoupper($table), 'text');
         $query = 'SELECT RDB\$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
 
         return $this->conn->fetchColumn($query);
@@ -73,9 +73,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
      */
     public function listViews()
     {
-        $result = $db->queryCol('SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS');
-
-        return $this->conn->fetchColumn($query);
+        return $this->conn->fetchColumn('SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS');
     }
     /**
      * list the views in the database that reference a given table
@@ -86,7 +84,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
     public function listTableViews($table)
     {
         $query  = 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS';
-        $table  = $db->quote(strtoupper($table), 'text');
+        $table  = $this->conn->quote(strtoupper($table), 'text');
         $query .= 'WHERE UPPER(RDB\$RELATION_NAME) = ' . $table;
 
         return $this->conn->fetchColumn($query);
@@ -104,7 +102,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
     }
     /**
      * This function will be called to get all triggers of the
-     * current database ($db->getDatabase())
+     * current database ($this->conn->getDatabase())
      *
      * @param  string $table      The name of the table from the
      *                            previous database to query against.
@@ -118,7 +116,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
                       OR RDB$SYSTEM_FLAG = 0';
 
         if ( ! is_null($table)) {
-            $table = $db->quote(strtoupper($table), 'text');
+            $table = $this->conn->quote(strtoupper($table), 'text');
             $query .= 'WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
         }
 

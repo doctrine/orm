@@ -91,8 +91,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import
     {
         $key_name = 'Key_name';
         $non_unique = 'Non_unique';
-        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
-            if ($db->options['field_case'] == CASE_LOWER) {
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            if ($this->conn->options['field_case'] == CASE_LOWER) {
                 $key_name = strtolower($key_name);
                 $non_unique = strtolower($non_unique);
             } else {
@@ -101,9 +101,9 @@ class Doctrine_Import_Mysql extends Doctrine_Import
             }
         }
 
-        $table = $db->quoteIdentifier($table, true);
+        $table = $this->conn->quoteIdentifier($table, true);
         $query = "SHOW INDEX FROM $table";
-        $indexes = $db->queryAll($query, null, MDB2_FETCHMODE_ASSOC);
+        $indexes = $this->conn->fetchAssoc($query);
 
         $result = array();
         foreach ($indexes as $index_data) {
@@ -119,8 +119,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import
             }
         }
 
-        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_change_key_case($result, $db->options['field_case']);
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_change_key_case($result, $this->conn->options['field_case']);
         }
         return array_keys($result);
     }
@@ -163,8 +163,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import
     {
         $key_name = 'Key_name';
         $non_unique = 'Non_unique';
-        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
-            if ($db->options['field_case'] == CASE_LOWER) {
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            if ($this->conn->options['field_case'] == CASE_LOWER) {
                 $key_name = strtolower($key_name);
                 $non_unique = strtolower($non_unique);
             } else {
@@ -173,9 +173,9 @@ class Doctrine_Import_Mysql extends Doctrine_Import
             }
         }
 
-        $table = $db->quoteIdentifier($table, true);
+        $table = $this->conn->quoteIdentifier($table, true);
         $query = "SHOW INDEX FROM $table";
-        $indexes = $db->queryAll($query, null, MDB2_FETCHMODE_ASSOC);
+        $indexes = $this->conn->fetchAssoc($query);
 
 
         $result = array();
@@ -185,8 +185,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import
             }
         }
 
-        if ($db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
-            $result = array_change_key_case($result, $db->options['field_case']);
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_change_key_case($result, $this->conn->options['field_case']);
         }
         return array_keys($result);
     }
@@ -230,7 +230,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
     {
         if (!is_null($database)) {
             $query = sprintf($this->sql['listViews'], ' FROM ' . $database);
-        } 
+        }
 
         return $this->conn->fetchColumn($query);
     }

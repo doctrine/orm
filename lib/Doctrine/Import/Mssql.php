@@ -70,18 +70,16 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     public function listSequences($database = null)
     {
         $query = "SELECT name FROM sysobjects WHERE xtype = 'U'";
-        $table_names = $db->queryCol($query);
-        if (PEAR::isError($table_names)) {
-            return $table_names;
-        }
+        $table_names = $this->conn->fetchColumn($query);
+
         $result = array();
         foreach ($table_names as $table_name) {
             if ($sqn = $this->_fixSequenceName($table_name, true)) {
                 $result[] = $sqn;
             }
         }
-        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_map(($db->options['field_case'] == CASE_LOWER ?
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ?
                           'strtolower' : 'strtoupper'), $result);
         }
         return $result;
@@ -152,7 +150,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     {
         $sql = "SELECT name FROM sysobjects WHERE type = 'U' ORDER BY name";
 
-        return $this->dbh->fetchCol($sql);
+        return $this->dbh->fetchColumn($sql);
     }
     /**
      * lists table triggers
@@ -162,21 +160,18 @@ class Doctrine_Import_Mssql extends Doctrine_Import
      */
     public function listTableTriggers($table)
     {
-        $table = $db->quote($table, 'text');
+        $table = $this->conn->quote($table, 'text');
         $query = "SELECT name FROM sysobjects WHERE xtype = 'TR'";
         if (!is_null($table)) {
             $query .= "AND object_name(parent_obj) = $table";
         }
 
-        $result = $db->queryCol($query);
-        if (PEAR::isError($results)) {
-            return $result;
-        }
+        $result = $this->conn->fetchColumn($query);
 
-        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE &&
-            $db->options['field_case'] == CASE_LOWER)
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE &&
+            $this->conn->options['field_case'] == CASE_LOWER)
         {
-            $result = array_map(($db->options['field_case'] == CASE_LOWER ?
+            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ?
                 'strtolower' : 'strtoupper'), $result);
         }
         return $result;
@@ -191,8 +186,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     {
         $keyName = 'INDEX_NAME';
         $pkName = 'PK_NAME';
-        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            if ($db->options['field_case'] == CASE_LOWER) {
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            if ($this->conn->options['field_case'] == CASE_LOWER) {
                 $keyName = strtolower($keyName);
                 $pkName  = strtolower($pkName);
             } else {
@@ -200,12 +195,12 @@ class Doctrine_Import_Mssql extends Doctrine_Import
                 $pkName  = strtoupper($pkName);
             }
         }
-        $table = $db->quote($table, 'text');
+        $table = $this->conn->quote($table, 'text');
         $query = 'EXEC sp_statistics @table_name = ' . $table;
-        $indexes = $db->queryCol($query, 'text', $keyName);
+        $indexes = $this->conn->queryCol($query, 'text', $keyName);
 
         $query = 'EXEC sp_pkeys @table_name = ' . $table;
-        $pkAll = $db->queryCol($query, 'text', $pkName);
+        $pkAll = $this->conn->queryCol($query, 'text', $pkName);
         $result = array();
         foreach ($indexes as $index) {
             if (!in_array($index, $pkAll) && $index != null) {
@@ -213,8 +208,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import
             }
         }
 
-        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_change_key_case($result, $db->options['field_case']);
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_change_key_case($result, $this->conn->options['field_case']);
         }
         return array_keys($result);
     }
@@ -237,12 +232,12 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     {
         $query = "SELECT name FROM sysobjects WHERE xtype = 'V'";
 
-        $result = $db->queryCol($query);
+        $result = $this->conn->fetchColumn($query);
 
-        if ($db->options['portability'] & Doctrine::PORTABILITY_FIX_CASE &&
-            $db->options['field_case'] == CASE_LOWER)
+        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE &&
+            $this->conn->options['field_case'] == CASE_LOWER)
         {
-            $result = array_map(($db->options['field_case'] == CASE_LOWER ?
+            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ?
                           'strtolower' : 'strtoupper'), $result);
         }
         return $result;
