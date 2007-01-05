@@ -32,5 +32,72 @@ Doctrine::autoload('Doctrine_Sequence');
  */
 class Doctrine_Sequence_Firebird extends Doctrine_Sequence
 {
-
+    /**
+     * Returns the next free id of a sequence
+     *
+     * @param string $seqName   name of the sequence
+     * @param bool              when true missing sequences are automatic created
+     *
+     * @return integer          next id in the given sequence
+     */
+    public function nextID($seqName, $ondemand = true)
+    {
+        $sequence_name = $this->getSequenceName($seq_name);
+        $query = 'SELECT GEN_ID('.$sequence_name.', 1) as the_value FROM RDB$DATABASE';
+        $this->expectError('*');
+        $result = $this->queryOne($query, 'integer');
+        $this->popExpect();
+        if (PEAR::isError($result)) {
+            if ($ondemand) {
+                $this->loadModule('Manager', null, true);
+                // Since we are creating the sequence on demand
+                // we know the first id = 1 so initialize the
+                // sequence at 2
+                $result = $this->manager->createSequence($seq_name, 2);
+                if (PEAR::isError($result)) {
+                    return $this->raiseError($result, null, null,
+                        'on demand sequence could not be created', __FUNCTION__);
+                } else {
+                    // First ID of a newly created sequence is 1
+                    // return 1;
+                    // BUT generators are not always reset, so return the actual value
+                    return $this->currID($seq_name);
+                }
+            }
+        }
+        return $result;
+    }
+    /**
+     * Returns the autoincrement ID if supported or $id or fetches the current
+     * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
+     *
+     * @param   string  name of the table into which a new row was inserted
+     * @param   string  name of the field into which a new row was inserted
+     */
+    public function lastInsertID($table = null, $field = null)
+    {
+        throw new Doctrine_Sequence_Exception('method not implemented');
+    }
+    /**
+     * Returns the current id of a sequence
+     *
+     * @param string $seqName   name of the sequence
+     *
+     * @return integer          current id in the given sequence
+     */
+    public function currID($seqName)
+    {
+        $sequence_name = $this->getSequenceName($seq_name);
+        $query = 'SELECT GEN_ID('.$sequence_name.', 0) as the_value FROM RDB$DATABASE';
+        $value = $this->queryOne($query);
+        if (PEAR::isError($value)) {
+            return $this->raiseError($result, null, null,
+                'Unable to select from ' . $seq_name, __FUNCTION__);
+        }
+        if (!is_numeric($value)) {
+            return $this->raiseError(MDB2_ERROR, null, null,
+                'could not find value in sequence table', __FUNCTION__);
+        }
+        return $value;
+    }
 }
