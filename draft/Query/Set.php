@@ -18,36 +18,40 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Query_Part');
 /**
- * Doctrine_Tree_NestedSet
+ * Doctrine_Query
  *
- * the purpose of Doctrine_Tree_NestedSet is to provide NestedSet tree access
- * strategy for all records extending it
- *
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Tree_NestedSet extends Doctrine_Record {
+class Doctrine_Query_Set extends Doctrine_Query_Part
+{
+    public function parse($dql)
+    {
+        $parts = Doctrine_Query::sqlExplode($dql, ',');
 
-    public function getLeafNodes() { 
-        $query = "SELECT ".implode(", ",$this->table->getColumnNames()).
-                 " FROM ".$this->table->getTableName().
-                 " WHERE rgt = lft + 1";
+        $result = array();
+        foreach ($parts as $part) {
+            $set = Doctrine_Query::sqlExplode($part, '=');
+
+            $e   = explode('.', trim($set[0]));
+            $field = array_pop($e);
+
+            $reference = implode('.', $e);
+
+            $alias     = $this->query->getTableAlias($reference);
+
+            $fieldname = $alias ? $alias . '.' . $field : $field;
+            $result[]  = $fieldname . ' = ' . $set[1];
+        }
+
+        return implode(', ', $result);
     }
-
-    public function getPath() { }
-
-    public function getDepth() { 
-        $query = "SELECT (COUNT(parent.name) - 1) AS depth
-                  FROM ".$this->table->getTableName()." AS node,".
-                  $this->table->getTableName()." AS parent
-                  WHERE node.lft BETWEEN parent.lft AND parent.rgt
-                  GROUP BY node.name";
-    }
-
-    public function removeNode() { }
-    
-    public function addNode() { }
 }
 

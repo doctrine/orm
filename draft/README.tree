@@ -1,0 +1,72 @@
+REMEMBER
+--------
+If performing batch tree manipulation tasks, then remember to refresh your records (see record::refresh()), as any transformations of the tree are likely to affect all instances of records that you have in your scope. (zYne, is there any way of automating this?)
+
+If you are inserting or moving a node within the tree, you must use the appropriate function to place the node in it's destination. Note: you cannot save a new record without inserting it into the tree.
+
+You can save an already existing node using record::save() without affecting the tree. Never set the tree specific record attributes manually.
+
+If you wish to delete a record, you MUST delete the node and not the record, using $record->deleteNode() or $record->getNode()->delete(). Deleting a node, will delete all its descendants.
+
+The difference between descendants and children is that descendants include children of children whereas children are direct descendants of their parent (real children not gran children and great gran children etc etc). 
+
+The most effective way to traverse a tree from the root node, is to use the tree::fetchTree() method:
+$tree = $manager->getTable('Model')->getTree()->fetchTree();
+It will by default include the root node in the tree and will return an iterator to traverse the tree.
+
+To traverse a tree from a given node, it will normally cost 3 queries, one to fetch the starting node, one to fetch the branch from this node, and one to determine the level of the start node, the traversal algorithm with then determine the level of each subsequent node for you.
+
+EXAMPLES
+--------
+See EXAMPLE.tree.php for very draft examples on how to use the tree interface within doctrine (note that the interface is independent of the implementation, so when other implementations are added, you should be able to switch implementation and your code still work). This should be run in a browser and relevant database settings altered as appropriate.
+
+MORE INFO
+---------
+For more info on storing hierarchical data in databases, the various implementations and tree traversal see these articles:
+
+http://dev.mysql.com/tech-resources/articles/hierarchical-data.html
+http://www.sitepoint.com/article/hierarchical-data-database
+http://en.wikipedia.org/wiki/Tree_traversal
+
+TO DO
+-----
+Discuss adding __call() to record to allow the node methods to be called directly from the record, although i know we are trying to avoid introspection.
+
+Discuss adding a level column to the database to store levels (will reduce traversing nodes by one query, and allow us to implement the LevelOrder Traversal of the Tree with one query, but updating tree may be more costly).
+
+Maybe add tree configuration to allow the above to be configurable as well as other options such as:
+-on deletion of a node, move descendants, unassign descendants or delete descendants
+-allowing the ability to save nodes that are not assigned in the tree (set lft=0, rgt=0, retrieve with tree::fetchUnassigned)
+-auto refreshing objects left and right values used in tree transformations
+
+Return getSiblings and getAncestors as Iterators
+
+NOTES FOR ZYNE
+--------------
+
+IMHO, i think that the Ajacency list should be moved into a tree structure, the table definitions and setUp can be set in the class Doctrine_Tree_AdjacencyList, then they simply have to call actsAsTree('AdjacencyList') in their setTableDefinition, although to be honest, with nestedset implemented i cannot think why i would want to use adjacency list anyhow !
+
+Doctrine_Query_Set, Doctrine_Query_Where
+----------------------------------------
+Not too sure if problem with my query syntax or with Doctrine, but i followed examples in docs
+In set and where, if not Component supplied, then alias is empty, so resultant query would be something like:
+UPDATE menu m SET .lft = lft + 2
+WHERE lft >= ?
+Notice the invalid resultant syntax .lft, as the alias was not set, so added check to determine if alias isset.
+
+CHANGELOG
+---------
+
+Doctrine_Record
+---------------
+added methods:
+getNode()
+deleteNode()
+
+amended:
+actsAsTree()
+
+Doctrine_Table
+--------------
+amended constructor to call tree::setUp()
+added setTree(), to call tree::setTableDefinition() and setup Tree in Table
