@@ -33,5 +33,42 @@
  */
 class Doctrine_Sequence extends Doctrine_Connection_Module
 {
-
+    /**
+     * Returns the next free id of a sequence
+     *
+     * @param string $seqName   name of the sequence
+     * @param bool              when true missing sequences are automatic created
+     *
+     * @return integer          next id in the given sequence
+     */
+    public function nextID($seqName, $ondemand = true)
+    {
+        throw new Doctrine_Sequence_Exception('method not implemented');
+    }
+    /**
+     * Returns the autoincrement ID if supported or $id or fetches the current
+     * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
+     *
+     * @param   string  name of the table into which a new row was inserted
+     * @param   string  name of the field into which a new row was inserted
+     *
+     * @return  mixed   MDB2 Error Object or id
+     */
+    public function lastInsertID($table = null, $field = null)
+    {
+        throw new Doctrine_Sequence_Exception('method not implemented');
+    }
+    /**
+     * Returns the current id of a sequence
+     *
+     * @param string $seqName   name of the sequence
+     *
+     * @return integer          current id in the given sequence
+     */
+    public function currID($seqName)
+    {
+        $this->warnings[] = 'database does not support getting current
+            sequence value, the sequence value was incremented';
+        return $this->nextID($seqName);
+    }
 }
