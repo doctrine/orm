@@ -29,5 +29,6 @@
  * @version     $Revision$
  * @author      Joe Simms <joe.simms@websites4.com>
  */
-class Doctrine_Node_AdjacencyList extends Doctrine_Node implements Doctrine_Node_Interface { }
- 
+class Doctrine_Node_AdjacencyList extends Doctrine_Node implements Doctrine_Node_Interface
+{}
+

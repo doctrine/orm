@@ -29,61 +29,63 @@
  * @version     $Revision$
  * @author      Joe Simms <joe.simms@websites4.com>
  */
-class Doctrine_Tree 
+class Doctrine_Tree
 {
-  /**
-   * @param object $table   reference to associated Doctrine_Table instance
-   */
-  protected $table;
-  
-  /**
-   * @param array $options
-   */
-  protected $options; 
+    /**
+     * @param object $table   reference to associated Doctrine_Table instance
+     */
+    protected $table;
 
-	/**
-	 * contructor, creates tree with reference to table and any options
-	 *
-	 * @param object $table		instance of Doctrine_Table
-	 * @param array $options		options				
-	 */ 
-  public function __construct($table, $options)
-  {
-    $this->table = $table;
-    $this->options = $options;
-  }
+    /**
+     * @param array $options
+     */
+    protected $options;
 
-	/**
-	 * Used to define table attributes required for the given implementation
-	 *			
-	 */ 
-  public function setTableDefinition()
-  {
-      throw new Doctrine_Tree_Exception('Table attributes have not been defined for this Tree implementation.');      
-  }
+    /**
+     * constructor, creates tree with reference to table and any options
+     *
+     * @param object $table                     instance of Doctrine_Table
+     * @param array $options                    options
+     */
+    public function __construct($table, $options)
+    {
+        $this->table = $table;
+        $this->options = $options;
+    }
 
-	/**
-   * this method is used for setting up relations and attributes and should be used by specific implementations
-	 *			
-	 */ 
-  public function setUp()
-  {
-      
-  }
+    /**
+     * Used to define table attributes required for the given implementation
+     *
+     * @throws Doctrine_Tree_Exception          if table attributes have not been defined
+     */
+    public function setTableDefinition()
+    {
+        throw new Doctrine_Tree_Exception('Table attributes have not been defined for this Tree implementation.');
+    }
 
-	/**
-	 * factory method to return tree instance based upon chosen implementation
-	 *
-	 * @param object $table		  instance of Doctrine_Table
-	 * @param string $impName		implementation (NestedSet, AdjacencyList, MaterializedPath)
-	 * @param array $options		options
-	 * @return object $options	instance of Doctrine_Node	 				
-	 */   
-  public static function factory( &$table, $implName, $options = array())
-  {
-    $class = 'Doctrine_Tree_'.$implName;
-    if(!class_exists($class))
-      throw new Doctrine_Exception('The chosen class must extend Doctrine_Tree');
-    return new $class($table, $options);
-  }
-} // END class 
+    /**
+     * this method is used for setting up relations and attributes and should be used by specific implementations
+     *
+     */
+    public function setUp()
+    {
+    }
+
+    /**
+     * factory method to return tree instance based upon chosen implementation
+     *
+     * @param object $table                     instance of Doctrine_Table
+     * @param string $impName                   implementation (NestedSet, AdjacencyList, MaterializedPath)
+     * @param array $options                    options
+     * @return object $options                  instance of Doctrine_Node
+     * @throws Doctrine_Exception               if class does not extend Doctrine_Tree
+     */
+    public static function factory(&$table, $implName, $options = array())
+    {
+        $class = 'Doctrine_Tree_' . $implName;
+        if (!class_exists($class)) {
+            throw new Doctrine_Exception('The chosen class must extend Doctrine_Tree');
+        }
+        return new $class($table, $options);
+    }
+}

@@ -32,30 +32,36 @@
 class Doctrine_Node_MaterializedPath_PreOrderIterator implements Iterator
 {
     private $topNode = null;
-    
+
     private $curNode = null;
-    
-    public function __construct($node, $opts) {
-        throw new Doctrine_Exception('Not yet implemented');
-    }
-    
-    public function rewind() {
-        throw new Doctrine_Exception('Not yet implemented');
-    }
-    
-    public function valid() {
-        throw new Doctrine_Exception('Not yet implemented');
-    }
-    
-    public function current() {
-        throw new Doctrine_Exception('Not yet implemented');
-    }
-    
-    public function key() {
+
+    public function __construct($node, $opts)
+    {
         throw new Doctrine_Exception('Not yet implemented');
     }
 
-    public function next() {
+    public function rewind()
+    {
         throw new Doctrine_Exception('Not yet implemented');
-    }  
+    }
+
+    public function valid()
+    {
+        throw new Doctrine_Exception('Not yet implemented');
+    }
+
+    public function current()
+    {
+        throw new Doctrine_Exception('Not yet implemented');
+    }
+
+    public function key()
+    {
+        throw new Doctrine_Exception('Not yet implemented');
+    }
+
+    public function next()
+    {
+        throw new Doctrine_Exception('Not yet implemented');
+    }
 }

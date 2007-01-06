@@ -31,34 +31,34 @@
  */
 interface Doctrine_Tree_Interface {
 
-	/**
-	 * creates root node from given record or from a new record
-	 *
-	 * @param object $record		instance of Doctrine_Record				
-	 */
-  public function createRoot(Doctrine_Record $record = null);
+    /**
+     * creates root node from given record or from a new record
+     *
+     * @param object $record                    instance of Doctrine_Record
+     */
+    public function createRoot(Doctrine_Record $record = null);
 
-	/**
-	 * returns root node
-	 *
-	 * @return object $record		instance of Doctrine_Record				
-	 */
-  public function findRoot();
+    /**
+     * returns root node
+     *
+     * @return object $record                   instance of Doctrine_Record
+     */
+    public function findRoot();
 
-	/**
-	 * optimised method to returns iterator for traversal of the entire tree from root
-	 * 
-	 * @param array $options		  options		
-	 * @return object $iterator		instance of Doctrine_Node_<Implementation>_PreOrderIterator			
-	 */
-  public function fetchTree($options = array());
+    /**
+     * optimised method to returns iterator for traversal of the entire tree from root
+     *
+     * @param array $options                    options
+     * @return object $iterator                 instance of Doctrine_Node_<Implementation>_PreOrderIterator
+     */
+    public function fetchTree($options = array());
 
-	/**
-	 * optimised method that returns iterator for traversal of the tree from the given record primary key
-	 * 
-	 * @param mixed $pk		        primary key as used by table::find() to locate node to traverse tree from
-	 * @param array $options		  options		
-	 * @return iterator		instance of Doctrine_Node_<Implementation>_PreOrderIterator					
-	 */
-  public function fetchBranch($pk, $options = array());
+    /**
+     * optimised method that returns iterator for traversal of the tree from the given record primary key
+     *
+     * @param mixed $pk                         primary key as used by table::find() to locate node to traverse tree from
+     * @param array $options                    options
+     * @return iterator                         instance of Doctrine_Node_<Implementation>_PreOrderIterator
+     */
+    public function fetchBranch($pk, $options = array());
 }

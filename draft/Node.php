@@ -31,119 +31,127 @@
  */
 class Doctrine_Node implements IteratorAggregate
 {
-  /**
-   * @param object    $record   reference to associated Doctrine_Record instance
-   */
-  protected $record;
+    /**
+     * @param object    $record   reference to associated Doctrine_Record instance
+     */
+    protected $record;
 
-  /**
-   * @param array     $options
-   */
-  protected $options;
+    /**
+     * @param array     $options
+     */
+    protected $options;
 
-  /**
-   * @param string     $iteratorType  (Pre | Post | Level)
-   */
-  protected $iteratorType;
+    /**
+     * @param string     $iteratorType  (Pre | Post | Level)
+     */
+    protected $iteratorType;
 
-  /**
-   * @param array     $iteratorOptions
-   */
-  protected $iteratorOptions;
+    /**
+     * @param array     $iteratorOptions
+     */
+    protected $iteratorOptions;
 
-	/**
-	 * contructor, creates node with reference to record and any options
-	 *
-	 * @param object $record		instance of Doctrine_Record
-	 * @param array $options		options				
-	 */ 
-  public function __construct(&$record, $options)
-  {
-    $this->record = $record;
-    $this->options = $options;
-  }
+    /**
+     * contructor, creates node with reference to record and any options
+     *
+     * @param object $record                    instance of Doctrine_Record
+     * @param array $options                    options
+     */
+    public function __construct(&$record, $options)
+    {
+        $this->record = $record;
+        $this->options = $options;
+    }
 
-	/**
-	 * factory method to return node instance based upon chosen implementation
-	 *
-	 * @param object $record		instance of Doctrine_Record
-	 * @param string $impName		implementation (NestedSet, AdjacencyList, MaterializedPath)
-	 * @param array $options		options
-	 * @return object $options	instance of Doctrine_Node	 				
-	 */ 
-  public static function factory(&$record, $implName, $options = array()) {
+    /**
+     * factory method to return node instance based upon chosen implementation
+     *
+     * @param object $record                    instance of Doctrine_Record
+     * @param string $impName                   implementation (NestedSet, AdjacencyList, MaterializedPath)
+     * @param array $options                    options
+     * @return object $options                  instance of Doctrine_Node
+     */
+    public static function factory(&$record, $implName, $options = array())
+    {
+        $class = 'Doctrine_Node_' . $implName;
 
-      $class = 'Doctrine_Node_'.$implName;
+        if (!class_exists($class)) {
+            throw new Doctrine_Node_Exception("The class $class must exist and extend Doctrine_Node");
+        }
 
-      if(!class_exists($class))
-        throw new Doctrine_Node_Exception("The class $class must exist and extend Doctrine_Node");
+        return new $class($record, $options);
+    }
 
-      return new $class($record, $options);
-  }
+    /**
+     * setter for record attribute
+     *
+     * @param object $record                    instance of Doctrine_Record
+     */
+    public function setRecord(&$record)
+    {
+        $this->record = $record;
+    }
 
-	/**
-	 * setter for record attribute
-	 *
-	 * @param object $record		instance of Doctrine_Record				
-	 */ 
-  public function setRecord(&$record)
-  {
-    $this->record = $record;
-  }
+    /**
+     * getter for record attribute
+     *
+     * @return object                           instance of Doctrine_Record
+     */
+    public function getRecord()
+    {
+        return $this->record;
+    }
 
-	/**
-	 * getter for record attribute
-	 *
-	 * @return object 		instance of Doctrine_Record				
-	 */   
-  public function getRecord() {
-    return $this->record;
-  }
+    /**
+     * convenience function for getIterator
+     *
+     * @param string $type                      type of iterator (Pre | Post | Level)
+     * @param array $options                    options
+     */
+    public function traverse($type = 'Pre', $options = array())
+    {
+        return $this->getIterator($type, $options);
+    }
 
-	/**
-	 * convenience function for getIterator
-	 *
-	 * @param string  $type   type of iterator (Pre | Post | Level)
-	 * @param array   $options  options			
-	 */ 
-  public function traverse($type = 'Pre', $options = array()) {
-    return $this->getIterator($type, $options);
-  }
+    /**
+     * get iterator
+     *
+     * @param string $type                      type of iterator (Pre | Post | Level)
+     * @param array $options                    options
+     */
+    public function getIterator($type = null, $options = null)
+    {
+        if ($type === null) {
+            $type = (isset($this->iteratorType) ? $this->iteratorType : 'Pre');
+        }
 
-	/**
-	 * get iterator
-	 *
-	 * @param string  $type   type of iterator (Pre | Post | Level)
-	 * @param array   $options  options			
-	 */ 
-  public function getIterator($type = null, $options = null)
-  {
-		if ($type === null)
-			$type = (isset($this->iteratorType) ? $this->iteratorType : 'Pre');
-				
-		if ($options === null)
-			$options = (isset($this->iteratorOptions) ? $this->iteratorOptions : array());
-			
-		$iteratorClass = 'Doctrine_Node_'.$this->record->getTable()->getTreeImplName().'_'.ucfirst(strtolower($type)).'OrderIterator';
-		
-		return new $iteratorClass($this->record, $options);
-  }
+        if ($options === null) {
+            $options = (isset($this->iteratorOptions) ? $this->iteratorOptions : array());
+        }
 
-	/**
-	 * sets node's iterator type
-	 *
-	 * @param int			
-	 */  
-  public function setIteratorType($type) {
-    $this->iteratorType = $type;
-  }
+        $implName = $this->record->getTable()->getTreeImplName();
+        $iteratorClass = 'Doctrine_Node_' . $implName . '_' . ucfirst(strtolower($type)) . 'OrderIterator';
 
-	/**
-	 * sets node's iterator options
-	 *
-	 * @param int			
-	 */  
-  public function setIteratorOptions($options) {
-    $this->iteratorOptions = $options;
-  }
-} // END class 
+        return new $iteratorClass($this->record, $options);
+    }
+
+    /**
+     * sets node's iterator type
+     *
+     * @param int
+     */
+    public function setIteratorType($type)
+    {
+        $this->iteratorType = $type;
+    }
+
+    /**
+     * sets node's iterator options
+     *
+     * @param int
+     */
+    public function setIteratorOptions($options)
+    {
+        $this->iteratorOptions = $options;
+    }
+}
