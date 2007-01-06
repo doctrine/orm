@@ -36,25 +36,27 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
      * Returns the next free id of a sequence
      *
      * @param string $seqName   name of the sequence
-     * @param bool              when true missing sequences are automatic created
+     * @param bool onDemand     when true missing sequences are automatic created
      *
      * @return integer          next id in the given sequence
      */
-    public function nextID($seqName, $ondemand = true)
+    public function nextID($seqName, $onDemand = true)
     {
-        $sequence_name = $this->quoteIdentifier($this->getSequenceName($seq_name), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+
         $query = "SELECT $sequence_name.nextval FROM DUAL";
-        $this->expectError(MDB2_ERROR_NOSUCHTABLE);
-        $result = $this->queryOne($query, 'integer');
-        $this->popExpect();
-        if (PEAR::isError($result)) {
-            if ($ondemand && $result->getCode() == MDB2_ERROR_NOSUCHTABLE) {
-                $this->loadModule('Manager', null, true);
-                $result = $this->manager->createSequence($seq_name);
-                if (PEAR::isError($result)) {
-                    return $result;
+
+        try {
+            $result = $this->queryOne($query, 'integer');
+        } catch(Doctrine_Connection_Exception $e) {
+            if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
+
+                try {
+                    $result = $this->conn->export->createSequence($seqName);
+                } catch(Doctrine_Exception $e) {
+                    throw new Doctrine_Sequence_Oracle_Exception('on demand sequence ' . $seqName . ' could not be created');
                 }
-                return $this->nextId($seq_name, false);
+                return $this->nextId($seqName, false);
             }
         }
         return $result;
@@ -83,8 +85,8 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
     {
         $sequence_name = $this->getSequenceName($seq_name);
         $query = 'SELECT (last_number-1) FROM user_sequences';
-        $query.= ' WHERE sequence_name='.$this->quote($sequence_name, 'text');
-        $query.= ' OR sequence_name='.$this->quote(strtoupper($sequence_name), 'text');
+        $query.= ' WHERE sequence_name=' . $this->quote($sequence_name, 'text');
+        $query.= ' OR sequence_name=' . $this->quote(strtoupper($sequence_name), 'text');
         return $this->queryOne($query, 'integer');
     }
 }

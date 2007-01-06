@@ -36,26 +36,26 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
      * Returns the next free id of a sequence
      *
      * @param string $seqName   name of the sequence
-     * @param bool              when true missing sequences are automatic created
+     * @param bool onDemand     when true missing sequences are automatic created
      *
      * @return integer          next id in the given sequence
      */
-    public function nextID($seqName, $ondemand = true)
+    public function nextId($seqName, $onDemand = true)
     {
-        $sequence_name = $this->quoteIdentifier($this->getSequenceName($seq_name), true);
-        $query = "SELECT NEXTVAL('$sequence_name')";
-        $this->expectError(MDB2_ERROR_NOSUCHTABLE);
-        $result = $this->queryOne($query, 'integer');
-        $this->popExpect();
-        if (PEAR::isError($result)) {
-            if ($ondemand && $result->getCode() == MDB2_ERROR_NOSUCHTABLE) {
-                $this->loadModule('Manager', null, true);
-                $result = $this->manager->createSequence($seq_name);
-                if (PEAR::isError($result)) {
-                    return $this->raiseError($result, null, null,
-                        'on demand sequence could not be created', __FUNCTION__);
+        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+
+        $query = "SELECT NEXTVAL('" . $sequenceName . "')";
+        try {
+            $result = $this->fetchOne($query, 'integer');
+        } catch(Doctrine_Connection_Exception $e) {
+            if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
+
+                try {
+                    $result = $this->conn->export->createSequence($seqName);
+                } catch(Doctrine_Exception $e) {
+                    throw new Doctrine_Sequence_Sqlite_Exception('on demand sequence ' . $seqName . ' could not be created');
                 }
-                return $this->nextId($seq_name, false);
+                return $this->nextId($seqName, false);
             }
         }
         return $result;
@@ -67,11 +67,12 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
      * @param   string  name of the table into which a new row was inserted
      * @param   string  name of the field into which a new row was inserted
      */
-    public function lastInsertID($table = null, $field = null)
+    public function lastInsertId($table = null, $field = null)
     {
         $seq = $table.(empty($field) ? '' : '_'.$field);
-        $sequence_name = $this->getSequenceName($seq);
-        return $this->queryOne("SELECT currval('$sequence_name')", 'integer');
+        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+
+        return $this->fetchOne("SELECT currval('" . $sequenceName . "')", 'integer');
     }
     /**
      * Returns the current id of a sequence
@@ -80,9 +81,9 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
      *
      * @return integer          current id in the given sequence
      */
-    public function currID($seqName)
+    public function currId($seqName)
     {
-        $sequence_name = $this->quoteIdentifier($this->getSequenceName($seq_name), true);
-        return $this->queryOne("SELECT last_value FROM $sequence_name", 'integer');
+        $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
+        return $this->fetchOne('SELECT last_value FROM ' . $sequenceName, 'integer');
     }
 }
