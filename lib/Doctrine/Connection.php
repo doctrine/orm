@@ -489,10 +489,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @param string $statement         sql query to be executed
      * @param array $params             prepared statement params
+     * @param int $colnum               0-indexed column number to retrieve
      * @return mixed
      */
-    public function fetchOne($statement, array $params = array()) {
-        return current($this->execute($statement, $params)->fetch(PDO::FETCH_NUM));
+    public function fetchOne($statement, array $params = array(), $colnum = 0) {
+        return $this->execute($statement, $params)->fetchColumn($colnum);
     }
     /**
      * fetchRow
@@ -519,15 +520,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @param string $statement         sql query to be executed
      * @param array $params             prepared statement params
+     * @param int $colnum               0-indexed column number to retrieve
      * @return array
      */
-    public function fetchColumn($statement, array $params = array()) {
-        $result = $this->query($statement, $params)->fetchAll(PDO::FETCH_COLUMN);
-
-        if ($this->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_map(($this->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
-        }
-        return $result;
+    public function fetchColumn($statement, array $params = array(), $colnum = 0) {
+        return $this->query($statement, $params)->fetchAll(PDO::FETCH_COLUMN, $colnum);
     }
     /**
      * fetchAssoc
