@@ -144,25 +144,24 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
             $fk = $record->getTable()->getRelation($k);
             if ($fk instanceof Doctrine_Relation_ForeignKey ||
                $fk instanceof Doctrine_Relation_LocalKey) {
-                if ($fk->isComposite()) {
-                    $local = $fk->getLocal();
-                    $foreign = $fk->getForeign();
+                $local = $fk->getLocal();
+                $foreign = $fk->getForeign();
 
-                    if ($record->getTable()->hasPrimaryKey($fk->getLocal())) {
-                        if ( ! $record->exists()) {
-                            $saveLater[$k] = $fk;
-                        } else {
-                            $v->save();
-                        }
+                if ($record->getTable()->hasPrimaryKey($fk->getLocal())) {
+                    if ( ! $record->exists()) {
+                        $saveLater[$k] = $fk;
                     } else {
-                        // ONE-TO-ONE relationship
-                        $obj = $record->get($fk->getTable()->getComponentName());
+                        $v->save();
+                    }
+                } else {
+                    // ONE-TO-ONE relationship
+                    $obj = $record->get($fk->getAlias());
 
-                        if ($obj->getState() != Doctrine_Record::STATE_TCLEAN) {
-                            $obj->save();
-                        }
+                    if ($obj->getState() != Doctrine_Record::STATE_TCLEAN) {
+                        $obj->save();
                     }
                 }
+
             } elseif ($fk instanceof Doctrine_Relation_Association) {
                 $v->save();
             }
