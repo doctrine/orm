@@ -71,8 +71,8 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
     public function lastInsertID($table = null, $field = null)
     {
         $seq = $table.(empty($field) ? '' : '_'.$field);
-        $sequence_name = $this->quoteIdentifier($this->getSequenceName($seq), true);
-        return $this->queryOne("SELECT $sequence_name.currval", 'integer');
+        $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
+        return $this->fetchOne("SELECT $sequence_name.currval", 'integer');
     }
     /**
      * Returns the current id of a sequence
@@ -83,10 +83,11 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
      */
     public function currID($seqName)
     {
-        $sequence_name = $this->getSequenceName($seq_name);
-        $query = 'SELECT (last_number-1) FROM user_sequences';
-        $query.= ' WHERE sequence_name=' . $this->quote($sequence_name, 'text');
-        $query.= ' OR sequence_name=' . $this->quote(strtoupper($sequence_name), 'text');
-        return $this->queryOne($query, 'integer');
+        $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
+        $query   = 'SELECT (last_number-1) FROM user_sequences';
+        $query  .= ' WHERE sequence_name=' . $this->conn->quote($sequence_name, 'text');
+        $query  .= ' OR sequence_name=' . $this->conn->quote(strtoupper($sequence_name), 'text');
+
+        return $this->fetchOne($query, 'integer');
     }
 }

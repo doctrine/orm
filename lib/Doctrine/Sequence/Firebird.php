@@ -40,29 +40,29 @@ class Doctrine_Sequence_Firebird extends Doctrine_Sequence
      *
      * @return integer          next id in the given sequence
      */
-    public function nextID($seqName, $ondemand = true)
+    public function nextID($seqName, $onDemand = true)
     {
-        $sequence_name = $this->getSequenceName($seq_name);
-        $query = 'SELECT GEN_ID('.$sequence_name.', 1) as the_value FROM RDB$DATABASE';
-        $this->expectError('*');
-        $result = $this->queryOne($query, 'integer');
-        $this->popExpect();
-        if (PEAR::isError($result)) {
-            if ($ondemand) {
-                $this->loadModule('Manager', null, true);
+        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+
+        $query = 'SELECT GEN_ID(' . $sequenceName . ', 1) as the_value FROM RDB$DATABASE';
+        try {
+        
+            $result = $this->queryOne($query, 'integer');
+
+        } catch(Doctrine_Connection_Exception $e) {
+            if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
                 // Since we are creating the sequence on demand
                 // we know the first id = 1 so initialize the
                 // sequence at 2
-                $result = $this->manager->createSequence($seq_name, 2);
-                if (PEAR::isError($result)) {
-                    return $this->raiseError($result, null, null,
-                        'on demand sequence could not be created', __FUNCTION__);
-                } else {
-                    // First ID of a newly created sequence is 1
-                    // return 1;
-                    // BUT generators are not always reset, so return the actual value
-                    return $this->currID($seq_name);
+                try {
+                    $result = $this->conn->export->createSequence($seqName, 2);
+                } catch(Doctrine_Exception $e) {
+                    throw new Doctrine_Sequence_Exception('on demand sequence ' . $seqName . ' could not be created');
                 }
+                // First ID of a newly created sequence is 1
+                // return 1;
+                // BUT generators are not always reset, so return the actual value
+                return $this->currID($seqName);
             }
         }
         return $result;
@@ -87,16 +87,17 @@ class Doctrine_Sequence_Firebird extends Doctrine_Sequence
      */
     public function currID($seqName)
     {
-        $sequence_name = $this->getSequenceName($seq_name);
-        $query = 'SELECT GEN_ID('.$sequence_name.', 0) as the_value FROM RDB$DATABASE';
-        $value = $this->queryOne($query);
-        if (PEAR::isError($value)) {
-            return $this->raiseError($result, null, null,
-                'Unable to select from ' . $seq_name, __FUNCTION__);
+        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+        
+
+        $query = 'SELECT GEN_ID(' . $sequence_name . ', 0) as the_value FROM RDB$DATABASE';
+        try {
+            $value = $this->queryOne($query);
+        } catch(Doctrine_Connection_Exception $e) {
+            throw new Doctrine_Sequence_Exception('Unable to select from ' . $seqName);
         }
-        if (!is_numeric($value)) {
-            return $this->raiseError(MDB2_ERROR, null, null,
-                'could not find value in sequence table', __FUNCTION__);
+        if ( ! is_numeric($value)) {
+            throw new Doctrine_Sequence_Exception('could not find value in sequence table');
         }
         return $value;
     }

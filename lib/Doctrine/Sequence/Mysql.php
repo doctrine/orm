@@ -40,38 +40,41 @@ class Doctrine_Sequence_Mysql extends Doctrine_Sequence
      *
      * @return integer          next id in the given sequence
      */
-    public function nextID($seq_name, $ondemand = true)
+    public function nextID($seqName, $ondemand = true)
     {
-        $sequence_name = $this->quoteIdentifier($this->getSequenceName($seq_name), true);
-        $seqcol_name = $this->quoteIdentifier($this->options['seqcol_name'], true);
-        $query = "INSERT INTO $sequence_name ($seqcol_name) VALUES (NULL)";
-        $this->expectError(MDB2_ERROR_NOSUCHTABLE);
-        $result =& $this->_doQuery($query, true);
-        $this->popExpect();
-        if (PEAR::isError($result)) {
-            if ($ondemand && $result->getCode() == MDB2_ERROR_NOSUCHTABLE) {
-                $this->loadModule('Manager', null, true);
+        $sequenceName  = $this->quoteIdentifier($this->getSequenceName($seq_name), true);
+        $seqcolName    = $this->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $query         = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
+        
+        try {
+
+            $this->conn->exec($query);
+
+        } catch(Doctrine_Connection_Exception $e) {
+            if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
                 // Since we are creating the sequence on demand
                 // we know the first id = 1 so initialize the
                 // sequence at 2
-                $result = $this->manager->createSequence($seq_name, 2);
-                if (PEAR::isError($result)) {
-                    return $this->raiseError($result, null, null,
-                        'on demand sequence '.$seq_name.' could not be created', __FUNCTION__);
-                } else {
-                    // First ID of a newly created sequence is 1
-                    return 1;
+                try {
+                    $result = $this->conn->export->createSequence($seqName, 2);
+                } catch(Doctrine_Exception $e) {
+                    throw new Doctrine_Sequence_Exception('on demand sequence ' . $seqName . ' could not be created');
                 }
+                // First ID of a newly created sequence is 1
+                return 1;
             }
             return $result;
         }
         $value = $this->lastInsertID();
         if (is_numeric($value)) {
-            $query = "DELETE FROM $sequence_name WHERE $seqcol_name < $value";
-            $result =& $this->_doQuery($query, true);
+            $query = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
+            $this->conn->exec($query);
+            /**
+            TODO: is the following needed ?
             if (PEAR::isError($result)) {
                 $this->warnings[] = 'nextID: could not delete previous sequence table values from '.$seq_name;
             }
+            */
         }
         return $value;
     }
@@ -79,21 +82,13 @@ class Doctrine_Sequence_Mysql extends Doctrine_Sequence
      * Returns the autoincrement ID if supported or $id or fetches the current
      * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
      *
-     * @param   string  name of the table into which a new row was inserted
-     * @param   string  name of the field into which a new row was inserted
+     * @param string  name of the table into which a new row was inserted
+     * @param string  name of the field into which a new row was inserted
+     * @return integer|boolean
      */
     public function lastInsertID($table = null, $field = null)
     {
-        $connection = $this->getConnection();
-        if (PEAR::isError($connection)) {
-            return $connection;
-        }
-        $value = @mysqli_insert_id($connection);
-        if (!$value) {
-            return $this->raiseError(null, null, null,
-                'Could not get last insert ID', __FUNCTION__);
-        }
-        return $value;
+        return $this->conn->getDbh()->lastInsertId();
     }
     /**
      * Returns the current id of a sequence

@@ -42,8 +42,9 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
      */
     public function nextID($seqName, $ondemand = true)
     {
-        $sequence_name = $this->quoteIdentifier($this->getSequenceName($seq_name), true);
-        $seqcol_name = $this->quoteIdentifier($this->options['seqcol_name'], true);
+        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+        $seqcolName   = $this->conn->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+
         $this->expectError(MDB2_ERROR_NOSUCHTABLE);
         if ($this->_checkSequence($sequence_name)) {
             $query = "SET IDENTITY_INSERT $sequence_name ON ".
@@ -70,13 +71,18 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
             }
             return $result;
         }
-        $value = $this->lastInsertID($sequence_name);
+        
+        $value = $this->lastInsertID($sequenceName);
+
         if (is_numeric($value)) {
-            $query = "DELETE FROM $sequence_name WHERE $seqcol_name < $value";
-            $result =& $this->_doQuery($query, true);
+            $query = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
+            $this->conn->exec($query);
+            /**
+            TODO: is the following needed ?
             if (PEAR::isError($result)) {
                 $this->warnings[] = 'nextID: could not delete previous sequence table values from '.$seq_name;
             }
+            */
         }
         return $value;
     }
@@ -91,14 +97,16 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
     {
         $server_info = $this->getServerVersion();
         if (is_array($server_info)
-            && !is_null($server_info['major'])
-                && $server_info['major'] >= 8) {
-                    $query = "SELECT SCOPE_IDENTITY()";
+            && ! is_null($server_info['major'])
+            && $server_info['major'] >= 8) {
+
+            $query = "SELECT SCOPE_IDENTITY()";
+
         } else {
-                    $query = "SELECT @@IDENTITY";
+            $query = "SELECT @@IDENTITY";
         }
 
-        return $this->queryOne($query, 'integer');
+        return $this->fetchOne($query, 'integer');
     }
     /**
      * Returns the current id of a sequence
