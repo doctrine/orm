@@ -11,6 +11,7 @@ of the Doctrine_Record class.
 <br \><br \>
 However something like <i>Doctrine_PrimaryKey_TestCase</i> is not valid since its way too generic.
 <br \><br \>
+<li \> Every class should have atleast one TestCase equivalent
 <li \> All testcase classes should inherit Doctrine_UnitTestCase
 </ul>
 <br \><br \>
@@ -29,4 +30,4 @@ divide the method into smaller methods.
 </ul>
 <b>ASSERTIONS</b><br \><br \>
 <ul>
-<li \>There should never be assertions within any loops and rarely within functions. 
+<li \>There should never be assertions within any loops and rarely within functions.

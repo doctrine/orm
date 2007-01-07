@@ -4,10 +4,11 @@ First this value is attached to every newly created Record.
 <br \><br \>
 <?php
 renderCode("<?php
-class User {
+<?php 
+class User extends Doctrine_record { 
     public function setTableDefinition() {
-        \$this->hasColumn('name', 'string', 50, 'default name');
-    }
+        \$this->hasColumn('name', 'string', 50, array('default' => 'default name'));
+    } 
 }
 
 \$user = new User();
