@@ -54,10 +54,10 @@ print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
-
+  $test->addTestCase(new Doctrine_Sequence_Mysql_TestCase());
 
 // DATABASE ABSTRACTION tests
-
+/**
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -86,6 +86,16 @@ $test->addTestCase(new Doctrine_DataDict_Mssql_TestCase());
 $test->addTestCase(new Doctrine_DataDict_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_DataDict_Oracle_TestCase());
 $test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
+
+// Sequence module (not yet fully tested)
+$test->addTestCase(new Doctrine_Sequence_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Firebird_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Informix_TestCase());
+
+$test->addTestCase(new Doctrine_Sequence_Mssql_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Pgsql_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Oracle_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Sqlite_TestCase());
 
 // Export module (not yet fully tested)
 $test->addTestCase(new Doctrine_Export_TestCase());
@@ -136,6 +146,9 @@ $test->addTestCase(new Doctrine_Collection_TestCase());
 $test->addTestCase(new Doctrine_Relation_TestCase());
 $test->addTestCase(new Doctrine_Relation_Access_TestCase());
 $test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
+$test->addTestCase(new Doctrine_Relation_OneToOne_TestCase());
+
+$test->addTestCase(new Doctrine_TreeStructure_TestCase());
 
 
 // Datatypes
@@ -193,9 +206,7 @@ $test->addTestCase(new Doctrine_Query_Expression_TestCase());
 $test->addTestCase(new Doctrine_Query_Having_TestCase());
 $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 
-
-$test->addTestCase(new Doctrine_TreeStructure_TestCase());
-
+*/
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());

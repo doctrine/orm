@@ -57,7 +57,11 @@ class AdapterMock implements Doctrine_Adapter_Interface {
 
         return 0;
     }
-    public function lastInsertId(){ }
+    public function lastInsertId()
+    {
+    	$this->queries[] = 'LAST_INSERT_ID()';
+        return 1;
+    }
     public function beginTransaction(){ 
         $this->queries[] = 'BEGIN TRANSACTION';
     }
@@ -67,7 +71,7 @@ class AdapterMock implements Doctrine_Adapter_Interface {
     public function rollBack(){ }
     public function errorCode(){ }
     public function errorInfo(){ }
-    public function getAttribute($attribute) { 
+    public function getAttribute($attribute) {
         if($attribute == PDO::ATTR_DRIVER_NAME)
             return strtolower($this->name);
     }
@@ -84,6 +88,9 @@ class AdapterStatementMock {
     }
     public function execute() {
         return true;
+    }
+    public function fetchColumn($colnum) {
+        return 0;
     }
 }
 

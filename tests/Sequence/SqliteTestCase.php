@@ -30,7 +30,5 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Sequence_Sqlite_TestCase extends Doctrine_UnitTestCase 
-{
-
+class Doctrine_Sequence_Sqlite_TestCase extends Doctrine_UnitTestCase {
 }

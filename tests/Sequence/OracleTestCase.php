@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Sequence_Mysql_TestCase
+ * Doctrine_Sequence_Oracle_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -30,7 +30,5 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Sequence_Mysql_TestCase extends Doctrine_UnitTestCase
-{
-
+class Doctrine_Sequence_Oracle_TestCase extends Doctrine_UnitTestCase {
 }
