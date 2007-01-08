@@ -112,8 +112,9 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
             $options = array_merge(array('include_record'=>true), $options);
 
             // remove root node from collection if not required
-            if($options['include_record'] == false)
-              $tree->remove(0);
+            if ($options['include_record'] == false) {
+                $tree->remove(0);
+            }
 
             // set collection for iterator
             $options['collection'] = $tree;
