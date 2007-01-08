@@ -47,7 +47,7 @@ class Doctrine_Tree
      * @param object $table                     instance of Doctrine_Table
      * @param array $options                    options
      */
-    public function __construct($table, $options)
+    public function __construct(Doctrine_Table $table, $options)
     {
         $this->table = $table;
         $this->options = $options;
@@ -80,7 +80,7 @@ class Doctrine_Tree
      * @return object $options                  instance of Doctrine_Node
      * @throws Doctrine_Exception               if class does not extend Doctrine_Tree
      */
-    public static function factory(&$table, $implName, $options = array())
+    public static function factory(Doctrine_Table $table, $implName, $options = array())
     {
         $class = 'Doctrine_Tree_' . $implName;
         if (!class_exists($class)) {

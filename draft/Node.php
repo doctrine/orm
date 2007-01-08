@@ -57,7 +57,7 @@ class Doctrine_Node implements IteratorAggregate
      * @param object $record                    instance of Doctrine_Record
      * @param array $options                    options
      */
-    public function __construct(&$record, $options)
+    public function __construct(Doctrine_Record $record, $options)
     {
         $this->record = $record;
         $this->options = $options;
@@ -71,7 +71,7 @@ class Doctrine_Node implements IteratorAggregate
      * @param array $options                    options
      * @return object $options                  instance of Doctrine_Node
      */
-    public static function factory(&$record, $implName, $options = array())
+    public static function factory(Doctrine_Record $record, $implName, $options = array())
     {
         $class = 'Doctrine_Node_' . $implName;
 
@@ -87,7 +87,7 @@ class Doctrine_Node implements IteratorAggregate
      *
      * @param object $record                    instance of Doctrine_Record
      */
-    public function setRecord(&$record)
+    public function setRecord(Doctrine_Record $record)
     {
         $this->record = $record;
     }
