@@ -30,5 +30,26 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Sequence_Oracle_TestCase extends Doctrine_UnitTestCase {
+class Doctrine_Sequence_Oracle_TestCase extends Doctrine_UnitTestCase 
+{
+     public function testCurrIdExecutesSql() 
+     {
+        $this->sequence->currId('user');
+        $q = "SELECT (last_number-1) FROM user_sequences WHERE sequence_name='user_seq' OR sequence_name='USER_SEQ'";
+
+        $this->assertEqual($this->adapter->pop(), $q);
+    }
+    public function testNextIdExecutesSql() 
+    {
+        $id = $this->sequence->nextId('user');
+
+        $this->assertEqual($this->adapter->pop(), 'SELECT user_seq.nextval FROM DUAL');
+
+    }
+    public function testLastInsertIdExecutesSql()
+    {
+        $this->sequence->lastInsertId('user');
+        
+        $this->assertEqual($this->adapter->pop(), 'SELECT user_seq.currval');
+    }
 }
