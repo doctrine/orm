@@ -42,18 +42,18 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
      */
     public function nextId($seqName, $onDemand = true)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
 
         $query = "SELECT NEXTVAL('" . $sequenceName . "')";
         try {
-            $result = $this->fetchOne($query, 'integer');
+            $result = (int) $this->fetchOne($query);
         } catch(Doctrine_Connection_Exception $e) {
             if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
 
                 try {
                     $result = $this->conn->export->createSequence($seqName);
                 } catch(Doctrine_Exception $e) {
-                    throw new Doctrine_Sequence_Sqlite_Exception('on demand sequence ' . $seqName . ' could not be created');
+                    throw new Doctrine_Sequence_Exception('on demand sequence ' . $seqName . ' could not be created');
                 }
                 return $this->nextId($seqName, false);
             }
@@ -70,9 +70,9 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
     public function lastInsertId($table = null, $field = null)
     {
         $seq = $table.(empty($field) ? '' : '_'.$field);
-        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
 
-        return $this->fetchOne("SELECT currval('" . $sequenceName . "')", 'integer');
+        return (int) $this->fetchOne("SELECT CURRVAL('" . $sequenceName . "')", 'integer');
     }
     /**
      * Returns the current id of a sequence
@@ -83,7 +83,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
      */
     public function currId($seqName)
     {
-        $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
-        return $this->fetchOne('SELECT last_value FROM ' . $sequenceName, 'integer');
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        return (int) $this->conn->fetchOne('SELECT last_value FROM ' . $sequenceName);
     }
 }
