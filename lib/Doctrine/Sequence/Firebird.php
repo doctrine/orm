@@ -64,6 +64,7 @@ class Doctrine_Sequence_Firebird extends Doctrine_Sequence
                 // BUT generators are not always reset, so return the actual value
                 return $this->currID($seqName);
             }
+            throw $e;
         }
         return $result;
     }

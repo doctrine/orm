@@ -40,10 +40,10 @@ class Doctrine_Sequence_Mysql extends Doctrine_Sequence
      *
      * @return integer          next id in the given sequence
      */
-    public function nextID($seqName, $ondemand = true)
+    public function nextId($seqName, $ondemand = true)
     {
-        $sequenceName  = $this->quoteIdentifier($this->getSequenceName($seq_name), true);
-        $seqcolName    = $this->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $sequenceName  = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $seqcolName    = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
         $query         = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
         
         try {
@@ -63,9 +63,11 @@ class Doctrine_Sequence_Mysql extends Doctrine_Sequence
                 // First ID of a newly created sequence is 1
                 return 1;
             }
-            return $result;
+            throw $e;
         }
-        $value = $this->lastInsertID();
+
+        $value = $this->lastInsertId();
+
         if (is_numeric($value)) {
             $query = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
             $this->conn->exec($query);
@@ -86,7 +88,7 @@ class Doctrine_Sequence_Mysql extends Doctrine_Sequence
      * @param string  name of the field into which a new row was inserted
      * @return integer|boolean
      */
-    public function lastInsertID($table = null, $field = null)
+    public function lastInsertId($table = null, $field = null)
     {
         return $this->conn->getDbh()->lastInsertId();
     }
@@ -97,12 +99,12 @@ class Doctrine_Sequence_Mysql extends Doctrine_Sequence
      *
      * @return integer          current id in the given sequence
      */
-    public function currID($seqName)
+    public function currId($seqName)
     {
-        $sequenceName   = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+        $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         $seqcolName     = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
         $query          = 'SELECT MAX(' . $seqcolName . ') FROM ' . $sequenceName;
 
-        return $this->queryOne($query, 'integer');
+        return (int) $this->conn->fetchOne($query);
     }
 }

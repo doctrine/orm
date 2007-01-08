@@ -45,31 +45,30 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
         $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
         $seqcolName   = $this->conn->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
 
-        $this->expectError(MDB2_ERROR_NOSUCHTABLE);
+
         if ($this->_checkSequence($sequence_name)) {
-            $query = "SET IDENTITY_INSERT $sequence_name ON ".
-                     "INSERT INTO $sequence_name ($seqcol_name) VALUES (0)";
+            $query = 'SET IDENTITY_INSERT ' . $sequenceName . ' ON '
+                   . 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (0)';
         } else {
-            $query = "INSERT INTO $sequence_name ($seqcol_name) VALUES (0)";
+            $query = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (0)';
         }
-        $result =& $this->_doQuery($query, true);
-        $this->popExpect();
-        if (PEAR::isError($result)) {
-            if ($ondemand && !$this->_checkSequence($sequence_name)) {
-                $this->loadModule('Manager', null, true);
+        try {
+
+            $this->conn->exec($query);
+
+        } catch(Doctrine_Connection_Exception $e) {
+            if ($onDemand && !$this->_checkSequence($sequenceName)) {
                 // Since we are creating the sequence on demand
                 // we know the first id = 1 so initialize the
                 // sequence at 2
-                $result = $this->manager->createSequence($seq_name, 2);
-                if (PEAR::isError($result)) {
-                    return $this->raiseError($result, null, null,
-                        'nextID: on demand sequence '.$seq_name.' could not be created');
-                } else {
-                    // First ID of a newly created sequence is 1
-                    return 1;
+                try {
+                    $result = $this->conn->export->createSequence($seqName, 2);
+                } catch(Doctrine_Exception $e) {
+                    throw new Doctrine_Sequence_Exception('on demand sequence ' . $seqName . ' could not be created');
                 }
+                // First ID of a newly created sequence is 1
+                return 1;
             }
-            return $result;
         }
         
         $value = $this->lastInsertID($sequenceName);
@@ -95,18 +94,18 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
      */
     public function lastInsertID($table = null, $field = null)
     {
-        $server_info = $this->getServerVersion();
-        if (is_array($server_info)
-            && ! is_null($server_info['major'])
-            && $server_info['major'] >= 8) {
+        $serverInfo = $this->getServerVersion();
+        if (is_array($serverInfo)
+            && ! is_null($serverInfo['major'])
+            && $serverInfo['major'] >= 8) {
 
-            $query = "SELECT SCOPE_IDENTITY()";
+            $query = 'SELECT SCOPE_IDENTITY()';
 
         } else {
-            $query = "SELECT @@IDENTITY";
+            $query = 'SELECT @@IDENTITY';
         }
 
-        return $this->fetchOne($query, 'integer');
+        return $this->fetchOne($query);
     }
     /**
      * Returns the current id of a sequence

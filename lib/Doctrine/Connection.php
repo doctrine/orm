@@ -61,17 +61,23 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      *              export                      Doctrine_Export driver, handles db structure modification abstraction (contains
      *                                          methods such as alterTable, createConstraint etc.)
+     *              import                      Doctrine_Import driver, handles db schema reading
+     *
+     *              sequence                    Doctrine_Sequence driver, handles sequential id generation and retrieval
      *
      * @see Doctrine_Connection::__get()
      * @see Doctrine_DataDict
      * @see Doctrine_Expression
      * @see Doctrine_Export
      * @see Doctrine_Transaction
+     * @see Doctrine_Sequence
      */
     private $modules = array('transaction' => false,
                              'expression'  => false,
                              'dataDict'    => false,
                              'export'      => false,
+                             'import'      => false,
+                             'sequence'    => false,
                              'unitOfWork'  => false,
                              );
     /**

@@ -282,7 +282,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         foreach (array_keys($definition['fields']) as $field) {
             $fields[] = $this->conn->quoteIdentifier($field);
         }
-        $query .= ' ('. implode(', ', $fields) . ')';
+        $query .= ' (' . implode(', ', $fields) . ')';
 
         return $query;
     }

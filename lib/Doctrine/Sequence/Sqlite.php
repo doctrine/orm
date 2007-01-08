@@ -42,14 +42,14 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
      */
     public function nextID($seqName, $onDemand = true)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
-        $seqcolName   = $this->conn->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $seqcolName   = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
 
         $query        = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
 
         try {
 
-            $this->conn->exec($query, true);
+            $this->conn->exec($query);
 
         } catch(Doctrine_Connection_Exception $e) {
             if ($onDemand && $result->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
@@ -102,11 +102,11 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
      */
     public function currID($seqName)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
-        $seqcolName   = $this->conn->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $seqcolName   = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
 
         $query        = 'SELECT MAX(' . $seqcolName . ') FROM ' . $sequenceName;
 
-        return $this->fetchOne($query, 'integer');
+        return (int) $this->conn->fetchOne($query);
     }
 }

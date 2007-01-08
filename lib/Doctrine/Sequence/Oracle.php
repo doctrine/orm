@@ -42,12 +42,11 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
      */
     public function nextID($seqName, $onDemand = true)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
-
-        $query = "SELECT $sequence_name.nextval FROM DUAL";
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $query        = 'SELECT ' . $sequenceName . '.nextval FROM DUAL';
 
         try {
-            $result = $this->queryOne($query, 'integer');
+            $result = $this->conn->fetchOne($query);
         } catch(Doctrine_Connection_Exception $e) {
             if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
 
@@ -58,6 +57,7 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
                 }
                 return $this->nextId($seqName, false);
             }
+            throw $e;
         }
         return $result;
     }
@@ -70,9 +70,10 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
      */
     public function lastInsertID($table = null, $field = null)
     {
-        $seq = $table.(empty($field) ? '' : '_'.$field);
-        $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
-        return $this->fetchOne("SELECT $sequence_name.currval", 'integer');
+        $seqName = $table . (empty($field) ? '' : '_'.$field);
+        $sequenceName =  $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+
+        return $this->conn->fetchOne('SELECT ' . $sequenceName . '.currval');
     }
     /**
      * Returns the current id of a sequence
@@ -83,11 +84,11 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
      */
     public function currID($seqName)
     {
-        $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         $query   = 'SELECT (last_number-1) FROM user_sequences';
-        $query  .= ' WHERE sequence_name=' . $this->conn->quote($sequence_name, 'text');
-        $query  .= ' OR sequence_name=' . $this->conn->quote(strtoupper($sequence_name), 'text');
+        $query  .= ' WHERE sequence_name=' . $this->conn->quote($sequenceName, 'text');
+        $query  .= ' OR sequence_name=' . $this->conn->quote(strtoupper($sequenceName), 'text');
 
-        return $this->fetchOne($query, 'integer');
+        return $this->conn->fetchOne($query);
     }
 }
