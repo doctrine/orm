@@ -40,24 +40,36 @@ function autoload($class) {
 
 require_once dirname(__FILE__) . '/../lib/Doctrine.php';
 
+
 spl_autoload_register(array('Doctrine', 'autoload'));
 spl_autoload_register('autoload');
 
+require_once dirname(__FILE__) . '/../models/location.php';
 require_once('classes.php');
 require_once('simpletest/unit_tester.php');
 require_once('simpletest/reporter.php');
 require_once('UnitTestCase.php');
 require_once('DriverTestCase.php');
 
+
 error_reporting(E_ALL);
 print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
-  $test->addTestCase(new Doctrine_Sequence_Mysql_TestCase());
+$test->addTestCase(new Doctrine_Query_Join_TestCase());
+/**
+$test->addTestCase(new Doctrine_Sequence_Firebird_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Informix_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Mysql_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Mssql_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Pgsql_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Oracle_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Sqlite_TestCase());
+
 
 // DATABASE ABSTRACTION tests
-/**
+
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -89,13 +101,7 @@ $test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
 
 // Sequence module (not yet fully tested)
 $test->addTestCase(new Doctrine_Sequence_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Firebird_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Informix_TestCase());
 
-$test->addTestCase(new Doctrine_Sequence_Mssql_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Pgsql_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Oracle_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Sqlite_TestCase());
 
 // Export module (not yet fully tested)
 $test->addTestCase(new Doctrine_Export_TestCase());

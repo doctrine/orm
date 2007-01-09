@@ -149,3 +149,52 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $users = $query->query("FROM User.Album.Song WHERE User.id IN (4,5) ORDER BY User.Album.Song.title DESC");
     }
 }
+class Record_District extends Record
+{
+	public function setUp ()
+	{
+		$this->hasOne('Record_Card as Card', 'Record_District.district_id');
+		$this->hasOne('Record_City as City', 'Record_District.city_id');
+		$this->hasMany('Record_Building as Building', 'Record_BuildingDistrict.building_id');
+	}
+
+	public function setTableDefinition ()
+	{
+		$this->setTableName('district');
+
+		$this->hasColumn('district_id', 'integer', 8, array('primary', 'unsigned', 'notnull', 'default' => 0));
+		$this->hasColumn('city_id', 'integer', 8, array('unsigned', 'notnull'));
+		$this->hasColumn('city', 'string', 50, array('notnull', 'default' => ''));
+		$this->hasColumn('district', 'string', 50, array('notnull', 'default' => ''));
+		$this->hasColumn('matchword', 'string', 50);
+		
+		$this->has_coord_columns();
+		$this->has_status_columns();
+	}
+}
+
+
+
+$dql_building =
+	"
+		FROM Record_Building b
+		LEFT JOIN b.District d
+		LEFT JOIN d.City c
+		LEFT JOIN b.Address a
+		WHERE b.building_id = {$id}
+	";
+
+
+
+$collection = $this->db->query($dql_building);
+$br = $collection[0];
+
+echo "building:{$br->building_id}\n";
+
+foreach ($br->District as $district) {
+	echo "district:{$district->district_id} {$district->district} {$district->City->city}\n";
+}
+
+// Notice: Trying to get property of non-object in /www/igglo2_doctrine/core/class/BuildingDAO.php on line 92
+
+

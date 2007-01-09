@@ -38,17 +38,4 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($country instanceof Record_Country);
     }
 }
-class Record_Country extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name', 'string', 200);
-    }
-}
-class Record_City extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name', 'string', 200);
-        $this->hasColumn('country_id', 'integer');
-    }
-    public function setUp() {
-        $this->hasOne('Record_Country as Country', 'Record_City.country_id');
-    }
-}
+

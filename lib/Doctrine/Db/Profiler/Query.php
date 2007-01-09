@@ -36,7 +36,7 @@ class Doctrine_Db_Profiler_Query
      */
     protected $query ='';
     /**
-     * @var integer     One of the Zend_Db_Profiler constants for query type, set by $queryType argument in constructor.
+     * @var integer     One of the Doctrine_Db_Profiler constants for query type, set by $queryType argument in constructor.
      */
     protected $queryType = 0;
 
@@ -56,7 +56,7 @@ class Doctrine_Db_Profiler_Query
 
     /**
      * Class constructor.  A query is about to be started, save the query text ($query) and its
-     * type (one of the Zend_Db_Profiler::* constants).
+     * type (one of the Doctrine_Db_Profiler::* constants).
      *
      * @param string $query
      * @param int $queryType
