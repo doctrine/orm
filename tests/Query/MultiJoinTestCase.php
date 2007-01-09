@@ -149,6 +149,7 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $users = $query->query("FROM User.Album.Song WHERE User.id IN (4,5) ORDER BY User.Album.Song.title DESC");
     }
 }
+/**
 class Record_District extends Record
 {
 	public function setUp ()
@@ -197,4 +198,4 @@ foreach ($br->District as $district) {
 
 // Notice: Trying to get property of non-object in /www/igglo2_doctrine/core/class/BuildingDAO.php on line 92
 
-
+*/
