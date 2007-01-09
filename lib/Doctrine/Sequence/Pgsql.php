@@ -46,7 +46,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
 
         $query = "SELECT NEXTVAL('" . $sequenceName . "')";
         try {
-            $result = (int) $this->fetchOne($query);
+            $result = (int) $this->conn->fetchOne($query);
         } catch(Doctrine_Connection_Exception $e) {
             if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
 
@@ -72,7 +72,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
         $seq = $table.(empty($field) ? '' : '_'.$field);
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
 
-        return (int) $this->fetchOne("SELECT CURRVAL('" . $sequenceName . "')", 'integer');
+        return (int) $this->conn->fetchOne("SELECT CURRVAL('" . $sequenceName . "')");
     }
     /**
      * Returns the current id of a sequence
