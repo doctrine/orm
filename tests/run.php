@@ -59,13 +59,6 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 
-$test->addTestCase(new Doctrine_Sequence_Firebird_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Informix_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Mysql_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Mssql_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Pgsql_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Oracle_TestCase());
-$test->addTestCase(new Doctrine_Sequence_Sqlite_TestCase());
 
 
 // DATABASE ABSTRACTION tests
@@ -101,6 +94,13 @@ $test->addTestCase(new Doctrine_DataDict_Sqlite_TestCase());
 
 // Sequence module (not yet fully tested)
 $test->addTestCase(new Doctrine_Sequence_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Firebird_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Informix_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Mysql_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Mssql_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Pgsql_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Oracle_TestCase());
+$test->addTestCase(new Doctrine_Sequence_Sqlite_TestCase());
 
 
 // Export module (not yet fully tested)
