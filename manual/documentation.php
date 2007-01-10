@@ -113,7 +113,7 @@ $menu = array('Getting started' =>
                                         'Autoincremented',
                                         'Natural',
                                         'Composite',
-                                        'Sequential')
+                                        'Sequence')
                         ),
            'Connection management' =>
                         array(
@@ -326,7 +326,12 @@ $menu = array('Getting started' =>
                                         'Examples',
                                         'Planned',
                                         'Technical Details',
-                                        'Maintainer'),
+                                        'Maintainer'), 
+                      'Db_Profiler'  => array(
+                                        'Introduction',
+                                        'Basic usage',
+                                        'Advanced usage',
+                                        ),
                       'Hook' => array(
                                         'Introduction',
                                         'Building queries',
