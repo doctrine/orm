@@ -48,11 +48,14 @@ class Doctrine_Db_Event
 
     protected $endedMicrotime;
 
+
     public function __construct($invoker, $type, $query = null)
     {
         $this->invoker = $invoker;
         $this->type    = $type;
         $this->query   = $query;
+
+
     }
     public function getQuery()
     {

@@ -217,18 +217,26 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                     if ($found)
                                         break;
 
-                                    $e2 = explode(":",$option);
+                                    $e2 = explode(':', $option);
 
                                     switch (strtolower($e2[0])) {
-                                        case "autoincrement":
+                                        case 'autoincrement':
+                                        case 'autoinc':
                                             $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
                                             $found = true;
                                             break;
-                                        case "seq":
+                                        case 'seq':
+                                        case 'sequence':
                                             $this->identifierType = Doctrine_Identifier::SEQUENCE;
                                             $found = true;
+                                            
+                                            if($value) {
+                                                $this->options['sequenceName'] = $value;
+                                            } else {
+                                                $this->options['sequenceName'] = $this->conn->getSequenceName($this->options['tableName']);
+                                            }
                                             break;
-                                        };
+                                    }
                                 }
                                 if ( ! isset($this->identifierType)) {
                                     $this->identifierType = Doctrine_Identifier::NORMAL;
@@ -332,16 +340,19 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     }
     /**
      * setColumn
+     *
      * @param string $name
      * @param string $type
      * @param integer $length
      * @param mixed $options
+     * @throws Doctrine_Table_Exception     if trying use wrongly typed parameter
      * @return void
      */
     final public function setColumn($name, $type, $length = null, $options = array()) {
         if (is_string($options)) {
             $options = explode('|', $options);
         }
+
         foreach ($options as $k => $option) {
             if (is_numeric($k)) {
                 if ( ! empty($option)) {
@@ -354,6 +365,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         if ($length == null)
             $length = 2147483647;
+            
+        if((string) (int) $length !== (string) $length) {
+            throw new Doctrine_Table_Exception('Invalid argument given for column length');
+        }
 
         $this->columns[$name] = array($type, $length, $options);
 
