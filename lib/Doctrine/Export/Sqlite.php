@@ -85,7 +85,51 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
             }
             $fields[] = $fieldString;
         }
-        $query .= ' ('.implode(', ', $fields) . ')';
+        $query .= ' (' . implode(', ', $fields) . ')';
+
         return $this->conn->exec($query);
+    }
+    /**
+     * create sequence
+     *
+     * @param string    $seqName        name of the sequence to be created
+     * @param string    $start          start value of the sequence; default is 1
+     * @return boolean
+     */
+    public function createSequence($seqName, $start = 1)
+    {
+        $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $seqcolName     = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $query          = 'CREATE TABLE ' . $sequenceName . ' (' . $seqcolName . ' INTEGER PRIMARY KEY DEFAULT 0 NOT NULL)';
+        
+        $this->conn->exec($query);
+
+        if ($start == 1) {
+            return true;
+        }
+
+        try {
+            $this->conn->exec('INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (' . ($start-1) . ')');
+            return true;
+        } catch(Doctrine_Connection_Exception $e) {
+            // Handle error
+            try {
+                $result = $db->exec('DROP TABLE ' . $sequenceName);
+            } catch(Doctrine_Connection_Exception $e) {
+                throw new Doctrine_Export_Exception('could not drop inconsistent sequence table');
+            }
+        }
+        throw new Doctrine_Export_Exception('could not create sequence table');
+    }
+    /**
+     * drop existing sequence
+     *
+     * @param string    $seq_name     name of the sequence to be dropped
+     * @return boolean
+     */
+    public function dropSequence($seq_name)
+    {
+        $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        return $this->conn->exec('DROP TABLE ' . $sequenceName);
     }
 }
