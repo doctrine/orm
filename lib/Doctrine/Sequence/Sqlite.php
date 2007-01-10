@@ -40,7 +40,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
      *
      * @return integer          next id in the given sequence
      */
-    public function nextID($seqName, $onDemand = true)
+    public function nextId($seqName, $onDemand = true)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         $seqcolName   = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
@@ -52,7 +52,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
             $this->conn->exec($query);
 
         } catch(Doctrine_Connection_Exception $e) {
-            if ($onDemand && $result->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
+            if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
                 // Since we are creating the sequence on demand
                 // we know the first id = 1 so initialize the
                 // sequence at 2
@@ -89,7 +89,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
      * @param   string  name of the field into which a new row was inserted
      * @return integer|boolean
      */
-    public function lastInsertID($table = null, $field = null)
+    public function lastInsertId($table = null, $field = null)
     {
         return $this->conn->getDbh()->lastInsertID();
     }
@@ -100,7 +100,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
      *
      * @return integer          current id in the given sequence
      */
-    public function currID($seqName)
+    public function currId($seqName)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         $seqcolName   = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);

@@ -320,13 +320,13 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      * @param string    $start        start value of the sequence; default is 1
      * @return boolean
      */
-    public function createSequence($sequenceName, $seqcol_name, $start = 1)
+    public function createSequence($sequenceName, $seqcolName, $start = 1)
     {
         $query  = 'CREATE TABLE ' . $sequenceName
-                . ' (' . $seqcol_name . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
+                . ' (' . $seqcolName . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
                 . $seqcol_name . '))'
-                . strlen($this->dbh->options['default_table_type']) ? ' TYPE = '
-                . $this->dbh->options['default_table_type'] : '';
+                . strlen($this->conn->default_table_type) ? ' TYPE = '
+                . $this->conn->default_table_type : '';
 
         $res    = $this->conn->exec($query);
 
@@ -334,7 +334,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             return true;
 
         $query  = 'INSERT INTO ' . $sequenceName
-                . ' (' . $seqcol_name . ') VALUES (' . ($start-1) . ')';
+                . ' (' . $seqcol_name . ') VALUES (' . ($start - 1) . ')';
 
         $res    = $this->conn->exec($query);
 
