@@ -62,7 +62,7 @@ class Doctrine_Sequence_TestCase extends Doctrine_UnitTestCase
 
         // transaction begin
         $this->assertEqual($this->profiler->pop()->getType(), Doctrine_Db_Event::BEGIN);
-        $this->assertEqual($this->profiler->pop()->getQuery(), 'CREATE TABLE custom_sequence_record (id INTEGER, name VARCHAR(2147483647))');
+        $this->assertEqual($this->profiler->pop()->getQuery(), 'CREATE TABLE custom_sequence_record (id INTEGER, name VARCHAR(2147483647), PRIMARY KEY(id))');
     }
 }
 class CustomSequenceRecord extends Doctrine_Record {
