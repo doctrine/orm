@@ -417,7 +417,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
     {
         $default = $autoinc = '';
         if (!empty($field['autoincrement'])) {
-            $autoinc = ' AUTO_INCREMENT PRIMARY KEY';
+            $autoinc = ' AUTO_INCREMENT';
         } elseif (array_key_exists('default', $field)) {
             if ($field['default'] === '') {
                 $field['default'] = empty($field['notnull']) ? null : 0;
