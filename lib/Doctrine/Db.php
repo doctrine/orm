@@ -422,6 +422,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      */
     public function beginTransaction()
     {
+        $this->connect();
+
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::BEGIN);
 
         $this->listener->onPreBeginTransaction($event);
@@ -439,6 +441,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      */
     public function commit()
     {
+        $this->connect();
+        
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::COMMIT);
 
         $this->listener->onPreCommit($event);
