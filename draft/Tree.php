@@ -39,7 +39,7 @@ class Doctrine_Tree
     /**
      * @param array $options
      */
-    protected $options;
+    protected $options = array();
 
     /**
      * constructor, creates tree with reference to table and any options
@@ -87,5 +87,24 @@ class Doctrine_Tree
             throw new Doctrine_Exception('The chosen class must extend Doctrine_Tree');
         }
         return new $class($table, $options);
+    }
+
+	/**
+	 * gets tree attribute value
+	 *		
+	 */     
+    public function getAttribute($name)
+    {
+      return isset($this->options[$name]) ? $this->options[$name] : null;
+    }
+
+	/**
+	 * sets tree attribute value
+	 *
+	 * @param mixed			
+	 */    
+    public function setAttribute($name, $value)
+    {
+      $this->options[$name] = $value;
     }
 }

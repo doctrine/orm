@@ -39,9 +39,8 @@ class Menu extends Doctrine_Record {
 
     }
     
-    // this toString() function is used to get the name for the path, see node::getPath
-    // maybe change to actually use __toString(), howvever, i wondered if this had any significance ??
-    public function toString() {
+    // this __toString() function is used to get the name for the path, see node::getPath
+    public function __toString() {
         return $this->get('name');
     }
 }

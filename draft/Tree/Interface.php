@@ -43,7 +43,7 @@ interface Doctrine_Tree_Interface {
      *
      * @return object $record                   instance of Doctrine_Record
      */
-    public function findRoot();
+    public function findRoot($root_id = 1);
 
     /**
      * optimised method to returns iterator for traversal of the entire tree from root

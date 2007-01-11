@@ -72,6 +72,8 @@ class Doctrine_Node_NestedSet_PreOrderIterator implements Iterator
         } else {
             $query = $q->where("$componentName.lft > ? AND $componentName.rgt < ?", $params)->orderBy('lft asc');
         }
+        
+        $query = $record->getTable()->getTree()->returnQueryWithRootId($query, $record->getNode()->getRootValue());
 
         $this->maxLevel   = isset($opts['depth']) ? ($opts['depth'] + $record->getNode()->getLevel()) : 0;
         $this->options    = $opts;

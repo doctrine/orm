@@ -32,12 +32,30 @@
 class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Interface
 {
     /**
+     * constructor, creates tree with reference to table and sets default root options
+     *
+     * @param object $table                     instance of Doctrine_Table
+     * @param array $options                    options
+     */
+    public function __construct(Doctrine_Table $table, $options)
+    {
+      // set default many root attributes
+      $options['has_many_roots'] = isset($options['has_many_roots']) ? $options['has_many_roots'] : false;
+      $options['root_column_name'] = isset($options['root_column_name']) ? $options['root_column_name'] : 'root_id';
+
+      parent::__construct($table, $options);
+    }
+    
+    /**
      * used to define table attributes required for the NestetSet implementation
      * adds lft and rgt columns for corresponding left and right values
      *
      */
     public function setTableDefinition()
     {
+        if($this->getAttribute('has_many_roots'))
+          $this->table->setColumn($this->getAttribute('root_column_name'),"integer",11);
+
         $this->table->setColumn("lft","integer",11);
         $this->table->setColumn("rgt","integer",11);
     }
@@ -53,8 +71,13 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
             $record = $this->table->create();
         }
 
+        // if tree is many roots, then get next root id
+        if($this->getAttribute('has_many_roots'))
+          $record->getNode()->setRootValue($this->getNextRootId());
+
         $record->set('lft', '1');
         $record->set('rgt', '2');
+
         $record->save();
 
         return $record;
@@ -65,11 +88,15 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      *
      * @return object $record        instance of Doctrine_Record
      */
-    public function findRoot()
+    public function findRoot($root_id = 1)
     {
         $q = $this->table->createQuery();
-        $root = $q->where('lft = ?', 1)
-                  ->execute()->getFirst();
+        $q = $q->where('lft = ?', 1);
+        
+        // if tree has many roots, then specify root id
+        $q = $this->returnQueryWithRootId($q, $root_id);
+
+        $root = $q->execute()->getFirst();
 
         // if no record is returned, create record
         if (!$root) {
@@ -93,9 +120,14 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         // fetch tree
         $q = $this->table->createQuery();
 
-        $tree = $q->where('lft >= ?', 1)
-                  ->orderBy('lft asc')
-                  ->execute();
+        $q = $q->where('lft >= ?', 1)
+                ->orderBy('lft asc');
+
+        // if tree has many roots, then specify root id
+        $root_id = isset($options['root_id']) ? $options['root_id'] : '1';
+        $q = $this->returnQueryWithRootId($q, $root_id);
+        
+        $tree = $q->execute();
 
         $root = $tree->getFirst();
 
@@ -141,5 +173,66 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         }
 
         // TODO: if record doesn't exist, throw exception or similar?
+    }
+
+    /**
+     * fetch root nodes
+     *
+     * @return collection                         Doctrine_Collection
+     */
+    public function fetchRoots()
+    {
+        $q = $this->table->createQuery();
+        $q = $q->where('lft = ?', 1);
+        return $q->execute();      
+    }
+
+    /**
+     * calculates the next available root id
+     *
+     * @return integer
+     */
+    public function getNextRootId()
+    {
+      return $this->getMaxRootId() + 1;
+    }
+
+    /**
+     * calculates the current max root id
+     *
+     * @return integer
+     */    
+    public function getMaxRootId()
+    {      
+      $component = $this->table->getComponentName();
+      $column = $this->getAttribute('root_column_name');
+      
+      // cannot get this dql to work, cannot retrieve result using $coll[0]->max
+      //$dql = "SELECT MAX(c.$column) FROM $component c";
+      
+      $dql = "SELECT c.$column FROM $component c ORDER BY c.$column desc LIMIT 1";
+
+      $coll = $this->table->getConnection()->query($dql);
+
+      $max = $coll[0]->get($column);
+
+      $max = !is_null($max) ? $max : 0;
+
+      return $max;      
+    }
+
+    /**
+     * returns parsed query with root id where clause added if applicable
+     *
+     * @param object    $query    Doctrine_Query
+     * @param integer   $root_id  id of destination root
+     * @return object   Doctrine_Query
+     */     
+    public function returnQueryWithRootId($query, $root_id = 1)
+    {
+      if($this->getAttribute('has_many_roots'))
+        $query->addWhere($this->getAttribute('root_column_name') . ' = ?', $root_id);
+      
+      return $query;     
     }
 }
