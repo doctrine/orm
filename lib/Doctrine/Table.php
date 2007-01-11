@@ -311,7 +311,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 $this->conn->export->createTable($this->options['tableName'], $columns, array_merge($this->options, $options));
             } catch(Doctrine_Connection_Exception $e) {
                 // we only want to silence table already exists errors
-                if($e->getPortableCode !== Doctrine::ERR_ALREADY_EXISTS) {
+                if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
                     throw $e;
                 }
             }
