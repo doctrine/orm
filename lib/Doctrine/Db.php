@@ -100,7 +100,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      */
     public function __construct($dsn, $user = null, $pass = null)
     {
-        if ( ! isset($user)) {
+    	// check the dsn is PEAR-like or not
+        if ( ! isset($user) && strpos($dsn, '://')) {
             $a = self::parseDSN($dsn);
 
             extract($a);
@@ -442,7 +443,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
     public function commit()
     {
         $this->connect();
-        
+
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::COMMIT);
 
         $this->listener->onPreCommit($event);
