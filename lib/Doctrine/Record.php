@@ -1445,10 +1445,25 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     {
         $this->_table->setEnumValues($column, $values);
     }
+    /**
+     * option
+     * sets or retrieves an option
+     *
+     * @see Doctrine_Table::$options    availible options
+     * @param mixed $name
+     * @param mixed $value
+     * @return mixed
+     */
     public function option($name, $value = null)
     {
         if ($value == null) {
-            $this->_table->getOption($name);
+            if (is_array($name)) {
+                foreach ($name as $k => $v) {
+                    $this->_table->setOption($k, $v);
+                }
+            } else {
+                return $this->_table->getOption($name);
+            }
         } else {
             $this->_table->setOption($name, $value);
         }

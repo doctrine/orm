@@ -90,6 +90,62 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         return $this->conn->exec($query);
     }
     /**
+     * create a new table
+     *
+     * @param string $name   Name of the database that should be created
+     * @param array $fields  Associative array that contains the definition of each field of the new table
+     *                       The indexes of the array entries are the names of the fields of the table an
+     *                       the array entry values are associative arrays like those that are meant to be
+     *                       passed with the field definitions to get[Type]Declaration() functions.
+     *                          array(
+     *                              'id' => array(
+     *                                  'type' => 'integer',
+     *                                  'unsigned' => 1
+     *                                  'notnull' => 1
+     *                                  'default' => 0
+     *                              ),
+     *                              'name' => array(
+     *                                  'type' => 'text',
+     *                                  'length' => 12
+     *                              ),
+     *                              'password' => array(
+     *                                  'type' => 'text',
+     *                                  'length' => 12
+     *                              )
+     *                          );
+     * @param array $options  An associative array of table options:
+     *
+     * @return void
+     */
+    public function createTable($name, array $fields, array $options = array()) 
+    {
+        if ( ! $name) {
+            throw new Doctrine_Export_Exception('no valid table name specified');
+        }
+        
+        if (empty($fields)) {
+            throw new Doctrine_Export_Exception('no fields specified for table '.$name);
+        }
+        $queryFields = $this->getFieldDeclarationList($fields);
+        
+        $autoinc = false;
+        foreach($fields as $field) {
+            if(isset($field['autoincrement']) && $field['autoincrement']) {
+                $autoinc = true;
+                break;
+            }
+        }
+
+        if ( ! $autoinc && isset($options['primary']) && ! empty($options['primary'])) {
+            $queryFields.= ', PRIMARY KEY('.implode(', ', array_values($options['primary'])).')';
+        }
+
+        $name  = $this->conn->quoteIdentifier($name, true);
+        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+
+        return $this->conn->exec($query);
+    }
+    /**
      * create sequence
      *
      * @param string    $seqName        name of the sequence to be created

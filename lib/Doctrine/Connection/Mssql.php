@@ -138,4 +138,62 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
 
         return $query;
     }
+    /**
+     * return version information about the server
+     *
+     * @param bool   $native  determines if the raw version string should be returned
+     * @return mixed array/string with version information or MDB2 error object
+     * @access public
+     */
+    function getServerVersion($native = false)
+    {
+        if ($this->connected_server_info) {
+            $serverInfo = $this->connected_server_info;
+        } else {
+            $query      = 'SELECT @@VERSION';
+            $serverInfo = $this->fetchOne($query);
+        }
+        // cache server_info
+        $this->connected_server_info = $serverInfo;
+        if ( ! $native) {
+            if (preg_match('/([0-9]+)\.([0-9]+)\.([0-9]+)/', $serverInfo, $tmp)) {
+                $serverInfo = array(
+                    'major' => $tmp[1],
+                    'minor' => $tmp[2],
+                    'patch' => $tmp[3],
+                    'extra' => null,
+                    'native' => $serverInfo,
+                );
+            } else {
+                $serverInfo = array(
+                    'major' => null,
+                    'minor' => null,
+                    'patch' => null,
+                    'extra' => null,
+                    'native' => $serverInfo,
+                );
+            }
+        }
+        return $serverInfo;
+    }
+    /**
+     * Checks if there's a sequence that exists.
+     *
+     * @param  string $seq_name     The sequence name to verify.
+     * @return boolean              The value if the table exists or not
+     */
+    public function checkSequence($seqName)
+    {
+        $query       = 'SELECT * FROM ' . $seqName;
+        try {
+            $this->exec($query);
+        } catch(Doctrine_Connection_Exception $e) {
+            if ($e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
+                return false;
+            }
+
+            throw $e;
+        }
+        return true;
+    }
 }

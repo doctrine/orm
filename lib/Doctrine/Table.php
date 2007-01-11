@@ -117,6 +117,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      *      -- name                         name of the component, for example component name of the GroupTable is 'Group'
      *
+     *      -- declaringClass               name of the table definition declaring class (when using inheritance the class
+     *                                      that defines the table structure can be any class in the inheritance hierarchy, 
+     *                                      hence we need reflection to check out which class actually calls setTableDefinition)
+     *
      *      -- tableName                    database table name, in most cases this is the same as component name but in some cases
      *                                      where one-table-multi-class inheritance is used this will be the name of the inherited table
      *
@@ -183,6 +187,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 $method    = new ReflectionMethod($this->options['name'], 'setTableDefinition');
                 $class     = $method->getDeclaringClass();
 
+                $this->options['declaringClass'] = $class;
+
                 if ( ! isset($this->options['tableName'])) {
                     $this->options['tableName'] = Doctrine::tableize($class->getName());
                 }
@@ -247,28 +253,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 };
 
                 if ($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
-                    if (Doctrine::isValidClassname($class->getName())) {
-                        try {
-                            $columns = array();
-                            foreach ($this->columns as $name => $column) {
-                                $definition = $column[2];
-                                $definition['type'] = $column[0];
-                                $definition['length'] = $column[1];
-
-                                if ($definition['type'] == 'enum' && isset($definition['default'])) {
-                                    $definition['default'] = $this->enumIndex($name, $definition['default']);
-                                }
-                                if ($definition['type'] == 'boolean' && isset($definition['default'])) {
-                                    $definition['default'] = (int) $definition['default'];
-                                }
-                                $columns[$name] = $definition;
-                            }
-
-                            $this->conn->export->createTable($this->options['tableName'], $columns);
-                        } catch(Exception $e) {
-
-                        }
-                    }
+                    $this->export();
                 }
 
             }
@@ -289,6 +274,48 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             throw new Doctrine_Table_Exception();
         }
         $this->repository = new Doctrine_Table_Repository($this);
+    }
+    /**
+     * export
+     * exports this table to database based on column and option definitions
+     *
+     * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
+     *                                          occurred during the create table operation
+     * @return boolean                          whether or not the export operation was successful
+     *                                          false if table already existed in the database
+     */
+    public function export() {
+        if (Doctrine::isValidClassname($this->options['declaringClass']->getName())) {
+            try {
+                $columns = array();
+                $primary = array();
+                foreach ($this->columns as $name => $column) {
+                    $definition = $column[2];
+                    $definition['type'] = $column[0];
+                    $definition['length'] = $column[1];
+
+                    if ($definition['type'] == 'enum' && isset($definition['default'])) {
+                        $definition['default'] = $this->enumIndex($name, $definition['default']);
+                    }
+                    if ($definition['type'] == 'boolean' && isset($definition['default'])) {
+                        $definition['default'] = (int) $definition['default'];
+                    }
+                    $columns[$name] = $definition;
+                    
+                    if(isset($definition['primary']) && $definition['primary']) {
+                        $primary[] = $name;
+                    }
+                }
+                $options['primary'] = $primary;
+
+                $this->conn->export->createTable($this->options['tableName'], $columns, array_merge($this->options, $options));
+            } catch(Doctrine_Connection_Exception $e) {
+                // we only want to silence table already exists errors
+                if($e->getPortableCode !== Doctrine::ERR_ALREADY_EXISTS) {
+                    throw $e;
+                }
+            }
+        }
     }
     /**
      * createQuery

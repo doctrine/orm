@@ -74,7 +74,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
         $this->options['server_version'] = '';
         */
         parent::__construct($manager, $adapter);
-        $this->initFunctions();
+        //$this->initFunctions();
     }
     /**
      * initializes database functions missing in sqlite

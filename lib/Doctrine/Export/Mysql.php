@@ -101,7 +101,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
         $query_fields = $this->getFieldDeclarationList($fields);
 
-        if ( ! empty($options['primary'])) {
+        if (isset($options['primary']) && ! empty($options['primary'])) {
             $query_fields.= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
         }
         $name  = $this->conn->quoteIdentifier($name, true);
@@ -110,12 +110,12 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         $optionStrings = array();
 
         if (isset($options['comment'])) {
-            $optionStrings['comment'] = 'COMMENT = '.$this->dbh->quote($options['comment'], 'text');
+            $optionStrings['comment'] = 'COMMENT = ' . $this->dbh->quote($options['comment'], 'text');
         }
         if (isset($options['charset'])) {
-            $optionsSting['charset'] = 'DEFAULT CHARACTER SET '.$options['charset'];
+            $optionsSting['charset'] = 'DEFAULT CHARACTER SET ' . $options['charset'];
             if (isset($options['collate'])) {
-                $optionStrings['charset'].= ' COLLATE '.$options['collate'];
+                $optionStrings['charset'].= ' COLLATE ' . $options['collate'];
             }
         }
 
