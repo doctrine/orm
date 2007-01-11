@@ -100,8 +100,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      */
     public function __construct($dsn, $user = null, $pass = null)
     {
-    	// check the dsn is PEAR-like or not
-        if ( ! isset($user) && strpos($dsn, '://')) {
+    	// check if dsn is PEAR-like or not
+        if ( ! isset($user) || strpos($dsn, '://')) {
             $a = self::parseDSN($dsn);
 
             extract($a);
