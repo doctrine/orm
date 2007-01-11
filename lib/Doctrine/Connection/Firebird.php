@@ -105,13 +105,4 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection
         }
         return $query;
     }
-    /**
-     * returns the next value in the given sequence
-     * @param string $sequence
-     * @return integer
-     */
-    public function nextId($sequence)
-    {
-        return $this->fetchOne('SELECT UNIQUE FROM ' . $sequence);
-    }
 }

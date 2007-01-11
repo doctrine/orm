@@ -85,26 +85,6 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
         return '[' . str_replace(']', ']]', $identifier) . ']';
     }
     /**
-     * returns the next value in the given sequence
-     *
-     * @param string $sequence      name of the sequence
-     * @return integer              the next value in the given sequence
-     */
-    public function nextId($sequence)
-    {
-        $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
-        $seqcolName   = $this->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
-        $query        = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (0)';
-        $result = $this->exec($query);
-        $value = $this->dbh->lastInsertId();
-
-        if (is_numeric($value)) {
-            $query  = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
-            $result = $this->exec($query);
-        }
-        return $value;
-    }
-    /**
      * Adds an adapter-specific LIMIT clause to the SELECT statement.
      * [ borrowed from Zend Framework ]
      *
@@ -157,26 +137,5 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
         }
 
         return $query;
-    }
-    /**
-     * Returns the autoincrement ID if supported or $id or fetches the current
-     * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
-     *
-     * @param string $table name of the table into which a new row was inserted
-     * @param string $field name of the field into which a new row was inserted
-     * @return integer
-     */
-    public function lastInsertID($table = null, $field = null)
-    {
-        $server_info = $this->getServerVersion();
-        if (is_array($server_info)
-            && !is_null($server_info['major'])
-                && $server_info['major'] >= 8) {
-                    $query = "SELECT SCOPE_IDENTITY()";
-        } else {
-                    $query = "SELECT @@IDENTITY";
-        }
-
-        return $this->fetchOne($query);
     }
 }

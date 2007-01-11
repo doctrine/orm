@@ -314,10 +314,10 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
         $table     = $record->getTable();
         $keys      = $table->getPrimaryKeys();
 
-        $seq = $record->getTable()->getSequenceName();
+        $seq       = $record->getTable()->getSequenceName();
 
         if ( ! empty($seq)) {
-            $id             = $this->nextId($seq);
+            $id             = $this->conn->sequence->nextId($seq);
             $name           = $record->getTable()->getIdentifier();
             $array[$name]   = $id;
         }

@@ -90,25 +90,6 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
         $this->exec($query);
     }
     /**
-     * returns the next value in the given sequence
-     * @param string $sequence
-     * @return integer
-     */
-    public function nextId($sequence)
-    {
-        return $this->fetchOne("SELECT NEXTVAL('$sequence')");
-    }
-    /**
-     * Returns the current id of a sequence
-     *
-     * @param string $seq_name name of the sequence
-     * @return integer
-     */
-    public function currId($sequence)
-    {
-        return $this->fetcOne('SELECT last_value FROM '.$sequence);
-    }
-    /**
      * Changes a query string for various DBMS specific reasons
      *
      * @param string $query         query to modify

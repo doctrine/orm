@@ -102,45 +102,6 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
         $this->exec($query);
     }
     /**
-     * Returns the next free id of a sequence
-     *
-     * @param string $seq_name name of the sequence
-     * @param boolean $ondemand when true the sequence is
-     *                          automatic created, if it
-     *                          not exists
-     *
-     * TODO: on demand creation of sequence table
-     *
-     * @return integer
-     */
-    public function nextId($seqName, $ondemand = true)
-    {
-        $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
-        $seqcolName   = $this->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
-        $query        = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
-        $result = $this->exec($query);
-        $value = $this->dbh->lastInsertId();
-
-        if (is_numeric($value)) {
-            $query  = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
-            $result = $this->exec($query);
-        }
-        return $value;
-    }
-    /**
-     * Returns the current id of a sequence
-     *
-     * @param string $seq_name name of the sequence
-     * @return integer
-     */
-    public function currId($seqName)
-    {
-        $sequenceName = $this->quoteIdentifier($this->getSequenceName($seqName), true);
-        $seqcolName = $this->quoteIdentifier($this->options['seqcol_name'], true);
-        $query = 'SELECT MAX(' . $seqcolName . ') FROM ' . $sequenceName;
-        return $this->fetchOne($query);
-    }
-    /**
      * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
      * query, except that if there is already a row in the table with the same
      * key field values, the REPLACE query just updates its values instead of

@@ -74,9 +74,13 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
         $this->options['server_version'] = '';
         */
         parent::__construct($manager, $adapter);
+        $this->initFunctions();
     }
     /**
      * initializes database functions missing in sqlite
+     *
+     * @see Doctrine_Expression
+     * @return void
      */
     public function initFunctions()
     {
@@ -84,17 +88,5 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
         $this->dbh->sqliteCreateFunction('mod',    array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
         $this->dbh->sqliteCreateFunction('concat', array('Doctrine_Expression_Sqlite', 'concatImpl'));
         $this->dbh->sqliteCreateFunction('now', 'time', 0);
-    }
-    /**
-     * Returns the current id of a sequence
-     *
-     * @param string $seq_name  name of the sequence
-     * @return integer          the current id in the given sequence
-     */
-    public function currId($sequence)
-    {
-        $sequence = $this->quoteIdentifier($sequence, true);
-        $seqColumn = $this->quoteIdentifier($this->options['seqcol_name'], true);
-        return $this->fetchOne('SELECT MAX(' . $seqColumn . ') FROM ' . $sequence);
     }
 }

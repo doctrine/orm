@@ -103,27 +103,4 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection
         }
         return $query;
     }
-    /**
-     * returns the next value in the given sequence
-     *
-     * @param string $sequence      name of the sequence
-     * @throws PDOException         if something went wrong at database level
-     * @return integer
-     */
-    public function nextId($sequence)
-    {
-        return $this->fetchOne('SELECT ' . $sequence . '.nextval FROM dual');
-    }
-    /**
-     * Returns the current id of a sequence
-     *
-     * @param string $sequence      name of the sequence
-     * @throws PDOException         if something went wrong at database level
-     * @return mixed id
-     */
-    public function currId($sequence)
-    {
-        $sequence = $this->quoteIdentifier($this->getSequenceName($sequence), true);
-        return $this->fetchOne('SELECT ' . $sequence . '.currval FROM dual');
-    }
 }
