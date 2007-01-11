@@ -59,7 +59,7 @@ class Doctrine_Transaction_Sqlite extends Doctrine_Transaction
                 throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . 'is not supported.');
         }
 
-        $query = 'PRAGMA read_uncommitted = '.$isolation;
+        $query = 'PRAGMA read_uncommitted = ' . $isolation;
 
         return $this->conn->execute($query);
     }

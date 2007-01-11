@@ -107,7 +107,6 @@ class Doctrine_Transaction_Mysql extends Doctrine_Transaction
      */
     public function getIsolation()
     {
-        $ret = $this->conn->execute('SELECT @@tx_isolation')->fetch(PDO::FETCH_NUM);
-        return current($ret);
+        return $this->conn->fetchOne('SELECT @@tx_isolation');
     }
 }
