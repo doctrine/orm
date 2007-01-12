@@ -102,6 +102,7 @@ $menu = array('Getting started' =>
                                         'Introduction',
                                         'Table and class naming',
                                         'Field(Column) naming',
+                                        'Table options',
                                         'Data types and lengths',
                                         'Constraints and validators',
                                         'Default values',
