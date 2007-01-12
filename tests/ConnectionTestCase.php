@@ -47,7 +47,88 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($this->connection->transaction instanceof Doctrine_Transaction);
         $this->assertTrue($this->connection->export instanceof Doctrine_Export);
     }
+    public function testFetchAll() {
+        $this->conn->exec('CREATE TABLE entity (id INTEGER, name TEXT)');
 
+        $this->conn->exec("INSERT INTO entity (id, name) VALUES (1, 'zYne')");
+        $this->conn->exec("INSERT INTO entity (id, name) VALUES (2, 'John')");
+
+        $a = $this->conn->fetchAll('SELECT * FROM entity');
+
+
+        $this->assertEqual($a, array (
+                            0 =>
+                            array (
+                              'id' => '1',
+                              'name' => 'zYne',
+                            ),
+                            1 =>
+                            array (
+                              'id' => '2',
+                              'name' => 'John',
+                            ),
+                          ));
+    }
+    public function testFetchOne() {
+        $c = $this->conn->fetchOne('SELECT COUNT(1) FROM entity');
+        
+        $this->assertEqual($c, 2);
+        
+        $c = $this->conn->fetchOne('SELECT COUNT(1) FROM entity WHERE id = ?', array(1));
+        
+        $this->assertEqual($c, 1);
+    }
+    
+    public function testFetchAssoc() {
+
+    }
+    public function testFetchColumn() {
+        $a = $this->conn->fetchColumn('SELECT * FROM entity');
+
+        $this->assertEqual($a, array (
+                              0 => '1',
+                              1 => '2',
+                            ));
+
+        $a = $this->conn->fetchColumn('SELECT * FROM entity WHERE id = ?', array(1));
+
+        $this->assertEqual($a, array (
+                              0 => '1',
+                            ));
+    }
+    public function testFetchArray() {
+        $a = $this->conn->fetchArray('SELECT * FROM entity');
+
+        $this->assertEqual($a, array (
+                              0 => '1',
+                              1 => 'zYne',
+                            ));
+
+        $a = $this->conn->fetchArray('SELECT * FROM entity WHERE id = ?', array(1));
+
+        $this->assertEqual($a, array (
+                              0 => '1',
+                              1 => 'zYne',
+                            ));
+    }
+    public function testFetchRow() {
+        $c = $this->conn->fetchRow('SELECT * FROM entity');
+
+        $this->assertEqual($c, array (
+                              'id' => '1',
+                              'name' => 'zYne',
+                            ));
+                            
+        $c = $this->conn->fetchRow('SELECT * FROM entity WHERE id = ?', array(1));
+        
+        $this->assertEqual($c, array (
+                              'id' => '1',
+                              'name' => 'zYne',
+                            ));
+    }
+    public function testFetchPairs() {
+                                   	
+    }
     public function testFlush() {
         $user = $this->connection->getTable('User')->find(4);
         $this->assertTrue(is_numeric($user->Phonenumber[0]->entity_id));

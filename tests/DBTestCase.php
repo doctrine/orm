@@ -23,93 +23,18 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
     public function prepareData() { }
     public function prepareTables() { }
     public function init() { }
-
-    public function testFetchAll() {
-        $this->dbh = Doctrine_Db2::getConnection('sqlite::memory:');
-        $this->dbh->connect();
-
-
-        $this->dbh->query('CREATE TABLE entity (id INTEGER, name TEXT)');
-
-        $this->dbh->query("INSERT INTO entity (id, name) VALUES (1, 'zYne')");
-        $this->dbh->query("INSERT INTO entity (id, name) VALUES (2, 'John')");
-
-        $a = $this->dbh->fetchAll('SELECT * FROM entity');
-
-
-        $this->assertEqual($a, array (
-                            0 =>
-                            array (
-                              'id' => '1',
-                              'name' => 'zYne',
-                            ),
-                            1 =>
-                            array (
-                              'id' => '2',
-                              'name' => 'John',
-                            ),
-                          ));
-    }
-    public function testFetchOne() {
-        $c = $this->dbh->fetchOne('SELECT COUNT(1) FROM entity');
-        
-        $this->assertEqual($c, 2);
-        
-        $c = $this->dbh->fetchOne('SELECT COUNT(1) FROM entity WHERE id = ?', array(1));
-        
-        $this->assertEqual($c, 1);
-    }
     
-    public function testFetchAssoc() {
+    public function testInitialize() {
+        $this->dbh = new Doctrine_Db('sqlite::memory:');
+        $this->dbh->exec('CREATE TABLE entity (id INTEGER, name TEXT)');
 
-    }
-    public function testFetchColumn() {
-        $a = $this->dbh->fetchColumn('SELECT * FROM entity');
-
-        $this->assertEqual($a, array (
-                              0 => '1',
-                              1 => '2',
-                            ));
-
-        $a = $this->dbh->fetchColumn('SELECT * FROM entity WHERE id = ?', array(1));
-
-        $this->assertEqual($a, array (
-                              0 => '1',
-                            ));
-    }
-    public function testFetchArray() {
-        $a = $this->dbh->fetchArray('SELECT * FROM entity');
-
-        $this->assertEqual($a, array (
-                              0 => '1',
-                              1 => 'zYne',
-                            ));
-
-        $a = $this->dbh->fetchArray('SELECT * FROM entity WHERE id = ?', array(1));
-
-        $this->assertEqual($a, array (
-                              0 => '1',
-                              1 => 'zYne',
-                            ));
-    }
-    public function testFetchRow() {
-        $c = $this->dbh->fetchRow('SELECT * FROM entity');
-
-        $this->assertEqual($c, array (
-                              'id' => '1',
-                              'name' => 'zYne',
-                            ));
-                            
-        $c = $this->dbh->fetchRow('SELECT * FROM entity WHERE id = ?', array(1));
+        $this->dbh->exec("INSERT INTO entity (id, name) VALUES (1, 'zYne')");
+        $this->dbh->exec("INSERT INTO entity (id, name) VALUES (2, 'John')");
         
-        $this->assertEqual($c, array (
-                              'id' => '1',
-                              'name' => 'zYne',
-                            ));
+        
+        $this->assertEqual($this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME), 'sqlite');
     }
-    public function testFetchPairs() {
-                                   	
-    }
+
     public function testAddValidEventListener() {
         $this->dbh->setListener(new Doctrine_Db_EventListener());
 
@@ -117,7 +42,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         try {
             $ret = $this->dbh->addListener(new Doctrine_Db_TestLogger());
             $this->pass();
-            $this->assertTrue($ret instanceof Doctrine_Db2);
+            $this->assertTrue($ret instanceof Doctrine_Db);
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
@@ -127,7 +52,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         try {
             $ret = $this->dbh->addListener(new Doctrine_Db_TestValidListener());
             $this->pass();
-            $this->assertTrue($ret instanceof Doctrine_Db2);
+            $this->assertTrue($ret instanceof Doctrine_Db);
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
@@ -138,7 +63,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         try {
             $ret = $this->dbh->addListener(new Doctrine_Db_EventListener_Chain(), 'chain');
             $this->pass();
-            $this->assertTrue($ret instanceof Doctrine_Db2);
+            $this->assertTrue($ret instanceof Doctrine_Db);
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
@@ -152,7 +77,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         try {
             $ret = $this->dbh->addListener(new Doctrine_Db_EventListener_Chain(), 'chain');
             $this->pass();
-            $this->assertTrue($ret instanceof Doctrine_Db2);
+            $this->assertTrue($ret instanceof Doctrine_Db);
         } catch(Doctrine_Db_Exception $e) {
             $this->fail();
         }
@@ -305,19 +230,19 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
     }
     public function testInvalidDSN() {
         try {
-            $this->dbh = Doctrine_Db2::getConnection('');
+            $this->dbh = Doctrine_Db::getConnection('');
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
         }
         try {
-            $this->dbh = Doctrine_Db2::getConnection('unknown');
+            $this->dbh = Doctrine_Db::getConnection('unknown');
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
         }   
         try {
-            $this->dbh = Doctrine_Db2::getConnection(0);
+            $this->dbh = Doctrine_Db::getConnection(0);
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
@@ -325,7 +250,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
     }
     public function testInvalidScheme() {
         try {
-            $this->dbh = Doctrine_Db2::getConnection('unknown://:memory:');
+            $this->dbh = Doctrine_Db::getConnection('unknown://:memory:');
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
@@ -333,7 +258,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
     }
     public function testInvalidHost() {
         try {
-            $this->dbh = Doctrine_Db2::getConnection('mysql://user:password@');
+            $this->dbh = Doctrine_Db::getConnection('mysql://user:password@');
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
@@ -341,20 +266,20 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
     }
     public function testInvalidDatabase() {
         try {
-            $this->dbh = Doctrine_Db2::getConnection('mysql://user:password@host/');
+            $this->dbh = Doctrine_Db::getConnection('mysql://user:password@host/');
             $this->fail();
         } catch(Doctrine_Db_Exception $e) {
             $this->pass();
         }
     }
     public function testGetConnectionPdoLikeDSN() {
-        $this->dbh = Doctrine_Db2::getConnection('mysql:host=localhost;dbname=test', 'root', 'password');
+        $this->dbh = Doctrine_Db::getConnection('mysql:host=localhost;dbname=test', 'root', 'password');
         $this->assertEqual($this->dbh->getOption('dsn'), 'mysql:host=localhost;dbname=test');
         $this->assertEqual($this->dbh->getOption('username'), 'root');
         $this->assertEqual($this->dbh->getOption('password'), 'password');
 
 
-        $this->dbh = Doctrine_Db2::getConnection('sqlite::memory:');
+        $this->dbh = Doctrine_Db::getConnection('sqlite::memory:');
 
         $this->assertEqual($this->dbh->getOption('dsn'), 'sqlite::memory:');
         $this->assertEqual($this->dbh->getOption('username'), false);
@@ -365,13 +290,13 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
     }
 
     public function testGetConnectionWithPearLikeDSN() {
-        $this->dbh = Doctrine_Db2::getConnection('mysql://zYne:password@localhost/test');
+        $this->dbh = Doctrine_Db::getConnection('mysql://zYne:password@localhost/test');
         $this->assertEqual($this->dbh->getOption('dsn'), 'mysql:host=localhost;dbname=test');
         $this->assertEqual($this->dbh->getOption('username'), 'zYne');
         $this->assertEqual($this->dbh->getOption('password'), 'password');
 
 
-        $this->dbh = Doctrine_Db2::getConnection('sqlite://:memory:');
+        $this->dbh = Doctrine_Db::getConnection('sqlite://:memory:');
 
         $this->assertEqual($this->dbh->getOption('dsn'), 'sqlite::memory:');
         $this->assertEqual($this->dbh->getOption('username'), false);
