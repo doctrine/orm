@@ -277,6 +277,18 @@ $menu = array('Getting started' =>
                                         'Column aggregation'
                                         ),
                         ),
+           'Hierarchical data' => array(
+                        'Introduction',
+                        'Adjacency list' => array(
+                                'Introduction'),
+                        'NestedSet' => array(
+                                'Introduction'),
+                        'Materialized path' => array(
+                                'Introduction',
+                                    ),
+                        ),
+
+
            'Configuration' =>
                         array(
                         'Introduction',
