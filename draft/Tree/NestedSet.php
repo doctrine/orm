@@ -90,13 +90,13 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      *
      * @return object $record        instance of Doctrine_Record
      */
-    public function findRoot($root_id = 1)
+    public function findRoot($rootId = 1)
     {
         $q = $this->table->createQuery();
         $q = $q->where('lft = ?', 1);
         
         // if tree has many roots, then specify root id
-        $q = $this->returnQueryWithRootId($q, $root_id);
+        $q = $this->returnQueryWithRootId($q, $rootId);
 
         $root = $q->execute()->getFirst();
 
@@ -126,8 +126,8 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
                 ->orderBy('lft asc');
 
         // if tree has many roots, then specify root id
-        $root_id = isset($options['root_id']) ? $options['root_id'] : '1';
-        $q = $this->returnQueryWithRootId($q, $root_id);
+        $rootId = isset($options['root_id']) ? $options['root_id'] : '1';
+        $q = $this->returnQueryWithRootId($q, $rootId);
         
         $tree = $q->execute();
 
@@ -230,10 +230,10 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      * @param integer   $root_id  id of destination root
      * @return object   Doctrine_Query
      */     
-    public function returnQueryWithRootId($query, $root_id = 1)
+    public function returnQueryWithRootId($query, $rootId = 1)
     {
         if($this->getAttribute('has_many_roots')) {
-            $query->addWhere($this->getAttribute('root_column_name') . ' = ?', $root_id);
+            $query->addWhere($this->getAttribute('root_column_name') . ' = ?', $rootId);
         }
 
         return $query;
