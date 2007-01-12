@@ -39,11 +39,11 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      */
     public function __construct(Doctrine_Table $table, $options)
     {
-      // set default many root attributes
-      $options['has_many_roots'] = isset($options['has_many_roots']) ? $options['has_many_roots'] : false;
-      $options['root_column_name'] = isset($options['root_column_name']) ? $options['root_column_name'] : 'root_id';
-
-      parent::__construct($table, $options);
+        // set default many root attributes
+        $options['has_many_roots'] = isset($options['has_many_roots']) ? $options['has_many_roots'] : false;
+        $options['root_column_name'] = isset($options['root_column_name']) ? $options['root_column_name'] : 'root_id';
+  
+        parent::__construct($table, $options);
     }
     
     /**
@@ -53,8 +53,9 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      */
     public function setTableDefinition()
     {
-        if($this->getAttribute('has_many_roots'))
-          $this->table->setColumn($this->getAttribute('root_column_name'),"integer",11);
+        if ($this->getAttribute('has_many_roots')) {
+            $this->table->setColumn($this->getAttribute('root_column_name'),"integer",11);
+        }
 
         $this->table->setColumn("lft","integer",11);
         $this->table->setColumn("rgt","integer",11);
@@ -67,13 +68,14 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      */
     public function createRoot(Doctrine_Record $record = null)
     {
-        if (!$record) {
+        if ( ! $record) {
             $record = $this->table->create();
         }
 
         // if tree is many roots, then get next root id
-        if($this->getAttribute('has_many_roots'))
-          $record->getNode()->setRootValue($this->getNextRootId());
+        if ($this->getAttribute('has_many_roots')) {
+            $record->getNode()->setRootValue($this->getNextRootId());
+        }
 
         $record->set('lft', '1');
         $record->set('rgt', '2');
@@ -99,7 +101,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         $root = $q->execute()->getFirst();
 
         // if no record is returned, create record
-        if (!$root) {
+        if ( ! $root) {
             $root = $this->table->create();
         }
 
@@ -132,7 +134,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         $root = $tree->getFirst();
 
         // if no record is returned, create record
-        if (!$root) {
+        if ( ! $root) {
             $root = $this->table->create();
         }
 
@@ -194,7 +196,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      */
     public function getNextRootId()
     {
-      return $this->getMaxRootId() + 1;
+        return $this->getMaxRootId() + 1;
     }
 
     /**
@@ -204,21 +206,21 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      */    
     public function getMaxRootId()
     {      
-      $component = $this->table->getComponentName();
-      $column = $this->getAttribute('root_column_name');
-      
-      // cannot get this dql to work, cannot retrieve result using $coll[0]->max
-      //$dql = "SELECT MAX(c.$column) FROM $component c";
-      
-      $dql = "SELECT c.$column FROM $component c ORDER BY c.$column desc LIMIT 1";
+        $component = $this->table->getComponentName();
+        $column = $this->getAttribute('root_column_name');
 
-      $coll = $this->table->getConnection()->query($dql);
-
-      $max = $coll[0]->get($column);
-
-      $max = !is_null($max) ? $max : 0;
-
-      return $max;      
+        // cannot get this dql to work, cannot retrieve result using $coll[0]->max
+        //$dql = "SELECT MAX(c.$column) FROM $component c";
+        
+        $dql = 'SELECT c.' . $column . ' FROM ' . $component . ' c ORDER BY c.' . $column . ' DESC LIMIT 1';
+  
+        $coll = $this->table->getConnection()->query($dql);
+  
+        $max = $coll[0]->get($column);
+  
+        $max = !is_null($max) ? $max : 0;
+  
+        return $max;      
     }
 
     /**
@@ -230,9 +232,10 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      */     
     public function returnQueryWithRootId($query, $root_id = 1)
     {
-      if($this->getAttribute('has_many_roots'))
-        $query->addWhere($this->getAttribute('root_column_name') . ' = ?', $root_id);
-      
-      return $query;     
+        if($this->getAttribute('has_many_roots')) {
+            $query->addWhere($this->getAttribute('root_column_name') . ' = ?', $root_id);
+        }
+
+        return $query;
     }
 }
