@@ -115,6 +115,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->dataDict     = $this->connection->dataDict;
             $this->expr         = $this->connection->expression;
             $this->sequence     = $this->connection->sequence;
+            $this->import       = $this->connection->import;
         }
         $this->unitOfWork = $this->connection->unitOfWork;
         $this->connection->setListener(new Doctrine_EventListener());
