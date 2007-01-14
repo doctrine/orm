@@ -18,9 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Connection_Module');
 /**
  * Doctrine_Cache_Query_Sqlite
- *
  *
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -30,45 +30,40 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Cache_Query_Sqlite implements Countable
+class Doctrine_Cache_Query_Sqlite extends Doctrine_Connection_Module implements Countable
 {
     /**
      * doctrine cache
      */
     const CACHE_TABLE = 'doctrine_query_cache';
     /**
-     * @var Doctrine_Session $session       the table object this cache container belongs to
-     */
-    private $table;
-    /**
-     * @var PDO $dbh                    database handler
-     */
-    private $dbh;
-    /**
      * constructor
      *
-     * @param Doctrine_Connection|null $connection
+     * @param Doctrine_Connection|null $conn
      */
-    public function __construct($connection = null)
+    public function __construct($conn = null)
     {
-        if ( ! ($connection instanceof Doctrine_Connection)) {
-            $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
-        }
-        $this->session = $connection;
+        parent::__construct($conn);
+
         $dir = 'cache';
 
-        $this->path = $dir.DIRECTORY_SEPARATOR;
-        $this->dbh  = new PDO("sqlite::memory:");
+        $this->path = $dir . DIRECTORY_SEPARATOR;
 
         try {
             if ($this->session->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true) {
                 $columns = array();
-                $columns['query_md5']       = array('string', 32, 'notnull');
-                $columns['query_result']    = array('array', 100000, 'notnull');
-                $columns['expires']         = array('integer', 11, 'notnull');
 
-                $dataDict = new Doctrine_DataDict($this->dbh);
-                $dataDict->createTable(self::CACHE_TABLE, $columns);
+                $columns['query_md5']       = array('type'      => 'string',
+                                                    'length'    => 32,
+                                                    'notnull'   => true);
+                $columns['query_result']    = array('type'      => 'array',
+                                                    'length'    => 100000,
+                                                    'notnull'   => true);
+                $columns['expires']         = array('type'      => 'integer',
+                                                    'length'    => 11,
+                                                    'notnull'   => true);
+
+                $this->conn->createTable(self::CACHE_TABLE, $columns);
             }
         } catch(PDOException $e) {
 
@@ -85,10 +80,10 @@ class Doctrine_Cache_Query_Sqlite implements Countable
      */
     public function store($query, array $result, $lifespan)
     {
-        $sql    = "INSERT INTO ".self::CACHE_TABLE." (query_md5, query_result, expires) VALUES (?,?,?)";
-        $stmt   = $this->dbh->prepare($sql);
+        $sql    = 'INSERT INTO ' . self::CACHE_TABLE . ' (query_md5, query_result, expires) VALUES (?,?,?)';
         $params = array(md5($query), serialize($result), (time() + $lifespan));
-        $stmt->execute($params);
+
+        $this->conn->execute($sql, $params);
     }
     /**
      * fetch
@@ -98,11 +93,9 @@ class Doctrine_Cache_Query_Sqlite implements Countable
      */
     public function fetch($md5)
     {
-        $sql    = "SELECT query_result, expires FROM ".self::CACHE_TABLE." WHERE query_md5 = ?";
-        $stmt   = $this->dbh->prepare($sql);
-        $params = array($md5);
-        $stmt->execute($params);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $sql    = 'SELECT query_result, expires FROM ' . self::CACHE_TABLE . ' WHERE query_md5 = ?';
+
+        $result = $this->conn->fetchAssoc($sql, array($md5));
         return unserialize($result['query_result']);
     }
     /**
@@ -113,9 +106,8 @@ class Doctrine_Cache_Query_Sqlite implements Countable
      */
     public function deleteAll()
     {
-        $sql    = "DELETE FROM ".self::CACHE_TABLE;
-        $stmt   = $this->dbh->exec($sql);
-        return $stmt->rowCount();
+        $sql    = 'DELETE FROM '.self::CACHE_TABLE;
+        return $this->conn->exec($sql);
     }
     /**
      * deleteExpired
@@ -125,8 +117,9 @@ class Doctrine_Cache_Query_Sqlite implements Countable
      */
     public function deleteExpired()
     {
-        $sql    = "DELETE FROM ".self::CACHE_TABLE." WHERE expired < ?";
+        $sql    = 'DELETE FROM ' . self::CACHE_TABLE . ' WHERE expired < ?';
         $stmt   = $this->dbh->prepare($sql);
+
         $stmt->execute(array(time()));
     }
     /**
@@ -135,15 +128,13 @@ class Doctrine_Cache_Query_Sqlite implements Countable
      * query was succesfully deleted
      *
      * @param string $md5
-     * @return boolean
+     * @return boolean          whether or not the row was successfully deleted
      */
     public function delete($md5)
     {
-        $sql    = "DELETE FROM ".self::CACHE_TABLE." WHERE query_md5 = ?";
-        $stmt   = $this->dbh->prepare($sql);
-        $params = array($md5);
-        $stmt->execute($params);
-        return $stmt->rowCount();
+        $sql    = 'DELETE FROM ' . self::CACHE_TABLE . ' WHERE query_md5 = ?';
+
+        return (bool) $this->conn->exec($sql, array($md5));
     }
     /**
      * count
@@ -152,7 +143,7 @@ class Doctrine_Cache_Query_Sqlite implements Countable
      */
     public function count()
     {
-        $stmt = $this->dbh->query("SELECT COUNT(*) FROM ".self::CACHE_TABLE);
+        $stmt = $this->dbh->query('SELECT COUNT(*) FROM ' . self::CACHE_TABLE);
         $data = $stmt->fetch(PDO::FETCH_NUM);
 
         // table has three columns so we have to divide the count by two
