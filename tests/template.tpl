@@ -30,5 +30,6 @@
  * @since       1.0
  * @version     $Revision$
  */
-class %s extends Doctrine_UnitTestCase {
+class %s extends Doctrine_UnitTestCase 
+{
 }
