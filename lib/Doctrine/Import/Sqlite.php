@@ -67,17 +67,17 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
      */
     public function listSequences($database = null)
     {
-        $query = "SELECT name FROM sqlite_master WHERE type='table' AND sql NOT NULL ORDER BY name";
-        $table_names = $this->conn->fetchColumn($query);
+        $query      = "SELECT name FROM sqlite_master WHERE type='table' AND sql NOT NULL ORDER BY name";
+        $tableNames = $this->conn->fetchColumn($query);
 
         $result = array();
-        foreach ($table_names as $table_name) {
-            if ($sqn = $this->_fixSequenceName($table_name, true)) {
+        foreach ($tableNames as $tableName) {
+            if ($sqn = $this->conn->fixSequenceName($tableName, true)) {
                 $result[] = $sqn;
             }
         }
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
+        if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_map(($this->conn->getAttribute(Doctrine::ATTR_FIELD_CASE) == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
         }
         return $result;
     }
@@ -90,27 +90,29 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
     public function listTableConstraints($table)
     {
         $table = $this->conn->quote($table, 'text');
+
         $query = "SELECT sql FROM sqlite_master WHERE type='index' AND ";
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $query.= 'LOWER(tbl_name)='.strtolower($table);
+
+        if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
+            $query .= 'LOWER(tbl_name) = ' . strtolower($table);
         } else {
-            $query.= "tbl_name=$table";
+            $query .= 'tbl_name = ' . $table;
         }
-        $query.= " AND sql NOT NULL ORDER BY name";
+        $query  .= ' AND sql NOT NULL ORDER BY name';
         $indexes = $this->conn->fetchColumn($query);
 
         $result = array();
         foreach ($indexes as $sql) {
             if (preg_match("/^create unique index ([^ ]+) on /i", $sql, $tmp)) {
-                $index = $this->_fixIndexName($tmp[1]);
-                if (!empty($index)) {
+                $index = $this->conn->fixIndexName($tmp[1]);
+                if ( ! empty($index)) {
                     $result[$index] = true;
                 }
             }
         }
 
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_change_key_case($result, $this->conn->options['field_case']);
+        if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
+            $result = array_change_key_case($result, $this->conn->getAttribute(Doctrine::ATTR_FIELD_CASE));
         }
         return array_keys($result);
     }
@@ -122,7 +124,6 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
      */
     public function listTableColumns($table)
     {
-
         $sql    = 'PRAGMA table_info(' . $table . ')';
         $result = $this->conn->fetchAll($sql);
 
@@ -149,13 +150,8 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
     public function listTableIndexes($table)
     {
         $sql     =  'PRAGMA index_list(' . $table . ')';
-        $result  = $this->dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-        $indexes = array();
-        foreach ($result as $key => $val) {
-
-        }
-    }
+        return $this->conn->fetchColumn($sql);
+   }
     /**
      * lists tables
      *
@@ -168,15 +164,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
              . "UNION ALL SELECT name FROM sqlite_temp_master "
              . "WHERE type = 'table' ORDER BY name";
 
-        $tables = array();
-        $stmt   = $this->dbh->query($sql);
-
-        $data   = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-        foreach ($data as $table) {
-            $tables[] = new Doctrine_Schema_Table(array('name' => $table));
-        }
-        return $tables;
+        return $this->conn->fetchColumn($sql);
     }
     /**
      * lists table triggers
