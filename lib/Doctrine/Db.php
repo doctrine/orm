@@ -105,6 +105,15 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
             $a = self::parseDSN($dsn);
 
             extract($a);
+        } else {
+            $e = explode(':', $dsn);
+
+            if($e[0] == 'uri') {
+                $e[0] = 'odbc';
+            }
+
+            $this->pendingAttributes[PDO::ATTR_DRIVER_NAME] = $e[0];
+
         }
         $this->options['dsn']      = $dsn;
         $this->options['username'] = $user;
@@ -235,7 +244,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @param string $dsn
      * @return array Parsed contents of DSN
      */
-    function parseDSN($dsn)
+    public function parseDSN($dsn)
     {
         // silence any warnings
         $parts = @parse_url($dsn);
