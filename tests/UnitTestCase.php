@@ -20,7 +20,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     protected $expr;
     protected $dataDict;
     protected $transaction;
-    
+
 
     private $init = false;
 
@@ -63,6 +63,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             case 'Expression':
             case 'Transaction':
             case 'DataDict':
+            case 'Sequence':
                 $this->driverName = 'Sqlite';
             break;
         }
@@ -83,7 +84,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         }
 
         try {
-            $this->connection = $this->manager->getConnection($this->driverName);
+            $this->conn = $this->connection = $this->manager->getConnection($this->driverName);
             $this->connection->evictTables();
             $this->dbh      = $this->adapter = $this->connection->getDbh();
             $this->listener = $this->manager->getAttribute(Doctrine::ATTR_LISTENER);
@@ -91,12 +92,12 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         } catch(Doctrine_Manager_Exception $e) {
             if($this->driverName == 'main') {
-                $this->dbh = Doctrine_Db::getConnection("sqlite::memory:");
+                $this->dbh = Doctrine_Db::getConnection('sqlite::memory:');
             } else {
                 $this->dbh = $this->adapter = new AdapterMock($this->driverName);
             }
 
-            $this->connection  = $this->manager->openConnection($this->dbh, $this->driverName);
+            $this->conn = $this->connection = $this->manager->openConnection($this->dbh, $this->driverName);
 
             if($this->driverName !== 'main') {
                 $exc  = 'Doctrine_Connection_' . ucwords($this->driverName) . '_Exception';

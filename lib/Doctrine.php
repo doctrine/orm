@@ -407,14 +407,14 @@ final class Doctrine
      * @return boolean
      */
     public static function autoload($classname)
-    {
-        if (class_exists($classname)) {
+    {  
+        if (class_exists($classname, false)) {
             return false;
         }
         if (! self::$path) {
             self::$path = dirname(__FILE__);
         }
-        $class = self::$path.DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR,$classname) . '.php';
+        $class = self::$path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR,$classname) . '.php';
 
         if ( ! file_exists($class)) {
             return false;

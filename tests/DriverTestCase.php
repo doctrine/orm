@@ -5,24 +5,35 @@ class AdapterMock implements Doctrine_Adapter_Interface {
     private $queries = array();
     
     private $exception = array();
+    
+    private $lastInsertIdFail = false;
 
-    public function __construct($name) {
+    public function __construct($name) 
+    {
         $this->name = $name;
     }
-    public function getName() {
+    public function getName() 
+    {
         return $this->name;
     }
-    public function pop() {
+    public function pop() 
+    {
         return array_pop($this->queries);
     }
-    public function forceException($name, $message = '', $code = 0) {
+    public function forceException($name, $message = '', $code = 0) 
+    {
         $this->exception = array($name, $message, $code);
     }
-    public function prepare($prepareString){ 
-        return new AdapterStatementMock;
+    public function prepare($query)
+    {
+        return new AdapterStatementMock($this, $query);
     }
-    public function query($queryString) {
-        $this->queries[] = $queryString;
+    public function addQuery($query)
+    {
+        $this->queries[] = $query;
+    }
+    public function query($query) {
+        $this->queries[] = $query;
 
         $e    = $this->exception;
 
@@ -34,7 +45,7 @@ class AdapterMock implements Doctrine_Adapter_Interface {
             throw new $name($e[1], $e[2]);
         }
 
-        return new AdapterStatementMock;
+        return new AdapterStatementMock($this, $query);
     }
     public function getAll() {
         return $this->queries;
@@ -57,10 +68,17 @@ class AdapterMock implements Doctrine_Adapter_Interface {
 
         return 0;
     }
+    public function forceLastInsertIdFail() {
+        $this->lastInsertIdFail = true;
+    }
     public function lastInsertId()
     {
     	$this->queries[] = 'LAST_INSERT_ID()';
-        return 1;
+    	if ($this->lastInsertIdFail) {
+            return null;
+    	} else {
+            return 1;
+        }
     }
     public function beginTransaction(){ 
         $this->queries[] = 'BEGIN TRANSACTION';
@@ -68,7 +86,10 @@ class AdapterMock implements Doctrine_Adapter_Interface {
     public function commit(){ 
         $this->queries[] = 'COMMIT';
     }
-    public function rollBack(){ }
+    public function rollBack() 
+    { 
+        $this->queries[] = 'ROLLBACK';
+    }
     public function errorCode(){ }
     public function errorInfo(){ }
     public function getAttribute($attribute) {
@@ -80,6 +101,15 @@ class AdapterMock implements Doctrine_Adapter_Interface {
     }
 }
 class AdapterStatementMock {
+    
+    private $mock;
+    
+    private $query;
+
+    public function __construct(AdapterMock $mock, $query) {
+        $this->mock  = $mock;
+        $this->query = $query;
+    }
     public function fetch($fetchMode) { 
         return array();
     }
@@ -87,6 +117,7 @@ class AdapterStatementMock {
         return array();
     }
     public function execute() {
+        $this->mock->addQuery($this->query);
         return true;
     }
     public function fetchColumn($colnum) {

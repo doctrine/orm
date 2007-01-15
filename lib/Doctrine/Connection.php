@@ -488,7 +488,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return array
      */
     public function fetchAll($statement, array $params = array()) {
-        return $this->query($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
     /**
      * fetchOne
@@ -509,7 +509,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return array
      */
     public function fetchRow($statement, array $params = array()) {
-        return $this->query($statement, $params)->fetch(PDO::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetch(PDO::FETCH_ASSOC);
     }
     /**
      * fetchArray
@@ -519,7 +519,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return array
      */
     public function fetchArray($statement, array $params = array()) {
-        return $this->query($statement, $params)->fetch(PDO::FETCH_NUM);
+        return $this->execute($statement, $params)->fetch(PDO::FETCH_NUM);
     }
     /**
      * fetchColumn
@@ -530,7 +530,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return array
      */
     public function fetchColumn($statement, array $params = array(), $colnum = 0) {
-        return $this->query($statement, $params)->fetchAll(PDO::FETCH_COLUMN, $colnum);
+        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_COLUMN, $colnum);
     }
     /**
      * fetchAssoc
@@ -540,7 +540,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return array
      */
     public function fetchAssoc($statement, array $params = array()) {
-        return $this->query($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
     /**
      * fetchBoth
@@ -550,7 +550,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return array
      */
     public function fetchBoth($statement, array $params = array()) {
-        return $this->query($statement, $params)->fetchAll(PDO::FETCH_BOTH);
+        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_BOTH);
     }
     /**
      * query
@@ -650,7 +650,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             if ( ! empty($params)) {
                 $stmt = $this->dbh->prepare($query);
                 $stmt->execute($params);
-                return $stmt;
+                return $stmt->rowCount();
             } else {
                 return $this->dbh->exec($query);
             }

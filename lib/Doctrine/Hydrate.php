@@ -642,7 +642,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
                 $b = array();
                 foreach ($map as $field => $value) {
                     if ($index > 0) {
-                        $b[] = '(' . $tableAlias . '.' . $field . ' = ' . $value . ' OR ' . $tableAlias . '.' . $field . ' IS NULL)';
+                        $b[] = '(' . $tableAlias . '.' . $field . ' = ' . $value 
+                             . ' OR ' . $tableAlias . '.' . $field . ' IS NULL)';
                     } else {
                         $b[] = $tableAlias . '.' . $field . ' = ' . $value;
                     }

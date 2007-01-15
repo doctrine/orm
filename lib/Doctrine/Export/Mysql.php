@@ -84,7 +84,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      * @param array $options  An associative array of table options:
      *                          array(
      *                              'comment' => 'Foo',
-     *                              'character_set' => 'utf8',
+     *                              'charset' => 'utf8',
      *                              'collate' => 'utf8_unicode_ci',
      *                              'collate' => 'utf8_unicode_ci',
      *                              'type'    => 'innodb',
@@ -94,18 +94,18 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      */
     public function createTable($name, array $fields, array $options = array()) {
         if ( ! $name)
-            throw new Doctrine_Export_Mysql_Exception('no valid table name specified');
+            throw new Doctrine_Export_Exception('no valid table name specified');
 
         if (empty($fields)) {
-            throw new Doctrine_Export_Mysql_Exception('no fields specified for table "'.$name.'"');
+            throw new Doctrine_Export_Exception('no fields specified for table "'.$name.'"');
         }
-        $query_fields = $this->getFieldDeclarationList($fields);
+        $queryFields = $this->getFieldDeclarationList($fields);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
-            $query_fields.= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
+            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
         }
         $name  = $this->conn->quoteIdentifier($name, true);
-        $query = 'CREATE TABLE ' . $name . ' (' . $query_fields . ')';
+        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
 
         $optionStrings = array();
 
@@ -227,7 +227,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     public function alterTable($name, array $changes, $check)
     {
         if ( ! $name)
-            throw new Doctrine_Export_Mysql_Exception('no valid table name specified');
+            throw new Doctrine_Export_Exception('no valid table name specified');
 
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
@@ -238,7 +238,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 case 'name':
                     break;
                 default:
-                    throw new Doctrine_Export_Mysql_Exception('change type "'.$changeName.'" not yet supported');
+                    throw new Doctrine_Export_Exception('change type "'.$changeName.'" not yet supported');
             }
         }
 
@@ -324,7 +324,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     {
         $query  = 'CREATE TABLE ' . $sequenceName
                 . ' (' . $seqcolName . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
-                . $seqcol_name . '))'
+                . $seqcolName . '))'
                 . strlen($this->conn->default_table_type) ? ' TYPE = '
                 . $this->conn->default_table_type : '';
 
@@ -334,7 +334,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             return true;
 
         $query  = 'INSERT INTO ' . $sequenceName
-                . ' (' . $seqcol_name . ') VALUES (' . ($start - 1) . ')';
+                . ' (' . $seqcolName . ') VALUES (' . ($start - 1) . ')';
 
         $res    = $this->conn->exec($query);
 
@@ -342,10 +342,10 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         try {
             $result = $this->conn->exec('DROP TABLE ' . $sequenceName);
         } catch(Exception $e) {
-            throw new Doctrine_Export_Mysql_Exception('could not drop inconsistent sequence table');
+            throw new Doctrine_Export_Exception('could not drop inconsistent sequence table');
         }
 
-        throw new Doctrine_Mysql_Export_Exception('could not create sequence table');
+        throw new Doctrine_Export_Exception('could not create sequence table');
     }
     /**
      * Get the stucture of a field into an array

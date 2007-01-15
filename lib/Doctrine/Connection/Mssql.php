@@ -79,7 +79,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
      */
     public function quoteIdentifier($identifier, $checkOption = false)
     {
-        if ($checkOption && ! $this->options['quote_identifier']) {
+        if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
             return $identifier;
         }
         return '[' . str_replace(']', ']]', $identifier) . ']';
@@ -143,9 +143,8 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
      *
      * @param bool   $native  determines if the raw version string should be returned
      * @return mixed array/string with version information or MDB2 error object
-     * @access public
      */
-    function getServerVersion($native = false)
+    public function getServerVersion($native = false)
     {
         if ($this->connected_server_info) {
             $serverInfo = $this->connected_server_info;

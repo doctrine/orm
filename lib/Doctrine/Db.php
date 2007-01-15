@@ -192,7 +192,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
 
         $this->dbh = new PDO($this->options['dsn'], $this->options['username'], $this->options['password']);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array("Doctrine_Db_Statement", array($this)));
+        $this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('Doctrine_Db_Statement', array($this)));
         
         foreach($this->pendingAttributes as $attr => $value) {
             $this->dbh->setAttribute($attr, $value);
