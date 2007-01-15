@@ -30,5 +30,48 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Import_Firebird_TestCase extends Doctrine_UnitTestCase {
+class Doctrine_Import_Firebird_TestCase extends Doctrine_UnitTestCase 
+{
+    public function testListTablesExecutesSql() 
+    {
+        $this->import->listTables();
+        
+        $this->assertEqual($this->adapter->pop(), 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE RDB$SYSTEM_FLAG=0 AND RDB$VIEW_BLR IS NULL');
+    }
+    public function testListTableFieldsExecutesSql()
+    {
+        $this->import->listTableFields('table');
+        
+        $this->assertEqual($this->adapter->pop(), "SELECT RDB\$FIELD_NAME FROM RDB\$RELATION_FIELDS WHERE UPPER(RDB\$RELATION_NAME) = 'TABLE'");
+    }
+    public function testListUsersExecutesSql()
+    {
+        $this->import->listUsers();
+
+        $this->assertEqual($this->adapter->pop(), "SELECT DISTINCT RDB\$USER FROM RDB\$USER_PRIVILEGES");
+    }
+    public function testListViewsExecutesSql()
+    {
+        $this->import->listViews();
+        
+        $this->assertEqual($this->adapter->pop(), "SELECT DISTINCT RDB\$VIEW_NAME FROM RDB\$VIEW_RELATIONS");
+    }
+    public function testListFunctionsExecutesSql()
+    {
+        $this->import->listFunctions('table');
+        
+        $this->assertEqual($this->adapter->pop(), "SELECT RDB\$FUNCTION_NAME FROM RDB\$FUNCTIONS WHERE RDB\$SYSTEM_FLAG IS NULL");
+    }
+    public function testListTableViewsExecutesSql()
+    {
+        $this->import->listTableViews('table');
+        
+        $this->assertEqual($this->adapter->pop(), "SELECT DISTINCT RDB\$VIEW_NAME FROM RDB\$VIEW_RELATIONS WHERE UPPER(RDB\$RELATION_NAME) = 'TABLE'");
+    }
+    public function testListTableTriggersExecutesSql()
+    {
+        $this->import->listTableTriggers('table');
+        
+        $this->assertEqual($this->adapter->pop(), "SELECT RDB\$TRIGGER_NAME FROM RDB\$TRIGGERS WHERE RDB\$SYSTEM_FLAG IS NULL OR RDB\$SYSTEM_FLAG = 0 WHERE UPPER(RDB\$RELATION_NAME) = 'TABLE'");
+    }
 }
