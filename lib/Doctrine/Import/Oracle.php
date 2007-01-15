@@ -53,11 +53,6 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         $result2 = $this->conn->standaloneQuery($query, array('text'), false);
         $result  = $result2->fetchCol();
 
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE
-            && $this->conn->options['field_case'] == CASE_LOWER
-        ) {
-            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
-        }
         $result2->free();
         return $result;
     }
@@ -69,14 +64,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listFunctions()
     {
         $query = "SELECT name FROM sys.user_source WHERE line = 1 AND type = 'FUNCTION'";
-        $result = $this->conn->fetchColumn($query);
-
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE
-            && $this->conn->options['field_case'] == CASE_LOWER
-        ) {
-            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
-        }
-        return $result;
+        return $this->conn->fetchColumn($query);
     }
     /**
      * lists all database triggers
@@ -99,14 +87,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         $query = "SELECT sequence_name FROM sys.user_sequences";
         $tableNames = $this->conn->fetchColumn($query);
 
-        $result = array();
-        foreach ($tableNames as $tableName) {
-            $result[] = $this->_fixSequenceName($tableName);
-        }
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
-        }
-        return $result;
+        return array_map(array($this->conn, 'fixSequenceName'), $result);
     }
     /**
      * lists table constraints
@@ -122,20 +103,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         $query.= ' WHERE table_name='.$table.' OR table_name='.strtoupper($table);
         $constraints = $this->conn->fetchColumn($query);
 
-        $result = array();
-        foreach ($constraints as $constraint) {
-            $constraint = $this->_fixIndexName($constraint);
-            if (!empty($constraint)) {
-                $result[$constraint] = true;
-            }
-        }
-
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE
-            && $this->conn->options['field_case'] == CASE_LOWER
-        ) {
-            $result = array_change_key_case($result, $this->conn->options['field_case']);
-        }
-        return array_keys($result);
+        return array_map(array($this->conn, 'fixIndexName'), $constraints);
     }
     /**
      * lists table constraints
@@ -174,20 +142,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         $query.= ' AND generated=' .$this->conn->quote('N', 'text');
         $indexes = $this->conn->fetchColumn($query);
 
-        $result = array();
-        foreach ($indexes as $index) {
-            $index = $this->_fixIndexName($index);
-            if (!empty($index)) {
-                $result[$index] = true;
-            }
-        }
-
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE
-            && $this->conn->options['field_case'] == CASE_LOWER
-        ) {
-            $result = array_change_key_case($result, $this->conn->options['field_case']);
-        }
-        return array_keys($result);
+        return array_map(array($this->conn, 'fixIndexName'), $indexes);
     }
     /**
      * lists tables
@@ -198,14 +153,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listTables($database = null)
     {
         $query = 'SELECT table_name FROM sys.user_tables';
-        $result = $this->conn->fetchColumn($query);
-
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE
-            && $this->conn->options['field_case'] == CASE_LOWER
-        ) {
-            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
-        }
-        return $result;
+        return $this->conn->fetchColumn($query);
     }
     /**
      * lists table triggers
@@ -253,13 +201,6 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listViews($database = null)
     {
         $query = 'SELECT view_name FROM sys.user_views';
-        $result = $this->conn->fetchColumn($query);
-
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE
-            && $this->conn->options['field_case'] == CASE_LOWER
-        ) {
-            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper'), $result);
-        }
-        return $result;
+        return $this->conn->fetchColumn($query);
     }
 }
