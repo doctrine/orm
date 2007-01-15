@@ -64,6 +64,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listFunctions()
     {
         $query = "SELECT name FROM sys.user_source WHERE line = 1 AND type = 'FUNCTION'";
+
         return $this->conn->fetchColumn($query);
     }
     /**
@@ -87,7 +88,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         $query = "SELECT sequence_name FROM sys.user_sequences";
         $tableNames = $this->conn->fetchColumn($query);
 
-        return array_map(array($this->conn, 'fixSequenceName'), $result);
+        return array_map(array($this->conn, 'fixSequenceName'), $tableNames);
     }
     /**
      * lists table constraints

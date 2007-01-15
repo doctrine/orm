@@ -38,27 +38,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
                             'listTables'      => 'SHOW TABLES',
                             'listUsers'       => 'SELECT DISTINCT USER FROM USER',
                             'listViews'       => "SHOW FULL TABLES %sWHERE Table_type = 'VIEW'",
-
                             );
-    /**
-     * lists all availible database functions
-     *
-     * @return array
-     */
-    public function listFunctions()
-    {
-
-    }
-    /**
-     * lists all database triggers
-     *
-     * @param string|null $database
-     * @return array
-     */
-    public function listTriggers($database = null)
-    {
-
-    }
     /**
      * lists all database sequences
      *
@@ -73,13 +53,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
         }
         $tableNames = $this->conn->fetchColumn($query);
 
-        $result = array();
-        foreach ($tableNames as $tableName) {
-            if ($sqn = $this->_fixSequenceName($tableName, true)) {
-                $result[] = $sqn;
-            }
-        }
-        return $result;
+        return array_map(array($this->conn, 'fixSequenceName'), $tableNames);
     }
     /**
      * lists table constraints
@@ -89,40 +63,36 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      */
     public function listTableConstraints($table)
     {
-        $key_name = 'Key_name';
-        $non_unique = 'Non_unique';
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
+        $keyName = 'Key_name';
+        $nonUnique = 'Non_unique';
+        if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
             if ($this->conn->options['field_case'] == CASE_LOWER) {
-                $key_name = strtolower($key_name);
-                $non_unique = strtolower($non_unique);
+                $keyName = strtolower($keyName);
+                $nonUnique = strtolower($nonUnique);
             } else {
-                $key_name = strtoupper($key_name);
-                $non_unique = strtoupper($non_unique);
+                $keyName = strtoupper($keyName);
+                $nonUnique = strtoupper($nonUnique);
             }
         }
 
         $table = $this->conn->quoteIdentifier($table, true);
-        $query = "SHOW INDEX FROM $table";
+        $query = 'SHOW INDEX FROM ' . $table;
         $indexes = $this->conn->fetchAssoc($query);
 
         $result = array();
-        foreach ($indexes as $index_data) {
-            if (!$index_data[$non_unique]) {
-                if ($index_data[$key_name] !== 'PRIMARY') {
-                    $index = $this->_fixIndexName($index_data[$key_name]);
+        foreach ($indexes as $indexData) {
+            if (!$indexData[$nonUnique]) {
+                if ($indexData[$keyName] !== 'PRIMARY') {
+                    $index = $this->conn->fixIndexName($indexData[$keyName]);
                 } else {
                     $index = 'PRIMARY';
                 }
-                if (!empty($index)) {
-                    $result[$index] = true;
+                if ( ! empty($index)) {
+                    $result[] = $index;
                 }
             }
         }
-
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_change_key_case($result, $this->conn->options['field_case']);
-        }
-        return array_keys($result);
+        return $result;
     }
     /**
      * lists table constraints
@@ -161,15 +131,15 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      */
     public function listTableIndexes($table)
     {
-        $key_name = 'Key_name';
-        $non_unique = 'Non_unique';
+        $keyName = 'Key_name';
+        $nonUnique = 'Non_unique';
         if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
             if ($this->conn->options['field_case'] == CASE_LOWER) {
-                $key_name = strtolower($key_name);
-                $non_unique = strtolower($non_unique);
+                $keyName = strtolower($keyName);
+                $nonUnique = strtolower($nonUnique);
             } else {
-                $key_name = strtoupper($key_name);
-                $non_unique = strtoupper($non_unique);
+                $keyName = strtoupper($key_name);
+                $nonUnique = strtoupper($nonUnique);
             }
         }
 
@@ -179,16 +149,12 @@ class Doctrine_Import_Mysql extends Doctrine_Import
 
 
         $result = array();
-        foreach ($indexes as $index_data) {
-            if ($index_data[$non_unique] && ($index = $this->_fixIndexName($index_data[$key_name]))) {
-                $result[$index] = true;
+        foreach ($indexes as $indexData) {
+            if ($indexData[$nonUnique] && ($index = $this->conn->fixIndexName($indexData[$keyName]))) {
+                $result[] = $index;
             }
         }
-
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_change_key_case($result, $this->conn->options['field_case']);
-        }
-        return array_keys($result);
+        return $result;
     }
     /**
      * lists tables
@@ -199,26 +165,6 @@ class Doctrine_Import_Mysql extends Doctrine_Import
     public function listTables($database = null)
     {
         return $this->conn->fetchColumn($this->sql['listTables']);
-    }
-    /**
-     * lists table triggers
-     *
-     * @param string $table     database table name
-     * @return array
-     */
-    public function listTableTriggers($table)
-    {
-
-    }
-    /**
-     * lists table views
-     *
-     * @param string $table     database table name
-     * @return array
-     */
-    public function listTableViews($table)
-    {
-
     }
     /**
      * lists database views

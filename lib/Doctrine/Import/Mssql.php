@@ -34,34 +34,6 @@ Doctrine::autoload('Doctrine_Import');
 class Doctrine_Import_Mssql extends Doctrine_Import
 {
     /**
-     * lists all databases
-     *
-     * @return array
-     */
-    public function listDatabases()
-    {
-
-    }
-    /**
-     * lists all availible database functions
-     *
-     * @return array
-     */
-    public function listFunctions()
-    {
-
-    }
-    /**
-     * lists all database triggers
-     *
-     * @param string|null $database
-     * @return array
-     */
-    public function listTriggers($database = null)
-    {
-
-    }
-    /**
      * lists all database sequences
      *
      * @param string|null $database
@@ -70,29 +42,9 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     public function listSequences($database = null)
     {
         $query = "SELECT name FROM sysobjects WHERE xtype = 'U'";
-        $table_names = $this->conn->fetchColumn($query);
+        $tableNames = $this->conn->fetchColumn($query);
 
-        $result = array();
-        foreach ($table_names as $table_name) {
-            if ($sqn = $this->_fixSequenceName($table_name, true)) {
-                $result[] = $sqn;
-            }
-        }
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ?
-                          'strtolower' : 'strtoupper'), $result);
-        }
-        return $result;
-    }
-    /**
-     * lists table constraints
-     *
-     * @param string $table     database table name
-     * @return array
-     */
-    public function listTableConstraints($table)
-    {
-
+        return array_map(array($this->conn, 'fixSequenceName'), $tableNames);
     }
     /**
      * lists table constraints
@@ -168,12 +120,6 @@ class Doctrine_Import_Mssql extends Doctrine_Import
 
         $result = $this->conn->fetchColumn($query);
 
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE &&
-            $this->conn->options['field_case'] == CASE_LOWER)
-        {
-            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ?
-                'strtolower' : 'strtoupper'), $result);
-        }
         return $result;
     }
     /**
@@ -204,23 +150,11 @@ class Doctrine_Import_Mssql extends Doctrine_Import
         $result = array();
         foreach ($indexes as $index) {
             if (!in_array($index, $pkAll) && $index != null) {
-                $result[$this->_fixIndexName($index)] = true;
+                $result[] = $this->_fixIndexName($index);
             }
         }
 
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            $result = array_change_key_case($result, $this->conn->options['field_case']);
-        }
-        return array_keys($result);
-    }
-    /**
-     * lists database users
-     *
-     * @return array
-     */
-    public function listUsers()
-    {
-
+        return $result;
     }
     /**
      * lists database views
@@ -232,14 +166,6 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     {
         $query = "SELECT name FROM sysobjects WHERE xtype = 'V'";
 
-        $result = $this->conn->fetchColumn($query);
-
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE &&
-            $this->conn->options['field_case'] == CASE_LOWER)
-        {
-            $result = array_map(($this->conn->options['field_case'] == CASE_LOWER ?
-                          'strtolower' : 'strtoupper'), $result);
-        }
-        return $result;
+        return $this->conn->fetchColumn($query);
     }
 }
