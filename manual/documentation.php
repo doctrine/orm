@@ -278,14 +278,16 @@ $menu = array('Getting started' =>
                                         ),
                         ),
            'Hierarchical data' => array(
-                        'Introduction',
+                        'Introduction' => array(
+								'About', 'Setting up', 'Node interface', 'Tree interface', 'Traversing or Walking Trees', 'Read me'),
                         'Adjacency list' => array(
                                 'Introduction'),
-                        'NestedSet' => array(
-                                'Introduction'),
+                        'Nested set' => array(
+                                'Introduction', 'Setting up', 'Tree options', 'Node support', 'Tree support', 'Read me'),
                         'Materialized path' => array(
                                 'Introduction',
                                     ),
+						'Examples'
                         ),
 
 

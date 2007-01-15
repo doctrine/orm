@@ -1,0 +1,1 @@
+Partially supported, available methods

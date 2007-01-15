@@ -1,0 +1,1 @@
+This is an example to show how you would set up and use the doctrine tree interface with the NestedSet implementation (currently the most comprehensively supported by Doctrine)
