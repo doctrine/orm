@@ -53,7 +53,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
     public function listTableFields($table)
     {
         $table = $this->conn->quote(strtoupper($table), 'text');
-        $query = 'SELECT RDB\$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
+        $query = 'SELECT RDB$FIELD_NAME FROM RDB$RELATION_FIELDS WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
 
         return $this->conn->fetchColumn($query);
     }
@@ -85,7 +85,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
     {
         $query  = 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS';
         $table  = $this->conn->quote(strtoupper($table), 'text');
-        $query .= 'WHERE UPPER(RDB\$RELATION_NAME) = ' . $table;
+        $query .= ' WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
 
         return $this->conn->fetchColumn($query);
     }
@@ -110,14 +110,11 @@ class Doctrine_Import_Firebird extends Doctrine_Import
      */
     public function listTableTriggers($table = null)
     {
-        $query = 'SELECT RDB$TRIGGER_NAME
-                    FROM RDB$TRIGGERS
-                   WHERE RDB$SYSTEM_FLAG IS NULL
-                      OR RDB$SYSTEM_FLAG = 0';
+        $query = 'SELECT RDB$TRIGGER_NAME FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG IS NULL OR RDB$SYSTEM_FLAG = 0';
 
         if ( ! is_null($table)) {
             $table = $this->conn->quote(strtoupper($table), 'text');
-            $query .= 'WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
+            $query .= ' WHERE UPPER(RDB$RELATION_NAME) = ' . $table;
         }
 
         return $this->conn->fetchColumn($query);
