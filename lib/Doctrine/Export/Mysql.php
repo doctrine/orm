@@ -320,8 +320,11 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      * @param string    $start        start value of the sequence; default is 1
      * @return boolean
      */
-    public function createSequence($sequenceName, $seqcolName, $start = 1)
+    public function createSequence($sequenceName, $start = 1)
     {
+        $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $seqcolName     = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+
         $query  = 'CREATE TABLE ' . $sequenceName
                 . ' (' . $seqcolName . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
                 . $seqcolName . '))'
