@@ -1,6 +1,7 @@
 <?php
 ob_start();
 
+ini_set('max_execution_time',900);
 
 function autoload($class) {
     if(strpos($class, 'TestCase') === false)
