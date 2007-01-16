@@ -38,6 +38,7 @@ class Doctrine_Db_Event
     const BEGIN     = 5;
     const COMMIT    = 6;
     const ROLLBACK  = 7;
+    const CONNECT   = 8;
     protected $invoker;
 
     protected $query;
@@ -54,8 +55,6 @@ class Doctrine_Db_Event
         $this->invoker = $invoker;
         $this->type    = $type;
         $this->query   = $query;
-
-
     }
     public function getQuery()
     {

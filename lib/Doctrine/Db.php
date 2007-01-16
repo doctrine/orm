@@ -199,6 +199,10 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
         if ($this->isConnected)
             return false;
 
+        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::CONNECT);
+
+        $this->listener->onPreConnect($event);
+
         $this->dbh = new PDO($this->options['dsn'], $this->options['username'], $this->options['password']);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('Doctrine_Db_Statement', array($this)));
@@ -212,6 +216,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
         }
 
         $this->isConnected = true;
+
+        $this->listener->onConnect($event);
         return true;
     }
 

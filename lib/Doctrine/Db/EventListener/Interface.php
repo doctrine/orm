@@ -26,6 +26,9 @@
  * @package     Doctrine
  */
 interface Doctrine_Db_EventListener_Interface {
+    public function onPreConnect(Doctrine_Db_Event $event);
+    public function onConnect(Doctrine_Db_Event $event);
+
     public function onPreQuery(Doctrine_Db_Event $event);
     public function onQuery(Doctrine_Db_Event $event);
 
