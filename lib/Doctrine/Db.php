@@ -273,10 +273,11 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
         $drivers = self::getAvailableDrivers();
 
         $parts['scheme'] = self::driverName($parts['scheme']);
-
+        /**
         if ( ! in_array($parts['scheme'], $drivers)) {
             throw new Doctrine_Db_Exception('Driver '.$parts['scheme'].' not availible or extension not loaded');
         }
+        */
         switch ($parts['scheme']) {
             case 'sqlite':
                 if (isset($parts['host']) && $parts['host'] == ':memory') {
