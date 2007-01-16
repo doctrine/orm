@@ -132,12 +132,21 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      *      -- inheritanceMap               inheritanceMap is used for inheritance mapping, keys representing columns and values
      *                                      the column values that should correspond to child classes
+     *
+     *      -- engine                       database engine (mysql example: INNODB)
+     *
+     *      -- charset                      character set
+     *
+     *      -- collation
      */
     protected $options          = array('name'           => null,
                                         'tableName'      => null,
                                         'sequenceName'   => null,
                                         'inheritanceMap' => array(),
                                         'enumMap'        => array(),
+                                        'engine'         => null,
+                                        'charset'        => null,
+                                        'collation'      => null
                                         );
 
     /**
