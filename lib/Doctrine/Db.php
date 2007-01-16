@@ -293,6 +293,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
             case 'firebird':
             case 'pgsql':
             case 'odbc':
+            case 'mock':
                 if ( ! isset($parts['path']) || $parts['path'] == '/') {
                     throw new Doctrine_Db_Exception('No database availible in data source name');
                 }
