@@ -204,6 +204,10 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
         $this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('Doctrine_Db_Statement', array($this)));
         
         foreach($this->pendingAttributes as $attr => $value) {
+            // some drivers don't support setting this so we just skip it
+            if($attr == PDO::ATTR_DRIVER_NAME) {
+                continue;
+            }
             $this->dbh->setAttribute($attr, $value);
         }
 

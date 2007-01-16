@@ -17,7 +17,7 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
- */
+ */                   
 /**
  * Doctrine_Tree
  *
@@ -89,20 +89,20 @@ class Doctrine_Tree
         return new $class($table, $options);
     }
 
-	/**
-	 * gets tree attribute value
-	 *		
-	 */     
+    /**
+     * gets tree attribute value
+     *        
+     */     
     public function getAttribute($name)
     {
       return isset($this->options[$name]) ? $this->options[$name] : null;
     }
 
-	/**
-	 * sets tree attribute value
-	 *
-	 * @param mixed			
-	 */    
+    /**
+     * sets tree attribute value
+     *
+     * @param mixed            
+     */
     public function setAttribute($name, $value)
     {
       $this->options[$name] = $value;
