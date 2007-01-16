@@ -281,7 +281,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         $this->shiftRLValues($dest->getNode()->getRightValue() + 2, 1);
         
         $newLeft = $dest->getNode()->getLeftValue();
-        $newRight = $dest->getNode()->getRightValue()    + 2;
+        $newRight = $dest->getNode()->getRightValue() + 2;
         $newRoot = $dest->getNode()->getRootValue();
 
         $this->insertNode($newLeft, $newRight, $newRoot);
@@ -437,7 +437,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function isLeaf()
     {
-        return (($this->getRightValue()-$this->getLeftValue())==1);     
+        return (($this->getRightValue() - $this->getLeftValue()) == 1);
     }
 
     /**
@@ -447,7 +447,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function isRoot()
     {
-        return ($this->getLeftValue()==1);        
+        return ($this->getLeftValue() == 1);
     }
 
     /**
@@ -457,17 +457,20 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */    
     public function isEqualTo(Doctrine_Record $subj)
     {
-        return (($this->getLeftValue()==$subj->getNode()->getLeftValue()) and ($this->getRightValue()==$subj->getNode()->getRightValue()) and ($this->getRootValue() == $subj->getNode()->getRootValue()));        
+        return (($this->getLeftValue() == $subj->getNode()->getLeftValue()) &&
+                ($this->getRightValue() == $subj->getNode()->getRightValue()) && 
+                ($this->getRootValue() == $subj->getNode()->getRootValue())
+                );
     }
 
     /**
      * determines if node is child of subject node
      *
-     * @return bool            
+     * @return bool
      */
     public function isDescendantOf(Doctrine_Record $subj)
     {
-        return (($this->getLeftValue()>$subj->getNode()->getLeftValue()) and ($this->getRightValue()<$subj->getNode()->getRightValue()) and ($this->getRootValue() == $subj->getNode()->getRootValue()));        
+        return (($this->getLeftValue()>$subj->getNode()->getLeftValue()) && ($this->getRightValue()<$subj->getNode()->getRightValue()) && ($this->getRootValue() == $subj->getNode()->getRootValue()));
     }
 
     /**
@@ -477,7 +480,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function isDescendantOfOrEqualTo(Doctrine_Record $subj)
     {
-        return (($this->getLeftValue()>=$subj->getNode()->getLeftValue()) and ($this->getRightValue()<=$subj->getNode()->getRightValue()) and ($this->getRootValue() == $subj->getNode()->getRootValue()));        
+        return (($this->getLeftValue()>=$subj->getNode()->getLeftValue()) && ($this->getRightValue()<=$subj->getNode()->getRightValue()) && ($this->getRootValue() == $subj->getNode()->getRootValue()));
     }
 
     /**
@@ -502,7 +505,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         
         $componentName = $this->record->getTable()->getComponentName();
 
-        $q = $q->where("$componentName.lft >= ? AND $componentName.rgt <= ?", array($this->getLeftValue(), $this->getRightValue()));
+        $q = $q->where($componentName. '.lft >= ? AND ' . $componentName . '.rgt <= ?', array($this->getLeftValue(), $this->getRightValue()));
 
         $q = $this->record->getTable()->getTree()->returnQueryWithRootId($q, $this->getRootValue());
         
@@ -566,28 +569,28 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      * @param int $first         First node to be shifted
      * @param int $delta         Value to be shifted by, can be negative
      */    
-    private function shiftRLValues($first, $delta, $root_id = 1)
+    private function shiftRlValues($first, $delta, $rootId = 1)
     {
-        $qLeft = $this->record->getTable()->createQuery();
-        $qRight = $this->record->getTable()->createQuery();
+        $qLeft  = new Doctrine_Query();
+        $qRight = new Doctrine_Query();
 
         // TODO: Wrap in transaction
 
         // shift left columns
         $qLeft = $qLeft->update($this->record->getTable()->getComponentName())
-                                ->set('lft', "lft + $delta")
+                                ->set('lft', 'lft + ' . $delta)
                                 ->where('lft >= ?', $first);
 
-        $qLeft = $this->record->getTable()->getTree()->returnQueryWithRootId($qLeft, $root_id);
+        $qLeft = $this->record->getTable()->getTree()->returnQueryWithRootId($qLeft, $rootId);
         
         $resultLeft = $qLeft->execute();
         
         // shift right columns
         $resultRight = $qRight->update($this->record->getTable()->getComponentName())
-                                ->set('rgt', "rgt    + $delta")
+                                ->set('rgt', 'rgt + ' . $delta)
                                 ->where('rgt >= ?', $first);
 
-        $qRight = $this->record->getTable()->getTree()->returnQueryWithRootId($qRight, $root_id);
+        $qRight = $this->record->getTable()->getTree()->returnQueryWithRootId($qRight, $rootId);
 
         $resultRight = $qRight->execute();
     }
@@ -600,28 +603,28 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      * @param int $last     Last node to be shifted (L value)
      * @param int $delta         Value to be shifted by, can be negative
      */ 
-    private function shiftRLRange($first, $last, $delta, $root_id = 1)
+    private function shiftRlRange($first, $last, $delta, $rootId = 1)
     {
-        $qLeft = $this->record->getTable()->createQuery();
-        $qRight = $this->record->getTable()->createQuery();
+        $qLeft  = new Doctrine_Query();
+        $qRight = new Doctrine_Query();
         
         // TODO : Wrap in transaction
 
         // shift left column values
         $qLeft = $qLeft->update($this->record->getTable()->getComponentName())
-                                ->set('lft', "lft + $delta")
+                                ->set('lft', 'lft + ' . $delta)
                                 ->where('lft >= ? AND lft <= ?', array($first, $last));
         
-        $qLeft = $this->record->getTable()->getTree()->returnQueryWithRootId($qLeft, $root_id);
+        $qLeft = $this->record->getTable()->getTree()->returnQueryWithRootId($qLeft, $rootId);
 
         $resultLeft = $qLeft->execute();
         
         // shift right column values
         $qRight = $qRight->update($this->record->getTable()->getComponentName())
-                                ->set('rgt', "rgt + $delta")
+                                ->set('rgt', 'rgt + ' . $delta)
                                 ->where('rgt >= ? AND rgt <= ?', array($first, $last));
 
-        $qRight = $this->record->getTable()->getTree()->returnQueryWithRootId($qRight, $root_id);
+        $qRight = $this->record->getTable()->getTree()->returnQueryWithRootId($qRight, $rootId);
 
         $resultRight = $qRight->execute();
     }
