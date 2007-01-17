@@ -39,6 +39,7 @@ class Doctrine_Db_Profiler extends Doctrine_Access implements Doctrine_Overloada
                                 'prepare',
                                 'commit',
                                 'rollback',
+                                'connect',
                                 'begintransaction',
                                 'exec',
                                 'execute',
