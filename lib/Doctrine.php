@@ -72,111 +72,110 @@ final class Doctrine
     const ERR_MANAGER_PARSE         = -33;
     const ERR_LOADMODULE            = -34;
     const ERR_INSUFFICIENT_DATA     = -35;
-    /**
-     * class naming error
-     */
     const ERR_CLASS_NAME            = -36;
-
+    
+    /**
+     * PDO derived constants
+     */
+    const CASE_LOWER = 2;
+    const CASE_NATURAL = 0;
+    const CASE_UPPER = 1;
+    const CURSOR_FWDONLY = 0;
+    const CURSOR_SCROLL = 1;
+    const ERRMODE_EXCEPTION = 2;
+    const ERRMODE_SILENT = 0;
+    const ERRMODE_WARNING = 1;
+    const FETCH_ASSOC = 2;
+    const FETCH_BOTH = 4;
+    const FETCH_BOUND = 6;
+    const FETCH_CLASS = 8;
+    const FETCH_CLASSTYPE = 262144;
+    const FETCH_COLUMN = 7;
+    const FETCH_FUNC = 10;
+    const FETCH_GROUP = 65536;
+    const FETCH_INTO = 9;
+    const FETCH_LAZY = 1;
+    const FETCH_NAMED = 11;
+    const FETCH_NUM = 3;
+    const FETCH_OBJ = 5;
+    const FETCH_ORI_ABS = 4;
+    const FETCH_ORI_FIRST = 2;
+    const FETCH_ORI_LAST = 3;
+    const FETCH_ORI_NEXT = 0;
+    const FETCH_ORI_PRIOR = 1;
+    const FETCH_ORI_REL = 5;
+    const FETCH_SERIALIZE = 524288;
+    const FETCH_UNIQUE = 196608;
+    const NULL_EMPTY_STRING = 1;
+    const NULL_NATURAL = 0;
+    const NULL_TO_STRING		 = NULL;
+    const PARAM_BOOL = 5;
+    const PARAM_INPUT_OUTPUT = -2147483648;
+    const PARAM_INT = 1;
+    const PARAM_LOB = 3;
+    const PARAM_NULL = 0;
+    const PARAM_STMT = 4;
+    const PARAM_STR = 2;
     /**
      * ATTRIBUTE CONSTANTS
      */
-
+     
     /**
-     * event listener attribute
+     * PDO derived attributes
      */
-    const ATTR_LISTENER             = 1;
+    const ATTR_AUTOCOMMIT           = 0;
+    const ATTR_PREFETCH             = 1;
+    const ATTR_TIMEOUT              = 2;
+    const ATTR_ERRMODE              = 3;
+    const ATTR_SERVER_VERSION       = 4;
+    const ATTR_CLIENT_VERSION       = 5;
+    const ATTR_SERVER_INFO          = 6;
+    const ATTR_CONNECTION_STATUS    = 7;
+    const ATTR_CASE                 = 8;
+    const ATTR_CURSOR_NAME          = 9;
+    const ATTR_CURSOR               = 10;
+    const ATTR_ORACLE_NULLS         = 11;
+    const ATTR_PERSISTENT           = 12;
+    const ATTR_STATEMENT_CLASS      = 13;
+    const ATTR_FETCH_TABLE_NAMES    = 14;
+    const ATTR_FETCH_CATALOG_NAMES  = 15;
+    const ATTR_DRIVER_NAME          = 16;
+    const ATTR_STRINGIFY_FETCHES    = 17;
+    const ATTR_MAX_COLUMN_LEN       = 18;
     /**
-     * portability attribute
+     * Doctrine constants
      */
-    const ATTR_PORTABILITY          = 9;
-    /**
-     * quote identifier attribute
-     */
-    const ATTR_QUOTE_IDENTIFIER     = 3;
-    /**
-     * field case attribute
-     */
-    const ATTR_FIELD_CASE           = 4;
-    /**
-     * index name format attribute
-     */
-    const ATTR_IDXNAME_FORMAT       = 5;
-    /**
-     * sequence name format attribute
-     */
-    const ATTR_SEQNAME_FORMAT       = 6;
-    /**
-     * sequence column name attribute
-     */
-    const ATTR_SEQCOL_NAME          = 7;
-    /**
-     * validation attribute
-     */
-    const ATTR_VLD                  = 12;
-    /**
-     * collection key attribute
-     */
-    const ATTR_COLL_KEY             = 15;
-    /**
-     * query limit
-     */
-    const ATTR_QUERY_LIMIT          = 17;
-    /**
-     * automatic length validations attribute
-     */
-    const ATTR_AUTO_LENGTH_VLD      = 19;
-    /**
-     * automatic type validations attribute
-     */
-    const ATTR_AUTO_TYPE_VLD        = 20;
-    /**
-     * default table type attribute
-     */
-    const ATTR_DEFAULT_TABLE_TYPE   = 21;
-    const ATTR_DEF_TEXT_LENGTH      = 30;
-    const ATTR_DEF_VARCHAR_LENGTH   = 31;
-    const ATTR_DEF_TABLESPACE       = 32;
-    const ATTR_EMULATE_DATABASE     = 33;
-    const ATTR_DB_NAME_FORMAT       = 34;
+    const ATTR_LISTENER             = 100;
+    const ATTR_QUOTE_IDENTIFIER     = 101;
+    const ATTR_FIELD_CASE           = 102;
+    const ATTR_IDXNAME_FORMAT       = 103;
+    const ATTR_SEQNAME_FORMAT       = 104;
+    const ATTR_SEQCOL_NAME          = 105;
+    const ATTR_PORTABILITY          = 106;
+    const ATTR_VLD                  = 107;
+    const ATTR_COLL_KEY             = 108;
+    const ATTR_QUERY_LIMIT          = 109;
+    const ATTR_AUTO_LENGTH_VLD      = 110;
+    const ATTR_AUTO_TYPE_VLD        = 111;
+    const ATTR_DEFAULT_TABLE_TYPE   = 112;
+    const ATTR_DEF_TEXT_LENGTH      = 113;
+    const ATTR_DEF_VARCHAR_LENGTH   = 114;
+    const ATTR_DEF_TABLESPACE       = 115;
+    const ATTR_EMULATE_DATABASE     = 116;
+    const ATTR_DB_NAME_FORMAT       = 117;
 
     /** TODO: REMOVE THE FOLLOWING CONSTANTS AND UPDATE THE DOCS ! */
 
-    /**
-     * fetchmode attribute
-     */
-    const ATTR_FETCHMODE        = 2;
-    /**
-     * batch size attribute
-     */
-    const ATTR_BATCH_SIZE       = 8;
-    /**
-     * locking attribute
-     */
-    const ATTR_LOCKMODE         = 11;
-    /**
-     * name prefix attribute
-     */
-    const ATTR_NAME_PREFIX      = 13;
-    /**
-     * create tables attribute
-     */
-    const ATTR_CREATE_TABLES    = 14;
-    /**
-     * collection limit attribute
-     */
-    const ATTR_COLL_LIMIT       = 16;
-    /**
-     * accessor invoking attribute
-     */
-    const ATTR_ACCESSORS        = 18;
-    /**
-     * accessor invoking prefix get
-     */
-    const ATTR_ACCESSOR_PREFIX_GET        = 22;
-    /**
-     * accessor invoking prefix set
-     */
-    const ATTR_ACCESSOR_PREFIX_SET        = 23;
+
+    const ATTR_FETCHMODE            = 118;
+    const ATTR_BATCH_SIZE           = 119;
+    const ATTR_LOCKMODE             = 120;
+    const ATTR_NAME_PREFIX          = 121;
+    const ATTR_CREATE_TABLES        = 122;
+    const ATTR_COLL_LIMIT           = 123;
+    const ATTR_ACCESSORS            = 124;
+    const ATTR_ACCESSOR_PREFIX_GET  = 125;
+    const ATTR_ACCESSOR_PREFIX_SET  = 126;
 
 
 
@@ -207,11 +206,6 @@ final class Doctrine
      * mode for batch fetching
      */
     const FETCH_BATCH           = 1;
-    /**
-     * LAZY FETCHING
-     * mode for lazy fetching
-     */
-    const FETCH_LAZY            = 2;
     /**
      * LAZY FETCHING
      * mode for offset fetching

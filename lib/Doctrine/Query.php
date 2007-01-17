@@ -1100,15 +1100,15 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $s1 = substr_count($term[$i],"$e1");
                 $s2 = substr_count($term[$i],"$e2");
 
-                if(substr($term[$i],0,1) == "(") {
+                if (substr($term[$i],0,1) == "(") {
                     if($s1 == $s2) {
                         $i++;
                     }
                 } else {
-                    if( ! (substr_count($term[$i], "'") & 1) &&
-                        ! (substr_count($term[$i], "\"") & 1) &&
-                        ! (substr_count($term[$i], "´") & 1)
-                        ) { $i++; }
+                    if ( ! (substr_count($term[$i], "'") & 1) &&
+                         ! (substr_count($term[$i], "\"") & 1) &&
+                         ! (substr_count($term[$i], "´") & 1)
+                       ) { $i++; }
                 }
             } else {
                 $term[$i] .= "$d".trim($val);
@@ -1120,10 +1120,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                         $i++;
                     }
                 } else {
-                    if( ! (substr_count($term[$i], "'") & 1) &&
-                        ! (substr_count($term[$i], "\"") & 1) &&
-                        ! (substr_count($term[$i], "´") & 1)
-                        ) { $i++; }
+                    if ( ! (substr_count($term[$i], "'") & 1) &&
+                         ! (substr_count($term[$i], "\"") & 1) &&
+                         ! (substr_count($term[$i], "´") & 1)
+                       ) { $i++; }
                 }
             }
         }
@@ -1303,14 +1303,16 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 if( ! isset($this->tables[$tableName])) {
                     $this->tables[$tableName] = $table;
 
-                    if($loadFields) {
+                    if ($loadFields) {
 
                         $skip = false;
 
-                        if( ! empty($this->pendingFields))
+                        if ( ! empty($this->pendingFields) ||
+                             ! empty($this->pendingAggregates)) {
                             $skip = true;
+                        }
 
-                        if($componentAlias) {
+                        if ($componentAlias) {
                             $this->compAliases[$componentAlias] = $currPath;
 
                             if(isset($this->pendingFields[$componentAlias])) {
@@ -1323,7 +1325,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                             }
                         }
 
-                        if( ! $skip) {
+                        if ( ! $skip) {
                             $this->parseFields($fullname, $tableName, $e2, $currPath);
                         }
                     }

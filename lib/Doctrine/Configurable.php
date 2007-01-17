@@ -216,7 +216,7 @@ abstract class Doctrine_Configurable
     {
         $attribute = (int) $attribute;
 
-        if ($attribute < 1 || $attribute > 23)
+        if ($attribute < 0)
             throw new Doctrine_Exception('Unknown attribute.');
 
         if ( ! isset($this->attributes[$attribute])) {
