@@ -177,6 +177,13 @@ final class Doctrine
     const ATTR_ACCESSOR_PREFIX_GET  = 125;
     const ATTR_ACCESSOR_PREFIX_SET  = 126;
 
+    /**
+     * NESTED SET CONSTANTS
+     */
+    const ATTR_NS_ROOT_COLUMN_NAME  = 130;
+    const ATTR_NS_GAP_SIZE          = 131;
+    const ATTR_NS_GAP_DECREASE_EXP  = 132;
+
 
 
     /**
