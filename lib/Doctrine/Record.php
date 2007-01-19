@@ -943,6 +943,23 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $conn->commit();
     }
     /**
+     * Tries to save the object and all its related components.
+     * In contrast to Doctrine_Record::save(), this method does not
+     * throw an exception when validation fails but returns TRUE on
+     * success or FALSE on failure.
+     * 
+     * @param Doctrine_Connection $conn                 optional connection parameter
+     * @return TRUE if the record was saved sucessfully without errors, FALSE otherwise.
+     */
+    public function trySave(Doctrine_Connection $conn = null) {
+        try {
+            $this->save($conn);
+            return true;
+        } catch (Doctrine_Validator_Exception $ignored) {
+            return false;
+        }
+    }
+    /**
      * replace
      * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
      * query, except that if there is already a row in the table with the same

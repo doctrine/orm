@@ -177,12 +177,11 @@ class Doctrine_Validator
         }
     }
     /**
-     * Enter description here...
-     *
+     * Validates the length of a field.
      */
     private function validateLength($column, $key, $value)
     {
-        if ($column[0] == "timestamp") {
+        if ($column[0] == "timestamp" || $column[0] == "integer") {
             return true;
         } else if ($column[0] == "array" || $column[0] == "object") {
             $length = strlen(serialize($value));
