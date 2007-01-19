@@ -173,7 +173,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @throws Doctrine_Manager_Exception               if trying to bind a connection with an existing name
      * @return Doctrine_Connection
      */
-    public function openConnection($adapter, $name = null)
+    public function openConnection($adapter, $name = null, $setCurrent = true)
     {
         if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
             throw new Doctrine_Manager_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
@@ -221,7 +221,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 throw new Doctrine_Manager_Exception('Unknown connection driver '. $adapter->getAttribute(PDO::ATTR_DRIVER_NAME));
         };
 
-        $this->currIndex = $name;
+        if ($setCurrent) {
+            $this->currIndex = $name;
+        }
         return $this->connections[$name];
     }
     public function openSession(PDO $pdo, $name = null)
