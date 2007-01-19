@@ -31,6 +31,9 @@
  */
 class Doctrine_Db_Event
 {
+    /**
+     * EVENT CODE CONSTANTS
+     */
     const QUERY     = 1;
     const EXEC      = 2;
     const EXECUTE   = 3;
@@ -39,44 +42,121 @@ class Doctrine_Db_Event
     const COMMIT    = 6;
     const ROLLBACK  = 7;
     const CONNECT   = 8;
+    /**
+     * @var Doctrine_Db $invoker        the handler which invoked this event
+     */
     protected $invoker;
-
+    /**
+     * @var string $query               the sql query associated with this event (if any)
+     */
     protected $query;
-
-    protected $type;
-
+    /**
+     * @see Doctrine_Db_Event constants
+     * @var integer $code               the event code
+     */
+    protected $code;
+    /**
+     * @var integer $startedMicrotime   the time point in which this event was started
+     */
     protected $startedMicrotime;
-
+    /**
+     * @var integer $endedMicrotime     the time point in which this event was ended
+     */
     protected $endedMicrotime;
-
-
-    public function __construct($invoker, $type, $query = null)
+    /**
+     * constructor
+     *
+     * @param Doctrine_Db $invoker      the handler which invoked this event
+     * @param integer $code             the event code
+     * @param string $query             the sql query associated with this event (if any)
+     */
+    public function __construct($invoker, $code, $query = null)
     {
         $this->invoker = $invoker;
-        $this->type    = $type;
+        $this->code    = $code;
         $this->query   = $query;
     }
+    /**
+     * getQuery
+     *
+     * @return string       returns the query associated with this event (if any)
+     */
     public function getQuery()
     {
         return $this->query;
     }
-    public function getType()
+    /**
+     * getName
+     * returns the name of this event
+     *
+     * @return string       the name of this event
+     */
+    public function getName() 
     {
-        return $this->type;
+        switch ($this->code) {
+            case self::QUERY:
+                return 'query';
+            case self::EXEC:
+                return 'exec';
+            case self::EXECUTE:
+                return 'execute';
+            case self::PREPARE:
+                return 'prepare';
+            case self::BEGIN:
+                return 'begin';
+            case self::COMMIT:
+                return 'commit';
+            case self::ROLLBACK:
+                return 'rollback';
+            case self::CONNECT:
+                return 'connect';
+        }
     }
-
+    /**
+     * getCode
+     *
+     * @return integer      returns the code associated with this event
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+    /**
+     * start
+     * starts the internal timer of this event
+     *
+     * @return void
+     */
     public function start()
     {
         $this->startedMicrotime = microtime(true);
     }
+    /**
+     * hasEnded
+     * whether or not this event has ended
+     *
+     * @return boolean
+     */
     public function hasEnded()
     {
         return ($this->endedMicrotime != null);
     }
+    /**
+     * end
+     * ends the internal timer of this event
+     *
+     * @return void
+     */
     public function end()
     {
         $this->endedMicrotime = microtime(true);
     }
+    /**
+     * getInvoker
+     * returns the handler that invoked this event
+     *
+     * @return Doctrine_Db   the handler that invoked this event
+     */
     public function getInvoker()
     {
         return $this->invoker;
