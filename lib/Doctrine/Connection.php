@@ -481,6 +481,16 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
     }
     /**
+     * Set the date/time format for the current connection
+     *
+     * @param string    time format
+     *
+     * @return void
+     */
+    public function setDateFormat($format = null)
+    {
+    }
+    /**
      * fetchAll
      *
      * @param string $statement         sql query to be executed
