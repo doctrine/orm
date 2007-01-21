@@ -69,7 +69,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
      */
     public function lastInsertId($table = null, $field = null)
     {
-        $seq = $table.(empty($field) ? '' : '_'.$field);
+        $seqName = $table . (empty($field) ? '' : '_' . $field);
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
 
         return (int) $this->conn->fetchOne("SELECT CURRVAL('" . $sequenceName . "')");

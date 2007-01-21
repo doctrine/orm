@@ -68,8 +68,13 @@ class AdapterMock implements Doctrine_Adapter_Interface {
 
         return 0;
     }
-    public function forceLastInsertIdFail() {
-        $this->lastInsertIdFail = true;
+    public function forceLastInsertIdFail($fail = true) 
+    {
+        if ($fail) {
+            $this->lastInsertIdFail = true;
+        } else {
+            $this->lastInsertIdFail = false;   	
+        }
     }
     public function lastInsertId()
     {

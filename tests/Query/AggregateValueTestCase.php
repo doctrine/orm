@@ -128,6 +128,10 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($users->count(), 1);
     }
+    public function testAggregateValueMappingSupportsLeftJoins3()
+    {
+
+    }
     public function testAggregateValueMappingSupportsInnerJoins() 
     {
         $q = new Doctrine_Query();

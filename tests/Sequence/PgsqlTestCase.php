@@ -34,7 +34,7 @@ class Doctrine_Sequence_Pgsql_TestCase extends Doctrine_UnitTestCase {
      public function testCurrIdExecutesSql() 
      {
         $this->sequence->currId('user');
-        $q = "SELECT (last_number-1) FROM user_sequences WHERE sequence_name='user_seq' OR sequence_name='USER_SEQ'";
+        $q = "SELECT last_value FROM user_seq";
 
         $this->assertEqual($this->adapter->pop(), $q);
     }
@@ -49,6 +49,6 @@ class Doctrine_Sequence_Pgsql_TestCase extends Doctrine_UnitTestCase {
     {
         $this->sequence->lastInsertId('user');
         
-        $this->assertEqual($this->adapter->pop(), 'SELECT user_seq.currval');
+        $this->assertEqual($this->adapter->pop(), "SELECT CURRVAL('user_seq')");
     }
 }

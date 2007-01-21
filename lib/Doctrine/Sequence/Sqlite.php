@@ -67,16 +67,15 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
             }
         }
 
-        $value = $this->conn->getDbh()->lastInsertID();
+        $value = $this->conn->getDbh()->lastInsertId();
 
         if (is_numeric($value)) {
             $query = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
+            
             $this->conn->exec($query);
             /**
             TODO: is the following needed ?
-            if (PEAR::isError($result)) {
-                $this->warnings[] = 'nextID: could not delete previous sequence table values from '.$seq_name;
-            }
+            $this->warnings[] = 'nextID: could not delete previous sequence table values from '.$seq_name;
             */
         }
         return $value;
