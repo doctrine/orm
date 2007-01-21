@@ -113,7 +113,7 @@ abstract class Doctrine_Configurable
                 if ( ! ($this instanceof Doctrine_Table)) {
                     throw new Doctrine_Exception("This attribute can only be set at table level.");
                 }
-                if ( ! $this->hasColumn($value)) {
+                if ($value !== null && ! $this->hasColumn($value)) {
                     throw new Doctrine_Exception("Couldn't set collection key attribute. No such column '$value'");
                 }
                 break;
