@@ -660,8 +660,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             }
         } elseif ($rel instanceof Doctrine_Relation_ForeignKey) {
             foreach ($this->data as $key => $record) {
-                if ($record->getState() == Doctrine_Record::STATE_TCLEAN
-                   || $record->getState() == Doctrine_Record::STATE_TDIRTY
+                if ($record->state() == Doctrine_Record::STATE_TCLEAN
+                   || $record->state() == Doctrine_Record::STATE_TDIRTY
                 ) {
                     continue;
                 }
@@ -682,8 +682,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $name       = $table->getComponentName();
 
             foreach ($this->data as $key => $record) {
-                if ($record->getState() == Doctrine_Record::STATE_TCLEAN
-                   || $record->getState() == Doctrine_Record::STATE_TDIRTY
+                if ($record->state() == Doctrine_Record::STATE_TCLEAN
+                   || $record->state() == Doctrine_Record::STATE_TDIRTY
                 ) {
                     continue;
                 }

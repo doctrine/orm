@@ -240,7 +240,7 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual(count($coll), 3);
 
-        $this->assertEqual($coll[2]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($coll[2]->state(), Doctrine_Record::STATE_PROXY);
 
 
 
@@ -268,33 +268,33 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
     }
     public function testFetchCollectionWithIdAsIndex() {
         $user = new User();
-        $user->setAttribute(Doctrine::ATTR_COLL_KEY, 'id');
+        $user->attribute(Doctrine::ATTR_COLL_KEY, 'id');
         
         $users = $user->getTable()->findAll();
         $this->assertFalse($users->contains(0));
         $this->assertEqual($users->count(), 8);
         
-        $this->assertEqual($users[0]->getState(), Doctrine_Record::STATE_TCLEAN); 
-        $this->assertEqual($users[4]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_TCLEAN); 
+        $this->assertEqual($users[4]->state(), Doctrine_Record::STATE_CLEAN);
     }
     public function testFetchCollectionWithNameAsIndex() {
         $user = new User();
-        $user->setAttribute(Doctrine::ATTR_COLL_KEY, 'name');
+        $user->attribute(Doctrine::ATTR_COLL_KEY, 'name');
         
         $users = $user->getTable()->findAll();
         $this->assertFalse($users->contains(0));
         $this->assertEqual($users->count(), 8);
         
-        $this->assertEqual($users[0]->getState(), Doctrine_Record::STATE_TCLEAN); 
-        $this->assertEqual($users['zYne']->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_TCLEAN); 
+        $this->assertEqual($users['zYne']->state(), Doctrine_Record::STATE_CLEAN);
     }
     public function testFetchMultipleCollections() {
         $this->connection->clear();
         
         $user = new User();
-        $user->setAttribute(Doctrine::ATTR_COLL_KEY, 'id');
+        $user->attribute(Doctrine::ATTR_COLL_KEY, 'id');
         $phonenumber = new Phonenumber();
-        $phonenumber->setAttribute(Doctrine::ATTR_COLL_KEY, 'id');
+        $phonenumber->attribute(Doctrine::ATTR_COLL_KEY, 'id');
 
 
         $q = new Doctrine_Query();
@@ -302,16 +302,16 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
         $this->assertFalse($users->contains(0));
         $this->assertEqual($users->count(), 8);
 
-        $this->assertEqual($users[0]->getState(), Doctrine_Record::STATE_TCLEAN);
-        $this->assertEqual($users[2]->getState(), Doctrine_Record::STATE_TCLEAN);
-        $this->assertEqual($users[3]->getState(), Doctrine_Record::STATE_TCLEAN);
-        $this->assertEqual($users[4]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($users[2]->state(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($users[3]->state(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($users[4]->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($users[4]->name, 'zYne');
 
         $this->assertEqual($users[4]->Phonenumber[0]->exists(), false);
-        $this->assertEqual($users[4]->Phonenumber[0]->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($users[4]->Phonenumber[0]->state(), Doctrine_Record::STATE_TDIRTY);
         $this->assertEqual($users[4]->Phonenumber[1]->exists(), false);
-        $this->assertEqual($users[4]->Phonenumber[2]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($users[4]->Phonenumber[2]->state(), Doctrine_Record::STATE_CLEAN);
     }
 
 }

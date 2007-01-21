@@ -135,7 +135,7 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase {
     public function testDelete() {
         $user = $this->connection->create('User');
         $this->connection->delete($user);
-        $this->assertEqual($user->getState(),Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($user->state(),Doctrine_Record::STATE_TCLEAN);
     }
     public function testGetTable() {
         $table = $this->connection->getTable('Group');

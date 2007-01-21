@@ -186,7 +186,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 }
 
                 // set the default values for this record
-                $this->setDefaultValues();
+                $this->assignDefaultValues();
 
                 // listen the onCreate event
                 $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onCreate($this);
@@ -310,13 +310,31 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $this->_errorStack;
     }
     /**
+     * errorStack
+     * assigns / returns record errorStack
+     *
+     * @param Doctrine_Validator_ErrorStack          errorStack to be assigned for this record
+     * @return void|Doctrine_Validator_ErrorStack    returns the errorStack associated with this record
+     */
+    public function errorStack($stack = null)
+    {
+    	if($stack !== null) {
+    	    if( ! ($stack instanceof Doctrine_Validator_ErrorStack)) {
+    	       throw new Doctrine_Record_Exception('Argument should be an instance of Doctrine_Validator_ErrorStack.');
+    	    }
+            $this->_errorStack = $stack;
+    	} else {
+            return $this->_errorStack;
+        }
+    }
+    /**
      * setDefaultValues
      * sets the default values for records internal data
      *
      * @param boolean $overwrite                whether or not to overwrite the already set values
      * @return boolean
      */
-    public function setDefaultValues($overwrite = false)
+    public function assignDefaultValues($overwrite = false)
     {
         if ( ! $this->_table->hasDefaultValues()) {
             return false;
@@ -1461,6 +1479,29 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function setEnumValues($column, $values)
     {
         $this->_table->setEnumValues($column, $values);
+    }
+    /**
+     * attribute
+     * sets or retrieves an option
+     *
+     * @see Doctrine::ATTR_* constants   availible attributes
+     * @param mixed $attr
+     * @param mixed $value
+     * @return mixed
+     */
+    public function attribute($attr, $value)
+    {
+        if ($value == null) {
+            if (is_array($attr)) {
+                foreach ($attr as $k => $v) {
+                    $this->_table->setAttribute($k, $v);
+                }
+            } else {
+                return $this->_table->getAttribute($attr);
+            }
+        } else {
+            $this->_table->setAttribute($attr, $value);
+        }    
     }
     /**
      * option

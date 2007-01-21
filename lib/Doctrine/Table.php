@@ -260,7 +260,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                             }
                         }
                 };
+                /**
+                            if ( ! isset($definition['values'])) {
+                                throw new Doctrine_Table_Exception('No values set for enum column ' . $name);
+                            }
 
+                            if ( ! is_array($definition['values'])) {
+                                throw new Doctrine_Table_Exception('Enum column values should be specified as an array.');
+                            }
+
+                */
                 if ($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
                     $this->export();
                 }
@@ -276,7 +285,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         array_pop($names);
         $this->parents   = $names;
 
-        $this->query     = "SELECT ".implode(", ",array_keys($this->columns))." FROM ".$this->getTableName();
+        $this->query     = 'SELECT ' . implode(', ', array_keys($this->columns)) . ' FROM ' . $this->getTableName();
 
         // check if an instance of this table is already initialized
         if ( ! $this->conn->addTable($this)) {
@@ -294,35 +303,44 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *                                          false if table already existed in the database
      */
     public function export() {
-        if (Doctrine::isValidClassname($this->options['declaringClass']->getName())) {
-            try {
-                $columns = array();
-                $primary = array();
-                foreach ($this->columns as $name => $column) {
-                    $definition = $column[2];
-                    $definition['type'] = $column[0];
-                    $definition['length'] = $column[1];
+        if ( ! Doctrine::isValidClassname($this->options['declaringClass']->getName())) {
+            throw new Doctrine_Table_Exception('Class name not valid.');
+        }
 
-                    if ($definition['type'] == 'enum' && isset($definition['default'])) {
-                        $definition['default'] = $this->enumIndex($name, $definition['default']);
-                    }
-                    if ($definition['type'] == 'boolean' && isset($definition['default'])) {
-                        $definition['default'] = (int) $definition['default'];
-                    }
-                    $columns[$name] = $definition;
-                    
-                    if(isset($definition['primary']) && $definition['primary']) {
-                        $primary[] = $name;
-                    }
-                }
-                $options['primary'] = $primary;
+        try {
+            $columns = array();
+            $primary = array();
 
-                $this->conn->export->createTable($this->options['tableName'], $columns, array_merge($this->options, $options));
-            } catch(Doctrine_Connection_Exception $e) {
-                // we only want to silence table already exists errors
-                if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
-                    throw $e;
+            foreach ($this->columns as $name => $column) {
+                $definition = $column[2];
+                $definition['type'] = $column[0];
+                $definition['length'] = $column[1];
+
+                switch ($definition['type']) {
+                    case 'enum':
+                        if (isset($definition['default'])) {
+                            $definition['default'] = $this->enumIndex($name, $definition['default']);
+                        }
+                        break;
+                    case 'boolean':
+                        if (isset($definition['default'])) {
+                            $definition['default'] = (int) $definition['default'];
+                        }
+                        break;
                 }
+                $columns[$name] = $definition;
+                
+                if(isset($definition['primary']) && $definition['primary']) {
+                    $primary[] = $name;
+                }
+            }
+            $options['primary'] = $primary;
+
+            $this->conn->export->createTable($this->options['tableName'], $columns, array_merge($this->options, $options));
+        } catch(Doctrine_Connection_Exception $e) {
+            // we only want to silence table already exists errors
+            if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
+                throw $e;
             }
         }
     }
@@ -902,12 +920,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 $id = array_values($id);
             }
 
-            $query  = $this->query." WHERE ".implode(" = ? AND ",$this->primaryKeys)." = ?";
+            $query  = $this->query . ' WHERE ' . implode(' = ? AND ', $this->primaryKeys) . ' = ?';
             $query  = $this->applyInheritance($query);
 
             $params = array_merge($id, array_values($this->options['inheritanceMap']));
 
-            $stmt  = $this->conn->execute($query,$params);
+            $stmt  = $this->conn->execute($query, $params);
 
             $this->data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -928,10 +946,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if ( ! empty($this->options['inheritanceMap'])) {
             $a = array();
             foreach ($this->options['inheritanceMap'] as $field => $value) {
-                $a[] = $field." = ?";
+                $a[] = $field . ' = ?';
             }
-            $i = implode(" AND ",$a);
-            $where .= " AND $i";
+            $i = implode(' AND ', $a);
+            $where .= ' AND ' . $i;
         }
         return $where;
     }
@@ -1017,7 +1035,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     final public function getProxy($id = null)
     {
         if ($id !== null) {
-            $query = "SELECT ".implode(", ",$this->primaryKeys)." FROM ".$this->getTableName()." WHERE ".implode(" = ? && ",$this->primaryKeys)." = ?";
+            $query = 'SELECT ' . implode(', ',$this->primaryKeys) 
+                   . ' FROM ' . $this->getTableName() 
+                   . ' WHERE ' . implode(' = ? && ',$this->primaryKeys).' = ?';
             $query = $this->applyInheritance($query);
 
             $params = array_merge(array($id), array_values($this->options['inheritanceMap']));
@@ -1104,12 +1124,29 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @param integer $index
      * @return mixed
      */
-    final public function enumValue($field, $index)
+    public function enumValue($field, $index)
     {
         if ($index instanceof Doctrine_Null)
             return $index;
 
-        return isset($this->options['enumMap'][$field][$index]) ? $this->options['enumMap'][$field][$index] : $index;
+        return isset($this->columns[$field][2]['values'][$index]) ? $this->columns[$field][2]['values'][$index] : $index;
+    }
+    /**
+     * enumIndex
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return mixed
+     */
+    public function enumIndex($field, $value)
+    {
+        if ( ! isset($this->columns[$field][2]['values'])) {
+            $values = array();
+        } else {
+            $values = $this->columns[$field][2]['values'];
+        }
+
+        return array_search($value, $values);
     }
     /**
      * invokeSet
@@ -1155,23 +1192,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $value;
     }
-    /**
-     * enumIndex
-     *
-     * @param string $field
-     * @param mixed $value
-     * @return mixed
-     */
-    final public function enumIndex($field, $value)
-    {
-        if ( ! isset($this->options['enumMap'][$field])) {
-            $values = array();
-        } else {
-            $values = $this->options['enumMap'][$field];
-        }
 
-        return array_search($value, $values);
-    }
     /**
      * getDefinitionOf
      *

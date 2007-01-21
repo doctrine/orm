@@ -886,7 +886,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
 
-        switch ($record->getState()) {
+        switch ($record->state()) {
             case Doctrine_Record::STATE_TDIRTY:
                 $this->unitOfWork->insert($record);
                 break;

@@ -42,7 +42,7 @@ class Doctrine_Boolean_TestCase extends Doctrine_UnitTestCase {
         $test->is_working = false;
 
         $this->assertEqual($test->is_working, false);
-        $this->assertEqual($test->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($test->state(), Doctrine_Record::STATE_TDIRTY);
         $test->save();
 
         $test->refresh();
@@ -98,7 +98,7 @@ class Doctrine_Boolean_TestCase extends Doctrine_UnitTestCase {
         $this->is_working = null;
 
         $this->assertEqual($this->is_working, null);
-        $this->assertEqual($test->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($test->state(), Doctrine_Record::STATE_TDIRTY);
         $test->save();
 
         $test->refresh();
@@ -108,7 +108,7 @@ class Doctrine_Boolean_TestCase extends Doctrine_UnitTestCase {
         $this->is_working_notnull = null;
 
         $this->assertEqual($this->is_working_notnull, false);
-        $this->assertEqual($test->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($test->state(), Doctrine_Record::STATE_TDIRTY);
         $test->save();
 
         $test->refresh();

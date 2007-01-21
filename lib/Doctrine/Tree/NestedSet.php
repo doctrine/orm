@@ -53,7 +53,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      */
     public function setTableDefinition()
     {
-        if ($root = $this->getAttribute('root_column_name')) {
+        if ($root = $this->getAttribute('rootColumnName')) {
             $this->table->setColumn($root, 'integer', 11);
         }
 
@@ -207,7 +207,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     public function getMaxRootId()
     {      
         $component = $this->table->getComponentName();
-        $column    = $this->getAttribute('root_column_name');
+        $column    = $this->getAttribute('rootColumnName');
 
         // cannot get this dql to work, cannot retrieve result using $coll[0]->max
         //$dql = "SELECT MAX(c.$column) FROM $component c";
@@ -229,10 +229,10 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      * @param object    $query    Doctrine_Query
      * @param integer   $root_id  id of destination root
      * @return object   Doctrine_Query
-     */     
+     */
     public function returnQueryWithRootId($query, $rootId = 1)
     {
-        if ($root = $this->getAttribute('root_column_name')) {
+        if ($root = $this->getAttribute('rootColumnName')) {
             $query->addWhere($root . ' = ?', $rootId);
         }
 

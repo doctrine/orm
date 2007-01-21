@@ -80,8 +80,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($e->Entity[0] instanceof Entity);
         $this->assertTrue($e->Entity[1] instanceof Entity);
 
-        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_TCLEAN);
-        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_TCLEAN);
         
         $e->Entity[0]->name = "Friend 1";
         $e->Entity[1]->name = "Friend 2";
@@ -102,15 +102,15 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($e->Entity[1]->Entity[1]->name, "Friend 2 2");
 
 
-        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_TDIRTY);
-        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_TDIRTY);
 
         $count = count($this->dbh);
 
         $e->save();
 
         $this->assertEqual(($count + 13), $this->dbh->count());
-        $this->assertEqual($e->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->state(), Doctrine_Record::STATE_CLEAN);
 
         $this->assertTrue($e->Entity[0] instanceof Entity);
         $this->assertTrue($e->Entity[1] instanceof Entity);
@@ -124,8 +124,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($e->Entity[1]->Entity[0]->name, "Friend 2 1");
         $this->assertEqual($e->Entity[1]->Entity[1]->name, "Friend 2 2");
 
-        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_CLEAN);
 
         $this->assertTrue(is_numeric($e->id));
 
@@ -168,12 +168,12 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual(count($this->dbh), ($count + 3));
 
-        $this->assertEqual($e->Entity[0]->getState(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($e->Entity[1]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_CLEAN);
         
         $coll = $this->connection->query("FROM Entity WHERE Entity.name = 'Friend 1'");
         $this->assertEqual($coll->count(), 1);
-        $this->assertEqual($coll[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($coll[0]->state(), Doctrine_Record::STATE_CLEAN);
         
         $this->assertEqual($coll[0]->name, "Friend 1");
         
@@ -302,23 +302,23 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($record->getTable()->getIdentifier(), array("entity1","entity2"));
         $this->assertEqual($record->getTable()->getIdentifierType(), Doctrine_Identifier::COMPOSITE);
         $this->assertEqual($record->obtainIdentifier(), array("entity1" => null, "entity2" => null));
-        $this->assertEqual($record->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($record->state(), Doctrine_Record::STATE_TCLEAN);
 
         $record->entity1 = 3;
         $record->entity2 = 4;
         $this->assertEqual($record->entity2, 4);
         $this->assertEqual($record->entity1, 3);
-        $this->assertEqual($record->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($record->state(), Doctrine_Record::STATE_TDIRTY);
         $this->assertEqual($record->obtainIdentifier(), array("entity1" => null, "entity2" => null));
 
         $record->save();
-        $this->assertEqual($record->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($record->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($record->entity2, 4);
         $this->assertEqual($record->entity1, 3);
         $this->assertEqual($record->obtainIdentifier(), array("entity1" => 3, "entity2" => 4));
 
         $record = $record->getTable()->find($record->obtainIdentifier());
-        $this->assertEqual($record->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($record->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($record->entity2, 4);
         $this->assertEqual($record->entity1, 3);
 
@@ -326,25 +326,25 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         
         $record->entity2 = 5;
         $record->entity1 = 2;
-        $this->assertEqual($record->getState(), Doctrine_Record::STATE_DIRTY);
+        $this->assertEqual($record->state(), Doctrine_Record::STATE_DIRTY);
         $this->assertEqual($record->entity2, 5);
         $this->assertEqual($record->entity1, 2);
         $this->assertEqual($record->obtainIdentifier(), array("entity1" => 3, "entity2" => 4));
 
         $record->save();
-        $this->assertEqual($record->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($record->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($record->entity2, 5);
         $this->assertEqual($record->entity1, 2);
         $this->assertEqual($record->obtainIdentifier(), array("entity1" => 2, "entity2" => 5));
         $record = $record->getTable()->find($record->obtainIdentifier());
 
-        $this->assertEqual($record->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($record->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($record->entity2, 5);
         $this->assertEqual($record->entity1, 2);
         $this->assertEqual($record->obtainIdentifier(), array("entity1" => 2, "entity2" => 5));
         
         $record->refresh();
-        $this->assertEqual($record->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($record->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($record->entity2, 5);
         $this->assertEqual($record->entity1, 2);
         $this->assertEqual($record->obtainIdentifier(), array("entity1" => 2, "entity2" => 5));
@@ -356,9 +356,9 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         
         $coll = $this->connection->query("FROM EntityReference-b");
         $this->assertTrue($coll[0] instanceof EntityReference);
-        $this->assertEqual($coll[0]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($coll[0]->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertTrue($coll[1] instanceof EntityReference);
-        $this->assertEqual($coll[1]->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($coll[1]->state(), Doctrine_Record::STATE_CLEAN);
 
         $coll = $this->connection->query("FROM EntityReference-b WHERE EntityReference.entity2 = 5");
         $this->assertEqual($coll->count(), 1);
@@ -380,12 +380,12 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
         $task = new Task();
         $this->assertTrue($task instanceof Task);
-        $this->assertEqual($task->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($task->state(), Doctrine_Record::STATE_TCLEAN);
         $this->assertTrue($task->Subtask[0] instanceof Task);
 
-        //$this->assertEqual($task->Subtask[0]->getState(), Doctrine_Record::STATE_TDIRTY);
+        //$this->assertEqual($task->Subtask[0]->state(), Doctrine_Record::STATE_TDIRTY);
         $this->assertTrue($task->ResourceAlias[0] instanceof Resource);
-        $this->assertEqual($task->ResourceAlias[0]->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($task->ResourceAlias[0]->state(), Doctrine_Record::STATE_TCLEAN);
 
         $task->name = "Task 1";
         $task->ResourceAlias[0]->name = "Resource 1";
@@ -414,7 +414,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $account = $user->Account;
         $account->amount = 1000;
         $this->assertTrue($account instanceof Account);
-        $this->assertEqual($account->getState(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($account->state(), Doctrine_Record::STATE_TDIRTY);
         $this->assertEqual($account->entity_id, $user);
         $this->assertEqual($account->amount, 1000);
         $this->assertEqual($user->name, "Richard Linklater");
@@ -424,7 +424,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $user->refresh();
         $account = $user->Account;
         $this->assertTrue($account instanceof Account);
-        $this->assertEqual($account->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($account->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($account->entity_id, $user->id);
         $this->assertEqual($account->amount, 1000);
         $this->assertEqual($user->name, "Richard Linklater");
@@ -437,7 +437,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
 
         $this->connection->flush();
-        $this->assertEqual($user->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($user->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertTrue($account instanceof Account);
 
         $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
@@ -446,13 +446,13 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
 
         $user = $user->getTable()->find($user->id);
-        $this->assertEqual($user->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($user->state(), Doctrine_Record::STATE_CLEAN);
 
 
         $account = $user->Account;
         $this->assertTrue($account instanceof Account);
 
-        $this->assertEqual($account->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($account->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
 
         $this->assertEqual($account->entity_id, $user->id);
@@ -482,13 +482,13 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($this->connection->getTable("User")->getData(), array());
         $user = new User();
-        $this->assertEqual(Doctrine_Lib::getRecordStateAsString($user->getState()), Doctrine_Lib::getRecordStateAsString(Doctrine_Record::STATE_TCLEAN));
+        $this->assertEqual(Doctrine_Lib::getRecordStateAsString($user->state()), Doctrine_Lib::getRecordStateAsString(Doctrine_Record::STATE_TCLEAN));
         $user->name = "John Locke";
 
         $this->assertTrue($user->name,"John Locke");
-        $this->assertTrue($user->getState() == Doctrine_Record::STATE_TDIRTY);
+        $this->assertTrue($user->state() == Doctrine_Record::STATE_TDIRTY);
         $user->save();
-        $this->assertTrue($user->getState() == Doctrine_Record::STATE_CLEAN);
+        $this->assertTrue($user->state() == Doctrine_Record::STATE_CLEAN);
         $this->assertTrue($user->name,"John Locke");
     }
 
@@ -627,10 +627,10 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($user->id) && $user->id > 0);
         
         $this->assertTrue($user->getModified() == array());
-        $this->assertTrue($user->getState() == Doctrine_Record::STATE_CLEAN);
+        $this->assertTrue($user->state() == Doctrine_Record::STATE_CLEAN);
 
         $user->delete();
-        $this->assertEqual($user->getState(), Doctrine_Record::STATE_TCLEAN);
+        $this->assertEqual($user->state(), Doctrine_Record::STATE_TCLEAN);
     }
 
     public function testUpdate() {
@@ -650,7 +650,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $new = $user->copy();
 
         $this->assertTrue($new instanceof Doctrine_Record);
-        $this->assertTrue($new->getState() == Doctrine_Record::STATE_TDIRTY);
+        $this->assertTrue($new->state() == Doctrine_Record::STATE_TDIRTY);
 
         $new = $user->copy();
         $new->save();
@@ -666,7 +666,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $new = $user->copy();
 
         $this->assertTrue($new instanceof Doctrine_Record);
-        $this->assertTrue($new->getState() == Doctrine_Record::STATE_TDIRTY);
+        $this->assertTrue($new->state() == Doctrine_Record::STATE_TDIRTY);
 
         $new->loginname = 'jackd';
 
@@ -782,7 +782,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertTrue($user->Email instanceof Email);
         $this->assertEqual($user->Email->id, $user->email_id);
-        $this->assertEqual($user->Email->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($user->Email->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($user->Email->address, "drinker@drinkmore.info");
         $id = $user->Email->id;
 

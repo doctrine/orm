@@ -38,7 +38,7 @@ class EventListenerChainTest extends Doctrine_Record {
         $chain = new Doctrine_EventListener_Chain();
         $chain->add(new Doctrine_EventListener_TestA());
         $chain->add(new Doctrine_EventListener_TestB());
-        $this->setAttribute(Doctrine::ATTR_LISTENER, $chain);
+        $this->attribute(Doctrine::ATTR_LISTENER, $chain);
     }
 }
 

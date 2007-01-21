@@ -524,14 +524,14 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $query->from("Task-l:ResourceAlias-l");
         $tasks = $query->execute();
         $this->assertEqual($tasks->count(), 3);
-        $this->assertTrue($tasks instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks instanceof Doctrine_Collection);
 
         $this->assertEqual($tasks[0]->ResourceAlias->count(), 2);
-        $this->assertTrue($tasks[0]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks[0]->ResourceAlias instanceof Doctrine_Collection);
 
 
         $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
-        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection);
         // sanity checking
         $this->assertEqual($tasks[1]->ResourceAlias[0]->getState(), Doctrine_Record::STATE_PROXY);
         $this->assertEqual($tasks[1]->ResourceAlias[1]->getState(), Doctrine_Record::STATE_PROXY);
@@ -548,7 +548,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(count($this->dbh), ($count + 4));
 
         $this->assertEqual($tasks[2]->ResourceAlias->count(), 1);
-        $this->assertTrue($tasks[2]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks[2]->ResourceAlias instanceof Doctrine_Collection);
     }
 
     public function testManyToManyFetchingWithDotOperator() {
@@ -560,16 +560,16 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
 
         $tasks = $query->query("FROM Task-l.ResourceAlias-l");
         $this->assertEqual($tasks->count(), 4);
-        $this->assertTrue($tasks instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks instanceof Doctrine_Collection);
 
         $this->assertEqual($tasks[0]->ResourceAlias->count(), 2);
-        $this->assertTrue($tasks[0]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks[0]->ResourceAlias instanceof Doctrine_Collection);
 
         $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
-        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection);
         
         $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
-        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection);
         // sanity checking
         $this->assertEqual($tasks[1]->ResourceAlias[0]->getState(), Doctrine_Record::STATE_PROXY);
         $this->assertEqual($tasks[1]->ResourceAlias[1]->getState(), Doctrine_Record::STATE_PROXY);
@@ -586,7 +586,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(count($this->dbh), ($count + 4));
 
         $this->assertEqual($tasks[2]->ResourceAlias->count(), 1);
-        $this->assertTrue($tasks[2]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks[2]->ResourceAlias instanceof Doctrine_Collection);
 
         $this->assertEqual($tasks[3]->ResourceAlias->count(), 0);
         $this->assertTrue($tasks[3]->ResourceAlias instanceof Doctrine_Collection);
@@ -597,16 +597,16 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
 
         $tasks = $query->query("FROM Task-l.ResourceAlias-l");
         $this->assertEqual($tasks->count(), 4);
-        $this->assertTrue($tasks instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks instanceof Doctrine_Collection);
 
         $this->assertEqual($tasks[0]->ResourceAlias->count(), 2);
-        $this->assertTrue($tasks[0]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks[0]->ResourceAlias instanceof Doctrine_Collection);
 
         $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
-        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection_Lazy);
-        
+        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection);
+
         $this->assertEqual($tasks[1]->ResourceAlias->count(), 4);
-        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks[1]->ResourceAlias instanceof Doctrine_Collection);
         // sanity checking
         $this->assertEqual($tasks[1]->ResourceAlias[0]->getState(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($tasks[1]->ResourceAlias[1]->getState(), Doctrine_Record::STATE_CLEAN);
@@ -623,7 +623,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(count($this->dbh), $count);
 
         $this->assertEqual($tasks[2]->ResourceAlias->count(), 1);
-        $this->assertTrue($tasks[2]->ResourceAlias instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($tasks[2]->ResourceAlias instanceof Doctrine_Collection);
 
         $this->assertEqual($tasks[3]->ResourceAlias->count(), 0);
         $this->assertTrue($tasks[3]->ResourceAlias instanceof Doctrine_Collection);
@@ -755,7 +755,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $q->from("User-l(name, email_id)");
         $users = $q->execute();
         $this->assertEqual($users->count(), 8);
-        $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($users instanceof Doctrine_Collection);
         $count = count($this->dbh);
         $this->assertTrue(is_string($users[0]->name));
         $this->assertEqual($count, count($this->dbh));
@@ -768,7 +768,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $q->from("User-b(name, email_id)");
         $users = $q->execute();
         $this->assertEqual($users->count(), 8);
-        $this->assertTrue($users instanceof Doctrine_Collection_Batch);
+        $this->assertTrue($users instanceof Doctrine_Collection);
         $count = count($this->dbh);
         $this->assertTrue(is_string($users[0]->name));
         $this->assertEqual($count, count($this->dbh));
@@ -830,7 +830,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $count = $this->dbh->count();
         $users = $this->query->from("User-l:Email-i")->execute();
         $this->assertEqual(($count + 1), $this->dbh->count());
-        $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($users instanceof Doctrine_Collection);
         $count = $this->dbh->count();
 
         foreach($users as $user) {
@@ -858,7 +858,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $count = $this->dbh->count();
         $users = $this->query->from("User-l:Account-i")->execute();
         $this->assertEqual(($count + 1), $this->dbh->count());
-        $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(), 1);
 
         $this->assertEqual($users[0]->Account->amount,3000);
@@ -1003,7 +1003,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         $this->assertFalse(strpos($query->getQuery(),"LIMIT"));
 
         $coll = $query->execute();
-        $this->assertTrue($coll instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($coll instanceof Doctrine_Collection);
         $this->assertEqual($coll->count(), 1);
 
         
@@ -1054,7 +1054,7 @@ class Doctrine_Query_TestCase extends Doctrine_UnitTestCase {
         "SELECT e.id AS e__id FROM entity e WHERE (e.type = 0)");
 
         $this->assertEqual($users[0]->name, "zYne");
-        $this->assertTrue($users instanceof Doctrine_Collection_Lazy);
+        $this->assertTrue($users instanceof Doctrine_Collection);
 
     }
 

@@ -49,8 +49,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($coll->count(), 11);
 
-        $this->assertEqual($coll[0]->getState(), Doctrine_Record::STATE_PROXY);
-        $this->assertEqual($coll[3]->getState(), Doctrine_Record::STATE_PROXY); 
+        $this->assertEqual($coll[0]->state(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($coll[3]->state(), Doctrine_Record::STATE_PROXY); 
     }
 
     public function testSmartMapping() {
@@ -66,8 +66,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($coll->count(), 11);
 
-        $this->assertEqual($coll[0]->getState(), Doctrine_Record::STATE_PROXY);
-        $this->assertEqual($coll[3]->getState(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($coll[0]->state(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($coll[3]->state(), Doctrine_Record::STATE_PROXY);
     }
 
     public function testMultipleComponents() {

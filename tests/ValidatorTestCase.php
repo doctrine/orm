@@ -119,7 +119,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
         $validator = new Doctrine_Validator();
         $validator->validateRecord($test);
 
-        $stack = $test->getErrorStack();
+        $stack = $test->errorStack();
 
         $this->assertTrue($stack instanceof Doctrine_Validator_ErrorStack);
 
@@ -137,15 +137,15 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
      * Tests Doctrine_Validator::validateRecord()
      */
     public function testValidate() {
-        $user = $this->connection->getTable("User")->find(4); 
+        $user = $this->connection->getTable('User')->find(4);
 
-        $set = array("password" => "this is an example of too long password",
-                     "loginname" => "this is an example of too long loginname",
-                     "name" => "valid name",
-                     "created" => "invalid");
+        $set = array('password' => 'this is an example of too long password',
+                     'loginname' => 'this is an example of too long loginname',
+                     'name' => 'valid name',
+                     'created' => 'invalid');
         $user->setArray($set);
         $email = $user->Email;
-        $email->address = "zYne@invalid";
+        $email->address = 'zYne@invalid';
 
         $this->assertTrue($user->getModified() == $set);
 
@@ -153,7 +153,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
         $validator->validateRecord($user);
 
 
-        $stack = $user->getErrorStack();
+        $stack = $user->errorStack();
 
         $this->assertTrue($stack instanceof Doctrine_Validator_ErrorStack);
         $this->assertTrue(in_array('length', $stack['loginname']));
@@ -161,12 +161,12 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(in_array('type', $stack['created']));
 
         $validator->validateRecord($email);
-        $stack = $email->getErrorStack();
+        $stack = $email->errorStack();
         $this->assertTrue(in_array('email', $stack['address']));
-        $email->address = "arnold@example.com";
+        $email->address = 'arnold@example.com';
 
         $validator->validateRecord($email);
-        $stack = $email->getErrorStack();
+        $stack = $email->errorStack();
 
         $this->assertTrue(in_array('unique', $stack['address']));
     }
@@ -205,7 +205,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
             $this->assertEqual($e->count(), 1);
             $invalidRecords = $e->getInvalidRecords();
             $this->assertEqual(count($invalidRecords), 1);
-            $stack = $invalidRecords[0]->getErrorStack();
+            $stack = $invalidRecords[0]->errorStack();
             $this->assertTrue(in_array('length', $stack['name']));
         }
 
@@ -222,8 +222,8 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertTrue(is_array($a));
         
-        $emailStack = $a[array_search($user->Email, $a)]->getErrorStack();
-        $userStack  = $a[array_search($user, $a)]->getErrorStack();
+        $emailStack = $a[array_search($user->Email, $a)]->errorStack();
+        $userStack  = $a[array_search($user, $a)]->errorStack();
 
         $this->assertTrue(in_array('email', $emailStack['address']));
         $this->assertTrue(in_array('length', $userStack['name']));
@@ -247,8 +247,8 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
             $this->assertEqual($e->count(), 1);
             $invalidRecords = $e->getInvalidRecords();
             $this->assertEqual(count($invalidRecords), 1);
-            
-            $stack = $invalidRecords[0]->getErrorStack();
+
+            $stack = $invalidRecords[0]->errorStack();
 
             $this->assertEqual($stack->count(), 2);
             $this->assertTrue(in_array('notTheSaint', $stack['name']));  // validate() hook constraint
@@ -267,7 +267,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
             $invalidRecords = $e->getInvalidRecords();
             $this->assertEqual(count($invalidRecords), 1);
             
-            $stack = $invalidRecords[0]->getErrorStack();
+            $stack = $invalidRecords[0]->errorStack();
             
             $this->assertEqual($stack->count(), 1);
             $this->assertTrue(in_array('notNobody', $stack['loginname']));  // validateOnUpdate() hook constraint
@@ -290,7 +290,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
             $user->save();
             $this->fail();
         } catch (Doctrine_Validator_Exception $ex) {
-            $errors = $user->getErrorStack();
+            $errors = $user->errorStack();
             $this->assertTrue(in_array('pwNotTopSecret', $errors['password']));
         }
         

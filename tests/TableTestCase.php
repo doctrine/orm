@@ -135,7 +135,7 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase {
     public function testCreate() {
         $record = $this->objTable->create();
         $this->assertTrue($record instanceof Doctrine_Record);
-        $this->assertTrue($record->getState() == Doctrine_Record::STATE_TCLEAN);
+        $this->assertTrue($record->state() == Doctrine_Record::STATE_TCLEAN);
     }
     public function testFind() {
         $record = $this->objTable->find(4);

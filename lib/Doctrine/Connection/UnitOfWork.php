@@ -157,7 +157,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                     // ONE-TO-ONE relationship
                     $obj = $record->get($fk->getAlias());
 
-                    if ($obj->getState() != Doctrine_Record::STATE_TCLEAN) {
+                    if ($obj->state() != Doctrine_Record::STATE_TCLEAN) {
                         $obj->save();
                     }
                 }
@@ -261,7 +261,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                 $set[] = $name." = ?";
 
                 if ($value instanceof Doctrine_Record) {
-                    switch ($value->getState()) {
+                    switch ($value->state()) {
                         case Doctrine_Record::STATE_TCLEAN:
                         case Doctrine_Record::STATE_TDIRTY:
                             $record->save();
