@@ -106,7 +106,7 @@ $test->addTestCase(new Doctrine_Sequence_Sqlite_TestCase());
 
 // Export module (not yet fully tested)
 $test->addTestCase(new Doctrine_Export_TestCase());
-$test->addTestCase(new Doctrine_Export_Reporter_TestCase());
+//$test->addTestCase(new Doctrine_Export_Reporter_TestCase());
 $test->addTestCase(new Doctrine_Export_Firebird_TestCase());
 $test->addTestCase(new Doctrine_Export_Informix_TestCase());
 $test->addTestCase(new Doctrine_Export_Mysql_TestCase());
@@ -214,6 +214,7 @@ $test->addTestCase(new Doctrine_Query_Having_TestCase());
 $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 $test->addTestCase(new Doctrine_Query_Join_TestCase());
 
+$test->addTestCase(new Doctrine_ColumnAlias_TestCase());
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());

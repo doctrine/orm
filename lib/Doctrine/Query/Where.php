@@ -83,8 +83,13 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 $field      = array_pop($a);
                 $reference  = implode('.', $a);
                 $table      = $this->query->load($reference, false);
+                
+                $field      = $table->getColumnName($field);
+
                 array_pop($a);
+                
                 $reference2 = implode('.', $a);
+                
                 $alias      = $this->query->getTableAlias($reference2);
 
                 $stack      = $this->query->getRelationStack();
@@ -103,9 +108,10 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                         }
                         $where = array();
                         foreach ($values as $value) {
-                            $where[] = $alias.'.'.$relation->getLocal().
-                              ' IN (SELECT '.$relation->getForeign().
-                              ' FROM '.$relation->getTable()->getTableName().' WHERE '.$field.$operator.$value.')';
+                            $where[] = $alias . '.' . $relation->getLocal() 
+                                     . ' IN (SELECT '.$relation->getForeign()
+                                     . ' FROM ' . $relation->getTable()->getTableName() 
+                                     . ' WHERE ' . $field . $operator . $value . ')';
                         }
                         $where = implode(' AND ', $where);
                         break;
@@ -116,6 +122,8 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 $table     = $this->query->load($reference, false);
                 $alias     = $this->query->getTableAlias($reference);
                 $table     = $this->query->getTable($alias);
+                
+                $field     = $table->getColumnName($field);
                 // check if value is enumerated value
                 $enumIndex = $table->enumIndex($field, trim($value, "'"));
 
@@ -161,8 +169,8 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                             $value  = $enumIndex;
                         }
                     default:
-                        $where      = $alias . '.' . $field . ' ' 
-                                    . $operator . ' ' . $value;
+                        $where = $alias . '.' . $field . ' '
+                               . $operator . ' ' . $value;
                 }
             }
         }

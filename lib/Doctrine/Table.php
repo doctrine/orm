@@ -92,24 +92,29 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     protected $columns          = array();
     /**
-     * @var array $bound                                bound relations
+     * @var array $columnAliases            an array of column aliases
+     *                                      keys as column aliases and values as column names
+     */
+    protected $columnAliases    = array();
+    /**
+     * @var array $bound                    bound relations
      */
     private $bound              = array();
     /**
-     * @var array $boundAliases                         bound relation aliases
+     * @var array $boundAliases             bound relation aliases
      */
     private $boundAliases       = array();
     /**
-     * @var integer $columnCount                        cached column count, Doctrine_Record uses this column count in when
-     *                                                  determining its state
+     * @var integer $columnCount            cached column count, Doctrine_Record uses this column count in when
+     *                                      determining its state
      */
     private $columnCount;
     /**
-     * @var array $parents                              the parent classes of this component
+     * @var array $parents                  the parent classes of this component
      */
     private $parents            = array();
     /**
-     * @var boolean $hasDefaultValues                   whether or not this table has default values
+     * @var boolean $hasDefaultValues       whether or not this table has default values
      */
     private $hasDefaultValues;
     /**
@@ -393,6 +398,24 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         return null;
     }
     /**
+     * getColumnName
+     *
+     * returns a column name for column alias
+     * if the actual name for the alias cannot be found
+     * this method returns the given alias
+     *
+     * @param string $alias         column alias
+     * @return string               column name
+     */
+    public function getColumnName($alias)
+    {
+        if(isset($this->columnAliases[$alias])) {
+            return $this->columnAliases[$alias];
+        }
+        
+        return $alias;
+    }
+    /**
      * setColumn
      *
      * @param string $name
@@ -402,7 +425,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @throws Doctrine_Table_Exception     if trying use wrongly typed parameter
      * @return void
      */
-    final public function setColumn($name, $type, $length = null, $options = array()) {
+    public function setColumn($name, $type, $length = null, $options = array())
+    {
         if (is_string($options)) {
             $options = explode('|', $options);
         }
@@ -415,12 +439,21 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 unset($options[$k]);
             }
         }
-        $name = strtolower($name);
 
-        if ($length == null)
+        $name  = strtolower($name);
+        $parts = explode(' as ', $name);
+        
+        if (count($parts) > 1) {
+            $this->columnAliases[$parts[1]] = $parts[0];
+            $name = $parts[0];
+        }
+
+
+        if ($length == null) {
             $length = 2147483647;
-            
-        if((string) (int) $length !== (string) $length) {
+        }
+
+        if ((string) (int) $length !== (string) $length) {
             throw new Doctrine_Table_Exception('Invalid argument given for column length');
         }
 

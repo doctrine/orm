@@ -111,12 +111,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     {
         $tableAlias = $this->getTableAlias($componentAlias);
 
-        if( ! isset($this->tables[$tableAlias]))
+        if ( ! isset($this->tables[$tableAlias]))
             throw new Doctrine_Query_Exception('Unknown component path '.$componentPath);
 
         $table      = $this->tables[$tableAlias];
 
-        if(isset($this->pendingFields[$componentAlias])) {
+        if (isset($this->pendingFields[$componentAlias])) {
             $fields = $this->pendingFields[$componentAlias];
 
             if(in_array('*', $fields))
@@ -124,7 +124,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             else
                 $fields = array_unique(array_merge($table->getPrimaryKeys(), $fields));
         }
-        foreach($fields as $name) {
+        foreach ($fields as $name) {
+            $name = $table->getColumnName($name);
+            
             $this->parts["select"][] = $tableAlias . '.' .$name . ' AS ' . $tableAlias . '__' . $name;
         }
         
@@ -159,34 +161,34 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         if(method_exists($this->conn->expression, $name)) {
 
-                $argStr = substr($func, ($pos + 1), -1);
+            $argStr = substr($func, ($pos + 1), -1);
 
-                $args    = explode(',', $argStr);
+            $args    = explode(',', $argStr);
 
-                $e2    = explode(' ', $args[0]);
+            $e2    = explode(' ', $args[0]);
 
-                $distinct = '';
-                if(count($e2) > 1) {
-                    if(strtoupper($e2[0]) == 'DISTINCT')
-                        $distinct  = 'DISTINCT ';
+            $distinct = '';
+            if(count($e2) > 1) {
+                if(strtoupper($e2[0]) == 'DISTINCT')
+                    $distinct  = 'DISTINCT ';
 
-                    $args[0] = $e2[1];
-                }
+                $args[0] = $e2[1];
+            }
 
 
 
-                $parts = explode('.', $args[0]);
-                $owner = $parts[0];
-                $alias = (isset($e[1])) ? $e[1] : $name;
+            $parts = explode('.', $args[0]);
+            $owner = $parts[0];
+            $alias = (isset($e[1])) ? $e[1] : $name;
 
-                $e3    = explode('.', $alias);
+            $e3    = explode('.', $alias);
 
-                if(count($e3) > 1) {
-                    $alias = $e3[1];
-                    $owner = $e3[0];
-                }
+            if(count($e3) > 1) {
+                $alias = $e3[1];
+                $owner = $e3[0];
+            }
 
-                $this->pendingAggregates[$owner][] = array($name, $args, $distinct, $alias);
+            $this->pendingAggregates[$owner][] = array($name, $args, $distinct, $alias);
         } else {
             throw new Doctrine_Query_Exception('Unknown aggregate function '.$name);
         }
@@ -211,6 +213,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 if(count($e) > 1) {
                     $tableAlias = $this->getTableAlias($e[0]);
                     $table      = $this->tables[$tableAlias];
+
+                    $e[1]       = $table->getColumnName($e[1]);
 
                     if( ! $table->hasColumn($e[1])) {
                         throw new Doctrine_Query_Exception('Unknown column ' . $e[1]);

@@ -469,7 +469,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     }
                 }
                 break;
-        };
+        }
     }
     /**
      * serialize
@@ -501,7 +501,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case "object":
                         $vars['_data'][$k] = serialize($vars['_data'][$k]);
                         break;
-                };
+                }
             }
         }
 
@@ -726,10 +726,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function get($name, $invoke = true)
     {
-
         $listener = $this->_table->getAttribute(Doctrine::ATTR_LISTENER);
         $value    = self::$null;
         $lower    = strtolower($name);
+
+        $lower    = $this->_table->getColumnName($lower);
 
         if (isset($this->_data[$lower])) {
             // check if the property is null (= it is the Doctrine_Null object located in self::$null)
@@ -810,12 +811,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     {
         $lower = strtolower($name);
 
+        $lower = $this->_table->getColumnName($lower);
+
         if (isset($this->_data[$lower])) {
             if ($value instanceof Doctrine_Record) {
                 $id = $value->getIncremented();
 
-                if ($id !== null)
+                if ($id !== null) {
                     $value = $id;
+                }
             }
 
             if ($load) {

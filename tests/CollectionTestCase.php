@@ -30,8 +30,10 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
-    public function testLoadRelatedForAssociation() {
+class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase 
+{
+    public function testLoadRelatedForAssociation() 
+    {
         $coll = $this->connection->query("FROM User");
 
         $this->assertEqual($coll->count(), 8);
@@ -96,7 +98,8 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($coll[0]->name, 'zYne');
     }
 
-    public function testLoadRelatedForNormalAssociation() {
+    public function testLoadRelatedForNormalAssociation() 
+    {
         $resource = new Doctrine_Collection('Resource');
         $resource[0]->name = 'resource 1';
         $resource[0]->Type[0]->type = 'type 1';
@@ -126,7 +129,8 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(($count + 1), $this->dbh->count());
     }
 
-    public function testAdd() {
+    public function testAdd() 
+    {
         $coll = new Doctrine_Collection($this->objTable);
         $coll->add(new User());
         $this->assertEqual($coll->count(),1);
@@ -142,7 +146,8 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
     }
 
 
-    public function testLoadRelated() {
+    public function testLoadRelated() 
+    {
         $coll = $this->connection->query("FROM User(id)");
 
         $q = $coll->loadRelated();
@@ -158,7 +163,8 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
         $coll[0]->Group[0];
         $this->assertEqual($count, $this->dbh->count());
     }
-    public function testLoadRelatedForLocalKeyRelation() {
+    public function testLoadRelatedForLocalKeyRelation() 
+    {
         $coll = $this->connection->query("FROM User");
 
         $this->assertEqual($coll->count(), 8);
@@ -182,7 +188,8 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
 
         $this->connection->clear();
     }
-    public function testLoadRelatedForForeignKey() {
+    public function testLoadRelatedForForeignKey() 
+    {
         $coll = $this->connection->query("FROM User");
         $this->assertEqual($coll->count(), 8);
         
@@ -214,13 +221,15 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
         
         $this->connection->clear();
     }
-    public function testCount() {
+    public function testCount() 
+    {
         $coll = new Doctrine_Collection($this->connection->getTable('User'));
         $this->assertEqual($coll->count(), 0);
         $coll[0];
         $this->assertEqual($coll->count(), 1);
     }
-    public function testExpand() {
+    public function testExpand() 
+    {
         $users = $this->connection->query("FROM User-b.Phonenumber-l WHERE User.Phonenumber.phonenumber LIKE '%123%'");
 
         $this->assertTrue($users instanceof Doctrine_Collection_Batch);
@@ -248,7 +257,8 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
         $user = $this->connection->getTable("User")->find(4);
 
     }
-    public function testGenerator() {
+    public function testGenerator() 
+    {
         $coll = new Doctrine_Collection($this->objTable);
         $coll->setKeyColumn('name');
 
@@ -266,7 +276,8 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
         }
 
     }
-    public function testFetchCollectionWithIdAsIndex() {
+    public function testFetchCollectionWithIdAsIndex() 
+    {
         $user = new User();
         $user->attribute(Doctrine::ATTR_COLL_KEY, 'id');
         
@@ -277,7 +288,8 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_TCLEAN); 
         $this->assertEqual($users[4]->state(), Doctrine_Record::STATE_CLEAN);
     }
-    public function testFetchCollectionWithNameAsIndex() {
+    public function testFetchCollectionWithNameAsIndex() 
+    {
         $user = new User();
         $user->attribute(Doctrine::ATTR_COLL_KEY, 'name');
         
@@ -288,7 +300,8 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_TCLEAN); 
         $this->assertEqual($users['zYne']->state(), Doctrine_Record::STATE_CLEAN);
     }
-    public function testFetchMultipleCollections() {
+    public function testFetchMultipleCollections() 
+    {
         $this->connection->clear();
         
         $user = new User();
