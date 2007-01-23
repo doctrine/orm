@@ -75,6 +75,30 @@ class Doctrine_ColumnAlias_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($coll[0]->alias1, 'someone');
         $this->assertEqual($coll[0]->alias2, 187);
     }
+    public function testAliasesAreSupportedForDqlAggregateFunctions()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('MAX(c.alias1)')
+          ->from('ColumnAliasTest c');
+
+        $coll = $q->execute();
+        
+        $this->assertEqual($coll[0]->max, 'someone');
+    }
+    public function testAliasesAreSupportedForDqlHavingPart()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('c.alias1')
+          ->from('ColumnAliasTest c')
+          ->having('MAX(c.alias2) = 187')
+          ->groupby('c.id');
+
+        $coll = $q->execute();
+        
+        $this->assertEqual($coll[0]->alias1, 'someone');
+    }
 }
 class ColumnAliasTest extends Doctrine_Record
 {

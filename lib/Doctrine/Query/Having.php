@@ -63,7 +63,8 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
                 $field     = array_pop($a);
                 $reference = implode('.', $a);
                 $table     = $this->query->load($reference, false);
-                $func      = $this->query->getTableAlias($reference).".".$field;
+                $field     = $table->getColumnName($field);
+                $func      = $this->query->getTableAlias($reference) . '.' . $field;
 
                 return $func;
             } else {
