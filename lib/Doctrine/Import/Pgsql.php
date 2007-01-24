@@ -88,7 +88,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
                                                    WHERE oid IN (
                                                         SELECT indexrelid
                                                         FROM pg_index, pg_class
-                                                        WHERE pg_class.relname=%s
+                                                        WHERE pg_class.relname = %s
                                                             AND pg_class.oid=pg_index.indrelid
                                                             AND indisunique != 't'
                                                             AND indisprimary != 't'
@@ -148,8 +148,10 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
      */
     public function listTableColumns($table)
     {
+        $table = $this->conn->quote($table);
+        $query = sprintf($this->sql['listTableColumns'], $table);
+        $result = $this->conn->fetchAssoc($query);
 
-        $result = $this->dbh->query($this->sql['listTableColumns'])->fetchAll(PDO::FETCH_ASSOC);
         $columns     = array();
         foreach ($result as $key => $val) {
             if ($val['type'] === 'varchar') {
@@ -190,7 +192,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
      */
     public function listTables($database = null)
     {
-        return $this->dbh->query($this->sql['listTables'])->fetchAll(PDO::FETCH_ASSOC);
+        return $this->conn->fetchAssoc($this->sql['listTables']);
     }
     /**
      * lists table triggers
