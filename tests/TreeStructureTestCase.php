@@ -88,5 +88,15 @@ class Doctrine_TreeStructure_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(count($o4->Children) == 0);
         $this->assertFalse(isset($o4->Parent));
     }
-}
+    public function testTreeStructureFetchingWorksWithDql()
+    {
+        $q = new Doctrine_Query();
+        $q->select('l.*, c.*')
+          ->from('TreeLeaf l, l.Children c')
+          ->where('l.parent_id IS NULL')
+          ->groupby('l.id, c.id');
 
+        $coll = $q->execute();
+
+    }
+}

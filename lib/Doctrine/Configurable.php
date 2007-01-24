@@ -126,6 +126,7 @@ abstract class Doctrine_Configurable
             case Doctrine::ATTR_DEFAULT_TABLE_TYPE:
             case Doctrine::ATTR_ACCESSOR_PREFIX_GET:
             case Doctrine::ATTR_ACCESSOR_PREFIX_SET:
+            case Doctrine::ATTR_EMULATE_DATABASE:
 
                 break;
             case Doctrine::ATTR_SEQCOL_NAME:

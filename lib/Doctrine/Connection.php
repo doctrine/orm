@@ -497,7 +497,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $params             prepared statement params
      * @return array
      */
-    public function fetchAll($statement, array $params = array()) {
+    public function fetchAll($statement, array $params = array()) 
+    {
         return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
     /**
@@ -508,7 +509,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param int $colnum               0-indexed column number to retrieve
      * @return mixed
      */
-    public function fetchOne($statement, array $params = array(), $colnum = 0) {
+    public function fetchOne($statement, array $params = array(), $colnum = 0) 
+    {
         return $this->execute($statement, $params)->fetchColumn($colnum);
     }
     /**
@@ -518,7 +520,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $params             prepared statement params
      * @return array
      */
-    public function fetchRow($statement, array $params = array()) {
+    public function fetchRow($statement, array $params = array()) 
+    {
         return $this->execute($statement, $params)->fetch(PDO::FETCH_ASSOC);
     }
     /**
@@ -528,7 +531,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $params             prepared statement params
      * @return array
      */
-    public function fetchArray($statement, array $params = array()) {
+    public function fetchArray($statement, array $params = array()) 
+    {
         return $this->execute($statement, $params)->fetch(PDO::FETCH_NUM);
     }
     /**
@@ -539,7 +543,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param int $colnum               0-indexed column number to retrieve
      * @return array
      */
-    public function fetchColumn($statement, array $params = array(), $colnum = 0) {
+    public function fetchColumn($statement, array $params = array(), $colnum = 0) 
+    {
         return $this->execute($statement, $params)->fetchAll(PDO::FETCH_COLUMN, $colnum);
     }
     /**
@@ -549,7 +554,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $params             prepared statement params
      * @return array
      */
-    public function fetchAssoc($statement, array $params = array()) {
+    public function fetchAssoc($statement, array $params = array()) 
+    {
         return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
     /**
@@ -559,7 +565,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $params             prepared statement params
      * @return array
      */
-    public function fetchBoth($statement, array $params = array()) {
+    public function fetchBoth($statement, array $params = array()) 
+    {
         return $this->execute($statement, $params)->fetchAll(PDO::FETCH_BOTH);
     }
     /**
@@ -578,7 +585,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @see Doctrine_Query
      * @return Doctrine_Collection      Collection of Doctrine_Record objects
      */
-    public function query($query, array $params = array()) {
+    public function query($query, array $params = array()) 
+    {
         $parser = new Doctrine_Query($this);
 
         return $parser->query($query, $params);
@@ -602,7 +610,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return Doctrine_Record|false    Doctrine_Record object on success,
      *                                  boolean false on failure
      */
-    public function queryOne($query, array $params = array()) {
+    public function queryOne($query, array $params = array()) 
+    {
         $parser = new Doctrine_Query($this);
 
         $coll = $parser->query($query, $params);
@@ -628,13 +637,26 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->dbh->query($query);
     }
     /**
+     * standaloneQuery
+     *
+     * @param string $query     sql query
+     * @param array $params     query parameters
+     *
+     * @return PDOStatement|Doctrine_Adapter_Statement
+     */
+    public function standaloneQuery($query, $params = array())
+    {
+        return $this->execute($query, $params);
+    }
+    /**
      * execute
      * @param string $query     sql query
      * @param array $params     query parameters
      *
      * @return PDOStatement|Doctrine_Adapter_Statement
      */
-    public function execute($query, array $params = array()) {
+    public function execute($query, array $params = array()) 
+    {
         try {
             if ( ! empty($params)) {
                 $stmt = $this->dbh->prepare($query);

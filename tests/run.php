@@ -60,10 +60,16 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 
-
+$test->addTestCase(new Doctrine_Import_Firebird_TestCase());
+$test->addTestCase(new Doctrine_Import_Informix_TestCase());
+$test->addTestCase(new Doctrine_Import_Mysql_TestCase());
+$test->addTestCase(new Doctrine_Import_Mssql_TestCase());
+$test->addTestCase(new Doctrine_Import_Pgsql_TestCase());
+$test->addTestCase(new Doctrine_Import_Oracle_TestCase());
+$test->addTestCase(new Doctrine_Import_Sqlite_TestCase());
 
 // DATABASE ABSTRACTION tests
-
+/**
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -117,13 +123,7 @@ $test->addTestCase(new Doctrine_Export_Sqlite_TestCase());
 
 // Import module (not yet fully tested)
 //$test->addTestCase(new Doctrine_Import_TestCase());
-$test->addTestCase(new Doctrine_Import_Firebird_TestCase());
-$test->addTestCase(new Doctrine_Import_Informix_TestCase());
-$test->addTestCase(new Doctrine_Import_Mysql_TestCase());
-$test->addTestCase(new Doctrine_Import_Mssql_TestCase());
-$test->addTestCase(new Doctrine_Import_Pgsql_TestCase());
-$test->addTestCase(new Doctrine_Import_Oracle_TestCase());
-$test->addTestCase(new Doctrine_Import_Sqlite_TestCase());
+
 
 // Expression module (not yet fully tested)
 $test->addTestCase(new Doctrine_Expression_TestCase());
@@ -155,7 +155,6 @@ $test->addTestCase(new Doctrine_Relation_Access_TestCase());
 $test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
 $test->addTestCase(new Doctrine_Relation_OneToOne_TestCase());
 
-$test->addTestCase(new Doctrine_TreeStructure_TestCase());
 
 
 // Datatypes
@@ -215,6 +214,9 @@ $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 $test->addTestCase(new Doctrine_Query_Join_TestCase());
 
 $test->addTestCase(new Doctrine_ColumnAlias_TestCase());
+*/
+
+$test->addTestCase(new Doctrine_TreeStructure_TestCase());
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());

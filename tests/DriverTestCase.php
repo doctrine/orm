@@ -73,7 +73,7 @@ class AdapterMock implements Doctrine_Adapter_Interface {
         if ($fail) {
             $this->lastInsertIdFail = true;
         } else {
-            $this->lastInsertIdFail = false;   	
+            $this->lastInsertIdFail = false;
         }
     }
     public function lastInsertId()
@@ -125,7 +125,7 @@ class AdapterStatementMock {
         $this->mock->addQuery($this->query);
         return true;
     }
-    public function fetchColumn($colnum) {
+    public function fetchColumn($colnum = 0) {
         return 0;
     }
 }

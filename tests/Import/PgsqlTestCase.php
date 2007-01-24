@@ -151,7 +151,8 @@ class Doctrine_Import_Pgsql_TestCase extends Doctrine_UnitTestCase
     public function testListTableConstraintsExecutesSql()
     {
         $this->import->listTableConstraints('table');
-        
+
+
         $q = "SELECT
                                                         relname
                                                    FROM

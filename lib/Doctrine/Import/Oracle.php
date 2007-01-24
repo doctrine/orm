@@ -37,23 +37,22 @@ class Doctrine_Import_Oracle extends Doctrine_Import
      */
     public function listDatabases()
     {
-        if ( ! $this->conn->options['emulate_database']) {
-            return $this->conn->raiseError(Doctrine::ERROR_UNSUPPORTED, null, null,
-                'database listing is only supported if the "emulate_database" option is enabled', __FUNCTION__);
+        if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE)) {
+            throw new Doctrine_Import_Exception('database listing is only supported if the "emulate_database" option is enabled');
         }
-
+        /**
         if ($this->conn->options['database_name_prefix']) {
             $query = 'SELECT SUBSTR(username, ';
-            $query.= (strlen($this->conn->options['database_name_prefix'])+1);
+            $query.= (strlen($this->conn->getAttribute(['database_name_prefix'])+1);
             $query.= ") FROM sys.dba_users WHERE username LIKE '";
             $query.= $this->conn->options['database_name_prefix']."%'";
         } else {
-            $query = 'SELECT username FROM sys.dba_users';
-        }
-        $result2 = $this->conn->standaloneQuery($query, array('text'), false);
-        $result  = $result2->fetchCol();
+        */
+        $query   = 'SELECT username FROM sys.dba_users';
 
-        $result2->free();
+        $result2 = $this->conn->standaloneQuery($query);
+        $result  = $result2->fetchColumn();
+
         return $result;
     }
     /**
@@ -86,6 +85,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listSequences($database = null)
     {
         $query = "SELECT sequence_name FROM sys.user_sequences";
+
         $tableNames = $this->conn->fetchColumn($query);
 
         return array_map(array($this->conn, 'fixSequenceName'), $tableNames);
@@ -98,10 +98,11 @@ class Doctrine_Import_Oracle extends Doctrine_Import
      */
     public function listTableConstraints($table)
     {
-
         $table = $this->conn->quote($table, 'text');
-        $query = 'SELECT index_name name FROM user_constraints';
-        $query.= ' WHERE table_name='.$table.' OR table_name='.strtoupper($table);
+
+        $query = 'SELECT index_name name FROM user_constraints'
+               . ' WHERE table_name = ' . $table . ' OR table_name = ' . strtoupper($table);
+
         $constraints = $this->conn->fetchColumn($query);
 
         return array_map(array($this->conn, 'fixIndexName'), $constraints);
@@ -115,7 +116,9 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listTableColumns($table)
     {
         $table  = strtoupper($table);
-        $sql    = "SELECT column_name, data_type, data_length, nullable, data_default from all_tab_columns WHERE table_name='$table' ORDER BY column_name";
+        $sql    = "SELECT column_name, data_type, data_length, nullable, data_default from all_tab_columns"
+                . " WHERE table_name = '" . $table . "' ORDER BY column_name";
+
         $result = $this->conn->fetchAssoc($sql);
 
         foreach($result as $val) {
@@ -138,9 +141,10 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listTableIndexes($table)
     {
         $table = $this->conn->quote($table, 'text');
-        $query = 'SELECT index_name name FROM user_indexes';
-        $query.= ' WHERE table_name='.$table.' OR table_name='.strtoupper($table);
-        $query.= ' AND generated=' .$this->conn->quote('N', 'text');
+        $query = 'SELECT index_name name FROM user_indexes'
+               . ' WHERE table_name = ' . $table . ' OR table_name = ' . strtoupper($table)
+               . ' AND generated = ' . $this->conn->quote('N', 'text');
+
         $indexes = $this->conn->fetchColumn($query);
 
         return array_map(array($this->conn, 'fixIndexName'), $indexes);
@@ -183,14 +187,18 @@ class Doctrine_Import_Oracle extends Doctrine_Import
      */
     public function listUsers()
     {
+    	/**
         if ($this->conn->options['emulate_database'] && $this->conn->options['database_name_prefix']) {
             $query = 'SELECT SUBSTR(username, ';
             $query.= (strlen($this->conn->options['database_name_prefix'])+1);
             $query.= ") FROM sys.dba_users WHERE username NOT LIKE '";
             $query.= $this->conn->options['database_name_prefix']."%'";
         } else {
-            $query = 'SELECT username FROM sys.dba_users';
-        }
+        */
+
+        $query = 'SELECT username FROM sys.dba_users';
+        //}
+
         return $this->conn->fetchColumn($query);
     }
     /**
