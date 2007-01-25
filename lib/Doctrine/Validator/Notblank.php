@@ -41,6 +41,6 @@ class Doctrine_Validator_Notblank
      */
     public function validate(Doctrine_Record $record, $key, $value, $args)
     {
-        return (trim($value) != "");
+        return (trim($value) != '');
     }
 }

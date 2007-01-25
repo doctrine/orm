@@ -41,7 +41,7 @@ class Doctrine_Validator_HtmlColor
      */
     public function validate(Doctrine_Record $record, $key, $value, $args)
     {
-        if ( ! preg_match("/^#{0,1}[0-9]{6}$/",$color)) {
+        if ( ! preg_match("/^#{0,1}[0-9]{6}$/", $value)) {
             return false;
         }
         return true;
