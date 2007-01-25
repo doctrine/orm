@@ -44,7 +44,7 @@ class Doctrine_Export_Oracle extends Doctrine_Export
     public function createDatabase($name)
     {
         if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
-            throw new Doctrine_Export_Oracle_Exception('database creation is only supported if the "emulate_database" attribute is enabled');
+            throw new Doctrine_Export_Exception('database creation is only supported if the "emulate_database" attribute is enabled');
 
         $username   = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
         $password   = $this->conn->dsn['password'] ? $this->conn->dsn['password'] : $name;
@@ -75,7 +75,7 @@ class Doctrine_Export_Oracle extends Doctrine_Export
     public function dropDatabase($name)
     {
         if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
-            throw new Doctrine_Export_Oracle_Exception('database dropping is only supported if the
+            throw new Doctrine_Export_Exception('database dropping is only supported if the
                                                        "emulate_database" option is enabled');
 
         $username = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
@@ -150,8 +150,8 @@ END;
     public function dropAutoincrement($table)
     {
         $table = strtoupper($table);
-        $trigger_name = $table . '_AI_PK';
-        $trigger_name_quoted = $this->conn->getDbh()->quote($trigger_name);
+        $triggerName = $table . '_AI_PK';
+        $trigger_name_quoted = $this->conn->quote($triggerName);
         $query = 'SELECT trigger_name FROM user_triggers';
         $query.= ' WHERE trigger_name='.$trigger_name_quoted.' OR trigger_name='.strtoupper($trigger_name_quoted);
         $trigger = $this->conn->fetchOne($query);
@@ -333,7 +333,7 @@ END;
                 case 'rename':
                     break;
                 default:
-                    throw new Doctrine_Export_Oracle_Exception('change type "'.$changeName.'" not yet supported');
+                    throw new Doctrine_Export_Exception('change type "'.$changeName.'" not yet supported');
             }
         }
 

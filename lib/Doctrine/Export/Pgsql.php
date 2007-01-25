@@ -157,7 +157,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
                 case 'rename':
                     break;
                 default:
-                    throw new Doctrine_Export_Pgsql_Exception('change type "'.$change_name.'\" not yet supported');
+                    throw new Doctrine_Export_Exception('change type "'.$change_name.'\" not yet supported');
             }
         }
 
@@ -187,7 +187,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
                     $server_info = $this->conn->getServerVersion();
 
                     if (is_array($server_info) && $server_info['major'] < 8) {
-                        throw new Doctrine_Export_Pgsql_Exception('changing column type for "'.$change_name.'\" requires PostgreSQL 8.0 or above');
+                        throw new Doctrine_Export_Exception('changing column type for "'.$change_name.'\" requires PostgreSQL 8.0 or above');
                     }
                     $query = "ALTER $field_name TYPE ".$this->conn->datatype->getTypeDeclaration($field['definition']);
                     $this->conn->exec("ALTER TABLE $name $query");

@@ -257,7 +257,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 if ($query) {
                     $query.= ', ';
                 }
-                $query.= 'ADD ' . $this->dbh->getDeclaration($field['type'], $field_name, $field);
+                $query.= 'ADD ' . $this->getDeclaration($field['type'], $field_name, $field);
             }
         }
 
@@ -290,7 +290,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                     $old_field_name = $field_name;
                 }
                 $old_field_name = $this->conn->quoteIdentifier($old_field_name, true);
-                $query.= "CHANGE $old_field_name " . $this->dbh->getDeclaration($field['definition']['type'], $field_name, $field['definition']);
+                $query.= "CHANGE $old_field_name " . $this->getDeclaration($field['definition']['type'], $field_name, $field['definition']);
             }
         }
 
@@ -301,7 +301,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 }
                 $field = $changes['rename'][$renamed_field];
                 $renamed_field = $this->conn->quoteIdentifier($renamed_field, true);
-                $query.= 'CHANGE ' . $renamed_field . ' ' . $this->dbh->getDeclaration($field['definition']['type'], $field['name'], $field['definition']);
+                $query.= 'CHANGE ' . $renamed_field . ' ' . $this->getDeclaration($field['definition']['type'], $field['name'], $field['definition']);
             }
         }
 
@@ -310,7 +310,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
 
         $name = $this->conn->quoteIdentifier($name, true);
-        return $this->conn->exec("ALTER TABLE $name $query");
+        return $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
     }
     /**
      * create sequence

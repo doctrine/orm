@@ -162,8 +162,7 @@ class Doctrine_Export_Mssql extends Doctrine_Export
                 case 'rename':
                 case 'change':
                 default:
-                    return $this->conn->raiseError(Doctrine::ERR_CANNOT_ALTER, null, null,
-                        'alterTable: change type "'.$change_name.'" not yet supported');
+                    throw new Doctrine_Export_Exception('alterTable: change type "' . $change_name . '" not yet supported');
             }
         }
 

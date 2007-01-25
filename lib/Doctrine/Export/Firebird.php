@@ -42,7 +42,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
      */
     public function createDatabase($name)
     {
-        throw new Doctrine_Export_Firebird_Exception(
+        throw new Doctrine_Export_Exception(
                 'PHP Interbase API does not support direct queries. You have to ' .
                 'create the db manually by using isql command or a similar program');
     }
@@ -54,7 +54,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
      */
     public  function dropDatabase($name)
     {
-        throw new Doctrine_Export_Firebird_Exception(
+        throw new Doctrine_Export_Exception(
                 'PHP Interbase API does not support direct queries. You have ' .
                 'to drop the db manually by using isql command or a similar program');
     }
@@ -112,8 +112,9 @@ class Doctrine_Export_Firebird extends Doctrine_Export
 
         //remove autoincrement trigger associated with the table
         $table = $this->conn->quote(strtoupper($table));
-        $trigger_name = $this->conn->quote(strtoupper($table) . '_AUTOINCREMENT_PK');
-        return $this->conn->exec("DELETE FROM RDB\$TRIGGERS WHERE UPPER(RDB\$RELATION_NAME)=$table AND UPPER(RDB\$TRIGGER_NAME)=$trigger_name");
+        $triggerName = $this->conn->quote(strtoupper($table) . '_AUTOINCREMENT_PK');
+
+        return $this->conn->exec("DELETE FROM RDB\$TRIGGERS WHERE UPPER(RDB\$RELATION_NAME)=" . $table . " AND UPPER(RDB\$TRIGGER_NAME)=" . $triggerName);
     }
     /**
      * create a new table
@@ -177,9 +178,9 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         foreach ($changes as $change_name => $change) {
             switch ($change_name) {
                 case 'notnull':
-                    throw new Doctrine_DataDict_Firebird_Exception('it is not supported changes to field not null constraint');
+                    throw new Doctrine_DataDict_Exception('it is not supported changes to field not null constraint');
                 case 'default':
-                    throw new Doctrine_DataDict_Firebird_Exception('it is not supported changes to field default value');
+                    throw new Doctrine_DataDict_Exception('it is not supported changes to field default value');
                 case 'length':
                     /*
                     return throw new Doctrine_DataDict_Firebird_Exception('it is not supported changes to field default length');
@@ -190,7 +191,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                 case 'definition':
                     break;
                 default:
-                    throw new Doctrine_DataDict_Firebird_Exception('it is not supported change of type' . $change_name);
+                    throw new Doctrine_DataDict_Exception('it is not supported change of type' . $change_name);
             }
         }
         return true;
@@ -313,7 +314,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                     }
                     break;
                 default:
-                    throw new Doctrine_DataDict_Firebird_Exception('change type ' . $change_name . ' not yet supported');
+                    throw new Doctrine_DataDict_Exception('change type ' . $change_name . ' not yet supported');
             }
         }
         if ($check) {
@@ -325,7 +326,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                 if ($query) {
                     $query.= ', ';
                 }
-                $query.= 'ADD ' . $this->conn->getDeclaration($field['type'], $field_name, $field, $name);
+                $query.= 'ADD ' . $this->getDeclaration($field['type'], $field_name, $field, $name);
             }
         }
 
@@ -358,7 +359,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                 }
                 $this->conn->loadModule('Datatype', null, true);
                 $field_name = $this->conn->quoteIdentifier($field_name, true);
-                $query.= 'ALTER ' . $field_name.' TYPE ' . $this->conn->datatype->getTypeDeclaration($field['definition']);
+                $query.= 'ALTER ' . $field_name.' TYPE ' . $this->getTypeDeclaration($field['definition']);
             }
         }
 
@@ -501,14 +502,15 @@ class Doctrine_Export_Firebird extends Doctrine_Export
     /**
      * drop existing sequence
      *
-     * @param string $seq_name name of the sequence to be dropped
+     * @param string $seqName name of the sequence to be dropped
      * @return void
      */
-    public function dropSequence($seq_name)
+    public function dropSequence($seqName)
     {
-        $sequence_name = $this->conn->getSequenceName($seq_name);
-        $sequence_name = $this->conn->quote($sequence_name);
-        $query = "DELETE FROM RDB\$GENERATORS WHERE UPPER(RDB\$GENERATOR_NAME)=$sequence_name";
+        $sequenceName = $this->conn->getSequenceName($seqName);
+        $sequenceName = $this->conn->quote($sequenceName);
+        $query = "DELETE FROM RDB\$GENERATORS WHERE UPPER(RDB\$GENERATOR_NAME)=" . $sequenceName;
+        
         return $this->conn->exec($query);
     }
 }
