@@ -57,7 +57,14 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @var Doctrine_Null $null     Doctrine_Null object, used for extremely fast null value checking
      */
     private $null;
-
+    /**
+     * @var array $driverMap
+     */
+    private $driverMap        = array('oracle'     => 'oci8',
+                                      'postgres'   => 'pgsql',
+                                      'oci'        => 'oci8',
+                                      'sqlite2'    => 'sqlite',
+                                      'sqlite3'    => 'sqlite');
     /**
      * constructor
      *
@@ -171,6 +178,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
      * @param string $name                              name of the connection, if empty numeric key is used
      * @throws Doctrine_Manager_Exception               if trying to bind a connection with an existing name
+     * @throws Doctrine_Manager_Exception               if trying to open connection for unknown driver
      * @return Doctrine_Connection
      */
     public function openConnection($adapter, $name = null, $setCurrent = true)
@@ -191,6 +199,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $name = $this->index;
             $this->index++;
         }
+
         switch ($adapter->getAttribute(PDO::ATTR_DRIVER_NAME)) {
             case 'mysql':
                 $this->connections[$name] = new Doctrine_Connection_Mysql($this, $adapter);
@@ -225,10 +234,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $this->currIndex = $name;
         }
         return $this->connections[$name];
-    }
-    public function openSession(PDO $pdo, $name = null)
-    {
-        return $this->openConnection($pdo, $name);
     }
     /**
      * getConnection
@@ -320,6 +325,17 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             throw new InvalidKeyException();
         }
         $this->currIndex = $key;
+    }
+    /**
+     * contains
+     * whether or not the manager contains specified connection
+     *
+     * @param mixed $key                        the connection key
+     * @return boolean
+     */
+    public function contains($key) 
+    {
+        return isset($this->connections[$key]);
     }
     /**
      * count
