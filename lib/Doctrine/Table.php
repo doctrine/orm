@@ -143,6 +143,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *      -- charset                      character set
      *
      *      -- collation
+     *
+     *      -- index                        the index definitions of this table
      */
     protected $options          = array('name'           => null,
                                         'tableName'      => null,
@@ -151,7 +153,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                         'enumMap'        => array(),
                                         'engine'         => null,
                                         'charset'        => null,
-                                        'collation'      => null
+                                        'collation'      => null,
+                                        'index'          => array(),
                                         );
 
     /**
@@ -307,7 +310,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @return boolean                          whether or not the export operation was successful
      *                                          false if table already existed in the database
      */
-    public function export() {
+    public function export() 
+    {
         if ( ! Doctrine::isValidClassname($this->options['declaringClass']->getName())) {
             throw new Doctrine_Table_Exception('Class name not valid.');
         }
@@ -350,6 +354,28 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
     }
     /**
+     * exportConstraints
+     * exports the constraints of this table into database based on option definitions
+     *
+     * @throws Doctrine_Connection_Exception    if something went wrong on db level
+     * @return void
+     */
+    public function exportConstraints()
+    {
+    	try {
+        	$this->conn->beginTransaction();
+
+            foreach ($this->options['index'] as $index => $definition) {
+                $this->conn->export->createIndex($this->options['tableName'], $index, $definition);
+            }
+            $this->conn->commit();
+        } catch(Doctrine_Connection_Exception $e) {
+            $this->conn->rollback();
+
+            throw $e;
+        }
+    }
+    /**
      * createQuery
      * creates a new Doctrine_Query object and adds the component name
      * of this table as the query 'from' part
@@ -378,8 +404,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 break;
             case 'enumMap':
             case 'inheritanceMap':
+            case 'index':
                 if ( ! is_array($value)) {
-                    throw new Doctrine_Table_Exception($name.' should be an array.');
+                    throw new Doctrine_Table_Exception($name . ' should be an array.');
                 }
                 break;
         }
