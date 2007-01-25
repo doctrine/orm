@@ -53,7 +53,7 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
                 try {
                     $result = $this->conn->export->createSequence($seqName);
                 } catch(Doctrine_Exception $e) {
-                    throw new Doctrine_Sequence_Oracle_Exception('on demand sequence ' . $seqName . ' could not be created');
+                    throw new Doctrine_Sequence_Exception('on demand sequence ' . $seqName . ' could not be created');
                 }
                 return $this->nextId($seqName, false);
             }
