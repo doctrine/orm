@@ -356,7 +356,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                 $length = null;
             break;
             default:
-                throw new Doctrine_DataDict_Mysql_Exception('unknown database attribute type: '.$dbType);
+                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$dbType);
         }
 
         $length = ((int) $length == 0) ? null : (int) $length;
@@ -422,7 +422,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
             if ($field['default'] === '') {
                 $field['default'] = empty($field['notnull']) ? null : 0;
             }
-            $default = ' DEFAULT '.$this->conn->getDbh()->quote($field['default']);
+            $default = ' DEFAULT '.$this->conn->quote($field['default']);
         }
         /**
         elseif (empty($field['notnull'])) {

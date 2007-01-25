@@ -173,7 +173,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
                 $length = null;
                 break;
             default:
-                throw new Doctrine_DataDict_Firebird_Exception('unknown database attribute type: '.$dbType);
+                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$dbType);
         }
 
         return array($type, $length, $unsigned, $fixed);

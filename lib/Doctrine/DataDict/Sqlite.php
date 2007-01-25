@@ -112,7 +112,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'DECIMAL('.$length.','.$this->conn->options['decimal_places'].')';
         }
-        throw new Doctrine_DataDict_Sqlite_Exception('Unknown datatype ' . $field['type']);
+        throw new Doctrine_DataDict_Exception('Unknown datatype ' . $field['type']);
     }
     /**
      * Maps a native array description of a field to Doctrine datatype and length
@@ -227,7 +227,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
                 $length = null;
                 break;
             default:
-                throw new Doctrine_DataDict_Sqlite_Exception('unknown database attribute type: '.$dbType);
+                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$dbType);
         }
 
         return array($type, $length, $unsigned, $fixed);

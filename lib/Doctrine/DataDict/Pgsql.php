@@ -412,7 +412,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'NUMERIC(' . $length . ',' . $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES) . ')';
             default:
-                throw new Doctrine_DataDict_Pgsql_Exception('Unknown field type '. $field['type']);
+                throw new Doctrine_DataDict_Exception('Unknown field type '. $field['type']);
         }
     }
     /**
@@ -537,7 +537,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
                 $length = null;
                 break;
             default:
-                throw new Doctrine_DataDict_Pgsql_Exception('unknown database attribute type: '.$db_type);
+                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$db_type);
         }
 
         return array($type, $length, $unsigned, $fixed);
