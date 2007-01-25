@@ -145,7 +145,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $queryFields = $this->getFieldDeclarationList($fields);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
-            $queryFields.= ', PRIMARY KEY('.implode(', ', array_values($options['primary'])).')';
+            $queryFields.= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
         }
 
         $name  = $this->conn->quoteIdentifier($name, true);
@@ -191,11 +191,11 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $table = $this->conn->quoteIdentifier($table, true);
         $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
-        $query = "ALTER TABLE $table ADD CONSTRAINT $name";
+        $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $name;
         if (!empty($definition['primary'])) {
-            $query.= ' PRIMARY KEY';
+            $query .= ' PRIMARY KEY';
         } elseif (!empty($definition['unique'])) {
-            $query.= ' UNIQUE';
+            $query .= ' UNIQUE';
         }
         $fields = array();
         foreach (array_keys($definition['fields']) as $field) {
@@ -206,7 +206,6 @@ class Doctrine_Export extends Doctrine_Connection_Module
     }
     /**
      * Get the stucture of a field into an array
-     *
      *
      * @param string    $table         name of the table on which the index is to be created
      * @param string    $name          name of the index to be created
@@ -241,46 +240,12 @@ class Doctrine_Export extends Doctrine_Connection_Module
         return $this->conn->execute($this->createIndexSql($table, $name, $definition));
     }
     /**
-     * createForeignKey
-     *
-     * @param string    $table         name of the table on which the index is to be created
-     * @param string    $name          name of the foreign key to be created
-     * @param array     $definition    associative array that defines properties of the foreign key to be created.
-     */
-    public function createForeignKey($table, $name, array $definition)
-    {
-
-    }
-    /**
      * Get the stucture of a field into an array
-     *
      *
      * @param string    $table         name of the table on which the index is to be created
      * @param string    $name          name of the index to be created
      * @param array     $definition    associative array that defines properties of the index to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the index fields as array
-     *                                 indexes. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the index that are specific to
-     *                                 each field.
-     *
-     *                                 Currently, only the sorting property is supported. It should be used
-     *                                 to define the sorting direction of the index. It may be set to either
-     *                                 ascending or descending.
-     *
-     *                                 Not all DBMS support index sorting direction configuration. The DBMS
-     *                                 drivers of those that do not support it ignore this property. Use the
-     *                                 function supports() to determine whether the DBMS driver can manage indexes.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'fields' => array(
-     *                                            'user_name' => array(
-     *                                                'sorting' => 'ascending'
-     *                                            ),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
+     * @see Doctrine_Export::createIndex()
      * @return string
      */
     public function createIndexSql($table, $name, array $definition)
@@ -296,6 +261,17 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $query .= ' (' . implode(', ', $fields) . ')';
 
         return $query;
+    }
+    /**
+     * createForeignKey
+     *
+     * @param string    $table         name of the table on which the index is to be created
+     * @param string    $name          name of the foreign key to be created
+     * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     */
+    public function createForeignKey($table, $name, array $definition)
+    {
+
     }
     /**
      * alter an existing table

@@ -54,7 +54,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
      */
     public function listTableColumns($table)
     {
-        $sql     = 'EXEC sp_columns @table_name = ' . $this->quoteIdentifier($table);
+        $sql     = 'EXEC sp_columns @table_name = ' . $this->conn->quoteIdentifier($table, true);
         $result  = $this->conn->fetchAssoc($sql);
         $columns = array();
 
@@ -102,7 +102,20 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     {
         $sql = "SELECT name FROM sysobjects WHERE type = 'U' ORDER BY name";
 
-        return $this->dbh->fetchColumn($sql);
+        return $this->conn->fetchColumn($sql);
+    }
+    /**
+     * lists all triggers
+     *
+     * @return array
+     */
+    public function listTriggers()
+    {
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'TR'";
+
+        $result = $this->conn->fetchColumn($query);
+
+        return $result;
     }
     /**
      * lists table triggers
@@ -113,10 +126,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     public function listTableTriggers($table)
     {
         $table = $this->conn->quote($table, 'text');
-        $query = "SELECT name FROM sysobjects WHERE xtype = 'TR'";
-        if (!is_null($table)) {
-            $query .= "AND object_name(parent_obj) = $table";
-        }
+        $query = "SELECT name FROM sysobjects WHERE xtype = 'TR' AND object_name(parent_obj) = " . $table;
 
         $result = $this->conn->fetchColumn($query);
 
@@ -143,11 +153,13 @@ class Doctrine_Import_Mssql extends Doctrine_Import
         }
         $table = $this->conn->quote($table, 'text');
         $query = 'EXEC sp_statistics @table_name = ' . $table;
-        $indexes = $this->conn->queryCol($query, 'text', $keyName);
+        $indexes = $this->conn->fetchColumn($query, $keyName);
 
         $query = 'EXEC sp_pkeys @table_name = ' . $table;
-        $pkAll = $this->conn->queryCol($query, 'text', $pkName);
+        $pkAll = $this->conn->fetchColumn($query, $pkName);
+
         $result = array();
+
         foreach ($indexes as $index) {
             if (!in_array($index, $pkAll) && $index != null) {
                 $result[] = $this->_fixIndexName($index);
