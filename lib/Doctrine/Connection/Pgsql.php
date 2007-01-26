@@ -138,7 +138,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
         $serverInfo = $this->fetchOne($query);
 
         if ( ! $native) {
-            $tmp = explode('.', $server_info, 3);
+            $tmp = explode('.', $serverInfo, 3);
 
             if (empty($tmp[2]) && isset($tmp[1])
                 && preg_match('/(\d+)(.*)/', $tmp[1], $tmp2)
