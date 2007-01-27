@@ -30,8 +30,10 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase {
-    public function testCreateSequenceExecutesSql() {
+class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase 
+{
+    public function testCreateSequenceExecutesSql() 
+    {
         $sequenceName = 'sequence';
         $start = 1;
         $query = 'CREATE SEQUENCE ' . $sequenceName . '_seq START WITH ' . $start . ' INCREMENT BY 1 NOCACHE';
@@ -41,7 +43,8 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->adapter->pop(), $query);
     }
 
-    public function testDropSequenceExecutesSql() {
+    public function testDropSequenceExecutesSql() 
+    {
         $sequenceName = 'sequence';
 
         $query = 'DROP SEQUENCE ' . $sequenceName;
@@ -50,7 +53,8 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual($this->adapter->pop(), $query . '_seq');
     }
-    public function testCreateTableExecutesSql() {
+    public function testCreateTableExecutesSql() 
+    {
         $name = 'mytable';
         
         $fields  = array('id' => array('type' => 'integer'));
@@ -62,7 +66,8 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id INT)');
         $this->assertEqual($this->adapter->pop(), 'BEGIN TRANSACTION');
     }
-    public function testCreateTableSupportsDefaultAttribute() {
+    public function testCreateTableSupportsDefaultAttribute() 
+    {
         $name = 'mytable';
         $fields  = array('name' => array('type' => 'char', 'length' => 10, 'default' => 'def'),
                          'type' => array('type' => 'integer', 'length' => 3, 'default' => 12)
@@ -76,7 +81,8 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10) DEFAULT \'def\', type NUMBER(3) DEFAULT 12, PRIMARY KEY(name, type))');
         $this->assertEqual($this->adapter->pop(), 'BEGIN TRANSACTION');
     }
-    public function testCreateTableSupportsMultiplePks() {
+    public function testCreateTableSupportsMultiplePks() 
+    {
         $name = 'mytable';
         $fields  = array('name' => array('type' => 'char', 'length' => 10),
                          'type' => array('type' => 'integer', 'length' => 3));
@@ -89,7 +95,8 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10), type NUMBER(3), PRIMARY KEY(name, type))');
         $this->assertEqual($this->adapter->pop(), 'BEGIN TRANSACTION');
     }
-    public function testCreateTableSupportsAutoincPks() {
+    public function testCreateTableSupportsAutoincPks() 
+    {
         $name = 'mytable';
         
         $fields  = array('id' => array('type' => 'integer', 'autoincrement' => true));
@@ -105,7 +112,8 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->adapter->pop(), 'BEGIN TRANSACTION');
     }
 
-    public function testCreateTableSupportsCharType() {
+    public function testCreateTableSupportsCharType() 
+    {
         $name = 'mytable';
         
         $fields  = array('id' => array('type' => 'char', 'length' => 3));
