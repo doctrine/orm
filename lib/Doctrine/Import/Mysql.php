@@ -138,7 +138,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
                 $keyName = strtolower($keyName);
                 $nonUnique = strtolower($nonUnique);
             } else {
-                $keyName = strtoupper($key_name);
+                $keyName = strtoupper($keyName);
                 $nonUnique = strtoupper($nonUnique);
             }
         }

@@ -51,7 +51,7 @@ class Doctrine_Sequence_Mysql extends Doctrine_Sequence
             $this->conn->exec($query);
 
         } catch(Doctrine_Connection_Exception $e) {
-            if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
+            if ($ondemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
                 // Since we are creating the sequence on demand
                 // we know the first id = 1 so initialize the
                 // sequence at 2

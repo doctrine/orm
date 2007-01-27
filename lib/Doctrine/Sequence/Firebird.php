@@ -91,7 +91,7 @@ class Doctrine_Sequence_Firebird extends Doctrine_Sequence
         $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
         
 
-        $query = 'SELECT GEN_ID(' . $sequence_name . ', 0) as the_value FROM RDB$DATABASE';
+        $query = 'SELECT GEN_ID(' . $sequenceName . ', 0) as the_value FROM RDB$DATABASE';
         try {
             $value = $this->queryOne($query);
         } catch(Doctrine_Connection_Exception $e) {

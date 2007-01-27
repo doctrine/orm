@@ -754,7 +754,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             } else {
                 return $value;
             }
-            return $value;
         }
 
         if (isset($this->_id[$lower])) {

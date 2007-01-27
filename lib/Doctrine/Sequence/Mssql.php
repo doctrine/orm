@@ -46,7 +46,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
         $seqcolName   = $this->conn->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
 
 
-        if ($this->_checkSequence($sequence_name)) {
+        if ($this->_checkSequence($sequenceName)) {
             $query = 'SET IDENTITY_INSERT ' . $sequenceName . ' ON '
                    . 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (0)';
         } else {
@@ -57,7 +57,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
             $this->conn->exec($query);
 
         } catch(Doctrine_Connection_Exception $e) {
-            if ($onDemand && !$this->_checkSequence($sequenceName)) {
+            if ($ondemand && !$this->_checkSequence($sequenceName)) {
                 // Since we are creating the sequence on demand
                 // we know the first id = 1 so initialize the
                 // sequence at 2

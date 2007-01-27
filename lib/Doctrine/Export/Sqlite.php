@@ -185,7 +185,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      */
     public function dropSequence($seq_name)
     {
-        $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($seq_name), true);
         return $this->conn->exec('DROP TABLE ' . $sequenceName);
     }
 }

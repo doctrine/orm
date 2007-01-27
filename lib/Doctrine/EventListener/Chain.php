@@ -443,7 +443,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
     public function onCollectionDelete(Doctrine_Collection $collection)
     {
         foreach ($this->listeners as $listener) {
-            $listener->onCollectionDelete($record);
+            $listener->onCollectionDelete($collection);
         }
     }
     /**
