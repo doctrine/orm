@@ -32,6 +32,10 @@
  */
 class Doctrine_Query_JoinCondition_TestCase extends Doctrine_UnitTestCase 
 {
+    public function prepareData() 
+    { }
+    public function prepareTables() 
+    { }
     public function testJoinConditionsAreSupportedForOneToManyLeftJoins()
     {
         $q = new Doctrine_Query();

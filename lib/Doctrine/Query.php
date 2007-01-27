@@ -76,6 +76,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @var array $pendingFields
      */
     private $pendingFields     = array();
+
     /**
      * @var integer $type                   the query type
      *
@@ -115,6 +116,20 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $this->isSubquery = (bool) $bool;
         return $this;
     }
+    /**
+     * getAggregateAlias
+     * 
+     * @return string
+     */
+    public function getAggregateAlias($dqlAlias)
+    {
+        if(isset($this->aggregateMap[$dqlAlias])) {
+            return $this->aggregateMap[$dqlAlias];
+        }
+        
+        return null;
+    }
+
     public function getTableStack()
     {
         return $this->tableStack;
@@ -257,9 +272,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 }
             }
 
-            $this->parts['select'][] = $name . '(' . $distinct . implode(', ', $arglist) . ') AS ' . $tableAlias . '__' . count($this->aggregateMap);
+            $sqlAlias = $tableAlias . '__' . count($this->aggregateMap);
 
-            $this->aggregateMap[] = $table;
+            $this->parts['select'][] = $name . '(' . $distinct . implode(', ', $arglist) . ') AS ' . $sqlAlias;
+
+            $this->aggregateMap[$alias] = $sqlAlias;
             $this->neededTables[] = $tableAlias;
         }
     }

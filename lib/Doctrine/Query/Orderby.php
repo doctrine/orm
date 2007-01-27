@@ -60,9 +60,14 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part
 
                 $r = $alias . '.' . $field;
 
-                if (isset($e[1])) {
-                    $r .= ' '.$e[1];
-                }
+
+            } else {
+                $field = $this->query->getAggregateAlias($e[0]);
+
+                $r = $field;
+            }
+            if (isset($e[1])) {
+                $r .= ' '.$e[1];
             }
             $ret[] = $r;
         }

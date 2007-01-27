@@ -85,7 +85,10 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
     protected $tableIndexes = array();
 
     protected $pendingAggregates = array();
-
+    /**
+     * @var array $aggregateMap             an array containing all aggregate aliases, keys as dql aliases
+     *                                      and values as sql aliases
+     */
     protected $aggregateMap      = array();
     /**
      * @var Doctrine_Hydrate_Alias $aliasHandler
