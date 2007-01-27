@@ -1,6 +1,39 @@
 <?php
-class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase {
-    public function testLeftJoin() {
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.com>.
+ */
+
+/**
+ * Doctrine_Export_Oracle_TestCase
+ *
+ * @package     Doctrine
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
+ */
+class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase 
+{
+    public function testLeftJoin() 
+    {
         $q = new Doctrine_Query();
 
         $q->from('User u LEFT JOIN u.Group');
@@ -10,7 +43,8 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual($users->count(), 8);
     }
-    public function testDefaultJoinIsLeftJoin() {
+    public function testDefaultJoinIsLeftJoin() 
+    {
         $q = new Doctrine_Query();
 
         $q->from('User u JOIN u.Group');
@@ -20,7 +54,8 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual($users->count(), 8);
     }
-    public function testInnerJoin() {
+    public function testInnerJoin() 
+    {
         $q = new Doctrine_Query();
 
         $q->from('User u INNER JOIN u.Group');
@@ -30,7 +65,8 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual($users->count(), 1);
     }
-    public function testMultipleLeftJoin() {
+    public function testMultipleLeftJoin() 
+    {
         $q = new Doctrine_Query();
 
         $q->from('User u LEFT JOIN u.Group LEFT JOIN u.Phonenumber');
@@ -40,7 +76,8 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 8);
     }
-    public function testMultipleLeftJoin2() {
+    public function testMultipleLeftJoin2() 
+    {
         $q = new Doctrine_Query();
 
         $q->from('User u LEFT JOIN u.Group LEFT JOIN u.Phonenumber');
@@ -50,7 +87,8 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 8);
     }
-    public function testMultipleInnerJoin() {
+    public function testMultipleInnerJoin() 
+    {
         $q = new Doctrine_Query();
 
         $q->select('u.name')->from('User u INNER JOIN u.Group INNER JOIN u.Phonenumber');
@@ -60,7 +98,8 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 1);
     }
-    public function testMultipleInnerJoin2() {
+    public function testMultipleInnerJoin2() 
+    {
         $q = new Doctrine_Query();
 
         $q->select('u.name')->from('User u INNER JOIN u.Group, u.Phonenumber');
@@ -70,7 +109,8 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 1);
     }
-    public function testMixingOfJoins() {
+    public function testMixingOfJoins() 
+    {
         $q = new Doctrine_Query();
 
         $q->select('u.name, g.name, p.phonenumber')->from('User u INNER JOIN u.Group g LEFT JOIN u.Phonenumber p');
