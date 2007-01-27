@@ -51,6 +51,10 @@ class Doctrine_Db_Event
      */
     protected $query;
     /**
+     * @var string $params               the parameters associated with the query (if any)
+     */
+    protected $params;
+    /**
      * @see Doctrine_Db_Event constants
      * @var integer $code               the event code
      */
@@ -70,11 +74,12 @@ class Doctrine_Db_Event
      * @param integer $code             the event code
      * @param string $query             the sql query associated with this event (if any)
      */
-    public function __construct($invoker, $code, $query = null)
+    public function __construct($invoker, $code, $query = null, $params = array())
     {
         $this->invoker = $invoker;
         $this->code    = $code;
         $this->query   = $query;
+        $this->params = $params;
     }
     /**
      * getQuery
@@ -160,6 +165,16 @@ class Doctrine_Db_Event
     public function getInvoker()
     {
         return $this->invoker;
+    }
+    /**
+     * getParams
+     * returns the parameters of the query
+     *
+     * @return array   parameters of the query
+     */
+    public function getParams()
+    {
+        return $this->params;
     }
     /**
      * Get the elapsed time (in microseconds) that the event ran.  If the event has
