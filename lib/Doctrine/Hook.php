@@ -158,7 +158,7 @@ class Doctrine_Hook
      *
      * @param array $params         an array containing all fields which the built query
      *                              should be ordered by
-     * @return boolean              whether or not the hooking was
+     * @return boolean              whether or not the hooking was successful
      */
     public function hookOrderby($params)
     {
@@ -187,6 +187,7 @@ class Doctrine_Hook
                 }
             }
         }
+        return true;
     }
     /**
      * @param integer $limit

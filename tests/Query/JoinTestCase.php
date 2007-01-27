@@ -74,4 +74,12 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($c->City[0]->District->name, 'District 1');
         $this->assertEqual($c->City[2]->District->name, 'District 2');
     }
+    public function testManyToManyJoinUsesProperTableAliases() 
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('u.name')->from('User u INNER JOIN u.Group g');
+
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e INNER JOIN groupuser g ON e.id = g.user_id INNER JOIN entity e2 ON e2.id = g.group_id WHERE (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))');
+    }
 }

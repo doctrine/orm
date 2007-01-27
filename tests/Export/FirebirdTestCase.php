@@ -4,7 +4,7 @@ class Doctrine_Export_Firebird_TestCase extends Doctrine_UnitTestCase {
         try {
             $this->export->createDatabase('db');
             $this->fail();
-        } catch(Doctrine_Export_Firebird_Exception $e) {
+        } catch(Doctrine_Export_Exception $e) {
             $this->pass();
         }
     }
@@ -12,7 +12,7 @@ class Doctrine_Export_Firebird_TestCase extends Doctrine_UnitTestCase {
         try {
             $this->export->dropDatabase('db');
             $this->fail();
-        } catch(Doctrine_Export_Firebird_Exception $e) {
+        } catch(Doctrine_Export_Exception $e) {
             $this->pass();
         }
     }

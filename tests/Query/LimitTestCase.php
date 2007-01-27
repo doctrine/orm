@@ -211,8 +211,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 3);
 
-        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e LEFT JOIN groupuser ON e.id = groupuser.user_id LEFT JOIN entity e2 ON e2.id = groupuser.group_id WHERE e2.id = ? AND (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL)) ORDER BY e.id DESC LIMIT 5");
-
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e LEFT JOIN groupuser g ON e.id = g.user_id LEFT JOIN entity e2 ON e2.id = g.group_id WHERE e2.id = ? AND (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL)) ORDER BY e.id DESC LIMIT 5");
         $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_RECORDS);
     }
 
@@ -239,10 +238,9 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase {
         $q->from("Photo")->where("Photo.Tag.id = ?")->orderby("Photo.id DESC")->limit(100);
 
         $photos = $q->execute(array(1));
-        $this->assertEqual($photos->count(), 3);
+        $this->assertEqual($photos->count(), 3);            
         $this->assertEqual($q->getQuery(), 
-        "SELECT p.id AS p__id, p.name AS p__name FROM photo p LEFT JOIN phototag ON p.id = phototag.photo_id LEFT JOIN tag t ON t.id = phototag.tag_id WHERE p.id IN (SELECT DISTINCT p2.id FROM photo p2 LEFT JOIN phototag ON p2.id = phototag.photo_id LEFT JOIN tag t2 ON t2.id = phototag.tag_id WHERE t2.id = ? ORDER BY p2.id DESC LIMIT 100) AND t.id = ? ORDER BY p.id DESC");
-
+        "SELECT p.id AS p__id, p.name AS p__name FROM photo p LEFT JOIN phototag p2 ON p.id = p2.photo_id LEFT JOIN tag t ON t.id = p2.tag_id WHERE p.id IN (SELECT DISTINCT p3.id FROM photo p3 LEFT JOIN phototag p4 ON p3.id = p4.photo_id LEFT JOIN tag t2 ON t2.id = p4.tag_id WHERE t2.id = ? ORDER BY p3.id DESC LIMIT 100) AND t.id = ? ORDER BY p.id DESC");
     }
 
 }

@@ -126,7 +126,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
         foreach ($fields as $name) {
             $name = $table->getColumnName($name);
-            
+
             $this->parts["select"][] = $tableAlias . '.' .$name . ' AS ' . $tableAlias . '__' . $name;
         }
         
@@ -521,12 +521,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     public function getQueryBase()
     {
-        switch($this->type) {
+        switch ($this->type) {
             case self::DELETE:
-                if($this->conn->getName() == 'Mysql')
-                    $q = 'DELETE '.end($this->tableAliases).' FROM ';
-                else
+                if ($this->conn->getName() == 'Mysql') {
+                    $q = 'DELETE '  .end($this->tableAliases) . ' FROM ';
+                } else {
                     $q = 'DELETE FROM ';
+                }
             break;
             case self::UPDATE:
                 $q = 'UPDATE ';
@@ -729,12 +730,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             }
         }
 
-
         // all conditions must be preserved in subquery
-        $subquery .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ',$this->parts['where']):'';
-        $subquery .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ',$this->parts['groupby']):'';
-        $subquery .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ',$this->parts['having']):'';
-        $subquery .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby']):'';
+        $subquery .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where'])  : '';
+        $subquery .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby'])   : '';
+        $subquery .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']) : '';
+        $subquery .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])   : '';
 
         // add driver specific limit clause
         $subquery = $this->conn->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
@@ -1222,7 +1222,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
                     $index += strlen($e[($key - 1)]) + 1;
                     // the mark here is either '.' or ':'
-                    $mark  = substr($path,($index - 1),1);
+                    $mark  = substr($path, ($index - 1), 1);
 
                     if(isset($this->tableAliases[$prevPath])) {
                         $tname = $this->tableAliases[$prevPath];
@@ -1236,14 +1236,15 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
 
 
-                    if(isset($this->tableAliases[$currPath])) {
+                    if (isset($this->tableAliases[$currPath])) {
                         $tname2 = $this->tableAliases[$currPath];
-                    } else
+                    } else {
                         $tname2 = $this->aliasHandler->generateShortAlias($original);
+                    }
 
                     $aliasString = $this->conn->quoteIdentifier($original) . ' ' . $tname2;
 
-                    switch($mark) {
+                    switch ($mark) {
                         case ':':
                             $join = 'INNER JOIN ';
                         break;
@@ -1268,16 +1269,25 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
                         $assocTableName = $asf->getTableName();
 
-                        if( ! $loadFields || $joinCondition) {
+                        if( ! $loadFields || $fk->getTable()->usesInheritanceMap() || $joinCondition) {
                             $this->subqueryAliases[] = $assocTableName;
                         }
-                        $this->parts['join'][$tname][$assocTableName] = $join . $assocTableName . ' ON ' . $tname  . '.'
+                        
+                        $assocPath = $prevPath . '.' . $asf->getComponentName();
+
+                        if (isset($this->tableAliases[$assocPath])) {
+                            $assocAlias = $this->tableAliases[$assocPath];
+                        } else {
+                            $assocAlias = $this->aliasHandler->generateShortAlias($assocTableName);
+                        }
+
+                        $this->parts['join'][$tname][$assocTableName] = $join . $assocTableName . ' ' . $assocAlias .' ON ' . $tname  . '.'
                                                                       . $table->getIdentifier() . ' = '
-                                                                      . $assocTableName . '.' . $fk->getLocal();
+                                                                      . $assocAlias . '.' . $fk->getLocal();
 
                         $this->parts['join'][$tname][$tname2]         = $join . $aliasString    . ' ON ' . $tname2 . '.'
                                                                       . $fk->getTable()->getIdentifier() . ' = '
-                                                                      . $assocTableName . '.' . $fk->getForeign()
+                                                                      . $assocAlias . '.' . $fk->getForeign()
                                                                       . $joinCondition;
 
                     } else {
