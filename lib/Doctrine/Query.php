@@ -59,6 +59,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param boolean $limitSubqueryUsed
      */
     private $limitSubqueryUsed = false;
+    /**
+     * @param boolean $isSubquery           whether or not this query object is a subquery of another 
+     *                                      query object
+     */
+    private $isSubquery;
 
     private $tableStack;
 
@@ -88,7 +93,28 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     {
         return new Doctrine_Query();
     }
+    /**
+     * isSubquery
+     * if $bool parameter is set this method sets the value of
+     * Doctrine_Query::$isSubquery. If this value is set to true
+     * the query object will not load the primary key fields of the selected
+     * components.
+     *
+     * If null is given as the first parameter this method retrieves the current
+     * value of Doctrine_Query::$isSubquery.
+     *
+     * @param boolean $bool     whether or not this query acts as a subquery
+     * @return Doctrine_Query|bool
+     */
+    public function isSubquery($bool = null)
+    {
+        if ($bool === null) {
+            return $this->isSubquery;
+        }
 
+        $this->isSubquery = (bool) $bool;
+        return $this;
+    }
     public function getTableStack()
     {
         return $this->tableStack;
@@ -119,10 +145,15 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         if (isset($this->pendingFields[$componentAlias])) {
             $fields = $this->pendingFields[$componentAlias];
 
-            if(in_array('*', $fields))
+            if(in_array('*', $fields)) {
                 $fields = $table->getColumnNames();
-            else
-                $fields = array_unique(array_merge($table->getPrimaryKeys(), $fields));
+            } else {
+                // only auto-add the primary key fields if this query object is not 
+                // a subquery of another query object
+                if ( ! $this->isSubquery) {
+                    $fields = array_unique(array_merge($table->getPrimaryKeys(), $fields));
+                }
+            }
         }
         foreach ($fields as $name) {
             $name = $table->getColumnName($name);
@@ -296,10 +327,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             case Doctrine::FETCH_OFFSET:
                 $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
             case Doctrine::FETCH_IMMEDIATE:
-                if( ! empty($names))
+                if( ! empty($names)) {
+                    // only auto-add the primary key fields if this query object is not
+                    // a subquery of another query object
                     $names = array_unique(array_merge($table->getPrimaryKeys(), $names));
-                else
+                } else {
                     $names = $table->getColumnNames();
+                }
             break;
             case Doctrine::FETCH_LAZY_OFFSET:
                 $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
