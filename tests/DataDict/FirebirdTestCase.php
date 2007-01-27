@@ -45,7 +45,7 @@ class Doctrine_DataDict_Firebird_TestCase extends Doctrine_UnitTestCase
         try {
             $this->dataDict->getPortableDeclaration(array('type' => 'unknown'));
             $this->fail();
-        } catch(Doctrine_DataDict_Firebird_Exception $e) {
+        } catch(Doctrine_DataDict_Exception $e) {
             $this->pass();
         }
     }

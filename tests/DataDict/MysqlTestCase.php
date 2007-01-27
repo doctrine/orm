@@ -44,7 +44,7 @@ class Doctrine_DataDict_Mysql_TestCase extends Doctrine_UnitTestCase {
         try {
             $this->dataDict->getPortableDeclaration(array('type' => 'some_unknown_type'));
             $this->fail();
-        } catch(Doctrine_DataDict_Mysql_Exception $e) {
+        } catch(Doctrine_DataDict_Exception $e) {
             $this->pass();
         }
     }
