@@ -18,9 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Cache_Driver');
+
 /**
- * Doctrine_Cache_Memcache
+ * Doctrine_Cache_Sqlite
  *
  * @package     Doctrine
  * @subpackage  Doctrine_Cache
@@ -31,48 +31,11 @@ Doctrine::autoload('Doctrine_Cache_Driver');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
+class Doctrine_Cache_Sqlite implements Doctrine_Cache_Interface
 {
     /**
-     * @var Memcache $_memcache     memcache object
-     */
-    private $_memcache = null;
-    /**
-     * constructor
-     * 
-     * @param array $options        associative array of cache driver options
-     */
-    public function __construct($options = array())
-    {      
-        if ( ! extension_loaded('memcache')) {
-            throw new Doctrine_Cache_Exception('In order to use Memcache driver, the memcache extension must be loaded.');
-        }
-        parent::__construct($options);
-
-        if (isset($options['servers'])) {
-            $value= $options['servers'];
-            if (isset($value['host'])) {
-                // in this case, $value seems to be a simple associative array (one server only)
-                $value = array(0 => $value); // let's transform it into a classical array of associative arrays
-            }
-            $this->setOption('servers', $value);
-        }
-        
-        $this->_memcache = new Memcache;
-
-        foreach ($this->_options['servers'] as $server) {
-            if ( ! array_key_exists('persistent', $server)) {
-                $server['persistent'] = true;
-            }
-            if ( ! array_key_exists('port', $server)) {
-                $server['port'] = 11211;
-            }
-            $this->_memcache->addServer($server['host'], $server['port'], $server['persistent']);
-        }
-    }
-    /**
      * Test if a cache is available for the given id and (if yes) return it (false else)
-     *
+     * 
      * Note : return value is always "string" (unserialization is done by the core not by the backend)
      * 
      * @param string $id cache id
@@ -81,13 +44,7 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
      */
     public function fetch($id, $testCacheValidity = true) 
     {
-        $tmp = $this->_memcache->get($id);
-
-        if (is_array($tmp)) {
-            return $tmp[0];
-        }
-
-        return false;
+    	
     }
     /**
      * Test if a cache is available or not (for the given id)
@@ -97,7 +54,7 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
      */
     public function contains($id) 
     {
-        return (bool) $this->_memcache->get($id);
+    	
     }
     /**
      * Save some string datas into a cache record
@@ -109,17 +66,9 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
      * @param int $lifeTime     if != false, set a specific lifetime for this cache record (null => infinite lifeTime)
      * @return boolean true if no problem
      */
-    public function save($data, $id, $lifeTime = false)
+    public function save($data, $id, $tags = array(), $lifeTime = false)
     {
-        $lifeTime = $this->getLifeTime($specificLifeTime);
 
-        if ($this->_options['compression']) {
-            $flag = MEMCACHE_COMPRESSED;
-        } else {
-            $flag = 0;
-        }
-
-        $result = $this->_memcache->set($id, array($data, time()), $flag, $lifeTime);
     }
     /**
      * Remove a cache record
@@ -129,6 +78,6 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
      */
     public function delete($id) 
     {
-        return $this->_memcache->delete($id);
+    	
     }
 }
