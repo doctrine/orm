@@ -320,15 +320,18 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
             $id             = $this->conn->sequence->nextId($seq);
             $name           = $record->getTable()->getIdentifier();
             $array[$name]   = $id;
+            
+            $record->assignIdentifier($id);
         }
 
         $this->conn->insert($table->getTableName(), $array);
 
-        if (count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
-            $id = $this->conn->getDBH()->lastInsertID();
+        if (empty($seq) && count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
+            $id = $this->conn->sequence->lastInsertId();
 
-            if ( ! $id)
+            if ( ! $id) {
                 $id = $table->getMaxIdentifier();
+            }
 
             $record->assignIdentifier($id);
         } else {
