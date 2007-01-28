@@ -4,9 +4,7 @@ class Article extends Doctrine_Record {
         $this->hasColumn("title","string", 200);
         
         // maps to TINYINT on mysql
-        $this->hasColumn("section", "enum", 2);
-        
-        $this->setEnumValues("section", array("PHP","Python","Java","Ruby"));
+        $this->hasColumn("section", "enum", 2, array('values' => array("PHP","Python","Java","Ruby")));
     }
 }
 $article = new Article;
