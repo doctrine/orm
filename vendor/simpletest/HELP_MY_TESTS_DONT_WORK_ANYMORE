@@ -1,0 +1,201 @@
+Simple Test interface changes
+=============================
+Because the SimpleTest tool set is still evolving it is likely that tests
+written with earlier versions will fail with the newest ones. The most
+dramatic changes are in the alpha releases. Here is a list of possible
+problems...
+
+No HTML when matching page elements
+-----------------------------------
+This behaviour has been switched to using plain text as if it
+were seen by the user of the browser. This means that HTML tags
+are suppressed, entities are converted and whitespace is
+normalised. This should make it easier to match items in forms.
+Also images are replaced with their "alt" text so that they
+can be matched as well.
+
+No method SimpleRunner::_getTestCase()
+--------------------------------------
+This was made public as getTestCase() in 1.0RC2.
+
+No method restartSession()
+--------------------------
+This was renamed to restart() in the WebTestCase, SimpleBrowser
+and the underlying SimpleUserAgent in 1.0RC2. Because it was
+undocumented anyway, no attempt was made at backward
+compatibility.
+
+My custom test case ignored by tally()
+--------------------------------------
+The _assertTrue method has had it's signature changed due to a bug
+in the PHP 5.0.1 release. You must now use getTest() from within
+that method to get the test case.
+
+Broken code extending SimpleRunner
+----------------------------------
+This was replaced with SimpleScorer so that I could use the runner
+name in another class. This happened in RC1 development and there
+is no easy backward compatibility fix. The solution is simply to
+extend SimpleScorer instead.
+
+Missing method getBaseCookieValue()
+-----------------------------------
+This was renamed getCurrentCookieValue() in RC1.
+
+Missing files from the SimpleTest suite
+---------------------------------------
+Versions of SimpleTest prior to Beta6 required a SIMPLE_TEST constant
+to point at the SimpleTest folder location before any of the toolset
+was loaded. This is no longer documented as it is now unnecessary
+for later versions. If you are using an earlier version you may
+need this constant. Consult the documentation that was bundled with
+the release that you are using or upgrade to Beta6 or later.
+
+No method SimpleBrowser::getCurrentUrl()
+--------------------------------------
+This is replaced with the more versatile showRequest() for
+debugging. It only existed in this context for version Beta5.
+Later versions will have SimpleBrowser::getHistory() for tracking
+paths through pages. It is renamed as getUrl() since 1.0RC1.
+
+No method Stub::setStubBaseClass()
+----------------------------------
+This method has finally been removed in 1.0RC1. Use
+SimpleTestOptions::setStubBaseClass() instead.
+
+No class CommandLineReporter
+----------------------------
+This was renamed to TextReporter in Beta3 and the deprecated version
+was removed in 1.0RC1.
+
+No method requireReturn()
+-------------------------
+This was deprecated in Beta3 and is now removed.
+
+No method expectCookie()
+------------------------
+This method was abruptly removed in Beta4 so as to simplify the internals
+until another mechanism can replace it. As a workaround it is necessary
+to assert that the cookie has changed by setting it before the page
+fetch and then assert the desired value.
+
+No method clickSubmitByFormId()
+-------------------------------
+This method had an incorrect name as no button was involved. It was
+renamed to submitByFormId() in Beta4 and the old version deprecated.
+Now removed.
+
+No method paintStart() or paintEnd()
+------------------------------------
+You should only get this error if you have subclassed the lower level
+reporting and test runner machinery. These methods have been broken
+down into events for test methods, events for test cases and events
+for group tests. The new methods are...
+
+paintStart() --> paintMethodStart(), paintCaseStart(), paintGroupStart()
+paintEnd() --> paintMethodEnd(), paintCaseEnd(), paintGroupEnd()
+
+This change was made in Beta3, ironically to make it easier to subclass
+the inner machinery. Simply duplicating the code you had in the previous
+methods should provide a temporary fix.
+
+No class TestDisplay
+--------------------
+This has been folded into SimpleReporter in Beta3 and is now deprecated.
+It was removed in RC1.
+
+No method WebTestCase::fetch()
+------------------------------
+This was renamed get() in Alpha8. It is removed in Beta3.
+
+No method submit()
+------------------
+This has been renamed clickSubmit() in Beta1. The old method was
+removed in Beta2.
+
+No method clearHistory()
+------------------------
+This method is deprecated in Beta2 and removed in RC1.
+
+No method getCallCount()
+------------------------
+This method has been deprecated since Beta1 and has now been
+removed. There are now more ways to set expectations on counts
+and so this method should be unecessery. Removed in RC1.
+
+Cannot find file *
+------------------
+The following public name changes have occoured...
+
+simple_html_test.php --> reporter.php
+simple_mock.php --> mock_objects.php
+simple_unit.php --> unit_tester.php
+simple_web.php --> web_tester.php
+
+The old names were deprecated in Alpha8 and removed in Beta1.
+
+No method attachObserver()
+--------------------------
+Prior to the Alpha8 release the old internal observer pattern was
+gutted and replaced with a visitor. This is to trade flexibility of
+test case expansion against the ease of writing user interfaces.
+
+Code such as...
+
+$test = &new MyTestCase();
+$test->attachObserver(new TestHtmlDisplay());
+$test->run();
+
+...should be rewritten as...
+
+$test = &new MyTestCase();
+$test->run(new HtmlReporter());
+
+If you previously attached multiple observers then the workaround
+is to run the tests twice, once with each, until they can be combined.
+For one observer the old method is simulated in Alpha 8, but is
+removed in Beta1.
+
+No class TestHtmlDisplay
+------------------------
+This class has been renamed to HtmlReporter in Alpha8. It is supported,
+but deprecated in Beta1 and removed in Beta2. If you have subclassed
+the display for your own design, then you will have to extend this
+class (HtmlReporter) instead.
+
+If you have accessed the event queue by overriding the notify() method
+then I am afraid you are in big trouble :(. The reporter is now
+carried around the test suite by the runner classes and the methods
+called directly. In the unlikely event that this is a problem and
+you don't want to upgrade the test tool then simplest is to write your
+own runner class and invoke the tests with...
+
+$test->accept(new MyRunner(new MyReporter()));
+
+...rather than the run method. This should be easier to extend
+anyway and gives much more control. Even this method is overhauled
+in Beta3 where the runner class can be set within the test case. Really
+the best thing to do is to upgrade to this version as whatever you were
+trying to achieve before should now be very much easier.
+
+Missing set options method
+--------------------------
+All test suite options are now in one class called SimpleTestOptions.
+This means that options are set differently...
+
+GroupTest::ignore() --> SimpleTestOptions::ignore()
+Mock::setMockBaseClass() --> SimpleTestOptions::setMockBaseClass()
+
+These changed in Alpha8 and the old versions are now removed in RC1.
+
+No method setExpected*()
+------------------------
+The mock expectations changed their names in Alpha4 and the old names
+ceased to be supported in Alpha8. The changes are...
+
+setExpectedArguments() --> expectArguments()
+setExpectedArgumentsSequence() --> expectArgumentsAt()
+setExpectedCallCount() --> expectCallCount()
+setMaximumCallCount() --> expectMaximumCallCount()
+
+The parameters remained the same.
