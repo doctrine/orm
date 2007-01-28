@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Cache_Sqlite implements Doctrine_Cache_Interface
+class Doctrine_Cache_Sqlite implements Doctrine_Cache_Interface, Countable
 {
     /**
      * Test if a cache is available for the given id and (if yes) return it (false else)
@@ -44,7 +44,12 @@ class Doctrine_Cache_Sqlite implements Doctrine_Cache_Interface
      */
     public function fetch($id, $testCacheValidity = true) 
     {
-    	
+        $sql    = 'SELECT data, expires FROM cache WHERE id = ?';
+        $params = array($id);
+
+        $result = $this->conn->fetchAssoc($sql, $params);
+
+        return unserialize($result['data']);
     }
     /**
      * Test if a cache is available or not (for the given id)
@@ -66,9 +71,13 @@ class Doctrine_Cache_Sqlite implements Doctrine_Cache_Interface
      * @param int $lifeTime     if != false, set a specific lifetime for this cache record (null => infinite lifeTime)
      * @return boolean true if no problem
      */
-    public function save($data, $id, $tags = array(), $lifeTime = false)
+    public function save($data, $id, $lifeTime = false)
     {
+        $sql    = 'INSERT INTO cache (id, data, expires) VALUES (?, ?, ?)';
 
+        $params = array($id, serialize($data), (time() + $lifespan));
+
+        return (bool) $this->conn->exec($sql, $params);
     }
     /**
      * Remove a cache record
@@ -78,6 +87,18 @@ class Doctrine_Cache_Sqlite implements Doctrine_Cache_Interface
      */
     public function delete($id) 
     {
-    	
+        $sql    = 'DELETE FROM cache WHERE id = ?';
+
+        return (bool) $this->conn->exec($sql, array($md5));
+    }
+    /**
+     * count
+     * returns the number of cached elements
+     *
+     * @return integer
+     */
+    public function count()
+    {
+        return (int) $this->conn->fetchOne('SELECT COUNT(*) FROM cache');
     }
 }
