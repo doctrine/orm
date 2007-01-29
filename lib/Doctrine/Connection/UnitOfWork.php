@@ -329,7 +329,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
         if (empty($seq) && count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
 
             if (strtolower($this->conn->getName()) == 'pgsql') {
-                $seq = $table->getTableName() . '_' . $keys[0] . '_seq'; 
+                $seq = $table->getTableName() . '_' . $keys[0]; 
             }
 
             $id = $this->conn->sequence->lastInsertId($seq);
