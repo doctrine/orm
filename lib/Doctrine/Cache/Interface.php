@@ -62,7 +62,7 @@ interface Doctrine_Cache_Interface
      * @param int $lifeTime     if != false, set a specific lifetime for this cache record (null => infinite lifeTime)
      * @return boolean true if no problem
      */
-    public function save($data, $id, $tags = array(), $lifeTime = false);
+    public function save($data, $id, $lifeTime = false);
 
     /**
      * Remove a cache record
