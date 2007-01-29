@@ -40,7 +40,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
      *
      * @return integer          next id in the given sequence
      */
-    public function nextID($seqName, $ondemand = true)
+    public function nextId($seqName, $ondemand = true)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
         $seqcolName   = $this->conn->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
@@ -71,7 +71,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
             }
         }
         
-        $value = $this->lastInsertID($sequenceName);
+        $value = $this->lastInsertId($sequenceName);
 
         if (is_numeric($value)) {
             $query = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
@@ -92,9 +92,9 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
      * @param   string  name of the table into which a new row was inserted
      * @param   string  name of the field into which a new row was inserted
      */
-    public function lastInsertID($table = null, $field = null)
+    public function lastInsertId($table = null, $field = null)
     {
-        $serverInfo = $this->getServerVersion();
+        $serverInfo = $this->conn->getServerVersion();
         if (is_array($serverInfo)
             && ! is_null($serverInfo['major'])
             && $serverInfo['major'] >= 8) {
@@ -105,7 +105,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
             $query = 'SELECT @@IDENTITY';
         }
 
-        return $this->fetchOne($query);
+        return $this->conn->fetchOne($query);
     }
     /**
      * Returns the current id of a sequence
@@ -114,10 +114,10 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
      *
      * @return integer          current id in the given sequence
      */
-    public function currID($seqName)
+    public function currId($seqName)
     {
         $this->warnings[] = 'database does not support getting current
             sequence value, the sequence value was incremented';
-        return $this->nextID($seqName);
+        return $this->nextId($seqName);
     }
 }

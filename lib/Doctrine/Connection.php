@@ -98,6 +98,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                                   'wildcards'           => array('%', '_')
                                   );
     /**
+     * @var array $serverInfo
+     */
+    protected $serverInfo = array();
+    /**
      * @var array $availibleDrivers         an array containing all availible drivers
      */
     private static $availibleDrivers    = array(

@@ -47,7 +47,7 @@ class Doctrine_Sequence_Firebird extends Doctrine_Sequence
         $query = 'SELECT GEN_ID(' . $sequenceName . ', 1) as the_value FROM RDB$DATABASE';
         try {
         
-            $result = $this->queryOne($query, 'integer');
+            $result = $this->conn->fetchOne($query, 'integer');
 
         } catch(Doctrine_Connection_Exception $e) {
             if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
@@ -75,9 +75,9 @@ class Doctrine_Sequence_Firebird extends Doctrine_Sequence
      * @param   string  name of the table into which a new row was inserted
      * @param   string  name of the field into which a new row was inserted
      */
-    public function lastInsertID($table = null, $field = null)
+    public function lastInsertId($table = null, $field = null)
     {
-        throw new Doctrine_Sequence_Exception('method not implemented');
+        return $this->conn->getDbh()->lastInsertId();
     }
     /**
      * Returns the current id of a sequence
@@ -86,14 +86,14 @@ class Doctrine_Sequence_Firebird extends Doctrine_Sequence
      *
      * @return integer          current id in the given sequence
      */
-    public function currID($seqName)
+    public function currId($seqName)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
         
 
         $query = 'SELECT GEN_ID(' . $sequenceName . ', 0) as the_value FROM RDB$DATABASE';
         try {
-            $value = $this->queryOne($query);
+            $value = $this->conn->fetchOne($query);
         } catch(Doctrine_Connection_Exception $e) {
             throw new Doctrine_Sequence_Exception('Unable to select from ' . $seqName);
         }

@@ -1,7 +1,7 @@
 <?php
 ob_start();
 
-ini_set('max_execution_time',900);
+ini_set('max_execution_time', 900);
 
 function autoload($class) {
     if(strpos($class, 'TestCase') === false)
@@ -135,7 +135,6 @@ $test->addTestCase(new Doctrine_Expression_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Expression_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Expression_Sqlite_TestCase());
 
-
 // Core
 
 $test->addTestCase(new Doctrine_Access_TestCase());
@@ -197,14 +196,11 @@ $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 $test->addTestCase(new Doctrine_Query_Condition_TestCase());
 $test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());
-$test->addTestCase(new Doctrine_Query_Subquery_TestCase());
+
 $test->addTestCase(new Doctrine_Query_TestCase());
 $test->addTestCase(new Doctrine_Query_ShortAliases_TestCase());
-
 $test->addTestCase(new Doctrine_Query_Delete_TestCase());
 $test->addTestCase(new Doctrine_Query_Where_TestCase());
-
-
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 $test->addTestCase(new Doctrine_Query_IdentifierQuoting_TestCase());
 $test->addTestCase(new Doctrine_Query_Update_TestCase());
@@ -219,8 +215,9 @@ $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 
 $test->addTestCase(new Doctrine_ColumnAlias_TestCase());
 
+$test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 
-
+$test->addTestCase(new Doctrine_Query_Orderby_TestCase());
 
 
 // Cache tests

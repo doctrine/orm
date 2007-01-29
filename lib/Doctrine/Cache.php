@@ -32,9 +32,9 @@
  */
 class Doctrine_Cache
 {
-    protected $_options = array('size' => 1000,
-                                'lifetime' => 3600,
-                                );
+      protected $_options = array('size'    => 1000,
+                                  'lifetime'  => 3600,
+                                  );
 
     protected $_queries = array();
 
@@ -45,7 +45,7 @@ class Doctrine_Cache
      * @param string $query         sql query string
      * @return void
      */
-    public function process($query)
+    public function addQuery($query)
     {
         $this->queries[] = $query;
     }
@@ -54,7 +54,7 @@ class Doctrine_Cache
      *
      * @return boolean
      */
-    public function save()
+    public function processAll()
     {
         $content = file_get_contents($this->_statsFile);
         $queries = explode("\n", $content);

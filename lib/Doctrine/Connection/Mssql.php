@@ -145,15 +145,15 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
      * @return mixed array/string with version information or MDB2 error object
      */
     public function getServerVersion($native = false)
-    {
-        if ($this->connected_server_info) {
-            $serverInfo = $this->connected_server_info;
+    {    
+        if ($this->serverInfo) {
+            $serverInfo = $this->serverInfo;
         } else {
             $query      = 'SELECT @@VERSION';
             $serverInfo = $this->fetchOne($query);
         }
         // cache server_info
-        $this->connected_server_info = $serverInfo;
+        $this->serverInfo = $serverInfo;
         if ( ! $native) {
             if (preg_match('/([0-9]+)\.([0-9]+)\.([0-9]+)/', $serverInfo, $tmp)) {
                 $serverInfo = array(
