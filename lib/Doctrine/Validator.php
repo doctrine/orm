@@ -136,6 +136,8 @@ class Doctrine_Validator
                     || $name == 'protected'
                     || $name == 'autoincrement'
                     || $name == 'default'
+                    || $name == 'values'
+                    || $name == 'sequence'
                 ) {
                     continue;
                 }
