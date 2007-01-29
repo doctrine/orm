@@ -1171,8 +1171,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     final public function getEnumValues($field)
     {
-        if (isset($this->options['enumMap'][$field])) {
-            return $this->options['enumMap'][$field];
+        if (isset($this->columns[$field][2]['values'])) {
+            return $this->columns[$field][2]['values'];
         } else {
             return array();
         }
@@ -1200,11 +1200,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function enumIndex($field, $value)
     {
-        if ( ! isset($this->columns[$field][2]['values'])) {
-            $values = array();
-        } else {
-            $values = $this->columns[$field][2]['values'];
-        }
+        $values = $this->getEnumValues($field);
 
         return array_search($value, $values);
     }
