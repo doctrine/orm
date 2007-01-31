@@ -30,24 +30,77 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Cache
+class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, IteratorAggregate
 {
-      protected $_options = array('size'    => 1000,
-                                  'lifetime'  => 3600,
-                                  );
+    protected $_options = array('size'        => 1000,
+                                'lifeTime'    => 3600,
+                                'statsFile'   => 'tmp/doctrine.cache.stats',
+                                );
 
     protected $_queries = array();
 
     protected $_driver;
+    
+    public function __construct($driverName, $options = array()) 
+    {
+    	$class = 'Doctrine_Cache_' . ucwords(strtolower($driverName));
+
+        if ( ! class_exists($class)) {
+            throw new Doctrine_Cache_Exception('Cache driver ' . $driverName . ' could not be found.');
+        }
+
+        $this->_driver = new $class($options);
+    }
     /**
-     * process
+     * addQuery
      *
      * @param string $query         sql query string
      * @return void
      */
-    public function addQuery($query)
+    public function add($query, $namespace = null)
     {
-        $this->queries[] = $query;
+    	if (isset($namespace)) {
+            $this->_queries[$namespace][] = $query;
+        } else {
+            $this->_queries[] = $query;
+        }
+    }
+    /**
+     * getQueries
+     *
+     * @param string $namespace     optional query namespace
+     * @return array                an array of sql query strings
+     */
+    public function getAll($namespace = null)
+    {
+        if (isset($namespace)) {
+            if( ! isset($this->_queries[$namespace])) {
+                return array();
+            }
+
+            return $this->_queries[$namespace];
+        }
+        
+        return $this->_queries;
+    }
+    /**
+     * pop
+     *
+     * pops a query from the stack
+     * @return string
+     */
+    public function pop()
+    {
+        return array_pop($this->_queries);
+    }
+    /**
+     * count
+     *
+     * @return integer      the number of queries in the stack
+     */
+    public function count() 
+    {
+        return count($this->_queries);	
     }
     /**
      * save
@@ -89,5 +142,42 @@ class Doctrine_Cache
     public function flush()
     {
         file_put_contents($this->_statsFile, implode("\n", $this->queries));
+    }
+    
+
+    public function onPreQuery(Doctrine_Db_Event $event)
+    { 
+
+    }
+    public function onQuery(Doctrine_Db_Event $event)
+    { 
+        $this->addQuery($event->getQuery(), $event->getInvoker()->getName());
+    }
+
+    public function onPrePrepare(Doctrine_Db_Event $event)
+    { 
+
+    }
+    public function onPrepare(Doctrine_Db_Event $event)
+    { 
+    
+    }
+
+    public function onPreExec(Doctrine_Db_Event $event)
+    { 
+    
+    }
+    public function onExec(Doctrine_Db_Event $event)
+    { 
+    
+    }
+
+    public function onPreExecute(Doctrine_Db_Event $event)
+    { 
+
+    }
+    public function onExecute(Doctrine_Db_Event $event)
+    { 
+        $this->addQuery($event->getQuery(), $event->getInvoker()->getName());
     }
 }
