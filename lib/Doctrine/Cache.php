@@ -94,13 +94,32 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         return array_pop($this->_queries);
     }
     /**
+     * reset
+     *
+     * removes all queries from the query stack
+     * @return void
+     */
+    public function reset()
+    {
+        $this->_queries = array();
+    }
+    /**
      * count
      *
-     * @return integer      the number of queries in the stack
+     * @return integer          the number of queries in the stack
      */
     public function count() 
     {
-        return count($this->_queries);	
+        return count($this->_queries);
+    }
+    /**
+     * getIterator
+     *
+     * @return ArrayIterator    an iterator that iterates through the query stack
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->_queries);
     }
     /**
      * save
@@ -151,7 +170,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     }
     public function onQuery(Doctrine_Db_Event $event)
     { 
-        $this->addQuery($event->getQuery(), $event->getInvoker()->getName());
+        $this->add($event->getQuery(), $event->getInvoker()->getName());
     }
 
     public function onPrePrepare(Doctrine_Db_Event $event)
@@ -178,6 +197,6 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     }
     public function onExecute(Doctrine_Db_Event $event)
     { 
-        $this->addQuery($event->getQuery(), $event->getInvoker()->getName());
+        $this->add($event->getQuery(), $event->getInvoker()->getName());
     }
 }
