@@ -18,9 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Exception');
 /**
- * Doctrine_Cache_Driver
+ * Doctrine_Cache_Exception
  *
  * @package     Doctrine
  * @subpackage  Doctrine_Cache
@@ -31,7 +31,5 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Cache_Driver implements Doctrine_Cache_Interface
-{
-
-}
+class Doctrine_Cache_Exception extends Doctrine_Exception
+{ }
