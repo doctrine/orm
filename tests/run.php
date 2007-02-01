@@ -62,7 +62,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 // DATABASE ABSTRACTION tests
-/**
+
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -214,12 +214,12 @@ $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 $test->addTestCase(new Doctrine_ColumnAlias_TestCase());
 $test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 $test->addTestCase(new Doctrine_Query_Orderby_TestCase());
-*/
+/**
 $test->addTestCase(new Doctrine_Cache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Apc_TestCase());
 $test->addTestCase(new Doctrine_Cache_Memcache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Sqlite_TestCase());
-
+*/
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());

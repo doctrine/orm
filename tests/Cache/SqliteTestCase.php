@@ -31,7 +31,10 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Cache_Sqlite_TestCase 
+class Doctrine_Cache_Sqlite_TestCase extends Doctrine_UnitTestCase
 {
-
+    public function prepareTables() 
+    { }
+    public function prepareData()
+    { }
 }

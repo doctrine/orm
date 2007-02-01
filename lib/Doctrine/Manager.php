@@ -187,6 +187,10 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             throw new Doctrine_Manager_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
         }
 
+        if ($adapter instanceof Doctrine_Db) {
+            $adapter->setName($name);
+        }
+
         // initialize the default attributes
         $this->setDefaultAttributes();
 

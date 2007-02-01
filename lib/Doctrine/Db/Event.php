@@ -42,6 +42,8 @@ class Doctrine_Db_Event
     const COMMIT    = 6;
     const ROLLBACK  = 7;
     const CONNECT   = 8;
+    const FETCH     = 9;
+    const FETCHALL  = 10;
     /**
      * @var Doctrine_Db $invoker        the handler which invoked this event
      */

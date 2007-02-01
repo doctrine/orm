@@ -21,9 +21,13 @@
 /**
  * Doctrine_Db_EventListener
  *
- * @author      Konsta Vesterinen
- * @license     LGPL
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @package     Doctrine
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
 interface Doctrine_Db_EventListener_Interface {
     public function onPreConnect(Doctrine_Db_Event $event);
@@ -40,7 +44,7 @@ interface Doctrine_Db_EventListener_Interface {
 
     public function onPreFetch(Doctrine_Db_Event $event);
     public function onFetch(Doctrine_Db_Event $event);
-    
+
     public function onPreFetchAll(Doctrine_Db_Event $event);
     public function onFetchAll(Doctrine_Db_Event $event);
 

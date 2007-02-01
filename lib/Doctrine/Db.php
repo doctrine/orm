@@ -34,12 +34,6 @@
  *    to database. Connecting to database is only invoked when actually needed
  *    (for example when query() is being called)
  *
- * 3. Portable error codes
- *    Doctrine_Db_Exception drivers provide portable error code handling.
- *
- * 4. Easy-to-use fetching methods
- *    For convience Doctrine_Db provides methods such as fetchOne(), fetchAssoc() etc.
- *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @package     Doctrine
@@ -84,6 +78,12 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      * @var integer $querySequence
      */
     protected $querySequence  = 0;
+    /**
+     * @var string $name                name of this connection
+     * @see Doctrine_Manager::openConnection()
+     */
+    protected $name;
+
 
     private static $driverMap = array('oracle'     => 'oci8',
                                       'postgres'   => 'pgsql',
@@ -112,7 +112,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
                 $e[0] = 'odbc';
             }
 
-            $this->pendingAttributes[PDO::ATTR_DRIVER_NAME] = $e[0];
+            $this->pendingAttributes[Doctrine::ATTR_DRIVER_NAME] = $e[0];
 
         }
         $this->options['dsn']      = $dsn;
@@ -133,11 +133,42 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
         return $this->querySequence;
     }
     /**
-     * getDBH
+     * getDbh
      */
-    public function getDBH()
+    public function getDbh()
     {
         return $this->dbh;
+    }
+    /**
+     * setAdapter
+     *
+     * @param Doctrine_Adapter_Interface|PDO $adapter
+     * @return void
+     */
+    public function setAdapter($adapter)
+    {
+        $this->dbh = $adapter;
+    }
+    /**
+     * setName
+     * this method should only be used by doctrine internally and
+     * also for testing purposes
+     *
+     * @param string $name      connection name
+     * @return void
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    /**
+     * getName
+     *
+     * @return string           the name of the associated connection
+     */
+    public function getName()
+    {
+        return $this->name;
     }
     public function getOption($name)
     {
@@ -203,13 +234,32 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
 
         $this->listener->onPreConnect($event);
 
-        $this->dbh = new PDO($this->options['dsn'], $this->options['username'], $this->options['password']);
-        $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('Doctrine_Db_Statement', array($this)));
+        $e     = explode(':', $this->options['dsn']);
+        $found = false;
+        
+        if (extension_loaded('pdo')) {
+            if (in_array($e[0], PDO::getAvailableDrivers())) {
+                $this->dbh = new PDO($this->options['dsn'], $this->options['username'], $this->options['password']);
+                $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                //$this->dbh->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('Doctrine_Db_Statement', array($this)));
+                $found = true;
+            }
+        }
+
+        if ( ! $found) {
+            $class = 'Doctrine_Adapter_' . ucwords($e[0]);
+
+            if (class_exists($class)) {
+                $this->dbh = new $class($this->options['dsn'], $this->options['username'], $this->options['password']);
+            } else {
+                throw new Doctrine_Db_Exception("Couldn't locate driver named " . $e[0]);      	
+            }
+        }
+
         
         foreach($this->pendingAttributes as $attr => $value) {
             // some drivers don't support setting this so we just skip it
-            if($attr == PDO::ATTR_DRIVER_NAME) {
+            if($attr == Doctrine::ATTR_DRIVER_NAME) {
                 continue;
             }
             $this->dbh->setAttribute($attr, $value);
@@ -362,7 +412,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
 
         $this->querySequence++;
 
-        return $stmt;
+        return new Doctrine_Db_Statement($this, $stmt);
     }
     /**
      * query

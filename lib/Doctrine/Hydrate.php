@@ -395,8 +395,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
         }
         $stmt  = $this->conn->execute($query, $params);
 
-        if ($this->aggregate)
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($this->aggregate) {
+            return $stmt->fetchAll(Doctrine::FETCH_ASSOC);
+        }
 
         if (count($this->tables) == 0) {
             throw new Doctrine_Query_Exception("No components selected");
@@ -669,12 +670,12 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
     }
     /**
      * parseData
-     * parses the data returned by PDOStatement
+     * parses the data returned by statement object
      *
-     * @param PDOStatement $stmt
+     * @param mixed $stmt
      * @return array
      */
-    public function parseData(PDOStatement $stmt)
+    public function parseData($stmt)
     {
         $array = array();
 

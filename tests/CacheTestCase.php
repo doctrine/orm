@@ -31,7 +31,40 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Cache_TestCase 
+class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
 {
+    protected $cache;
 
+    public function prepareTables()
+    { }
+    public function prepareData()
+    { }
+
+    public function testAdapterQueryAddsQueriesToCacheStack()
+    {
+        $this->dbh->query('SELECT * FROM user');
+
+        $this->assertEqual($this->cache->getAll(), array('main' => array('SELECT * FROM user')));
+    }
+    public function testAdapterStatementExecuteAddsQueriesToCacheStack()
+    {
+        $stmt = $this->dbh->prepare('SELECT * FROM user');
+
+        $stmt->execute();
+
+        $this->assertEqual($this->cache->getAll(), array('main' => array('SELECT * FROM user')));
+    }
+    public function setUp()
+    {
+        parent::setUp();
+
+    	if ( ! isset($this->cache)) {
+            $this->cache = new Doctrine_Cache('Array');
+    
+            $this->dbh->setAdapter(new Doctrine_Adapter_Mock());
+            $this->dbh->addListener($this->cache);
+        }
+
+        $this->cache->reset();
+    }
 }

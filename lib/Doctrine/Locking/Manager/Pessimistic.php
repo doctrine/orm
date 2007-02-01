@@ -109,7 +109,7 @@ class Doctrine_Locking_Manager_Pessimistic
         }
 
         try {
-            $dbh = $this->conn->getDBH();
+            $dbh = $this->conn->getDbh();
             $dbh->beginTransaction();
 
             $stmt = $dbh->prepare("INSERT INTO $this->_lockTable

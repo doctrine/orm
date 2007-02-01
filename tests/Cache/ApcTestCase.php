@@ -31,7 +31,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Cache_Apc_TestCase 
+class Doctrine_Cache_Apc_TestCase extends Doctrine_UnitTestCase 
 {
 
 }
