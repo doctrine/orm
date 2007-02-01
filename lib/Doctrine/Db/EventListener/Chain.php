@@ -130,6 +130,31 @@ class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrin
             $listener->onCommit($event);
         }
     }
+    public function onPreFetch(Doctrine_Db_Event $event)
+    { 
+        foreach ($this->listeners as $listener) {
+            $listener->onPreFetch($event);
+        }
+    }
+    public function onFetch(Doctrine_Db_Event $event)
+    {
+        foreach ($this->listeners as $listener) {
+            $listener->onFetch($event);
+        }
+    }
+
+    public function onPreFetchAll(Doctrine_Db_Event $event)
+    {
+        foreach ($this->listeners as $listener) {
+            $listener->onPreFetchAll($event);
+        }
+    }
+    public function onFetchAll(Doctrine_Db_Event $event)
+    {
+        foreach ($this->listeners as $listener) {
+            $listener->onFetchAll($event);
+        }
+    }
 
     public function onPreRollBack(Doctrine_Db_Event $event)
     {

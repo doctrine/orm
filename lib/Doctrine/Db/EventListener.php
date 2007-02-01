@@ -55,6 +55,16 @@ class Doctrine_Db_EventListener implements Doctrine_Db_EventListener_Interface
     { }
     public function onExec(Doctrine_Db_Event $event)
     { }
+    
+    public function onPreFetch(Doctrine_Db_Event $event)
+    { }
+    public function onFetch(Doctrine_Db_Event $event)
+    { }
+
+    public function onPreFetchAll(Doctrine_Db_Event $event)
+    { }
+    public function onFetchAll(Doctrine_Db_Event $event)
+    { }
 
     public function onPreRollBack(Doctrine_Db_Event $event)
     { }

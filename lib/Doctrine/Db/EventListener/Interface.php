@@ -38,6 +38,12 @@ interface Doctrine_Db_EventListener_Interface {
     public function onPreExec(Doctrine_Db_Event $event);
     public function onExec(Doctrine_Db_Event $event);
 
+    public function onPreFetch(Doctrine_Db_Event $event);
+    public function onFetch(Doctrine_Db_Event $event);
+    
+    public function onPreFetchAll(Doctrine_Db_Event $event);
+    public function onFetchAll(Doctrine_Db_Event $event);
+
     public function onPreCommit(Doctrine_Db_Event $event);
     public function onCommit(Doctrine_Db_Event $event);
 

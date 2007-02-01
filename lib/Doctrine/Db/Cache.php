@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Db_EventListener');
 /**
  * Doctrine_Db_Cache
  *
@@ -32,48 +33,13 @@
  */
 class Doctrine_Db_Cache extends Doctrine_Db_EventListener
 {
+    
+    protected $cache;
 
-    public function __construct($cacheDriver)
+    public function __construct(Doctrine_Cache $cache)
     {
-
-    }
-    public function onPreQuery(Doctrine_Db_Event $event)
-    { 
-        $query = $event->getQuery();
-
-        $this->cache->process($query);
-    }
-    public function onQuery(Doctrine_Db_Event $event)
-    { 
-
+        $this->cache = $cache;
     }
 
-    public function onPrePrepare(Doctrine_Db_Event $event)
-    { 
 
-    }
-    public function onPrepare(Doctrine_Db_Event $event)
-    { 
-    
-    }
-
-    public function onPreExec(Doctrine_Db_Event $event)
-    { 
-    
-    }
-    public function onExec(Doctrine_Db_Event $event)
-    { 
-    
-    }
-
-    public function onPreExecute(Doctrine_Db_Event $event)
-    { 
-        $query = $event->getQuery();
-
-        $this->cache->process($query);
-    }
-    public function onExecute(Doctrine_Db_Event $event)
-    { 
-    
-    }
 }
