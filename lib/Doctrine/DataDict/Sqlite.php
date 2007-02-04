@@ -111,7 +111,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
                     //($this->conn->options['fixed_float']+2).','.$this->conn->options['fixed_float'].')' : '');
             case 'decimal':
                 $length = !empty($field['length']) ? $field['length'] : 18;
-                return 'DECIMAL('.$length.','.$this->conn->options['decimal_places'].')';
+                return 'DECIMAL('.$length.','.$this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES).')';
         }
         throw new Doctrine_DataDict_Exception('Unknown datatype ' . $field['type']);
     }
