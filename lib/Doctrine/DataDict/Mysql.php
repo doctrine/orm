@@ -181,6 +181,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                 }
                 return 'LONGBLOB';
             case 'integer':
+            case 'int':
             case 'enum':
                 if (!empty($field['length'])) {
                     $length = $field['length'];
@@ -211,7 +212,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'DECIMAL(' . $length . ',' . 0 . ')'; //$this->dbh->options['decimal_places'] . ')';
         }
-        return '';
+        throw new Doctrine_DataDict_Exception('Unknown column type.');
     }
     /**
      * Maps a native array description of a field to a MDB2 datatype and length
