@@ -75,6 +75,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
                 return 'BLOB SUB_TYPE 0';
             case 'integer':
             case 'enum':
+            case 'int':
                 return 'INT';
             case 'boolean':
                 return 'SMALLINT';
@@ -89,8 +90,9 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
             case 'decimal':
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'DECIMAL('.$length.','.$this->conn->options['decimal_places'].')';
+            default:
+                throw new Doctrine_DataDict_Exception('Unknown field type '. $field['type']);
         }
-        return '';
     }
     /**
      * Maps a native array description of a field to a Doctrine datatype and length

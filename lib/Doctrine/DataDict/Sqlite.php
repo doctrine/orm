@@ -97,6 +97,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
             case 'enum':
             case 'integer':
             case 'boolean':
+            case 'int':
                 return 'INTEGER';
             case 'date':
                 return 'DATE';

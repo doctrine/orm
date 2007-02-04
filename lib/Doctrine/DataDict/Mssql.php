@@ -90,6 +90,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
                 return 'IMAGE';
             case 'integer':
             case 'enum':
+            case 'int':
                 return 'INT';
             case 'boolean':
                 return 'BIT';
@@ -105,7 +106,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'DECIMAL('.$length.','.$this->conn->options['decimal_places'].')';
         }
-        return '';
+        throw new Doctrine_DataDict_Exception('Unknown column type.');
     }
     /**
      * Maps a native array description of a field to a MDB2 datatype and length
@@ -172,7 +173,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
             default:
                 throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$db_type);
         }
-        
+
         return array($type, $length, $unsigned, $fixed);
     }
 }

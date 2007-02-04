@@ -72,6 +72,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
                 return 'BLOB';
             case 'integer':
             case 'enum':
+            case 'int':
                 if (!empty($field['length'])) {
                     return 'NUMBER('.$field['length'].')';
                 }
@@ -86,6 +87,8 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
                 return 'NUMBER';
             case 'decimal':
                 return 'NUMBER(*,'.$this->conn->options['decimal_places'].')';
+            default:
+                throw new Doctrine_DataDict_Exception('Unknown field type '. $field['type']);
         }
     }
     /**
@@ -97,7 +100,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
      */
     public function getPortableDeclaration(array $field)
     {
-        $db_type = strtolower($field['type']);
+        $dbType = strtolower($field['type']);
         $type = array();
         $length = $unsigned = $fixed = null;
         if (!empty($field['length'])) {
@@ -108,7 +111,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
             $field['name'] = '';
         }
 
-        switch ($db_type) {
+        switch ($dbType) {
             case 'integer':
             case 'pls_integer':
             case 'binary_integer':
@@ -174,7 +177,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
             case 'rowid':
             case 'urowid':
             default:
-                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$db_type);
+                throw new Doctrine_DataDict_Exception('unknown database attribute type: ' . $dbType);
         }
 
         return array($type, $length, $unsigned, $fixed);
