@@ -1,12 +1,48 @@
 <?php
-class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase {
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.com>.
+ */
+
+/**
+ * Doctrine_Db_Profiler_TestCase
+ *
+ * @package     Doctrine
+ * @subpackage  Doctrine_Db
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
+ */
+class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase 
+{
     protected $dbh;
     
     protected $profiler;
-    public function prepareTables() {}
-    public function prepareData() {} 
+    public function prepareTables() 
+    {}
+    public function prepareData() 
+    {}
     
-    public function testQuery() {
+    public function testQuery() 
+    {
         $this->dbh = Doctrine_Db::getConnection('sqlite::memory:');
 
         $this->profiler = new Doctrine_Db_Profiler();
@@ -22,7 +58,8 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual($this->dbh->count(), 1);
     }
-    public function testPrepareAndExecute() {
+    public function testPrepareAndExecute() 
+    {
 
         $stmt  = $this->dbh->prepare('INSERT INTO test (id) VALUES (?)');
         $event = $this->profiler->lastEvent();
@@ -41,7 +78,8 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($this->dbh->count(), 2);
     }
-    public function testMultiplePrepareAndExecute() {
+    public function testMultiplePrepareAndExecute() 
+    {
 
         $stmt = $this->dbh->prepare('INSERT INTO test (id) VALUES (?)');
         $this->assertEqual($this->profiler->lastEvent()->getQuery(), 'INSERT INTO test (id) VALUES (?)');
@@ -65,7 +103,8 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($this->dbh->count(), 4);
     }
-    public function testExecuteStatementMultipleTimes() {
+    public function testExecuteStatementMultipleTimes() 
+    {
         try {
             $stmt = $this->dbh->prepare('INSERT INTO test (id) VALUES (?)');
             $stmt->execute(array(1));
@@ -85,7 +124,8 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->profiler->lastEvent()->getCode(), Doctrine_Db_Event::EXECUTE);
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
     }
-    public function testTransactionRollback() {
+    public function testTransactionRollback() 
+    {
         try {
             $this->dbh->beginTransaction();
             $this->pass();
@@ -109,7 +149,8 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->profiler->lastEvent()->getCode(), Doctrine_Db_Event::ROLLBACK);
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
     }
-    public function testTransactionCommit() {
+    public function testTransactionCommit() 
+    {
         try {
             $this->dbh->beginTransaction();
             $this->pass();
