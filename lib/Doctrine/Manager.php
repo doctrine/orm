@@ -197,7 +197,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         if ($name !== null) {
             $name = (string) $name;
             if (isset($this->connections[$name])) {
-                throw new Doctrine_Manager_Exception("Connection with $name already exists!");
+                return $this->connections[$name];
             }
         } else {
             $name = $this->index;
