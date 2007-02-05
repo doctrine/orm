@@ -7,7 +7,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     protected $old;
     protected $dbh;
     protected $listener;
-    protected $cache;
+
     protected $users;
     protected $valueHolder;
     protected $tables = array();

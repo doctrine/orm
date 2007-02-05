@@ -74,7 +74,7 @@ class Doctrine_Cache_Array
      * @param int $lifeTime     if != false, set a specific lifetime for this cache record (null => infinite lifeTime)
      * @return boolean true if no problem
      */
-    public function save($data, $id, $lifeTime = false) 
+    public function save($id, $data, $lifeTime = false) 
     {
         $this->data[$id] = $data;
     }

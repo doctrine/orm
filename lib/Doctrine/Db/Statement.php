@@ -42,7 +42,13 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
         $this->adapter = $adapter;
         $this->stmt    = $stmt;
     }
-
+    /**
+     *
+     */
+    public function getDbh()
+    {
+        return $this->adapter;
+    }
     public function getQuery()
     {
         return $this->stmt->queryString;
@@ -62,9 +68,9 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
     public function bindColumn($column, $param, $type = null)
     {
     	if($type === null) {
-            return $this->stmt->bindValue($column, $param);
+            return $this->stmt->bindColumn($column, $param);
         } else {
-            return $this->stmt->bindValue($column, $param, $type);
+            return $this->stmt->bindColumn($column, $param, $type);
         }
     }
     /**
@@ -187,9 +193,12 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
     {
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::EXECUTE, $this->stmt->queryString, $params);
 
-        $this->adapter->getListener()->onPreExecute($event);
+        $skip = $this->adapter->getListener()->onPreExecute($event);
 
-        $this->stmt->execute($params);
+        if ( ! $skip) {
+            $this->stmt->execute($params);
+            $this->adapter->incrementQueryCount();
+        }
 
         $this->adapter->getListener()->onExecute($event);
 
@@ -242,11 +251,21 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
     public function fetchAll($fetchStyle = Doctrine::FETCH_BOTH,
                              $columnIndex = null)
     {
-    	if($columnIndex !== null) {
-            return $this->stmt->fetchAll($fetchStyle, $columnIndex);
-        } else {
-            return $this->stmt->fetchAll($fetchStyle);
+        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::FETCHALL, $this->stmt->queryString, array($fetchStyle, $columnIndex));
+
+        $data = $this->adapter->getListener()->onPreFetchAll($event);
+
+        if ($data === null) {
+            if ($columnIndex !== null) {
+                $data = $this->stmt->fetchAll($fetchStyle, $columnIndex);
+            } else {
+                $data = $this->stmt->fetchAll($fetchStyle);
+            }
         }
+
+        $this->adapter->getListener()->onFetchAll($event);
+
+        return $data;
     }
     /**
      * fetchColumn

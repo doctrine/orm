@@ -30,7 +30,7 @@ Doctrine::autoload('Doctrine_Overloadable');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Db_Profiler extends Doctrine_Access implements Doctrine_Overloadable, IteratorAggregate
+class Doctrine_Db_Profiler extends Doctrine_Access implements Doctrine_Overloadable, IteratorAggregate, Countable
 {
     /**
      * @param array $listeners      an array containing all availible listeners
@@ -109,11 +109,10 @@ class Doctrine_Db_Profiler extends Doctrine_Access implements Doctrine_Overloada
          */
         if ( ! is_null($this->filterTypes)) {
             if ( ! ($a[0]->getQueryType() & $this->_filterTypes)) {
-                return false;
+
             }
         }
-        
-        return true;
+
     }
     /**
      * get
@@ -147,6 +146,15 @@ class Doctrine_Db_Profiler extends Doctrine_Access implements Doctrine_Overloada
     public function getIterator()
     {
         return new ArrayIterator($this->events);
+    }
+    /**
+     * count
+     * 
+     * @return integer
+     */
+    public function count() 
+    {
+        return count($this->events);
     }
     /**
      * pop the last event from the event stack

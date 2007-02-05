@@ -39,13 +39,48 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
     { }
     public function prepareData()
     { }
-
+    /**
     public function testAdapterQueryAddsQueriesToCacheStack()
     {
         $this->dbh->query('SELECT * FROM user');
 
         $this->assertEqual($this->cache->getAll(), array('main' => array('SELECT * FROM user')));
     }
+    */
+    public function testAdapterQueryChecksCache()
+    {
+    	$query = 'SELECT * FROM user';
+
+        $resultSet = array(array('name' => 'John'), array('name' => 'Arnold'));
+
+    	$this->cache->getDriver()->save(md5($query), $resultSet);
+
+        $count = $this->dbh->getAdapter()->count();
+
+        $stmt = $this->dbh->query($query);
+        $data = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
+
+        $this->assertEqual($data, $resultSet);
+        $this->assertEqual($this->dbh->getAdapter()->count(), $count);
+    }
+    public function testAdapterStatementExecuteChecksCache()
+    {
+    	$query  = 'SELECT * FROM user WHERE id = ?';
+        $params = array(1);
+        $resultSet = array(array('name' => 'John'), array('name' => 'Arnold'));
+
+    	$this->cache->getDriver()->save(md5(serialize(array($query, $params))), $resultSet);
+
+        $count = $this->dbh->getAdapter()->count();
+
+        $stmt = $this->dbh->prepare($query);
+        $stmt->execute($params);
+        $data = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
+
+        $this->assertEqual($data, $resultSet);
+        $this->assertEqual($this->dbh->getAdapter()->count(), $count);
+    }
+    /**
     public function testAdapterStatementExecuteAddsQueriesToCacheStack()
     {
         $stmt = $this->dbh->prepare('SELECT * FROM user');
@@ -54,13 +89,22 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($this->cache->getAll(), array('main' => array('SELECT * FROM user')));
     }
+    public function testAdapterStatementFetchCallsCacheFetch()
+    {
+        $stmt = $this->dbh->prepare('SELECT * FROM user');
+
+        $stmt->execute();
+
+        $a = $stmt->fetchAll();
+    }
+    */
     public function setUp()
     {
         parent::setUp();
 
     	if ( ! isset($this->cache)) {
             $this->cache = new Doctrine_Cache('Array');
-    
+
             $this->dbh->setAdapter(new Doctrine_Adapter_Mock());
             $this->dbh->addListener($this->cache);
         }

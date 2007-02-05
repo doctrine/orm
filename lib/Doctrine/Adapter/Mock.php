@@ -31,7 +31,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface 
+class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
 {
     private $name;
     
@@ -59,7 +59,10 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface
     }
     public function prepare($query)
     {
-        return new Doctrine_Adapter_Statement_Mock($this, $query);
+        $mock = new Doctrine_Adapter_Statement_Mock($this, $query);
+        $mock->queryString = $query;
+        
+        return $mock;
     }
     public function addQuery($query)
     {
@@ -79,7 +82,10 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface
             throw new $name($e[1], $e[2]);
         }
 
-        return new Doctrine_Adapter_Statement_Mock($this, $query);
+        $stmt = new Doctrine_Adapter_Statement_Mock($this, $query);
+        $stmt->queryString = $query;
+        
+        return $stmt;
     }
     public function getAll() 
     {
@@ -121,6 +127,10 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface
     	} else {
             return 1;
         }
+    }
+    public function count() 
+    {
+        return count($this->queries);	
     }
     public function beginTransaction()
     {

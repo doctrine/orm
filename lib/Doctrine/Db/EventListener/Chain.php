@@ -87,9 +87,16 @@ class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrin
     }
     public function onPreQuery(Doctrine_Db_Event $event)
     {
+    	$return = null;
+
         foreach ($this->listeners as $listener) {
-            $listener->onPreQuery($event);
+            $tmp = $listener->onPreQuery($event);
+
+            if ($tmp !== null) {
+                $return = $tmp;
+            }
         }
+        return $return;
     }
 
     public function onPreExec(Doctrine_Db_Event $event)
@@ -145,9 +152,16 @@ class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrin
 
     public function onPreFetchAll(Doctrine_Db_Event $event)
     {
+    	$return = null;
+
         foreach ($this->listeners as $listener) {
-            $listener->onPreFetchAll($event);
+            $tmp = $listener->onPreFetchAll($event);
+
+            if ($tmp !== null) {
+                $return = $tmp;
+            }
         }
+        return $return;
     }
     public function onFetchAll(Doctrine_Db_Event $event)
     {
@@ -184,9 +198,16 @@ class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrin
 
     public function onPreExecute(Doctrine_Db_Event $event)
     {
+    	$return = null;
+    	
         foreach ($this->listeners as $listener) {
-            $listener->onPreExecute($event);
+            $tmp = $listener->onPreExecute($event);
+
+            if ($tmp !== null) {
+                $return = $tmp;
+            }
         }
+        return $return;
     }
     public function onExecute(Doctrine_Db_Event $event)
     {

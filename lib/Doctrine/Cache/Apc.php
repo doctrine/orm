@@ -86,7 +86,7 @@ class Doctrine_Cache_Apc extends Doctrine_Cache_Driver
      * @param int $lifeTime     if != false, set a specific lifetime for this cache record (null => infinite lifeTime)
      * @return boolean true if no problem
      */
-    public function save($data, $id, $lifeTime = false)
+    public function save($id, $data, $lifeTime = false)
     {
         $lifeTime = $this->getLifeTime($lifeTime);
 

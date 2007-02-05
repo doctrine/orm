@@ -35,12 +35,11 @@ class Doctrine_Adapter_Statement_Mock
 {
     private $mock;
     
-    private $query;
+    public $queryString;
 
-    public function __construct(Doctrine_Adapter_Mock $mock, $query) 
+    public function __construct($mock)
     {
         $this->mock  = $mock;
-        $this->query = $query;
     }
     public function fetch($fetchMode) 
     {
@@ -52,7 +51,9 @@ class Doctrine_Adapter_Statement_Mock
     }
     public function execute() 
     {
-        $this->mock->addQuery($this->query);
+    	if(is_object($this->mock)) {
+            $this->mock->addQuery($this->queryString);
+        }
         return true;
     }
     public function fetchColumn($colnum = 0) 

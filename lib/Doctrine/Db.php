@@ -75,14 +75,12 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      */
     protected $listener;
     /**
-     * @var integer $querySequence
-     */
-    protected $querySequence  = 0;
-    /**
      * @var string $name                name of this connection
      * @see Doctrine_Manager::openConnection()
      */
     protected $name;
+    
+    protected $count = 0;
 
 
     private static $driverMap = array('oracle'     => 'oci8',
@@ -120,22 +118,24 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
         $this->options['password'] = $pass;
         $this->listener = new Doctrine_Db_EventListener();
     }
-
-    public function nextQuerySequence()
+    
+    public function incrementQueryCount() 
     {
-        return ++$this->querySequence;
-    }
-    /**
-     * getQuerySequence
-     */
-    public function getQuerySequence()
-    {
-        return $this->querySequence;
+        $this->count++;
     }
     /**
      * getDbh
      */
     public function getDbh()
+    {
+        return $this->dbh;
+    }
+    /**
+     * getAdapter
+     *
+     * @return Doctrine_Adapter_Interface|PDO $adapter
+     */
+    public function getAdapter()
     {
         return $this->dbh;
     }
@@ -410,8 +410,6 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
 
         $this->listener->onPrepare($event);
 
-        $this->querySequence++;
-
         return new Doctrine_Db_Statement($this, $stmt);
     }
     /**
@@ -426,16 +424,23 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
 
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::QUERY, $statement);
 
-        $this->listener->onPreQuery($event);
+        $skip  = $this->listener->onPreQuery($event);
 
         if ( ! empty($params)) {
-            $stmt = $this->dbh->query($statement)->execute($params);
+            $stmt = $this->dbh->prepare($statement);
+            return $stmt->execute($params);
         } else {
-            $stmt = $this->dbh->query($statement);
+            if ( ! $skip) {
+                $stmt = $this->dbh->query($statement);
+                $this->count++;
+            } else {
+                $stmt = new stdClass;
+                $stmt->queryString = $statement;
+            }
+            $stmt = new Doctrine_Db_Statement($this, $stmt);
         }
-        $this->listener->onQuery($event);
 
-        $this->querySequence++;
+        $this->listener->onQuery($event);
 
         return $stmt;
     }
@@ -470,6 +475,8 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
         $this->listener->onPreExec($event);
 
         $rows = $this->dbh->exec($statement);
+
+        $this->count++;
 
         $this->listener->onExec($event);
 
@@ -591,8 +598,9 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      */
     public function getIterator()
     {
-        if ($this->listener instanceof Doctrine_Db_Profiler)
+        if ($this->listener instanceof Doctrine_Db_Profiler) {
             return $this->listener;
+        }
     }
     /**
      * count
@@ -602,6 +610,6 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
      */
     public function count()
     {
-        return $this->querySequence;
+        return $this->count;
     }
 }

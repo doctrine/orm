@@ -41,6 +41,8 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
 
     protected $_driver;
     
+    protected $_data;
+    
     public function __construct($driverName, $options = array()) 
     {
     	$class = 'Doctrine_Cache_' . ucwords(strtolower($driverName));
@@ -51,10 +53,17 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
 
         $this->_driver = new $class($options);
     }
+    
+    
+    public function getDriver() 
+    {
+        return $this->_driver;
+    }
     /**
      * addQuery
      *
-     * @param string $query         sql query string
+     * @param string|array $query           sql query string
+     * @param string $namespace             connection namespace
      * @return void
      */
     public function add($query, $namespace = null)
@@ -134,6 +143,9 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         $stats   = array();
 
         foreach ($queries as $query) {
+            if (is_array($query)) {
+                $query = $query[0];
+            }
             if (isset($stats[$query])) {
                 $stats[$query]++;
             } else {
@@ -143,7 +155,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         sort($stats);
 
         $i = $this->_options['size'];
-        
+
         while ($i--) {
             $element = next($stats);
             $query   = key($stats);
@@ -166,15 +178,34 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
 
     public function onPreQuery(Doctrine_Db_Event $event)
     { 
+        $query = $event->getQuery();
+        
+        // only process SELECT statements
+        if (substr(trim(strtoupper($query)), 0, 6) == 'SELECT') {
 
+            $this->add($query, $event->getInvoker()->getName());
+            
+            $data = $this->_driver->fetch(md5($query));
+
+            $this->_data = $data;
+            
+            return true;
+        }
+        
+        return false;
     }
+
     public function onQuery(Doctrine_Db_Event $event)
-    { 
-        $this->add($event->getQuery(), $event->getInvoker()->getName());
+    {
+
     }
 
+    public function onPreFetchAll(Doctrine_Db_Event $event)
+    {
+        return $this->_data;
+    }
     public function onPrePrepare(Doctrine_Db_Event $event)
-    { 
+    {
 
     }
     public function onPrepare(Doctrine_Db_Event $event)
@@ -187,16 +218,29 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     
     }
     public function onExec(Doctrine_Db_Event $event)
-    { 
+    {
     
     }
 
     public function onPreExecute(Doctrine_Db_Event $event)
     { 
+        $query = $event->getQuery();
+        
+        // only process SELECT statements
+        if (substr(trim(strtoupper($query)), 0, 6) == 'SELECT') {
 
+            $this->add($query, $event->getInvoker()->getDbh()->getName());
+            
+            $data = $this->_driver->fetch(md5(serialize(array($query, $event->getParams()))));
+
+            $this->_data = $data;
+            
+            return true;
+        }
+        
+        return false;
     }
     public function onExecute(Doctrine_Db_Event $event)
-    { 
-        $this->add($event->getQuery(), $event->getInvoker()->getName());
+    {
     }
 }
