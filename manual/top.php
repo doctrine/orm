@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>Doctrine ORM Framework</TITLE>
+<TITLE>Doctrine ORM Framework <?=$title?></TITLE>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
 <link rel="stylesheet" type="text/css" href="styles/basic.css">
 </HEAD>

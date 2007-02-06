@@ -1,7 +1,7 @@
 <?php
 require_once("highlight.php");
 error_reporting(E_ALL);
-include("top.php");
+
 $h = new PHP_Highlight();
 
 function render($title,$t,$e) {
@@ -568,6 +568,19 @@ $menu = array('Getting started' =>
                                 ))
             );
 
+if (!empty($_REQUEST['index'])){
+	$ex = explode(".",$_REQUEST["index"]);
+	$paths = array2path($menu);
+	if( ! isset($paths[$ex[0]])){
+		$title = '';
+	}else{
+		$title = " / ". $paths[$ex[0]];
+	}
+}else{
+	$title = '';
+}
+
+include("top.php");
 
 ?>
 
@@ -649,11 +662,7 @@ $menu = array('Getting started' =>
 
                 } else {
                     $i = 1;
-                    $ex = explode(".",$_REQUEST["index"]);
-
-
-                    $paths = array2path($menu);
-
+                    // $paths was generated before, to display a correct document title
                     if( ! isset($paths[$ex[0]]))
                         exit;
 
