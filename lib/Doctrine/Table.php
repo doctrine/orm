@@ -751,7 +751,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if (isset($this->relations[$name])) {
             unset($this->relations[$name]);
         }
-        $e          = explode(" as ",$name);
+
+        $lower = strtolower($name);
+
+        if (isset($this->columns[$lower])) {
+            throw new Doctrine_Table_Exception('Column name with ' . $lower . ' already exists!');
+        }
+
+        $e          = explode(' as ', $name);
         $name       = $e[0];
 
         if (isset($e[1])) {
