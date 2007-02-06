@@ -222,7 +222,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                 } catch(Exception $e) {
                     $this->rollback();
 
-                    throw new Doctrine_Connection_Transaction_Exception($e->__toString());
+                    throw new Doctrine_Transaction_Exception($e->__toString());
                 }
                 if ( ! empty($this->invalid)) {
                     $this->rollback();
