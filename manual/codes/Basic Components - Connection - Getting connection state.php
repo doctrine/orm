@@ -1,5 +1,5 @@
 <?php
-switch($conn->getState())
+switch($conn->getState()):
     case Doctrine_Connection::STATE_ACTIVE:
         // connection open and zero open transactions
     break;
