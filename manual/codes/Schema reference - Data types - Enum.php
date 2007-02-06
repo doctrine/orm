@@ -8,8 +8,8 @@ class Test extends Doctrine_Record {
                                         'java',
                                         'python'
                                         )
-                               );
-			 )
+                               )
+			 );
     }
 }
 ?>
