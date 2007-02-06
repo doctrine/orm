@@ -235,7 +235,18 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
                           $cursorOrientation = Doctrine::FETCH_ORI_NEXT,
                           $cursorOffset = null)
     {
-        return $this->stmt->fetch($fetchStyle, $cursorOrientation, $cursorOffset);
+        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::FETCHALL, $this->stmt->queryString, 
+                                       array($fetchStyle, $cursorOrientation, $cursorOffset));
+
+        $data = $this->adapter->getListener()->onPreFetch($event);
+
+        if ($data === null) {
+            $data = $this->stmt->fetch($fetchStyle, $cursorOrientation, $cursorOffset);
+        }
+        
+        $this->adapter->getListener()->onFetch($event);
+    
+        return $data;
     }
     /**
      * fetchAll
