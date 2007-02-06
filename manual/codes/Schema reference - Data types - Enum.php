@@ -9,6 +9,7 @@ class Test extends Doctrine_Record {
                                         'python'
                                         )
                                );
+			 )
     }
 }
 ?>
