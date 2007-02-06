@@ -32,35 +32,99 @@
  */
 class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, IteratorAggregate
 {
-    protected $_options = array('size'        => 1000,
-                                'lifeTime'    => 3600,
-                                'statsFile'   => 'tmp/doctrine.cache.stats',
+    /**
+     * @var array $_options                         an array of general caching options
+     */
+    protected $_options = array('size'              => 1000,
+                                'lifeTime'          => 3600,
+                                'statsSlamDefense'  => 0.75,
+                                'saveSlamDefense'   => 0.80,
+                                'statsFile'         => '../data/stats.cache',
                                 );
-
+    /**
+     * @var array $_queries                         query stack
+     */
     protected $_queries = array();
-
+    /**
+     * @var Doctrine_Cache_Interface $_driver       the cache driver object
+     */
     protected $_driver;
-    
+    /**
+     * @var array $data                             current cache data array
+     */
     protected $_data;
-    
-    public function __construct($driverName, $options = array()) 
+    /**
+     * constructor
+     *
+     * @param Doctrine_Cache_Interface|string $driver       cache driver name or a driver object
+     * @param array $options                                cache driver options
+     */
+    public function __construct($driver, $options = array())
     {
-    	$class = 'Doctrine_Cache_' . ucwords(strtolower($driverName));
-
-        if ( ! class_exists($class)) {
-            throw new Doctrine_Cache_Exception('Cache driver ' . $driverName . ' could not be found.');
+    	if (is_object($driver)) {
+    	   if ( ! ($driver instanceof Doctrine_Cache_Interface)) {
+    	       throw new Doctrine_Cache_Exception('Driver should implement Doctrine_Cache_Interface.');
+    	   }
+    	   
+    	   $this->_driver = $driver;
+    	   $this->_driver->setOptions($options);
+        } else {
+            $class = 'Doctrine_Cache_' . ucwords(strtolower($driver));
+    
+            if ( ! class_exists($class)) {
+                throw new Doctrine_Cache_Exception('Cache driver ' . $driver . ' could not be found.');
+            }
+    
+            $this->_driver = new $class($options);
         }
-
-        $this->_driver = new $class($options);
     }
-    
-    
-    public function getDriver() 
+    /**
+     * getDriver
+     * returns the current cache driver
+     *
+     * @return Doctrine_Cache_Driver
+     */
+    public function getDriver()
     {
         return $this->_driver;
     }
     /**
-     * addQuery
+     * setOption
+     *
+     * @param mixed $option     the option name
+     * @param mixed $value      option value
+     * @return boolean          TRUE on success, FALSE on failure
+     */
+    public function setOption($option, $value)
+    {
+    	// sanity check (we need this since we are using isset() instead of array_key_exists())
+    	if ($value === null) {
+            throw new Doctrine_Cache_Exception('Null values not accepted for options.');
+    	}
+
+    	if (isset($this->_options[$option])) {
+            $this->_options[$option] = $value;
+            return true;
+        }
+        return false;
+    }
+    /**
+     * getOption
+     * 
+     * @param mixed $option     the option name
+     * @return mixed            option value
+     */
+    public function getOption($option)
+    {
+        if ( ! isset($this->_options[$option])) {
+            throw new Doctrine_Cache_Exception('Unknown option ' . $option);
+        }
+
+        return $this->_options[$option];
+    }
+    /**
+     * add
+     * adds a query to internal query stack
      *
      * @param string|array $query           sql query string
      * @param string $namespace             connection namespace
@@ -172,10 +236,24 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
      */
     public function flush()
     {
-        file_put_contents($this->_statsFile, implode("\n", $this->queries));
-    }
-    
+    	if ($this->_options['statsFile'] !== false) {
 
+            if ( ! file_exists($this->_options['statsFile'])) {
+                throw new Doctrine_Cache_Exception("Couldn't save cache statistics. Cache statistics file doesn't exists!");
+            }
+
+            file_put_contents($this->_options['statsFile'], implode("\n", $this->_queries));
+        }
+    }
+    /**
+     * onPreQuery
+     * listens the onPreQuery event of Doctrine_Db
+     *
+     * adds the issued query to internal query stack
+     * and checks if cached element exists
+     *
+     * @return boolean
+     */
     public function onPreQuery(Doctrine_Db_Event $event)
     { 
         $query = $event->getQuery();
@@ -194,36 +272,44 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         
         return false;
     }
-
-    public function onQuery(Doctrine_Db_Event $event)
+    /**
+     * onPreFetch
+     * listens the onPreFetch event of Doctrine_Db_Statement
+     *
+     * advances the internal pointer of cached data and returns 
+     * the current element
+     *
+     * @return array
+     */
+    public function onPreFetch(Doctrine_Db_Event $event)
     {
-
+        $ret = current($this->_data);
+    	next($this->_data);
+        return $ret;
     }
-
+    /**
+     * onPreFetch
+     * listens the onPreFetchAll event of Doctrine_Db_Statement
+     *
+     * returns the current cache data array
+     *
+     * @return array
+     */
     public function onPreFetchAll(Doctrine_Db_Event $event)
     {
         return $this->_data;
     }
-    public function onPrePrepare(Doctrine_Db_Event $event)
-    {
-
-    }
-    public function onPrepare(Doctrine_Db_Event $event)
-    { 
-    
-    }
-
-    public function onPreExec(Doctrine_Db_Event $event)
-    { 
-    
-    }
-    public function onExec(Doctrine_Db_Event $event)
-    {
-    
-    }
-
+    /**
+     * onPreExecute
+     * listens the onPreExecute event of Doctrine_Db_Statement
+     *
+     * adds the issued query to internal query stack
+     * and checks if cached element exists
+     *
+     * @return boolean
+     */
     public function onPreExecute(Doctrine_Db_Event $event)
-    { 
+    {
         $query = $event->getQuery();
         
         // only process SELECT statements
@@ -240,7 +326,17 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         
         return false;
     }
-    public function onExecute(Doctrine_Db_Event $event)
+    /**
+     * destructor
+     *
+     * @return void
+     */
+    public function process()
     {
+    	$rand = (rand(1, 10000) / (10000 * 100));
+
+        if($rand > $this->_options['statSlamDefense']) {
+            $this->flush();
+        }
     }
 }
