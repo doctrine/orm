@@ -755,7 +755,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $lower = strtolower($name);
 
         if (isset($this->columns[$lower])) {
-            throw new Doctrine_Table_Exception('Column name with ' . $lower . ' already exists!');
+            throw new Doctrine_Table_Exception("Couldn't bind relation. Column with name " . $lower . ' already exists!');
         }
 
         $e          = explode(' as ', $name);
