@@ -568,18 +568,20 @@ $menu = array('Getting started' =>
                                 ))
             );
 
+$title = '';
 if (!empty($_REQUEST['index'])){
 	$ex = explode(".",$_REQUEST["index"]);
 	$paths = array2path($menu);
-	if( ! isset($paths[$ex[0]])){
-		$title = '';
-	}else{
-		$title = " / ". $paths[$ex[0]];
+	if( isset($paths[$ex[0]])){
+		$currIndex = '';
+		for($i=0; $i<count($ex); $i++){
+			if ($currIndex) {$currIndex.=".";}
+			$currIndex .= $ex[$i]; 
+			if (!isset($paths[$currIndex])){ break; }
+			$title .= " - ". $paths[$currIndex];
+		}
 	}
-}else{
-	$title = '';
 }
-
 include("top.php");
 
 ?>
