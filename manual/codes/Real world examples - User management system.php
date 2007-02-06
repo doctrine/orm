@@ -15,7 +15,6 @@ class Entity extends Doctrine_Record {
         $this->hasColumn("updated","integer",11);
         $this->hasColumn("email_id","integer");
     }
-    }
 }
 class Group extends Entity {
     public function setUp() {
