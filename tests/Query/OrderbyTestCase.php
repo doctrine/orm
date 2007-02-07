@@ -51,6 +51,6 @@ class Doctrine_Query_Orderby_TestCase extends Doctrine_UnitTestCase
           ->from('User u')
           ->orderby('rand DESC');
 
-        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, RANDOM() AS e__0 FROM entity e WHERE (e.type = 0) ORDER BY e__0 DESC');
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, ((RANDOM() + 2147483648) / 4294967296) AS e__0 FROM entity e WHERE (e.type = 0) ORDER BY e__0 DESC');
     }
 }

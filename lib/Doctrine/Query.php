@@ -215,10 +215,18 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         if(method_exists($this->conn->expression, $name)) {
 
             $argStr = substr($func, ($pos + 1), -1);
+            $args   = explode(',', $argStr);
 
-            $args    = explode(',', $argStr);
+            $func   = call_user_func_array(array($this->conn->expression, $name), $args);
 
-            $e2    = explode(' ', $args[0]);
+            if(substr($func, 0, 1) !== '(') {
+                $pos  = strpos($func, '(');
+                $name = substr($func, 0, $pos);
+            } else {
+                $name = $func;
+            }
+
+            $e2     = explode(' ', $args[0]);
 
             $distinct = '';
             if(count($e2) > 1) {
@@ -299,8 +307,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
             $sqlAlias = $tableAlias . '__' . count($this->aggregateMap);
 
-            $this->parts['select'][] = $name . '(' . $distinct . implode(', ', $arglist) . ') AS ' . $sqlAlias;
-
+            if(substr($name, 0, 1) !== '(') {
+                $this->parts['select'][] = $name . '(' . $distinct . implode(', ', $arglist) . ') AS ' . $sqlAlias;
+            } else {
+                $this->parts['select'][] = $name . ' AS ' . $sqlAlias;
+            }
             $this->aggregateMap[$alias] = $sqlAlias;
             $this->neededTables[] = $tableAlias;
         }
