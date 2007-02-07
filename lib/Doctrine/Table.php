@@ -145,6 +145,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *      -- collation
      *
      *      -- index                        the index definitions of this table
+     *
+     *      -- treeImpl                     the tree implementation of this table (if any)
+     *
+     *      -- treeOptions                  the tree options
      */
     protected $options          = array('name'           => null,
                                         'tableName'      => null,
@@ -154,6 +158,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                         'engine'         => null,
                                         'charset'        => null,
                                         'collation'      => null,
+                                        'treeImpl'       => null,
+                                        'treeOptions'    => null,
                                         'index'          => array(),
                                         );
 
@@ -825,16 +831,17 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if (isset($this->bound[$name])) {
             $type       = $this->bound[$name][1];
             $local      = $this->bound[$name][2];
-            list($component, $foreign) = explode(".",$this->bound[$name][0]);
+            list($component, $foreign) = explode(".", $this->bound[$name][0]);
             $alias      = $name;
             $name       = $this->bound[$alias][3];
 
             $table      = $this->conn->getTable($name);
 
             if ($component == $this->options['name'] || in_array($component, $this->parents)) {
+
                 // ONE-TO-ONE
                 if ($type == Doctrine_Relation::ONE_COMPOSITE ||
-                   $type == Doctrine_Relation::ONE_AGGREGATE) {
+                    $type == Doctrine_Relation::ONE_AGGREGATE) {
                     // tree structure parent relation found
 
                     if ( ! isset($local)) {
@@ -856,7 +863,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             } elseif ($component == $name ||
                     ($component == $alias)) {     //  && ($name == $this->options['name'] || in_array($name,$this->parents))
 
-
                 if ( ! isset($local)) {
                     $local = $this->identifier;
                 }
@@ -867,8 +873,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 // MANY-TO-MANY
                 // only aggregate relations allowed
 
-                if ($type != Doctrine_Relation::MANY_AGGREGATE)
+                if ($type != Doctrine_Relation::MANY_AGGREGATE) {
                     throw new Doctrine_Table_Exception("Only aggregate relations are allowed for many-to-many relations");
+                }
 
                 $classes = array_merge($this->parents, array($this->options['name']));
 
@@ -899,17 +906,19 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
                     $relation = new Doctrine_Relation_Association_Self($table, $associationTable, $fields[0], $fields[1], $type, $alias);
                 } else {
-
-                    // auto initialize a new one-to-one relationship for association table
-                    $associationTable->bind($this->getComponentName(),  $associationTable->getComponentName(). '.' .$e2[1], Doctrine_Relation::ONE_AGGREGATE, $this->getIdentifier());
-                    $associationTable->bind($table->getComponentName(), $associationTable->getComponentName(). '.' .$foreign, Doctrine_Relation::ONE_AGGREGATE, $table->getIdentifier());
-
-                    // NORMAL MANY-TO-MANY RELATIONSHIP
-                    $this->relations[$e2[0]] = new Doctrine_Relation_ForeignKey($associationTable, $local, $e2[1], Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
-
-                    $relation = new Doctrine_Relation_Association($table, $associationTable, $e2[1], $foreign, $type, $alias);
+                    if($table === $this) {
+                                         	
+                    } else {
+                        // auto initialize a new one-to-one relationship for association table
+                        $associationTable->bind($this->getComponentName(),  $associationTable->getComponentName(). '.' .$e2[1], Doctrine_Relation::ONE_AGGREGATE, $this->getIdentifier());
+                        $associationTable->bind($table->getComponentName(), $associationTable->getComponentName(). '.' .$foreign, Doctrine_Relation::ONE_AGGREGATE, $table->getIdentifier());
+    
+                        // NORMAL MANY-TO-MANY RELATIONSHIP
+                        $this->relations[$e2[0]] = new Doctrine_Relation_ForeignKey($associationTable, $local, $e2[1], Doctrine_Relation::MANY_COMPOSITE, $e2[0]);
+    
+                        $relation = new Doctrine_Relation_Association($table, $associationTable, $e2[1], $foreign, $type, $alias);
+                    }
                 }
-
             }
 
             $this->relations[$alias] = $relation;
