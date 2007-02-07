@@ -179,6 +179,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $this->neededTables[] = $tableAlias;
 
     }
+    /**
+     * parseSelect
+     * parses the query select part and
+     * adds selected fields to pendingFields array
+     *
+     * @param string $dql
+     */
     public function parseSelect($dql)
     {
         $refs = Doctrine_Query::bracketExplode($dql, ',');
@@ -234,21 +241,39 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $owner = $e3[0];
             }
 
+            // a function without parameters eg. RANDOM()
+            if ($owner === '') {
+                $owner = 0;
+            }
+
             $this->pendingAggregates[$owner][] = array($name, $args, $distinct, $alias);
         } else {
-            throw new Doctrine_Query_Exception('Unknown aggregate function '.$name);
+            throw new Doctrine_Query_Exception('Unknown function '.$name);
         }
     }
     public function processPendingAggregates($componentAlias)
     {
         $tableAlias     = $this->getTableAlias($componentAlias);
 
-        if( ! isset($this->tables[$tableAlias]))
-            throw new Doctrine_Query_Exception('Unknown component path '.$componentPath);
-
+        if ( ! isset($this->tables[$tableAlias])) {
+            throw new Doctrine_Query_Exception('Unknown component path ' . $componentPath);
+        }
+        
+        $root       = current($this->tables);
         $table      = $this->tables[$tableAlias];
+        $aggregates = array();
 
-        foreach($this->pendingAggregates[$componentAlias] as $parts) {
+        if(isset($this->pendingAggregates[$componentAlias])) {
+            $aggregates = $this->pendingAggregates[$componentAlias];
+        }
+        
+        if ($root === $table) {
+            if (isset($this->pendingAggregates[0])) {
+                $aggregates += $this->pendingAggregates[0];
+            }
+        }
+
+        foreach($aggregates as $parts) {
             list($name, $args, $distinct, $alias) = $parts;
 
             $arglist = array();
@@ -257,7 +282,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
 
                 if(count($e) > 1) {
-                    $tableAlias = $this->getTableAlias($e[0]);
+                    //$tableAlias = $this->getTableAlias($e[0]);
                     $table      = $this->tables[$tableAlias];
 
                     $e[1]       = $table->getColumnName($e[1]);
@@ -320,7 +345,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         $params = array_merge($this->params, $params);
 
-		$a = $this->getConnection()->execute($q, $params)->fetch(PDO::FETCH_NUM);
+		$a = $this->getConnection()->fetchOne($q, $params);
 		return $a[0];		
 	}
     /**
@@ -1384,7 +1409,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                                 $this->processPendingFields($componentAlias);
                                 $skip = true;
                             }
-                            if(isset($this->pendingAggregates[$componentAlias])) {
+                            if(isset($this->pendingAggregates[$componentAlias]) ||
+                              (current($this->tables) === $table && isset($this->pendingAggregates[0]))
+                               ) {
                                 $this->processPendingAggregates($componentAlias);
                                 $skip = true;
                             }

@@ -31,17 +31,26 @@
  * @version     $Revision$
  */
 class Doctrine_Query_Orderby_TestCase extends Doctrine_UnitTestCase 
-{     
+{
     public function testOrderByAggregateValueIsSupported()
     {
         $q = new Doctrine_Query();
-        
-        $q->select('u.name, COUNT(p.phonenumber) count')
-          ->from('User u')->leftJoin('u.Phonenumber p')
-          ->orderby('count DESC');
-        
-        $users = $q->execute();
-        
 
+        $q->select('u.name, COUNT(p.phonenumber) count')
+          ->from('User u')
+          ->leftJoin('u.Phonenumber p')
+          ->orderby('count DESC');
+
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, COUNT(p.phonenumber) AS p__0 FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0) ORDER BY p__0 DESC');
+    }
+    public function testOrderByRandomIsSupported()
+    {
+        $q = new Doctrine_Query();
+        
+        $q->select('u.name, RANDOM() rand')
+          ->from('User u')
+          ->orderby('rand DESC');
+
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, RANDOM() AS e__0 FROM entity e WHERE (e.type = 0) ORDER BY e__0 DESC');
     }
 }

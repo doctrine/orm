@@ -30,12 +30,18 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase {
-    public function testOneToOneAggregateRelationWithAliasesIsSupported() {
+class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase 
+{
+    public function prepareData() 
+    { }
+    public function prepareTables() 
+    { }
+    public function testOneToOneAggregateRelationWithAliasesIsSupported() 
+    {
         $city = new Record_City();
         $country = $city->Country;
-        
-        $this->assertTrue($country instanceof Record_Country);
+
+        $this->assertTrue($country instanceof Record_Country);  
     }
 }
 

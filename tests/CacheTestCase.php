@@ -80,7 +80,23 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($data, $resultSet);
         $this->assertEqual($this->dbh->getAdapter()->count(), $count);
     }
-    /**
+    public function testFetchAdvancesCacheDataPointer()
+    {
+        $query  = 'SELECT * FROM user WHERE id = ?';
+        $count = $this->dbh->getAdapter()->count();
+        $params = array(1);
+        $stmt = $this->dbh->prepare($query);
+        $stmt->execute($params);
+
+        $row1 = $stmt->fetch();
+        $row2 = $stmt->fetch();
+
+        $this->assertEqual($row1, array('name' => 'John'));
+        $this->assertEqual($row2, array('name' => 'Arnold'));
+
+        $this->assertEqual($this->dbh->getAdapter()->count(), $count);
+    }
+
     public function testAdapterStatementExecuteAddsQueriesToCacheStack()
     {
         $stmt = $this->dbh->prepare('SELECT * FROM user');
@@ -97,14 +113,14 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
 
         $a = $stmt->fetchAll();
     }
-    */
+
     public function setUp()
     {
         parent::setUp();
 
     	if ( ! isset($this->cache)) {
             $this->cache = new Doctrine_Cache('Array');
-
+            $this->cache->setOption('cacheFile', false);
             $this->dbh->setAdapter(new Doctrine_Adapter_Mock());
             $this->dbh->addListener($this->cache);
         }

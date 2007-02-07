@@ -34,7 +34,14 @@ Doctrine::autoload('Doctrine_Access');
 class Doctrine_Db_EventListener_Chain extends Doctrine_Access implements Doctrine_Overloadable
 {
     private $listeners = array();
-
+    /**
+     * add
+     * adds a listener to the chain of listeners
+     *
+     * @param object $listener
+     * @param string $name
+     * @return void
+     */
     public function add($listener, $name = null)
     {
         if ( ! ($listener instanceof Doctrine_Db_EventListener_Interface)

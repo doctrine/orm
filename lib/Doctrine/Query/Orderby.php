@@ -67,7 +67,7 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part
                 $r = $field;
             }
             if (isset($e[1])) {
-                $r .= ' '.$e[1];
+                $r .= ' ' . $e[1];
             }
             $ret[] = $r;
         }
