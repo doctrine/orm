@@ -42,6 +42,15 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression
         return 'RLIKE';
     }
     /**
+     * return string to call a function to get random value inside an SQL statement
+     *
+     * @return string to generate float between 0 and 1
+     */
+    public function random()
+    {
+        return 'RAND()';
+    }
+    /**
      * build a pattern matching string
      *
      * EXPERIMENTAL
