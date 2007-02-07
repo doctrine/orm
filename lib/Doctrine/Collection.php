@@ -596,6 +596,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function loadRelated($name = null)
     {
+        $list = array();
         $query   = new Doctrine_Query($this->table->getConnection());
 
         if ( ! isset($name)) {
@@ -616,7 +617,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $foreign = $rel->getForeign();
         $local   = $rel->getLocal();
 
-        $list = array();
         if ($rel instanceof Doctrine_Relation_LocalKey || $rel instanceof Doctrine_Relation_ForeignKey) {
             foreach ($this->data as $record) {
                 $list[] = $record[$local];
