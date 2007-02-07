@@ -113,7 +113,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             $optionStrings['comment'] = 'COMMENT = ' . $this->dbh->quote($options['comment'], 'text');
         }
         if (isset($options['charset'])) {
-            $optionsSting['charset'] = 'DEFAULT CHARACTER SET ' . $options['charset'];
+            $optionStrings['charset'] = 'DEFAULT CHARACTER SET ' . $options['charset'];
             if (isset($options['collate'])) {
                 $optionStrings['charset'].= ' COLLATE ' . $options['collate'];
             }
