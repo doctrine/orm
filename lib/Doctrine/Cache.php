@@ -39,6 +39,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
                                 'lifeTime'          => 3600,
                                 'statsSlamDefense'  => 0.75,
                                 'saveSlamDefense'   => 0.80,
+                                'cleanPropability'  => 0.98,
                                 'statsFile'         => '../data/stats.cache',
                                 );
     /**
@@ -53,6 +54,10 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
      * @var array $data                             current cache data array
      */
     protected $_data;
+    /**
+     * @var boolean $success                        the success of last operation
+     */
+    protected $_success = false;
     /**
      * constructor
      *
@@ -195,6 +200,13 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         return new ArrayIterator($this->_queries);
     }
     /**
+     * @return boolean          whether or not the last cache operation was successful
+     */
+    public function isSuccessful() 
+    {
+        return $this->_success;
+    }
+    /**
      * save
      *
      * @return boolean
@@ -265,6 +277,8 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
             
             $data = $this->_driver->fetch(md5($query));
 
+            $this->success = ($data) ? true : false;
+
             $this->_data = $data;
             
             return true;
@@ -316,8 +330,10 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         if (substr(trim(strtoupper($query)), 0, 6) == 'SELECT') {
 
             $this->add($query, $event->getInvoker()->getDbh()->getName());
-            
+
             $data = $this->_driver->fetch(md5(serialize(array($query, $event->getParams()))));
+
+            $this->success = ($data) ? true : false;
 
             $this->_data = $data;
             
@@ -326,6 +342,15 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         
         return false;
     }
+    /**
+     * onExecute
+     * listens the onExecute event of Doctrine_Db_Statement
+     *
+     * adds the issued query to internal query stack
+     * and checks if cached element exists
+     *
+     * @return boolean
+     */
     /**
      * destructor
      *
