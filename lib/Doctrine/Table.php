@@ -162,7 +162,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                         'treeOptions'    => null,
                                         'index'          => array(),
                                         );
-
+    /**
+     * @var Doctrine_Tree $tree             tree object associated with this table
+     */
+    protected $tree;
     /**
      * the constructor
      * @throws Doctrine_Connection_Exception    if there are no opened connections
@@ -411,6 +414,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             case 'enumMap':
             case 'inheritanceMap':
             case 'index':
+            case 'treeOptions':
                 if ( ! is_array($value)) {
                     throw new Doctrine_Table_Exception($name . ' should be an array.');
                 }
@@ -1372,6 +1376,43 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     final public function getData()
     {
         return $this->data;
+    }
+    /**
+     * returns a string representation of this object
+     *
+     * @return string
+     */    
+    public function setTree($implName, $options) {
+        $this->setOption('treeImpl', $implName);
+        $this->setOption('treeOptions', $options);
+    }
+    /**
+     * getter for associated tree
+     *
+     * @return mixed  if tree return instance of Doctrine_Tree, otherwise returns false
+     */    
+    public function getTree() {
+        if (isset($this->options['treeImpl'])) {
+            if ( ! $this->tree) {
+                $this->tree = Doctrine_Tree::factory($this, 
+                                                     $this->options['treeImpl'], 
+                                                     $this->options['treeOptions']
+                                                     );
+
+                // set the table definition for the given tree implementation
+                $this->tree->setTableDefinition();
+            }
+            return $this->tree;
+        }
+        return false;
+    }
+    /**
+     * determine if table acts as tree
+     *
+     * @return mixed  if tree return instance of Doctrine_Tree, otherwise returns false
+     */    
+    public function isTree() {
+        return ( ! is_null($this->options['treeImpl'])) ? true : false;
     }
     /**
      * returns a string representation of this object
