@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Cache_Array
+class Doctrine_Cache_Array implements Countable
 {
     /**
      * @var array $data         an array of cached data
@@ -74,7 +74,7 @@ class Doctrine_Cache_Array
      * @param int $lifeTime     if != false, set a specific lifetime for this cache record (null => infinite lifeTime)
      * @return boolean true if no problem
      */
-    public function save($id, $data, $lifeTime = false) 
+    public function save($id, $data, $lifeTime = false)
     {
         $this->data[$id] = $data;
     }
@@ -86,6 +86,24 @@ class Doctrine_Cache_Array
      */
     public function delete($id)
     {
-        unset($this->data[$id]);	
+        unset($this->data[$id]);
+    }
+    /**
+     * Remove all cache record
+     * 
+     * @return boolean true if no problem
+     */
+    public function deleteAll()
+    {
+        $this->data = array();
+    }
+    /**
+     * count
+     *
+     * @return integer
+     */
+    public function count() 
+    {
+        return count($this->data);
     }
 }

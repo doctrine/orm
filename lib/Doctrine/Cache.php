@@ -35,12 +35,12 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     /**
      * @var array $_options                         an array of general caching options
      */
-    protected $_options = array('size'              => 1000,
-                                'lifeTime'          => 3600,
-                                'statsPropability'  => 0.75,
-                                'savePropability'   => 0.10,
-                                'cleanPropability'  => 0.01,
-                                'statsFile'         => '../data/stats.cache',
+    protected $_options = array('size'                  => 1000,
+                                'lifeTime'              => 3600,
+                                'addStatsPropability'   => 0.25,
+                                'savePropability'       => 0.10,
+                                'cleanPropability'      => 0.01,
+                                'statsFile'             => '../data/stats.cache',
                                 );
     /**
      * @var array $_queries                         query stack
@@ -211,50 +211,63 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
      *
      * @return boolean
      */
-    public function processAll()
+    public function clean()
     {
-        $content = file_get_contents($this->_statsFile);
-        $queries = explode("\n", $content);
+        $rand = (mt_rand() / mt_getrandmax());
 
-        $stats   = array();
+    	if ($rand <= $this->_options['cleanPropability']) {
+            $content = file_get_contents($this->_statsFile);
+            $queries = explode("\n", $content);
 
-        foreach ($queries as $query) {
-            if (is_array($query)) {
-                $query = $query[0];
+            $stats   = array();
+    
+            foreach ($queries as $query) {
+                if (is_array($query)) {
+                    $query = $query[0];
+                }
+                if (isset($stats[$query])) {
+                    $stats[$query]++;
+                } else {
+                    $stats[$query] = 1;
+                }
             }
-            if (isset($stats[$query])) {
-                $stats[$query]++;
-            } else {
-                $stats[$query] = 1;
+            sort($stats);
+    
+            $i = $this->_options['size'];
+    
+            while ($i--) {
+                $element = next($stats);
+                $query   = key($stats);
+    
+                if (is_array($query)) {
+                    $hash = md5(serialize($query));
+                } else {
+                    $hash = md5($query);
+                }
+    
+                $this->_driver->delete($hash);
             }
-        }
-        sort($stats);
-
-        $i = $this->_options['size'];
-
-        while ($i--) {
-            $element = next($stats);
-            $query   = key($stats);
-            $conn    = Doctrine_Manager::getConnection($element[1]);
-            $data    = $conn->fetchAll($query);
-            $this->_driver->save(serialize($data), $query, $this->_options['lifetime']);
         }
     }
     /**
-     * flush
+     * appendStats
      *
      * adds all queries to stats file
      * @return void
      */
-    public function flush()
+    public function appendStats()
     {
     	if ($this->_options['statsFile'] !== false) {
 
             if ( ! file_exists($this->_options['statsFile'])) {
                 throw new Doctrine_Cache_Exception("Couldn't save cache statistics. Cache statistics file doesn't exists!");
             }
+            
+            $rand = (mt_rand() / mt_getrandmax());
 
-            file_put_contents($this->_options['statsFile'], implode("\n", $this->_queries));
+            if ($rand <= $this->_options['addStatsPropability']) {
+                file_put_contents($this->_options['statsFile'], implode("\n", $this->_queries));
+            }
         }
     }
     /**
@@ -281,10 +294,10 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
             $this->success = ($data) ? true : false;
 
             if ( ! $data) {
-                $rand = (rand(1, 10000) / (10000 * 100));
+                $rand = (mt_rand() / mt_getrandmax());
 
                 if ($rand < $this->_options['savePropability']) {
-                    $stmt = $event->getInvoker()->query($query);
+                    $stmt = $event->getInvoker()->getAdapter()->query($query);
 
                     $data = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
 
@@ -349,10 +362,13 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
             $this->success = ($data) ? true : false;
 
             if ( ! $data) {
-                $rand = (rand(1, 10000) / (10000 * 100));
+                $rand = (mt_rand() / mt_getrandmax());
 
-                if ($rand < $this->_options['savePropability']) {
-                    $stmt = $event->getInvoker()->execute($event->getParams());
+                if ($rand <= $this->_options['savePropability']) {
+
+                    $stmt = $event->getInvoker()->getStatement();
+
+                    $stmt->execute($event->getParams());
 
                     $data = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
 
@@ -366,18 +382,5 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
 
         }
         return (bool) $data;
-    }
-    /**
-     * processStats
-     *
-     * @return void
-     */
-    public function processStats()
-    {
-    	$rand = (rand(1, 10000) / (10000 * 100));
-
-        if($rand > $this->_options['statSlamDefense']) {
-            $this->flush();
-        }
     }
 }
