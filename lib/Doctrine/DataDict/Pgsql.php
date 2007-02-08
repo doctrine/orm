@@ -383,10 +383,10 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
                     if (!empty($field['length'])) {
                         $length = $field['length'];
                         if ($length > 4) {
-                            return 'BIGSERIAL PRIMARY KEY';
+                            return 'BIGSERIAL';
                         }
                     }
-                    return 'SERIAL PRIMARY KEY';
+                    return 'SERIAL';
                 }
                 if (!empty($field['length'])) {
                     $length = $field['length'];
@@ -575,7 +575,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
 
         if ( ! empty($field['autoincrement'])) {
             $name = $this->conn->quoteIdentifier($name, true);
-            return $name.' '.$this->getNativeDeclaration($field);
+            return $name . ' ' . $this->getNativeDeclaration($field);
         }
 
         $default = '';
