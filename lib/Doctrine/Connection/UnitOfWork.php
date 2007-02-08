@@ -326,7 +326,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
 
         $this->conn->insert($table->getTableName(), $array);
 
-        if (empty($seq) && count($keys) == 1 && $keys[0] == $table->getIdentifier()) {
+        if (empty($seq) && count($keys) == 1 && $keys[0] == $table->getIdentifier() &&
+            $table->getIdentifierType() != Doctrine_Identifier::NORMAL) {
 
             if (strtolower($this->conn->getName()) == 'pgsql') {
                 $seq = $table->getTableName() . '_' . $keys[0];
