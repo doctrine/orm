@@ -356,8 +356,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         $params = array_merge($this->params, $params);
 
-		$a = $this->getConnection()->fetchOne($q, $params);
-		return $a[0];		
+		return (int) $this->getConnection()->fetchOne($q, $params);
 	}
     /**
      * loadFields
