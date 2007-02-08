@@ -1393,9 +1393,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function getTree() {
         if (isset($this->options['treeImpl'])) {
             if ( ! $this->tree) {
+                $options = isset($this->options['treeOptions']) ? $this->options['treeOptions'] : array();
                 $this->tree = Doctrine_Tree::factory($this, 
                                                      $this->options['treeImpl'], 
-                                                     $this->options['treeOptions']
+                                                     $options
                                                      );
             }
             return $this->tree;
