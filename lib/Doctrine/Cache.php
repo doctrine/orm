@@ -37,8 +37,8 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
      */
     protected $_options = array('size'              => 1000,
                                 'lifeTime'          => 3600,
-                                'statsSlamDefense'  => 0.75,
-                                'saveSlamDefense'   => 0.80,
+                                'statsPropability'  => 0.75,
+                                'savePropability'   => 0.80,
                                 'cleanPropability'  => 0.98,
                                 'statsFile'         => '../data/stats.cache',
                                 );
