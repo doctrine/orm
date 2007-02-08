@@ -222,14 +222,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 }
                 switch (count($this->primaryKeys)) {
                     case 0:
-                        $definition = array('id' => 
-                                            new Doctrine_Column(
-                                                array('type' => 'integer',
-                                                      'length' => 20,
-                                                      'autoincrement' => true,
-                                                      'primary'       => true,
-                                                    )));
-                        $this->columns = array_merge($definition, $this->columns);
+                        $this->columns = array_merge(array('id' =>
+                                                        array('integer',
+                                                              20,
+                                                              array('autoincrement' => true,
+                                                                    'primary'       => true
+                                                                    )
+                                                              )
+                                                        ), $this->columns);
 
                         $this->primaryKeys[] = 'id';
                         $this->identifier = 'id';
@@ -243,7 +243,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
                         } else {
                             foreach ($this->primaryKeys as $pk) {
-                                $e = $this->columns[$pk];
+                                $e = $this->columns[$pk][2];
 
                                 $found = false;
 
@@ -336,7 +336,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $primary = array();
 
             foreach ($this->columns as $name => $column) {
-                $definition = $column->getDefinition();
+                $definition = $column[2];
+                $definition['type'] = $column[0];
+                $definition['length'] = $column[1];
 
                 switch ($definition['type']) {
                     case 'enum':
@@ -515,8 +517,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             throw new Doctrine_Table_Exception('Invalid argument given for column length');
         }
 
-        $definition = array('type' => $type, 'length' => $length) + $options;
-        $this->columns[$name] = new Doctrine_Column($definition);
+        $this->columns[$name] = array($type, $length, $options);
 
         if (isset($options['primary'])) {
             $this->primaryKeys[] = $name;
@@ -534,6 +535,25 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function hasDefaultValues()
     {
         return $this->hasDefaultValues;
+    }
+    /**
+     * getDefaultValueOf
+     * returns the default value(if any) for given column
+     *
+     * @param string $column
+     * @return mixed
+     */
+    public function getDefaultValueOf($column)
+    {
+        $column = strtolower($column);
+        if ( ! isset($this->columns[$column])) {
+            throw new Doctrine_Table_Exception("Couldn't get default value. Column ".$column." doesn't exist.");
+        }
+        if (isset($this->columns[$column][2]['default'])) {
+            return $this->columns[$column][2]['default'];
+        } else {
+            return null;
+        }
     }
     /**
      * @return mixed
@@ -1089,8 +1109,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     final public function getEnumValues($field)
     {
-        if (isset($this->columns[$field]['values'])) {
-            return $this->columns[$field]['values'];
+        if (isset($this->columns[$field][2]['values'])) {
+            return $this->columns[$field][2]['values'];
         } else {
             return array();
         }
@@ -1107,7 +1127,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if ($index instanceof Doctrine_Null)
             return $index;
 
-        return isset($this->columns[$field]['values'][$index]) ? $this->columns[$field]['values'][$index] : $index;
+        return isset($this->columns[$field][2]['values'][$index]) ? $this->columns[$field][2]['values'][$index] : $index;
     }
     /**
      * enumIndex
@@ -1166,34 +1186,35 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $value;
     }
+
+    /**
+     * getDefinitionOf
+     *
+     * @return string       ValueWrapper class name on success, false on failure
+     */
+    public function getValueWrapperOf($column)
+    {
+        if (isset($this->columns[$column][2]['wrapper'])) {
+            return $this->columns[$column][2]['wrapper'];
+        }
+        return false;
+    }
     /**
      * getColumnCount
      *
      * @return integer      the number of columns in this table
      */
-    public function getColumnCount()
+    final public function getColumnCount()
     {
         return $this->columnCount;
     }
-    /**
-     * getColumn
-     *
-     * @param string $name
-     * @return Doctrine_Column
-     */
-    public function getColumn($name)
-    {
-        if (isset($this->columns[$name])) {
-            return $this->columns[$name];
-        }
-        throw new Doctrine_Table_Exception('Unknown column ' . $name);
-    }
+
     /**
      * returns all columns and their definitions
      *
      * @return array
      */
-    public function getColumns()
+    final public function getColumns()
     {
         return $this->columns;
     }
@@ -1205,6 +1226,31 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function getColumnNames()
     {
         return array_keys($this->columns);
+    }
+
+    /**
+     * getDefinitionOf
+     *
+     * @return mixed        array on success, false on failure
+     */
+    public function getDefinitionOf($column)
+    {
+        if (isset($this->columns[$column])) {
+            return $this->columns[$column];
+        }
+        return false;
+    }
+    /**
+     * getTypeOf
+     *
+     * @return mixed        string on success, false on failure
+     */
+    public function getTypeOf($column)
+    {
+        if (isset($this->columns[$column])) {
+            return $this->columns[$column][0];
+        }
+        return false;
     }
     /**
      * setData
@@ -1275,9 +1321,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->options['tableName'];
     }
-    public function setTableName($name)
+    public function setTableName($tableName)
     {
-        $this->options['tableName'] = $name;
+        $this->options['tableName'] = $tableName;	
     }
     /**
      * determine if table acts as tree
