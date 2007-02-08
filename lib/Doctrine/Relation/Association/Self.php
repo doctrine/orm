@@ -51,10 +51,10 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
                           ' WHERE '.$this->foreign.
                           ' = ?';
 
-                $dql  = 'FROM '.$this->table->getComponentName();
-                $dql .= '.'.$this->associationTable->getComponentName();
-                $dql .= ' WHERE '.$this->table->getComponentName().'.'.$this->table->getIdentifier().' IN ('.$sub.')';
-                $dql .= ' || '.$this->table->getComponentName().'.'.$this->table->getIdentifier().' IN ('.$sub2.')';
+                $dql  = 'FROM ' . $this->table->getComponentName();
+                $dql .= '.' . $this->associationTable->getComponentName();
+                $dql .= ' WHERE ' . $this->table->getComponentName() . '.' . $this->table->getIdentifier() . ' IN (' . $sub . ')';
+                $dql .= ' || ' . $this->table->getComponentName() . '.' . $this->table->getIdentifier() . ' IN (' . $sub2 . ')';
                 break;
             case 'collection':
                 $sub  = substr(str_repeat('?, ', $count),0,-2);

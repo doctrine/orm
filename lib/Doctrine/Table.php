@@ -110,10 +110,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     private $columnCount;
     /**
-     * @var array $parents                  the parent classes of this component
-     */
-    private $parents            = array();
-    /**
      * @var boolean $hasDefaultValues       whether or not this table has default values
      */
     private $hasDefaultValues;
@@ -121,6 +117,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @var array $options                  an array containing all options
      *
      *      -- name                         name of the component, for example component name of the GroupTable is 'Group'
+     *
+     *      -- parents                      the parent classes of this component
      *
      *      -- declaringClass               name of the table definition declaring class (when using inheritance the class
      *                                      that defines the table structure can be any class in the inheritance hierarchy, 
@@ -308,7 +306,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         // save parents
         array_pop($names);
-        $this->parents   = $names;
+        $this->options['parents']   = $names;
 
         $this->query     = 'SELECT ' . implode(', ', array_keys($this->columns)) . ' FROM ' . $this->getTableName();
 
@@ -392,6 +390,28 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             throw $e;
         }
     }
+    /** 
+     * __get
+     * an alias for getOption
+     *
+     * @param string $option
+     */
+    public function __get($option)
+    {
+        if (isset($this->options[$option])) {
+            return $this->options[$option];
+        }
+        return null;
+    }
+    /**
+     * __isset
+     *
+     * @param string $option
+     */
+    public function __isset($option) 
+    {
+        return isset($this->options[$option]);
+    }
     /**
      * createQuery
      * creates a new Doctrine_Query object and adds the component name
@@ -429,11 +449,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 break;
         }
         $this->options[$name] = $value;
-    }
-
-    public function usesInheritanceMap()
-    {
-        return ( ! empty($this->options['inheritanceMap']));
     }
     public function getOption($name)
     {
@@ -593,72 +608,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         return in_array($key,$this->primaryKeys);
     }
     /**
-     * @param $sequence
-     * @return void
-     */
-    final public function setSequenceName($sequence)
-    {
-        $this->options['sequenceName'] = $sequence;
-    }
-    /**
-     * @return string   sequence name
-     */
-    final public function getSequenceName()
-    {
-        return $this->options['sequenceName'];
-    }
-    /**
-     * getParents
-     */
-    final public function getParents()
-    {
-        return $this->parents;
-    }
-    /**
-     * @return boolean
-     */
-    final public function hasInheritanceMap()
-    {
-        return (empty($this->options['inheritanceMap']));
-    }
-    /**
-     * @return array        inheritance map (array keys as fields)
-     */
-    final public function getInheritanceMap()
-    {
-        return $this->options['inheritanceMap'];
-    }
-    /**
-     * return all composite paths in the form [component1].[component2]. . .[componentN]
-     * @return array
-     */
-    final public function getCompositePaths()
-    {
-        $array = array();
-        $name  = $this->getComponentName();
-        foreach ($this->bound as $k=>$a) {
-            try {
-                $fk = $this->getRelation($k);
-                switch ($fk->getType()) {
-                    case Doctrine_Relation::ONE_COMPOSITE:
-                    case Doctrine_Relation::MANY_COMPOSITE:
-                        $n = $fk->getTable()->getComponentName();
-                        $array[] = $name.".".$n;
-                        $e = $fk->getTable()->getCompositePaths();
-                        if ( ! empty($e)) {
-                            foreach ($e as $name) {
-                                $array[] = $name.".".$n.".".$name;
-                            }
-                        }
-                        break;
-                };
-            } catch(Doctrine_Table_Exception $e) {
-
-            }
-        }
-        return $array;
-    }
-    /**
      * returns all bound relations
      *
      * @return array
@@ -787,14 +736,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
 
         $this->bound[$alias] = array($field, $type, $localKey, $name);
-    }
-    /**
-     * getComponentName
-     * @return string                   the component name
-     */
-    public function getComponentName()
-    {
-        return $this->options['name'];
     }
     /**
      * @return Doctrine_Connection
@@ -959,26 +900,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
 
         return $this->relations;
-    }
-    /**
-     * sets the database table name
-     *
-     * @param string $name              database table name
-     * @return void
-     */
-    final public function setTableName($name)
-    {
-        $this->options['tableName'] = $name;
-    }
-
-    /**
-     * returns the database table name
-     *
-     * @return string
-     */
-    final public function getTableName()
-    {
-        return $this->options['tableName'];
     }
     /**
      * create
@@ -1181,17 +1102,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $coll->add($record);
         }
         return $coll;
-    }
-    /**
-     * sets enumerated value array for given field
-     *
-     * @param string $field
-     * @param array $values
-     * @return void
-     */
-    final public function setEnumValues($field, array $values)
-    {
-        $this->options['enumMap'][strtolower($field)] = $values;
     }
     /**
      * @param string $field
@@ -1402,6 +1312,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             return $this->tree;
         }
         return false;
+    }
+    public function getComponentName() 
+    {
+        return $this->options['name'];
+    }
+    public function getTableName()
+    {
+        return $this->options['tableName'];
     }
     /**
      * determine if table acts as tree

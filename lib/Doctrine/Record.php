@@ -1068,7 +1068,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
         }
 
-        foreach ($this->_table->getInheritanceMap() as $k => $v) {
+        foreach ($this->_table->inheritanceMap as $k => $v) {
             $old = $this->get($k, false);
 
             if ((string) $old !== (string) $v || $old === null) {
@@ -1477,7 +1477,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     public function setTableName($tableName)
     {
-        $this->_table->setTableName($tableName);
+        $this->_table->tableName = $tableName;
     }
     public function setInheritanceMap($map)
     {

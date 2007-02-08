@@ -632,8 +632,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
         $array = array();
 
         foreach ($this->tables as $alias => $table) {
-            $array[$alias][] = $table->getInheritanceMap();
-        };
+            $array[$alias][] = $table->inheritanceMap;
+        }
 
         // apply inheritance maps
         $str = "";

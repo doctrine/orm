@@ -373,7 +373,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $query  = "SELECT ".$fields." FROM ".$this->table->getTableName();
 
         // apply column aggregation inheritance
-        foreach ($this->table->getInheritanceMap() as $k => $v) {
+        $map = $this->table->inheritanceMap;
+        foreach ($map as $k => $v) {
             $where[]  = $k." = ?";
             $params[] = $v;
         }

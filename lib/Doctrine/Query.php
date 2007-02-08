@@ -1346,17 +1346,20 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                        $this->needsSubquery = true;
                     }
 
-                    if( ! $loadFields || $fk->getTable()->usesInheritanceMap() || $joinCondition) {
+
+                    $map = $fk->getTable()->inheritanceMap;
+
+                    if( ! $loadFields || ! empty($map) || $joinCondition) {
                         $this->subqueryAliases[] = $tname2;
                     }
 
 
-                    if($fk instanceof Doctrine_Relation_Association) {
+                    if ($fk instanceof Doctrine_Relation_Association) {
                         $asf = $fk->getAssociationFactory();
 
                         $assocTableName = $asf->getTableName();
 
-                        if( ! $loadFields || $fk->getTable()->usesInheritanceMap() || $joinCondition) {
+                        if( ! $loadFields || ! empty($map) || $joinCondition) {
                             $this->subqueryAliases[] = $assocTableName;
                         }
                         
@@ -1368,14 +1371,24 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                             $assocAlias = $this->aliasHandler->generateShortAlias($assocTableName);
                         }
 
-                        $this->parts['join'][$tname][$assocTableName] = $join . $assocTableName . ' ' . $assocAlias .' ON ' . $tname  . '.'
+                        $this->parts['join'][$tname][$assocTableName] = $join . $assocTableName . ' ' . $assocAlias . ' ON ' . $tname  . '.'
                                                                       . $table->getIdentifier() . ' = '
                                                                       . $assocAlias . '.' . $fk->getLocal();
+                                                                      
+                        if ($fk instanceof Doctrine_Relation_Association_Self) {
+                            $this->parts['join'][$tname][$assocTableName] .= ' OR ' . $tname  . '.' . $table->getIdentifier() . ' = '
+                                                                           . $assocAlias . '.' . $fk->getForeign();
+                        }
 
                         $this->parts['join'][$tname][$tname2]         = $join . $aliasString    . ' ON ' . $tname2 . '.'
                                                                       . $fk->getTable()->getIdentifier() . ' = '
                                                                       . $assocAlias . '.' . $fk->getForeign()
                                                                       . $joinCondition;
+
+                        if ($fk instanceof Doctrine_Relation_Association_Self) {
+                            $this->parts['join'][$tname][$tname2] .= ' OR ' . $tname2  . '.' . $table->getIdentifier() . ' = '
+                                                                           . $assocAlias . '.' . $fk->getLocal();
+                        }
 
                     } else {
                         $this->parts['join'][$tname][$tname2]         = $join . $aliasString
