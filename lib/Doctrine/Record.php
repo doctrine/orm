@@ -1477,7 +1477,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     public function setTableName($tableName)
     {
-        $this->_table->tableName = $tableName;
+        $this->_table->setOption('tableName', $tableName);
     }
     public function setInheritanceMap($map)
     {
