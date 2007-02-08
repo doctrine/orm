@@ -5,8 +5,8 @@ class Menu extends Doctrine_Record {
         $this->setTableName('menu');
 		
         // add this your table definition to set the table as NestedSet tree implementation
-		$options = array();
-        $this->actsAsTree('NestedSet', $options);
+        $this->option('treeImpl', 'NestedSet');
+        $this->option('treeOptions', array());        
        
         // you do not need to add any columns specific to the nested set implementation, these are added for you
         $this->hasColumn("name","string",30);

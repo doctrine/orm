@@ -1,6 +1,7 @@
 <?php
-$options = array('has_many_roots' => true,			// enable many roots
-	  			 'root_column_name' => 'root_id');	// set root column name, defaults to 'root_id'
+//use these options in the setTableDefinition
+$options = array('hasManyRoots' => true,			// enable many roots
+	  			 'rootColumnName' => 'root_id');	// set root column name, defaults to 'root_id'
 
 // To create new root nodes, if you have manually set the root_id, then it will be used
 // otherwise it will automatically use the next available root id

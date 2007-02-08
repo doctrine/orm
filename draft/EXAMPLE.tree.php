@@ -4,26 +4,7 @@
 require_once("../lib/Doctrine.php");
  
 // autoloading objects, modified function to search drafts folder first, should run this test script from the drafts folder
-function __autoload($classname) {
-
-        if (class_exists($classname)) {
-            return false;
-        }
-        if (! $path) {
-            $path = dirname(__FILE__);
-        }
-        $classpath = str_replace('Doctrine_', '',$classname);
-        
-        $class = $path.DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR,$classpath) . '.php';
-
-        if ( !file_exists($class)) {
-            return Doctrine::autoload($classname);
-        }
-
-        require_once($class);
-
-        return true;
-}
+spl_autoload_register(array('Doctrine', 'autoload'));
 
 // define our tree
 class Menu extends Doctrine_Record { 
