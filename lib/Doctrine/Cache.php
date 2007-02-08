@@ -38,8 +38,8 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     protected $_options = array('size'              => 1000,
                                 'lifeTime'          => 3600,
                                 'statsPropability'  => 0.75,
-                                'savePropability'   => 0.80,
-                                'cleanPropability'  => 0.98,
+                                'savePropability'   => 0.10,
+                                'cleanPropability'  => 0.01,
                                 'statsFile'         => '../data/stats.cache',
                                 );
     /**
@@ -269,22 +269,33 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     public function onPreQuery(Doctrine_Db_Event $event)
     { 
         $query = $event->getQuery();
-        
+
+        $data  = false;
         // only process SELECT statements
         if (substr(trim(strtoupper($query)), 0, 6) == 'SELECT') {
 
             $this->add($query, $event->getInvoker()->getName());
-            
+
             $data = $this->_driver->fetch(md5($query));
 
             $this->success = ($data) ? true : false;
 
+            if ( ! $data) {
+                $rand = (rand(1, 10000) / (10000 * 100));
+
+                if ($rand < $this->_options['savePropability']) {
+                    $stmt = $event->getInvoker()->query($query);
+
+                    $data = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
+
+                    $this->success = true;
+
+                    $this->_driver->save(md5($query), $data);
+                }
+            }
             $this->_data = $data;
-            
-            return true;
         }
-        
-        return false;
+        return (bool) $data;
     }
     /**
      * onPreFetch
@@ -325,7 +336,9 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     public function onPreExecute(Doctrine_Db_Event $event)
     {
         $query = $event->getQuery();
-        
+
+        $data  = false;
+
         // only process SELECT statements
         if (substr(trim(strtoupper($query)), 0, 6) == 'SELECT') {
 
@@ -335,28 +348,31 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
 
             $this->success = ($data) ? true : false;
 
+            if ( ! $data) {
+                $rand = (rand(1, 10000) / (10000 * 100));
+
+                if ($rand < $this->_options['savePropability']) {
+                    $stmt = $event->getInvoker()->execute($event->getParams());
+
+                    $data = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
+
+                    $this->success = true;
+
+                    $this->_driver->save(md5(serialize(array($query, $event->getParams()))), $data);
+                }
+            }
+
             $this->_data = $data;
-            
-            return true;
+
         }
-        
-        return false;
+        return (bool) $data;
     }
     /**
-     * onExecute
-     * listens the onExecute event of Doctrine_Db_Statement
-     *
-     * adds the issued query to internal query stack
-     * and checks if cached element exists
-     *
-     * @return boolean
-     */
-    /**
-     * destructor
+     * processStats
      *
      * @return void
      */
-    public function process()
+    public function processStats()
     {
     	$rand = (rand(1, 10000) / (10000 * 100));
 
