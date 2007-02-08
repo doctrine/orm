@@ -40,8 +40,9 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     public function __construct(Doctrine_Table $table, $options)
     {
         // set default many root attributes
-        $options['has_many_roots'] = isset($options['has_many_roots']) ? $options['has_many_roots'] : false;
-        $options['root_column_name'] = isset($options['root_column_name']) ? $options['root_column_name'] : 'root_id';
+        $options['hasManyRoots'] = isset($options['hasManyRoots']) ? $options['hasManyRoots'] : false;
+        if($options['hasManyRoots'])
+            $options['rootColumnName'] = isset($options['rootColumnName']) ? $options['rootColumnName'] : 'root_id';
   
         parent::__construct($table, $options);
     }
@@ -73,7 +74,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         }
 
         // if tree is many roots, then get next root id
-        if($root = $this->getAttribute('root_column_name')) {
+        if($root = $this->getAttribute('hasManyRoots')) {
             $record->getNode()->setRootValue($this->getNextRootId());
         }
 
@@ -121,9 +122,10 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     {
         // fetch tree
         $q = $this->table->createQuery();
+        $componentName = $this->table->getComponentName();
 
-        $q = $q->where('lft >= ?', 1)
-                ->orderBy('lft asc');
+        $q = $q->where("$componentName.lft >= ?", 1)
+                ->orderBy("$componentName.lft asc");
 
         // if tree has many roots, then specify root id
         $rootId = isset($options['root_id']) ? $options['root_id'] : '1';

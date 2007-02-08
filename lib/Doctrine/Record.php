@@ -79,6 +79,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     protected $_table;
     /**
+     * @var Doctrine_Node_<TreeImpl>       node object
+     */
+    protected $_node;
+    /**
      * @var integer $_id                    the primary keys of this object
      */
     protected $_id           = array();
@@ -1533,10 +1537,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     {
 
     }
-    public function actsAsTree($treeImplName, $args)
-    {
-
-    }
     /**
      * addListener
      *
@@ -1590,6 +1590,27 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $this->_data[$column] = $newvalue;
         }
         return $this;
+    }
+    /**
+     * getter for node assciated with this record
+     *
+     * @return mixed if tree returns Doctrine_Node otherwise returns false
+     */    
+    public function getNode() {
+      if(!$this->_table->isTree())
+        return false;
+
+      if(!isset($this->_node))
+        $this->_node = Doctrine_Node::factory($this, $this->getTable()->getOption('treeImpl'), $this->getTable()->getOption('treeOptions'));
+        
+      return $this->_node;          
+    }
+    /**
+     * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
+     *
+     */    
+    public function deleteNode() {
+      $this->getNode()->delete();
     }
     /**
      * returns a string representation of this object

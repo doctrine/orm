@@ -187,8 +187,9 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     {
         $q = $this->record->getTable()->createQuery();
 
-        $parent =     $q->where('lft < ? AND rgt > ?', array($this->getLeftValue(), $this->getRightValue()))
-                                    ->orderBy('rgt asc')
+        $componentName = $this->record->getTable()->getComponentName();
+        $parent =     $q->where("$componentName.lft < ? AND $componentName.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
+                                    ->orderBy("$componentName.rgt asc")
                                     ->execute()
                                     ->getFirst();
 
@@ -207,8 +208,9 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     {
         $q = $this->record->getTable()->createQuery();
 
-        $ancestors =    $q->where('lft < ? AND rgt > ?', array($this->getLeftValue(), $this->getRightValue()))
-                                        ->orderBy('lft asc')
+        $componentName = $this->record->getTable()->getComponentName();
+        $ancestors =    $q->where("$componentName.lft < ? AND $componentName.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
+                                        ->orderBy("$componentName.lft asc")
                                         ->execute();
 
         return $ancestors;

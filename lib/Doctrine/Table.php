@@ -206,6 +206,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if (method_exists($record, 'setTableDefinition')) {
             $record->setTableDefinition();
 
+            // set the table definition for the given tree implementation
+            if($this->isTree())
+                $this->getTree()->setTableDefinition();
+
             $this->columnCount = count($this->columns);
 
             if (isset($this->columns)) {
@@ -297,6 +301,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
 
         $record->setUp();
+
+        // if tree, set up tree
+        if($this->isTree())
+            $this->getTree()->setUp();
 
         // save parents
         array_pop($names);
@@ -1378,15 +1386,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         return $this->data;
     }
     /**
-     * returns a string representation of this object
-     *
-     * @return string
-     */    
-    public function setTree($implName, $options) {
-        $this->setOption('treeImpl', $implName);
-        $this->setOption('treeOptions', $options);
-    }
-    /**
      * getter for associated tree
      *
      * @return mixed  if tree return instance of Doctrine_Tree, otherwise returns false
@@ -1398,9 +1397,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                                      $this->options['treeImpl'], 
                                                      $this->options['treeOptions']
                                                      );
-
-                // set the table definition for the given tree implementation
-                $this->tree->setTableDefinition();
             }
             return $this->tree;
         }
@@ -1409,7 +1405,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     /**
      * determine if table acts as tree
      *
-     * @return mixed  if tree return instance of Doctrine_Tree, otherwise returns false
+     * @return mixed  if tree return true, otherwise returns false
      */    
     public function isTree() {
         return ( ! is_null($this->options['treeImpl'])) ? true : false;

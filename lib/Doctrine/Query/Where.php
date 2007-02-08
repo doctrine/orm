@@ -171,8 +171,9 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                             $value  = $enumIndex;
                         }
                     default:
-                        $where = $alias . '.' . $field . ' '
-                               . $operator . ' ' . $value;
+                        $fieldname  = $alias ? $alias . '.' . $field : $field;
+                        $where      = $fieldname . ' ' 
+                                    . $operator . ' ' . $value;
                 }
             }
         }

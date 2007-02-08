@@ -68,9 +68,9 @@ class Doctrine_Node_NestedSet_PreOrderIterator implements Iterator
 
         $params = array($record->get('lft'), $record->get('rgt'));
         if (isset($opts['include_record']) && $opts['include_record']) {
-            $query = $q->where("$componentName.lft >= ? AND $componentName.rgt <= ?", $params)->orderBy('lft asc');
+            $query = $q->where("$componentName.lft >= ? AND $componentName.rgt <= ?", $params)->orderBy("$componentName.lft asc");
         } else {
-            $query = $q->where("$componentName.lft > ? AND $componentName.rgt < ?", $params)->orderBy('lft asc');
+            $query = $q->where("$componentName.lft > ? AND $componentName.rgt < ?", $params)->orderBy("$componentName.lft asc");
         }
         
         $query = $record->getTable()->getTree()->returnQueryWithRootId($query, $record->getNode()->getRootValue());

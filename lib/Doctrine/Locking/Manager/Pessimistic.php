@@ -102,6 +102,7 @@ class Doctrine_Locking_Manager_Pessimistic
         $key        = $record->obtainIdentifier();
 
         $gotLock = false;
+        $time = time();
 
         if (is_array($key)) {
             // Composite key
@@ -118,7 +119,7 @@ class Doctrine_Locking_Manager_Pessimistic
             $stmt->bindParam(':object_type', $objectType);
             $stmt->bindParam(':object_key', $key);
             $stmt->bindParam(':user_ident', $userIdent);
-            $stmt->bindParam(':ts_obtained', time());
+            $stmt->bindParam(':ts_obtained', $time);
 
             try {
                 $stmt->execute();
@@ -138,7 +139,7 @@ class Doctrine_Locking_Manager_Pessimistic
                                            WHERE object_type = :object_type AND
                                                  object_key  = :object_key  AND
                                                  user_ident  = :user_ident");
-                    $stmt->bindParam(':ts', time());
+                    $stmt->bindParam(':ts', $time);
                     $stmt->bindParam(':object_type', $objectType);
                     $stmt->bindParam(':object_key', $key);
                     $stmt->bindParam(':user_ident', $lockingUserIdent);

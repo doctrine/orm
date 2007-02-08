@@ -47,7 +47,8 @@ class Doctrine_Query_Set extends Doctrine_Query_Part
 
             $alias     = $this->query->getTableAlias($reference);
 
-            $result[]  = $alias . '.' . $field . ' = ' . $set[1];
+            $fieldname = $alias ? $alias . '.' . $field : $field;
+            $result[]  = $fieldname . ' = ' . $set[1];
         }
 
         return implode(', ', $result);
