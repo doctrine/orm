@@ -289,7 +289,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
      * @return boolean
      */
     public function onPreQuery(Doctrine_Db_Event $event)
-    { 
+    {
         $query = $event->getQuery();
 
         $data  = false;
@@ -315,12 +315,13 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
                     $this->_driver->save(md5(serialize($query)), $data);
                 }
             }
-            if ($data)
+            if ($this->success)
+            {
                 $this->_data = $data;
-            else
-                $this->_data = array();
+                return true;
+            }
         }
-        return (bool) $data;
+        return false;
     }
     /**
      * onPreFetch
@@ -389,12 +390,12 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
                     $this->_driver->save(md5(serialize(array($query, $event->getParams()))), $data);
                 }
             }
-            if ($data)
+            if ($this->success)
+            {
                 $this->_data = $data;
-            else
-                $this->_data = array();
-
+                return true;
+            }
         }
-        return (bool) $data;
+        return false;
     }
 }
