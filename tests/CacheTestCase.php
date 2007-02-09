@@ -113,6 +113,52 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
 
         $a = $stmt->fetchAll();
     }
+    public function testAdapterStatementExecuteAddsQueriesToCache()
+    {
+    	$this->cache->setOption('savePropability', 1);
+
+    	$driver = $this->cache->getDriver();
+
+    	$driver->deleteAll();
+
+    	$this->assertEqual($driver->count(), 0);
+
+        $stmt = $this->dbh->prepare('SELECT * FROM user WHERE id = ?');
+
+        $stmt->execute(array(1));
+
+        $this->assertEqual($driver->count(), 1);
+    }
+    public function testAppendStatsWritesQueriesToStatsFile()
+    {
+    	$this->cache->setOption('addStatsPropability', 1);
+    	
+    	$data = array(1,2,3);
+
+        $this->cache->add('SELECT * FROM user');
+        $this->cache->add(array('SELECT * FROM user WHERE id = ?', array(1)));
+
+        $this->cache->appendStats();
+        
+        $stats = $this->cache->readStats();
+
+        $this->assertEqual($stats[0], 'SELECT * FROM user');
+        $this->assertEqual($stats[1], array('SELECT * FROM user WHERE id = ?', array(1)));
+    }
+    public function testCleanRemovesDriver()
+    {
+    	$this->cache->setOption('cleanPropability', 1);
+
+        $this->cache->add('SELECT * FROM user');
+        $this->cache->add(array('SELECT * FROM user WHERE id = ?', array(1)));
+
+        $this->cache->appendStats();
+        
+        $stats = $this->cache->readStats();
+
+        $this->assertEqual($stats[0], 'SELECT * FROM user');
+        $this->assertEqual($stats[1], array('SELECT * FROM user WHERE id = ?', array(1)));
+    }
 
     public function setUp()
     {
@@ -121,6 +167,8 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
     	if ( ! isset($this->cache)) {
             $this->cache = new Doctrine_Cache('Array');
             $this->cache->setOption('cacheFile', false);
+            $this->cache->setOption('savePropability', 0);
+
             $this->dbh->setAdapter(new Doctrine_Adapter_Mock());
             $this->dbh->addListener($this->cache);
         }
