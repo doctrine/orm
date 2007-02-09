@@ -54,7 +54,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     /**
      * @var array $data                             current cache data array
      */
-    protected $_data;
+    protected $_data = array();
     /**
      * @var boolean $success                        the success of last operation
      */
@@ -294,7 +294,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
 
         $data  = false;
         // only process SELECT statements
-        if (substr(trim(strtoupper($query)), 0, 6) == 'SELECT') {
+        if (substr(strtoupper(trim($query), 0, 6)) == 'SELECT') {
 
             $this->add($query, $event->getInvoker()->getName());
 
@@ -315,7 +315,10 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
                     $this->_driver->save(md5(serialize($query)), $data);
                 }
             }
-            $this->_data = $data;
+            if ($data)
+                $this->_data = $data;
+            else
+                $this->_data = array();
         }
         return (bool) $data;
     }
@@ -362,7 +365,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         $data  = false;
 
         // only process SELECT statements
-        if (substr(trim(strtoupper($query)), 0, 6) == 'SELECT') {
+        if (substr(strtoupper(trim($query), 0, 6)) == 'SELECT') {
 
             $this->add($query, $event->getInvoker()->getDbh()->getName());
 
@@ -386,8 +389,10 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
                     $this->_driver->save(md5(serialize(array($query, $event->getParams()))), $data);
                 }
             }
-
-            $this->_data = $data;
+            if ($data)
+                $this->_data = $data;
+            else
+                $this->_data = array();
 
         }
         return (bool) $data;
