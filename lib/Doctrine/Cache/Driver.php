@@ -33,5 +33,47 @@
  */
 abstract class Doctrine_Cache_Driver implements Doctrine_Cache_Interface
 {
+    /**
+     * @var array $options      an array of options
+     */
+    protected $options;
+    
+    /**
+     * constructor
+     *
+     * @param array $options      an array of options
+     */
+    public function __construct($options) 
+    {
+        $this->options = $options;
+    }
+    /**
+     * setOption
+     *
+     * @param mixed $option     the option name
+     * @param mixed $value      option value
+     * @return boolean          TRUE on success, FALSE on failure
+     */
+    public function setOption($option, $value)
+    {
+    	if (isset($this->_options[$option])) {
+            $this->_options[$option] = $value;
+            return true;
+        }
+        return false;
+    }
+    /**
+     * getOption
+     * 
+     * @param mixed $option     the option name
+     * @return mixed            option value
+     */
+    public function getOption($option)
+    {
+        if ( ! isset($this->_options[$option])) {
+            return null;
+        }
 
+        return $this->_options[$option];
+    }
 }
