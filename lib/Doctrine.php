@@ -400,12 +400,14 @@ final class Doctrine
      * including the compiled file instead of multiple files (in worst
      * cases dozens of files) can improve performance by an order of magnitude
      *
+     * @param string $target
+     *
      * @throws Doctrine_Exception
      * @return void
      */
-    public static function compile()
+    public static function compile($target = null)
     {
-        Doctrine_Compiler::compile();
+        Doctrine_Compiler::compile($target);
     }
     /**
      * simple autoload function
