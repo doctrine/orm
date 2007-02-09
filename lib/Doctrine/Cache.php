@@ -294,7 +294,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
 
         $data  = false;
         // only process SELECT statements
-        if (substr(strtoupper(trim($query), 0, 6)) == 'SELECT') {
+        if (strtoupper(substr(ltrim($query), 0, 6)) == 'SELECT') {
 
             $this->add($query, $event->getInvoker()->getName());
 
@@ -365,7 +365,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         $data  = false;
 
         // only process SELECT statements
-        if (substr(strtoupper(trim($query), 0, 6)) == 'SELECT') {
+        if (strtoupper(substr(ltrim($query), 0, 6)) == 'SELECT') {
 
             $this->add($query, $event->getInvoker()->getDbh()->getName());
 
