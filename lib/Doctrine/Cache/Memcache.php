@@ -111,15 +111,13 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
      */
     public function save($id, $data, $lifeTime = false)
     {
-        $lifeTime = $this->getLifeTime($specificLifeTime);
-
         if ($this->_options['compression']) {
             $flag = MEMCACHE_COMPRESSED;
         } else {
             $flag = 0;
         }
 
-        $result = $this->_memcache->set($id, array($data, time()), $flag, $lifeTime);
+        $result = $this->_memcache->set($id, $data, $flag, $lifeTime);
     }
     /**
      * Remove a cache record
