@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Db_EventListener');
 /**
  * Doctrine_Cache
  *
@@ -234,7 +235,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
             while ($i--) {
                 $element = next($stats);
                 $query   = key($stats);
-                
+
                 $hash = md5($query);
 
                 $this->_driver->delete($hash);

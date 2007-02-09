@@ -102,6 +102,7 @@ $menu = array('Getting started' =>
                                         'Introduction',
                                         'Table and class naming',
                                         'Field(Column) naming',
+                                        'Column aliases',
                                         'Table options',
                                         'Data types and lengths',
                                         'Constraints and validators',
@@ -114,7 +115,13 @@ $menu = array('Getting started' =>
                                         'Autoincremented',
                                         'Natural',
                                         'Composite',
-                                        'Sequence')
+                                        'Sequence'),
+                        'Indexes' => array(
+                                     'Introduction',
+                                     'Adding indexes',
+                                     'Index options',
+                                     'Special indexes',
+                                    ),
                         ),
            'Connection management' =>
                         array(
@@ -372,7 +379,10 @@ $menu = array('Getting started' =>
 
                             array(
                                   'Introduction',
-                                  'SELECT queries',
+                                  'SELECT queries' =>
+                                        array('DISTINCT keyword',
+                                              'Aggregate values',
+                                              ),
                                   'UPDATE queries',
                                   'DELETE queries',
                                   'FROM clause',
@@ -380,7 +390,6 @@ $menu = array('Getting started' =>
                                   'Conditional expressions' =>
                                         array('Literals',
                                               'Input parameters',
-
                                               'Operators and operator precedence',
                                               'Between expressions',
                                               'In expressions',
@@ -398,7 +407,10 @@ $menu = array('Getting started' =>
                                               'Collection functions'),
 
                                   'GROUP BY, HAVING clauses',
-                                  'ORDER BY clause',
+                                  'ORDER BY clause' 
+                                        => array('Introduction',
+                                                 'Sorting by an aggregate value',
+                                                 'Using random order'),
                                   'LIMIT and OFFSET clauses' =>
                                         array('Introduction',
                                               'Driver portability',
@@ -420,6 +432,16 @@ $menu = array('Getting started' =>
                         'Lock modes',
                         'Isolation levels',
                         'Deadlocks',
+
+                        ),
+           'Caching' => array(
+                        'Introduction',
+                        'Availible options',
+                        'Drivers' =>
+                            array('Memcache',
+                                  'APC',
+                                  'Sqlite'
+                                ),
 
                         ),
            'Native SQL' => array(

@@ -133,7 +133,7 @@ interface Doctrine_Adapter_Statement_Interface
      *                                  bound parameters in the SQL statement being executed.
      * @return boolean                  Returns TRUE on success or FALSE on failure.
      */
-    public function execute(array $params = array());
+    public function execute($params = null);
     /**
      * fetch
      *

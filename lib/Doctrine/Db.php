@@ -428,7 +428,9 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
 
         if ( ! empty($params)) {
             $stmt = $this->dbh->prepare($statement);
+
             return $stmt->execute($params);
+            
         } else {
             if ( ! $skip) {
                 $stmt = $this->dbh->query($statement);

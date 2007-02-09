@@ -52,7 +52,7 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
     }
     public function getStatement()
     {
-        return $this->stmt;	
+        return $this->stmt;
     }
     public function getQuery()
     {
@@ -194,7 +194,7 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
      *                                  bound parameters in the SQL statement being executed.
      * @return boolean                  Returns TRUE on success or FALSE on failure.
      */
-    public function execute(array $params = array())
+    public function execute($params = null)
     {
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::EXECUTE, $this->stmt->queryString, $params);
 
