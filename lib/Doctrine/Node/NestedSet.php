@@ -709,8 +709,8 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */     
     public function getRootValue()
     {
-        if($this->record->getTable()->getTree()->getAttribute('has_many_roots'))
-            return $this->record->get($this->record->getTable()->getTree()->getAttribute('root_column_name'));
+        if($this->record->getTable()->getTree()->getAttribute('hasManyRoots'))
+            return $this->record->get($this->record->getTable()->getTree()->getAttribute('rootColumnName'));
         
         return 1;
     }
@@ -722,7 +722,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function setRootValue($value)
     {
-        if($this->record->getTable()->getTree()->getAttribute('has_many_roots'))
-            $this->record->set($this->record->getTable()->getTree()->getAttribute('root_column_name'), $value);     
+        if($this->record->getTable()->getTree()->getAttribute('hasManyRoots'))
+            $this->record->set($this->record->getTable()->getTree()->getAttribute('rootColumnName'), $value);     
     }
 }
