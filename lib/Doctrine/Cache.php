@@ -216,15 +216,11 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
         $rand = (mt_rand() / mt_getrandmax());
 
     	if ($rand <= $this->_options['cleanPropability']) {
-            $content = file_get_contents($this->_statsFile);
-            $queries = explode("\n", $content);
+            $queries = $this->readStats();
 
             $stats   = array();
     
             foreach ($queries as $query) {
-                if (is_array($query)) {
-                    $query = $query[0];
-                }
                 if (isset($stats[$query])) {
                     $stats[$query]++;
                 } else {
@@ -238,16 +234,28 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
             while ($i--) {
                 $element = next($stats);
                 $query   = key($stats);
-    
-                if (is_array($query)) {
-                    $hash = md5(serialize($query));
-                } else {
-                    $hash = md5($query);
-                }
-    
+                
+                $hash = md5($query);
+
                 $this->_driver->delete($hash);
             }
         }
+    }
+    /**
+     * readStats
+     *
+     * @return array
+     */
+    public function readStats() 
+    {
+    	if ($this->_options['statsFile'] !== false) {
+    	   $content = file_get_contents($this->_options['statsFile']);
+           
+           $e = explode("\n", $content);
+           
+           return array_map('unserialize', $e);
+    	}
+    	return array();
     }
     /**
      * appendStats
@@ -266,7 +274,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
             $rand = (mt_rand() / mt_getrandmax());
 
             if ($rand <= $this->_options['addStatsPropability']) {
-                file_put_contents($this->_options['statsFile'], implode("\n", $this->_queries));
+                file_put_contents($this->_options['statsFile'], implode("\n", array_map('serialize', $this->_queries)));
             }
         }
     }
@@ -289,7 +297,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
 
             $this->add($query, $event->getInvoker()->getName());
 
-            $data = $this->_driver->fetch(md5($query));
+            $data = $this->_driver->fetch(md5(serialize($query)));
 
             $this->success = ($data) ? true : false;
 
@@ -303,7 +311,7 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
 
                     $this->success = true;
 
-                    $this->_driver->save(md5($query), $data);
+                    $this->_driver->save(md5(serialize($query)), $data);
                 }
             }
             $this->_data = $data;

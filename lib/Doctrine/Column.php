@@ -36,7 +36,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
      * @var array $definition
      */
     protected $_definition = array(
-                                'type',
+                                'type' => null,
                                 'length' => 0,
                                 );
     /**
@@ -45,6 +45,22 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
     public function __construct(array $definition = array())
     {
         $this->_definition = $definition;
+    }
+    /**
+     * @return array
+     */
+    public function getDefinition()
+    {
+        return $this->_definition;
+    }
+    /**
+     * contains
+     *
+     * @return boolean
+     */
+    public function contains($name) 
+    {
+        return isset($this->_definition[$name]);
     }
     /**
      * get

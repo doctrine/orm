@@ -50,6 +50,10 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
     {
         return $this->adapter;
     }
+    public function getStatement()
+    {
+        return $this->stmt;	
+    }
     public function getQuery()
     {
         return $this->stmt->queryString;
