@@ -406,6 +406,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *          Text value with the default CHARACTER SET for this field.
      *      collation
      *          Text value with the default COLLATION for this field.
+     *      unique
+     *          unique constraint
      *
      * @return string
      */
@@ -442,6 +444,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *          Text value with the default CHARACTER SET for this field.
      *      collation
      *          Text value with the default COLLATION for this field.
+     *      unique
+     *          unique constraint
+     *
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
      */
@@ -461,21 +466,20 @@ class Doctrine_Export extends Doctrine_Connection_Module
             }
 
             $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
-        }
-        /**
-        TODO: is this really needed for portability?
-        elseif (empty($field['notnull'])) {
+        } elseif (empty($field['notnull'])) {
             $default = ' DEFAULT NULL';
         }
-        */
 
-        $charset = empty($field['charset']) ? '' :
-            ' '.$this->getCharsetFieldDeclaration($field['charset']);
+        $charset   = (isset($field['charset']) && $field['charset']) ?
+                    ' ' . $this->getCharsetFieldDeclaration($field['charset']) : '';
 
-        $collation = empty($field['collation']) ? '' :
-            ' '.$this->getCollationFieldDeclaration($field['collation']);
+        $collation = (isset($field['collation']) && $field['collation']) ?
+                    ' ' . $this->getCollationFieldDeclaration($field['collation']) : '';
 
-        $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
+        $notnull   = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
+
+        $unique    = (isset($field['unique']) && $field['unique']) ?
+                    ' ' . $this->getUniqueFieldDeclaration() : '';
 
         $method = 'get' . $field['type'] . 'Declaration';
 
@@ -484,7 +488,18 @@ class Doctrine_Export extends Doctrine_Connection_Module
         } else {
             $dec = $this->conn->dataDict->getNativeDeclaration($field);
         }
-        return $this->conn->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $collation;
+        return $this->conn->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $unique . $collation;
+    }
+    /**
+     * Obtain DBMS specific SQL code portion needed to set the UNIQUE constraint
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @return string  DBMS specific SQL code portion needed to set the UNIQUE constraint
+     *                 of a field declaration.
+     */
+    public function getUniqueFieldDeclaration()
+    {
+        return 'UNIQUE';
     }
     /**
      * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
