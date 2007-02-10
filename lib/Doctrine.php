@@ -336,6 +336,23 @@ final class Doctrine
      * mode for pessimistic locking
      */
     const LOCK_PESSIMISTIC      = 1;
+
+    /**
+     * constant for auto_increment identifier
+     */
+    const IDENTIFIER_AUTOINC        = 1;
+    /**
+     * constant for sequence identifier
+     */
+    const IDENTIFIER_SEQUENCE       = 2;
+    /**
+     * constant for normal identifier
+     */
+    const IDENTIFIER_NATURAL        = 3;
+    /**
+     * constant for composite identifier
+     */
+    const IDENTIFIER_COMPOSITE      = 4;
     /**
      * constructor
      */
@@ -379,10 +396,12 @@ final class Doctrine
      * method for importing existing schema to Doctrine_Record classes
      *
      * @param string $directory
+     * @param array $info
+     * @return boolean
      */
-    public static function import($directory)
+    public static function import($directory, array $databases = array())
     {
-        Doctrine_Import::import();
+        return Doctrine_Manager::connection()->import->import($directory, $databases);
     }
     /**
      * export
