@@ -1067,8 +1067,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     $a[$v] = $this->_data[$v];
             }
         }
-
-        foreach ($this->_table->inheritanceMap as $k => $v) {
+        $map = $this->_table->inheritanceMap;
+        foreach ($map as $k => $v) {
             $old = $this->get($k, false);
 
             if ((string) $old !== (string) $v || $old === null) {

@@ -174,4 +174,21 @@ class Doctrine_Import extends Doctrine_Connection_Module
 
         return $this->conn->fetchColumn($this->sql['listViews']);
     }
+    /**
+     * import
+     *
+     * method for importing existing schema to Doctrine_Record classes
+     *
+     * @param string $directory
+     * @param array $databases
+     */
+    public function import($directory, array $databases = array())
+    {
+        $builder = new Doctrine_Import_Builder();
+        $builder->setTargetPath($directory);
+
+        foreach ($this->listTables() as $table) {
+            $builder->buildRecord($table, $this->listTableColumns($table));
+        }
+    }
 }

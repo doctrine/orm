@@ -464,17 +464,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return true;
     }
     /**
-     * returns the next value in the given sequence
-     *
-     * @param string $sequence
-     * @throws PDOException     if something went wrong at database level
-     * @return integer
-     */
-    public function nextId($sequence)
-    {
-        throw new Doctrine_Connection_Exception('NextId() for sequences not supported by this driver.');
-    }
-    /**
      * Set the charset on the current connection
      *
      * @param string    charset
@@ -483,6 +472,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function setCharset($charset)
     {
+    	
     }
     /**
      * Set the date/time format for the current connection

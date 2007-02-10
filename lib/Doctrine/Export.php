@@ -131,9 +131,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *                          );
      * @param array $options  An associative array of table options:
      *
-     * @return void
+     * @return string
      */
-    public function createTable($name, array $fields, array $options = array()) 
+    public function createTableSql($name, array $fields, array $options = array())
     {
         if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');
@@ -145,17 +145,35 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $queryFields = $this->getFieldDeclarationList($fields);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
-            $queryFields.= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
+            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
+        }
+        if (isset($options['indexes']) && ! empty($options['indexes'])) {
+            foreach($options['indexes'] as $index => $definition) {
+                $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
+            }
         }
 
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
 
-        return $this->conn->exec($query);
+        return $query;
+    }
+    /**
+     * create a new table
+     *
+     * @param string $name   Name of the database that should be created
+     * @param array $fields  Associative array that contains the definition of each field of the new table
+     * @param array $options  An associative array of table options:
+     * @see Doctrine_Export::createTableSql()
+     *
+     * @return void
+     */
+    public function createTable($name, array $fields, array $options = array())
+    {
+        return $this->conn->execute($this->createTableSql($name, $fields, $options));
     }
     /**
      * create sequence
-     * (this method is implemented by the drivers)
      *
      * @param string    $seqName        name of the sequence to be created
      * @param string    $start          start value of the sequence; default is 1
@@ -163,9 +181,20 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function createSequence($seqName, $start = 1)
     {
+        return $this->conn->execute($this->createSequenceSql($seqName, $start = 1));  
+    }
+    /**
+     * return RDBMS specific create sequence statement
+     * (this method is implemented by the drivers)
+     *
+     * @param string    $seqName        name of the sequence to be created
+     * @param string    $start          start value of the sequence; default is 1
+     * @return string
+     */
+    public function createSequenceSql($seqName, $start = 1)
+    {
         throw new Doctrine_Export_Exception('Create sequence not supported by this driver.');
     }
-
     /**
      * create a constraint on a table
      *
@@ -253,7 +282,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $table  = $this->conn->quoteIdentifier($table);
         $name   = $this->conn->quoteIdentifier($name);
         $type   = '';
-        
+
         if(isset($definition['type'])) {
             switch (strtolower($definition['type'])) {
                 case 'unique':
@@ -479,7 +508,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
             $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
         } elseif (empty($field['notnull'])) {
-            $default = ' DEFAULT NULL';
+            //$default = ' DEFAULT NULL';
         }
 
         $charset   = (isset($field['charset']) && $field['charset']) ?
@@ -501,6 +530,142 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $dec = $this->conn->dataDict->getNativeDeclaration($field);
         }
         return $this->conn->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $unique . $collation;
+    }
+    /**
+     * Obtain DBMS specific SQL code portion needed to set an index 
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $charset       name of the index
+     * @param array $definition     index definition
+     * @return string  DBMS specific SQL code portion needed to set an index
+     */
+    public function getIndexDeclaration($name, array $definition)
+    {
+        $name   = $this->conn->quoteIdentifier($name);
+        $type   = '';
+
+        if (isset($definition['type'])) {
+            if (strtolower($definition['type']) == 'unique') {
+                $type = strtoupper($definition['type']) . ' ';
+            } else {
+                throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+            }
+        }
+        
+        if ( ! isset($definition['fields']) || ! is_array($definition['fields'])) {
+            throw new Doctrine_Export_Exception('No index columns given.');
+        }
+
+        $query = $type . 'INDEX ' . $name;
+
+        $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
+        
+        return $query;
+    }
+    /**
+     * getIndexFieldDeclarationList
+     * Obtain DBMS specific SQL code portion needed to set an index
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @return string
+     */
+    public function getIndexFieldDeclarationList(array $fields)
+    {
+        foreach ($fields as $field => $definition) {
+            if(is_array($definition)) {
+                $fields[] = $this->conn->quoteIdentifier($field);
+            } else {
+                $fields[] = $definition;
+            }
+        }
+        return implode(', ', $fields);
+    }
+    /**
+     * getForeignKeyDeclaration
+     * Obtain DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
+     * of a field declaration to be used in statements like CREATE TABLE.
+     *
+     * @param array $definition         an associative array with the following structure:
+     *          name                    optional constraint name
+     * 
+     *          local                   the local field(s)
+     *
+     *          foreign                 the foreign reference field(s)
+     *
+     *          foreignTable            the name of the foreign table
+     *
+     *          onDelete                referential delete action
+     *  
+     *          onUpdate                referential update action
+     *
+     * The onDelete and onUpdate keys accept the following values:
+     *
+     * CASCADE: Delete or update the row from the parent table and automatically delete or 
+     *          update the matching rows in the child table. Both ON DELETE CASCADE and ON UPDATE CASCADE are supported. 
+     *          Between two tables, you should not define several ON UPDATE CASCADE clauses that act on the same column
+     *          in the parent table or in the child table.
+     *
+     * SET NULL: Delete or update the row from the parent table and set the foreign key column or columns in the
+     *          child table to NULL. This is valid only if the foreign key columns do not have the NOT NULL qualifier 
+     *          specified. Both ON DELETE SET NULL and ON UPDATE SET NULL clauses are supported.
+     *
+     * NO ACTION: In standard SQL, NO ACTION means no action in the sense that an attempt to delete or update a primary 
+     *           key value is not allowed to proceed if there is a related foreign key value in the referenced table. 
+     *
+     * RESTRICT: Rejects the delete or update operation for the parent table. NO ACTION and RESTRICT are the same as
+     *           omitting the ON DELETE or ON UPDATE clause.
+     *
+     * SET DEFAULT
+     *
+     * @return string  DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
+     *                 of a field declaration.
+     */
+    public function getForeignKeyDeclaration($definition)
+    {
+    	$sql = '';
+        if (isset($definition['name'])) {
+            $sql .= 'CONSTRAINT ' . $definition['name'];
+        }
+        if ( ! isset($definition['local'])) {
+            throw new Doctrine_Export_Exception('Local reference field missing from definition.');
+        }
+        if ( ! isset($definition['foreign'])) {
+            throw new Doctrine_Export_Exception('Foreign reference field missing from definition.');
+        }
+        if ( ! isset($definition['foreignTable'])) {
+            throw new Doctrine_Export_Exception('Foreign reference table missing from definition.');
+        }
+
+        if ( ! is_array($definition['local'])) {
+            $definition['local'] = array($definition['local']);
+        }
+        if ( ! is_array($definition['foreign'])) {
+            $definition['foreign'] = array($definition['foreign']);
+        }
+        $sql .= implode(', ', array_map(array($this->conn, 'quoteIdentifier'), $definition['local']))
+              . ' REFERENCES '
+              . $definition['foreignTable'] . '('
+              . implode(', ', array_map(array($this->conn, 'quoteIdentifier'), $definition['foreign'])) . ')';
+
+        $a = array('onUpdate', 'onDelete');
+        foreach($a as $v) {
+            $keyword = ($v == 'onUpdate') ? ' ON UPDATE ' : ' ON DELETE ';
+
+            if (isset($definition[$v])) {
+                switch ($definition[$v]) {
+                    case 'CASCADE':
+                    case 'SET NULL':
+                    case 'NO ACTION':
+                    case 'RESTRICT':
+                    case 'SET DEFAULT':
+                        $sql .= $keyword . $definition[$v];
+                    break;
+                    default:
+                        throw new Doctrine_Export_Exception('Unknown foreign key referential action option given.');
+                }
+            }
+        }
+        return $sql;
     }
     /**
      * Obtain DBMS specific SQL code portion needed to set the UNIQUE constraint

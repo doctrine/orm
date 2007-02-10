@@ -73,15 +73,15 @@ class Doctrine_Import_Mssql extends Doctrine_Import
             $decl = $this->conn->dataDict->getPortableDeclaration($val);
 
             $description  = array(
-                'name'    => $val['column_name'],
-                'type'    => $type,
+                'name'      => $val['column_name'],
+                'type'      => $type,
                 'ptype'     => $decl['type'],
                 'length'    => $decl['length'],
                 'fixed'     => $decl['fixed'],
                 'unsigned'  => $decl['unsigned'],
-                'notnull' => (bool) ($val['is_nullable'] === 'NO'),
-                'default' => $val['column_def'],
-                'primary' => (strtolower($identity) == 'identity'),
+                'notnull'   => (bool) ($val['is_nullable'] === 'NO'),
+                'default'   => $val['column_def'],
+                'primary'   => (strtolower($identity) == 'identity'),
             );
             $columns[$val['column_name']] = $description;
         }
