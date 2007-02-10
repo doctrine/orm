@@ -85,11 +85,12 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         $name = 'mytable';
 
         $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true));
-        $options = array('type' => 'INNODB');
+        $options = array('primary' => array('id'), 
+                        'type' => 'INNODB');
         
         $this->export->createTable($name, $fields, $options);
 
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY) ENGINE = INNODB');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id INT UNSIGNED AUTO_INCREMENT, PRIMARY KEY(id)) ENGINE = INNODB');
     }
     public function testCreateTableSupportsCharType() 
     {
@@ -213,7 +214,25 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($this->export->getIndexFieldDeclarationList($fields), 'id(10) ASC, name(1) DESC');
     }
+    public function testCreateTableSupportsIndexesWithCustomSorting()
+    {
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
+                         'name' => array('type' => 'string', 'length' => 4),
+                         );
 
+        $options = array('primary' => array('id'),
+                         'indexes' => array('myindex' => array(
+                                                    'fields' => array(
+                                                            'id' => array('sorting' => 'ASC'), 
+                                                            'name' => array('sorting' => 'DESC')
+                                                                )
+                                                            ))
+                         );
+
+        $this->export->createTable('sometable', $fields, $options);
+        
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, name VARCHAR(4), INDEX myindex (id ASC, name DESC), PRIMARY KEY(id)) ENGINE = INNODB');
+    }
 }
 class MysqlTestRecord extends Doctrine_Record 
 {
