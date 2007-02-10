@@ -46,5 +46,50 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10), type INTEGER, PRIMARY KEY(name, type))');
     }
+    public function testCreateTableSupportsIndexes() 
+    {
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
+                         'name' => array('type' => 'string', 'length' => 4),
+                         );
+
+        $options = array('primary' => array('id'),
+                         'indexes' => array('myindex' => array('fields' => array('id', 'name')))
+                         );
+
+        $this->export->createTable('sometable', $fields, $options);
+        
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER UNSIGNED PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id, name))');
+    }
+    public function testUnknownIndexSortingAttributeThrowsException()
+    {
+        $fields = array('id' => array('sorting' => 'ASC'),
+                        'name' => array('sorting' => 'unknown'));
+
+        try {
+            $this->export->getIndexFieldDeclarationList($fields);
+            $this->fail();
+        } catch(Doctrine_Export_Exception $e) {
+            $this->pass();
+        }
+    }
+    public function testCreateTableSupportsIndexesWithCustomSorting()
+    {
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
+                         'name' => array('type' => 'string', 'length' => 4),
+                         );
+
+        $options = array('primary' => array('id'),
+                         'indexes' => array('myindex' => array(
+                                                    'fields' => array(
+                                                            'id' => array('sorting' => 'ASC'), 
+                                                            'name' => array('sorting' => 'DESC')
+                                                                )
+                                                            ))
+                         );
+
+        $this->export->createTable('sometable', $fields, $options);
+        
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER UNSIGNED PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id ASC, name DESC))');
+    }
 }
 ?>

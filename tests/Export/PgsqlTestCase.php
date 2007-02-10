@@ -13,10 +13,11 @@ class Doctrine_Export_Pgsql_TestCase extends Doctrine_UnitTestCase {
         $name = 'mytable';
         
         $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true));
+        $options = array('primary' => array('id'));
+        
+        $this->export->createTable($name, $fields, $options);
 
-        $this->export->createTable($name, $fields);
-
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id SERIAL PRIMARY KEY)');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id SERIAL, PRIMARY KEY(id))');
     }
     public function testCreateTableSupportsDefaultAttribute() {
         $name = 'mytable';
