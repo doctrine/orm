@@ -1532,16 +1532,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * if not this method retrieves index named $name
      *
      * @param string $name              the name of the index
-     * @param array|string $columns     an array of columns or a single column name
+     * @param array $definition         the definition array
      * @param array $options            an array of options
      * @return mixed
      */
-    public function index($name, $columns = null, array $options = array())
+    public function index($name, array $definition = array())
     {
     	if ( ! $columns) {
             return $this->_table->getIndex($name);
         } else {
-            return $this->_table->addIndex($name, $columns, $options);
+            return $this->_table->addIndex($name, $definition);
         }
     }
     /**
