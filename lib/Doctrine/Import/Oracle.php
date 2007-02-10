@@ -122,12 +122,17 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         $result = $this->conn->fetchAssoc($sql);
 
         foreach($result as $val) {
+            $decl = $this->conn->dataDict->getPortableDeclaration($val);                                 	
+
             $descr[$val['column_name']] = array(
-               'name'    => $val['column_name'],
-               'notnull' => (bool) ($val['nullable'] === 'N'), // nullable is N when mandatory
-               'type'    => $val['data_type'],
-               'default' => $val['data_default'],
-               'length'  => $val['data_length']
+               'name'       => $val['column_name'],
+               'notnull'    => (bool) ($val['nullable'] === 'N'), // nullable is N when mandatory
+               'type'       => $val['data_type'],
+               'ptype'      => $decl['type'],
+               'fixed'      => $decl['fixed'],
+               'unsigned'   => $decl['unsigned'],
+               'default'    => $val['data_default'],
+               'length'     => $val['data_length']
             );
         }
         return $result;

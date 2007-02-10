@@ -149,7 +149,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
      */
     public function listTableIndexes($table)
     {
-        $sql     =  'PRAGMA index_list(' . $table . ')';
+        $sql  = 'PRAGMA index_list(' . $table . ')';
         return $this->conn->fetchColumn($sql);
    }
     /**
