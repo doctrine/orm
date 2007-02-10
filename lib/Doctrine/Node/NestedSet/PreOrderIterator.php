@@ -84,7 +84,6 @@ class Doctrine_Node_NestedSet_PreOrderIterator implements Iterator
         $this->level      = $record->getNode()->getLevel();
         $this->prevLeft   = $record->getNode()->getLeftValue();
 
-        echo $this->maxDepth;
         // clear the table identity cache
         $record->getTable()->clear();
     }
