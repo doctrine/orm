@@ -384,12 +384,25 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      * @throws PDOException
      * @return void
      */
-    public function createIndex($table, $name, array $definition)
+    public function createIndex($table, $name, array $definition, $type = null)
     {
         $table  = $table;
         $name   = $this->conn->getIndexName($name);
-        $query  = 'CREATE INDEX ' . $name . ' ON ' . $table;
+
+        if(isset($type)) {
+            switch (strtolower($type)) {
+                case 'fulltext':
+                case 'unique':
+                    $type = strtoupper($type) . ' ';
+                break;
+                default:
+                    throw new Doctrine_Export_Exception('Unknown index type ' . $type);
+            }
+        }
+        $query  = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
+
         $fields = array();
+
         foreach ($definition['fields'] as $field => $fieldinfo) {
             if (!empty($fieldinfo['length'])) {
                 $fields[] = $field . '(' . $fieldinfo['length'] . ')';
