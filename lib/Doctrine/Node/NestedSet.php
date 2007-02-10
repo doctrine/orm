@@ -209,10 +209,11 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         $q = $this->record->getTable()->createQuery();
 
         $componentName = $this->record->getTable()->getComponentName();
-        $ancestors =    $q->where("$componentName.lft < ? AND $componentName.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
-                                        ->orderBy("$componentName.lft asc")
-                                        ->execute();
-
+        $q = $q->where("$componentName.lft < ? AND $componentName.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
+                                        ->orderBy("$componentName.lft asc");
+        $q = $this->record->getTable()->getTree()->returnQueryWithRootId($q, $this->getRootValue());
+        $ancestors = $q->execute();
+        
         return $ancestors;
     }
 
