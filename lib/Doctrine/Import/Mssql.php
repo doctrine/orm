@@ -67,12 +67,18 @@ class Doctrine_Import_Mssql extends Doctrine_Import
             }
 
             if ($type == 'varchar') {
-                $type .= '('.$val['length'].')';
+                $type .= '(' . $val['length'] . ')';
             }
+
+            $decl = $this->conn->dataDict->getPortableDeclaration($val);
 
             $description  = array(
                 'name'    => $val['column_name'],
                 'type'    => $type,
+                'ptype'     => $decl['type'],
+                'length'    => $decl['length'],
+                'fixed'     => $decl['fixed'],
+                'unsigned'  => $decl['unsigned'],
                 'notnull' => (bool) ($val['is_nullable'] === 'NO'),
                 'default' => $val['column_def'],
                 'primary' => (strtolower($identity) == 'identity'),
