@@ -101,15 +101,16 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
         $queryFields = $this->getFieldDeclarationList($fields);
 
-        if (isset($options['primary']) && ! empty($options['primary'])) {
-            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
-        }
-
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach($options['indexes'] as $index => $definition) {
                 $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
             }
         }
+        if (isset($options['primary']) && ! empty($options['primary'])) {
+            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
+        }
+
+
 
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
@@ -231,7 +232,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      *                           actually perform them otherwise.
      * @return boolean
      */
-    public function alterTable($name, array $changes, $check)
+    public function alterTableSql($name, array $changes, $check)
     {
         if ( ! $name)
             throw new Doctrine_Export_Exception('no valid table name specified');
@@ -286,18 +287,18 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
 
         if ( ! empty($changes['change']) && is_array($changes['change'])) {
-            foreach ($changes['change'] as $field_name => $field) {
+            foreach ($changes['change'] as $fieldName => $field) {
                 if ($query) {
                     $query.= ', ';
                 }
-                if (isset($rename[$field_name])) {
-                    $old_field_name = $rename[$field_name];
-                    unset($rename[$field_name]);
+                if (isset($rename[$fieldName])) {
+                    $oldFieldName = $rename[$fieldName];
+                    unset($rename[$fieldName]);
                 } else {
-                    $old_field_name = $field_name;
+                    $oldFieldName = $fieldName;
                 }
-                $old_field_name = $this->conn->quoteIdentifier($old_field_name, true);
-                $query.= "CHANGE $old_field_name " . $this->getDeclaration($field['definition']['type'], $field_name, $field['definition']);
+                $oldFieldName = $this->conn->quoteIdentifier($old_field_name, true);
+                $query .= "CHANGE $oldFieldName " . $this->getDeclaration($field['definition']['type'], $fieldName, $field['definition']);
             }
         }
 
@@ -382,7 +383,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      *                                    array(
      *                                        'fields' => array(
      *                                            'user_name' => array(
-     *                                                'sorting' => 'ascending'
+     *                                                'sorting' => 'ASC'
      *                                                'length' => 10
      *                                            ),
      *                                            'last_login' => array()
@@ -407,19 +408,79 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             }
         }
         $query  = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
-
-        $fields = array();
-
-        foreach ($definition['fields'] as $field => $fieldinfo) {
-            if (!empty($fieldinfo['length'])) {
-                $fields[] = $field . '(' . $fieldinfo['length'] . ')';
-            } else {
-                $fields[] = $field;
-            }
-        }
-        $query .= ' ('. implode(', ', $fields) . ')';
+        $query .= ' ('. $this->getIndexFieldDeclarationList() . ')';
 
         return $query;
+    }
+    /**
+     * Obtain DBMS specific SQL code portion needed to set an index 
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $charset       name of the index
+     * @param array $definition     index definition
+     * @return string  DBMS specific SQL code portion needed to set an index
+     */
+    public function getIndexDeclaration($name, array $definition)
+    {
+        $name   = $this->conn->quoteIdentifier($name);
+        $type   = '';
+        if(isset($definition['type'])) {
+            switch (strtolower($definition['type'])) {
+                case 'fulltext':
+                case 'unique':
+                    $type = strtoupper($definition['type']) . ' ';
+                break;
+                default:
+                    throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+            }
+        }
+        
+        if ( ! isset($definition['fields']) || ! is_array($definition['fields'])) {
+            throw new Doctrine_Export_Exception('No index columns given.');
+        }
+
+        $query = $type . 'INDEX ' . $name;
+
+        $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
+        
+        return $query;
+    }
+    /**
+     * getIndexFieldDeclarationList
+     * Obtain DBMS specific SQL code portion needed to set an index
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @return string
+     */
+    public function getIndexFieldDeclarationList(array $fields)
+    {
+    	$declFields = array();
+
+        foreach ($fields as $fieldName => $field) {
+            $fieldString = $fieldName;
+
+            if (is_array($field)) {
+                if (isset($field['length'])) {
+                    $fieldString .= '(' . $field['length'] . ')';
+                }
+
+                if (isset($field['sorting'])) {
+                    $sort = strtoupper($field['sorting']);
+                    switch ($sort) {
+                        case 'ASC':
+                        case 'DESC':
+                            $fieldString .= ' ' . $sort;
+                            break;
+                        default:
+                            throw new Doctrine_Export_Exception('Unknown index sorting option given.');
+                    }
+                }
+            } else {
+                $fieldString = $field;
+            }
+            $declFields[] = $fieldString;
+        }
+        return implode(', ', $declFields);
     }
     /**
      * drop existing index
