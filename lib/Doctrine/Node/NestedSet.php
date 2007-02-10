@@ -138,7 +138,9 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function getFirstChild()
     {
         $q = $this->record->getTable()->createQuery();
-        $result = $q->where('lft = ?', $this->getLeftValue() + 1)->execute()->getFirst();
+        $q = $q->where('lft = ?', $this->getLeftValue() + 1);
+        $q = $this->record->getTable()->getTree()->returnQueryWithRootId($q, $this->getRootValue());
+        $result = $q->execute()->getFirst();
         
         if(!$result)
              $result = $this->record->getTable()->create();
@@ -154,7 +156,9 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function getLastChild()
     {
         $q = $this->record->getTable()->createQuery();
-        $result = $q->where('rgt = ?', $this->getRightValue() - 1)->execute()->getFirst();
+        $q = $q->where('rgt = ?', $this->getRightValue() - 1);
+        $q = $this->record->getTable()->getTree()->returnQueryWithRootId($q, $this->getRootValue());
+        $result = $q->execute()->getFirst();
 
         if(!$result)
              $result = $this->record->getTable()->create();
