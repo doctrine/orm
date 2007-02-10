@@ -206,6 +206,13 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
             $this->pass();
         }
     }
+    public function testIndexDeclarationsSupportSortingAndLengthAttributes()
+    {
+        $fields = array('id' => array('sorting' => 'ASC', 'length' => 10),
+                        'name' => array('sorting' => 'DESC', 'length' => 1));
+
+        $this->assertEqual($this->export->getIndexFieldDeclarationList($fields), 'id(10) ASC, name(1) DESC');
+    }
 
 }
 class MysqlTestRecord extends Doctrine_Record 
