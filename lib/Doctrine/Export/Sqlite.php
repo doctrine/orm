@@ -65,29 +65,47 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      * @throws PDOException
      * @return void
      */
-    public function createIndex($table, $name, array $definition)
+    public function createIndexSql($table, $name, array $definition)
     {
         $table = $this->conn->quoteIdentifier($table, true);
         $name  = $this->conn->getIndexName($name);
         $query = 'CREATE INDEX ' . $name . ' ON ' . $table;
-        $fields = array();
-        foreach ($definition['fields'] as $fieldName => $field) {
-            $fieldString = $fieldName;
-            if (isset($field['sorting'])) {
-                switch ($field['sorting']) {
-                    case 'ascending':
-                        $fieldString .= ' ASC';
-                        break;
-                    case 'descending':
-                        $fieldString .= ' DESC';
-                        break;
-                }
-            }
-            $fields[] = $fieldString;
-        }
-        $query .= ' (' . implode(', ', $fields) . ')';
+        $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
 
-        return $this->conn->exec($query);
+        return $query;
+    }
+    /**
+     * getIndexFieldDeclarationList
+     * Obtain DBMS specific SQL code portion needed to set an index
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @return string   
+     */
+    public function getIndexFieldDeclarationList(array $fields)
+    {
+    	$declFields = array();
+
+        foreach ($fields as $fieldName => $field) {
+            $fieldString = $fieldName;
+
+            if (is_array($field)) {
+                if (isset($field['sorting'])) {
+                    $sort = strtoupper($field['sorting']);
+                    switch ($sort) {
+                        case 'ASC':
+                        case 'DESC':
+                            $fieldString .= ' ' . $sort;
+                            break;
+                        default:
+                            throw new Doctrine_Export_Exception('Unknown index sorting option given.');
+                    }
+                }
+            } else {
+                $fieldString = $field;
+            }
+            $declFields[] = $fieldString;
+        }
+        return implode(', ', $declFields);
     }
     /**
      * create a new table
@@ -138,6 +156,12 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
 
         if ( ! $autoinc && isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields.= ', PRIMARY KEY('.implode(', ', array_values($options['primary'])).')';
+        }
+
+        if (isset($options['indexes']) && ! empty($options['indexes'])) {
+            foreach($options['indexes'] as $index => $definition) {
+                $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
+            }
         }
 
         $name  = $this->conn->quoteIdentifier($name, true);

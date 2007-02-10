@@ -92,7 +92,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      *
      * @return void
      */
-    public function createTable($name, array $fields, array $options = array()) {
+    public function createTableSql($name, array $fields, array $options = array()) {
         if ( ! $name)
             throw new Doctrine_Export_Exception('no valid table name specified');
 
@@ -104,6 +104,13 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
         }
+
+        if (isset($options['indexes']) && ! empty($options['indexes'])) {
+            foreach($options['indexes'] as $index => $definition) {
+                $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
+            }
+        }
+
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
 
@@ -134,7 +141,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         if (!empty($optionStrings)) {
             $query.= ' '.implode(' ', $optionStrings);
         }
-        return $this->conn->exec($query);
+        return $query;
     }
     /**
      * alter an existing table
