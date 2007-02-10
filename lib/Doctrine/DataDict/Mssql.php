@@ -174,6 +174,9 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
                 throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$db_type);
         }
 
-        return array($type, $length, $unsigned, $fixed);
+        return array('type'     => $type,
+                     'length'   => $length,
+                     'unsigned' => $unsigned, 
+                     'fixed'    => $fixed);
     }
 }

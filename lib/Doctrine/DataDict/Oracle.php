@@ -180,6 +180,9 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
                 throw new Doctrine_DataDict_Exception('unknown database attribute type: ' . $dbType);
         }
 
-        return array($type, $length, $unsigned, $fixed);
+        return array('type'     => $type,
+                     'length'   => $length,
+                     'unsigned' => $unsigned, 
+                     'fixed'    => $fixed);
     }
 }

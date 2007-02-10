@@ -178,7 +178,10 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
                 throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$dbType);
         }
 
-        return array($type, $length, $unsigned, $fixed);
+        return array('type'     => $type,
+                     'length'   => $length,
+                     'unsigned' => $unsigned, 
+                     'fixed'    => $fixed);
     }
     /**
      * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
