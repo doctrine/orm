@@ -160,12 +160,19 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
                 $length = preg_replace('~.*\(([0-9]*)\).*~', '$1', $val['complete_type']);
                 $val['type'] .= '(' . $length . ')';
             }
+            
+            $decl = $this->conn->dataDict->getPortableDeclaration($val);
+
             $description = array(
-                'name'    => $val['field'],
-                'type'    => $val['type'],
-                'notnull' => ($val['isnotnull'] == ''),
-                'default' => $val['default'],
-                'primary' => ($val['pri'] == 't'),
+                'name'      => $val['field'],
+                'type'      => $val['type'],
+                'ptype'     => $decl['type'],
+                'length'    => $decl['length'],
+                'fixed'     => $decl['fixed'],
+                'unsigned'  => $decl['unsigned'],
+                'notnull'   => ($val['isnotnull'] == ''),
+                'default'   => $val['default'],
+                'primary'   => ($val['pri'] == 't'),
             );
             $columns[$val['field']] = $description;
         }
