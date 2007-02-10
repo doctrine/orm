@@ -1415,14 +1415,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_AGGREGATE, $localKey);
     }
     /**
-     * setPrimaryKey
-     * @param mixed $key
-     */
-    final public function setPrimaryKey($key)
-    {
-        $this->_table->setPrimaryKey($key);
-    }
-    /**
      * hasColumn
      * sets a column definition
      *
@@ -1515,8 +1507,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * sets or retrieves an option
      *
      * @see Doctrine_Table::$options    availible options
-     * @param mixed $name
-     * @param mixed $value
+     * @param mixed $name               the name of the option
+     * @param mixed $value              options value
      * @return mixed
      */
     public function option($name, $value = null)
@@ -1533,9 +1525,24 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $this->_table->setOption($name, $value);
         }
     }
-    public function hasIndex($name )
+    /**
+     * index
+     * defines or retrieves an index
+     * if the second parameter is set this method defines an index
+     * if not this method retrieves index named $name
+     *
+     * @param string $name              the name of the index
+     * @param array|string $columns     an array of columns or a single column name
+     * @param array $options            an array of options
+     * @return mixed
+     */
+    public function index($name, $columns = null, array $options = array())
     {
-
+    	if ( ! $columns) {
+            return $this->_table->getIndex($name);
+        } else {
+            return $this->_table->addIndex($name, $columns, $options);
+        }
     }
     /**
      * addListener
@@ -1601,7 +1608,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return false;
 
       if(!isset($this->_node))
-        $this->_node = Doctrine_Node::factory($this, $this->getTable()->getOption('treeImpl'), $this->getTable()->getOption('treeOptions'));
+        $this->_node = Doctrine_Node::factory($this, 
+                                              $this->getTable()->getOption('treeImpl'),
+                                              $this->getTable()->getOption('treeOptions')
+                                              );
         
       return $this->_node;          
     }
