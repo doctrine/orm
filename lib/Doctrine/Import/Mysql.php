@@ -104,18 +104,25 @@ class Doctrine_Import_Mysql extends Doctrine_Import
     {
         $sql = 'DESCRIBE ' . $table;
         $result = $this->conn->fetchAssoc($sql);
+
         $description = array();
         foreach ($result as $key => $val) {
 
-            array_change_key_case($val, CASE_LOWER);
+            $val = array_change_key_case($val, CASE_LOWER);
+
+            $decl = $this->conn->dataDict->getPortableDeclaration($val);
 
             $description = array(
-                'name'    => $val['field'],
-                'type'    => $val['type'],
-                'primary' => (strtolower($val['key']) == 'pri'),
-                'default' => $val['default'],
-                'notnull' => (bool) ($val['null'] != 'YES'),
-                'autoinc' => (bool) (strpos($val['extra'], 'auto_increment') !== false),
+                'name'      => $val['field'],
+                'type'      => $val['type'],
+                'ptype'     => $decl['type'],
+                'length'    => $decl['length'],
+                'fixed'     => $decl['fixed'],
+                'unsigned'  => $decl['unsigned'],
+                'primary'   => (strtolower($val['key']) == 'pri'),
+                'default'   => $val['default'],
+                'notnull'   => (bool) ($val['null'] != 'YES'),
+                'autoinc'   => (bool) (strpos($val['extra'], 'auto_increment') !== false),
             );
             $columns[$val['field']] = $description;
         }
@@ -144,7 +151,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
         }
 
         $table = $this->conn->quoteIdentifier($table, true);
-        $query = "SHOW INDEX FROM $table";
+        $query = 'SHOW INDEX FROM ' . $table;
         $indexes = $this->conn->fetchAssoc($query);
 
 
