@@ -233,6 +233,26 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, name VARCHAR(4), INDEX myindex (id ASC, name DESC), PRIMARY KEY(id)) ENGINE = INNODB');
     }
+    public function testCreateTableSupportsFulltextIndexes()
+    {
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
+                         'content' => array('type' => 'string', 'length' => 4),
+                         );
+
+        $options = array('primary' => array('id'),
+                         'indexes' => array('myindex' => array(
+                                                    'fields' => array(
+                                                            'content' => array('sorting' => 'DESC')
+                                                                ),
+                                                    'type' => 'fulltext',
+                                                            )),
+                         'type'    => 'MYISAM',
+                         );
+
+        $this->export->createTable('sometable', $fields, $options);
+        
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, content VARCHAR(4), FULLTEXT INDEX myindex (content DESC), PRIMARY KEY(id)) ENGINE = MYISAM');
+    }
 }
 class MysqlTestRecord extends Doctrine_Record 
 {
