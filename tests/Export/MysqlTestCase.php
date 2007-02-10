@@ -194,6 +194,19 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_test_record (name TEXT, code BIGINT, PRIMARY KEY(name, code)) ENGINE = INNODB');
     }
+    public function testUnknownIndexSortingAttributeThrowsException()
+    {
+        $fields = array('id' => array('sorting' => 'ASC'),
+                        'name' => array('sorting' => 'unknown'));
+
+        try {
+            $this->export->getIndexFieldDeclarationList($fields);
+            $this->fail();
+        } catch(Doctrine_Export_Exception $e) {
+            $this->pass();
+        }
+    }
+
 }
 class MysqlTestRecord extends Doctrine_Record 
 {
