@@ -252,8 +252,20 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $table  = $this->conn->quoteIdentifier($table);
         $name   = $this->conn->quoteIdentifier($name);
+        $type   = '';
+        
+        if(isset($definition['type'])) {
+            switch (strtolower($definition['type'])) {
+                case 'unique':
+                    $type = strtoupper($definition['type']) . ' ';
+                break;
+                default:
+                    throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
+            }
+        }
 
-        $query = 'CREATE INDEX ' . $name . ' ON ' . $table;
+        $query = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
+
         $fields = array();
         foreach (array_keys($definition['fields']) as $field) {
             $fields[] = $this->conn->quoteIdentifier($field);
