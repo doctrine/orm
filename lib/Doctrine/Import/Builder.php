@@ -35,7 +35,9 @@
  */
 class Doctrine_Import_Builder
 {
-
+    /**
+     * @var string $path    the path where imported files are being generated
+     */
     private $path = '';
 
     private $suffix = '.php';
@@ -54,10 +56,10 @@ class Doctrine_Import_Builder
     }
 
     /**
+     * setTargetPath
      *
-     * @param string path
+     * @param string path   the path where imported files are being generated
      * @return
-     * @access public
      */
     public function setTargetPath($path)
     {
@@ -67,26 +69,17 @@ class Doctrine_Import_Builder
 
         $this->path = $path;
     }
+    /**
+     * getTargetPath
+     *
+     * @return string       the path where imported files are being generated
+     */
     public function getTargetPath()
     {
         return $this->path;
     }
-    /**
-     *
-     * @param string path
-     * @return
-     * @access public
-     */
-    public function setFileSuffix($suffix)
-    {
-        $this->suffix = $suffix;
-    }
-    public function getFileSuffix()
-    {
-        return $this->suffix;
-    }
 
-    public function buildRecord(Doctrine_Schema_Table $table)
+    public function buildRecord($table, $tableColumns)
     {
         if (empty($this->path)) {
             throw new Doctrine_Import_Builder_Exception('No build target directory set.');
@@ -95,14 +88,13 @@ class Doctrine_Import_Builder
             throw new Doctrine_Import_Builder_Exception('Build target directory ' . $this->path . ' is not writable.');
         }
         $created   = date('l dS \of F Y h:i:s A');
-        $className = Doctrine::classify($table->get('name'));
+        $className = Doctrine::classify($table);
         $fileName  = $this->path . DIRECTORY_SEPARATOR . $className . $this->suffix;
         $columns   = array();
-
         $i = 0;
 
-        foreach ($table as $name => $column) {
-            $columns[$i] = '        $this->hasColumn(\'' . $column['name'] . '\', \'' . $column['type'] . '\'';
+        foreach ($tableColumns as $name => $column) {
+            $columns[$i] = '        $this->hasColumn(\'' . $name . '\', \'' . $column['ptype'][0] . '\'';
             if ($column['length']) {
                 $columns[$i] .= ', ' . $column['length'];
             } else {
@@ -126,10 +118,15 @@ class Doctrine_Import_Builder
             if ($column['unique']) {
                 $a[] = '\'unique\' => true';
             }
+            if ($column['unsigned']) {
+                $a[] = '\'unsigned\' => true';
+            }
 
             if ( ! empty($a)) {
-                $columns[$i] .= ', ' . 'array(' . implode(',
-', $a) . ')';
+                $columns[$i] .= ', ' . 'array(';
+                $length = strlen($columns[$i]);
+                $columns[$i] .= implode(', 
+' . str_repeat(' ', $length), $a) . ')';
             }
             $columns[$i] .= ');';
 
@@ -140,12 +137,13 @@ class Doctrine_Import_Builder
             $i++;
         }
 
-        $content   = sprintf(self::$tpl, $created, $className, implode('', $columns));
+        $content   = sprintf(self::$tpl, $created, $className, implode("\n", $columns));
 
         $bytes     = file_put_contents($fileName, $content);
 
-        if ($bytes === false)
+        if ($bytes === false) {
             throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $fileName);
+        }
     }
     /**
      *
