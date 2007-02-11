@@ -1538,7 +1538,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function index($name, array $definition = array())
     {
-    	if ( ! $columns) {
+    	if ( ! $definition) {
             return $this->_table->getIndex($name);
         } else {
             return $this->_table->addIndex($name, $definition);

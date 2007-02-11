@@ -136,13 +136,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *      -- inheritanceMap               inheritanceMap is used for inheritance mapping, keys representing columns and values
      *                                      the column values that should correspond to child classes
      *
-     *      -- engine                       database engine (mysql example: INNODB)
+     *      -- type                         table type (mysql example: INNODB)
      *
      *      -- charset                      character set
      *
      *      -- collation
      *
-     *      -- index                        the index definitions of this table
+     *      -- indexes                      the index definitions of this table
      *
      *      -- treeImpl                     the tree implementation of this table (if any)
      *
@@ -158,7 +158,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                         'collation'      => null,
                                         'treeImpl'       => null,
                                         'treeOptions'    => null,
-                                        'index'          => array(),
+                                        'indexes'        => array(),
                                         );
     /**
      * @var Doctrine_Tree $tree             tree object associated with this table
@@ -411,6 +411,31 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function __isset($option) 
     {
         return isset($this->options[$option]);
+    }
+    /**
+     * addIndex
+     * 
+     * adds an index to this table
+     *
+     * @return void
+     */
+    public function addIndex($index, array $definition)
+    {
+    	$index = $this->conn->getIndexName($index);
+        $this->options['indexes'][$index] = $definition;
+    }
+    /**
+     * getIndex
+     *
+     * @return array|boolean        array on success, FALSE on failure
+     */
+    public function getIndex($index) 
+    {
+        if (isset($this->options['indexes'][$index])) {
+            return $this->options['indexes'][$index];
+        }
+        
+        return false;
     }
     /**
      * createQuery
