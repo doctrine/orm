@@ -304,6 +304,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             case 'integer':
             case 'enum':
             case 'boolean':
+            case 'double':
+            case 'float':
+            case 'bool':
+            case 'int':
                 return $input;
             case 'array':
             case 'object':
@@ -472,7 +476,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function setCharset($charset)
     {
-    	
+
     }
     /**
      * Set the date/time format for the current connection
