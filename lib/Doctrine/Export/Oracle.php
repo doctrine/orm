@@ -380,6 +380,15 @@ END;
             $result = $this->conn->exec("ALTER TABLE $name RENAME TO ".$change_name);
         }
     }
+    /** 
+     * getForeignKeyDeferredDeclaration
+     *
+     * @return string
+     */
+    public function getForeignKeyDeferredDeclaration($deferred)
+    {
+        return ($deferred) ? 'INITIALLY DEFERRED DEFERRABLE' : '';
+    }
     /**
      * create sequence
      *

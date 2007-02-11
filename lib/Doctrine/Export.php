@@ -494,22 +494,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function getDeclaration($name, array $field)
     {
 
-        $default = '';
-        if (isset($field['default'])) {
-            if ($field['default'] === '') {
-                $field['default'] = empty($field['notnull'])
-                    ? null : $this->valid_default_values[$field['type']];
-                if ($field['default'] === ''
-                    && ($conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
-                ) {
-                    $field['default'] = ' ';
-                }
-            }
-
-            $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
-        } elseif (empty($field['notnull'])) {
-            //$default = ' DEFAULT NULL';
-        }
+        $default   = $this->getDefaultFieldDeclaration($field);
 
         $charset   = (isset($field['charset']) && $field['charset']) ?
                     ' ' . $this->getCharsetFieldDeclaration($field['charset']) : '';
@@ -532,12 +517,39 @@ class Doctrine_Export extends Doctrine_Connection_Module
         return $this->conn->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $unique . $collation;
     }
     /**
+     * getDefaultDeclaration
+     * Obtain DBMS specific SQL code portion needed to set a default value
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param array $field      field definition array
+     * @return string           DBMS specific SQL code portion needed to set a default value
+     */
+    public function getDefaultFieldDeclaration($field)
+    {
+        $default = '';
+        if (isset($field['default'])) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($field['notnull'])
+                    ? null : $this->valid_default_values[$field['type']];
+
+                if ($field['default'] === ''
+                    && ($conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
+                ) {
+                    $field['default'] = ' ';
+                }
+            }
+    
+            $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
+        }
+        return $default;
+    }
+    /**
      * Obtain DBMS specific SQL code portion needed to set an index 
      * declaration to be used in statements like CREATE TABLE.
      *
      * @param string $charset       name of the index
      * @param array $definition     index definition
-     * @return string  DBMS specific SQL code portion needed to set an index
+     * @return string               DBMS specific SQL code portion needed to set an index
      */
     public function getIndexDeclaration($name, array $definition)
     {
@@ -598,6 +610,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *  
      *          onUpdate                referential update action
      *
+     *          deferred                deferred constraint checking
+     *
      * The onDelete and onUpdate keys accept the following values:
      *
      * CASCADE: Delete or update the row from the parent table and automatically delete or 
@@ -621,6 +635,48 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *                 of a field declaration.
      */
     public function getForeignKeyDeclaration($definition)
+    {
+        $sql  = $this->getForeignKeyBaseDeclaration();
+        
+        if (isset($definition['deferred'])) {
+            $sql .= ' ' . $this->getForeignKeyDeferredDeclaration();
+        }
+
+        $a = array('onUpdate', 'onDelete');
+        foreach($a as $v) {
+            $keyword = ($v == 'onUpdate') ? ' ON UPDATE ' : ' ON DELETE ';
+
+            if (isset($definition[$v])) {
+                switch ($definition[$v]) {
+                    case 'CASCADE':
+                    case 'SET NULL':
+                    case 'NO ACTION':
+                    case 'RESTRICT':
+                    case 'SET DEFAULT':
+                        $sql .= $keyword . $definition[$v];
+                    break;
+                    default:
+                        throw new Doctrine_Export_Exception('Unknown foreign key referential action option given.');
+                }
+            }
+        }
+        return $sql;
+    }
+    /** 
+     * getForeignKeyDeferredDeclaration
+     *
+     * @return string
+     */
+    public function getForeignKeyDeferredDeclaration($deferred)
+    {
+        return '';
+    }
+    /**
+     * getForeignKeyBaseDeclaration
+     *
+     * @return string
+     */
+    public function getForeignKeyBaseDeclaration()
     {
     	$sql = '';
         if (isset($definition['name'])) {
@@ -646,25 +702,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
               . ' REFERENCES '
               . $definition['foreignTable'] . '('
               . implode(', ', array_map(array($this->conn, 'quoteIdentifier'), $definition['foreign'])) . ')';
-
-        $a = array('onUpdate', 'onDelete');
-        foreach($a as $v) {
-            $keyword = ($v == 'onUpdate') ? ' ON UPDATE ' : ' ON DELETE ';
-
-            if (isset($definition[$v])) {
-                switch ($definition[$v]) {
-                    case 'CASCADE':
-                    case 'SET NULL':
-                    case 'NO ACTION':
-                    case 'RESTRICT':
-                    case 'SET DEFAULT':
-                        $sql .= $keyword . $definition[$v];
-                    break;
-                    default:
-                        throw new Doctrine_Export_Exception('Unknown foreign key referential action option given.');
-                }
-            }
-        }
+        
         return $sql;
     }
     /**

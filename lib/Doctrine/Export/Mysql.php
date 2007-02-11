@@ -412,6 +412,33 @@ class Doctrine_Export_Mysql extends Doctrine_Export
 
         return $query;
     }
+    /** 
+     * getDefaultDeclaration
+     * Obtain DBMS specific SQL code portion needed to set a default value
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param array $field      field definition array
+     * @return string           DBMS specific SQL code portion needed to set a default value
+     */
+    public function getDefaultFieldDeclaration($field)
+    {
+        $default = '';
+        if (isset($field['default']) && $field['length'] <= 255) {
+            if ($field['default'] === '') {
+                $field['default'] = empty($field['notnull'])
+                    ? null : $this->valid_default_values[$field['type']];
+
+                if ($field['default'] === ''
+                    && ($conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
+                ) {
+                    $field['default'] = ' ';
+                }
+            }
+    
+            $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
+        }
+        return $default;
+    }
     /**
      * Obtain DBMS specific SQL code portion needed to set an index 
      * declaration to be used in statements like CREATE TABLE.
