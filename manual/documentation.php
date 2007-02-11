@@ -109,6 +109,11 @@ $menu = array('Getting started' =>
                                         'Default values',
                                         'Enum emulation',
                                         ),
+                        'Working with existing databases' => array(
+                                        'Introduction',
+                                        'Making the first import',
+                                        'Import options',
+                                        ),
 
                         'Record identifiers' => array(
                                         'Introduction',
@@ -122,6 +127,8 @@ $menu = array('Getting started' =>
                                      'Index options',
                                      'Special indexes',
                                     ),
+
+
                         ),
            'Connection management' =>
                         array(
@@ -149,6 +156,9 @@ $menu = array('Getting started' =>
                                         'Enum',
                                         'Gzip',
                         ),
+            'Foreign keys' => array(
+                            'Introduction',
+                            ),
 /**
                         'Column attributes' => array(
                                         'Introduction',

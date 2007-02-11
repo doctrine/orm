@@ -13,10 +13,8 @@ class Article
     }
     public function setUp() 
     {
-        \$this->option('index', 
-                        array('content' =>
-                            array('content' => 
-                                array('fulltext' => true));
+        \$this->index('content', array('fields' => 'content',
+                                       'type' => 'fulltext'));
     }
 }
 ?>");

@@ -1,13 +1,6 @@
 <?php ?>
-You can add indexes by simple calling Doctrine_Record::option('index', $definition) where $definition is the 
-definition array. The structure of the definition array is as follows:
-<div class='sql'>
-<pre>
-[   indexName1 => [col1 => [col1-options], ... , colN => [colN-options]
-    indexName2 => ...
-    indexNameN => ]
-</pre>
-</div>
+You can add indexes by simple calling Doctrine_Record::index('indexName', $definition) where $definition is the
+definition array.
 <br \><br \>
 An example of adding a simple index to field called 'name':
 <br \><br \>
@@ -21,7 +14,7 @@ class IndexTest extends Doctrine_Record
     }
     public function setUp()
     {
-        \$this->option('index', array('myindex' => 'name'));
+        \$this->index('myindex', array('fields' => 'name');
     }
 }
 ?>");
@@ -40,7 +33,7 @@ class MultiColumnIndexTest extends Doctrine_Record
     }
     public function setUp()
     {
-        \$this->option('index', array('myindex' => array('name', 'code')));
+        \$this->index('myindex', array('fields' => array('name', 'code')));
     }
 }
 ?>");
@@ -60,10 +53,8 @@ class MultipleIndexTest extends Doctrine_Record
     }
     public function setUp()
     {
-        \$this->option('index', 
-                      array('myindex' => array('name', 'code')
-                            'ageindex' => 'age')
-                            );
+        \$this->index('myindex', array('fields' => array('name', 'code')));
+        \$this->index('ageindex', array('fields' => array('age'));
     }
 }
 ?>");
