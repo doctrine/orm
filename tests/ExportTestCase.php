@@ -30,8 +30,10 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export_TestCase extends Doctrine_UnitTestCase {
-    public function testCreateTableThrowsExceptionWithoutValidTableName() {
+class Doctrine_Export_TestCase extends Doctrine_UnitTestCase 
+{
+    public function testCreateTableThrowsExceptionWithoutValidTableName() 
+    {
         try {
             $this->export->createTable(0, array(), array());
 
@@ -40,7 +42,8 @@ class Doctrine_Export_TestCase extends Doctrine_UnitTestCase {
             $this->pass();
         }
     }
-    public function testCreateTableThrowsExceptionWithEmptyFieldsArray() {
+    public function testCreateTableThrowsExceptionWithEmptyFieldsArray() 
+    {
         try {
             $this->export->createTable('sometable', array(), array());
 
@@ -49,29 +52,34 @@ class Doctrine_Export_TestCase extends Doctrine_UnitTestCase {
             $this->pass();
         }
     }
-    public function testDropConstraintExecutesSql() {
+    public function testDropConstraintExecutesSql() 
+    {
         $this->export->dropConstraint('sometable', 'relevancy');
 
         $this->assertEqual($this->adapter->pop(), 'ALTER TABLE sometable DROP CONSTRAINT relevancy_idx');
     }
-    public function testCreateIndexExecutesSql() {
+    public function testCreateIndexExecutesSql() 
+    {
         $this->export->createIndex('sometable', 'relevancy', array('fields' => array('title' => array(), 'content' => array())));
         
         $this->assertEqual($this->adapter->pop(), 'CREATE INDEX relevancy_idx ON sometable (title, content)');
     }
 
-    public function testDropIndexExecutesSql() {
+    public function testDropIndexExecutesSql() 
+    {
         $this->export->dropIndex('sometable', 'relevancy');
         
         $this->assertEqual($this->adapter->pop(), 'DROP INDEX relevancy_idx');
     }
-    public function testDropTableExecutesSql() {
+    public function testDropTableExecutesSql() 
+    {
         $this->export->dropTable('sometable');
         
         $this->assertEqual($this->adapter->pop(), 'DROP TABLE sometable');
     }
-    public function testRecordIsExportedProperly() {
-                                                   	
+    public function testRecordIsExportedProperly() 
+    {
+
     }
 }
 ?>

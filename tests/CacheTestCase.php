@@ -53,7 +53,7 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
 
         $resultSet = array(array('name' => 'John'), array('name' => 'Arnold'));
 
-    	$this->cache->getDriver()->save(md5($query), $resultSet);
+    	$this->cache->getDriver()->save(md5(serialize($query)), $resultSet);
 
         $count = $this->dbh->getAdapter()->count();
 

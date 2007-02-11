@@ -584,5 +584,22 @@ class PackageVersionNotes extends Doctrine_Record {
         $this->hasOne('PackageVersion', 'PackageVersionNotes.package_version_id');
     }
 }
-
+class NestTest extends Doctrine_Record
+{
+    public function setTableDefinition() {
+        $this->hasColumn('name', 'string');
+    }
+    public function setUp()
+    {
+        $this->hasMany('NestTest as Parents', 'NestReference.parent_id');
+        $this->hasMany('NestTest as Children', 'NestReference.child_id');
+    }
+}
+class NestReference extends Doctrine_Record 
+{
+    public function setTableDefinition() {
+        $this->hasColumn('parent_id', 'integer', 4, 'primary');
+        $this->hasColumn('child_id', 'integer', 4, 'primary');
+    }
+}
 ?>

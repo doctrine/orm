@@ -119,7 +119,7 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($this->objTable->getComponentName() == "User");
     } 
     public function testGetTableName() {
-        $this->assertTrue($this->objTable->getTableName() == "entity");
+        $this->assertTrue($this->objTable->tableName == "entity");
     } 
     public function testGetConnection() {
         $this->assertTrue($this->objTable->getConnection() instanceof Doctrine_Connection);
@@ -128,9 +128,9 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($this->objTable->getData() == array());
     }
     public function testSetSequenceName() {
-        $this->objTable->setSequenceName("test-seq");
-        $this->assertEqual($this->objTable->getSequenceName(),"test-seq");
-        $this->objTable->setSequenceName(null);
+        $this->objTable->sequenceName = "test-seq";
+        $this->assertEqual($this->objTable->sequenceName, "test-seq");
+        $this->objTable->sequenceName = null;
     }
     public function testCreate() {
         $record = $this->objTable->create();
