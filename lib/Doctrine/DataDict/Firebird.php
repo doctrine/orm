@@ -21,6 +21,7 @@
 Doctrine::autoload('Doctrine_DataDict');
 /**
  * @package     Doctrine
+ * @subpackage  Doctrine_DataDict
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lorenzo Alberton <l.alberton@quipo.it> (PEAR MDB2 Interbase driver)

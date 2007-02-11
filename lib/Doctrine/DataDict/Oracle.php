@@ -18,8 +18,10 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_DataDict');
 /**
  * @package     Doctrine
+ * @subpackage  Doctrine_DataDict
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @version     $Revision$
@@ -84,6 +86,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
             case 'timestamp':
                 return 'DATE';
             case 'float':
+            case 'double':
                 return 'NUMBER';
             case 'decimal':
                 return 'NUMBER(*,'.$this->conn->options['decimal_places'].')';

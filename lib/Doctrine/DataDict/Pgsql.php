@@ -18,8 +18,10 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_DataDict');
 /**
  * @package     Doctrine
+ * @subpackage  Doctrine_DataDict
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Paul Cooper <pgc@ucecom.com>
@@ -408,6 +410,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
             case 'timestamp':
                 return 'TIMESTAMP without time zone';
             case 'float':
+            case 'double':
                 return 'FLOAT8';
             case 'decimal':
                 $length = !empty($field['length']) ? $field['length'] : 18;
