@@ -87,10 +87,8 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
         // check that value isn't a string
         if (strpos($value, '\'') === false) {
             // parse booleans
-            if ($value == 'true')
-                $value = 1;
-            elseif ($value == 'false')
-                $value = 0;
+            $value = $this->query->getConnection()
+                     ->dataDict->parseBoolean($value);  
 
             $a = explode('.', $value);
 
