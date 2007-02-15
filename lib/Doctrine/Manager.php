@@ -204,7 +204,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $this->index++;
         }
 
-        switch ($adapter->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+        switch ($adapter->getAttribute(Doctrine::ATTR_DRIVER_NAME)) {
             case 'mysql':
                 $this->connections[$name] = new Doctrine_Connection_Mysql($this, $adapter);
                 break;
@@ -250,7 +250,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         if ( ! isset($this->connections[$name])) {
             throw new Doctrine_Manager_Exception('Unknown connection: ' . $name);
         }
-        $this->currIndex = $name;
+
         return $this->connections[$name];
     }
     /**
