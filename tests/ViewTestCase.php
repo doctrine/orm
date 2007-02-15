@@ -38,8 +38,9 @@ class Doctrine_View_TestCase extends Doctrine_UnitTestCase {
         $view = new Doctrine_View($query, 'MyView');
 
         $this->assertEqual($view->getName(), 'MyView');
-        $this->assertEqual($view->getQuery(), $query);
-        $this->assertEqual($view, $query->getView());
+
+        $this->assertTrue($view->getQuery() === $query);
+        $this->assertTrue($view === $query->getView());
         $this->assertTrue($view->getConnection() instanceof Doctrine_Connection);
 
         $success = true;

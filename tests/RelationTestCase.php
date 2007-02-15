@@ -114,7 +114,5 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertTrue($user->getTable()->getRelation('Phonenumber') instanceof Doctrine_Relation_ForeignKey);
         $this->manager->setAttribute(Doctrine::ATTR_CREATE_TABLES, true);
-    }
-
-
+    }   
 }

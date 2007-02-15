@@ -83,7 +83,7 @@ class Doctrine_TreeStructure_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(count($o1->get('Children')) == 2);
 
         $this->assertTrue(isset($o2->Parent));
-        $this->assertTrue($o2->Parent == $o1);
+        $this->assertTrue($o2->Parent === $o1);
 
         $this->assertTrue(count($o4->Children) == 0);
         $this->assertFalse(isset($o4->Parent));

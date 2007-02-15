@@ -44,7 +44,7 @@ class Doctrine_Manager_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_integer(count($this->manager)));
     }
     public function testGetCurrentConnection() {
-        $this->assertEqual($this->manager->getCurrentConnection(), $this->connection);
+        $this->assertTrue($this->manager->getCurrentConnection() === $this->connection);
     }
     public function testGetConnections() {
         $this->assertTrue(is_integer(count($this->manager->getConnections())));
