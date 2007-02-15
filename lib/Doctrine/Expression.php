@@ -272,7 +272,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module
     public function concat($args)
     {
         $cols = $this->getIdentifiers($args);
-        return 'CONCAT(' . join(', ', $cols) . ')';
+        return 'CONCAT(' . join(', ', (array) $cols) . ')';
     }
     /**
      * Returns the SQL for a logical not.
