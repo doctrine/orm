@@ -348,19 +348,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
         return $coll;
     }
     /**
-     * convertBoolean
-     * converts boolean to integers
-     *
-     * @param mixed $item
-     * @return void
-     */
-    public static function convertBoolean(&$item)
-    {
-        if (is_bool($item)) {
-            $item = (int) $item;
-        }
-    }
-    /**
      * setParams
      *
      * @param array $params
@@ -378,9 +365,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD) {
         $this->collections = array();
 
-        $params = array_merge($this->params, $params);
-
-        array_walk($params, array(__CLASS__, 'convertBoolean'));
+        $params = $this->conn->convertBooleans(array_merge($this->params, $params));
 
         if ( ! $this->view) {
             $query = $this->getQuery($params);
