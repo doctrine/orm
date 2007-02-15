@@ -130,7 +130,7 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase {
         $this->conn->exec('DROP TABLE entity');
     }
     public function testGetManager() {
-        $this->assertEqual($this->connection->getManager(),$this->manager);
+        $this->assertTrue($this->connection->getManager() === $this->manager);
     }
     public function testDelete() {
         $user = $this->connection->create('User');

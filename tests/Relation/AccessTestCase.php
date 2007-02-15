@@ -70,7 +70,7 @@ class Doctrine_Relation_Access_TestCase extends Doctrine_UnitTestCase {
 	}
 	
     public function prepareTables() {
-        $this->tables = array("MyUser",
+        $this->tables += array("MyUser",
 							  "MyOneThing",
 							  "MyUserOneThing",
   							  "MyOtherThing",

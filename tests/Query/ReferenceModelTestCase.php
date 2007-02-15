@@ -10,6 +10,8 @@ class Doctrine_Query_ReferenceModel_TestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
         $this->connection->clear();
     }
+    public function prepareData() 
+    { }
 
     public function testInitializeData() {
         $query = new Doctrine_Query($this->connection);

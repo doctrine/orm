@@ -259,6 +259,31 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_index_test_record (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, FULLTEXT INDEX content_idx (content), UNIQUE INDEX namecode_idx (name, code), PRIMARY KEY(id)) ENGINE = MYISAM');
     }
+    public function testExportSupportsForeignKeys()
+    {
+        $r = new MysqlForeignKeyTest;
+        //print $this->adapter->pop();
+        //$this->assertEqual($this->adapter->pop()); 
+    }
+}
+class MysqlForeignKeyTest extends Doctrine_Record
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', null);
+        $this->hasColumn('code', 'integer', 4);
+        $this->hasColumn('content', 'string', 4000);
+        $this->hasColumn('parent_id', 'integer');
+
+        $this->foreignKey(array('local'         => 'id',
+                                'foreign'       => 'parent_id',
+                                'foreignTable'  => 'mysql_foreign_key_test',
+                                'onDelete'      => 'CASCADE')
+                                );
+
+        $this->option('type', 'INNODB');
+
+    }
 }
 class MysqlIndexTestRecord extends Doctrine_Record 
 {
@@ -283,7 +308,7 @@ class MysqlTestRecord extends Doctrine_Record
         $this->hasColumn('name', 'string', null, 'primary');
         $this->hasColumn('code', 'integer', null, 'primary');
 
-        $this->option('engine', 'INNODB');
+        $this->option('type', 'INNODB');
     }
 }
 ?>
