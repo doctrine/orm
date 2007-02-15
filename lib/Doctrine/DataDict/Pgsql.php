@@ -602,4 +602,16 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
         $name = $this->conn->quoteIdentifier($name, true);
         return $name . ' ' . $this->getNativeDeclaration($field) . $default . $notnull;
     }
+    /**
+     * parseBoolean
+     * parses a literal boolean value and returns 
+     * proper sql equivalent
+     *
+     * @param string $value     boolean value to be parsed
+     * @return string           parsed boolean value
+     */
+    public function parseBoolean($value)
+    {
+        return $value;
+    }
 }
