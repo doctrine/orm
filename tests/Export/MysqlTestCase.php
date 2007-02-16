@@ -254,9 +254,9 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, content VARCHAR(4), FULLTEXT INDEX myindex (content DESC), PRIMARY KEY(id)) ENGINE = MYISAM');
     }
     public function testExportSupportsIndexes() 
-    {
+    {     
         $r = new MysqlIndexTestRecord;
-        
+
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_index_test_record (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, FULLTEXT INDEX content_idx (content), UNIQUE INDEX namecode_idx (name, code), PRIMARY KEY(id)) ENGINE = MYISAM');
     }
     public function testExportSupportsForeignKeys()
@@ -293,7 +293,7 @@ class MysqlIndexTestRecord extends Doctrine_Record
         $this->hasColumn('code', 'integer', 4);
         $this->hasColumn('content', 'string', 4000);
 
-        $this->index('content', array('fields' => 'content', 'type' => 'fulltext'));
+        $this->index('content',  array('fields' => 'content', 'type' => 'fulltext'));
         $this->index('namecode', array('fields' => array('name', 'code'),
                                        'type'   => 'unique'));
 
