@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Configurable');
 /**
  * Doctrine_Connection
  *
@@ -481,8 +482,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                . 'VALUES (' . substr(str_repeat('?, ', count($values)), 0, -2) . ')';
 
         // prepare and execute the statement
-        $stmt   = $this->dbh->prepare($query);
-        $stmt->execute(array_values($values));
+        $this->execute($query, array_values($values));
 
         return true;
     }
@@ -684,7 +684,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             }
         } catch(Doctrine_Adapter_Exception $e) {
         } catch(PDOException $e) { }
-
+            print Doctrine_Lib::formatSql($query);
         $this->rethrowException($e);
     }
     /**

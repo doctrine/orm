@@ -775,7 +775,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             if ( ! isset($this->references[$name])) {
                 $this->loadReference($name);
             }
-        } catch(Doctrine_Table_Exception $e) {
+        } catch(Doctrine_Table_Exception $e) { 
+            print $e;
             throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
         }
 
@@ -1527,13 +1528,23 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * index
+     * defines a foreignKey
+     *
+     * @param array $definition         the definition array
+     * @return void
+     */
+    public function foreignKey(array $definition = array())
+    {
+        return $this->_table->addForeignKey($definition);
+    }
+    /**
+     * index
      * defines or retrieves an index
      * if the second parameter is set this method defines an index
      * if not this method retrieves index named $name
      *
      * @param string $name              the name of the index
      * @param array $definition         the definition array
-     * @param array $options            an array of options
      * @return mixed
      */
     public function index($name, array $definition = array())

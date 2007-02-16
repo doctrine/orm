@@ -36,29 +36,11 @@ Doctrine::autoload('Doctrine_Relation');
 class Doctrine_Relation_Association extends Doctrine_Relation
 {
     /**
-     * @var Doctrine_Table $associationTable
-     */
-    protected $associationTable;
-    /**
-     * the constructor
-     * @param Doctrine_Table $table                 foreign factory object
-     * @param Doctrine_Table $associationTable      factory which handles the association
-     * @param string $local                         local field name
-     * @param string $foreign                       foreign field name
-     * @param integer $type                         type of relation
-     * @see Doctrine_Table constants
-     */
-    public function __construct(Doctrine_Table $table, Doctrine_Table $associationTable, $local, $foreign, $type, $alias)
-    {
-        parent::__construct($table, $local, $foreign, $type, $alias);
-        $this->associationTable = $associationTable;
-    }
-    /**
      * @return Doctrine_Table
      */
     public function getAssociationFactory()
     {
-        return $this->associationTable;
+        return $this->definition['assocTable'];
     }
     /**
      * processDiff
@@ -106,23 +88,26 @@ class Doctrine_Relation_Association extends Doctrine_Relation
      */
     public function getRelationDql($count, $context = 'record')
     {
+    	$component = $this->definition['assocTable']->getComponentName();
         switch ($context) {
             case "record":
-                $sub    = 'SQL:SELECT ' . $this->foreign.
-                          ' FROM '  . $this->associationTable->getTableName().
-                          ' WHERE ' . $this->local.
+                $sub    = 'SQL:SELECT ' . $this->definition['foreign'].
+                          ' FROM '  . $this->definition['assocTable']->getTableName().
+                          ' WHERE ' . $this->definition['local'] .
                           ' IN ('   . substr(str_repeat("?, ", $count),0,-2) .
                           ')';
 
-                $dql  = "FROM ".$this->table->getComponentName();
-                $dql .= ".".$this->associationTable->getComponentName();
-                $dql .= " WHERE ".$this->table->getComponentName().".".$this->table->getIdentifier()." IN ($sub)";
+                $dql  = 'FROM ' . $this->definition['table']->getComponentName();
+                $dql .= '.' . $component;
+                $dql .= ' WHERE ' . $this->definition['table']->getComponentName() 
+                      . '.' . $this->definition['table']->getIdentifier() . ' IN (' . $sub . ')';
                 break;
             case "collection":
                 $sub  = substr(str_repeat("?, ", $count),0,-2);
-                $dql  = "FROM ".$this->associationTable->getComponentName().".".$this->table->getComponentName();
-                $dql .= " WHERE ".$this->associationTable->getComponentName().".".$this->local." IN ($sub)";
-        };
+                $dql  = 'FROM ' . $component . '.' . $this->definition['table']->getComponentName();
+                $dql .= ' WHERE ' . $component . '.' . $this->definition['local'] . ' IN (' . $sub . ')';
+                break;
+        }
 
         return $dql;
     }
@@ -138,7 +123,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     {
         $id      = $record->getIncremented();
         if (empty($id)) {
-            $coll = new Doctrine_Collection($this->table);
+            $coll = new Doctrine_Collection($this->definition['table']);
         } else {
             $coll = Doctrine_Query::create()->parseQuery($this->getRelationDql(1))->execute(array($id));
         }

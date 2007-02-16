@@ -261,7 +261,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return void
      */
-    public function setReference(Doctrine_Record $record,Doctrine_Relation $relation)
+    public function setReference(Doctrine_Record $record, Doctrine_Relation $relation)
     {
         $this->reference       = $record;
         $this->relation        = $relation;
@@ -607,30 +607,27 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     $list[] = $value;
                 }
             };
-            $query->from($this->table->getComponentName()."(".implode(", ",$this->table->getPrimaryKeys()).")");
-            $query->where($this->table->getComponentName().".id IN (".substr(str_repeat("?, ", count($list)),0,-2).")");
+            $query->from($this->table->getComponentName() . '(' . implode(", ",$this->table->getPrimaryKeys()) . ')');
+            $query->where($this->table->getComponentName() . '.id IN (' . substr(str_repeat("?, ", count($list)),0,-2) . ')');
 
             return $query;
         }
 
         $rel     = $this->table->getRelation($name);
-        $table   = $rel->getTable();
-        $foreign = $rel->getForeign();
-        $local   = $rel->getLocal();
 
         if ($rel instanceof Doctrine_Relation_LocalKey || $rel instanceof Doctrine_Relation_ForeignKey) {
             foreach ($this->data as $record) {
-                $list[] = $record[$local];
-            };
+                $list[] = $record[$rel->getLocal()];
+            }
         } else {
             foreach ($this->data as $record) {
                 $value = $record->getIncremented();
                 if ($value !== null) {
                     $list[] = $value;
                 }
-            };
+            }
         }
-        $this->table->getRelation($name);
+
         $dql     = $rel->getRelationDql(count($list), 'collection');
 
         $coll    = $query->query($dql, $list);

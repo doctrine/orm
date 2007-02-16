@@ -42,24 +42,31 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
     {
         switch ($context) {
             case 'record':
-                $sub    = 'SELECT '.$this->foreign.
-                          ' FROM '.$this->associationTable->getTableName().
-                          ' WHERE '.$this->local.
-                          ' = ?';
-                $sub2   = 'SELECT '.$this->local.
-                          ' FROM '.$this->associationTable->getTableName().
-                          ' WHERE '.$this->foreign.
-                          ' = ?';
+                $sub    = 'SELECT '.$this->definition['foreign'] 
+                        . ' FROM '.$this->definition['assocTable']->getTableName()
+                        . ' WHERE '.$this->definition['local']
+                        . ' = ?';
 
-                $dql  = 'FROM ' . $this->table->getComponentName();
-                $dql .= '.' . $this->associationTable->getComponentName();
-                $dql .= ' WHERE ' . $this->table->getComponentName() . '.' . $this->table->getIdentifier() . ' IN (' . $sub . ')';
-                $dql .= ' || ' . $this->table->getComponentName() . '.' . $this->table->getIdentifier() . ' IN (' . $sub2 . ')';
+                $sub2   = 'SELECT '.$this->definition['local']
+                        . ' FROM '.$this->definition['assocTable']->getTableName()
+                        . ' WHERE '.$this->definition['foreign']
+                        . ' = ?';
+
+                $dql  = 'FROM ' . $this->definition['table']->getComponentName()
+                      . '.' . $this->definition['assocTable']->getComponentName()
+                      . ' WHERE ' . $this->definition['table']->getComponentName()
+                      . '.' . $this->definition['table']->getIdentifier() 
+                      . ' IN (' . $sub . ')'
+                      . ' || ' . $this->definition['table']->getComponentName() 
+                      . '.' . $this->definition['table']->getIdentifier() 
+                      . ' IN (' . $sub2 . ')';
                 break;
             case 'collection':
                 $sub  = substr(str_repeat('?, ', $count),0,-2);
-                $dql  = 'FROM '.$this->associationTable->getComponentName().'.'.$this->table->getComponentName();
-                $dql .= ' WHERE '.$this->associationTable->getComponentName().'.'.$this->local.' IN ('.$sub.')';
+                $dql  = 'FROM '.$this->definition['assocTable']->getComponentName() 
+                      . '.' . $this->definition['table']->getComponentName()
+                      . ' WHERE '.$this->definition['assocTable']->getComponentName() 
+                      . '.' . $this->definition['local'] . ' IN (' . $sub . ')';
         };
 
         return $dql;

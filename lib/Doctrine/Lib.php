@@ -54,7 +54,7 @@ class Doctrine_Lib
             case Doctrine_Record::STATE_TCLEAN:
                 return "transient clean";
                 break;
-        };
+        }
     }
     /**
      * returns a string representation of Doctrine_Record object
@@ -89,7 +89,7 @@ class Doctrine_Lib
             case Doctrine_Transaction::STATE_ACTIVE:
                 return "active";
                 break;
-        };
+        }
     }
     /**
      * returns a string representation of Doctrine_Connection object
@@ -98,28 +98,12 @@ class Doctrine_Lib
      */
     public static function getConnectionAsString(Doctrine_Connection $connection)
     {
-        $r[] = "<pre>";
-        $r[] = "Doctrine_Connection object";
-        $r[] = "State               : ".Doctrine_Lib::getConnectionStateAsString($connection->getTransaction()->getState());
-        $r[] = "Open Transactions   : ".$connection->getTransaction()->getTransactionLevel();
-        $r[] = "Table in memory     : ".$connection->count();
-
-        $queries = false;
-        if ($connection->getDBH() instanceof Doctrine_Db) {
-            $handler = "Doctrine Database Handler";
-            $queries = count($connection->getDBH()->getQueries());
-            $sum     = array_sum($connection->getDBH()->getExecTimes());
-        } elseif ($connection->getDBH() instanceof PDO) {
-            $handler = "PHP Native PDO Driver";
-        } else {
-            $handler = "Unknown Database Handler";
-        }
-
-        $r[] = "DB Handler          : ".$handler;
-        if ($queries) {
-            $r[] = "Executed Queries    : ".$queries;
-            $r[] = "Sum of Exec Times   : ".$sum;
-        }
+        $r[] = '<pre>';
+        $r[] = 'Doctrine_Connection object';
+        $r[] = 'State               : ' . Doctrine_Lib::getConnectionStateAsString($connection->transaction->getState());
+        $r[] = 'Open Transactions   : ' . $connection->transaction->getTransactionLevel();
+        $r[] = 'Table in memory     : ' . $connection->count();
+        $r[] = 'Driver name         : ' . $connection->getDbh()->getAttribute(Doctrine::ATTR_DRIVER_NAME);
 
         $r[] = "</pre>";
         return implode("\n",$r)."<br>";

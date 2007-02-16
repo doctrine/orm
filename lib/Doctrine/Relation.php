@@ -53,41 +53,66 @@ abstract class Doctrine_Relation
      */
     const MANY_COMPOSITE        = 3;
 
+    const ONE   = 0;
+    const MANY  = 1;
+    
+    protected $definition = array('alias'   => true,
+                                  'foreign' => true,
+                                  'local'   => true,
+                                  'table'   => true,
+                                  );
     /**
-     * @var Doctrine_Table $table   foreign factory
+     * constructor
+     *
+     * @param array $definition         an associative array with the following structure:
+     *          name                    related class name
+     *
+     *          local                   the local field(s)
+     *
+     *          foreign                 the foreign reference field(s)
+     *
+     *          table                   the foreign table object
+     *
+     *          assocTable              the association table object (if any)
+     *
+     *          onDelete                referential delete action
+     *  
+     *          onUpdate                referential update action
+     *
+     *          deferred                deferred constraint checking 
+     *
+     *          alias                   relation alias
+     *
+     *          type                    the relation type, either Doctrine_Relation::ONE or Doctrine_Relation::MANY
+     *
+     * The onDelete and onUpdate keys accept the following values:
+     *
+     * CASCADE: Delete or update the row from the parent table and automatically delete or 
+     *          update the matching rows in the child table. Both ON DELETE CASCADE and ON UPDATE CASCADE are supported.
+     *          Between two tables, you should not define several ON UPDATE CASCADE clauses that act on the same column
+     *          in the parent table or in the child table.
+     *
+     * SET NULL: Delete or update the row from the parent table and set the foreign key column or columns in the
+     *          child table to NULL. This is valid only if the foreign key columns do not have the NOT NULL qualifier 
+     *          specified. Both ON DELETE SET NULL and ON UPDATE SET NULL clauses are supported.
+     *
+     * NO ACTION: In standard SQL, NO ACTION means no action in the sense that an attempt to delete or update a primary 
+     *           key value is not allowed to proceed if there is a related foreign key value in the referenced table.
+     *
+     * RESTRICT: Rejects the delete or update operation for the parent table. NO ACTION and RESTRICT are the same as
+     *           omitting the ON DELETE or ON UPDATE clause.
+     *
+     * SET DEFAULT
      */
-    protected $table;
-    /**
-     * @var string $local           local field
-     */
-    protected $local;
-    /**
-     * @var string $foreign         foreign field
-     */
-    protected $foreign;
-    /**
-     * @var integer $type           bind type
-     */
-    protected $type;
-    /**
-     * @var string $alias           relation alias
-     */
-    protected $alias;
-
-    /**
-     * @param Doctrine_Table $table
-     * @param string $local
-     * @param string $foreign
-     * @param integer $type
-     * @param string $alias
-     */
-    public function __construct(Doctrine_Table $table, $local, $foreign, $type, $alias)
+    public function __construct(array $definition)
     {
-        $this->table    = $table;
-        $this->local    = $local;
-        $this->foreign  = $foreign;
-        $this->type     = $type;
-        $this->alias    = $alias;
+    	foreach (array_keys($this->definition) as $key) {
+            if ( ! isset($definition[$key])) {
+                throw new Doctrine_Exception($key . ' is required!');
+            }
+        }
+
+        $this->definition = $definition;
     }
     /**
      * getAlias
@@ -97,7 +122,7 @@ abstract class Doctrine_Relation
      */
     final public function getAlias()
     {
-        return $this->alias;
+        return $this->definition['alias'];
     }
     /**
      * getType
@@ -108,7 +133,7 @@ abstract class Doctrine_Relation
      */
     final public function getType()
     {
-        return $this->type;
+        return $this->definition['type'];
     }
     /**
      * getTable
@@ -118,7 +143,7 @@ abstract class Doctrine_Relation
      */
     final public function getTable()
     {
-        return $this->table;
+        return $this->definition['table'];
     }
     /**
      * getLocal
@@ -128,7 +153,7 @@ abstract class Doctrine_Relation
      */
     final public function getLocal()
     {
-        return $this->local;
+        return $this->definition['local'];
     }
     /**
      * getForeign
@@ -139,7 +164,7 @@ abstract class Doctrine_Relation
      */
     final public function getForeign()
     {
-        return $this->foreign;
+        return $this->definition['foreign'];
     }
     /**
      * isComposite
@@ -149,8 +174,8 @@ abstract class Doctrine_Relation
      */
     final public function isComposite()
     {
-        return ($this->type == Doctrine_Relation::ONE_COMPOSITE ||
-                $this->type == Doctrine_Relation::MANY_COMPOSITE);
+        return ($this->definition['type'] == Doctrine_Relation::ONE_COMPOSITE ||
+                $this->definition['type'] == Doctrine_Relation::MANY_COMPOSITE);
     }
     /**
      * isOneToOne
@@ -160,8 +185,8 @@ abstract class Doctrine_Relation
      */
     final public function isOneToOne()
     {
-        return ($this->type == Doctrine_Relation::ONE_AGGREGATE ||
-                $this->type == Doctrine_Relation::ONE_COMPOSITE);
+        return ($this->definition['type'] == Doctrine_Relation::ONE_AGGREGATE ||
+                $this->definition['type'] == Doctrine_Relation::ONE_COMPOSITE);
     }
     /**
      * getRelationDql
@@ -171,8 +196,10 @@ abstract class Doctrine_Relation
      */
     public function getRelationDql($count)
     {
-        $dql  = 'FROM ' . $this->table->getComponentName()
-              . ' WHERE ' . $this->table->getComponentName() . '.' . $this->foreign
+    	$component = $this->definition['table']->getComponentName();
+
+        $dql  = 'FROM ' . $component
+              . ' WHERE ' . $component . '.' . $this->definition['foreign']
               . ' IN (' . substr(str_repeat('?, ', $count), 0, -2) . ')';
 
         return $dql;
@@ -278,12 +305,12 @@ abstract class Doctrine_Relation
     public function __toString()
     {
         $r[] = "<pre>";
-        $r[] = "Class       : ".get_class($this);
-        $r[] = "Component   : ".$this->table->getComponentName();
-        $r[] = "Table       : ".$this->table->getTableName();
-        $r[] = "Local key   : ".$this->local;
-        $r[] = "Foreign key : ".$this->foreign;
-        $r[] = "Type        : ".$this->type;
+        foreach ($this->definition as $k => $v) {
+            if(is_object($v)) {
+                $v = 'Object(' . get_class($v) . ')';
+            }
+            $r[] = $k . ' : ' . $v;
+        }
         $r[] = "</pre>";
         return implode("\n", $r);
     }

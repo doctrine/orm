@@ -37,6 +37,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
      * processDiff
      *
      * @param Doctrine_Record $record
+     * @return void
      */
     public function processDiff(Doctrine_Record $record)
     {
@@ -75,29 +76,29 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
      */
     public function fetchRelatedFor(Doctrine_Record $record)
     {
-        $id = $record->get($this->local);
+        $id = $record->get($this->definition['local']);
 
         if ($this->isOneToOne()) {
             if (empty($id)) {
-                $related = $this->table->create();
+                $related = $this->definition['table']->create();
             } else {
-                $dql  = 'FROM ' . $this->table->getComponentName()
-                      . ' WHERE ' . $this->table->getComponentName()
-                      . '.' . $this->foreign . ' = ?';
+                $dql  = 'FROM ' . $this->definition['table']->getComponentName()
+                      . ' WHERE ' . $this->definition['table']->getComponentName()
+                      . '.' . $this->definition['foreign'] . ' = ?';
 
-                $coll = $this->table->getConnection()->query($dql, array($id));
+                $coll = $this->definition['table']->getConnection()->query($dql, array($id));
                 $related = $coll[0];
             }
 
-            $related->set($this->foreign, $record, false);
+            $related->set($this->definition['foreign'], $record, false);
 
         } else {    
 
             if (empty($id)) {
-                $related = new Doctrine_Collection($this->table);
+                $related = new Doctrine_Collection($this->definition['table']);
             } else {
                 $query      = $this->getRelationDql(1);
-                $related    = $this->table->getConnection()->query($query, array($id));
+                $related    = $this->definition['table']->getConnection()->query($query, array($id));
             }
             $related->setReference($record, $this);
         }

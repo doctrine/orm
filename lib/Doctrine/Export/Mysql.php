@@ -86,7 +86,6 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      *                              'comment' => 'Foo',
      *                              'charset' => 'utf8',
      *                              'collate' => 'utf8_unicode_ci',
-     *                              'collate' => 'utf8_unicode_ci',
      *                              'type'    => 'innodb',
      *                          );
      *
@@ -106,6 +105,13 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
             }
         }
+
+        if (isset($options['foreignKeys']) && ! empty($options['foreignKeys'])) {
+            foreach($options['foreignKeys'] as $definition) {
+                $queryFields .= ', ' . $this->getForeignKeyDeclaration($definition);
+            }
+        }
+
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
         }
@@ -333,13 +339,17 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($sequenceName), true);
         $seqcolName     = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
 
-        $query  = 'CREATE TABLE ' . $sequenceName
-                . ' (' . $seqcolName . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
-                . $seqcolName . '))'
-                . strlen($this->conn->default_table_type) ? ' TYPE = '
-                . $this->conn->default_table_type : '';
-
-        $res    = $this->conn->exec($query);
+        try {
+            $query  = 'CREATE TABLE ' . $sequenceName
+                    . ' (' . $seqcolName . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
+                    . $seqcolName . '))'
+                    . strlen($this->conn->default_table_type) ? ' TYPE = '
+                    . $this->conn->default_table_type : '';
+    
+            $res    = $this->conn->exec($query);
+        } catch(Doctrine_Connection_Exception $e) {
+            throw new Doctrine_Export_Exception('could not create sequence table');
+        }
 
         if ($start == 1)
             return true;
@@ -352,11 +362,11 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         // Handle error
         try {
             $result = $this->conn->exec('DROP TABLE ' . $sequenceName);
-        } catch(Exception $e) {
+        } catch(Doctrine_Connection_Exception $e) {
             throw new Doctrine_Export_Exception('could not drop inconsistent sequence table');
         }
 
-        throw new Doctrine_Export_Exception('could not create sequence table');
+
     }
     /**
      * Get the stucture of a field into an array
@@ -462,8 +472,11 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             }
         }
         
-        if ( ! isset($definition['fields']) || ! is_array($definition['fields'])) {
+        if ( ! isset($definition['fields'])) {
             throw new Doctrine_Export_Exception('No index columns given.');
+        }
+        if ( ! is_array($definition['fields'])) {
+            $definition['fields'] = array($definition['fields']);
         }
 
         $query = $type . 'INDEX ' . $name;

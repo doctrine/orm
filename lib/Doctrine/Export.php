@@ -615,7 +615,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * The onDelete and onUpdate keys accept the following values:
      *
      * CASCADE: Delete or update the row from the parent table and automatically delete or 
-     *          update the matching rows in the child table. Both ON DELETE CASCADE and ON UPDATE CASCADE are supported. 
+     *          update the matching rows in the child table. Both ON DELETE CASCADE and ON UPDATE CASCADE are supported.
      *          Between two tables, you should not define several ON UPDATE CASCADE clauses that act on the same column
      *          in the parent table or in the child table.
      *
@@ -624,7 +624,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *          specified. Both ON DELETE SET NULL and ON UPDATE SET NULL clauses are supported.
      *
      * NO ACTION: In standard SQL, NO ACTION means no action in the sense that an attempt to delete or update a primary 
-     *           key value is not allowed to proceed if there is a related foreign key value in the referenced table. 
+     *           key value is not allowed to proceed if there is a related foreign key value in the referenced table.
      *
      * RESTRICT: Rejects the delete or update operation for the parent table. NO ACTION and RESTRICT are the same as
      *           omitting the ON DELETE or ON UPDATE clause.
@@ -634,9 +634,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * @return string  DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
      *                 of a field declaration.
      */
-    public function getForeignKeyDeclaration($definition)
+    public function getForeignKeyDeclaration(array $definition)
     {
-        $sql  = $this->getForeignKeyBaseDeclaration();
+        $sql  = $this->getForeignKeyBaseDeclaration($definition);
         
         if (isset($definition['deferred'])) {
             $sql .= ' ' . $this->getForeignKeyDeferredDeclaration();
@@ -673,15 +673,19 @@ class Doctrine_Export extends Doctrine_Connection_Module
     }
     /**
      * getForeignKeyBaseDeclaration
+     * Obtain DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
+     * of a field declaration to be used in statements like CREATE TABLE.
      *
+     * @param array $definition
      * @return string
      */
-    public function getForeignKeyBaseDeclaration()
+    public function getForeignKeyBaseDeclaration(array $definition)
     {
     	$sql = '';
         if (isset($definition['name'])) {
-            $sql .= 'CONSTRAINT ' . $definition['name'];
+            $sql .= 'CONSTRAINT ' . $definition['name'] . ' ';
         }
+        $sql .= 'FOREIGN KEY ';
         if ( ! isset($definition['local'])) {
             throw new Doctrine_Export_Exception('Local reference field missing from definition.');
         }

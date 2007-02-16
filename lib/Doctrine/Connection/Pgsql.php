@@ -90,6 +90,20 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
         $this->exec($query);
     }
     /**
+     * convertBoolean
+     * some drivers need the boolean values to be converted into integers
+     * when using DQL API
+     *
+     * This method takes care of that conversion
+     *
+     * @param array $item
+     * @return void
+     */
+    public function convertBooleans(array $items)
+    {
+        return $items;
+    }
+    /**
      * Changes a query string for various DBMS specific reasons
      *
      * @param string $query         query to modify

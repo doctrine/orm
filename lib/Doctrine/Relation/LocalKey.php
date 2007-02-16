@@ -58,17 +58,17 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation
      */
     public function fetchRelatedFor(Doctrine_Record $record)
     {
-        $id      = $record->get($this->local);
+        $id = $record->get($this->definition['local']);
 
         if (empty($id)) {
-            $related = $this->table->create();
+            $related = $this->definition['table']->create();
         } else {
-            if ( ! ($related = $this->table->find($id))) {
-                $related = $this->table->create();
+            if ( ! ($related = $this->definition['table']->find($id))) {
+                $related = $this->definition['table']->create();
             }
         }
 
-        $record->set($this->local, $related, false);
+        $record->set($this->definition['local'], $related, false);
 
         return $related;
     }
