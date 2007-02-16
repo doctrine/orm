@@ -42,7 +42,7 @@ class Doctrine_Sequence_Firebird extends Doctrine_Sequence
      */
     public function nextID($seqName, $onDemand = true)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
 
         $query = 'SELECT GEN_ID(' . $sequenceName . ', 1) as the_value FROM RDB$DATABASE';
         try {
@@ -88,7 +88,7 @@ class Doctrine_Sequence_Firebird extends Doctrine_Sequence
      */
     public function currId($seqName)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         
 
         $query = 'SELECT GEN_ID(' . $sequenceName . ', 0) as the_value FROM RDB$DATABASE';
