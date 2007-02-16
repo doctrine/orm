@@ -47,7 +47,7 @@ class Doctrine_Sequence_Firebird extends Doctrine_Sequence
         $query = 'SELECT GEN_ID(' . $sequenceName . ', 1) as the_value FROM RDB$DATABASE';
         try {
         
-            $result = $this->conn->fetchOne($query, 'integer');
+            $result = $this->conn->fetchOne($query);
 
         } catch(Doctrine_Connection_Exception $e) {
             if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
