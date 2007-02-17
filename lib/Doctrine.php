@@ -454,6 +454,33 @@ final class Doctrine
         return true;
     }
     /**
+     * dump
+     *
+     * dumps a given variable
+     *
+     * @param mixed $var        a variable of any type
+     * @return void|string
+     */
+    public static function dump($var) 
+    {
+    	$ret = array();
+        switch (gettype($var)) {
+            case 'array':
+                $ret[] = 'Array(';
+                foreach ($var as $k => $v) {
+                    $ret[] = $k . ' : ' . Doctrine::dump($v);
+                }
+                $ret[] = ')';
+                break;
+            case 'object';
+                $ret[] = 'Object(' . get_class($var) . ')';
+                break;
+            default:
+                $ret[] = var_export($var, true);
+        }
+        return implode("\n", $ret);
+    }
+    /**
      * returns table name from class name
      *
      * @param string $classname
