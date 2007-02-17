@@ -131,11 +131,15 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
         $columns     = array();
         foreach ($result as $key => $val) {
             $description = array(
-                    'name'    => $val['name'],
-                    'type'    => $val['type'],
-                    'notnull' => (bool) $val['notnull'],
-                    'default' => $val['dflt_value'],
-                    'primary' => (bool) $val['pk'],
+                    'name'      => $val['name'],
+                    'type'      => $val['type'],
+                    'notnull'   => (bool) $val['notnull'],
+                    'default'   => $val['dflt_value'],
+                    'primary'   => (bool) $val['pk'],
+                    'length'    => null,
+                    'scale'     => null,
+                    'precision' => null,
+                    'unsigned'  => null, 
                     );
             $columns[$val['name']] = $description;
         }
