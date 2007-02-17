@@ -56,16 +56,22 @@ abstract class Doctrine_Relation
     const ONE   = 0;
     const MANY  = 1;
     
-    protected $definition = array('alias'   => true,
-                                  'foreign' => true,
-                                  'local'   => true,
-                                  'table'   => true,
+    protected $definition = array('alias'       => true,
+                                  'foreign'     => true,
+                                  'local'       => true,
+                                  'class'       => true,
+                                  'type'        => true,
+                                  'name'        => false,
+                                  'assocTable'  => false,
+                                  'onDelete'    => false,
+                                  'onUpdate'    => false,
+                                  'deferred'    => false,
                                   );
     /**
      * constructor
      *
      * @param array $definition         an associative array with the following structure:
-     *          name                    related class name
+     *          name                    foreign key constraint name
      *
      *          local                   the local field(s)
      *
@@ -106,13 +112,26 @@ abstract class Doctrine_Relation
      */
     public function __construct(array $definition)
     {
-    	foreach (array_keys($this->definition) as $key) {
-            if ( ! isset($definition[$key])) {
+    	$def = array();
+    	foreach ($this->definition as $key => $val) {
+            if ( ! isset($definition[$key]) && $val) {
                 throw new Doctrine_Exception($key . ' is required!');
+            }
+            if (isset($definition[$key])) {
+                $def[$key] = $definition[$key];
             }
         }
 
-        $this->definition = $definition;
+        $this->definition = $def;
+    }
+    /** 
+     * toArray
+     *
+     * @return array
+     */
+    public function toArray() 
+    {
+        return $this->definition;
     }
     /**
      * getAlias
@@ -143,7 +162,7 @@ abstract class Doctrine_Relation
      */
     final public function getTable()
     {
-        return $this->definition['table'];
+        return Doctrine_Manager::connection()->getTable($this->definition['class']);
     }
     /**
      * getLocal
@@ -196,7 +215,7 @@ abstract class Doctrine_Relation
      */
     public function getRelationDql($count)
     {
-    	$component = $this->definition['table']->getComponentName();
+    	$component = $this->getTable()->getComponentName();
 
         $dql  = 'FROM ' . $component
               . ' WHERE ' . $component . '.' . $this->definition['foreign']

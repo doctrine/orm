@@ -109,6 +109,7 @@ class Doctrine_Validator
             if ($record->getTable()->getAttribute(Doctrine::ATTR_AUTO_LENGTH_VLD)) {
                 if (!$this->validateLength($column, $key, $value)) {
                     $errorStack->add($key, 'length');
+
                     continue;
                 }
             }

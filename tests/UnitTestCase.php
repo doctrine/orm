@@ -85,6 +85,8 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
         try {
             $this->conn = $this->connection = $this->manager->getConnection($this->driverName);
+            $this->manager->setCurrentConnection($this->driverName);
+
             $this->connection->evictTables();
             $this->dbh      = $this->adapter = $this->connection->getDbh();
             $this->listener = $this->manager->getAttribute(Doctrine::ATTR_LISTENER);
@@ -110,7 +112,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->listener = new Doctrine_EventListener_Debugger();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
-        if($this->driverName !== 'main') {
+        if ($this->driverName !== 'main') {
             $this->export       = $this->connection->export;
             $this->transaction  = $this->connection->transaction;
             $this->dataDict     = $this->connection->dataDict;
@@ -121,9 +123,11 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->unitOfWork = $this->connection->unitOfWork;
         $this->connection->setListener(new Doctrine_EventListener());
         $this->query = new Doctrine_Query($this->connection);
-        $this->prepareTables();
-        $this->prepareData();
 
+        if ($this->driverName === 'main') {
+            $this->prepareTables();
+            $this->prepareData();
+        }
         $this->valueHolder = new Doctrine_ValueHolder($this->connection->getTable('User'));
 
     }
@@ -208,9 +212,12 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     }
     public function assertDeclarationType($type, $type2) {
         $dec = $this->getDeclaration($type);
-        if( ! is_array($type2))
+        
+        if ( ! is_array($type2)) {
             $type2 = array($type2);
-        $this->assertEqual($dec[0], $type2);
+        }
+
+        $this->assertEqual($dec['type'], $type2);
     }
     public function getDeclaration($type) {
         return $this->dataDict->getPortableDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 1, 'fixed' => true));

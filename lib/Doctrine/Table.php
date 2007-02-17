@@ -172,7 +172,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @throws Doctrine_Table_Exception         if there is already an instance of this table
      * @return void
      */
-    public function __construct($name, Doctrine_Connection $conn)
+    public function __construct($name, Doctrine_Connection $conn, $allowExport)
     {
         $this->conn = $conn;
 
@@ -303,8 +303,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $record->setUp();
 
         // if tree, set up tree
-        if($this->isTree())
+        if ($this->isTree()) {
             $this->getTree()->setUp();
+        }
 
         // save parents
         array_pop($names);
@@ -312,10 +313,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         $this->query     = 'SELECT ' . implode(', ', array_keys($this->columns)) . ' FROM ' . $this->getTableName();
 
-        // check if an instance of this table is already initialized
-        if ( ! $this->conn->addTable($this)) {
-            throw new Doctrine_Table_Exception();
-        }
+
         $this->repository = new Doctrine_Table_Repository($this);
     }
     /**
@@ -360,6 +358,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     $primary[] = $name;
                 }
             }
+            /**
+            foreach ($this->getRelations() as $name => $relation) {
+                $fk = $relation->toArray();
+                $fk['foreignTable'] = $relation->getTable()->getTableName();
+
+                $options['foreignKeys'][] = $fk;
+            }  */
+
             $options['primary'] = $primary;
 
             $this->conn->export->createTable($this->options['tableName'], $columns, array_merge($this->options, $options));
@@ -675,15 +681,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function getBoundForName($name, $component)
     {
-
         foreach ($this->bound as $k => $bound) {
             $e = explode('.', $bound['field']);
 
-            if ($bound['name'] == $name && $e[0] == $component) {
+            if ($bound['class'] == $name && $e[0] == $component) {
                 return $this->bound[$k];
             }
         }
-        throw new Doctrine_Table_Exception('Unknown bound '.$name);
+        throw new Doctrine_Table_Exception('Unknown bound ' . $name);
     }
     /**
      * returns the alias for given component name
@@ -751,7 +756,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @param string $field
      * @return void
      */
-    public function bind($name, $field, $type, $local = null, $options = array())
+    public function bind($name, $field, $type, $options = null)
     {
         if (isset($this->relations[$name])) {
             unset($this->relations[$name]);
@@ -775,10 +780,18 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         $this->bound[$alias] = array('field'    => $field,
                                      'type'     => $type,
-                                     'local'    => $local,
-                                     'name'     => $name,
-                                     'options'  => $options,
+                                     'class'    => $name,
                                      'alias'    => $alias);
+        if ($options !== null) {
+            $opt = array();
+            if (is_string($options)) {
+                $opt['local'] = $options;
+            } else {
+                $opt = (array) $options;
+            }
+
+            $this->bound[$alias] = array_merge($this->bound[$alias], $opt);
+        }
     }
     /**
      * @return Doctrine_Connection
@@ -829,7 +842,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             list($component, $definition['foreign']) = explode('.', $definition['field']);
             unset($definition['field']);
 
-            $definition['table'] = $this->conn->getTable($definition['name']);
+            $definition['table'] = $this->conn->getTable($definition['class'], false);
 
             if ($component == $this->options['name'] || in_array($component, $this->options['parents'])) {
 
@@ -850,14 +863,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
                     if ( ! isset($definition['local'])) {
                         $tmp = $definition['table']->getIdentifier();
+                        
+                        $definition['local'] = $tmp;
                     }
-                    $definition['local']   = $tmp;
-                    //$definition['foreign'] = $tmp;
+
+                    //$definition['foreign'] = $tmp;  
 
                     $relation = new Doctrine_Relation_ForeignKey($definition);
                 }
 
-            } elseif ($component == $definition['name'] ||
+            } elseif ($component == $definition['class'] ||
                      ($component == $definition['alias'])) {     //  && ($name == $this->options['name'] || in_array($name,$this->parents))
 
                 if ( ! isset($defintion['local'])) {
@@ -874,7 +889,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     throw new Doctrine_Table_Exception("Only aggregate relations are allowed for many-to-many relations");
                 }
 
-                $classes = array_merge($this->parents, array($this->options['name']));
+                $classes = array_merge($this->options['parents'], array($this->options['name']));
 
                 foreach (array_reverse($classes) as $class) {
                     try {
@@ -895,7 +910,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 if ($e2[0] != $component) {
                     throw new Doctrine_Table_Exception($e2[0] . ' doesn\'t match ' . $component);
                 }
-                $associationTable = $this->conn->getTable($e2[0]);
+                $associationTable = $this->conn->getTable($e2[0], false);
 
                 if (count($fields) > 1) {
                     // SELF-REFERENCING THROUGH JOIN TABLE
@@ -904,6 +919,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     $def['local']   = $this->identifier;
                     $def['foreign'] = $fields[0];
                     $def['alias']   = $e2[0];
+                    $def['class']   = $e2[0];
                     $def['type']    = Doctrine_Relation::MANY_COMPOSITE;
 
                     $this->relations[$e2[0]] = new Doctrine_Relation_ForeignKey($def);
@@ -933,6 +949,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                         $def['foreign'] = $e2[1];
                         $def['local']   = $definition['local'];
                         $def['alias']   = $e2[0];
+                        $def['class']   = $e2[0];
                         $def['type']    = Doctrine_Relation::MANY_COMPOSITE;
                         $this->relations[$e2[0]] = new Doctrine_Relation_ForeignKey($def);
     
@@ -966,7 +983,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     final public function getRelations()
     {
         $a = array();
-        foreach ($this->bound as $k=>$v) {
+        foreach ($this->bound as $k => $v) {
             $this->getRelation($k);
         }
 

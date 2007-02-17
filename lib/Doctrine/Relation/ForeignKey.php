@@ -80,13 +80,13 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
 
         if ($this->isOneToOne()) {
             if (empty($id)) {
-                $related = $this->definition['table']->create();
+                $related = $this->getTable()->create();
             } else {
-                $dql  = 'FROM ' . $this->definition['table']->getComponentName()
-                      . ' WHERE ' . $this->definition['table']->getComponentName()
+                $dql  = 'FROM ' . $this->getTable()->getComponentName()
+                      . ' WHERE ' . $this->getTable()->getComponentName()
                       . '.' . $this->definition['foreign'] . ' = ?';
 
-                $coll = $this->definition['table']->getConnection()->query($dql, array($id));
+                $coll = $this->getTable()->getConnection()->query($dql, array($id));
                 $related = $coll[0];
             }
 
@@ -95,10 +95,10 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
         } else {    
 
             if (empty($id)) {
-                $related = new Doctrine_Collection($this->definition['table']);
+                $related = new Doctrine_Collection($this->getTable());
             } else {
                 $query      = $this->getRelationDql(1);
-                $related    = $this->definition['table']->getConnection()->query($query, array($id));
+                $related    = $this->getTable()->getConnection()->query($query, array($id));
             }
             $related->setReference($record, $this);
         }

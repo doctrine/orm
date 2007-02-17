@@ -47,13 +47,13 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
     {
         $tree = array();
         foreach ($tables as $k => $table) {
-            $k = $k.$table;
+
             if ( ! ($table instanceof Doctrine_Table)) {
                 $table = $this->conn->getTable($table);
             }
             $nm     = $table->getComponentName();
 
-            $index  = array_search($nm,$tree);
+            $index  = array_search($nm, $tree);
 
             if ($index === false) {
                 $tree[] = $nm;
@@ -110,17 +110,17 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                     if ($index2 !== false)
                         unset($tree[$index2]);
 
-                    array_splice($tree,$index, 0,$name);
+                    array_splice($tree, $index, 0, $name);
                     $index++;
 
-                    $index3 = array_search($n,$tree);
+                    $index3 = array_search($n, $tree);
 
                     if ($index3 !== false) {
                         if ($index3 >= $index)
                             continue;
 
                         unset($tree[$index]);
-                        array_splice($tree,$index3,0,$n);
+                        array_splice($tree, $index3, 0, $n);
                         $index = $index2;
                     } else {
                         $tree[] = $n;

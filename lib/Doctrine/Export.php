@@ -583,14 +583,15 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function getIndexFieldDeclarationList(array $fields)
     {
+    	$ret = array();
         foreach ($fields as $field => $definition) {
             if(is_array($definition)) {
-                $fields[] = $this->conn->quoteIdentifier($field);
+                $ret[] = $this->conn->quoteIdentifier($field);
             } else {
-                $fields[] = $definition;
+                $ret[] = $this->conn->quoteIdentifier($definition);
             }
         }
-        return implode(', ', $fields);
+        return implode(', ', $ret);
     }
     /**
      * getForeignKeyDeclaration
@@ -686,6 +687,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $sql .= 'CONSTRAINT ' . $definition['name'] . ' ';
         }
         $sql .= 'FOREIGN KEY ';
+
         if ( ! isset($definition['local'])) {
             throw new Doctrine_Export_Exception('Local reference field missing from definition.');
         }

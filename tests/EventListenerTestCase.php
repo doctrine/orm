@@ -208,5 +208,6 @@ class Doctrine_EventListener_TestCase extends Doctrine_UnitTestCase {
         $this->tables = array('EventListenerTest');
         parent::prepareTables();
     }
+
 }
 ?>

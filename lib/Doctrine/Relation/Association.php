@@ -97,14 +97,14 @@ class Doctrine_Relation_Association extends Doctrine_Relation
                           ' IN ('   . substr(str_repeat("?, ", $count),0,-2) .
                           ')';
 
-                $dql  = 'FROM ' . $this->definition['table']->getComponentName();
+                $dql  = 'FROM ' . $this->getTable()->getComponentName();
                 $dql .= '.' . $component;
-                $dql .= ' WHERE ' . $this->definition['table']->getComponentName() 
-                      . '.' . $this->definition['table']->getIdentifier() . ' IN (' . $sub . ')';
+                $dql .= ' WHERE ' . $this->getTable()->getComponentName()
+                      . '.' . $this->getTable()->getIdentifier() . ' IN (' . $sub . ')';
                 break;
             case "collection":
                 $sub  = substr(str_repeat("?, ", $count),0,-2);
-                $dql  = 'FROM ' . $component . '.' . $this->definition['table']->getComponentName();
+                $dql  = 'FROM ' . $component . '.' . $this->getTable()->getComponentName();
                 $dql .= ' WHERE ' . $component . '.' . $this->definition['local'] . ' IN (' . $sub . ')';
                 break;
         }
@@ -123,7 +123,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     {
         $id      = $record->getIncremented();
         if (empty($id)) {
-            $coll = new Doctrine_Collection($this->definition['table']);
+            $coll = new Doctrine_Collection($this->getTable());
         } else {
             $coll = Doctrine_Query::create()->parseQuery($this->getRelationDql(1))->execute(array($id));
         }

@@ -684,7 +684,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             }
         } catch(Doctrine_Adapter_Exception $e) {
         } catch(PDOException $e) { }
-            print Doctrine_Lib::formatSql($query);
+
         $this->rethrowException($e);
     }
     /**
@@ -742,18 +742,22 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param string $name              component name
      * @return object Doctrine_Table
      */
-    public function getTable($name)
+    public function getTable($name, $allowExport = true)
     {
         if (isset($this->tables[$name])) {
             return $this->tables[$name];
         }
-        $class = $name."Table";
+        $class = $name . 'Table';
 
-        if (class_exists($class) && in_array("Doctrine_Table", class_parents($class))) {
-            return new $class($name, $this);
+        if (class_exists($class) && in_array('Doctrine_Table', class_parents($class))) {
+            $table = new $class($name, $this, $allowExport);
         } else {
-            return new Doctrine_Table($name, $this);
+            $table = new Doctrine_Table($name, $this, $allowExport);
         }
+        
+        $this->tables[$name] = $table;
+        
+        return $table;
     }
     /**
      * returns an array of all initialized tables

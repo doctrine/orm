@@ -31,6 +31,7 @@
  * @version     $Revision$
  */
 class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase {
+
     public function testUnknownModule() {
         try {
             $this->connection->unknown;
@@ -46,7 +47,7 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($this->connection->transaction instanceof Doctrine_Transaction);
         $this->assertTrue($this->connection->export instanceof Doctrine_Export);
     }
-    public function testFetchAll() {  
+    public function testFetchAll() {
         $this->conn->exec('DROP TABLE entity');
         $this->conn->exec('CREATE TABLE entity (id INT, name TEXT)');
 

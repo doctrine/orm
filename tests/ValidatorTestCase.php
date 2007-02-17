@@ -197,6 +197,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
      */
     public function testSave() {
         $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
+        $this->manager->setAttribute(Doctrine::ATTR_AUTO_LENGTH_VLD, true);
         $user = $this->connection->getTable("User")->find(4);
         try {
             $user->name = "this is an example of too long name not very good example but an example nevertheless";
@@ -212,7 +213,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
         try {
             $user = $this->connection->create("User");
             $user->Email->address = "jackdaniels@drinkmore.info...";
-            $user->name = "this is an example of too long user name not very good example but an example nevertheles";
+            $user->name = "this is an example of too long user name not very good example but an example nevertheless";
             $user->save();
             $this->fail();
         } catch(Doctrine_Validator_Exception $e) {
@@ -228,6 +229,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(in_array('email', $emailStack['address']));
         $this->assertTrue(in_array('length', $userStack['name']));
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
+        $this->manager->setAttribute(Doctrine::ATTR_AUTO_LENGTH_VLD, false);
     }
 
     /**

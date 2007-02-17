@@ -776,7 +776,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->loadReference($name);
             }
         } catch(Doctrine_Table_Exception $e) { 
-            print $e;
             throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
         }
 
@@ -1378,9 +1377,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $fkField
      * @return void
      */
-    final public function ownsOne($componentName, $foreignKey, $localKey = null)
+    final public function ownsOne($componentName, $foreignKey, $options = null)
     {
-        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_COMPOSITE, $localKey);
+        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_COMPOSITE, $options);
     }
     /**
      * binds One-to-Many composite relation
@@ -1389,9 +1388,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $fkField
      * @return void
      */
-    final public function ownsMany($componentName, $foreignKey, $localKey = null)
+    final public function ownsMany($componentName, $foreignKey, $options = null)
     {
-        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_COMPOSITE, $localKey);
+        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_COMPOSITE, $options);
     }
     /**
      * binds One-to-One aggregate relation
@@ -1400,9 +1399,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $fkField
      * @return void
      */
-    final public function hasOne($componentName, $foreignKey, $localKey = null)
+    final public function hasOne($componentName, $foreignKey, $options = null)
     {
-        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_AGGREGATE, $localKey);
+        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_AGGREGATE, $options);
     }
     /**
      * binds One-to-Many aggregate relation
@@ -1411,9 +1410,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $fkField
      * @return void
      */
-    final public function hasMany($componentName, $foreignKey, $localKey = null)
+    final public function hasMany($componentName, $foreignKey, $options = null)
     {
-        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_AGGREGATE, $localKey);
+        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_AGGREGATE, $options);
     }
     /**
      * hasColumn
