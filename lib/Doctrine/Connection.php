@@ -96,7 +96,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                                                                  'escape' => false,
                                                                  'escape_pattern' => false
                                                                  ),
-                                  'wildcards'           => array('%', '_')
+                                  'wildcards'           => array('%', '_'),
+                                  'varchar_max_length'  => 255,
                                   );
     /**
      * @var array $serverInfo
