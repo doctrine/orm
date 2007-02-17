@@ -41,7 +41,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction
      */
     protected function createSavePoint($savepoint)
     {
-        $query = 'SAVEPOINT '.$savepoint;
+        $query = 'SAVEPOINT ' . $savepoint;
 
         return $this->conn->execute($query);
     }
@@ -66,7 +66,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction
      */
     protected function rollbackSavePoint($savepoint)
     {
-        $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
+        $query = 'ROLLBACK TO SAVEPOINT ' . $savepoint;
 
         return $this->conn->execute($query);
     }
