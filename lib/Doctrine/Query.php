@@ -71,6 +71,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
     private $isDistinct        = false;
     
+    protected $components      = array();
+    
     private $neededTables      = array();
     /**
      * @var array $pendingFields
