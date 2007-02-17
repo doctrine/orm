@@ -32,12 +32,7 @@
  */
 class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase 
 {
-    public function __construct() 
-    {
-        parent::__construct('mysql');
-    }
-
-    public function testAlterTableThrowsExceptionWithoutValidTableName() 
+    public function testAlterTableThrowsExceptionWithoutValidTableName()
     {
         try {
             $this->export->alterTable(0, array(), array());
@@ -254,16 +249,17 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, content VARCHAR(4), FULLTEXT INDEX myindex (content DESC), PRIMARY KEY(id)) ENGINE = MYISAM');
     }
     public function testExportSupportsIndexes() 
-    {     
+    {
         $r = new MysqlIndexTestRecord;
 
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_index_test_record (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, FULLTEXT INDEX content_idx (content), UNIQUE INDEX namecode_idx (name, code), PRIMARY KEY(id)) ENGINE = MYISAM');
     }
+
     public function testExportSupportsForeignKeys()
     {
         $r = new MysqlForeignKeyTest;
-        //print $this->adapter->pop();
-        //$this->assertEqual($this->adapter->pop()); 
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_foreign_key_test (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, parent_id BIGINT, FOREIGN KEY id REFERENCES mysql_foreign_key_test(parent_id) ON UPDATE RESTRICT ON DELETE CASCADE, PRIMARY KEY(id)) ENGINE = INNODB');
     }
 }
 class MysqlForeignKeyTest extends Doctrine_Record
@@ -275,11 +271,11 @@ class MysqlForeignKeyTest extends Doctrine_Record
         $this->hasColumn('content', 'string', 4000);
         $this->hasColumn('parent_id', 'integer');
 
-        $this->foreignKey(array('local'         => 'id',
-                                'foreign'       => 'parent_id',
-                                'foreignTable'  => 'mysql_foreign_key_test',
-                                'onDelete'      => 'CASCADE')
-                                );
+        $this->hasMany('MysqlForeignKeyTest as Children', 
+                       'MysqlForeignKeyTest.parent_id',
+                       array('onDelete' => 'CASCADE',
+                             'onUpdate' => 'RESTRICT')
+                       );
 
         $this->option('type', 'INNODB');
 

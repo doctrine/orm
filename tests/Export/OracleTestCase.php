@@ -123,7 +123,20 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase
         $this->adapter->pop();
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id CHAR(3))');
     }
-    public function testCreateTableSupportsIndexes() 
+    public function testCreateTableSupportsUniqueConstraint()
+    {
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
+                         'name' => array('type' => 'string', 'length' => 4),
+                         );
+
+        $options = array('primary' => array('id'),
+                         );
+
+        $sql = $this->export->createTableSql('sometable', $fields, $options);
+
+        $this->assertEqual($sql, 'CREATE TABLE sometable (id INT UNIQUE, name VARCHAR2(4), PRIMARY KEY(id))');
+    }
+    public function testCreateTableSupportsIndexes()
     {
         $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
                          'name' => array('type' => 'string', 'length' => 4),
@@ -133,9 +146,9 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase
                          'indexes' => array('myindex' => array('fields' => array('id', 'name')))
                          );
 
-        $sql =$this->export->createTableSql('sometable', $fields, $options);
+        $sql = $this->export->createTableSql('sometable', $fields, $options);
 
-        $this->assertEqual($sql, 'CREATE TABLE sometable (id INTEGER UNSIGNED PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id, name))');
+        $this->assertEqual($sql, 'CREATE TABLE sometable (id INT UNIQUE, name VARCHAR2(4), PRIMARY KEY(id), INDEX myindex (id, name))');
     }
 }
 ?>
