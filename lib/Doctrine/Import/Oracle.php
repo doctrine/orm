@@ -116,13 +116,13 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     public function listTableColumns($table)
     {
         $table  = strtoupper($table);
-        $sql    = "SELECT column_name, data_type, data_length, nullable, data_default from all_tab_columns"
+        $sql    = "SELECT column_name, data_type, data_length, nullable, data_default, data_scale, data_precision FROM all_tab_columns"
                 . " WHERE table_name = '" . $table . "' ORDER BY column_name";
 
         $result = $this->conn->fetchAssoc($sql);
 
         foreach($result as $val) {
-            $decl = $this->conn->dataDict->getPortableDeclaration($val);                                 	
+            $decl = $this->conn->dataDict->getPortableDeclaration($val);
 
             $descr[$val['column_name']] = array(
                'name'       => $val['column_name'],
@@ -132,7 +132,9 @@ class Doctrine_Import_Oracle extends Doctrine_Import
                'fixed'      => $decl['fixed'],
                'unsigned'   => $decl['unsigned'],
                'default'    => $val['data_default'],
-               'length'     => $val['data_length']
+               'length'     => $val['data_length'],
+               'precision'  => $val['data_precision'],
+               'scale'      => $val['scale'],
             );
         }
         return $result;
