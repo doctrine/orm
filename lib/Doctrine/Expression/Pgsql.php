@@ -100,6 +100,15 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression
         return join(' || ' , $cols);
     }
     /**
+     * Returns the SQL string to return the current system date and time.
+     *
+     * @return string
+     */
+    public function now()
+    {
+        return 'LOCALTIMESTAMP(0)';
+    }
+    /**
      * regexp
      *
      * @return string           the regular expression operator
