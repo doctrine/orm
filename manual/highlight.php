@@ -299,7 +299,7 @@ class PHP_Highlight
             } elseif ($blocks === true && in_array($i, $this->_plaintextkeys)) {
                 $out .= $line;
             } else {
-                $out .= "<code>$line</code>";
+                $out .= "$line";
             }
 
             $out .= "</li>\n";
@@ -339,7 +339,7 @@ class PHP_Highlight
  
         // Format code
         $source = $this->toArray($funcref);
-        $out = "<code>\n";
+        $out = "<div class='code'>\n";
         foreach ($source as $i => $line) {
             $out .= '    ';
     
@@ -350,7 +350,7 @@ class PHP_Highlight
             $out .= empty($line) ? '&nbsp;' : $line;
             $out .= "<br />\n";
         }
-        $out .= "</code>\n";
+        $out .= "</div>\n";
  
         if ($return === true) {
             return $out;

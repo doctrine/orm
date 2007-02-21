@@ -69,11 +69,30 @@ background: #F5F5F5;
 div.level5 {
 
 }
-div.index {
+table.index {
 border-style: solid;
 border-color: #A0A0A0;
 border-shadow: none;
 border-width: thin;
+}
+td.bordered {
+border-style: solid;
+border-color: #A0A0A0;
+border-shadow: none;
+border-width: thin;
+}
+div.content {
+margin: 5,5,5,5 px;
+}
+div.code {
+font-family: monospace;
+}
+div.smallmenu {
+border-style: solid;
+border-color: #A0A0A0;
+border-shadow: none;
+border-width: thin;
+background: #E9E9E9;
 }
 b.title {
 color: #A50A3D;
@@ -107,4 +126,8 @@ margin-left: 60px;
 font.level4 {
 font-size: 11 px;
 margin-left: 90px;
+}
+font.smallmenu {
+font-size: 13 px;
+font-weight: bold;
 }
