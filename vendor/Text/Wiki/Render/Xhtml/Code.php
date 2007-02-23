@@ -58,35 +58,39 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
         $css_html = $this->formatConf(' class="%s"', 'css_html');
         $css_filename = $this->formatConf(' class="%s"', 'css_filename');
 
-        if ($type == 'php') {
+        if ($type == 'php' || true) {
             if (substr($options['text'], 0, 5) != '<?php') {
                 // PHP code example:
                 // add the PHP tags
-                $text = "<?php\n" . $options['text'] . "\n?>"; // <?php
+                $text = "<?php 
+                " .  $options['text'] . "\n?>"; // <?php
             }
 
             // convert tabs to four spaces
-            $text = str_replace("\t", "    ", $text);
+            $text = str_replace("\t", "&nbsp;&nbsp;%nbsp;&nbsp;", $text);
 
             // colorize the code block (also converts HTML entities and adds
             // <code>...</code> tags)
-            ob_start();
-            highlight_string($text);
-            $text = ob_get_contents();
-            ob_end_clean();
+            $h = new PHP_Highlight;
+            $h->loadString($text);
+            $text = $h->toHtml(true);
 
             // replace <br /> tags with simple newlines.
             // replace non-breaking space with simple spaces.
             // translate HTML <font> and color to XHTML <span> and style.
             // courtesy of research by A. Kalin :-).
+            /**
             $map = array(
                 '<br />'  => "\n",
                 '&nbsp;'  => ' ',
+                "\n"      => "<br \>",
                 '<font'   => '<span',
                 '</font>' => '</span>',
                 'color="' => 'style="color:'
             );
+
             $text = strtr($text, $map);
+            */
 
             // get rid of the last newline inside the code block
             // (becuase higlight_string puts one there)
@@ -100,7 +104,10 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
             }
 
             // done
-            $text = "<pre$css>$text</pre>";
+            $text = "<table border=1 class='dashed' cellpadding=0 cellspacing=0>
+                     <tr><td><b>$text
+                     </b></td></tr>
+                     </table>";
 
         } elseif ($type == 'html' || $type == 'xhtml') {
 

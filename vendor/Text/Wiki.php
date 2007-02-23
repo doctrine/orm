@@ -408,15 +408,15 @@ class Text_Wiki {
     *    in further calls it will be effectively ignored.
     * @return &object a reference to the Text_Wiki unique instantiation.
     */
-    function &singleton($parser = 'Default', $rules = null)
+    function singleton($parser = 'Default', $rules = null)
     {
         static $only = array();
         if (!isset($only[$parser])) {
-            $ret = & Text_Wiki::factory($parser, $rules);
+            $ret = Text_Wiki::factory($parser, $rules);
             if (Text_Wiki::isError($ret)) {
                 return $ret;
             }
-            $only[$parser] =& $ret;
+            $only[$parser] = $ret;
         }
         return $only[$parser];
     }
@@ -432,7 +432,7 @@ class Text_Wiki {
      *    {@see Text_Wiki::singleton} for a list of rules
      * @return Text_Wiki a Parser object extended from Text_Wiki
      */
-    function &factory($parser = 'Default', $rules = null)
+    function factory($parser = 'Default', $rules = null)
     {
         $class = 'Text_Wiki_' . $parser;
         $file = str_replace('_', '/', $class).'.php';
@@ -445,7 +445,7 @@ class Text_Wiki {
             }
         }
 
-        $obj =& new $class($rules);
+        $obj = new $class($rules);
         return $obj;
     }
 
@@ -920,7 +920,7 @@ class Text_Wiki {
 
                 // load may have failed; only parse if
                 // an object is in the array now
-                if (is_object($this->parseObj[$name])) {
+                if (isset($this->parseObj[$name]) && is_object($this->parseObj[$name])) {
                     $this->parseObj[$name]->parse();
                 }
             }
@@ -1222,7 +1222,7 @@ class Text_Wiki {
             }
         }
 
-        $this->parseObj[$rule] =& new $class($this);
+        $this->parseObj[$rule] = new $class($this);
 
     }
 
@@ -1258,7 +1258,7 @@ class Text_Wiki {
             }
         }
 
-        $this->renderObj[$rule] =& new $class($this);
+        $this->renderObj[$rule] = new $class($this);
     }
 
 
@@ -1291,7 +1291,7 @@ class Text_Wiki {
             }
         }
 
-        $this->formatObj[$format] =& new $class($this);
+        $this->formatObj[$format] = new $class($this);
     }
 
 

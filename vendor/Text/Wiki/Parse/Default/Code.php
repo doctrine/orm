@@ -71,7 +71,7 @@ class Text_Wiki_Parse_Code extends Text_Wiki_Parse {
     {
         // are there additional attribute arguments?
         $args = trim($matches[1]);
-        
+
         if ($args == '') {
             $options = array(
                 'text' => $matches[2],
