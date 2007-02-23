@@ -42,7 +42,37 @@ function render($title,$t,$e) {
     }
     print "<br>";
 }
+/**
+    public function parseIndex($index, $path = array(), $counters = array())
+    {
+    	$ret = array();
 
+        foreach ($index as $k => $v) {
+            $i = count($path) - 1;
+
+            $counters[$i]++;
+
+            if (is_array($v)) {
+                if ( ! is_numeric($k)) {
+                    $tmp   = $path;
+                    $tmp[] = $k;
+                    
+                    $chapterName = ( ! empty($path)) ? implode(' - ', $path) . ' - ' . $k : $k;
+
+                    $ret[] = array('index' => implode('.', $counters),
+                                   'name'  => $chapterName);
+                }
+
+                $ret   = array_merge($ret, $this->parseIndex($v, $tmp, $counters));
+            } else {
+                $chapterName = ( ! empty($path)) ? implode(' - ', $path) . ' - ' . $v : $v;
+
+                $ret[] = array('index' => implode('.', $counters), 
+                               'name'  => $chapterName);
+            }
+        }
+        return $ret;
+    }*/
 function render_block($name) {
 
     if(file_exists("docs/$name.php")) {

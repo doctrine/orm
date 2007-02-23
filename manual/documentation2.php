@@ -1,11 +1,18 @@
 <?php
 include("top.php"); 
 require_once("highlight.php");
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
+set_include_path(dirname(__FILE__) . '/../vendor/');
+
 $f = file_get_contents('menu.php');
 $a = explode(PHP_EOL, $f);
 $res = array();
 $curr = false;
+
+require_once('Text/Wiki.php');
+require_once('Text/Wiki/MediaWiki.php');
+
+
 
 
 class DocTool
@@ -13,10 +20,13 @@ class DocTool
     private $index;
     
     protected $highlighter;
+    
+    protected $wiki;
 
     public function __construct()
     {
         $this->highlighter = new PHP_Highlight;
+        $this->wiki = new Text_Wiki;
     }
     public function parseIndex2($index)
     {
@@ -74,7 +84,7 @@ class DocTool
             if(substr($c, 0, 5) == "<?php") {
                 include("docs/$name.php");
             } else {
-                print $c."<br><br>";
+                print $this->wiki->transform($c) . "<br><br>";
             }
         }
         if(file_exists("codes/$name.php")) {

@@ -112,16 +112,17 @@
                                 while($count--) {
                                     array_shift($p);
                                 }
-
-                                print "<div class=level" . $l . '><font class=level' . $l . '>';
-                                ?>
-
-                                <a href=documentation2.php?chapter=<?php print urlencode($i[$x]['name']) . '>' . end($p); ?></a>
-                                </font></div>
-                                <?php
-                        
-                                if (strncmp($i[$x]['name'], $_GET['chapter'], strlen($_GET['chapter'])) !== 0) {
-                                    break;
+                                if ( ! empty($p)) {
+                                    print "<div class=level" . $l . '><font class=level' . $l . '>' . $i[$x]['index'];
+                                    ?>
+    
+                                    <a href=documentation2.php?chapter=<?php print urlencode($i[$x]['name']) . '>' . end($p); ?></a>
+                                    </font></div>
+                                    <?php
+    
+                                    if (strncmp($i[$x]['name'], $_GET['chapter'], strlen($_GET['chapter'])) !== 0) {
+                                        break;
+                                    }
                                 }
                             }
                         }

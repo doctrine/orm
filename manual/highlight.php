@@ -339,7 +339,7 @@ class PHP_Highlight
  
         // Format code
         $source = $this->toArray($funcref);
-        $out = "<div class='code'>\n";
+        $out = "<div class='code'>";
         foreach ($source as $i => $line) {
             $out .= '    ';
     
@@ -350,7 +350,7 @@ class PHP_Highlight
             $out .= empty($line) ? '&nbsp;' : $line;
             $out .= "<br />\n";
         }
-        $out .= "</div>\n";
+        $out .= "</div>";
  
         if ($return === true) {
             return $out;
