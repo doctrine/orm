@@ -10,7 +10,7 @@ $res = array();
 $curr = false;
 
 require_once('Text/Wiki.php');
-require_once('Text/Wiki/MediaWiki.php');
+require_once('Text/Wiki/Mediawiki.php');
 
 
 
