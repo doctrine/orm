@@ -84,7 +84,8 @@ class DocTool
 
             if (substr($c, 0, 5) == "<?php") {
                 include("docs/$name.php");
-            } elseif (strpos($c, '<br \>') !== false) {
+            } elseif (strpos($c, '<br \>') !== false || 
+                      strpos($c, '<ul>') !== false) {
                 print $c;
             } else {
                 print $this->wiki->transform($c) . "<br><br>";
