@@ -8,9 +8,14 @@
                     $indexes = explode('.', $v['index']);
                     $level = count($indexes);
                     $e = explode(' - ', $v['name']);
-            
+                    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR . $v['name'] . '.php';
+
                     print '<div class=level' . $level . '><font class=level' . $level . '>&nbsp;'. $v['index'] . '. <a href=documentation2.php?chapter='
-                          . urlencode($v['name']) . ">" . end($e) ."</a></font></div>";
+                          . urlencode($v['name']) . ">" . end($e) ."</a></font>";
+                    if ( ! file_exists($file)) {
+                        //print "<font color='red'>[code]</font>";
+                    }
+                    print "</div>";
                 }
             } else {
             

@@ -76,24 +76,28 @@ class DocTool
         return $ret;
     }   
 
-    public function renderBlock($name) {
+    public function renderBlock($name) 
+    {
 
-        if(file_exists("docs/$name.php")) {
+        if (file_exists("docs/$name.php")) {
             $c = file_get_contents("docs/$name.php");
 
-            if(substr($c, 0, 5) == "<?php") {
+            if (substr($c, 0, 5) == "<?php") {
                 include("docs/$name.php");
+            } elseif (strpos($c, '<br \>') !== false) {
+                print $c;
             } else {
                 print $this->wiki->transform($c) . "<br><br>";
             }
         }
-        if(file_exists("codes/$name.php")) {
+        if (file_exists("codes/$name.php")) {
             $c = file_get_contents("codes/$name.php");
             $c = trim($c);
             $this->renderCode($c);
         }
     }
-    public function renderCode($code = null) {
+    public function renderCode($code = null) 
+    {
         if( ! empty($code)) {
     
             $this->highlighter->loadString($code);
