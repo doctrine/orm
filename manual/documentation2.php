@@ -2,7 +2,7 @@
 include("top.php"); 
 require_once("highlight.php");
 error_reporting(E_ALL);
-set_include_path(dirname(__FILE__) . '/../vendor/');
+set_include_path(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'vendor/');
 
 $f = file_get_contents('menu.php');
 $a = explode(PHP_EOL, $f);
