@@ -472,7 +472,7 @@ final class Doctrine
                 }
                 $ret[] = ')';
                 break;
-            case 'object';
+            case 'object':
                 $ret[] = 'Object(' . get_class($var) . ')';
                 break;
             default:
