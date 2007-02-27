@@ -153,7 +153,7 @@ final class Doctrine
     const ATTR_CMPNAME_FORMAT       = 118;
     const ATTR_DBNAME_FORMAT        = 117;
     const ATTR_TBLCLASS_FORMAT      = 119;
-
+    const ATTR_EXPORT               = 140;
     const ATTR_SEQCOL_NAME          = 105;
 
 
@@ -336,6 +336,27 @@ final class Doctrine
      * mode for pessimistic locking
      */
     const LOCK_PESSIMISTIC      = 1;
+    /**
+     * EXPORT CONSTANTS
+     */
+     
+    /**
+     * turns of exporting
+     */
+    const EXPORT_NONE               = 0;
+    /**
+     * export constraints
+     */
+    const EXPORT_CONSTRAINTS        = 1;
+    /**
+     * export tables
+     */
+    const EXPORT_TABLES             = 2;
+    /**
+     * export all
+     */
+    const EXPORT_ALL                = 3;
+
 
     /**
      * constant for auto_increment identifier
