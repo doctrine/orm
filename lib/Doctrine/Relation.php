@@ -93,7 +93,7 @@ abstract class Doctrine_Relation
      *
      * The onDelete and onUpdate keys accept the following values:
      *
-     * CASCADE: Delete or update the row from the parent table and automatically delete or 
+     * CASCADE: Delete or update the row from the parent table and automatically delete or
      *          update the matching rows in the child table. Both ON DELETE CASCADE and ON UPDATE CASCADE are supported.
      *          Between two tables, you should not define several ON UPDATE CASCADE clauses that act on the same column
      *          in the parent table or in the child table.
@@ -162,7 +162,9 @@ abstract class Doctrine_Relation
      */
     final public function getTable()
     {
-        return Doctrine_Manager::connection()->getTable($this->definition['class']);
+        return Doctrine_Manager::getInstance()
+               ->getConnectionForComponent($this->definition['class'])
+               ->getTable($this->definition['class']);
     }
     /**
      * getLocal
