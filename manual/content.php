@@ -123,11 +123,10 @@
     
                                     <a href=documentation2.php?chapter=<?php print urlencode($i[$x]['name']) . '>' . end($p); ?></a>
                                     </font></div>
-                                    <?php
-    
-                                    if (strncmp($i[$x]['name'], $_GET['chapter'], strlen($_GET['chapter'])) !== 0) {
-                                        break;
-                                    }
+                                    <?php 
+                                }
+                                if (strncmp($i[$x]['name'], $_GET['chapter'], strlen($_GET['chapter'])) !== 0) {
+                                    break;
                                 }
                             }
                         }

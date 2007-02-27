@@ -7,6 +7,9 @@ Getting started
         Introduction
         Making the first import
         Import options
+    Exporting classes
+        Introduction
+        Export options
 Connection management
     Opening a new connection
     Lazy-connecting to database
@@ -37,8 +40,9 @@ Object relational mapping
             Gzip
         About type conversion
     Constraints and validators
+        Introduction
         Notnull
-        Max - Min
+        Check
     Record identifiers
         Introduction
         Autoincremented
@@ -66,6 +70,9 @@ Object relational mapping
             One table many classes
             One table one class
             Column aggregation
+        Foreign key constraints
+            Introduction
+            Constraint actions
     Hierarchical data
         Introduction
             About
@@ -323,4 +330,4 @@ Coding standards
         Control statements
         Inline documentation
     Testing
-        Writing tests 
+        Writing tests
