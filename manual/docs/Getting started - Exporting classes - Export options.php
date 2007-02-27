@@ -8,4 +8,7 @@ $manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);
 $manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_TABLES ^ 
                                               Doctrine::EXPORT_CONSTRAINTS);
 
+// turn off exporting
+
+$manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_NONE);
 </code>
