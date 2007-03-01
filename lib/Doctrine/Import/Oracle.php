@@ -126,7 +126,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
             $descr[$val['column_name']] = array(
                'name'       => $val['column_name'],
-               'notnull'    => (bool) ($val['nullable'] === 'N'), // nullable is N when mandatory
+               'notnull'    => (bool) ($val['nullable'] === 'N'),
                'type'       => $val['data_type'],
                'ptype'      => $decl['type'],
                'fixed'      => $decl['fixed'],

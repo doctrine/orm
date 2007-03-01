@@ -529,8 +529,9 @@ final class Doctrine
      */
     public static function isValidClassname($classname)
     {
-        if (preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname))
+        if (preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname)) {
             return false;
+        }    
 
         return true;
     }

@@ -48,6 +48,14 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     const UPDATE = 2;
     /**
+     * constant for INSERT queries
+     */
+    const INSERT = 3;
+    /**
+     * constant for CREATE queries
+     */
+    const CREATE = 4;
+    /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
      */
     private $subqueryAliases  = array();
@@ -957,8 +965,14 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $parts = $this->splitQuery($query);
 
         foreach($parts as $k => $part) {
-            $part = implode(" ",$part);
+            $part = implode(' ', $part);
             switch(strtoupper($k)) {
+                case 'CREATE':
+                    $this->type = self::CREATE;
+                break;
+                case 'INSERT':
+                    $this->type = self::INSERT;
+                break;
                 case 'DELETE':
                     $this->type = self::DELETE;
                 break;
@@ -1297,10 +1311,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
                     if( ! isset($this->tableAliases[$currPath])) {
                         $this->tableIndexes[$tname] = 1;
+                    }  
+
+                    $this->parts['from'] = $this->conn->quoteIdentifier($table->getTableName());
+                    
+                    if ($this->type === self::SELECT) {
+                         $this->parts['from'] .= ' ' . $tname;
                     }
-
-
-                    $this->parts["from"]           = $this->conn->quoteIdentifier($table->getTableName()) . ' ' . $tname;
 
                     $this->tableAliases[$currPath] = $tname;
 
