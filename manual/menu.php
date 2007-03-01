@@ -18,6 +18,7 @@ Connection management
 Object relational mapping
     Introduction
     Table and class naming
+    Table options
     Columns
         Column naming
         Column aliases
@@ -237,6 +238,15 @@ DQL (Doctrine Query Language)
         Arithmetic functions
         Datetime functions
         Collection functions
+    Subqueries
+        Introduction
+        Comparisons using subqueries
+        Conditional expressions
+            ANY, IN and SOME
+            ALL
+            EXISTS and NOT EXISTS
+        Correlated subqueries
+        Subqueries in FROM clause
     GROUP BY, HAVING clauses
     ORDER BY clause
         Introduction

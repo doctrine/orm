@@ -11,7 +11,7 @@ class MyInnoDbRecord extends Doctrine_Record
     {
         \$this->hasColumn('name', 'string');
 
-        \$this->option('engine', 'INNODB');
+        \$this->option('type', 'INNODB');
     }
 }
 ?>");
