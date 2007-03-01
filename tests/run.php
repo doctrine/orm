@@ -62,7 +62,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 // DATABASE ABSTRACTION tests
-
+/**
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -196,7 +196,7 @@ $test->addTestCase(new Doctrine_CustomResultSetOrderTestCase());
 //$test->addTestCase(new Doctrine_Collection_Offset_TestCase());
 
 
-// Query tests
+// Query tests   */
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
@@ -205,7 +205,7 @@ $test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());
 
 $test->addTestCase(new Doctrine_Query_TestCase());
 $test->addTestCase(new Doctrine_Query_ShortAliases_TestCase());
-$test->addTestCase(new Doctrine_Query_Delete_TestCase());
+
 $test->addTestCase(new Doctrine_Query_Where_TestCase());
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 $test->addTestCase(new Doctrine_Query_IdentifierQuoting_TestCase());
@@ -228,6 +228,8 @@ $test->addTestCase(new Doctrine_Cache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Apc_TestCase());
 $test->addTestCase(new Doctrine_Cache_Memcache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Sqlite_TestCase());
+
+$test->addTestCase(new Doctrine_Query_Delete_TestCase());
 
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());

@@ -35,6 +35,30 @@ Doctrine::autoload('Doctrine_Access');
 abstract class Doctrine_Hydrate extends Doctrine_Access
 {
     /**
+     * QUERY TYPE CONSTANTS
+     */
+
+    /**
+     * constant for SELECT queries
+     */
+    const SELECT = 0;
+    /**
+     * constant for DELETE queries
+     */
+    const DELETE = 1;
+    /**
+     * constant for UPDATE queries
+     */
+    const UPDATE = 2;
+    /**
+     * constant for INSERT queries
+     */
+    const INSERT = 3;
+    /**
+     * constant for CREATE queries
+     */
+    const CREATE = 4;
+    /**
      * @var array $fetchmodes                   an array containing all fetchmodes
      */
     protected $fetchModes  = array();
@@ -109,6 +133,12 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
         'limit'     => false,
         'offset'    => false,
         );
+    /**
+     * @var integer $type                   the query type
+     *
+     * @see Doctrine_Query::* constants
+     */
+    protected $type            = self::SELECT;
     /**
      * constructor
      *
@@ -606,6 +636,24 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
         return false;
     }
     /**
+     * getType
+     *
+     * returns the type of this query object
+     * by default the type is Doctrine_Hydrate::SELECT but if update() or delete()
+     * are being called the type is Doctrine_Hydrate::UPDATE and Doctrine_Hydrate::DELETE,
+     * respectively
+     *
+     * @see Doctrine_Hydrate::SELECT
+     * @see Doctrine_Hydrate::UPDATE
+     * @see Doctrine_Hydrate::DELETE
+     *
+     * @return integer      return the query type
+     */
+    public function getType() 
+    {
+        return $this->type;
+    }
+    /**
      * applyInheritance
      * applies column aggregation inheritance to DQL / SQL query
      *
@@ -627,14 +675,22 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
         $index = 0;
         foreach ($array as $tableAlias => $maps) {
             $a = array();
+            
+            // don't use table aliases if the query isn't a select query
+            if ($this->type !== Doctrine_Query::SELECT) {
+                $tableAlias = '';
+            } else {
+                $tableAlias .= '.';
+            }
+            
             foreach ($maps as $map) {
                 $b = array();
                 foreach ($map as $field => $value) {
                     if ($index > 0) {
-                        $b[] = '(' . $tableAlias . '.' . $field . ' = ' . $value 
-                             . ' OR ' . $tableAlias . '.' . $field . ' IS NULL)';
+                        $b[] = '(' . $tableAlias  . $field . ' = ' . $value
+                             . ' OR ' . $tableAlias . $field . ' IS NULL)';
                     } else {
-                        $b[] = $tableAlias . '.' . $field . ' = ' . $value;
+                        $b[] = $tableAlias . $field . ' = ' . $value;
                     }
                 }
 

@@ -46,9 +46,9 @@ class Doctrine_Query_Set extends Doctrine_Query_Part
             $reference = implode('.', $e);
 
             $alias     = $this->query->getTableAlias($reference);
+            $table     = $this->query->getTable($alias);
 
-            $fieldname = $alias ? $alias . '.' . $field : $field;
-            $result[]  = $fieldname . ' = ' . $set[1];
+            $result[]  = $table->getColumnName($field) . ' = ' . $set[1];
         }
 
         return implode(', ', $result);

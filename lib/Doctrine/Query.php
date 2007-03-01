@@ -32,30 +32,6 @@ Doctrine::autoload('Doctrine_Hydrate');
  */
 class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     /**
-     * QUERY TYPE CONSTANTS
-     */
-
-    /**
-     * constant for SELECT queries
-     */
-    const SELECT = 0;
-    /**
-     * constant for DELETE queries
-     */
-    const DELETE = 1;
-    /**
-     * constant for UPDATE queries
-     */
-    const UPDATE = 2;
-    /**
-     * constant for INSERT queries
-     */
-    const INSERT = 3;
-    /**
-     * constant for CREATE queries
-     */
-    const CREATE = 4;
-    /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
      */
     private $subqueryAliases  = array();
@@ -87,12 +63,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     private $pendingFields     = array();
 
-    /**
-     * @var integer $type                   the query type
-     *
-     * @see Doctrine_Query::* constants
-     */
-    protected $type            = self::SELECT;
+
 
     /**
      * create
@@ -126,6 +97,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $this->isSubquery = (bool) $bool;
         return $this;
     }
+
     /**
      * getAggregateAlias
      * 

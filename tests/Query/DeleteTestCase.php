@@ -5,13 +5,13 @@ class Doctrine_Query_Delete_TestCase extends Doctrine_UnitTestCase {
 
         $q->parseQuery('DELETE FROM User');
 
-        $this->assertEqual($q->getQuery(), 'DELETE FROM entity WHERE (e.type = 0)');
+        $this->assertEqual($q->getQuery(), 'DELETE FROM entity WHERE (type = 0)');
 
         $q = new Doctrine_Query();
 
         $q->delete()->from('User');
         
-        $this->assertEqual($q->getQuery(), 'DELETE FROM entity WHERE (e.type = 0)');
+        $this->assertEqual($q->getQuery(), 'DELETE FROM entity WHERE (type = 0)');
     }
     public function testDeleteAll() {
         $q = new Doctrine_Query();

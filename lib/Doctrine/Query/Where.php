@@ -132,7 +132,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                     $trimmed   = Doctrine_Query::bracketTrim($value);
 
                     if (substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
-                                                                                                	
+
                         // subquery found
                         $q     = new Doctrine_Query();
                         $value = '(' . $q->isSubquery(true)->parseQuery($trimmed)->getQuery() . ')';
@@ -171,7 +171,13 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                             $value  = $enumIndex;
                         }
                     default:
-                        $fieldname  = $alias ? $alias . '.' . $field : $field;
+
+                        if ($this->query->getType() === Doctrine_Query::SELECT) {
+                            $fieldname = $alias ? $alias . '.' . $field : $field;
+                        } else {
+                            $fieldname = $field;
+                        }
+                        
                         $where      = $fieldname . ' ' 
                                     . $operator . ' ' . $value;
                 }
