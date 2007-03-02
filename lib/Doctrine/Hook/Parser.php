@@ -39,7 +39,12 @@ abstract class Doctrine_Hook_Parser
     {
         return $this->condition;
     }
-
+    /**
+     * getParams
+     * returns the parameters associated with this parser
+     *
+     * @return array
+     */
     public function getParams()
     {
         return $this->params;

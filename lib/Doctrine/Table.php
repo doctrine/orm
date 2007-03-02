@@ -266,10 +266,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                             $this->identifierType = Doctrine_Identifier::SEQUENCE;
                                             $found = true;
                                             
-                                            if($value) {
+                                            if ($value) {
                                                 $this->options['sequenceName'] = $value;
                                             } else {
-                                                $this->options['sequenceName'] = $this->conn->getSequenceName($this->options['tableName']);
+                                                if (($sequence = $this->getAttribute(Doctrine::ATTR_DEFAULT_SEQUENCE)) !== null) {
+                                                    $this->options['sequenceName'] = $sequence;
+                                                } else {
+                                                    $this->options['sequenceName'] = $this->conn->getSequenceName($this->options['tableName']);
+                                                }
                                             }
                                             break;
                                     }

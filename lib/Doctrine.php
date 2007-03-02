@@ -150,11 +150,11 @@ final class Doctrine
     const ATTR_FIELD_CASE           = 102;
     const ATTR_IDXNAME_FORMAT       = 103;
     const ATTR_SEQNAME_FORMAT       = 104;
+    const ATTR_SEQCOL_NAME          = 105;
     const ATTR_CMPNAME_FORMAT       = 118;
     const ATTR_DBNAME_FORMAT        = 117;
     const ATTR_TBLCLASS_FORMAT      = 119;
     const ATTR_EXPORT               = 140;
-    const ATTR_SEQCOL_NAME          = 105;
 
 
 
@@ -169,7 +169,7 @@ final class Doctrine
     const ATTR_DEF_VARCHAR_LENGTH   = 114;
     const ATTR_DEF_TABLESPACE       = 115;
     const ATTR_EMULATE_DATABASE     = 116;
-
+    const ATTR_DEFAULT_SEQUENCE     = 133;
 
     /** TODO: REMOVE THE FOLLOWING CONSTANTS AND UPDATE THE DOCS ! */
 
