@@ -50,10 +50,6 @@ class Doctrine_Hook
                              'offset'
                               );
     /**
-     * @var array $params                   query parameters
-     */
-    protected $params       = array();
-    /**
      * @var array $fieldParsers             custom field parsers array
      *                                      keys as field names in the format componentAlias.FieldName
      *                                      values as parser names / objects
@@ -143,12 +139,10 @@ class Doctrine_Hook
 
                     $parser->parse($alias, $column, $value);
 
-                    $this->query->addWhere($parser->getCondition());
-                    $this->params += $parser->getParams();
+                    $this->query->addWhere($parser->getCondition(), $parser->getParams());
                 }
             }
         }
-        $this->params += $params;
 
         return true;
     }

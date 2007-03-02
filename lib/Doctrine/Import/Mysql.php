@@ -95,6 +95,16 @@ class Doctrine_Import_Mysql extends Doctrine_Import
         return $result;
     }
     /**
+     * lists table foreign keys
+     *
+     * @param string $table     database table name
+     * @return array
+     */
+    public function listTableForeignKeys($table) 
+    {
+        $sql = 'SHOW CREATE TABLE ' . $this->conn->quoteIdentifier($table, true);	
+    }
+    /**
      * lists table constraints
      *
      * @param string $table     database table name
@@ -102,7 +112,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      */
     public function listTableColumns($table)
     {
-        $sql = 'DESCRIBE ' . $table;
+        $sql = 'DESCRIBE ' . $this->conn->quoteIdentifier($table, true);
         $result = $this->conn->fetchAssoc($sql);
 
         $description = array();
