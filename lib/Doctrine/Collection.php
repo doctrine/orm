@@ -720,7 +720,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $conn->beginTransaction();
 
         foreach ($this as $key => $record) {
-            $record->save();
+            $record->save($conn);
         };
 
         $conn->commit();
@@ -741,7 +741,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $conn->beginTransaction();
 
         foreach ($this as $key => $record) {
-            $record->delete();
+            $record->delete($conn);
         }
 
         $conn->commit();

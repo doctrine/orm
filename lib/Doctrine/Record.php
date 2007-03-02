@@ -956,7 +956,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
             if (isset($this->references[$alias])) {
                 $obj = $this->references[$alias];
-                $obj->save();
+                $obj->save($conn);
             }
         }
 

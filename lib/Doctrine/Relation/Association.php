@@ -45,10 +45,15 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     /**
      * processDiff
      *
-     * @param Doctrine_Record
+     * @param Doctrine_Record $record
+     * @param Doctrine_Connection $conn
      */
-    public function processDiff(Doctrine_Record $record)
+    public function processDiff(Doctrine_Record $record, $conn = null)
     {
+         if (!$conn) {
+             $conn = $this->getTable()->getConnection();
+         }
+
         $asf     = $this->getAssociationFactory();
         $alias   = $this->getAlias();
 
@@ -65,7 +70,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
                        . ' WHERE '      . $this->getForeign() . ' = ?'
                        . ' AND '        . $this->getLocal()   . ' = ?';
 
-                $this->getTable()->getConnection()->execute($query, array($r->getIncremented(),$record->getIncremented()));
+                $conn->execute($query, array($r->getIncremented(),$record->getIncremented()));
             }
 
             $operations = Doctrine_Relation::getInsertOperations($record->obtainOriginals($alias),$new);
@@ -74,7 +79,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
                 $reldao = $asf->create();
                 $reldao->set($this->getForeign(), $r);
                 $reldao->set($this->getLocal(), $record);
-                $reldao->save();
+                $reldao->save($conn);
             }
 
             $record->assignOriginals($alias, clone $record->get($alias));

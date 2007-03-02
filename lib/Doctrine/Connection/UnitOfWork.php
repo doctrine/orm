@@ -151,19 +151,19 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                     if ( ! $record->exists()) {
                         $saveLater[$k] = $fk;
                     } else {
-                        $v->save();
+                        $v->save($this->conn);
                     }
                 } else {
                     // ONE-TO-ONE relationship
                     $obj = $record->get($fk->getAlias());
 
                     if ($obj->state() != Doctrine_Record::STATE_TCLEAN) {
-                        $obj->save();
+                        $obj->save($this->conn);
                     }
                 }
 
             } elseif ($fk instanceof Doctrine_Relation_Association) {
-                $v->save();
+                $v->save($this->conn);
             }
         }
         return $saveLater;
@@ -189,7 +189,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
             $table   = $rel->getTable();
             $alias   = $rel->getAlias();
 
-            $rel->processDiff($record);
+            $rel->processDiff($record, $this->conn);
         }
     }
     /**
@@ -206,7 +206,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                 case Doctrine_Relation::ONE_COMPOSITE:
                 case Doctrine_Relation::MANY_COMPOSITE:
                     $obj = $record->get($fk->getAlias());
-                    $obj->delete();
+                    $obj->delete($this->conn);
                     break;
             };
         }
@@ -264,7 +264,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                     switch ($value->state()) {
                         case Doctrine_Record::STATE_TCLEAN:
                         case Doctrine_Record::STATE_TDIRTY:
-                            $record->save();
+                            $record->save($this->conn);
                         default:
                             $array[$name] = $value->getIncremented();
                             $record->set($name, $value->getIncremented());
