@@ -233,6 +233,12 @@ class Text_Wiki_Parse {
     {
         // find the =" sections;
         $tmp = explode('="', trim($text));
+        $mark = '"';
+
+        if (count($tmp) == 1) {
+            $tmp = explode("='", trim($text));
+            $mark = "'";
+        }
 
         // basic setup
         $k = count($tmp) - 1;
@@ -251,12 +257,11 @@ class Text_Wiki_Parse {
             // find the last double-quote in the value.
             // the part to the left is the value for the last key,
             // the part to the right is the next key name
-            $pos = strrpos($val, '"');
+            $pos = strrpos($val, $mark);
             $attrs[$key] = stripslashes(substr($val, 0, $pos));
             $key = trim(substr($val, $pos+1));
 
         }
-
         return $attrs;
 
     }

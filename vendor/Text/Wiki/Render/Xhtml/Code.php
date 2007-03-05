@@ -58,7 +58,7 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
         $css_html = $this->formatConf(' class="%s"', 'css_html');
         $css_filename = $this->formatConf(' class="%s"', 'css_filename');
 
-        if ($type == 'php' || true) {
+        if ($type == 'php') {
             if (substr($options['text'], 0, 5) != '<?php') {
                 // PHP code example:
                 // add the PHP tags
@@ -120,6 +120,14 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
             $text = $this->textEncode($text);
             $text = "<pre$css><code$css_html>$text</code></pre>";
 
+        } elseif ($type == 'sql') {
+            // HTML code example:
+            // add <html> opening and closing tags,
+            // convert tabs to four spaces,
+            // convert entities.
+            $text = str_replace("\t", "    ", $text);
+            $text = $this->textEncode($text);
+            $text = "<div class='sql'>$text</div>";
         } else {
             // generic code example:
             // convert tabs to four spaces,
