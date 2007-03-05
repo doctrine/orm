@@ -43,6 +43,7 @@ Object relational mapping
     Constraints and validators
         Introduction
         Notnull
+        Unique
         Check
     Record identifiers
         Introduction
