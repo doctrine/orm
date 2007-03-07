@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Pgsql.php 1113 2007-02-17 10:00:04Z romanb $
+ *  $Id$
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,7 +29,7 @@ Doctrine::autoload('Doctrine_Export');
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
- * @version     $Revision: 1113 $
+ * @version     $Revision$
  */
 class Doctrine_Export_Frontbase extends Doctrine_Export
 {
