@@ -157,7 +157,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                     // ONE-TO-ONE relationship
                     $obj = $record->get($fk->getAlias());
 
-                    if ($obj->state() != Doctrine_Record::STATE_TCLEAN) {
+                    $state = $obj->state();
+                    if ( !($state == Doctrine_Record::STATE_CLEAN || $state == Doctrine_Record::STATE_TCLEAN) ) {
                         $obj->save($this->conn);
                     }
                 }
