@@ -139,7 +139,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
                     'length'    => null,
                     'scale'     => null,
                     'precision' => null,
-                    'unsigned'  => null, 
+                    'unsigned'  => null,
                     );
             $columns[$val['name']] = $description;
         }
@@ -188,7 +188,18 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
      */
     public function listTableViews($table)
     {
+        $query = "SELECT name, sql FROM sqlite_master WHERE type='view' AND sql NOT NULL";
+        $views = $db->fetchAll($query);
 
+        $result = array();
+        foreach ($views as $row) {
+            if (preg_match("/^create view .* \bfrom\b\s+\b{$table}\b /i", $row['sql'])) {
+                if ( ! empty($row['name'])) {
+                    $result[$row['name']] = true;
+                }
+            }
+        }
+        return $result;
     }
     /**
      * lists database users
@@ -207,7 +218,9 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
      */
     public function listViews($database = null)
     {
+        $query = "SELECT name FROM sqlite_master WHERE type='view' AND sql NOT NULL";
 
+        return $this->conn->fetchColumn($query);
     }
 }
 
