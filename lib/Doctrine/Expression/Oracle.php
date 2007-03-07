@@ -89,8 +89,17 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression
      *
      * @return string           an oracle SQL string that generates a float between 0 and 1
      */
-    function random()
+    public function random()
     {
         return 'dbms_random.value';
+    }
+    /**
+     * Returns global unique identifier
+     *
+     * @return string to get global unique identifier
+     */
+    public function guid()
+    {
+        return 'SYS_GUID()';
     }
 }

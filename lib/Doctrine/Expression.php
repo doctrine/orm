@@ -652,4 +652,13 @@ class Doctrine_Expression extends Doctrine_Connection_Module
         $value2 = $this->getIdentifier($value2);
         return $expression . ' BETWEEN ' .$value1 . ' AND ' . $value2;
     }
+    /**
+     * Returns global unique identifier
+     *
+     * @return string to get global unique identifier
+     */
+    public function guid()
+    {
+        throw new Doctrine_Expression_Exception('method not implemented');
+    }
 }

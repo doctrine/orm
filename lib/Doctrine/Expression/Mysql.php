@@ -98,4 +98,13 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression
         $match.= $this->patternEscapeString();
         return $match;
     }
+    /**
+     * Returns global unique identifier
+     *
+     * @return string to get global unique identifier
+     */
+    public function guid()
+    {
+        return 'UUID()';
+    }
 }

@@ -71,11 +71,19 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression
      * @param string $arg2
      * @param string $values...
      * @return string to concatenate two strings
-     * @access public
-     **/
-    function concat($arg1, $arg2)
+     */
+    public function concat($arg1, $arg2)
     {
         $args = func_get_args();
         return '(' . implode(' + ', $args) . ')';
+    }
+    /**
+     * Returns global unique identifier
+     *
+     * @return string to get global unique identifier
+     */
+    public function guid()
+    {
+        return 'NEWID()';
     }
 }
