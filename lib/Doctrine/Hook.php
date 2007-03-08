@@ -63,6 +63,7 @@ class Doctrine_Hook
     protected $typeParsers  = array(
                               'char'      => 'Doctrine_Hook_WordLike',
                               'string'    => 'Doctrine_Hook_WordLike',
+                              'varchar'   => 'Doctrine_Hook_WordLike',
                               'integer'   => 'Doctrine_Hook_Integer',
                               'time'      => 'Doctrine_Hook_Time',
                               'date'      => 'Doctrine_Hook_Date',
