@@ -253,6 +253,38 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
         return $this->connections[$name];
     }
+    /** 
+     * getComponentAlias
+     * retrieves the alias for given component name 
+     * if the alias couldn't be found, this method returns the given
+     * component name
+     *
+     * @param string $componentName
+     * @return string                   the component alias
+     */
+    public function getComponentAlias($componentName)
+    {
+        if (isset($this->componentAliases[$componentName])) {
+            return $this->componentAliases[$componentName];
+        }
+        
+        return $componentName;
+    }
+    /**
+     * sets an alias for given component name
+     * very useful when building a large framework with a possibility
+     * to override any given class
+     *
+     * @param string $componentName         the name of the component
+     * @param string $alias
+     * @return Doctrine_Manager
+     */
+    public function setComponentAlias($componentName, $alias) 
+    {
+        $this->componentAliases[$componentName] = $alias;
+        
+        return $this;
+    }
     /**
      * bindComponent
      * binds given component to given connection
