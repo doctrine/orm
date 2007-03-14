@@ -341,6 +341,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
             case 'oci8':
             case 'mssql':
             case 'firebird':
+            case 'dblib':
             case 'pgsql':
             case 'odbc':
             case 'mock':
@@ -430,7 +431,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
             $stmt = $this->dbh->prepare($statement);
 
             return $stmt->execute($params);
-            
+
         } else {
             if ( ! $skip) {
                 $stmt = $this->dbh->query($statement);

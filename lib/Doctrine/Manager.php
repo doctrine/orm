@@ -219,6 +219,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 $this->connections[$name] = new Doctrine_Connection_Oracle($this, $adapter);
                 break;
             case 'mssql':
+            case 'dblib':
                 $this->connections[$name] = new Doctrine_Connection_Mssql($this, $adapter);
                 break;
             case 'firebird':
