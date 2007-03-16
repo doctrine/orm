@@ -178,10 +178,11 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             } else {
 
                 $e = explode('.', $reference);
-                if(count($e) > 2)
+                if (count($e) > 2) {
                     $this->pendingFields[] = $reference;
-                else
+                } else {
                     $this->pendingFields[$e[0]][] = $e[1];
+                }
             }
         }
     }
@@ -469,6 +470,32 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         }
     }
     /**
+     * addSelect
+     *
+     * @param string $select
+     */
+    public function addSelect($select)
+    {
+        $this->type = self::SELECT;
+        
+        $this->parseSelect($select);
+        
+        return $this;
+    }
+    /**
+     * addHaving
+     *
+     * @param string $having
+     */
+    public function addHaving($having) 
+    {
+        $class = 'Doctrine_Query_Having';
+        $parser = new $class($this);
+        $this->parts['having'][] = $parser->parse($orderby);
+        
+        return $this;
+    }
+    /**
      * sets a query part
      *
      * @param string $name
@@ -485,9 +512,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             case 'select':
                 $this->type = self::SELECT;
 
-                if( ! isset($args[0]))
+                if ( ! isset($args[0])) {
                     throw new Doctrine_Query_Exception('Empty select part');
-
+                }
                 $this->parseSelect($args[0]);
             break;
             case 'delete':
