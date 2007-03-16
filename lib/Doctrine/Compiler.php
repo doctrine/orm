@@ -221,6 +221,7 @@ class Doctrine_Compiler
                                    'Validator_Range',
                                    'Validator_Regexp',
                                    'Validator_Unique',
+                                   'Validator_Unsigned',
                                    'Validator_Usstate',
                                    'ValueHolder',
                                    'View_Exception',
