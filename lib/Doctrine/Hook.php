@@ -79,6 +79,8 @@ class Doctrine_Hook
             $this->query->parseQuery($query);
         } elseif ($query instanceof Doctrine_Query) {
             $this->query = $query;
+        } else {
+            throw new Doctrine_Exception('Constructor argument should be either Doctrine_Query object or valid DQL query');      	
         }
     }
     /**
@@ -131,6 +133,10 @@ class Doctrine_Hook
 
                 $tableAlias = $this->query->getTableAlias($alias);
                 $table = $this->query->getTable($tableAlias);
+
+                if ( ! $table) {
+                    throw new Doctrine_Exception('Unknown table alias ' . $tableAlias);
+                }
 
                 if ($def = $table->getDefinitionOf($column)) {
                     if (isset($this->typeParsers[$def[0]])) {
