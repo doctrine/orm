@@ -101,7 +101,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
 
             $offset = intval($offset);
             if ($offset < 0) {
-                throw new Zend_Db_Adapter_Exception("LIMIT argument offset=$offset is not valid");
+                throw new Doctrine_Connection_Exception("LIMIT argument offset=$offset is not valid");
             }
     
             $orderby = stristr($query, 'ORDER BY');
@@ -174,7 +174,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
      */
     public function checkSequence($seqName)
     {
-        $query       = 'SELECT * FROM ' . $seqName;
+        $query = 'SELECT * FROM ' . $seqName;
         try {
             $this->exec($query);
         } catch(Doctrine_Connection_Exception $e) {
