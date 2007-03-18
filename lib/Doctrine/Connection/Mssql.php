@@ -97,42 +97,33 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
     public function modifyLimitQuery($query, $limit, $offset, $isManip = false)
     {
         if ($limit > 0) {
-            // we need the starting SELECT clause for later
-            $select = 'SELECT ';
-            if (preg_match('/^[[:space:]*SELECT[[:space:]]*DISTINCT/i', $query, $matches) == 1) {
-                $select .= 'DISTINCT ';
+            $count = intval($limit);
+
+            $offset = intval($offset);
+            if ($offset < 0) {
+                throw new Zend_Db_Adapter_Exception("LIMIT argument offset=$offset is not valid");
             }
-            $length = strlen($select);
-
-            // is there an offset?
-            if (! $offset) {
-                // no offset, it's a simple TOP count
-                return $select . ' TOP ' . $limit . substr($query, $length);
+    
+            $orderby = stristr($sql, 'ORDER BY');
+            if ($orderby !== false) {
+                $sort = (stripos($orderby, 'desc') !== false) ? 'desc' : 'asc';
+                $order = str_ireplace('ORDER BY', '', $orderby);
+                $order = trim(preg_replace('/ASC|DESC/i', '', $order));
             }
-
-            // the total of the count **and** the offset, combined.
-            // this will be used in the "internal" portion of the
-            // hacked-up statement.
-            $total = $limit + $offset;
-
-            // build the "real" order for the external portion.
-            $order = implode(',', $parts['order']);
-
-            // build a "reverse" order for the internal portion.
-            $reverse = $order;
-            $reverse = str_ireplace(" ASC",  " \xFF", $reverse);
-            $reverse = str_ireplace(" DESC", " ASC",  $reverse);
-            $reverse = str_ireplace(" \xFF", " DESC", $reverse);
-
-            // create a main statement that replaces the SELECT
-            // with a SELECT TOP
-            $main = $select . ' TOP ' . $total . substr($query, $length);
-
-            // build the hacked-up statement.
-            // do we really need the "as" aliases here?
-            $query = 'SELECT * FROM ('
-                   . 'SELECT TOP ' . $count . ' * FROM (' . $main . ') AS select_limit_rev ORDER BY '. $reverse
-                   . ') AS select_limit ORDER BY ' . $order;
+    
+            $sql = preg_replace('/^SELECT\s/i', 'SELECT TOP ' . ($count+$offset) . ' ', $sql);
+    
+            $sql = 'SELECT * FROM (SELECT TOP ' . $count . ' * FROM (' . $sql . ') AS inner_tbl';
+            if ($orderby !== false) {
+                $sql .= ' ORDER BY ' . $order . ' ';
+                $sql .= (stripos($sort, 'asc') !== false) ? 'DESC' : 'ASC';
+            }
+            $sql .= ') AS outer_tbl';
+            if ($orderby !== false) {
+                $sql .= ' ORDER BY ' . $order . ' ' . $sort;
+            }
+    
+            return $sql;
 
         }
 
@@ -145,7 +136,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
      * @return mixed array/string with version information or MDB2 error object
      */
     public function getServerVersion($native = false)
-    {    
+    {
         if ($this->serverInfo) {
             $serverInfo = $this->serverInfo;
         } else {
