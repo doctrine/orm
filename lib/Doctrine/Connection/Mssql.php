@@ -104,26 +104,26 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
                 throw new Zend_Db_Adapter_Exception("LIMIT argument offset=$offset is not valid");
             }
     
-            $orderby = stristr($sql, 'ORDER BY');
+            $orderby = stristr($query, 'ORDER BY');
             if ($orderby !== false) {
                 $sort = (stripos($orderby, 'desc') !== false) ? 'desc' : 'asc';
                 $order = str_ireplace('ORDER BY', '', $orderby);
                 $order = trim(preg_replace('/ASC|DESC/i', '', $order));
             }
     
-            $sql = preg_replace('/^SELECT\s/i', 'SELECT TOP ' . ($count+$offset) . ' ', $sql);
+            $query = preg_replace('/^SELECT\s/i', 'SELECT TOP ' . ($count+$offset) . ' ', $query);
     
-            $sql = 'SELECT * FROM (SELECT TOP ' . $count . ' * FROM (' . $sql . ') AS inner_tbl';
+            $query = 'SELECT * FROM (SELECT TOP ' . $count . ' * FROM (' . $query . ') AS inner_tbl';
             if ($orderby !== false) {
-                $sql .= ' ORDER BY ' . $order . ' ';
-                $sql .= (stripos($sort, 'asc') !== false) ? 'DESC' : 'ASC';
+                $query .= ' ORDER BY ' . $order . ' ';
+                $query .= (stripos($sort, 'asc') !== false) ? 'DESC' : 'ASC';
             }
-            $sql .= ') AS outer_tbl';
+            $query .= ') AS outer_tbl';
             if ($orderby !== false) {
-                $sql .= ' ORDER BY ' . $order . ' ' . $sort;
+                $query .= ' ORDER BY ' . $order . ' ' . $sort;
             }
     
-            return $sql;
+            return $query;
 
         }
 
