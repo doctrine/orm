@@ -75,7 +75,7 @@ class Doctrine_Cache_Sqlite extends Doctrine_Cache_Driver implements Countable
     {
         $sql    = 'INSERT INTO cache (id, data, expires) VALUES (?, ?, ?)';
 
-        $params = array($id, serialize($data), (time() + $lifespan));
+        $params = array($id, serialize($data), (time() + $lifeTime));
 
         return (bool) $this->conn->exec($sql, $params);
     }
@@ -89,7 +89,7 @@ class Doctrine_Cache_Sqlite extends Doctrine_Cache_Driver implements Countable
     {
         $sql    = 'DELETE FROM cache WHERE id = ?';
 
-        return (bool) $this->conn->exec($sql, array($md5));
+        return (bool) $this->conn->exec($sql, array($id));
     }
     /**
      * count
