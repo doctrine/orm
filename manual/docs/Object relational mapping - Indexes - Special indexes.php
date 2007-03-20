@@ -10,9 +10,7 @@ class Article
     {
     	\$this->hasColumn('name', 'string');
         \$this->hasColumn('content', 'string');
-    }
-    public function setUp() 
-    {
+
         \$this->index('content', array('fields' => 'content',
                                        'type' => 'fulltext'));
     }

@@ -27,9 +27,7 @@ class MultipleIndexTest extends Doctrine_Record
         \$this->hasColumn('name', 'string');
         \$this->hasColumn('code', 'string');
         \$this->hasColumn('age', 'integer');
-    }
-    public function setUp()
-    {
+
         \$this->index('myindex', array(
                       'fields' => array(
                                   'name' =>

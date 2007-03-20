@@ -11,9 +11,7 @@ class IndexTest extends Doctrine_Record
     public function setTableDefinition()
     {
         \$this->hasColumn('name', 'string');
-    }
-    public function setUp()
-    {
+
         \$this->index('myindex', array('fields' => 'name');
     }
 }
@@ -30,9 +28,7 @@ class MultiColumnIndexTest extends Doctrine_Record
     {
         \$this->hasColumn('name', 'string');
         \$this->hasColumn('code', 'string');
-    }
-    public function setUp()
-    {
+
         \$this->index('myindex', array('fields' => array('name', 'code')));
     }
 }
@@ -50,9 +46,7 @@ class MultipleIndexTest extends Doctrine_Record
         \$this->hasColumn('name', 'string');
         \$this->hasColumn('code', 'string');
         \$this->hasColumn('age', 'integer');
-    }
-    public function setUp()
-    {
+
         \$this->index('myindex', array('fields' => array('name', 'code')));
         \$this->index('ageindex', array('fields' => array('age'));
     }
