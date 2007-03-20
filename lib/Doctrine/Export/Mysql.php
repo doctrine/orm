@@ -303,7 +303,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 } else {
                     $oldFieldName = $fieldName;
                 }
-                $oldFieldName = $this->conn->quoteIdentifier($old_field_name, true);
+                $oldFieldName = $this->conn->quoteIdentifier($oldFieldName, true);
                 $query .= "CHANGE $oldFieldName " . $this->getDeclaration($field['definition']['type'], $fieldName, $field['definition']);
             }
         }

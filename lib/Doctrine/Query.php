@@ -135,7 +135,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $tableAlias = $this->getTableAlias($componentAlias);
 
         if ( ! isset($this->tables[$tableAlias]))
-            throw new Doctrine_Query_Exception('Unknown component path '.$componentPath);
+            throw new Doctrine_Query_Exception('Unknown component path '.$componentAlias);
 
         $table      = $this->tables[$tableAlias];
 
@@ -247,7 +247,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $tableAlias     = $this->getTableAlias($componentAlias);
 
         if ( ! isset($this->tables[$tableAlias])) {
-            throw new Doctrine_Query_Exception('Unknown component path ' . $componentPath);
+            throw new Doctrine_Query_Exception('Unknown component path ' . $componentAlias);
         }
         
         $root       = current($this->tables);
@@ -491,7 +491,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     {
         $class = 'Doctrine_Query_Having';
         $parser = new $class($this);
-        $this->parts['having'][] = $parser->parse($orderby);
+        $this->parts['having'][] = $parser->parse($having);
         
         return $this;
     }
@@ -1216,7 +1216,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 } else {
                     if ( ! (substr_count($term[$i], "'") & 1) &&
                          ! (substr_count($term[$i], "\"") & 1) &&
-                         ! (substr_count($term[$i], "´") & 1)
+                         ! (substr_count($term[$i], "ï¿½") & 1)
                        ) { $i++; }
                 }
             } else {
@@ -1231,7 +1231,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 } else {
                     if ( ! (substr_count($term[$i], "'") & 1) &&
                          ! (substr_count($term[$i], "\"") & 1) &&
-                         ! (substr_count($term[$i], "´") & 1)
+                         ! (substr_count($term[$i], "ï¿½") & 1)
                        ) { $i++; }
                 }
             }

@@ -43,12 +43,12 @@ class Doctrine_Connection_Db2 extends Doctrine_Connection
     public function modifyLimitQuery($query, $limit, $offset)
     {
         if ($limit <= 0)
-            return $sql;
+            return $query;
 
         if ($offset == 0) {
-            return $sql . ' FETCH FIRST '. $count .' ROWS ONLY';
+            return $query . ' FETCH FIRST '. $limit .' ROWS ONLY';
         } else {
-            $sqlPieces = explode('from', $sql);
+            $sqlPieces = explode('from', $query);
             $select = $sqlPieces[0];
             $table = $sqlPieces[1];
 
@@ -57,7 +57,7 @@ class Doctrine_Connection_Db2 extends Doctrine_Connection
             $sql = 'WITH OFFSET AS(' . $select . ', ROW_NUMBER() ' .
                'OVER(ORDER BY ' . $col[1] . ') AS dctrn_rownum FROM ' . $table . ')' .
                $select . 'FROM OFFSET WHERE dctrn_rownum BETWEEN ' . $offset .
-                   'AND ' . ($offset + $count - 1);
+                   'AND ' . ($offset + $limit - 1);
             return $sql;
         }
     }
