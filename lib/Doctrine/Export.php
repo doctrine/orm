@@ -594,6 +594,24 @@ class Doctrine_Export extends Doctrine_Connection_Module
         return implode(', ', $ret);
     }
     /**
+     * A method to return the required SQL string that fits between CREATE ... TABLE
+     * to create the table as a temporary table.
+     *
+     * Should be overridden in driver classes to return the correct string for the
+     * specific database type.
+     *
+     * The default is to return the string "TEMPORARY" - this will result in a
+     * SQL error for any database that does not support temporary tables, or that
+     * requires a different SQL command from "CREATE TEMPORARY TABLE".
+     *
+     * @return string The string required to be placed between "CREATE" and "TABLE"
+     *                to generate a temporary table, if possible.
+     */
+    public function getTemporaryTableQuery()
+    {
+        return 'TEMPORARY';
+    }
+    /**
      * getForeignKeyDeclaration
      * Obtain DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
      * of a field declaration to be used in statements like CREATE TABLE.
