@@ -66,6 +66,7 @@ abstract class Doctrine_Relation
                                   'onDelete'    => false,
                                   'onUpdate'    => false,
                                   'deferred'    => false,
+                                  'constraint'  => false,
                                   );
     /**
      * constructor
@@ -90,6 +91,8 @@ abstract class Doctrine_Relation
      *          alias                   relation alias
      *
      *          type                    the relation type, either Doctrine_Relation::ONE or Doctrine_Relation::MANY
+     *
+     *          constraint              boolean value, true if the relation needs referential integrity constraint
      *
      * The onDelete and onUpdate keys accept the following values:
      *
@@ -119,6 +122,8 @@ abstract class Doctrine_Relation
             }
             if (isset($definition[$key])) {
                 $def[$key] = $definition[$key];
+            } else {
+                $def[$key] = null;      	
             }
         }
 
@@ -132,6 +137,15 @@ abstract class Doctrine_Relation
     public function toArray() 
     {
         return $this->definition;
+    }
+    /**
+     * hasConstraint
+     *
+     * @return boolean
+     */
+    public function hasConstraint()
+    {
+        return $this->definition['constraint'];
     }
     /**
      * getAlias

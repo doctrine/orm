@@ -58,7 +58,7 @@ class Doctrine_Locking_Manager_Pessimistic
     {
         $this->conn = $conn;
 
-        if ($this->conn->getAttribute(Doctrine::ATTR_CREATE_TABLES) === true) {
+        if ($this->conn->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_TABLES) {
             $columns = array();
             $columns['object_type']        = array('type'    => 'string',
                                                    'length'  => 50,

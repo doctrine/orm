@@ -94,7 +94,8 @@ abstract class Doctrine_Configurable
                 }
                 break;
             case Doctrine::ATTR_CREATE_TABLES:
-                $value = (bool) $value;
+                $attribute = Doctrine::ATTR_EXPORT;
+                $value     = Doctrine::EXPORT_ALL;
                 break;
             case Doctrine::ATTR_ACCESSORS:
                 $accessors = array('none','get','set','both');
@@ -128,6 +129,7 @@ abstract class Doctrine_Configurable
             case Doctrine::ATTR_ACCESSOR_PREFIX_SET:
             case Doctrine::ATTR_EMULATE_DATABASE:
             case Doctrine::ATTR_DEFAULT_SEQUENCE:
+            case Doctrine::ATTR_EXPORT:
 
                 break;
             case Doctrine::ATTR_SEQCOL_NAME:

@@ -62,7 +62,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 // DATABASE ABSTRACTION tests
-/**
+
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -108,12 +108,13 @@ $test->addTestCase(new Doctrine_Export_TestCase());
 //$test->addTestCase(new Doctrine_Export_Reporter_TestCase());
 $test->addTestCase(new Doctrine_Export_Firebird_TestCase());
 $test->addTestCase(new Doctrine_Export_Informix_TestCase());
-$test->addTestCase(new Doctrine_Export_Mysql_TestCase());
+
 $test->addTestCase(new Doctrine_Export_Mssql_TestCase());
 $test->addTestCase(new Doctrine_Export_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Export_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Export_Sqlite_TestCase());
 
+$test->addTestCase(new Doctrine_Export_Mysql_TestCase());
 
 // Import module (not yet fully tested)
 //$test->addTestCase(new Doctrine_Import_TestCase());
@@ -153,6 +154,7 @@ $test->addTestCase(new Doctrine_Collection_TestCase());
 
 $test->addTestCase(new Doctrine_TreeStructure_TestCase());
 $test->addTestCase(new Doctrine_Relation_TestCase());
+
 $test->addTestCase(new Doctrine_Relation_Access_TestCase());
 $test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
 $test->addTestCase(new Doctrine_Relation_OneToOne_TestCase());
@@ -163,13 +165,15 @@ $test->addTestCase(new Doctrine_Boolean_TestCase());
 
 
 // Utility components
-$test->addTestCase(new Doctrine_Hook_TestCase());
+
 $test->addTestCase(new Doctrine_PessimisticLocking_TestCase());
 
 $test->addTestCase(new Doctrine_RawSql_TestCase());
 $test->addTestCase(new Doctrine_View_TestCase());
+
 $test->addTestCase(new Doctrine_Validator_TestCase());
 
+$test->addTestCase(new Doctrine_Hook_TestCase());
 
 // Db component
 $test->addTestCase(new Doctrine_Db_TestCase());
@@ -196,7 +200,7 @@ $test->addTestCase(new Doctrine_CustomResultSetOrderTestCase());
 //$test->addTestCase(new Doctrine_Collection_Offset_TestCase());
 
 
-// Query tests   */
+// Query tests
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
@@ -205,7 +209,7 @@ $test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());
 
 $test->addTestCase(new Doctrine_Query_TestCase());
 $test->addTestCase(new Doctrine_Query_ShortAliases_TestCase());
-
+$test->addTestCase(new Doctrine_Query_Delete_TestCase());
 $test->addTestCase(new Doctrine_Query_Where_TestCase());
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 $test->addTestCase(new Doctrine_Query_IdentifierQuoting_TestCase());
@@ -229,7 +233,6 @@ $test->addTestCase(new Doctrine_Cache_Apc_TestCase());
 $test->addTestCase(new Doctrine_Cache_Memcache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Sqlite_TestCase());
 
-$test->addTestCase(new Doctrine_Query_Delete_TestCase());
 
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());

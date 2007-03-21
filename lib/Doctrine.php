@@ -345,13 +345,13 @@ final class Doctrine
      */
     const EXPORT_NONE               = 0;
     /**
-     * export constraints
-     */
-    const EXPORT_CONSTRAINTS        = 1;
-    /**
      * export tables
      */
-    const EXPORT_TABLES             = 2;
+    const EXPORT_TABLES             = 1;
+    /**
+     * export constraints
+     */
+    const EXPORT_CONSTRAINTS        = 2;
     /**
      * export all
      */

@@ -758,6 +758,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         
         $this->tables[$name] = $table;
         
+        if ($table->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_TABLES) {
+            $table->export();
+        }
+
         return $table;
     }
     /**

@@ -32,6 +32,11 @@
  */
 class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase 
 {
+    public function prepareTables() 
+    { }
+    public function prepareData() 
+    { }
+
     public function testAlterTableThrowsExceptionWithoutValidTableName()
     {
         try {
@@ -248,7 +253,8 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, content VARCHAR(4), FULLTEXT INDEX myindex (content DESC), PRIMARY KEY(id)) ENGINE = MYISAM');
     }
-    public function testExportSupportsIndexes() 
+
+    public function testExportSupportsIndexes()
     {
         $r = new MysqlIndexTestRecord;
 
@@ -259,19 +265,45 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
     {
         $r = new MysqlForeignKeyTest;
 
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_foreign_key_test (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, parent_id BIGINT, FOREIGN KEY id REFERENCES mysql_foreign_key_test(parent_id) ON UPDATE RESTRICT ON DELETE CASCADE, PRIMARY KEY(id)) ENGINE = INNODB');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_foreign_key_test (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, parent_id BIGINT, FOREIGN KEY parent_id REFERENCES mysql_foreign_key_test(id), FOREIGN KEY id REFERENCES mysql_foreign_key_test(parent_id) ON UPDATE RESTRICT ON DELETE CASCADE, PRIMARY KEY(id)) ENGINE = INNODB');
     }
+
+    public function testExportSupportsForeignKeysWithoutAttributes()
+    {
+        $r = new MysqlForeignKeyTest2;
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_foreign_key_test2 (id BIGINT AUTO_INCREMENT, name TEXT, foreignkey BIGINT, FOREIGN KEY foreignkey REFERENCES mysql_foreign_key_test(id), PRIMARY KEY(id)) ENGINE = INNODB');
+
+    }
+    public function testExportSupportsForeignKeysForManyToManyRelations()
+    {
+        $r = new MysqlUser;
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_user (id BIGINT AUTO_INCREMENT, name TEXT, PRIMARY KEY(id)) ENGINE = INNODB');
+
+        $r->MysqlGroup[0];
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_group (id BIGINT AUTO_INCREMENT, name TEXT, PRIMARY KEY(id)) ENGINE = INNODB');
+
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_group_member (group_id BIGINT, user_id BIGINT, PRIMARY KEY(group_id, user_id)) ENGINE = INNODB');
+    }
+
 }
 class MysqlForeignKeyTest extends Doctrine_Record
 {
-    public function setTableDefinition() 
+    public function setTableDefinition()
     {
         $this->hasColumn('name', 'string', null);
         $this->hasColumn('code', 'integer', 4);
         $this->hasColumn('content', 'string', 4000);
         $this->hasColumn('parent_id', 'integer');
 
-        $this->hasMany('MysqlForeignKeyTest as Children', 
+        $this->hasOne('MysqlForeignKeyTest as Parent',
+                      'MysqlForeignKeyTest.parent_id'
+                       );
+
+        $this->hasMany('MysqlForeignKeyTest as Children',
                        'MysqlForeignKeyTest.parent_id',
                        array('onDelete' => 'CASCADE',
                              'onUpdate' => 'RESTRICT')
@@ -281,7 +313,43 @@ class MysqlForeignKeyTest extends Doctrine_Record
 
     }
 }
-class MysqlIndexTestRecord extends Doctrine_Record 
+class MysqlGroupMember extends Doctrine_Record
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('group_id', 'integer', null, 'primary');
+        $this->hasColumn('user_id', 'integer', null, 'primary');
+    }
+}
+class MysqlUser extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string', null);
+
+        $this->hasMany('MysqlGroup', 'MysqlGroupMember.group_id');
+    }
+}
+class MysqlGroup extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string', null);
+
+        $this->hasMany('MysqlUser', 'MysqlGroupMember.user_id');
+    }
+}
+class MysqlForeignKeyTest2 extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', null);
+        $this->hasColumn('foreignkey', 'integer');
+       
+        $this->hasOne('MysqlForeignKeyTest', 'MysqlForeignKeyTest2.foreignkey');
+    }
+}
+class MysqlIndexTestRecord extends Doctrine_Record
 {
     public function setTableDefinition() 
     {

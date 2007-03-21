@@ -295,9 +295,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                             }
 
                 */
-                if ($this->getAttribute(Doctrine::ATTR_CREATE_TABLES)) {
-                    $this->export();
-                }
+
 
             }
         } else {
@@ -362,13 +360,21 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     $primary[] = $name;
                 }
             }
-            /**
-            foreach ($this->getRelations() as $name => $relation) {
-                $fk = $relation->toArray();
-                $fk['foreignTable'] = $relation->getTable()->getTableName();
 
-                $options['foreignKeys'][] = $fk;
-            }  */
+            if ($this->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_CONSTRAINTS) {
+
+                foreach ($this->getRelations() as $name => $relation) {
+                    $fk = $relation->toArray();
+                    $fk['foreignTable'] = $relation->getTable()->getTableName();
+    
+                    if ($relation->hasConstraint()) {
+    
+                        $options['foreignKeys'][] = $fk;
+                    } elseif ($relation instanceof Doctrine_Relation_LocalKey) {
+                        $options['foreignKeys'][] = $fk;
+                    }
+                }
+            }
 
             $options['primary'] = $primary;
 
@@ -847,6 +853,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             unset($definition['field']);
 
             $definition['table'] = $this->conn->getTable($definition['class'], false);
+            $definition['constraint'] = false;
 
             if ($component == $this->options['name'] || in_array($component, $this->options['parents'])) {
 
@@ -872,6 +879,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     }
 
                     //$definition['foreign'] = $tmp;  
+                    $definition['constraint'] = true;
 
                     $relation = new Doctrine_Relation_ForeignKey($definition);
                 }
@@ -882,6 +890,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 if ( ! isset($defintion['local'])) {
                     $definition['local'] = $this->identifier;
                 }
+                
+                $definition['constraint'] = true;
+
                 // ONE-TO-MANY or ONE-TO-ONE
                 $relation = new Doctrine_Relation_ForeignKey($definition);
 
@@ -914,7 +925,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 if ($e2[0] != $component) {
                     throw new Doctrine_Table_Exception($e2[0] . ' doesn\'t match ' . $component);
                 }
-                $associationTable = $this->conn->getTable($e2[0], false);
+                $associationTable = $this->conn->getTable($e2[0]);
 
                 if (count($fields) > 1) {
                     // SELF-REFERENCING THROUGH JOIN TABLE

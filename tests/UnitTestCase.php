@@ -29,7 +29,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
         $this->manager   = Doctrine_Manager::getInstance();
         $this->manager->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_IMMEDIATE);
-        
+        $this->manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);        
 
         $this->tables = array_merge($this->tables, 
                         array("entity",
@@ -92,6 +92,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->listener = $this->manager->getAttribute(Doctrine::ATTR_LISTENER);
 
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
+
         } catch(Doctrine_Manager_Exception $e) {
             if($this->driverName == 'main') {
                 $this->dbh = Doctrine_Db::getConnection('sqlite::memory:');

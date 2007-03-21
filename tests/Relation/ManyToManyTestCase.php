@@ -5,7 +5,7 @@ class M2MTest extends Doctrine_Record {
         $this->hasColumn('child_id', 'integer');
     }
     public function setUp() {
-        $this->ownsMany('OwnsOneToManyWithAlias as AliasO2M', 'AliasO2M.component_id');
+
         $this->hasMany('RTC1 as RTC1', 'JC1.c1_id');
         $this->hasMany('RTC2 as RTC2', 'JC1.c1_id');
         $this->hasMany('RTC3 as RTC3', 'JC2.c1_id');
@@ -155,9 +155,10 @@ class Doctrine_Relation_ManyToMany_TestCase extends Doctrine_UnitTestCase {
     }
     
     public function testUnknownManyToManyRelation() {
-        $component = new RelationErrorTest();
-        
         try {
+            $component = new RelationErrorTest();
+        
+
             $rel = $component->getTable()->getRelation('RTCUnknown');
             $this->fail();
         } catch(Doctrine_Table_Exception $e) {
@@ -211,7 +212,6 @@ class Doctrine_Relation_ManyToMany_TestCase extends Doctrine_UnitTestCase {
 
     public function testManyToManyHasRelationWithAliases() {
         $component = new M2MTest();
-        $component->AliasO2M;
         
         try {
             $rel = $component->getTable()->getRelation('RTC1');
