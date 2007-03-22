@@ -1121,9 +1121,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if ( ! is_array($key)) {
             $key = array($key);
         }
+
         foreach ($key as $k) {
             if ( ! isset($this->data[$k])) {
-                throw new Doctrine_Exception("Primary key value for $k wasn't found");
+                throw new Doctrine_Table_Exception("Primary key value for $k wasn't found");
             }
             $id[] = $this->data[$k];
         }

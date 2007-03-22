@@ -159,14 +159,20 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         }
         
         // sqlite doesn't support foreign key declaration but it parses those anyway
+        
+        $fk = array();
         if (isset($options['foreignKeys']) && ! empty($options['foreignKeys'])) {
-            foreach($options['foreignKeys'] as $definition) {
-                $queryFields .= ', ' . $this->getForeignKeyDeclaration($definition);
+            foreach ($options['foreignKeys'] as $definition) {
+                //$queryFields .= ', ' . $this->getForeignKeyDeclaration($definition);
+
+                if (isset($definition['onDelete'])) {
+                    $fk[] = $definition;
+                }
             }
         }
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
-            foreach($options['indexes'] as $index => $definition) {
+            foreach ($options['indexes'] as $index => $definition) {
                 $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
             }
         }
@@ -174,7 +180,38 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
 
-        return $this->conn->exec($query);
+        try {
+            if ( ! empty($fk)) {
+                $this->conn->beginTransaction();
+            }
+            $ret   = $this->conn->exec($query);
+
+            if ( ! empty($fk)) {
+                foreach ($fk as $definition) {
+
+                    $query = 'CREATE TRIGGER doctrine_' . $name . '_cscd_delete '
+                           . 'AFTER DELETE ON ' . $name . ' FOR EACH STATEMENT '
+                           . 'BEGIN '
+                           . 'DELETE FROM ' . $definition['foreignTable'] . ' WHERE ';
+
+                    $local = (array) $definition['local'];
+                    foreach((array) $definition['foreign'] as $k => $field) {
+                        $query .= $field . ' = old.' . $local[$k] . ';';
+                    }
+
+                    $query .= 'END;';
+
+                    $this->conn->exec($query);
+                }
+
+                $this->conn->commit();
+            }
+        } catch(Doctrine_Exception $e) {
+
+            $this->conn->rollback();
+
+            throw $e;
+        }
     }
     /**
      * create sequence
