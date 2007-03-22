@@ -157,6 +157,13 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         if ( ! $autoinc && isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields.= ', PRIMARY KEY('.implode(', ', array_values($options['primary'])).')';
         }
+        
+        // sqlite doesn't support foreign key declaration but it parses those anyway
+        if (isset($options['foreignKeys']) && ! empty($options['foreignKeys'])) {
+            foreach($options['foreignKeys'] as $definition) {
+                $queryFields .= ', ' . $this->getForeignKeyDeclaration($definition);
+            }
+        }
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach($options['indexes'] as $index => $definition) {

@@ -263,16 +263,16 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
 
     public function testExportSupportsForeignKeys()
     {
-        $r = new MysqlForeignKeyTest;
+        $r = new ForeignKeyTest;
 
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_foreign_key_test (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, parent_id BIGINT, FOREIGN KEY parent_id REFERENCES mysql_foreign_key_test(id), FOREIGN KEY id REFERENCES mysql_foreign_key_test(parent_id) ON UPDATE RESTRICT ON DELETE CASCADE, PRIMARY KEY(id)) ENGINE = INNODB');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE foreign_key_test (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, parent_id BIGINT, FOREIGN KEY parent_id REFERENCES foreign_key_test(id), FOREIGN KEY id REFERENCES foreign_key_test(parent_id) ON UPDATE RESTRICT ON DELETE CASCADE, PRIMARY KEY(id)) ENGINE = INNODB');
     }
 
     public function testExportSupportsForeignKeysWithoutAttributes()
     {
-        $r = new MysqlForeignKeyTest2;
+        $r = new ForeignKeyTest2;
 
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_foreign_key_test2 (id BIGINT AUTO_INCREMENT, name TEXT, foreignkey BIGINT, FOREIGN KEY foreignkey REFERENCES mysql_foreign_key_test(id), PRIMARY KEY(id)) ENGINE = INNODB');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE foreign_key_test2 (id BIGINT AUTO_INCREMENT, name TEXT, foreignkey BIGINT, FOREIGN KEY foreignkey REFERENCES foreign_key_test(id), PRIMARY KEY(id)) ENGINE = INNODB');
 
     }
     public function testExportSupportsForeignKeysForManyToManyRelations()
@@ -290,7 +290,7 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
     }
 
 }
-class MysqlForeignKeyTest extends Doctrine_Record
+class ForeignKeyTest extends Doctrine_Record
 {
     public function setTableDefinition()
     {
@@ -299,12 +299,12 @@ class MysqlForeignKeyTest extends Doctrine_Record
         $this->hasColumn('content', 'string', 4000);
         $this->hasColumn('parent_id', 'integer');
 
-        $this->hasOne('MysqlForeignKeyTest as Parent',
-                      'MysqlForeignKeyTest.parent_id'
+        $this->hasOne('ForeignKeyTest as Parent',
+                      'ForeignKeyTest.parent_id'
                        );
 
-        $this->hasMany('MysqlForeignKeyTest as Children',
-                       'MysqlForeignKeyTest.parent_id',
+        $this->hasMany('ForeignKeyTest as Children',
+                       'ForeignKeyTest.parent_id',
                        array('onDelete' => 'CASCADE',
                              'onUpdate' => 'RESTRICT')
                        );
@@ -339,14 +339,14 @@ class MysqlGroup extends Doctrine_Record
         $this->hasMany('MysqlUser', 'MysqlGroupMember.user_id');
     }
 }
-class MysqlForeignKeyTest2 extends Doctrine_Record 
+class ForeignKeyTest2 extends Doctrine_Record
 {
     public function setTableDefinition() 
     {
         $this->hasColumn('name', 'string', null);
         $this->hasColumn('foreignkey', 'integer');
        
-        $this->hasOne('MysqlForeignKeyTest', 'MysqlForeignKeyTest2.foreignkey');
+        $this->hasOne('ForeignKeyTest', 'ForeignKeyTest2.foreignkey');
     }
 }
 class MysqlIndexTestRecord extends Doctrine_Record

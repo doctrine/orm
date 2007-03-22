@@ -144,9 +144,16 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         $queryFields = $this->getFieldDeclarationList($fields);
 
+        if (isset($options['foreignKeys']) && ! empty($options['foreignKeys'])) {
+            foreach($options['foreignKeys'] as $definition) {
+                $queryFields .= ', ' . $this->getForeignKeyDeclaration($definition);
+            }
+        }
+
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
         }
+        
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach($options['indexes'] as $index => $definition) {
                 $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);

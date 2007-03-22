@@ -46,7 +46,7 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10), type INTEGER, PRIMARY KEY(name, type))');
     }
-    public function testCreateTableSupportsIndexes() 
+    public function testCreateTableSupportsIndexes()
     {
         $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
                          'name' => array('type' => 'string', 'length' => 4),
@@ -90,6 +90,12 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase {
         $this->export->createTable('sometable', $fields, $options);
         
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER UNSIGNED PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id ASC, name DESC))');
+    }
+    public function testExportSupportsForeignKeys()
+    {
+        $r = new ForeignKeyTest;
+        
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE foreign_key_test (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(2147483647), code INTEGER, content VARCHAR(4000), parent_id INTEGER, FOREIGN KEY parent_id REFERENCES foreign_key_test(id), FOREIGN KEY id REFERENCES foreign_key_test(parent_id) ON UPDATE RESTRICT ON DELETE CASCADE)');
     }
 }
 ?>
