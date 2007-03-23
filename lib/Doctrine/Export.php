@@ -494,6 +494,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *          Text value with the default COLLATION for this field.
      *      unique
      *          unique constraint
+     *      check   
+     *          column check constraint
      *
      * @return string  DBMS specific SQL code portion that should be used to
      *      declare the specified field.
@@ -513,6 +515,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         $unique    = (isset($field['unique']) && $field['unique']) ?
                     ' ' . $this->getUniqueFieldDeclaration() : '';
+                    
+        $check     = (isset($field['check']) && $field['check']) ?
+                    ' ' . $field['check'] : '';
 
         $method = 'get' . $field['type'] . 'Declaration';
 
@@ -521,7 +526,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         } else {
             $dec = $this->conn->dataDict->getNativeDeclaration($field);
         }
-        return $this->conn->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $unique . $collation;
+        return $this->conn->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $unique . $check . $collation;
     }
     /**
      * getDefaultDeclaration
