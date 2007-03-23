@@ -711,7 +711,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         if (isset($definition['name'])) {
             $sql .= 'CONSTRAINT ' . $definition['name'] . ' ';
         }
-        $sql .= 'FOREIGN KEY ';
+        $sql .= 'FOREIGN KEY (';
 
         if ( ! isset($definition['local'])) {
             throw new Doctrine_Export_Exception('Local reference field missing from definition.');
@@ -730,7 +730,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $definition['foreign'] = array($definition['foreign']);
         }
         $sql .= implode(', ', array_map(array($this->conn, 'quoteIdentifier'), $definition['local']))
-              . ' REFERENCES '
+              . ') REFERENCES '
               . $definition['foreignTable'] . '('
               . implode(', ', array_map(array($this->conn, 'quoteIdentifier'), $definition['foreign'])) . ')';
         
