@@ -27,7 +27,11 @@ class Order extends Doctrine_Record
     }
     public function setUp()
     {
-        $this->hasOne('Product', 'Order.product_id', array('constraint' => true));
+        $this->hasOne('Product', 'Order.product_id');
+        
+        // foreign key columns should *always* have indexes
+        
+        $this->index('product_id', array('fields' => 'product_id'));
     }
 }
 </code>
@@ -36,8 +40,9 @@ When exported the class 'Order' would execute the following sql:
 
 CREATE TABLE orders (
     order_id integer PRIMARY KEY,
-    product_no integer REFERENCES products (id),
-    quantity integer
+    product_id integer REFERENCES products (id),
+    quantity integer,
+    INDEX product_id_idx (product_id)
 )
 
 Now it is impossible to create orders with product_no entries that do not appear in the products table.
