@@ -103,22 +103,22 @@ class Doctrine_Import_Builder
 
             $a = array();
 
-            if ($column['default']) {
+            if (isset($column['default']) && $column['default']) {
                 $a[] = '\'default\' => ' . var_export($column['default'], true);
             }
-            if ($column['notnull']) {
+            if (isset($column['notnull']) && $column['notnull']) {
                 $a[] = '\'notnull\' => true';
             }
-            if ($column['primary']) {
+            if (isset($column['primary']) && $column['primary']) {
                 $a[] = '\'primary\' => true';
             }
-            if ($column['autoinc']) {
+            if (isset($column['autoinc']) && $column['autoinc']) {
                 $a[] = '\'autoincrement\' => true';
             }
-            if ($column['unique']) {
+            if (isset($column['unique']) && $column['unique']) {
                 $a[] = '\'unique\' => true';
             }
-            if ($column['unsigned']) {
+            if (isset($column['unsigned']) && $column['unsigned']) {
                 $a[] = '\'unsigned\' => true';
             }
 
