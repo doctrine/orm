@@ -228,7 +228,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                                         array('integer',
                                                               20,
                                                               array('autoincrement' => true,
-                                                                    'primary'       => true
+                                                                    'primary'       => true,
+                                                                    'unsigned'      => true,
                                                                     )
                                                               )
                                                         ), $this->columns);
@@ -367,6 +368,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     $fk = $relation->toArray();
                     $fk['foreignTable'] = $relation->getTable()->getTableName();
     
+                    if ($relation->getTable() === $this && in_array($relation->getLocal(), $primary)) {
+                        continue;                                                                                 	
+                    }
+
                     if ($relation->hasConstraint()) {
     
                         $options['foreignKeys'][] = $fk;
