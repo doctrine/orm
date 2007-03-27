@@ -91,7 +91,52 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      *
      * @return void
      */
-    public function createTableSql($name, array $fields, array $options = array()) {
+    public function createTable($name, array $fields, array $options = array()) 
+    {
+    	$sql = $this->createTableSql($name, $fields, $options);
+
+        $this->conn->exec('SET FOREIGN_KEY_CHECKS = 0');	
+        
+        $this->conn->execute($sql);
+    
+        $this->conn->exec('SET FOREIGN_KEY_CHECKS = 1');
+    }
+    /**
+     * create a new table
+     *
+     * @param string $name   Name of the database that should be created
+     * @param array $fields  Associative array that contains the definition of each field of the new table
+     *                       The indexes of the array entries are the names of the fields of the table an
+     *                       the array entry values are associative arrays like those that are meant to be
+     *                       passed with the field definitions to get[Type]Declaration() functions.
+     *                          array(
+     *                              'id' => array(
+     *                                  'type' => 'integer',
+     *                                  'unsigned' => 1
+     *                                  'notnull' => 1
+     *                                  'default' => 0
+     *                              ),
+     *                              'name' => array(
+     *                                  'type' => 'text',
+     *                                  'length' => 12
+     *                              ),
+     *                              'password' => array(
+     *                                  'type' => 'text',
+     *                                  'length' => 12
+     *                              )
+     *                          );
+     * @param array $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                              'type'    => 'innodb',
+     *                          );
+     *
+     * @return void
+     */
+    public function createTableSql($name, array $fields, array $options = array()) 
+    {
         if ( ! $name)
             throw new Doctrine_Export_Exception('no valid table name specified');
 
