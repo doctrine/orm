@@ -283,7 +283,9 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
         */
 
         $notnull  = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
-        $unsigned = (isset($field['unsigned']) && $field['unsigned']) ? ' UNSIGNED' : '';
+
+        // sqlite does not support unsigned attribute for autoinremented fields
+        $unsigned = (isset($field['unsigned']) && $field['unsigned'] && ! $field['autoincrement']) ? ' UNSIGNED' : '';
 
         $name = $this->conn->quoteIdentifier($name, true);
         return $name . ' ' . $type . $unsigned . $default . $notnull . $autoinc;
