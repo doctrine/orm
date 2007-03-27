@@ -11,6 +11,7 @@ Getting started
         Introduction
         Export options
 Connection management
+    DSN, the Data Source Name
     Opening a new connection
     Lazy-connecting to database
     Managing connections
