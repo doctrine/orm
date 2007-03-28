@@ -219,12 +219,14 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
         } catch(Doctrine_Validator_Exception $e) {
             $this->pass();
             $a = $e->getInvalidRecords();
+            //var_dump($a[1]->getErrorStack());
         }
-
-        $this->assertTrue(is_array($a));
         
-        $emailStack = $a[array_search($user->Email, $a)]->errorStack();
-        $userStack  = $a[array_search($user, $a)]->errorStack();
+        $this->assertTrue(is_array($a));
+        //var_dump(array_search($user, $a));
+        $emailStack = $user->Email->errorStack();
+        $userStack  = $user->errorStack();
+        //var_dump($userStack);
 
         $this->assertTrue(in_array('email', $emailStack['address']));
         $this->assertTrue(in_array('length', $userStack['name']));
