@@ -35,7 +35,9 @@
  */
 class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
     public function prepareTables() {
-        $this->tables[] = "ValidatorTest";
+        $this->tables[] = 'ValidatorTest';
+        $this->tables[] = 'ValidatorTest_Person';
+        $this->tables[] = 'ValidatorTest_FootballPlayer';
         parent::prepareTables();
     }
 
@@ -296,6 +298,56 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
         } catch (Doctrine_Validator_Exception $ex) {
             $errors = $user->errorStack();
             $this->assertTrue(in_array('pwNotTopSecret', $errors['password']));
+        }
+        
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
+    }
+    
+    /*
+    public function testIssue()
+    {
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
+        
+        try {
+            $person = new ValidatorTest_Person();
+            $person->name = '';  // will raise a validation exception since name must be 'notblank'
+            $person->is_football_player = true;
+        
+            $person->ValidatorTest_FootballPlayer->team_name = 'liverpool';
+            $person->ValidatorTest_FootballPlayer->goals_count = 2;
+        
+            $person->save();
+        }
+        catch(Doctrine_Validator_Exception $e) {
+            $this->fail("test");
+            //var_dump($person->getErrorStack());
+            //var_dump($person->ValidatorTest_FootballPlayer->getErrorStack());
+        }
+        
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
+    }
+    */
+    
+    /**
+     * Enter description here...
+     *
+     * @todo move to a separate test file (tests/Validator/UniqueTestCase) .
+     */
+    public function testSetSameUniqueValueThrowsNoException()
+    {
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
+        
+        $r = new ValidatorTest_Person();
+        $r->name = 'value';
+        $r->save();
+        
+        $r = $this->connection->getTable('ValidatorTest_Person')->findAll()->getFirst();
+        $r->name = 'value';
+        try {
+           $r->save();
+        }
+        catch(Doctrine_Validator_Exception $e) {
+           $this->fail("Validator exception raised without reason!");
         }
         
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);

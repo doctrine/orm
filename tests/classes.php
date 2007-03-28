@@ -602,4 +602,24 @@ class NestReference extends Doctrine_Record
         $this->hasColumn('child_id', 'integer', 4, 'primary');
     }
 }
+
+class ValidatorTest_Person extends Doctrine_Record {
+   public function setTableDefinition() {
+      $this->hasColumn('name', 'string', 255, array('notblank', 'unique'));
+      $this->hasColumn('is_football_player', 'boolean');
+   }
+   
+   public function setUp() {
+      $this->ownsOne('ValidatorTest_FootballPlayer', 'ValidatorTest_FootballPlayer.person_id');
+   }
+}
+
+class ValidatorTest_FootballPlayer extends Doctrine_Record {
+   public function setTableDefinition() {
+      $this->hasColumn('person_id', 'string', 255, 'primary');     
+      $this->hasColumn('team_name', 'string', 255);
+      $this->hasColumn('goals_count', 'integer', 4);
+   }
+} 
+
 ?>
