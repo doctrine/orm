@@ -1,6 +1,7 @@
 Getting started
     Requirements
     Installation
+        Include and autoload
     Compiling
     Starting new project
     Working with existing databases
