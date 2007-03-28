@@ -2,9 +2,14 @@ The installation of doctrine is very easy. Just get the latest revision of Doctr
 
 You need a SVN(Subversion) client for downloading Doctrine.
 
-To check out Doctrine using the **svn** command line tool in the current directory use:
+In order to check out Doctrine in the current directory using the **svn** command line tool use the following code: 
 <code type="bash">
 svn co http://doctrine.pengus.net/svn/trunk . 
 </code>
-Do check out using a GUI based tool like [http://tortoisesvn.tigris.org/ TortoiseSVN] simply use the http://doctrine.pengus.net/svn/trunk in the the path field. No username or password is neccesary. 
+
+If you do not have a SVN client, chose one from the list below. Find the **Checkout** option and enter http://doctrine.pengus.net/svn/trunk in the **path** or **repository url** parameter. There is no need for a username or password to check out Doctrine. 
+
+* [http://tortoisesvn.tigris.org/ TortoiseSVN] a Windows application that  integrates into Windows Explorer
+* [http://www.apple.com/downloads/macosx/development_tools/svnx.html svnx] a  Mac OS X GUI svn application 
+* Eclipse has SVN integration through the [http://subclipse.tigris.org/ subeclipse] plugin
 

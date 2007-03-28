@@ -2,16 +2,16 @@ Let's consider we have a mysql database called test with a single table called '
 
 The file table has been created with the following sql statement:
 
-CREATE TABLE file (
-    id INT AUTO_INCREMENT NOT NULL,
+{{CREATE TABLE file (
+    id INT UNSIGNED AUTO_INCREMENT NOT NULL,
     name VARCHAR(150),
     size BIGINT,
     modified BIGINT,
     type VARCHAR(10),
     content TEXT,
     path TEXT,
-    PRIMARY KEY(id))
-    
+    PRIMARY KEY(id))}}
+
 Now we would like to convert it into Doctrine record class. It can be achieved easily with the following code snippet:
 
 <code type='php'>
@@ -39,6 +39,7 @@ class File extends Doctrine_Record
     {
         $this->hasColumn('id', 'integer', 4, array('notnull' => true,
                                                    'primary' => true,
+                                                   'unsigned' > true,
                                                    'autoincrement' => true));
         $this->hasColumn('name', 'string', 150);
         $this->hasColumn('size', 'integer', 8);
