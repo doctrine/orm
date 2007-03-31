@@ -81,7 +81,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         if ( ! ($table instanceof Doctrine_Table)) {
             $table = Doctrine_Manager::getInstance()
-                        ->getCurrentConnection()
                         ->getTable($table);
         }
         $this->table = $table;

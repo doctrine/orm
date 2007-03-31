@@ -522,7 +522,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function unserialize($serialized)
     {
         $manager    = Doctrine_Manager::getInstance();
-        $connection    = $manager->getCurrentConnection();
+        $connection = $manager->getConnectionForComponent(get_class($this));
 
         $this->oid  = self::$index;
         self::$index++;
