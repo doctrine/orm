@@ -288,6 +288,15 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         return $this;
     }
     /**
+     * getConnectionName
+     *
+     * @return string   the name of the connection
+     */
+    public function getConnectionName(Doctrine_Connection $conn) 
+    {
+        return array_search($conn, $this->connections, true);	
+    }
+    /**
      * bindComponent
      * binds given component to given connection
      * this means that when ever the given component uses a connection
