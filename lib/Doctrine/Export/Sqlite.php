@@ -190,7 +190,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
                 foreach ($fk as $definition) {
 
                     $query = 'CREATE TRIGGER doctrine_' . $name . '_cscd_delete '
-                           . 'AFTER DELETE ON ' . $name . ' FOR EACH STATEMENT '
+                           . 'AFTER DELETE ON ' . $name . ' FOR EACH ROW '
                            . 'BEGIN '
                            . 'DELETE FROM ' . $definition['foreignTable'] . ' WHERE ';
 

@@ -172,7 +172,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @throws Doctrine_Table_Exception         if there is already an instance of this table
      * @return void
      */
-    public function __construct($name, Doctrine_Connection $conn, $allowExport)
+    public function __construct($name, Doctrine_Connection $conn)
     {
         $this->conn = $conn;
 
@@ -684,7 +684,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function getBound($name)
     {
         if ( ! isset($this->bound[$name])) {
-            throw new Doctrine_Table_Exception('Unknown bound '.$name);
+            throw new Doctrine_Table_Exception('Unknown bound ' . $name);
         }
         return $this->bound[$name];
     }
@@ -737,7 +737,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @return void
      */
     public function unbindAll()
-    {
+    {            throw new Exception();
         $this->bound        = array();
         $this->relations    = array();
         $this->boundAliases = array();
@@ -850,6 +850,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if (isset($this->relations[$name])) {
             return $this->relations[$name];
         }
+
+        if ( ! $this->conn->hasTable($this->options['name'])) {
+            $allowExport = true;
+        } else {
+            $allowExport = false;
+        }
+
         if (isset($this->bound[$name])) {
 
             $definition = $this->bound[$name];
@@ -857,7 +864,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             list($component, $definition['foreign']) = explode('.', $definition['field']);
             unset($definition['field']);
 
-            $definition['table'] = $this->conn->getTable($definition['class'], false);
+            $definition['table'] = $this->conn->getTable($definition['class'], $allowExport);
             $definition['constraint'] = false;
 
             if ($component == $this->options['name'] || in_array($component, $this->options['parents'])) {
@@ -930,7 +937,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 if ($e2[0] != $component) {
                     throw new Doctrine_Table_Exception($e2[0] . ' doesn\'t match ' . $component);
                 }
-                $associationTable = $this->conn->getTable($e2[0]);
+                $associationTable = $this->conn->getTable($e2[0], $allowExport);
 
                 if (count($fields) > 1) {
                     // SELF-REFERENCING THROUGH JOIN TABLE
@@ -984,6 +991,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
             return $this->relations[$name];
         }
+ 
 
         // load all relations
         $this->getRelations();
@@ -1002,7 +1010,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     final public function getRelations()
     {
-        $a = array();
         foreach ($this->bound as $k => $v) {
             $this->getRelation($k);
         }

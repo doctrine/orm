@@ -148,7 +148,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         } else {
             $class  = get_class($this);
             // get the table of this class
-            $this->_table = Doctrine_Manager::getInstance()->getConnectionForComponent($class)->getTable(get_class($this));
+            $this->_table = Doctrine_Manager::getInstance()
+                            ->getTable(get_class($this));
+
             $exists = false;
         }
 
@@ -322,12 +324,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function errorStack($stack = null)
     {
-    	if($stack !== null) {
-    	    if( ! ($stack instanceof Doctrine_Validator_ErrorStack)) {
-    	       throw new Doctrine_Record_Exception('Argument should be an instance of Doctrine_Validator_ErrorStack.');
-    	    }
+        if($stack !== null) {
+            if( ! ($stack instanceof Doctrine_Validator_ErrorStack)) {
+               throw new Doctrine_Record_Exception('Argument should be an instance of Doctrine_Validator_ErrorStack.');
+            }
             $this->_errorStack = $stack;
-    	} else {
+        } else {
             return $this->_errorStack;
         }
     }
@@ -1548,7 +1550,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function index($name, array $definition = array())
     {
-    	if ( ! $definition) {
+        if ( ! $definition) {
             return $this->_table->getIndex($name);
         } else {
             return $this->_table->addIndex($name, $definition);

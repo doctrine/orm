@@ -49,7 +49,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
         foreach ($tables as $k => $table) {
 
             if ( ! ($table instanceof Doctrine_Table)) {
-                $table = $this->conn->getTable($table);
+                $table = $this->conn->getTable($table, false);
             }
             $nm     = $table->getComponentName();
 

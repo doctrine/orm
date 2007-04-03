@@ -43,6 +43,10 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     protected $tables           = array();
     /**
+     * @var array $exported
+     */
+    protected $exported         = array();
+    /**
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName;
@@ -751,15 +755,59 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $class = $name . 'Table';
 
         if (class_exists($class) && in_array('Doctrine_Table', class_parents($class))) {
-            $table = new $class($name, $this, $allowExport);
+            $table = new $class($name, $this);
         } else {
-            $table = new Doctrine_Table($name, $this, $allowExport);
+            $table = new Doctrine_Table($name, $this);
         }
-        
+
         $this->tables[$name] = $table;
-        
-        if ($table->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_TABLES) {
-            $table->export();
+
+        if ($allowExport) {
+            
+            // the following is an algorithm for loading all 
+            // the related tables for all loaded tables
+
+            $next = count($this->tables);
+            $prev = count($this->exported);
+            $stack = $this->exported;
+            while ($prev < $next) {
+                $prev = count($this->tables);
+
+                foreach($this->tables as $name => $tableObject) {
+                    if (isset($stack[$name])) {
+                        continue;
+                    } else {
+                       $stack[$name] = true;
+                    }
+
+                    $tableObject->getRelations();
+
+                    //$this->getTable('RelationTestChild')->getRelation('Children');
+                }
+                $next = count($this->tables);
+            }
+
+
+            // when all the tables are loaded we build the array in which the order of the tables is
+            // relationally correct so that then those can be created in the given order)
+
+            $names = array_keys($this->tables);
+
+            $names = $this->unitOfWork->buildFlushTree($names);
+
+            foreach($names as $name) {
+                $tableObject = $this->tables[$name];
+
+                if (isset($this->exported[$name])) {
+                    continue;
+                }
+
+                if ($tableObject->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_TABLES) {
+
+                    $tableObject->export();
+                }
+                $this->exported[$name] = true;
+            }
         }
 
         return $table;
@@ -863,6 +911,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function evictTables()
     {
         $this->tables = array();
+        $this->exported = array();
     }
     /**
      * close
