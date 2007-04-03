@@ -355,6 +355,11 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
                     throw new Doctrine_Db_Exception('No hostname set in data source name');
                 }
                 $parts['dsn'] = $parts["scheme"].":host=".$parts["host"].";dbname=".$parts["database"];
+                
+                if (isset($parts['port'])) {
+                    // append port to dsn if supplied
+                    $parts['dsn'] .= ';port=' . $parts['port'];
+                }
                 break;
             default:
                 throw new Doctrine_Db_Exception('Unknown driver '.$parts['scheme']);
