@@ -678,13 +678,15 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $keyword = ($v == 'onUpdate') ? ' ON UPDATE ' : ' ON DELETE ';
 
             if (isset($definition[$v])) {
-                switch ($definition[$v]) {
+                $upper = strtoupper($definition[$v]);
+                
+                switch ($upper) {
                     case 'CASCADE':
                     case 'SET NULL':
                     case 'NO ACTION':
                     case 'RESTRICT':
                     case 'SET DEFAULT':
-                        $sql .= $keyword . $definition[$v];
+                        $sql .= $keyword . $upper;
                     break;
                     default:
                         throw new Doctrine_Export_Exception('Unknown foreign key referential action option given.');
