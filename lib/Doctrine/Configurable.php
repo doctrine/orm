@@ -96,7 +96,7 @@ abstract class Doctrine_Configurable
             case Doctrine::ATTR_CREATE_TABLES:
                     $attribute = Doctrine::ATTR_EXPORT;
                 if ($value) {
-                    $value = Doctrine::EXPORT_ALL;
+                    $value = Doctrine::EXPORT_TABLES;
                 } else {
                     $value = Doctrine::EXPORT_NONE;
                 }
