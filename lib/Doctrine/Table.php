@@ -229,7 +229,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                                               20,
                                                               array('autoincrement' => true,
                                                                     'primary'       => true,
-                                                                    'unsigned'      => true,
                                                                     )
                                                               )
                                                         ), $this->columns);
