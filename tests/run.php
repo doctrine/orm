@@ -222,6 +222,7 @@ $test->addTestCase(new Doctrine_Query_Having_TestCase());
 $test->addTestCase(new Doctrine_Query_From_TestCase());
 $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 $test->addTestCase(new Doctrine_ColumnAlias_TestCase());
+$test->addTestCase(new Doctrine_ColumnAggregationInheritance_TestCase());
 $test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Join_TestCase());
@@ -238,6 +239,7 @@ $test->addTestCase(new Doctrine_Cache_Sqlite_TestCase());
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
+
 
 class MyReporter extends HtmlReporter {
     public function paintHeader() {}

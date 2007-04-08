@@ -1145,13 +1145,53 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if (isset($this->identityMap[$id])) {
             $record = $this->identityMap[$id];
         } else {
-            $record = new $this->options['name']($this);
+						$recordName = $this->getClassnameToReturn();
+						$record = new $recordName($this);
             $this->identityMap[$id] = $record;
         }
         $this->data = array();
 
         return $record;
     }
+
+	/**
+	 * Get the classname to return. Most often this is just the options['name']
+	 *
+	 * Check the subclasses option and the inheritanceMap for each subclass to see 
+	 * if all the maps in a subclass is met. If this is the case return that 
+	 * subclass name. If no subclasses match or if there are no subclasses defined 
+	 * return the name of the class for this tables record.
+	 *
+	 * @todo this function could use reflection to check the first time it runs 
+	 * if the subclassing option is not set. 
+	 *
+	 * @return string The name of the class to create
+	 *
+	 */ 
+	public function getClassnameToReturn()
+	{
+		if(!isset($this->options["subclasses"])){
+			return $this->options['name'];
+		}
+		foreach($this->options["subclasses"] as $subclass){
+			$table = $this->conn->getTable($subclass);
+			$inheritanceMap = $table->getOption("inheritanceMap");
+			$nomatch = false;
+			foreach($inheritanceMap as $key => $value){
+				if(!isset($this->data[$key]) || $this->data[$key] != $value){
+					$nomatch = true;
+					break;
+				}
+			}
+			if(!$nomatch){
+				return $table->getComponentName();
+			}
+		}
+		return $this->options['name'];
+	}
+
+
+
     /**
      * @param $id                       database row id
      * @throws Doctrine_Find_Exception
