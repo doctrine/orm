@@ -32,36 +32,35 @@
  */
 class Doctrine_ColumnAggregationInheritance_TestCase extends Doctrine_UnitTestCase 
 {
-		protected $otherEntity = null;
+    protected $otherEntity = null;
 
     public function prepareData() 
-		{ 
+    { 
 
-			parent::prepareData();
-			//we create a test entity that is not a user and not a group
-			$entity = new Entity();
-			$entity->name="Other Entity";
-			$entity->type = 2; 
-			$entity->save();
-			$this->otherEntity = $entity;
-		}
-    
-	public function testQueriedClassReturnedIfNoSubclassMatch()
-		{
-			$q = new Doctrine_Query();
-			$entityOther = $q->from("Entity")->where("id=?")->execute(array($this->otherEntity->id))->getFirst();
-			$this->assertTrue($entityOther instanceOf Entity);
-		}
-		
-		public function testSubclassReturnedIfInheritanceMatches()
-		{
-			$q = new Doctrine_Query();
-			$group = $q->from("Entity")->where("id=?")->execute(array(1))->getFirst();
-			$this->assertTrue($group instanceOf Group);
+        parent::prepareData();
+        //we create a test entity that is not a user and not a group
+        $entity = new Entity();
+        $entity->name='Other Entity';
+        $entity->type = 2; 
+        $entity->save();
+        $this->otherEntity = $entity;
+    }
 
-			$q = new Doctrine_Query();
-			$user = $q->from("Entity")->where("id=?")->execute(array(5))->getFirst();
-			$this->assertTrue($user instanceOf User);
-		}
+    public function testQueriedClassReturnedIfNoSubclassMatch()
+    {
+        $q = new Doctrine_Query();
+        $entityOther = $q->from('Entity')->where('id=?')->execute(array($this->otherEntity->id))->getFirst();
+        $this->assertTrue($entityOther instanceOf Entity);
+    }
+
+    public function testSubclassReturnedIfInheritanceMatches()
+    {
+        $q = new Doctrine_Query();
+        $group = $q->from('Entity')->where('id=?')->execute(array(1))->getFirst();
+        $this->assertTrue($group instanceOf Group);
+
+        $q = new Doctrine_Query();
+        $user = $q->from('Entity')->where('id=?')->execute(array(5))->getFirst();
+        $this->assertTrue($user instanceOf User);
+    }
 }
-
