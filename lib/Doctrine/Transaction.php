@@ -127,35 +127,41 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         foreach ($this->delete as $name => $deletes) {
             $record = false;
             $ids    = array();
-	    if (is_array($deletes[count($deletes)-1]->getTable()->getIdentifier())){
-                    foreach($deletes as $k => $record){
-                        $cond = '';
-                        $ids = $record->obtainIdentifier();
-                        $query = 'DELETE FROM '.$record->getTable()->getTableName().' WHERE ';
-                        foreach(array_keys($ids) as $id){
-                            if ($cond){ $cond .= " AND ";}
-                            $cond .= " $id = ? ";
+            
+    	    if (is_array($deletes[count($deletes)-1]->getTable()->getIdentifier())) {
+                foreach($deletes as $k => $record) {
+                    $cond = '';
+                    $ids = $record->obtainIdentifier();
+                    $query = 'DELETE FROM '.$record->getTable()->getTableName().' WHERE ';
+                    
+                    foreach(array_keys($ids) as $id ){
+                        if ($cond) { 
+                            $cond .= " AND ";
                         }
-                        $query = $query . $cond;
-                        $this->conn->execute($query, array_values($ids));
-		    }
-	    }else{
-		    foreach ($deletes as $k => $record) {
-			$ids[] = $record->getIncremented();
-			$record->assignIdentifier(false);
-		    }
-		    if ($record instanceof Doctrine_Record) {
-			$params  = substr(str_repeat("?, ",count($ids)),0,-2);
-			
-			$query   = 'DELETE FROM '
-				 . $record->getTable()->getTableName()
-				 . ' WHERE '
-				 . $record->getTable()->getIdentifier()
-				 . ' IN(' . $params . ')';
 
-			$this->conn->execute($query, $ids);
-		    }
-	    }
+                        $cond .= " $id = ? ";
+                    }
+                    
+                    $query = $query . $cond;
+                    $this->conn->execute($query, array_values($ids));
+                }
+    	    } else {
+    		    foreach ($deletes as $k => $record) {
+                    $ids[] = $record->getIncremented();
+                    $record->assignIdentifier(false);
+    		    }
+    		    if ($record instanceof Doctrine_Record) {
+        			$params = substr(str_repeat("?, ",count($ids)),0,-2);
+    
+        			$query = 'DELETE FROM '
+        				   . $record->getTable()->getTableName()
+        				   . ' WHERE '
+        				   . $record->getTable()->getIdentifier()
+        				   . ' IN(' . $params . ')';
+        
+        			$this->conn->execute($query, $ids);
+    		    }
+    	    }
 
         }
         $this->delete = array();
