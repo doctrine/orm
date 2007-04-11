@@ -492,6 +492,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         unset($vars['references']);
         unset($vars['originals']);
         unset($vars['_table']);
+        unset($vars['_errorStack']);
 
         $name = $this->_table->getIdentifier();
         $this->_data = array_merge($this->_data, $this->_id);
