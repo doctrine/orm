@@ -1,16 +1,21 @@
 <?php
 
-class RelationTest extends Doctrine_Record {
-    public function setTableDefinition() {
+class RelationTest extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
         $this->hasColumn('name', 'string', 200);
         $this->hasColumn('child_id', 'integer');
     }
-    public function setUp() {
+    public function setUp()
+    {
         $this->ownsMany('OwnsOneToManyWithAlias as AliasO2M', 'AliasO2M.component_id');
     }
 }
-class RelationTestChild extends RelationTest {
-    public function setUp() {
+class RelationTestChild extends RelationTest 
+{
+    public function setUp() 
+    {
         $this->hasOne('RelationTest as Parent', 'RelationTestChild.child_id');
 
         $this->ownsMany('RelationTestChild as Children', 'RelationTestChild.child_id');
@@ -37,27 +42,38 @@ class OwnsOneToManyWithAlias extends Doctrine_Record {
 }
 
 class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
-    public function prepareData() { }
-    public function prepareTables() {
-        parent::prepareTables();
+
+    public function prepareData() 
+    { }
+    public function prepareTables() 
+    {}
+    public function setUp() {
+        if( ! $this->init) $this->init(); 
+        
+        if(isset($this->objTable)) {
+            $this->objTable->clear();
+        }
+        $this->init    = true;
     }
 
 
     public function testOneToManyTreeRelationWithConcreteInheritance() {
+
         $component = new RelationTestChild();
-        
+
         try {
             $rel = $component->getTable()->getRelation('Children');
+
             $this->pass();
         } catch(Doctrine_Exception $e) {
+
             $this->fail();
         }
         $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
-        
+
         $this->assertTrue($component->Children instanceof Doctrine_Collection);
         $this->assertTrue($component->Children[0] instanceof RelationTestChild);
     }
-
 
     public function testOneToOneTreeRelationWithConcreteInheritance() {
         $component = new RelationTestChild();
@@ -114,5 +130,6 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertTrue($user->getTable()->getRelation('Phonenumber') instanceof Doctrine_Relation_ForeignKey);
         $this->manager->setAttribute(Doctrine::ATTR_CREATE_TABLES, true);
-    }   
+    }
+
 }

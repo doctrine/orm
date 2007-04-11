@@ -22,14 +22,14 @@ class Doctrine_UnitTestCase extends UnitTestCase {
     protected $transaction;
 
 
-    private $init = false;
+    protected $init = false;
 
     public function init() {
         $name = get_class($this);
 
         $this->manager   = Doctrine_Manager::getInstance();
         $this->manager->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_IMMEDIATE);
-        $this->manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);        
+        $this->manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);
 
         $this->tables = array_merge($this->tables, 
                         array("entity",
@@ -129,8 +129,6 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             $this->prepareTables();
             $this->prepareData();
         }
-        $this->valueHolder = new Doctrine_ValueHolder($this->connection->getTable('User'));
-
     }
     public function prepareTables() {
         foreach($this->tables as $name) {

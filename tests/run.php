@@ -104,17 +104,19 @@ $test->addTestCase(new Doctrine_Sequence_Sqlite_TestCase());
 
 // Export module (not yet fully tested)
 
-$test->addTestCase(new Doctrine_Export_TestCase());
+
 //$test->addTestCase(new Doctrine_Export_Reporter_TestCase());
 $test->addTestCase(new Doctrine_Export_Firebird_TestCase());
 $test->addTestCase(new Doctrine_Export_Informix_TestCase());
-
+$test->addTestCase(new Doctrine_Export_TestCase());
 $test->addTestCase(new Doctrine_Export_Mssql_TestCase());
 $test->addTestCase(new Doctrine_Export_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Export_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Export_Sqlite_TestCase());
 
 $test->addTestCase(new Doctrine_Export_Mysql_TestCase());
+
+$test->addTestCase(new Doctrine_CascadingDelete_TestCase());
 
 // Import module (not yet fully tested)
 //$test->addTestCase(new Doctrine_Import_TestCase());
@@ -145,6 +147,7 @@ $test->addTestCase(new Doctrine_Access_TestCase());
 $test->addTestCase(new Doctrine_Manager_TestCase());
 $test->addTestCase(new Doctrine_Connection_TestCase());
 $test->addTestCase(new Doctrine_Table_TestCase());
+
 
 $test->addTestCase(new Doctrine_UnitOfWork_TestCase());
 $test->addTestCase(new Doctrine_Connection_Transaction_TestCase());
@@ -234,6 +237,7 @@ $test->addTestCase(new Doctrine_Cache_Apc_TestCase());
 $test->addTestCase(new Doctrine_Cache_Memcache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Sqlite_TestCase());
 
+$test->addTestCase(new Doctrine_Query_Check_TestCase());
 
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());

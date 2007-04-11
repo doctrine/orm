@@ -32,29 +32,30 @@
  */
 class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase 
 {
+    /**
     public function testLoadRelatedForAssociation() 
     {
-        $coll = $this->connection->query("FROM User");
+        $coll = $this->connection->query('FROM User');
 
         $this->assertEqual($coll->count(), 8);
 
-        $coll[0]->Group[1]->name = "Actors House 2";
+        $coll[0]->Group[1]->name = 'Actors House 2';
 
-        $coll[0]->Group[2]->name = "Actors House 3";
+        $coll[0]->Group[2]->name = 'Actors House 3';
 
-        $coll[2]->Group[0]->name = "Actors House 4";
-        $coll[2]->Group[1]->name = "Actors House 5";
-        $coll[2]->Group[2]->name = "Actors House 6";
+        $coll[2]->Group[0]->name = 'Actors House 4';
+        $coll[2]->Group[1]->name = 'Actors House 5';
+        $coll[2]->Group[2]->name = 'Actors House 6';
         
-        $coll[5]->Group[0]->name = "Actors House 7";
-        $coll[5]->Group[1]->name = "Actors House 8";
-        $coll[5]->Group[2]->name = "Actors House 9";
+        $coll[5]->Group[0]->name = 'Actors House 7';
+        $coll[5]->Group[1]->name = 'Actors House 8';
+        $coll[5]->Group[2]->name = 'Actors House 9';
         
         $coll->save();
         
         $this->connection->clear();
         
-        $coll = $this->connection->query("FROM User");
+        $coll = $this->connection->query('FROM User');
 
         $this->assertEqual($coll->count(), 8);
         $this->assertEqual($coll[0]->Group->count(), 2);
@@ -64,13 +65,13 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase
 
         $this->connection->clear();
         
-        $coll = $this->connection->query("FROM User");
+        $coll = $this->connection->query('FROM User');
 
         $this->assertEqual($coll->count(), 8);
 
         $count = $this->dbh->count();
 
-        $coll->loadRelated("Group");
+        $coll->loadRelated('Group');
         $this->assertEqual(($count + 1), $this->dbh->count());
         $this->assertEqual($coll[0]->Group->count(), 2);
         $this->assertEqual(($count + 1), $this->dbh->count());
@@ -97,6 +98,7 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($coll->count(), 1);
         $this->assertEqual($coll[0]->name, 'zYne');
     }
+    */
 
     public function testLoadRelatedForNormalAssociation() 
     {
@@ -148,7 +150,7 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase
 
     public function testLoadRelated() 
     {
-        $coll = $this->connection->query("FROM User(id)");
+        $coll = $this->connection->query('FROM User(id)');
 
         $q = $coll->loadRelated();
 
@@ -165,24 +167,24 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase
     }
     public function testLoadRelatedForLocalKeyRelation() 
     {
-        $coll = $this->connection->query("FROM User");
+        $coll = $this->connection->query('FROM User');
 
         $this->assertEqual($coll->count(), 8);
         
         $count = $this->dbh->count();
-        $coll->loadRelated("Email");
+        $coll->loadRelated('Email');
 
         $this->assertEqual(($count + 1), $this->dbh->count());
 
-        $this->assertEqual($coll[0]->Email->address, "zYne@example.com");
+        $this->assertEqual($coll[0]->Email->address, 'zYne@example.com');
 
         $this->assertEqual(($count + 1), $this->dbh->count());
 
-        $this->assertEqual($coll[2]->Email->address, "caine@example.com");
+        $this->assertEqual($coll[2]->Email->address, 'caine@example.com');
 
-        $this->assertEqual($coll[3]->Email->address, "kitano@example.com");
+        $this->assertEqual($coll[3]->Email->address, 'kitano@example.com');
 
-        $this->assertEqual($coll[4]->Email->address, "stallone@example.com");
+        $this->assertEqual($coll[4]->Email->address, 'stallone@example.com');
 
         $this->assertEqual(($count + 1), $this->dbh->count());
 
