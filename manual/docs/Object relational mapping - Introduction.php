@@ -1,7 +1,41 @@
-Setting up a table definition in doctrine is done by using hasColumn method calls inside setTableDefinition method.
-Doctrine_Record::hasColumn() takes 4 arguments:<br \>
+Doctrine_Record::hasColumn() takes 4 arguments:
 
-1. [<b class="title">column name</b>] <br />
-2. [<b class="title">column type</b>] <br />
-3. [<b class="title">column length</b>] <br />
-4. [<b class="title">column constraints and validators</b>]
+# **column name**
+# **column type**
+# **column length**
+# **column constraints and validators**
+
+<code type='php'>
+class Email extends Doctrine_Record {
+    public function setTableDefinition() {
+        // setting custom table name:
+        $this->setTableName('emails');
+
+        $this->hasColumn('address',         // name of the column
+                         'string',          // column type
+                         '200',             // column length
+                         array('notblank' => true,
+                               'email'    => true  // validators / constraints
+                               )
+                         );
+
+
+        $this->hasColumn('address2',         // name of the column
+                         'string',          // column type
+                         '200',             // column length
+                         // validators / constraints without arguments can be
+                         // specified also as as string with | separator
+                         'notblank|email'
+                         );
+
+        // Doctrine even supports the following format for
+        // validators / constraints which have no arguments:
+
+        $this->hasColumn('address3',         // name of the column
+                         'string',          // column type
+                         '200',             // column length
+                         array('notblank', 'email')
+                         );
+    }
+}
+</code>
