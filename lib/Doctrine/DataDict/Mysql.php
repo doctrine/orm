@@ -137,7 +137,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
     	if ( ! isset($field['type'])) {
     	   $field['type'] = null;
     	}
-    	
+
         switch ($field['type']) {
             case 'char':
                 $length = (! empty($field['length'])) ? $field['length'] : false;
@@ -246,6 +246,8 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
         if ( ! isset($field['name'])) {
             $field['name'] = '';
         }
+        
+        $values = null;
 
         switch ($dbType) {
             case 'tinyint':
@@ -304,7 +306,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                 }
             break;
             case 'enum':
-                $type[] = 'text';
+                $type[] = 'enum';
                 preg_match_all('/\'.+\'/U', $field['type'], $matches);
                 $length = 0;
                 $fixed = false;
@@ -317,6 +319,8 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                         if (preg_match('/^(is|has)/', $field['name'])) {
                             $type = array_reverse($type);
                         }
+                    } else {
+                        $values = $matches[0];
                     }
                 }
                 $type[] = 'integer';
@@ -369,7 +373,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
         $length = ((int) $length == 0) ? null : (int) $length;
 
 
-        return array('type' => $type, 'length' => $length, 'unsigned' => $unsigned, 'fixed' => $fixed);
+        return array('type' => $type, 'length' => $length, 'unsigned' => $unsigned, 'fixed' => $fixed, 'values' => $values);
     }
     /**
      * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET

@@ -129,6 +129,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
                 'length'    => $decl['length'],
                 'fixed'     => $decl['fixed'],
                 'unsigned'  => $decl['unsigned'],
+                'values'    => $decl['values'],
                 'primary'   => (strtolower($val['key']) == 'pri'),
                 'default'   => $val['default'],
                 'notnull'   => (bool) ($val['null'] != 'YES'),

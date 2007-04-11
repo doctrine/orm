@@ -121,6 +121,9 @@ class Doctrine_Import_Builder
             if (isset($column['unsigned']) && $column['unsigned']) {
                 $a[] = '\'unsigned\' => true';
             }
+            if ($column['ptype'][0] == 'enum' && isset($column['values']) && $column['values']) {
+                $a[] = '\'values\' => array(' . implode(',', $column['values']) . ')';
+            }
 
             if ( ! empty($a)) {
                 $columns[$i] .= ', ' . 'array(';
