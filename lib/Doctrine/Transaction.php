@@ -127,22 +127,18 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         foreach ($this->delete as $name => $deletes) {
             $record = false;
             $ids    = array();
-            
+
     	    if (is_array($deletes[count($deletes)-1]->getTable()->getIdentifier())) {
                 foreach($deletes as $k => $record) {
-                    $cond = '';
+                    $cond = array();
                     $ids = $record->obtainIdentifier();
                     $query = 'DELETE FROM '.$record->getTable()->getTableName().' WHERE ';
-                    
-                    foreach(array_keys($ids) as $id ){
-                        if ($cond) { 
-                            $cond .= " AND ";
-                        }
 
-                        $cond .= " $id = ? ";
+                    foreach (array_keys($ids) as $id){
+                        $cond[] = $id . ' = ? ';
                     }
-                    
-                    $query = $query . $cond;
+
+                    $query = $query . implode(' AND ', $cond);
                     $this->conn->execute($query, array_values($ids));
                 }
     	    } else {
