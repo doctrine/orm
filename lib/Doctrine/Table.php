@@ -1170,12 +1170,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */ 
     public function getClassnameToReturn()
     {
-        if (!isset($this->options["subclasses"])) {
+        if (!isset($this->options['subclasses'])) {
             return $this->options['name'];
         }
-        foreach ($this->options["subclasses"] as $subclass) {
+        foreach ($this->options['subclasses'] as $subclass) {
             $table = $this->conn->getTable($subclass);
-            $inheritanceMap = $table->getOption("inheritanceMap");
+            $inheritanceMap = $table->getOption('inheritanceMap');
             $nomatch = false;
             foreach ($inheritanceMap as $key => $value) {
                 if (!isset($this->data[$key]) || $this->data[$key] != $value) {
