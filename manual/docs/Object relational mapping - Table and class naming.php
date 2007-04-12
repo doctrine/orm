@@ -16,3 +16,4 @@ Doctrine automatically creates table names from the record class names. For this
 Example. My_PerfectClass
 <br />
 If you need to use a different naming schema, you can override this using the setTableName() method in the setTableDefinition() method.
+

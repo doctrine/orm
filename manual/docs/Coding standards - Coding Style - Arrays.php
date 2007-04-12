@@ -13,3 +13,16 @@
 <ul>
 <li \>When declaring associative arrays with the array construct, it is encouraged to break the statement into multiple lines. In this case, each successive line must be padded with whitespace such that both the keys and the values are aligned:
 </ul>
+
+<code type="php">
+$sampleArray = array('Doctrine', 'ORM', 1, 2, 3);
+
+
+$sampleArray = array(1, 2, 3, 
+                     $a, $b, $c,                     
+                     56.44, $d, 500);
+
+
+$sampleArray = array('first'  => 'firstValue',
+                     'second' => 'secondValue');
+

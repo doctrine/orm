@@ -7,3 +7,4 @@ Email record is also deleted.
 <br \><br \>
 Then again if you bind an Email to a User using hasOne or hasMany methods, everytime User record calls delete the associated
 Email record is NOT deleted.
+

@@ -22,3 +22,4 @@ Doctrine_Table_Exception               thrown when user tries to initialize a ne
 
 Doctrine_Mapping_Exception             thrown when user tries to get a foreign key object but the mapping is not done right
 </pre>
+

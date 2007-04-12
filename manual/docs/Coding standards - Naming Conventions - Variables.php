@@ -26,3 +26,5 @@ All variables must satisfy the following conditions:
     There are cases when more descriptive names are more appropriate (for example when multiple objects of the same class are used in same context),
     in that case it is allowed to use different names than the ones mentioned.
 </ul>
+
+

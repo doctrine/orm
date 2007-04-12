@@ -10,3 +10,4 @@ LIMIT clause in subqueries<br \><br \>
 when pgsql driver is used<br \><br \>
 <li \> Oracle only allows < 30 object identifiers (= table/column names/aliases), hence the limit subquery must use as short aliases as possible
 and it must avoid alias collisions with the main query.
+

@@ -69,3 +69,4 @@ foreach(\$manager as \$conn) {
 }
 ?>");
 ?>
+

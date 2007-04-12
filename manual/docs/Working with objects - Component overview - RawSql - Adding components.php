@@ -4,3 +4,17 @@ wrap all the columns in curly brackets but we also specify what tables associate
 First we specify that table entity maps to record class 'Entity'
 <br \><br \>
 Then we specify that table phonenumber maps to Entity.Phonenumber (meaning phonenumber associated with an entity)
+
+<code type="php">
+$query = new Doctrine_RawSql($conn);
+
+$query->parseQuery("SELECT {entity.*}, {phonenumber.*} 
+                   FROM entity 
+                   LEFT JOIN phonenumber 
+                   ON phonenumber.entity_id = entity.id");
+
+$query->addComponent("entity", "Entity");
+$query->addComponent("phonenumber", "Entity.Phonenumber");
+
+$entities = $query->execute();
+</code>

@@ -22,3 +22,4 @@ Example 2. Column with type 'integer' and length 1 results in 'TINYINT' on many 
 <br \><br \>
 In general Doctrine is smart enough to know which integer/string type to use depending on the specified length.
 
+

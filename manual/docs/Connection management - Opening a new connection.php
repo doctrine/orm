@@ -38,3 +38,4 @@ renderCode("<?php
 \$conn = Doctrine_Manager::connection(\$dbh);
 ?>");
 ?>
+

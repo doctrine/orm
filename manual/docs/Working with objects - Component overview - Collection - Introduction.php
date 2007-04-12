@@ -5,3 +5,22 @@ When fetching data from database with either DQL API (see Doctrine_Query) or raw
 Doctrine_Collection by default.
 <br \><br \>
 The following example shows how to initialize a new collection:
+
+<code type="php">
+$conn = Doctrine_Manager::getInstance()
+    ->openConnection(new PDO("dsn", "username", "pw"));
+
+// initalizing a new collection
+$users = new Doctrine_Collection($conn->getTable('User'));
+
+// alternative (propably easier)
+$users = new Doctrine_Collection('User');
+
+// adding some data
+$coll[0]->name = 'Arnold';
+
+$coll[1]->name = 'Somebody';
+
+// finally save it!
+$coll->save();
+</code>

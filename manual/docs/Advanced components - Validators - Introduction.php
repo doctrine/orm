@@ -15,3 +15,9 @@ are both valid integers whilst "3f" is not. Type validations occur on every colu
 column definition needs a type).<br /><br />
 - Length validation: As the name implies, all values assigned to columns are validated to make
 sure that the value does not exceed the maximum length.
+
+<code type="php">
+// turning on validation
+
+Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_VLD, true);
+</code>

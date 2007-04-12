@@ -16,3 +16,22 @@
 <li \>When concatenating strings with the "." operator, it is permitted to break the statement into multiple lines to improve readability. In these cases, each successive line should be padded with whitespace such that the "."; operator is aligned under the "=" operator:
 </ul>
 
+
+<code type="php">
+// literal string
+$string = 'something';
+
+// string contains apostrophes
+$sql = "SELECT id, name FROM people WHERE name = 'Fred' OR name = 'Susan'";
+
+// variable substitution
+$greeting = "Hello $name, welcome back!";
+
+// concatenation
+$framework = 'Doctrine' . ' ORM ' . 'Framework';
+
+// concatenation line breaking
+
+$sql = "SELECT id, name FROM user "
+     . "WHERE name = ? "
+     . "ORDER BY name ASC";

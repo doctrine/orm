@@ -18,3 +18,4 @@ for this is that since all user defined ActiveRecords inherit Doctrine_Record, i
 <ul>
 <li>Functions in the global scope ("floating functions") are NOT permmitted. All static functions should be wrapped in a static class.
 </ul>
+

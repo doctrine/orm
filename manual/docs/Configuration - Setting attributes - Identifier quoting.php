@@ -48,3 +48,4 @@ will result in a SQL statement that all the field names are quoted with the back
 as opposed to:
 <br \>
 <div class='sql'>SELECT * FROM sometable WHERE id='123'</div>
+

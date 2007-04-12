@@ -29,3 +29,4 @@ SELECT u.*, p.* FROM User u INNER JOIN u.Phonenumber p
 </pre>
 </div>
 
+

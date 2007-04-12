@@ -45,3 +45,4 @@ Using the above example, we can also explore the default field operator. Default
  <br \><br \>
 The above example will create a character varying field of length 12 characters in the database table. If the length definition is left out, Doctrine will create a length of the maximum allowable length for the data type specified, which may create a problem with some field types and indexing. Best practice is to define lengths for all or most of your fields. 
 
+

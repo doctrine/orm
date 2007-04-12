@@ -5,3 +5,11 @@ The length limited option is the most recommended for efficiency reasons. The un
 The fields of this type should be able to handle 8 bit characters. Drivers take care of DBMS specific escaping of characters of special meaning with the values of the strings to be converted to this type.
 <br \><br \>
 By default Doctrine will use variable length character types. If fixed length types should be used can be controlled via the fixed modifier.
+
+<code type="php">
+class Test extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('stringtest', 'string', 200, array('fixed' => true));
+    }
+}
+</code>

@@ -44,3 +44,4 @@ Enterprise application design patterns used:
 <dd>For lazy loading of objects and object properties
 <li \><a href="http://www.martinfowler.com/eaaCatalog/queryObject.html">Query Object</a><br \>
 <dd>DQL API is actually an extension to the basic idea of Query Object pattern
+

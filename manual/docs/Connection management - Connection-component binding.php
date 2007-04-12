@@ -21,3 +21,4 @@ renderCode("<?php
 \$groups = \$q->from('Group g')->where('g.id IN (1,2,3)')->execute();
 ?>");
 ?>
+

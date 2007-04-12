@@ -11,3 +11,4 @@ Underscores are only permitted in place of the path separator, eg. the filename 
 <li \>If a class name is comprised of more than one word, the first letter of each new word must be capitalized. Successive capitalized letters 
 are not allowed, e.g. a class "XML_Reader" is not allowed while "Xml_Reader" is acceptable.
 </ul>
+

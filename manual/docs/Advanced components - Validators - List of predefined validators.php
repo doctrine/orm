@@ -11,3 +11,4 @@ Here is a list of predefined validators. You cannot use these names for your cus
 || range    || [min,max]     || Checks if value is in range specified by arguments.||
 || unique   ||							 || Checks if value is unique in its database table. ||
 || regexp   || [expression]  || Check if valie matches a given regexp. ||
+

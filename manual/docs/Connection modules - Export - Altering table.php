@@ -53,3 +53,43 @@ Associative array with the names of the fields to be changed as indexes of the a
 </ul>
 The value of each entry of the array should be set to another associative array with the properties of the fields to that are meant to be changed as array entries. These entries should be assigned to the new values of the respective properties. The properties of the fields should be the same as defined by the Doctrine parser.
 
+
+<code type="php">
+$a = array('name' => 'userlist',
+           'add' => array(
+                    'quota' => array(
+                        'type' => 'integer',
+                        'unsigned' => 1
+                        )
+                    ),
+            'remove' => array(
+                    'file_limit' => array(),
+                    'time_limit' => array()
+                    ),
+            'change' => array(
+                    'name' => array(
+                        'length' => '20',
+                        'definition' => array(
+                            'type' => 'text',
+                            'length' => 20
+                            )
+                        )
+                    ),
+            'rename' => array(
+                    'sex' => array(
+                        'name' => 'gender',
+                        'definition' => array(
+                            'type' => 'text',
+                            'length' => 1,
+                            'default' => 'M'
+                            )
+                        )
+                    )
+            
+            );
+
+$dbh  = new PDO('dsn','username','pw');
+$conn = Doctrine_Manager::getInstance()->openConnection($dbh);
+
+$conn->export->alterTable('mytable', $a);
+</code>

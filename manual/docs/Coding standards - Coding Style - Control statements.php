@@ -73,3 +73,4 @@ switch (\$case) {
 <ul>
 <li \>The construct default may never be omitted from a switch statement.
 </ul>
+

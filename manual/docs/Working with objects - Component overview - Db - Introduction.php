@@ -8,3 +8,4 @@ Doctrine_Db fits perfectly for application using for example page caching.
 3. It has many short cuts for commonly used fetching methods like Doctrine_Db::fetchOne().
 <br \><br \>
 4. Supports PEAR-like data source names as well as PDO data source names.
+

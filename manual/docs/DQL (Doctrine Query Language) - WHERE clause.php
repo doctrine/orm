@@ -14,3 +14,4 @@ WHERE <i>where_condition</i>
 <li \> When narrowing results with aggregate function values HAVING clause should be used instead of WHERE clause
 <br \><br \>
 </ul>
+

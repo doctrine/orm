@@ -24,3 +24,4 @@ FROM Article
                 WHERE ReaderLog.article_id = Article.id)
 </pre>
 </div>     
+

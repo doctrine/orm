@@ -18,3 +18,5 @@ Doctrine_Connection is a wrapper for database connection. It handles several thi
 full information of possible errors.
 
 </ul>
+
+

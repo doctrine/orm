@@ -66,3 +66,4 @@ class Book extends Doctrine_Record {
 }
 ?>");
 ?>
+

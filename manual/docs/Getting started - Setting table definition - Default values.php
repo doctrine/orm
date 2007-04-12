@@ -17,3 +17,4 @@ print \$user->name; // default name
 ?>
 <br \>
 Also when exporting record class to database DEFAULT <i>value</i> is attached to column definition statement. <br \>
+

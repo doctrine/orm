@@ -74,3 +74,4 @@ returned.
 <li \>The <i>LENGTH</i> function returns the length of the string in characters as an integer.
 
 </ul>
+

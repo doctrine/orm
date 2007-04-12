@@ -12,3 +12,4 @@ access it through $record->myField (or $record['myField'], whatever you prefer) 
 or Postgres or Oracle ect.<br />
 <br />
 In short: You can name your fields however you want, using under_scores, camelCase or whatever you prefer. 
+

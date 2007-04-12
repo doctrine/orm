@@ -22,3 +22,20 @@ Without WHERE clause, all records are updated.
 A LIMIT clause is a <b>rows-matched restriction</b> not a rows-changed restriction.
 The statement stops as soon as it has found <i>record_count</i> rows that satisfy the WHERE clause, whether or not they actually were changed.
 </ul>
+
+<code type="php">
+$q    = 'UPDATE Account SET amount = amount + 200 WHERE id > 200';
+
+$rows = $this->conn->query($q);
+
+// the same query using the query interface
+
+$q = new Doctrine_Query();
+
+$rows = $q->update('Account')
+          ->set('amount', 'amount + 200')
+          ->where('id > 200')
+          ->execute();
+          
+print $rows; // the number of affected rows
+</code>

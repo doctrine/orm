@@ -76,3 +76,4 @@ renderCode("<?php
         Doctrine::PORTABILITY_ALL ^ Doctrine::PORTABILITY_RTRIM);
 ?>");
 ?>
+

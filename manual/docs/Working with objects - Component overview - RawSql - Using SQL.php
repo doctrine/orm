@@ -8,3 +8,11 @@ $q->parseQuery(). There are some differences though:
 The following example represents a very simple case where no addComponent() calls are needed. 
 Here we select all entities from table entity with all the columns loaded in the records.
 
+
+<code type="php">
+$query = new Doctrine_RawSql($conn);
+
+$query->parseQuery("SELECT {entity.name} FROM entity");
+        
+$entities = $query->execute();
+</code>

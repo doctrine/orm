@@ -8,3 +8,10 @@ Following rules must apply to all constants used within Doctrine framework:
 </ul>
 <ul><li \> Constants must be defined as class members by using the "const" construct. Defining constants in the global scope with "define" is NOT permitted.
 </ul>
+
+<code type="php">
+class Doctrine_SomeClass {
+    const MY_CONSTANT = 'something';
+}
+print Doctrine_SomeClass::MY_CONSTANT;
+</code>

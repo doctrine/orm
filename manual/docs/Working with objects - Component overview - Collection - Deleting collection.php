@@ -11,3 +11,11 @@ DELETE FROM phonenumber WHERE id IN (1,2,3, ... ,M)<br \>
 It should also be noted that Doctrine is smart enough to perform single-shot-delete per table when transactions are used.
 So if you are deleting a lot of records and want to optimize the operation just wrap the delete calls in Doctrine_Connection transaction.
 
+
+<code type="php">
+// delete all users with name 'John'
+
+$users = $table->findByDql("name LIKE '%John%'");
+
+$users->delete();
+</code>

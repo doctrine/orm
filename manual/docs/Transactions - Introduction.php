@@ -26,3 +26,17 @@ are performed in the following order: all inserts, all updates and last all dele
 delete operations of the same component are gathered in one query.
 </ul>
 
+
+<code type="php">
+$conn->beginTransaction();
+
+$user = new User();
+$user->name = 'New user';
+$user->save();
+
+$user = $conn->getTable('User')->find(5);
+$user->name = 'Modified user';
+$user->save();
+
+$conn->commit(); // all the queries are executed here
+</code>

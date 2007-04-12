@@ -48,3 +48,4 @@ FROM C WHERE C.col1 <> ALL (FROM C2(col1));
 FROM C WHERE C.col1 NOT IN (FROM C2(col1));
 </pre>
 </div>
+

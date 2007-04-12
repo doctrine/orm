@@ -21,3 +21,4 @@ noone else modifies the same objects until he has finished his work.<br />
 <br />
 Doctrine's pessimistic offline locking capabilities can be used to control concurrency during actions or procedures
 that take several HTTP request and response cycles and/or a lot of time to complete.
+

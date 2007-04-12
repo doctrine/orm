@@ -26,3 +26,4 @@ FROM C1 WHERE C1.col1 IN    (FROM C2(col1));
 </pre>
 </div>
 
+

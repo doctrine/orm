@@ -48,3 +48,4 @@ FROM User WHERE User.type = 'admin'
 
 <br \>
 Predefined reserved literals are case insensitive, although its a good standard to write them in uppercase.
+
