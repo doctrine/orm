@@ -1,0 +1,1 @@
+Aggregate value SELECT syntax:
