@@ -1197,6 +1197,27 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $ret;
     }
     /**
+     * copyDeep
+     * returns a copy of this object and all its related objects
+     *
+     * @return Doctrine_Record
+     */
+    public function copyDeep(){
+        $newObject = $this->copy();
+        foreach( $this->getTable()->getRelations() as $relation ) {
+            if ( $relation->getType() == Doctrine_Relation::MANY_COMPOSITE   ||
+                 $relation->getType() == Doctrine_Relation::ONE_COMPOSITE ) {
+                $alias = $relation->getAlias();
+                foreach ( $this->$alias as $relatedObject ) {
+                    $newRelatedObject = $relatedObject->copyDeep();
+                    $newObject->{$alias}[] = $newRelatedObject;
+                }
+            }
+        }
+        return $newObject;
+    }
+    
+    /**
      * assignIdentifier
      *
      * @param integer $id
