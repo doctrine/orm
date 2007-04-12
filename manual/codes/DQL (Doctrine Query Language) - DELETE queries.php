@@ -7,9 +7,10 @@ $rows = $this->conn->query($q, array(3));
 
 $q = new Doctrine_Query();
 
-$rows = $q->update('Account')
-          ->where('id > ?')
-          ->execute(array(3));
+$rows = $q->delete('Account')
+					->from('Account a')
+          ->where('a.id > ?', 3)
+          ->execute();
           
 print $rows; // the number of affected rows
 ?>
