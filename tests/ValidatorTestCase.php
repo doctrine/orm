@@ -40,7 +40,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
         $this->tables[] = 'ValidatorTest_FootballPlayer';
         parent::prepareTables();
     }
-
+    
     /**
      * Tests correct type detection.
      */
@@ -333,7 +333,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
      *
      * @todo move to a separate test file (tests/Validator/UniqueTestCase) .
      */
-    public function testSetSameUniqueValueThrowsNoException()
+    public function testSetSameUniqueValueOnSameRecordThrowsNoException()
     {
         $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
         
@@ -346,10 +346,32 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
         try {
            $r->save();
         }
-        catch(Doctrine_Validator_Exception $e) {
+        catch (Doctrine_Validator_Exception $e) {
            $this->fail("Validator exception raised without reason!");
-           var_dump($r->getErrorStack());
         }
+        
+        $r->delete(); // clean up
+        
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
+    }
+    
+    public function testSetSameUniqueValueOnDifferentRecordThrowsException()
+    {
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
+        
+        $r = new ValidatorTest_Person();
+        $r->identifier = '1234';
+        $r->save();
+        
+        $r = new ValidatorTest_Person();
+        $r->identifier = 1234;
+        try {
+            $r->save();
+            $this->fail("No validator exception thrown on unique validation.");
+        } catch (Doctrine_Validator_Exception $e) {
+            $this->pass();
+        }
+        $r->delete(); // clean up
         
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
     }
