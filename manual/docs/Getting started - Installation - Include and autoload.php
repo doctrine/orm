@@ -1,14 +1,14 @@
 In order to use Doctrine in your project it must first be included.
 
-<code type="php">
-require_once("path-to-doctrine/lib/Doctrine.php");
+<code type='php'>
+require_once('path-to-doctrine/lib/Doctrine.php');
 </code>
 
 Doctrine support [http://www.php.net/autoload Autoloading] for including files so that you do not have to include anything more then the base file. There are two different strategies that can be used to do this:
 
 If you do use the **__autoload** function for your own logic you can use it. 
 
-<code type="php">
+<code type='php'>
 function __autoload($class) {
 	Doctrine::autoload($class);
 }

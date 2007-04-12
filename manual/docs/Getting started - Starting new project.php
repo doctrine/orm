@@ -8,7 +8,7 @@ An short example:
 
 We want to create a database table called 'user' with columns id(primary key), name, username, password and created. Provided that you have already installed Doctrine these few lines of code are all you need:
 
-<code type="php">
+<code type='php'>
 require_once('lib/Doctrine.php');
 
 spl_autoload_register(array('Doctrine', 'autoload'));
@@ -18,10 +18,10 @@ class User extends Doctrine_Record {
         // set 'user' table columns, note that
         // id column is always auto-created
         
-        $this->hasColumn("name","string",30);
-        $this->hasColumn("username","string",20);
-        $this->hasColumn("password","string",16);
-        $this->hasColumn("created","integer",11);
+        $this->hasColumn('name','string',30);
+        $this->hasColumn('username','string',20);
+        $this->hasColumn('password','string',16);
+        $this->hasColumn('created','integer',11);
     }
 }
 </code>
