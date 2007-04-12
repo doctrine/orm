@@ -338,16 +338,17 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase {
         $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
         
         $r = new ValidatorTest_Person();
-        $r->name = 'value';
+        $r->identifier = '1234';
         $r->save();
         
         $r = $this->connection->getTable('ValidatorTest_Person')->findAll()->getFirst();
-        $r->name = 'value';
+        $r->identifier = 1234;
         try {
            $r->save();
         }
         catch(Doctrine_Validator_Exception $e) {
            $this->fail("Validator exception raised without reason!");
+           var_dump($r->getErrorStack());
         }
         
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);

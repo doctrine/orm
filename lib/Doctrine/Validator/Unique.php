@@ -43,8 +43,17 @@ class Doctrine_Validator_Unique
     {
         $table = $record->getTable();
         $sql   = 'SELECT ' . $table->getIdentifier() . ' FROM ' . $table->getTableName() . ' WHERE ' . $key . ' = ?';
+        
+        $values = array();
+        $values[] = $value;
+       
+        foreach ($table->getPrimaryKeys() as $pk) {
+            $sql .= " AND {$pk} != ?";
+            $values[] = $record->$pk;
+        }
+        
         $stmt  = $table->getConnection()->getDbh()->prepare($sql);
-        $stmt->execute(array($value));
+        $stmt->execute($values);
 
         return ( ! is_array($stmt->fetch()));
     }

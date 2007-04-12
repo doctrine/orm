@@ -606,7 +606,7 @@ class NestReference extends Doctrine_Record
 
 class ValidatorTest_Person extends Doctrine_Record {
    public function setTableDefinition() {
-      $this->hasColumn('name', 'string', 255, array('notblank', 'unique'));
+      $this->hasColumn('identifier', 'integer', 4, array('notblank', 'unique'));
       $this->hasColumn('is_football_player', 'boolean');
    }
    
