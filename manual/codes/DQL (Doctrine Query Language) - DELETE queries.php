@@ -8,7 +8,7 @@ $rows = $this->conn->query($q, array(3));
 $q = new Doctrine_Query();
 
 $rows = $q->delete('Account')
-					->from('Account a')
+          ->from('Account a')
           ->where('a.id > ?', 3)
           ->execute();
           
