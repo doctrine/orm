@@ -6,9 +6,9 @@ $query = new Doctrine_Query();
 $query->select('u.*, COUNT(p.id) num_posts')
       ->from('User u, u.Posts p')
       ->where('u.id = ?', 1)
-      ->groupby('u.id')
-      ->execute();
+      ->groupby('u.id');
 
-echo $query->Posts[0]->num_posts . ' posts found';
+$users = $query->execute();
+
+echo $users->Posts[0]->num_posts . ' posts found';
 ?>
-
