@@ -8,4 +8,7 @@ $query->select('u.*, COUNT(p.id) num_posts')
       ->where('u.id = ?', 1)
       ->groupby('u.id')
       ->execute();
+
+echo $query->Posts[0]->num_posts . ' posts found';
 ?>
+
