@@ -79,7 +79,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     protected $_table;
     /**
-     * @var Doctrine_Node_<TreeImpl>       node object
+     * @var Doctrine_Node_<TreeImpl>        node object
      */
     protected $_node;
     /**
@@ -1190,7 +1190,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $ret = $this->_table->create($this->_data);
         $modified = array();
         foreach ($this->_data as $key => $val) {
-            if (!($val instanceof Doctrine_Null)) {
+            if ( ! ($val instanceof Doctrine_Null)) {
                 $ret->_modified[] = $key;
             }
         }
@@ -1203,18 +1203,18 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @return Doctrine_Record
      */
     public function copyDeep(){
-        $newObject = $this->copy();
-        foreach( $this->getTable()->getRelations() as $relation ) {
-            if ( $relation->getType() == Doctrine_Relation::MANY_COMPOSITE   ||
-                 $relation->getType() == Doctrine_Relation::ONE_COMPOSITE ) {
-                $alias = $relation->getAlias();
-                foreach ( $this->$alias as $relatedObject ) {
-                    $newRelatedObject = $relatedObject->copyDeep();
-                    $newObject->{$alias}[] = $newRelatedObject;
+        $copy = $this->copy();
+
+        foreach ($this->references as $key => $value) {
+            if ($value instanceof Doctrine_Collection) {
+                foreach ($value as $record) {
+                    $copy->{$key}[] = $record->copyDeep();
                 }
+            } else {
+                $copy->set($key, $value->copyDeep());
             }
         }
-        return $newObject;
+        return $copy;
     }
     
     /**
@@ -1637,24 +1637,27 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return mixed if tree returns Doctrine_Node otherwise returns false
      */    
-    public function getNode() {
-      if(!$this->_table->isTree())
-        return false;
+    public function getNode() 
+    {
+        if ( ! $this->_table->isTree()) {
+            return false;
+        }
 
-      if(!isset($this->_node))
-        $this->_node = Doctrine_Node::factory($this, 
+        if ( ! isset($this->_node)) {
+            $this->_node = Doctrine_Node::factory($this,
                                               $this->getTable()->getOption('treeImpl'),
                                               $this->getTable()->getOption('treeOptions')
                                               );
+        }
         
-      return $this->_node;          
+        return $this->_node;
     }
     /**
      * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
      *
      */    
     public function deleteNode() {
-      $this->getNode()->delete();
+        $this->getNode()->delete();
     }
     /**
      * returns a string representation of this object
