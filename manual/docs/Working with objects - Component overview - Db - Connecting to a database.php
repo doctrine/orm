@@ -1,8 +1,12 @@
 <?php ?>
 Doctrine_Db allows both PEAR-like DSN (data source name) as well as PDO like DSN as constructor parameters.
-<br \><br \>
+
+
+
 Getting an instance of Doctrine_Db using PEAR-like DSN:
-<br \><br \>
+
+
+
 <?php
 $str = "<?php
 // using PEAR like dsn for connecting pgsql database
@@ -15,9 +19,13 @@ $str = "<?php
 ?>";
 renderCode($str);
 ?>
-<br \><br \>
+
+
+
 Getting an instance of Doctrine_Db using PDO-like DSN (PDO mysql driver):
-<br \><br \>
+
+
+
 <?php
 $str = "<?php
 \$dbh = new Doctrine_Db('mysql:host=localhost;dbname=test', 
@@ -25,16 +33,22 @@ $str = "<?php
 ?>";
 renderCode($str);
 ?>
-<br \><br \>
+
+
+
 Getting an instance of Doctrine_Db using PDO-like DSN (PDO sqlite with memory tables):
-<br \> <br \>
+
+ 
+
 <?php
 $str = "<?php
 \$dbh = new Doctrine_Db('sqlite::memory:');
 ?>";
 renderCode($str);
 ?>
-<br \><br \>
+
+
+
 
 Handling connection errors:
 
@@ -48,7 +62,8 @@ try {
    }
    \$dbh = null;
 } catch (PDOException \$e) {
-   print 'Error!: ' . \$e->getMessage() . '<br />';
+   print 'Error!: ' . \$e->getMessage() . '
+';
    die();
 }
 ?>";

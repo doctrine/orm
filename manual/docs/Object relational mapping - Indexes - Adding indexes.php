@@ -1,11 +1,14 @@
 <?php ?>
 You can add indexes by simple calling Doctrine_Record::index('indexName', $definition) where $definition is the
 definition array.
-<br \><br \>
+
+
+
 An example of adding a simple index to field called 'name':
-<br \><br \>
-<?php
-renderCode("<?php
+
+
+
+<code type="php">
 class IndexTest extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -15,13 +18,15 @@ class IndexTest extends Doctrine_Record
         \$this->index('myindex', array('fields' => 'name');
     }
 }
-?>");
-?>
-<br \><br \>
+?></code>
+
+
+
 An example of adding a multi-column index to field called 'name':
-<br \><br \>
-<?php
-renderCode("<?php
+
+
+
+<code type="php">
 class MultiColumnIndexTest extends Doctrine_Record
 {
     public function setTableDefinition() 
@@ -32,13 +37,15 @@ class MultiColumnIndexTest extends Doctrine_Record
         \$this->index('myindex', array('fields' => array('name', 'code')));
     }
 }
-?>");
-?>
-<br \><br \>
+?></code>
+
+
+
 An example of adding a multiple indexes on same table:
-<br \><br \>
-<?php
-renderCode("<?php
+
+
+
+<code type="php">
 class MultipleIndexTest extends Doctrine_Record
 {
     public function setTableDefinition() 
@@ -51,5 +58,4 @@ class MultipleIndexTest extends Doctrine_Record
         \$this->index('ageindex', array('fields' => array('age'));
     }
 }
-?>");
-?>
+?></code>

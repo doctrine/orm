@@ -1,23 +1,26 @@
 Doctrine Query Language(DQL) is an Object Query Language created for helping users in complex object retrieval.
 You should always consider using DQL(or raw SQL) when retrieving relational data efficiently (eg. when fetching users and their phonenumbers).
-<br \><br \>
-When compared to using raw SQL, DQL has several benefits: <br \>
-    <ul>
-    <li \>From the start it has been designed to retrieve records(objects) not result set rows
-    </ul>
-    <ul>
-    <li \>DQL understands relations so you don't have to type manually sql joins and join conditions
-    </ul>
-    <ul>
-    <li \>DQL is portable on different databases
-    </ul>
-    <ul>
-    <li \>DQL has some very complex built-in algorithms like (the record limit algorithm) which can help
+
+
+
+When compared to using raw SQL, DQL has several benefits: 
+
+    
+    * From the start it has been designed to retrieve records(objects) not result set rows
+    
+    
+    * DQL understands relations so you don't have to type manually sql joins and join conditions
+    
+    
+    * DQL is portable on different databases
+    
+    
+    * DQL has some very complex built-in algorithms like (the record limit algorithm) which can help
     developer to efficiently retrieve objects
-    </ul>
-    <ul>
-    <li \>It supports some functions that can save time when dealing with one-to-many, many-to-many relational data with conditional fetching.
-    </ul>
+    
+    
+    * It supports some functions that can save time when dealing with one-to-many, many-to-many relational data with conditional fetching.
+    
 
 If the power of DQL isn't enough, you should consider using the rawSql API for object population.
 
@@ -29,9 +32,11 @@ If the power of DQL isn't enough, you should consider using the rawSql API for o
 $users = $conn->getTable('User')->findAll();
 
 foreach($users as $user) {
-    print $user->name."<br \>";
+    print $user->name."
+";
     foreach($user->Phonenumber as $phonenumber) {
-        print $phonenumber."<br \>";
+        print $phonenumber."
+";
     }
 }
 
@@ -41,9 +46,11 @@ foreach($users as $user) {
 $users = $conn->query("FROM User.Phonenumber");
 
 foreach($users as $user) {
-    print $user->name."<br \>";
+    print $user->name."
+";
     foreach($user->Phonenumber as $phonenumber) {
-        print $phonenumber."<br \>";
+        print $phonenumber."
+";
     }
 }
 

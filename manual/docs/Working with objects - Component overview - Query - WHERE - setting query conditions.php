@@ -3,9 +3,9 @@ The WHERE clause, if given, indicates the condition or conditions that the recor
 
 Doctrine_Query provides easy to use WHERE -part management methods where and addWhere. The where methods always overrides
 the query WHERE -part whereas addWhere adds new condition to the WHERE -part stack.
-<br \>
-<?php
-renderCode("<?php
+
+
+<code type="php">
 // find all groups where the group primary key is bigger than 10
 
 \$coll = \$q->from('Group')->where('Group.id > 10');
@@ -13,23 +13,26 @@ renderCode("<?php
 // the same query using Doctrine_Expression component
 \$e    = \$q->expr;
 \$coll = \$q->from('Group')->where(\$e->gt('Group.id', 10));
-?>");
-?>
-<br \><br \>
-Using regular expression operator: <br \><br \>
-<?php
-renderCode("<?php
+?></code>
+
+
+
+Using regular expression operator: 
+
+
+<code type="php">
 // find all users where users where user name matches
 // a regular expression, regular expressions must be 
 // supported by the underlying database
 
-\$coll = \$conn->query(\"FROM User WHERE User.name REGEXP '[ad]'\");
-?>");
-?>              
-<br \><br \>
-DQL has support for portable LIKE operator:   <br \><br \>
-<?php
-renderCode("<?php
+\$coll = \$conn->query(\"FROM User WHERE User.name REGEXP '[ad]'\</code></code>              
+
+
+
+DQL has support for portable LIKE operator:   
+
+
+<code type="php">
 // find all users and their associated emails 
 // where SOME of the users phonenumbers
 // (the association between user and phonenumber 
@@ -37,13 +40,14 @@ renderCode("<?php
 
 \$coll = \$q->select('u.*, e.*')
             ->from('User u LEFT JOIN u.Email e LEFT JOIN u.Phonenumber p')
-            ->where(\"p.phonenumber LIKE '123%'\");
-?>");
-?>
- <br \><br \>
-Using multiple conditions and condition nesting are also possible:  <br \><br \>
-<?php
-renderCode("<?php
+            ->where(\"p.phonenumber LIKE '123%'\</code></code>
+ 
+
+
+Using multiple conditions and condition nesting are also possible:  
+
+
+<code type="php">
 // multiple conditions
 
 \$coll = \$q->select('u.*')
@@ -54,8 +58,6 @@ renderCode("<?php
 
 \$coll = \$q->select('u.*')
             ->from('User u LEFT JOIN u.Email e')
-            ->where(\"u.name LIKE '%Jack%' OR u.name LIKE '%John%') AND e.address LIKE '%@drinkmore.info'\");
-?>");
-?>
+            ->where(\"u.name LIKE '%Jack%' OR u.name LIKE '%John%') AND e.address LIKE '%@drinkmore.info'\</code></code>
 
 

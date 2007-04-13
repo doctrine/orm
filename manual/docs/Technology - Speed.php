@@ -1,36 +1,69 @@
-<li \><b class="title">Lazy initialization</b><br \>
+* <b class="title">Lazy initialization**
+
 For collection elements
-<br \><br \>
-<li \><b class="title">Subselect fetching</b><br \>
+
+
+
+* <b class="title">Subselect fetching**
+
 Doctrine knows how to fetch collections efficiently using a subselect.
-<br \><br \>
-<li \><b class="title">Executing SQL statements later, when needed</b><br \>
+
+
+
+* <b class="title">Executing SQL statements later, when needed**
+
 The connection never issues an INSERT or UPDATE until it is actually needed. So if an exception occurs and you need to abort the transaction, some statements will never actually be issued. Furthermore, this keeps lock times in the database as short as possible (from the late UPDATE to the transaction end).
-<br \><br \>
-<li \><b class="title">Join fetching</b><br \>
+
+
+
+* <b class="title">Join fetching**
+
 Doctrine knows how to fetch complex object graphs using joins and subselects
-<br \><br \>
-<li \><b class="title">Multiple collection fetching strategies</b><br \>
+
+
+
+* <b class="title">Multiple collection fetching strategies**
+
 Doctrine has multiple collection fetching strategies for performance tuning.
-<br \><br \>
-<li \><b class="title">Dynamic mixing of fetching strategies</b><br \>
+
+
+
+* <b class="title">Dynamic mixing of fetching strategies**
+
 Fetching strategies can be mixed and for example users can be fetched in a batch collection while
 users' phonenumbers are loaded in offset collection using only one query.
-<br \><br \>
-<li \><b class="title">Driver specific optimizations</b><br \>
+
+
+
+* <b class="title">Driver specific optimizations**
+
 Doctrine knows things like bulk-insert on mysql
-<br \><br \>
-<li \><b class="title">Transactional single-shot delete</b><br \>
+
+
+
+* <b class="title">Transactional single-shot delete**
+
 Doctrine knows how to gather all the primary keys of the pending objects in delete list and performs only one sql delete statement per table.
-<br \><br \>
-<li \><b class="title">Updating only the modified columns.</b><br \>
+
+
+
+* <b class="title">Updating only the modified columns.**
+
 Doctrine always knows which columns have been changed.
-<br \><br \>
-<li \><b class="title">Never inserting/updating unmodified objects.</b><br \>
+
+
+
+* <b class="title">Never inserting/updating unmodified objects.**
+
 Doctrine knows if the the state of the record has changed.
-<br \><br \>
-<li \><b class="title">PDO for database abstraction</b><br \>
+
+
+
+* <b class="title">PDO for database abstraction**
+
 PDO is by far the fastest availible database abstraction layer for php.
-<br \><br \>
+
+
+
 
 

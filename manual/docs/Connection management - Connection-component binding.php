@@ -1,9 +1,10 @@
 <?php ?>
 Doctrine allows you to bind connections to components (= your ActiveRecord classes). This means everytime a component issues a query
 or data is being fetched from the table the component is pointing at Doctrine will use the bound connection.
-<br \> <br \>
-<?php
-renderCode("<?php
+
+ 
+
+<code type="php">
 \$conn = \$manager->openConnection(new PDO('dsn','username','password'), 'connection 1');
 
 \$conn2 = \$manager->openConnection(new PDO('dsn2','username2','password2'), 'connection 2');
@@ -19,6 +20,5 @@ renderCode("<?php
 
 // Doctrine uses 'connection 2' for fetching here
 \$groups = \$q->from('Group g')->where('g.id IN (1,2,3)')->execute();
-?>");
-?>
+?></code>
 

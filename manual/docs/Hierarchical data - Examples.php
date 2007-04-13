@@ -204,11 +204,13 @@ echo $two->getNode()->getNumberChildren() .'</br>';
 
 output_message('path to 1');
 $path = $one->getNode()->getPath(' > ');
-echo $path .'<br />';
+echo $path .'
+';
 
 output_message('path to 1 (including 1)');
 $path = $one->getNode()->getPath(' > ', true);
-echo $path .'<br />';
+echo $path .'
+';
 
 output_message('1 has parent');
 $hasParent = $one->getNode()->hasParent();
@@ -219,7 +221,8 @@ output_message('parent to 1');
 $parent = $one->getNode()->getParent();
 if($parent->exists())
 {
-  echo $parent->get('name') .'<br />';  
+  echo $parent->get('name') .'
+';  
 }
 
 output_message('root isRoot?');
@@ -241,21 +244,24 @@ output_message('root getParent');
 $parent = $root->getNode()->getParent();
 if($parent->exists())
 {
-  echo $parent->get('name') .'<br />';  
+  echo $parent->get('name') .'
+';  
 }
 
 output_message('get first child of root');
 $record = $root->getNode()->getFirstChild();
 if($record->exists())
 {
-  echo $record->get('name') .'<br />';  
+  echo $record->get('name') .'
+';  
 }
 
 output_message('get last child of root');
 $record = $root->getNode()->getLastChild();
 if($record->exists())
 {
-  echo $record->get('name') .'<br />';  
+  echo $record->get('name') .'
+';  
 }
 
 $one_two->refresh();
@@ -264,14 +270,16 @@ output_message('get prev sibling of 1.2');
 $record = $one_two->getNode()->getPrevSibling();
 if($record->exists())
 {
-  echo $record->get('name') .'<br />';  
+  echo $record->get('name') .'
+';  
 }
 
 output_message('get next sibling of 1.2');
 $record = $one_two->getNode()->getNextSibling();
 if($record->exists())
 {
-  echo $record->get('name') .'<br />';  
+  echo $record->get('name') .'
+';  
 }
 
 output_message('siblings of 1.2');
@@ -279,7 +287,8 @@ $siblings = $one_two->getNode()->getSiblings();
 foreach($siblings as $sibling)
 {
   if($sibling->exists())
-    echo $sibling->get('name') .'<br />'; 
+    echo $sibling->get('name') .'
+'; 
 }
 
 output_message('siblings of 1.2 (including 1.2)');
@@ -287,7 +296,8 @@ $siblings = $one_two->getNode()->getSiblings(true);
 foreach($siblings as $sibling)
 {
   if($sibling->exists())
-    echo $sibling->get('name') .'<br />'; 
+    echo $sibling->get('name') .'
+'; 
 }
 
 $new = new Menu();
@@ -384,6 +394,8 @@ function output_node($record)
 
 function output_message($msg)
 {
-  echo "<br /><strong><em>$msg</em></strong>".'<br />';
+  echo "
+**//$msg//**".'
+';
 }
 </code>

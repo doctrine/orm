@@ -1,7 +1,6 @@
 <?php ?>
 Doctrine offers many index options, some of them being db-specific. Here is a full list of availible options:
-<div class='sql'>
-<pre>        
+<code>        
 
 sorting     => string('ASC' / 'DESC')      
         what kind of sorting does the index use (ascending / descending)
@@ -16,10 +15,8 @@ type        => string('unique',         -- supported by most drivers
                       'fulltext',       -- only availible on Mysql driver
                       'gist',           -- only availible on Pgsql driver
                       'gin')            -- only availible on Pgsql driver
-</pre>
-</div>
-<?php
-renderCode("<?php
+</code>
+<code type="php">
 class MultipleIndexTest extends Doctrine_Record
 {
     public function setTableDefinition() 
@@ -38,5 +35,4 @@ class MultipleIndexTest extends Doctrine_Record
                       ));
     }
 }
-?>");
-?>
+?></code>

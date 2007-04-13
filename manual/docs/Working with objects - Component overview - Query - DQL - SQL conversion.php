@@ -35,17 +35,22 @@ foreach($e as $line) {
     elseif(strpos($line, "DQL") !== false)
         $color = "367FAC";
 
-    $l = str_replace("SELECT","<br \><font color='$color'><b>SELECT</b></font>",$line);
-    $l = str_replace("FROM","<br \><font color='$color'><b>FROM</b></font>",$l);
-    $l = str_replace("LEFT JOIN","<br \><font color='$color'><b>LEFT JOIN</b></font>",$l);
-    $l = str_replace("INNER JOIN","<br \><font color='$color'><b>INNER JOIN</b></font>",$l);
-    $l = str_replace("WHERE","<br \><font color='$color'><b>WHERE</b></font>",$l);
-    $l = str_replace("AS","<font color='$color'><b>AS</b></font>",$l);
-    $l = str_replace("ON","<font color='$color'><b>ON</b></font>",$l);
-    $l = str_replace("ORDER BY","<font color='$color'><b>ORDER BY</b></font>",$l);
-    $l = str_replace("LIMIT","<font color='$color'><b>LIMIT</b></font>",$l);
-    $l = str_replace("OFFSET","<font color='$color'><b>OFFSET</b></font>",$l);
-    $l = str_replace("DISTINCT","<font color='$color'><b>DISTINCT</b></font>",$l);
+    $l = str_replace("SELECT","
+<font color='$color'>**SELECT**</font>",$line);
+    $l = str_replace("FROM","
+<font color='$color'>**FROM**</font>",$l);
+    $l = str_replace("LEFT JOIN","
+<font color='$color'>**LEFT JOIN**</font>",$l);
+    $l = str_replace("INNER JOIN","
+<font color='$color'>**INNER JOIN**</font>",$l);
+    $l = str_replace("WHERE","
+<font color='$color'>**WHERE**</font>",$l);
+    $l = str_replace("AS","<font color='$color'>**AS**</font>",$l);
+    $l = str_replace("ON","<font color='$color'>**ON**</font>",$l);
+    $l = str_replace("ORDER BY","<font color='$color'>**ORDER BY**</font>",$l);
+    $l = str_replace("LIMIT","<font color='$color'>**LIMIT**</font>",$l);
+    $l = str_replace("OFFSET","<font color='$color'>**OFFSET**</font>",$l);
+    $l = str_replace("DISTINCT","<font color='$color'>**DISTINCT**</font>",$l);
     $l = str_replace("  ","<dd>",$l);
 
     print $l."<br>";
