@@ -1,6 +1,6 @@
 Syntax:
 <code>
-//operand// [NOT ]EXISTS (//subquery//)
+<operand> [NOT ]EXISTS (<subquery>)
 </code>
 The EXISTS operator returns TRUE if the subquery returns one or more rows and FALSE otherwise. 
 

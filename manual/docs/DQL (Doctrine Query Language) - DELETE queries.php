@@ -1,8 +1,8 @@
 <code>
-DELETE FROM //component_name//
-    [WHERE //where_condition//]
+DELETE FROM <component_name>
+    [WHERE <where_condition>]
     [ORDER BY ...]
-    [LIMIT //record_count//]
+    [LIMIT <record_count>]
 </code>
 
 * The DELETE statement deletes records from //component_name// and returns the number of records deleted.
@@ -12,7 +12,7 @@ Without WHERE clause, all records are deleted.
 
 * If the ORDER BY clause is specified, the records are deleted in the order that is specified.
 
-* The LIMIT clause places a limit on the number of rows that can be deleted. 
+* The LIMIT clause places a limit on the number of rows that can be deleted.
 The statement will stop as soon as it has deleted //record_count// records.
 
 
@@ -30,6 +30,6 @@ $rows = $q->delete('Account')
           ->from('Account a')
           ->where('a.id > ?', 3)
           ->execute();
-          
+
 print $rows; // the number of affected rows
 </code>

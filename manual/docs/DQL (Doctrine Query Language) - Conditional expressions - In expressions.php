@@ -1,6 +1,6 @@
 Syntax:
 <code>
-//operand// IN (//subquery//|//value list//)
+<operand> IN (<subquery>|<value list>)
 </code>
 An IN conditional expression returns true if the //operand// is found from result of the //subquery//
 or if its in the specificied comma separated //value list//, hence the IN expression is always false if the result of the subquery

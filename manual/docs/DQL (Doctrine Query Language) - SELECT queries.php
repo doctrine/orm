@@ -2,15 +2,15 @@ SELECT statement syntax:
 <code>
 SELECT
     [ALL | DISTINCT]
-    //select_expr//, ...
-    [FROM //components//
-    [WHERE //where_condition//]
-    [GROUP BY //groupby_expr//
+    <select_expr>, ...
+    [FROM <components>
+    [WHERE <where_condition>]
+    [GROUP BY <groupby_expr>
       [ASC | DESC], ... ]
-    [HAVING //where_condition//]
-    [ORDER BY //orderby_expr//
+    [HAVING <where_condition>]
+    [ORDER BY <orderby_expr>
       [ASC | DESC], ...]
-    [LIMIT //row_count// OFFSET //offset//}]
+    [LIMIT <row_count> OFFSET <offset>}]
 </code>
 
 
@@ -21,7 +21,7 @@ The SELECT statement is used for the retrieval of data from one or more componen
 SELECT a.name, a.amount FROM Account a
 </code>
 
-* An asterisk can be used for selecting all columns from given component. Even when using an asterisk the executed sql queries never actually use it 
+* An asterisk can be used for selecting all columns from given component. Even when using an asterisk the executed sql queries never actually use it
 (Doctrine converts asterisk to appropriate column names, hence leading to better performance on some databases).
 <code>
 SELECT a.* FROM Account a

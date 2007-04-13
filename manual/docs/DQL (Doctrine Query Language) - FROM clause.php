@@ -1,8 +1,8 @@
-Syntax: 
+Syntax:
 
 
 <code>
-FROM //component_reference// [[LEFT | INNER] JOIN //component_reference//] ...
+FROM <component_reference> [[LEFT | INNER] JOIN <component_reference>] ...
 </code>
 
 The FROM clause indicates the component or components from which to retrieve records.
@@ -18,7 +18,7 @@ For each table specified, you can optionally specify an alias.
 SELECT u.*, p.* FROM User u LEFT JOIN u.Phonenumber
 
 SELECT u.*, p.* FROM User u, u.Phonenumber p
-</code>  
+</code>
 
 * //INNER JOIN// produces an intersection between two specified components (that is, each and every record in the first component is joined to each and every record in the second component).
 So basically //INNER JOIN// can be used when you want to efficiently fetch for example all users which have one or more phonenumbers.
