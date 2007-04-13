@@ -19,4 +19,7 @@ $users = $q->from('User u')->leftJoin('u.Email e')->orderby('e.address');
 
 $users = $q->from('User u')->leftJoin('u.Email e')
            ->addOrderby('u.name')->addOrderby('e.address');
+
+// grab randomly 10 users
+$users = $q->select('u.*, RAND() rand')->from('User u')->limit(10)->orderby('rand DESC');
 </code>
