@@ -58,11 +58,13 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
     {
         // ticket #307
         $q = new Doctrine_Query();
-        $q->query("SELECT u.*, (SELECT p.name FROM User p WHERE p.name = u.name) name2 FROM User u WHERE u.name = 'zYne' LIMIT 1");
+        /*$q->query("SELECT u.*, (SELECT p.name FROM User p WHERE p.name = u.name) name2 FROM User u WHERE u.name = 'zYne' LIMIT 1");
 
         $users = $q->execute();
 
         $this->assertEqual($users->count(), 1);
+        */
+        $this->fail("Subquery support in select part. Ticket #307.");
     }
 }
 ?>
