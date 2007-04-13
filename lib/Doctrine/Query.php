@@ -550,15 +550,20 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             case 'having':
             case 'orderby':
             case 'groupby':
-                $class = "Doctrine_Query_".ucwords($name);
+                if (empty($args[0])) {
+                    return $this;
+                }
+
+                $class  = 'Doctrine_Query_' . ucwords($name);
                 $parser = new $class($this);
 
                 $this->parts[$name] = array($parser->parse($args[0]));
             break;
             case 'limit':
             case 'offset':
-                if($args[0] == null)
+                if($args[0] == null) {
                     $args[0] = false;
+                }
 
                 $this->parts[$name] = $args[0];
             break;
