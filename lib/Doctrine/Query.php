@@ -445,6 +445,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     public function addOrderBy($orderby)
     {
+        if (empty($orderby)) {
+            return $this;
+        }
         $class = 'Doctrine_Query_Orderby';
         $parser = new $class($this);
         $this->parts['orderby'][] = $parser->parse($orderby);
