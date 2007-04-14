@@ -203,7 +203,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
 
         $sub = Doctrine_Query::bracketTrim(substr($where, $pos));
 
-        return $operator . ' ('.$this->query->createSubquery()->parseQuery($sub, false)->getQuery() . ')';
+        return $operator . ' (' . $this->query->createSubquery()->parseQuery($sub, false)->getQuery() . ')';
     }
     /**
      * getOperator

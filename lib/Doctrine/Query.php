@@ -62,6 +62,17 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @var array $pendingFields
      */
     private $pendingFields     = array();
+    /**
+     * @var array $pendingSubqueries        SELECT part subqueries, these are called pending subqueries since
+     *                                      they cannot be parsed directly (some queries might be correlated)
+     */
+    private $pendingSubqueries = array();
+    /**
+     * @var boolean $subqueriesProcessed    Whether or not pending subqueries have already been processed.
+     *                                      Consequent calls to getQuery would result badly constructed queries
+     *                                      without this variable
+     */
+    private $subqueriesProcessed = false;
 
 
 
@@ -142,7 +153,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         if (isset($this->pendingFields[$componentAlias])) {
             $fields = $this->pendingFields[$componentAlias];
 
-            if(in_array('*', $fields)) {
+            if (in_array('*', $fields)) {
                 $fields = $table->getColumnNames();
             } else {
                 // only auto-add the primary key fields if this query object is not 
@@ -155,7 +166,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         foreach ($fields as $name) {
             $name = $table->getColumnName($name);
 
-            $this->parts["select"][] = $tableAlias . '.' .$name . ' AS ' . $tableAlias . '__' . $name;
+            $this->parts['select'][] = $tableAlias . '.' .$name . ' AS ' . $tableAlias . '__' . $name;
         }
         
         $this->neededTables[] = $tableAlias;
@@ -172,9 +183,14 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     {
         $refs = Doctrine_Query::bracketExplode($dql, ',');
 
-        foreach($refs as $reference) {
-            if(strpos($reference, '(') !== false) {
-                $this->parseAggregateFunction2($reference);
+        foreach ($refs as $reference) {
+            if (strpos($reference, '(') !== false) {
+                if (substr($reference, 0, 1) === '(') {
+                    // subselect found in SELECT part
+                    $this->parseSubselect($reference);
+                } else {
+                    $this->parseAggregateFunction2($reference);
+                }
             } else {
 
                 $e = explode('.', $reference);
@@ -185,6 +201,31 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 }
             }
         }
+    }
+    /** 
+     * parseSubselect
+     *
+     * parses the subquery found in DQL SELECT part and adds the
+     * parsed form into $pendingSubqueries stack
+     *
+     * @param string $reference
+     * @return void
+     */
+    public function parseSubselect($reference) 
+    {
+        $e     = Doctrine_Query::bracketExplode($reference, ' ');
+        $alias = $e[1];
+
+        if (count($e) > 2) {
+            if (strtoupper($e[1]) !== 'AS') {
+                throw new Doctrine_Query_Exception('Syntax error near: ' . $reference);
+            }
+            $alias = $e[2];
+        }
+        
+        $subquery = substr($e[0], 1, -1);
+        
+        $this->pendingSubqueries[] = array($subquery, $alias);
     }
     public function parseAggregateFunction2($func)
     {
@@ -242,9 +283,39 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             throw new Doctrine_Query_Exception('Unknown function '.$name);
         }
     }
+    public function processPendingSubqueries() 
+    {
+    	if ($this->subqueriesProcessed === true) {
+            return false;
+    	}
+
+    	foreach ($this->pendingSubqueries as $value) {
+            list($dql, $alias) = $value;
+
+            $sql = $this->createSubquery()->parseQuery($dql, false)->getQuery();
+            
+            reset($this->tableAliases);
+            
+            $tableAlias = current($this->tableAliases);
+
+            reset($this->compAliases);
+            
+            $componentAlias = key($this->compAliases);
+
+            $sqlAlias = $tableAlias . '__' . count($this->aggregateMap);
+    
+            $this->parts['select'][] = '(' . $sql . ') AS ' . $sqlAlias;
+    
+            $this->aggregateMap[$alias] = $sqlAlias;
+            $this->subqueryAggregates[$componentAlias][] = $alias;
+        }
+        $this->subqueriesProcessed = true;
+        
+        return true;
+    }
     public function processPendingAggregates($componentAlias)
     {
-        $tableAlias     = $this->getTableAlias($componentAlias);
+        $tableAlias = $this->getTableAlias($componentAlias);
 
         if ( ! isset($this->tables[$tableAlias])) {
             throw new Doctrine_Query_Exception('Unknown component path ' . $componentAlias);
@@ -669,6 +740,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             $needsSubQuery = true;
             $this->limitSubqueryUsed = true;
         }
+
+        // process all pending SELECT part subqueries
+        $this->processPendingSubqueries();
 
         // build the basic query
 
@@ -1333,7 +1407,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                     $this->tableAliases[$currPath] = $tname;
 
                     $tableName = $tname;
-
                 } else {
 
                     $index += strlen($e[($key - 1)]) + 1;

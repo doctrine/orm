@@ -33,7 +33,8 @@
  */
 class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase 
 {
-    public function testSubqueryWithWherePartAndInExpression() 
+
+    public function testSubqueryWithWherePartAndInExpression()
     {
         $q = new Doctrine_Query();
         $q->from('User')->where("User.id NOT IN (FROM User(id) WHERE User.name = 'zYne')");
@@ -46,11 +47,11 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users->count(), 7);
         $this->assertEqual($users[0]->name, 'Arnold Schwarzenegger');
     }
-    public function testSubqueryAllowsSelectingOfAnyField() 
+    public function testSubqueryAllowsSelectingOfAnyField()
     {
         $q = new Doctrine_Query();
         $q->from('User u')->where('u.id NOT IN (SELECT g.user_id FROM Groupuser g)');
-        
+
         $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e WHERE e.id NOT IN (SELECT g.user_id AS g__user_id FROM groupuser g) AND (e.type = 0)");
     }
 
@@ -58,13 +59,19 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
     {
         // ticket #307
         $q = new Doctrine_Query();
-        /*$q->query("SELECT u.*, (SELECT p.name FROM User p WHERE p.name = u.name) name2 FROM User u WHERE u.name = 'zYne' LIMIT 1");
+        
+        $q->parseQuery("SELECT u.name, (SELECT COUNT(p.id) FROM Phonenumber p WHERE p.entity_id = u.id) pcount FROM User u WHERE u.name = 'zYne' LIMIT 1");
+
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, (SELECT COUNT(p.id) AS p__0 FROM phonenumber p WHERE p.entity_id = e.id) AS e__0 FROM entity e WHERE e.name = 'zYne' AND (e.type = 0) LIMIT 1");
+        // test consequent call
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, (SELECT COUNT(p.id) AS p__0 FROM phonenumber p WHERE p.entity_id = e.id) AS e__0 FROM entity e WHERE e.name = 'zYne' AND (e.type = 0) LIMIT 1");
 
         $users = $q->execute();
 
         $this->assertEqual($users->count(), 1);
-        */
-        $this->fail("Subquery support in select part. Ticket #307.");
+
+        $this->assertEqual($users[0]->name, 'zYne');
+        $this->assertEqual($users[0]->pcount, 1);
     }
 }
 ?>

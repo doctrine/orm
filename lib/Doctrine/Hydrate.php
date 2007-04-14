@@ -109,6 +109,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
     protected $tableIndexes = array();
 
     protected $pendingAggregates = array();
+    
+    protected $subqueryAggregates = array();
     /**
      * @var array $aggregateMap             an array containing all aggregate aliases, keys as dql aliases
      *                                      and values as sql aliases
@@ -403,9 +405,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
             $query = $this->view->getSelectSql();
         }
 
-        if ($this->isLimitSubqueryUsed()
-           && $this->conn->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) !== 'mysql'
-        ) {
+        if ($this->isLimitSubqueryUsed() && 
+            $this->conn->getDBH()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
+            
             $params = array_merge($params, $params);
         }
         $stmt  = $this->conn->execute($query, $params);
@@ -415,8 +417,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
         }
 
         if (count($this->tables) == 0) {
-            throw new Doctrine_Query_Exception("No components selected");
+            throw new Doctrine_Query_Exception('No components selected');
         }
+
         $keys  = array_keys($this->tables);
         $root  = $keys[0];
 
@@ -425,13 +428,15 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
         $coll        = $this->getCollection($root);
         $prev[$root] = $coll;
 
-        if ($this->aggregate)
+        if ($this->aggregate) {
             $return = Doctrine::FETCH_ARRAY;
+        }
 
         $array = $this->parseData($stmt);
 
-        if ($return == Doctrine::FETCH_ARRAY)
+        if ($return == Doctrine::FETCH_ARRAY) {
             return $array;
+        }
 
         foreach ($array as $data) {
             /**
@@ -482,6 +487,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
 
                             if (isset($this->pendingAggregates[$alias][$index])) {
                                 $agg = $this->pendingAggregates[$alias][$index][3];
+                            } elseif (isset($this->subqueryAggregates[$alias][$index])) {
+                                $agg = $this->subqueryAggregates[$alias][$index];
                             }
 
                             $record->mapValue($agg, $value);
@@ -494,13 +501,14 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
 
                 if ( ! isset($previd[$name])) {
                     $previd[$name] = array();
-                }
+                }              
                 if ($previd[$name] !== $row) {
                     // set internal data
 
                     $this->tables[$name]->setData($row);
 
                     // initialize a new record
+
                     $record = $this->tables[$name]->getRecord();
 
                     // aggregate values have numeric keys
@@ -514,6 +522,8 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
 
                             if (isset($this->pendingAggregates[$alias][$index])) {
                                 $agg = $this->pendingAggregates[$alias][$index][3];
+                            } elseif (isset($this->subqueryAggregates[$alias][$index])) {
+                                $agg = $this->subqueryAggregates[$alias][$index];
                             }
                             $record->mapValue($agg, $value);
                         }
@@ -521,20 +531,21 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
 
                     if ($name == $root) {
                         // add record into root collection
+
                         $coll->add($record);
                         unset($previd);
 
                     } else {
-
-                            $prev = $this->addRelated($prev, $name, $record);
+                        $prev = $this->addRelated($prev, $name, $record);
                     }
 
                     // following statement is needed to ensure that mappings
                     // are being done properly when the result set doesn't
                     // contain the rows in 'right order'
 
-                    if ($prev[$name] !== $record)
+                    if ($prev[$name] !== $record) {
                         $prev[$name] = $record;
+                    }
                 }
 
                 $previd[$name] = $row;
@@ -682,7 +693,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
             } else {
                 $tableAlias .= '.';
             }
-            
+
             foreach ($maps as $map) {
                 $b = array();
                 foreach ($map as $field => $value) {
