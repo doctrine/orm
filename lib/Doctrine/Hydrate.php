@@ -225,6 +225,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
         // copy the aliases to the subquery
         $obj->copyAliases($this);
 
+        // this prevents the 'id' being selected, re ticket #307
+        $obj->isSubquery(true);
+
         return $obj;
     }
     /**
