@@ -33,4 +33,9 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 final class Doctrine_Null
-{ }
+{ 
+    public function __toString()
+    {
+    	return '';
+    }
+}
