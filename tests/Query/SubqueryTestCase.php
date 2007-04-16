@@ -73,5 +73,16 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users[0]->name, 'zYne');
         $this->assertEqual($users[0]->pcount, 1);
     }
+
+    public function testSubqueryInSelectPart2()
+    {
+        // ticket #307
+        $q = new Doctrine_Query();
+        
+        $q->parseQuery("SELECT u.name, (SELECT COUNT(w.id) FROM User w WHERE w.id = u.id) pcount FROM User u WHERE u.name = 'zYne' LIMIT 1");
+        
+        $this->assertNotEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, (SELECT COUNT(e.id) AS e__0 FROM entity e WHERE e.id = e.id AND (e.type = 0)) AS e__0 FROM entity e WHERE e.name = 'zYne' AND (e.type = 0) LIMIT 1");
+
+    }
 }
 ?>
