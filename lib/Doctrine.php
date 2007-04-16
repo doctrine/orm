@@ -317,12 +317,16 @@ final class Doctrine
      * @see Doctrine::ATTR_PORTABILITY
      */
     const PORTABILITY_FIX_ASSOC_FIELD_NAMES = 16;
-
+    /**
+     * Portability: makes Doctrine_Expression throw exception for unportable RDBMS expressions
+     * @see Doctrine::ATTR_PORTABILITY
+     */
+    const PORTABILITY_EXPR          = 32;
     /**
      * Portability: turn on all portability features.
      * @see Doctrine::ATTR_PORTABILITY
      */
-    const PORTABILITY_ALL           = 17;
+    const PORTABILITY_ALL           = 33;
 
     /**
      * LOCKMODE CONSTANTS
