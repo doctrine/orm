@@ -235,52 +235,50 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         $pos  = strpos($func, '(');
         $name = substr($func, 0, $pos);
 
-
-        if(method_exists($this->conn->expression, $name)) {
-
+        try {
             $argStr = substr($func, ($pos + 1), -1);
             $args   = explode(',', $argStr);
-
+    
             $func   = call_user_func_array(array($this->conn->expression, $name), $args);
-
+    
             if(substr($func, 0, 1) !== '(') {
                 $pos  = strpos($func, '(');
                 $name = substr($func, 0, $pos);
             } else {
                 $name = $func;
             }
-
+    
             $e2     = explode(' ', $args[0]);
-
+    
             $distinct = '';
             if(count($e2) > 1) {
                 if(strtoupper($e2[0]) == 'DISTINCT')
                     $distinct  = 'DISTINCT ';
-
+    
                 $args[0] = $e2[1];
             }
-
-
-
+    
+    
+    
             $parts = explode('.', $args[0]);
             $owner = $parts[0];
             $alias = (isset($e[1])) ? $e[1] : $name;
-
+    
             $e3    = explode('.', $alias);
-
+    
             if(count($e3) > 1) {
                 $alias = $e3[1];
                 $owner = $e3[0];
             }
-
+    
             // a function without parameters eg. RANDOM()
             if ($owner === '') {
                 $owner = 0;
             }
-
+    
             $this->pendingAggregates[$owner][] = array($name, $args, $distinct, $alias);
-        } else {
-            throw new Doctrine_Query_Exception('Unknown function '.$name);
+        } catch(Doctrine_Expression_Exception $e) {
+            throw new Doctrine_Query_Exception('Unknown function ' . $func . '.');
         }
     }
     public function processPendingSubqueries() 

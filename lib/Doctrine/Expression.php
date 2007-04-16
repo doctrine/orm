@@ -661,4 +661,15 @@ class Doctrine_Expression extends Doctrine_Connection_Module
     {
         throw new Doctrine_Expression_Exception('method not implemented');
     }
+    /**
+     * __call
+     *
+     * for all native RDBMS functions the function name itself is returned
+     */
+    public function __call($m, $a) 
+    {
+    	if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EXPR) {
+            throw new Doctrine_Expression_Exception('Unknown expression ' . $m);
+        }
+    }
 }
