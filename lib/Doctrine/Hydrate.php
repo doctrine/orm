@@ -200,6 +200,7 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
         $this->compAliases  = $query->getComponentAliases();
         $this->tableAliases = $query->getTableAliases();
         $this->tableIndexes = $query->getTableIndexes();
+        $this->aliasHandler = $query->aliasHandler;
 
         return $this;
     }
