@@ -219,14 +219,18 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $item
      * @return void
      */
-    public function convertBooleans(array $items)
+    public function convertBooleans($item)
     {
-        foreach ($items as $k => $item) {
-            if (is_bool($item)) {
-                $items[$k] = (int) $item;
+    	if (is_array($item)) {
+            foreach ($item as $k => $value) {
+                if (is_bool($item)) {
+                    $item[$k] = (int) $value;
+                }
             }
+        } else {
+            $item = (int) $item;      	
         }
-        return $items;
+        return $item;
     }
     /**
      * Quote a string so it can be safely used as a table or column name

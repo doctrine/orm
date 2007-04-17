@@ -99,9 +99,16 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
      * @param array $item
      * @return void
      */
-    public function convertBooleans(array $items)
+    public function convertBooleans($item)
     {
-        return $items;
+    	if (is_array($item)) {
+            foreach ($item as $key => $value) {
+                $item[$key] = ($value) ? 'true' : 'false';
+            }
+    	} else {
+    	   $item = ($item) ? 'true' : 'false';      	
+    	}
+        return $item;
     }
     /**
      * Changes a query string for various DBMS specific reasons
