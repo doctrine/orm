@@ -551,6 +551,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 }
             }
     
+            if ($field['type'] === 'boolean') {
+                $fields['default'] = $this->conn->convertBooleans($field['default']);                                 	
+            }
             $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
         }
         return $default;
@@ -679,7 +682,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
             if (isset($definition[$v])) {
                 $upper = strtoupper($definition[$v]);
-                
+
                 switch ($upper) {
                     case 'CASCADE':
                     case 'SET NULL':
