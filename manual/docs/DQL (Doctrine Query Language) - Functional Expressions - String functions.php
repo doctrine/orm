@@ -5,14 +5,14 @@ map the concatenation of users firstname and lastname to a value called name
 
 
 <code type="php">
-\$q = new Doctrine_Query();
+$q = new Doctrine_Query();
 
-\$users = \$q->select('CONCAT(u.firstname, u.lastname) name')->from('User u')->execute();
+$users = $q->select('CONCAT(u.firstname, u.lastname) name')->from('User u')->execute();
 
-foreach(\$users as \$user) {
-    // here 'name' is not a property of \$user,
+foreach($users as $user) {
+    // here 'name' is not a property of $user,
     // its a mapped function value
-    print \$user->name;
+    print $user->name;
 }
 ?>
 </code>
@@ -26,12 +26,12 @@ The //SUBSTRING// function returns a string.
 
 
 <code type="php">
-\$q = new Doctrine_Query();
+$q = new Doctrine_Query();
 
-\$users = \$q->select('u.name')->from('User u')->where(\"SUBSTRING(u.name, 0, 1) = 'z'\")->execute();
+$users = $q->select('u.name')->from('User u')->where("SUBSTRING(u.name, 0, 1) = 'z'")->execute();
 
-foreach(\$users as \$user) {
-    print \$user->name;
+foreach($users as $user) {
+    print $user->name;
 }
 ?>
 </code>
@@ -46,12 +46,12 @@ not provided, BOTH is assumed. The //TRIM// function returns the trimmed string.
 
 
 <code type="php">
-\$q = new Doctrine_Query();
+$q = new Doctrine_Query();
 
-\$users = \$q->select('u.name')->from('User u')->where(\"TRIM(u.name) = 'Someone'\")->execute();
+$users = $q->select('u.name')->from('User u')->where("TRIM(u.name) = 'Someone'")->execute();
 
-foreach(\$users as \$user) {
-    print \$user->name;
+foreach($users as $user) {
+    print $user->name;
 }
 ?>
 </code>    
@@ -63,12 +63,12 @@ string.
 
 
 <code type="php">
-\$q = new Doctrine_Query();
+$q = new Doctrine_Query();
 
-\$users = \$q->select('u.name')->from('User u')->where(\"LOWER(u.name) = 'someone'\")->execute();
+$users = $q->select('u.name')->from('User u')->where("LOWER(u.name) = 'someone'")->execute();
 
-foreach(\$users as \$user) {
-    print \$user->name;
+foreach($users as $user) {
+    print $user->name;
 }
 ?>
 </code>  
