@@ -345,6 +345,7 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
             case 'pgsql':
             case 'odbc':
             case 'mock':
+            case 'oracle':
                 if ( ! isset($parts['path']) || $parts['path'] == '/') {
                     throw new Doctrine_Db_Exception('No database availible in data source name');
                 }
@@ -354,7 +355,14 @@ class Doctrine_Db implements Countable, IteratorAggregate, Doctrine_Adapter_Inte
                 if ( ! isset($parts['host'])) {
                     throw new Doctrine_Db_Exception('No hostname set in data source name');
                 }
-                $parts['dsn'] = $parts["scheme"].":host=".$parts["host"].";dbname=".$parts["database"];
+                
+                if (isset(self::$driverMap[$parts['scheme']])) {
+                    $parts['scheme'] = self::$driverMap[$parts['scheme']];
+                }
+
+                $parts['dsn'] = $parts['scheme'] . ':host='
+                              . $parts['host'] . ';dbname='
+                              . $parts['database'];
                 
                 if (isset($parts['port'])) {
                     // append port to dsn if supplied
