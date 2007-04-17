@@ -1,3 +1,5 @@
+<?php ?>
+
 * The //CONCAT// function returns a string that is a concatenation of its arguments. In the example above we 
 map the concatenation of users firstname and lastname to a value called name
 
