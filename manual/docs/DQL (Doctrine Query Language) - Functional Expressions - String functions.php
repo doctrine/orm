@@ -1,5 +1,3 @@
-<?php ?>
-
 * The //CONCAT// function returns a string that is a concatenation of its arguments. In the example above we 
 map the concatenation of users firstname and lastname to a value called name
 
@@ -14,7 +12,8 @@ foreach(\$users as \$user) {
     // its a mapped function value
     print \$user->name;
 }
-?></code>
+?>
+</code>
 
 
 
@@ -32,7 +31,8 @@ The //SUBSTRING// function returns a string.
 foreach(\$users as \$user) {
     print \$user->name;
 }
-?></code>
+?>
+</code>
  
 
 
@@ -51,7 +51,8 @@ not provided, BOTH is assumed. The //TRIM// function returns the trimmed string.
 foreach(\$users as \$user) {
     print \$user->name;
 }
-?></code>    
+?>
+</code>    
 
 
 * The //LOWER// and //UPPER// functions convert a string to lower and upper case, respectively. They return a
@@ -67,11 +68,11 @@ string.
 foreach(\$users as \$user) {
     print \$user->name;
 }
-?></code>  
+?>
+</code>  
 
 
-* 
-The //LOCATE// function returns the position of a given string within a string, starting the search at a specified
+* The //LOCATE// function returns the position of a given string within a string, starting the search at a specified
 position. It returns the first position at which the string was found as an integer. The first argument
 is the string to be located; the second argument is the string to be searched; the optional third argument
 is an integer that represents the string position at which the search is started (by default, the beginning of
