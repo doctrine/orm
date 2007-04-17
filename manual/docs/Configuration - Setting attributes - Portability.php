@@ -1,4 +1,3 @@
-<?php ?>
 Each database management system (DBMS) has it's own behaviors. For example, some databases capitalize field names in their output, some lowercase them, while others leave them alone. These quirks make it difficult to port your scripts over to another server type. PEAR Doctrine:: strives to overcome these differences so your program can switch between DBMS's without any changes.
 
 You control which portability modes are enabled by using the portability configuration option. Configuration options are set via factory() and setOption().
@@ -101,7 +100,7 @@ Using setAttribute() to enable portability for lowercasing and trimming
 
 
 <code type="php">
-\$conn->setAttribute('portability',
+$conn->setAttribute('portability',
         Doctrine::PORTABILITY_FIX_CASE | Doctrine::PORTABILITY_RTRIM);
 
 ?></code>
@@ -117,7 +116,7 @@ Using setAttribute() to enable all portability options except trimming
 
 
 <code type="php">
-\$conn->setAttribute('portability',
+$conn->setAttribute('portability',
         Doctrine::PORTABILITY_ALL ^ Doctrine::PORTABILITY_RTRIM);
 ?></code>
 
