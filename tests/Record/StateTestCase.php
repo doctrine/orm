@@ -107,4 +107,27 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($user->state(), Doctrine_Record::STATE_PROXY);
     }
+    public function testProxiesAreAutomaticallyUpdatedWithFetches()
+    {
+        $user = new User();
+        $user->name = 'someuser';
+        $user->password = '123';
+        $user->save();
+
+        $this->connection->clear();
+
+        $user = $this->connection->queryOne("SELECT u.name FROM User u WHERE u.name = 'someuser'");
+        
+        $this->assertEqual($user->state(), Doctrine_Record::STATE_PROXY);
+        
+        $user2 = $this->connection->queryOne("FROM User u WHERE u.name = 'someuser'");     
+
+        $this->assertEqual($user->getOID(), $user2->getOID());
+        
+        $count = count($this->dbh);
+        
+        $this->assertEqual($user->password, '123');
+        
+        $this->assertEqual($count, count($this->dbh));
+    }
 }

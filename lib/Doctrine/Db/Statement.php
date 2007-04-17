@@ -42,6 +42,10 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
     {
         $this->adapter = $adapter;
         $this->stmt    = $stmt;
+        
+        if ($stmt === false) {
+            throw new Doctrine_Db_Exception('Unknown statement object given.');                    	
+        }
     }
     /**
      *

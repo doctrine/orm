@@ -1144,6 +1144,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         if (isset($this->identityMap[$id])) {
             $record = $this->identityMap[$id];
+            $record->hydrate($this->data);
         } else {
             $recordName = $this->getClassnameToReturn();
             $record = new $recordName($this);
@@ -1183,7 +1184,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     break;
                 }
             }
-            if (!$nomatch) {
+            if ( ! $nomatch) {
                 return $table->getComponentName();
             }
         }

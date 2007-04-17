@@ -382,7 +382,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return integer
      */
-    private function cleanData($debug = false)
+    private function cleanData()
     {
         $tmp = $this->_data;
 
@@ -397,41 +397,56 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->_data[$name] = self::$null;
             } else {
                 switch ($type) {
-                    case "array":
-                    case "object":
+                    case 'array':
+                    case 'object':
                         if ($tmp[$name] !== self::$null) {
                             if (is_string($tmp[$name])) {
                                 $value = unserialize($tmp[$name]);
 
                                 if ($value === false)
-                                    throw new Doctrine_Record_Exception("Unserialization of $name failed.");
+                                    throw new Doctrine_Record_Exception('Unserialization of ' . $name . ' failed.');
                             } else {
                                 $value = $tmp[$name];
                             }
                             $this->_data[$name] = $value;
                         }
                         break;
-                    case "gzip":
+                    case 'gzip':
                         if ($tmp[$name] !== self::$null) {
                             $value = gzuncompress($tmp[$name]);
 
                             if ($value === false)
-                                throw new Doctrine_Record_Exception("Uncompressing of $name failed.");
+                                throw new Doctrine_Record_Exception('Uncompressing of ' . $name . ' failed.');
 
                             $this->_data[$name] = $value;
                         }
                         break;
-                    case "enum":
+                    case 'enum':
                         $this->_data[$name] = $this->_table->enumValue($name, $tmp[$name]);
                         break;
                     default:
                         $this->_data[$name] = $tmp[$name];
-                };
+                }
                 $count++;
             }
         }
 
         return $count;
+    }
+    /**
+     * hydrate
+     * hydrates this object from given array
+     *
+     * @param array $data
+     * @return boolean
+     */
+    public function hydrate(array $data)
+    {
+        foreach ($data as $k => $v) {
+            $this->_data[$k] = $v;
+        }
+        $this->cleanData();
+        $this->prepareIdentifiers();
     }
     /**
      * prepareIdentifiers
