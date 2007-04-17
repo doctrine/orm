@@ -350,7 +350,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     break;
                 case 'boolean':
                     if (isset($definition['default'])) {
-                        $definition['default'] = (int) $definition['default'];
+                        $definition['default'] = $this->conn->convertBooleans($definition['default']);
                     }
                     break;
                 }
