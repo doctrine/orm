@@ -285,9 +285,9 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      */
     public function alterTableSql($name, array $changes, $check)
     {
-        if ( ! $name)
+        if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');
-
+        }
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
                 case 'add':
@@ -297,7 +297,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 case 'name':
                     break;
                 default:
-                    throw new Doctrine_Export_Exception('change type "'.$changeName.'" not yet supported');
+                    throw new Doctrine_Export_Exception('change type "' . $changeName . '" not yet supported');
             }
         }
 
@@ -307,33 +307,33 @@ class Doctrine_Export_Mysql extends Doctrine_Export
 
         $query = '';
         if ( ! empty($changes['name'])) {
-            $change_name = $this->conn->quoteIdentifier($changes['name'], true);
+            $change_name = $this->conn->quoteIdentifier($changes['name']);
             $query .= 'RENAME TO ' . $change_name;
         }
 
         if ( ! empty($changes['add']) && is_array($changes['add'])) {
-            foreach ($changes['add'] as $field_name => $field) {
+            foreach ($changes['add'] as $fieldName => $field) {
                 if ($query) {
                     $query.= ', ';
                 }
-                $query.= 'ADD ' . $this->getDeclaration($field['type'], $field_name, $field);
+                $query.= 'ADD ' . $this->getDeclaration($field['type'], $fieldName, $field);
             }
         }
 
         if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
-            foreach ($changes['remove'] as $field_name => $field) {
+            foreach ($changes['remove'] as $fieldName => $field) {
                 if ($query) {
-                    $query.= ', ';
+                    $query .= ', ';
                 }
-                $field_name = $this->conn->quoteIdentifier($field_name, true);
-                $query.= 'DROP ' . $field_name;
+                $fieldName = $this->conn->quoteIdentifier($fieldName);
+                $query .= 'DROP ' . $fieldName;
             }
         }
 
         $rename = array();
         if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
-            foreach ($changes['rename'] as $field_name => $field) {
-                $rename[$field['name']] = $field_name;
+            foreach ($changes['rename'] as $fieldName => $field) {
+                $rename[$field['name']] = $fieldName;
             }
         }
 
@@ -349,18 +349,20 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                     $oldFieldName = $fieldName;
                 }
                 $oldFieldName = $this->conn->quoteIdentifier($oldFieldName, true);
-                $query .= "CHANGE $oldFieldName " . $this->getDeclaration($field['definition']['type'], $fieldName, $field['definition']);
+                $query .= 'CHANGE ' . $oldFieldName . ' ' 
+                        . $this->getDeclaration($field['definition']['type'], $fieldName, $field['definition']);
             }
         }
 
         if ( ! empty($rename) && is_array($rename)) {
-            foreach ($rename as $rename_name => $renamed_field) {
+            foreach ($rename as $renameName => $renamedField) {
                 if ($query) {
                     $query.= ', ';
                 }
-                $field = $changes['rename'][$renamed_field];
-                $renamed_field = $this->conn->quoteIdentifier($renamed_field, true);
-                $query.= 'CHANGE ' . $renamed_field . ' ' . $this->getDeclaration($field['definition']['type'], $field['name'], $field['definition']);
+                $field = $changes['rename'][$renamedField];
+                $renamedField = $this->conn->quoteIdentifier($renamedField, true);
+                $query .= 'CHANGE ' . $renamedField . ' '
+                        . $this->getDeclaration($field['definition']['type'], $field['name'], $field['definition']);
             }
         }
 
@@ -452,7 +454,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         $table  = $table;
         $name   = $this->conn->getIndexName($name);
         $type   = '';
-        if(isset($definition['type'])) {
+        if (isset($definition['type'])) {
             switch (strtolower($definition['type'])) {
                 case 'fulltext':
                 case 'unique':
@@ -463,7 +465,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             }
         }
         $query  = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
-        $query .= ' ('. $this->getIndexFieldDeclarationList() . ')';
+        $query .= ' (' . $this->getIndexFieldDeclarationList() . ')';
 
         return $query;
     }
