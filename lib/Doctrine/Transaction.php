@@ -60,7 +60,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     /**
      * @var array $savepoints               an array containing all savepoints
      */
-    public $savePoints       = array();
+    protected $savePoints       = array();
     /**
      * getState
      * returns the state of this connection
@@ -129,10 +129,12 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             $ids    = array();
 
     	    if (is_array($deletes[count($deletes)-1]->getTable()->getIdentifier())) {
-                foreach($deletes as $k => $record) {
+                foreach ($deletes as $k => $record) {
                     $cond = array();
                     $ids = $record->obtainIdentifier();
-                    $query = 'DELETE FROM '.$record->getTable()->getTableName().' WHERE ';
+                    $query = 'DELETE FROM ' 
+                           . $this->conn->quoteIdentifier($record->getTable()->getTableName()) 
+                           . ' WHERE ';
 
                     foreach (array_keys($ids) as $id){
                         $cond[] = $id . ' = ? ';
@@ -147,10 +149,10 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                     $record->assignIdentifier(false);
     		    }
     		    if ($record instanceof Doctrine_Record) {
-        			$params = substr(str_repeat("?, ",count($ids)),0,-2);
+        			$params = substr(str_repeat('?, ', count($ids)),0,-2);
     
         			$query = 'DELETE FROM '
-        				   . $record->getTable()->getTableName()
+        				   . $this->conn->quoteIdentifier($record->getTable()->getTableName())
         				   . ' WHERE '
         				   . $record->getTable()->getIdentifier()
         				   . ' IN(' . $params . ')';
