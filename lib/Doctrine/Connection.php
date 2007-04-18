@@ -461,7 +461,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             }
         }
 
-        $query          = 'DELETE FROM '. $table . ' WHERE ' . implode(' AND ', $condition);
+        $query          = 'DELETE FROM ' . $this->quoteIdentifier($table) . ' WHERE ' . implode(' AND ', $condition);
         $affectedRows   = $this->exec($query);
 
         $this->insert($table, $values);
@@ -486,7 +486,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $cols = array_keys($values);
 
         // build the statement
-        $query = "INSERT INTO $table "
+        $query = 'INSERT INTO ' . $this->quoteIdentifier($table) 
                . '(' . implode(', ', $cols) . ') '
                . 'VALUES (' . substr(str_repeat('?, ', count($values)), 0, -2) . ')';
 
