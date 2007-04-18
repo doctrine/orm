@@ -57,6 +57,9 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
      */
     public function getNativeDeclaration($field)
     {
+    	if ( ! isset($field['type'])) {
+            throw new Doctrine_DataDict_Exception('Missing column type.');
+    	}
         switch ($field['type']) {
             case 'varchar':
             case 'string':
@@ -90,10 +93,10 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
                 return 'DOUBLE PRECISION';
             case 'decimal':
                 $length = !empty($field['length']) ? $field['length'] : 18;
-                return 'DECIMAL('.$length.','.$this->conn->options['decimal_places'].')';
-            default:
-                throw new Doctrine_DataDict_Exception('Unknown field type '. $field['type']);
+                return 'DECIMAL(' . $length.',' . $this->conn->options['decimal_places'] . ')';
         }
+        
+        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
     /**
      * Maps a native array description of a field to a Doctrine datatype and length

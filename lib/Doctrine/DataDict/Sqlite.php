@@ -57,6 +57,9 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
      */
     public function getNativeDeclaration(array $field)
     {
+    	if ( ! isset($field['type'])) {
+            throw new Doctrine_DataDict_Exception('Missing column type.');
+    	}
         switch ($field['type']) {
             case 'text':
             case 'object':
@@ -114,7 +117,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'DECIMAL('.$length.','.$this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES).')';
         }
-        throw new Doctrine_DataDict_Exception('Unknown datatype ' . $field['type']);
+        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
     /**
      * Maps a native array description of a field to Doctrine datatype and length

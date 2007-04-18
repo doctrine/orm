@@ -55,6 +55,9 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
      */
     public function getNativeDeclaration(array $field)
     {
+    	if ( ! isset($field['type'])) {
+            throw new Doctrine_DataDict_Exception('Missing column type.');
+    	}
         switch ($field['type']) {
             case 'string':
             case 'array':
@@ -91,8 +94,8 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
             case 'decimal':
                 return 'NUMBER(*,'.$this->conn->options['decimal_places'].')';
             default:
-                throw new Doctrine_DataDict_Exception('Unknown field type '. $field['type']);
         }
+        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
     /**
      * Maps a native array description of a field to a doctrine datatype and length

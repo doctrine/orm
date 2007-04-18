@@ -135,7 +135,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
     public function getNativeDeclaration($field)
     {
     	if ( ! isset($field['type'])) {
-    	   $field['type'] = null;
+            throw new Doctrine_DataDict_Exception('Missing column type.');
     	}
 
         switch ($field['type']) {
@@ -218,7 +218,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'DECIMAL(' . $length . ',' . 0 . ')'; //$this->dbh->options['decimal_places'] . ')';
         }
-        throw new Doctrine_DataDict_Exception('Unknown column type ' . $field['type'] .  '.');
+        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
     /**
      * Maps a native array description of a field to a MDB2 datatype and length
@@ -367,7 +367,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                 $length = null;
             break;
             default:
-                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$dbType);
+                throw new Doctrine_DataDict_Exception('unknown database attribute type: ' . $dbType);
         }
 
         $length = ((int) $length == 0) ? null : (int) $length;

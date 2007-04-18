@@ -56,6 +56,9 @@ class Doctrine_DataDict_Informix extends Doctrine_DataDict
      */
     public function getNativeDeclaration($field)
     {
+    	if ( ! isset($field['type'])) {
+            throw new Doctrine_DataDict_Exception('Missing column type.');
+    	}
         switch ($field['type']) {
             case 'char':
             case 'varchar':
@@ -102,6 +105,6 @@ class Doctrine_DataDict_Informix extends Doctrine_DataDict
             case 'decimal':
                 return 'DECIMAL';
         }
-        return '';
+        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
 }

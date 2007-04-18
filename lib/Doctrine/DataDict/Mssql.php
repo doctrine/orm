@@ -59,6 +59,9 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
      */
     public function getNativeDeclaration($field)
     {
+    	if ( ! isset($field['type'])) {
+            throw new Doctrine_DataDict_Exception('Missing column type.');
+    	}
         switch ($field['type']) {
             case 'array':
             case 'object':
@@ -107,7 +110,8 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'DECIMAL('.$length.','.$this->conn->options['decimal_places'].')';
         }
-        throw new Doctrine_DataDict_Exception('Unknown column type.');
+
+        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
     /**
      * Maps a native array description of a field to a MDB2 datatype and length

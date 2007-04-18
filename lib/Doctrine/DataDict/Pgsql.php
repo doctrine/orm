@@ -360,6 +360,9 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
      */
     public function getNativeDeclaration(array $field)
     {
+    	if ( ! isset($field['type'])) {
+            throw new Doctrine_DataDict_Exception('Missing column type.');
+    	}
         switch ($field['type']) {
             case 'char':
             case 'string':
@@ -415,9 +418,8 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
             case 'decimal':
                 $length = !empty($field['length']) ? $field['length'] : 18;
                 return 'NUMERIC(' . $length . ',' . $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES) . ')';
-            default:
-                throw new Doctrine_DataDict_Exception('Unknown field type '. $field['type']);
         }
+        throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
     /**
      * Maps a native array description of a field to a portable Doctrine datatype and length
