@@ -41,7 +41,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
      */
     protected function createSavePoint($savepoint)
     {
-        $query = 'SAVEPOINT '.$savepoint;
+        $query = 'SAVEPOINT ' . $savepoint;
 
         return $this->conn->execute($query);
     }
@@ -54,7 +54,7 @@ class Doctrine_Transaction_Firebird extends Doctrine_Transaction
      */
     protected function releaseSavePoint($savepoint)
     {
-        $query = 'RELEASE SAVEPOINT '.$savepoint;
+        $query = 'RELEASE SAVEPOINT ' . $savepoint;
 
         return $this->conn->execute($query);
     }
