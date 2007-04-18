@@ -21,7 +21,7 @@ function autoload($class) {
     } else {
         $file   = str_replace('_', '', $file);
     }
-    print $file ."<br \>";
+
     // create a test case file if it doesn't exist
 
     if( ! file_exists($file)) {
@@ -226,7 +226,8 @@ $test->addTestCase(new Doctrine_Query_From_TestCase());
 $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 $test->addTestCase(new Doctrine_ColumnAlias_TestCase());
 $test->addTestCase(new Doctrine_ColumnAggregationInheritance_TestCase());
-$test->addTestCase(new Doctrine_Query_Subquery_TestCase());
+
+
 
 $test->addTestCase(new Doctrine_Query_Join_TestCase());
 
@@ -238,6 +239,9 @@ $test->addTestCase(new Doctrine_Cache_Memcache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Sqlite_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Check_TestCase());
+
+$test->addTestCase(new Doctrine_Query_Subquery_TestCase());
+
 
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
