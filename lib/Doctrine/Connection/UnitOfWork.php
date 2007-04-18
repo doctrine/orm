@@ -259,19 +259,19 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
         }
         $set   = array();
         foreach ($array as $name => $value) {
-                $set[] = $name." = ?";
+            $set[] = $name . ' = ?';
 
-                if ($value instanceof Doctrine_Record) {
-                    switch ($value->state()) {
-                        case Doctrine_Record::STATE_TCLEAN:
-                        case Doctrine_Record::STATE_TDIRTY:
-                            $record->save($this->conn);
-                        default:
-                            $array[$name] = $value->getIncremented();
-                            $record->set($name, $value->getIncremented());
-                    };
+            if ($value instanceof Doctrine_Record) {
+                switch ($value->state()) {
+                    case Doctrine_Record::STATE_TCLEAN:
+                    case Doctrine_Record::STATE_TDIRTY:
+                        $record->save($this->conn);
+                    default:
+                        $array[$name] = $value->getIncremented();
+                        $record->set($name, $value->getIncremented());
                 }
-        };
+            }
+        }
 
         $params   = array_values($array);
         $id       = $record->obtainIdentifier();
@@ -282,7 +282,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
         $id     = array_values($id);
         $params = array_merge($params, $id);
 
-        $sql  = 'UPDATE ' . $record->getTable()->getTableName()
+        $sql  = 'UPDATE ' . $this->conn->quoteIdentifier($record->getTable()->getTableName())
               . ' SET ' . implode(', ', $set)
               . ' WHERE ' . implode(' = ? AND ', $record->getTable()->getPrimaryKeys())
               . ' = ?';
