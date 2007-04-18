@@ -1,5 +1,4 @@
 <?php
-ob_start();
 
 ini_set('max_execution_time', 900);
 
@@ -55,7 +54,6 @@ require_once dirname(__FILE__) . '/UnitTestCase.php';
 require_once dirname(__FILE__) . '/DriverTestCase.php';
 
 error_reporting(E_ALL);
-print '<pre>';
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
@@ -274,28 +272,8 @@ if (TextReporter::inCli()) {
         $password = $argv[3];
     }
     exit ($test->run(new TextReporter()) ? 0 : 1);
-} else {
-    if (isset($_POST))
-    {
-        $dsn        = isset($_POST["dsn"])?$_POST["dsn"]:null;
-        $username   = isset($_POST["username"])?$_POST["username"]:null;
-        $password   = isset($_POST["password"])?$_POST["password"]:null;
-    }
-    $test->run(new MyReporter());
-    $output = ob_get_clean();
 }
-/**
-$cache = Doctrine_Manager::getInstance()->getCurrentConnection()->getCacheHandler();
-if(isset($cache)) {
-    $a     = $cache->getQueries();
-    print "Executed cache queries: ".count($a)."\n";
 
-    foreach($a as $query) {
-        print $query."\n";
-    }
-
-}
-*/
 ?>
 <html>
 <head>
@@ -332,6 +310,31 @@ if(isset($cache)) {
 </form>
 <h3>Tests</h3>
 <pre>
+<?php
+
+    ob_start();
+    if (isset($_POST))
+    {
+        $dsn        = isset($_POST["dsn"])?$_POST["dsn"]:null;
+        $username   = isset($_POST["username"])?$_POST["username"]:null;
+        $password   = isset($_POST["password"])?$_POST["password"]:null;
+    }
+    $test->run(new MyReporter());
+    $output = ob_get_clean();
+
+/**
+$cache = Doctrine_Manager::getInstance()->getCurrentConnection()->getCacheHandler();
+if(isset($cache)) {
+    $a     = $cache->getQueries();
+    print "Executed cache queries: ".count($a)."\n";
+
+    foreach($a as $query) {
+        print $query."\n";
+    }
+
+}
+*/
+?>
 <?php echo $output; ?>
 </pre>
 <h3>Queries</h3>
