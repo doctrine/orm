@@ -35,24 +35,24 @@ function autoload($class) {
         file_put_contents($file, $contents);
     }
     require_once($file);
-    
+
     return true;
 }
 
+// include doctrine, and register it's autoloader
 require_once dirname(__FILE__) . '/../lib/Doctrine.php';
-
-
 spl_autoload_register(array('Doctrine', 'autoload'));
+
+// register the autoloader function above
 spl_autoload_register('autoload');
 
 require_once dirname(__FILE__) . '/../models/location.php';
-require_once('classes.php');
+require_once dirname(__FILE__) . '/classes.php';
 require_once dirname(__FILE__) . '/../vendor/simpletest/unit_tester.php';
 require_once dirname(__FILE__) . '/../vendor/simpletest/reporter.php';
 
-require_once('UnitTestCase.php');
-require_once('DriverTestCase.php');
-
+require_once dirname(__FILE__) . '/UnitTestCase.php';
+require_once dirname(__FILE__) . '/DriverTestCase.php';
 
 error_reporting(E_ALL);
 print '<pre>';
