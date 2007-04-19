@@ -19,7 +19,7 @@
         <?php
         // https://sourceforge.net/project/showfiles.php?group_id=160015
         ?>
-        <a href="index.php">main</a> | <a href="documentation.php">documentation</a> | <a href="download.php">download</a> | <a href="faq.php">FAQ</a> | <a href="about.php">about</a> | <a href="http://www.phpbbserver.com/phpdoctrine/">forums</a>
+        <a href="index.php">main</a> | <a href="documentation2.php">documentation</a> | <a href="download.php">download</a> | <a href="faq.php">FAQ</a> | <a href="about.php">about</a> | <a href="http://www.phpbbserver.com/phpdoctrine/">forums</a>
         </td>
         <td width=30>
         </td>
