@@ -376,6 +376,8 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
 	public function count($params = array())
     {
+		$parts_old = $this->parts;
+
 		$this->remove('select');
 		$join  = $this->join;
 		$where = $this->where;
@@ -408,6 +410,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         $params = array_merge($this->params, $params);
 
+		$this->parts = $parts_old;
 		return (int) $this->getConnection()->fetchOne($q, $params);
 	}
     /**
