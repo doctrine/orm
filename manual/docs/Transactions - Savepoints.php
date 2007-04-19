@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine supports transaction savepoints. This means you can set named transactions and have them nested.
 
 

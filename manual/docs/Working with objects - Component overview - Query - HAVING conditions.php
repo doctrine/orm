@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine_Query provides having() method for adding HAVING conditions to the DQL query. This method is identical in function to the Doctrine_Query::where() method.
 
 

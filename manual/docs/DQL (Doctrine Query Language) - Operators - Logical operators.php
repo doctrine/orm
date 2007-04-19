@@ -1,5 +1,5 @@
 
-<li>
+* 
 
 
 NOT, !
@@ -40,8 +40,8 @@ NOT, !
             expression evaluates the same way as
             (!1)+1.
           
-</li>
-<li>
+
+* 
 
 
 <a name="function_and"></a>
@@ -81,8 +81,8 @@ NOT, !
         -&gt; 0
 
 </pre>
-</li>
-<li>
+
+* 
 
 
             OR
@@ -121,8 +121,8 @@ NOT, !
         -&gt; 1
 
 </pre>
-</li>
-<li>
+
+* 
 
 
 <a name="function_xor"></a>
@@ -162,6 +162,6 @@ NOT, !
             a XOR b is mathematically equal to
             (a AND (NOT b)) OR ((NOT a) and b).
           
-</li>
+
 
 

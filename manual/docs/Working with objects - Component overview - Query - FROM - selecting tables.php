@@ -1,4 +1,4 @@
-<?php ?>
+
 The FROM clause indicates the component or components from which to retrieve records.
 If you name more than one component, you are performing a join.
 For each table specified, you can optionally specify an alias. Doctrine_Query offers easy to use

@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine_Export drivers provide an easy database portable way of altering existing database tables.
 
 

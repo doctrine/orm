@@ -6,15 +6,15 @@ the lazy fetching strategy will be used whenever the records of 'example' table 
 
 
 
-<li> Global level
+*  Global level
     
         The attributes set in global level will affect every connection and every table in each connection.
     
-<li> Connection level
+*  Connection level
     
         The attributes set in connection level will take effect on each table in that connection.
     
-<li> Table level
+*  Table level
     
         The attributes set in table level will take effect only on that table.
     

@@ -1,4 +1,4 @@
-<?php ?>
+
 From the start Doctrine has been designed to work with multiple connections. Unless separately specified Doctrine always uses the current connection 
 for executing the queries. The following example uses openConnection() second argument as an optional
 connection alias.

@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine supports default values for all data types. When default value is attached to a record column this means two of things.
 First this value is attached to every newly created Record.
 

@@ -1,4 +1,4 @@
-<?php ?>
+
 Opening a new database connection in Doctrine is very easy. If you wish to use PDO (www.php.net/PDO) you can just initalize a new PDO object:
 
  

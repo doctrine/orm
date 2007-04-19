@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine supports sequences for generating record identifiers. Sequences are a way of offering unique IDs for data rows. If you do most of your work with e.g. MySQL, think of sequences as another way of doing AUTO_INCREMENT. 
 
 

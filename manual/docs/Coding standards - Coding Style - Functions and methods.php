@@ -1,4 +1,4 @@
-<?php ?>
+
 
 * Methods must be named by following the naming conventions.
 

@@ -1,4 +1,4 @@
-<?php ?>
+
 DQL (Doctrine Query Language) is a object query language which allows
 you to find objects. DQL understands things like object relationships, polymorphism and 
 inheritance (including column aggregation inheritance). 

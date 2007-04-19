@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine_Db allows both PEAR-like DSN (data source name) as well as PDO like DSN as constructor parameters.
 
 

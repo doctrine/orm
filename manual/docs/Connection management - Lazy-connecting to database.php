@@ -1,4 +1,4 @@
-<?php ?>
+
 Lazy-connecting to database is handled via Doctrine_Db wrapper. When using Doctrine_Db instead of PDO / Doctrine_Adapter, lazy-connecting 
 to database is being performed (that means Doctrine will only connect to database when needed). 
 

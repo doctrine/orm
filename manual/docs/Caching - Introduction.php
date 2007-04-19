@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine_Cache offers an intuitive and easy-to-use query caching solution. It provides the following things:
 
     *  Multiple cache backends to choose from (including Memcached, APC and Sqlite)

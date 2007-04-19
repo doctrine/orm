@@ -5,7 +5,7 @@ influental things when it comes to boosting application performance.
 
 
 
-<li>Immediate Collection
+* Immediate Collection
 Fetches all records and all record data immediately into collection memory. Use this collection only if you really need to show all that data
 in web page.
 
@@ -17,7 +17,7 @@ SELECT id, name, type, created FROM user
 
 
 
-<li>Batch Collection
+* Batch Collection
 Fetches all record primary keys into colletion memory. When individual collection elements are accessed this collection initializes proxy objects.
 When the non-primary-key-property of a proxy object is accessed that object sends request to Batch collection which loads the data
 for that specific proxy object as well as other objects close to that proxy object.
@@ -35,7 +35,7 @@ SELECT id, name, type, created FROM user WHERE id IN (6,7,8,9,10)
 [ ... ]
 
 
-<li>Lazy Collection
+* Lazy Collection
 Lazy collection is exactly same as Batch collection with batch size preset to one.
 
 
@@ -53,7 +53,7 @@ SELECT id, name, type, created FROM user WHERE id = 3
 [ ... ]
 
 
-<li>Offset Collection
+* Offset Collection
 Offset collection is the same as immediate collection with the difference that it uses database provided limiting of queries.
 
 

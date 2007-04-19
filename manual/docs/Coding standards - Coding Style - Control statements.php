@@ -1,4 +1,4 @@
-<?php ?>
+
 
 * Control statements based on the if and elseif constructs must have a single space before the opening parenthesis of the conditional, and a single space after the closing parenthesis.
 

@@ -1,9 +1,9 @@
 Doctrine automatically creates table names from the record class names. For this reason, it is recommended to name your record classes using the following rules:
 
-    <li>Use CamelCase naming</li>
-    <li>Underscores are allowed</li>
-    <li>The first letter must be capitalized</li>
-    <li>The class name cannot be one of the following (these keywords are reserved in DQL API): 
+    * Use CamelCase naming
+    * Underscores are allowed
+    * The first letter must be capitalized
+    * The class name cannot be one of the following (these keywords are reserved in DQL API): 
 
         SELECT, FROM, WHERE, UPDATE, DELETE, JOIN, OUTER, INNER, LEFT, GROUP, ORDER, BY, HAVING,
 
@@ -20,7 +20,7 @@ Doctrine automatically creates table names from the record class names. For this
         CHARACTER_LENGTH, CHAR_LENGTH, BIT_LENGTH, CURRENT_TIME, CURRENT_DATE, 
 
         CURRENT_TIMESTAMP, NEW, EXISTS, ALL, ANY, SOME.
-</li>
+
 
 Example. My_PerfectClass
 

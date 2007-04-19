@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine offers many index options, some of them being db-specific. Here is a full list of availible options:
 <code>        
 

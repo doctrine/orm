@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine_Db has a pluggable event listener architecture. It provides before and after
 listeners for all relevant methods. Every listener method takes one parameter: a Doctrine_Db_Event object, which
 holds info about the occurred event.

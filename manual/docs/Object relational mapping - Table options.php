@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine offers various table options. All table options can be set via Doctrine_Record::option($optionName, $value)
 
 

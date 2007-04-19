@@ -1,4 +1,4 @@
-<?php ?>
+
 The WHERE clause, if given, indicates the condition or conditions that the records must satisfy to be selected.
 
 Doctrine_Query provides easy to use WHERE -part management methods where and addWhere. The where methods always overrides

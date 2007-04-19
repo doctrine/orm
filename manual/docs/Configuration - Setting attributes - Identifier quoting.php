@@ -1,4 +1,4 @@
-<?php ?>
+
 You can quote the db identifiers (table and field names) with quoteIdentifier(). The delimiting style depends on which database driver is being used. NOTE: just because you CAN use delimited identifiers, it doesn't mean you SHOULD use them. In general, they end up causing way more problems than they solve. Anyway, it may be necessary when you have a reserved word as a field name (in this case, we suggest you to change it, if you can).
 
 Some of the internal Doctrine methods generate queries. Enabling the "quote_identifier" attribute of Doctrine you can tell Doctrine to quote the identifiers in these generated queries. For all user supplied queries this option is irrelevant.

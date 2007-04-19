@@ -1,4 +1,4 @@
-<?php ?>
+
 You can add indexes by simple calling Doctrine_Record::index('indexName', $definition) where $definition is the
 definition array.
 

@@ -15,9 +15,9 @@ In a hierarchical data model, data is organized into a tree-like structure. The 
 There are three major approaches to managing tree structures in relational databases, these are:
 
 
-	<li>the adjacency list model</li>
-	<li>the nested set model (otherwise known as the modified pre-order tree traversal algorithm)</li> 
-	<li>materialized path model</li> 
+	* the adjacency list model
+	* the nested set model (otherwise known as the modified pre-order tree traversal algorithm) 
+	* materialized path model 
 
 
 

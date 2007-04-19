@@ -1,4 +1,4 @@
-<?php ?>
+
 Doctrine allows you to bind connections to components (= your ActiveRecord classes). This means everytime a component issues a query
 or data is being fetched from the table the component is pointing at Doctrine will use the bound connection.
 
