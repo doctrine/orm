@@ -39,21 +39,21 @@ class Doctrine_Lib
     public static function getRecordStateAsString($state)
     {
         switch ($state) {
-            case Doctrine_Record::STATE_PROXY:
-                return "proxy";
-                break;
-            case Doctrine_Record::STATE_CLEAN:
-                return "persistent clean";
-                break;
-            case Doctrine_Record::STATE_DIRTY:
-                return "persistent dirty";
-                break;
-            case Doctrine_Record::STATE_TDIRTY:
-                return "transient dirty";
-                break;
-            case Doctrine_Record::STATE_TCLEAN:
-                return "transient clean";
-                break;
+        case Doctrine_Record::STATE_PROXY:
+            return "proxy";
+            break;
+        case Doctrine_Record::STATE_CLEAN:
+            return "persistent clean";
+            break;
+        case Doctrine_Record::STATE_DIRTY:
+            return "persistent dirty";
+            break;
+        case Doctrine_Record::STATE_TDIRTY:
+            return "transient dirty";
+            break;
+        case Doctrine_Record::STATE_TCLEAN:
+            return "transient clean";
+            break;
         }
     }
     /**
@@ -72,6 +72,44 @@ class Doctrine_Lib
         $r[] = "</pre>";
         return implode("\n",$r)."<br />";
     }
+
+    public static function getRecordAsXml(Doctrine_Record $record, $xml = null)
+    {
+        $recordname = $record->getTable()->name;
+        if ($xml == null) {
+            $xml = new SimpleXMLElement("<" . $recordname . "></" . $recordname . ">");
+        }
+        $xml->addChild("id", $record->getOID());
+        $xml_options = $record->option("xml");
+        foreach ($record->getData() as $field => $value) {
+            if (isset($xml_options["ignore_fields"]) && !in_array($field, $xml_options["ignore_fields"])) {
+                $xml->addChild($field, $value);
+            }
+        }
+        if (!isset($xml_options["include_relations"])) {
+            return $xml->asXML();
+        }
+        $relations = $record->getTable()->getRelations();
+        foreach ($relations as $name => $relation) {
+            if (in_array($name, $xml_options["include_relations"])) {
+                $relation_type = $relation->getType();
+                $related_records = $record->get($name);
+                if ($relation_type == Doctrine_Relation::ONE) {
+                    $related_xml = $xml->addChild($name);
+                    Doctrine_Lib::getRecordAsXml($related_records, $related_xml);
+                } else {
+                    $xml_collection = $xml->addChild($name . "s"); //this could be fixed to plurelize in some better way i guess
+                    foreach ($related_records as $related_name => $related_record) {
+                        $related_xml = $xml_collection->addChild($name);
+                        Doctrine_Lib::getRecordAsXml($related_record, $related_xml);
+                    }
+                }
+            }
+        }
+        return $xml->asXML();
+    }
+
+
     /**
      * getStateAsString
      * returns a given connection state as string
@@ -80,15 +118,15 @@ class Doctrine_Lib
     public static function getConnectionStateAsString($state)
     {
         switch ($state) {
-            case Doctrine_Transaction::STATE_SLEEP:
-                return "open";
-                break;
-            case Doctrine_Transaction::STATE_BUSY:
-                return "busy";
-                break;
-            case Doctrine_Transaction::STATE_ACTIVE:
-                return "active";
-                break;
+        case Doctrine_Transaction::STATE_SLEEP:
+            return "open";
+            break;
+        case Doctrine_Transaction::STATE_BUSY:
+            return "busy";
+            break;
+        case Doctrine_Transaction::STATE_ACTIVE:
+            return "active";
+            break;
         }
     }
     /**
