@@ -1073,7 +1073,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     $a[$v] = gzcompress($this->_data[$v],5);
                     break;
                 case 'boolean':
-                    $a[$v] = (int) $this->_data[$v];
+                    $a[$v] = $this->getTable()->getConnection()->convertBooleans($this->_data[$v]);
                 break;
                 case 'enum':
                     $a[$v] = $this->_table->enumIndex($v,$this->_data[$v]);
