@@ -616,14 +616,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     /**
      * @return mixed
      */
-    final public function getIdentifier()
+    public function getIdentifier()
     {
         return $this->identifier;
     }
     /**
      * @return integer
      */
-    final public function getIdentifierType()
+    public function getIdentifierType()
     {
         return $this->identifierType;
     }
@@ -631,7 +631,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * hasColumn
      * @return boolean
      */
-    final public function hasColumn($name)
+    public function hasColumn($name)
     {
         return isset($this->columns[$name]);
     }
@@ -639,7 +639,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @param mixed $key
      * @return void
      */
-    final public function setPrimaryKey($key)
+    public function setPrimaryKey($key)
     {
         switch (gettype($key)) {
         case "array":
@@ -654,14 +654,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * returns all primary keys
      * @return array
      */
-    final public function getPrimaryKeys()
+    public function getPrimaryKeys()
     {
         return $this->primaryKeys;
     }
     /**
      * @return boolean
      */
-    final public function hasPrimaryKey($key)
+    public function hasPrimaryKey($key)
     {
         return in_array($key,$this->primaryKeys);
     }
@@ -818,7 +818,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * hasRelatedComponent
      * @return boolean
      */
-    final public function hasRelatedComponent($name, $component)
+    public function hasRelatedComponent($name, $component)
     {
         return (strpos($this->bound[$name]['field'], $component . '.') !== false);
     }
