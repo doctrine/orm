@@ -644,7 +644,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             break;
             default:
                 $this->parts[$name] = array();
-                $this->$method($args[0]);
+                if (method_exists($this, $method)) {
+                	$this->$method($args[0]);
+                }
 
             throw new Doctrine_Query_Exception("Unknown overload method");
         }
