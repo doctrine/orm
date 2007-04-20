@@ -1278,11 +1278,18 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     public static function sqlExplode($str, $d = ' ', $e1 = '(', $e2 = ')')
     {
+    	if ($d == ' ') {
+    		$d = array(' ', '\s');
+    	}
         if(is_array($d)) {
+        	if (in_array(' ', $d)) {
+        		$d[] = '\s';
+        	}
             $str = preg_split('/('.implode('|', $d).')/', $str);
             $d = stripslashes($d[0]);
-        } else
+        } else {
             $str = explode("$d",$str);
+        }
 
         $i = 0;
         $term = array();
