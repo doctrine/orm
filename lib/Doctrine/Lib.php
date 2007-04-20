@@ -72,18 +72,69 @@ class Doctrine_Lib
         $r[] = "</pre>";
         return implode("\n",$r)."<br />";
     }
+    /**
+     * Return an collection of records as XML. 
+     * 
+     * @see getRecordAsXml for options to set in the record class to control this.
+     *
+     * @param Doctrine_Collection $collection
+     * @param SimpleXMLElement $xml
+     * @return string Xml as string 
+     */
 
-    public static function getRecordAsXml(Doctrine_Record $record, $xml = null)
+    public static function getCollectionAsXml(Doctrine_Collection $collection, SimpleXMLElement $incomming_xml = null){
+
+        $collection_name = Doctrine_Lib::plurelize($collection->getTable()->name);
+
+        if (!isset($incomming_xml)) {
+            $xml = new SimpleXMLElement("<" . $collection_name . "></" . $collection_name . ">");
+        } else {
+            $xml = $incomming_xml->addChild($collection_name);
+        }
+        foreach ($collection as $key => $record) {
+            Doctrine_Lib::getRecordAsXml($record, $xml);
+        }
+        return $xml->asXML();
+    }
+
+    public static function plurelize($string){
+        return $string . "s";
+    }
+
+    /**
+     * Return a recrd as XML. 
+     *
+     * In order to control how this is done set the "xml" option in a record. 
+     * This option is an array that has the keys "ignore_fields" and "include_relations". Both of these are arrays that list the name of fields/relations to include/process. 
+     *
+     * If you want to insert this xml as a part inside another xml send a 
+     * SimpleXMLElement to the function. Because of the nature of SimpleXML the 
+     * content you add to this element will be avilable after the function is 
+     * complete.
+     *
+     * @param Doctrine_Record $record
+     * @param SimpleXMLElement $xml
+     * @return string Xml as string
+     */
+    public static function getRecordAsXml(Doctrine_Record $record, SimpleXMlElement $incomming_xml = NULL)
     {
         $recordname = $record->getTable()->name;
-        if ($xml == null) {
+        if (!isset($incomming_xml)) {
             $xml = new SimpleXMLElement("<" . $recordname . "></" . $recordname . ">");
+        }else{
+            $xml = $incomming_xml->addChild($recordname);
         }
-        $xml->addChild("id", $record->getOID());
+				foreach($record->obtainIdentifier() as $pk_field => $pk_value){
+					$xml->addChild($pk_field,$pk_value); 
+				}
         $xml_options = $record->option("xml");
         foreach ($record->getData() as $field => $value) {
             if (isset($xml_options["ignore_fields"]) && !in_array($field, $xml_options["ignore_fields"])) {
-                $xml->addChild($field, $value);
+                if ($value instanceOf Doctrine_Null) {
+                    $xml->addChild($field);
+                } else {	
+                    $xml->addChild($field, $value);
+                }
             }
         }
         if (!isset($xml_options["include_relations"])) {
@@ -94,15 +145,10 @@ class Doctrine_Lib
             if (in_array($name, $xml_options["include_relations"])) {
                 $relation_type = $relation->getType();
                 $related_records = $record->get($name);
-                if ($relation_type == Doctrine_Relation::ONE) {
-                    $related_xml = $xml->addChild($name);
-                    Doctrine_Lib::getRecordAsXml($related_records, $related_xml);
+                if ($relation_type == Doctrine_Relation::ONE && $related_records instanceOf Doctrine_Record) {
+                    Doctrine_Lib::getRecordAsXml($related_records, $xml);
                 } else {
-                    $xml_collection = $xml->addChild($name . "s"); //this could be fixed to plurelize in some better way i guess
-                    foreach ($related_records as $related_name => $related_record) {
-                        $related_xml = $xml_collection->addChild($name);
-                        Doctrine_Lib::getRecordAsXml($related_record, $related_xml);
-                    }
+                    Doctrine_Lib::getCollectionAsXml($related_records, $xml);
                 }
             }
         }
