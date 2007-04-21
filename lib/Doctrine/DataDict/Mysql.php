@@ -385,7 +385,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
      */
     public function getCharsetFieldDeclaration($charset)
     {
-        return 'CHARACTER SET '.$charset;
+        return 'CHARACTER SET ' . $charset;
     }
     /**
      * Obtain DBMS specific SQL code portion needed to set the COLLATION
@@ -397,7 +397,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
      */
     public function getCollationFieldDeclaration($collation)
     {
-        return 'COLLATE '.$collation;
+        return 'COLLATE ' . $collation;
     }
     /**
      * Obtain DBMS specific SQL code portion needed to declare an integer type
