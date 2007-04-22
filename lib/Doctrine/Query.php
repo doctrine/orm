@@ -341,7 +341,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 $e = explode('.', $arg);
 
 
-                if(count($e) > 1) {
+                if (is_numeric($arg)) {
+                    $arglist[]  = $arg;
+                } elseif (count($e) > 1) {
                     //$tableAlias = $this->getTableAlias($e[0]);
                     $table      = $this->tables[$tableAlias];
 
