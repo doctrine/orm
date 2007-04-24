@@ -352,7 +352,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         if ($key !== false) {
             unset($this->connections[$key]);
         }
-        $this->currIndex = key($this->connections[$key]);
+        $this->currIndex = key($this->connections);
 
         unset($connection);
     }
