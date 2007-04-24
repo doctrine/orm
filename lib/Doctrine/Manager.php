@@ -346,6 +346,14 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function closeConnection(Doctrine_Connection $connection)
     {
         $connection->close();
+        
+        $key = array_search($connection, $this->connections, true);
+
+        if ($key !== false) {
+            unset($this->connections[$key]);
+        }
+        $this->currIndex = key($this->connections[$key]);
+
         unset($connection);
     }
     /**
