@@ -886,28 +886,29 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         // initialize the base of the subquery
         $subquery   = 'SELECT DISTINCT ' . $primaryKey;
 
-        if($this->conn->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'pgsql') {
+        if ($this->conn->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'pgsql') {
             // pgsql needs the order by fields to be preserved in select clause
 
-            foreach($this->parts['orderby'] as $part) {
+            foreach ($this->parts['orderby'] as $part) {
                 $e = explode(' ', $part);
 
                 // don't add primarykey column (its already in the select clause)
-                if($e[0] !== $primaryKey)
+                if ($e[0] !== $primaryKey) {
                     $subquery .= ', ' . $e[0];
+                }
             }
         }
 
         $subquery .= ' FROM ' . $this->conn->quoteIdentifier($table->getTableName()) . ' ' . $alias;
 
-        foreach($this->parts['join'] as $parts) {
-            foreach($parts as $part) {
+        foreach ($this->parts['join'] as $parts) {
+            foreach ($parts as $part) {
                 // preserve LEFT JOINs only if needed
-                if(substr($part,0,9) === 'LEFT JOIN') {
+                if (substr($part,0,9) === 'LEFT JOIN') {
                     $e = explode(' ', $part);
 
-                    if( ! in_array($e[3], $this->subqueryAliases) &&
-                        ! in_array($e[2], $this->subqueryAliases)) {
+                    if ( ! in_array($e[3], $this->subqueryAliases) &&
+                         ! in_array($e[2], $this->subqueryAliases)) {
                         continue;
                     }
 
