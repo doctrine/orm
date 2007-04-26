@@ -60,14 +60,16 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
         } else {
             if ( ! is_numeric($func)) {
                 $a = explode('.', $func);
-                $field     = array_pop($a);
+                
                 if (count($a) > 1) {
+                    $field     = array_pop($a);
                     $reference = implode('.', $a);
                     $table     = $this->query->load($reference, false);
                     $field     = $table->getColumnName($field);
                     $func      = $this->query->getTableAlias($reference) . '.' . $field;
                 } else {
-                    $func      = $this->query->getAggregateAlias($field); 
+                    $field = end($a);
+                    $func      = $this->query->getAggregateAlias($field);
                 }
                 return $func;
             } else {
