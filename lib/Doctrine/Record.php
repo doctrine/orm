@@ -748,7 +748,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function get($name, $invoke = true)
     {
-        $listener = $this->_table->getAttribute(Doctrine::ATTR_LISTENER);
         $value    = self::$null;
         $lower    = strtolower($name);
 
@@ -787,7 +786,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if (isset($this->_values[$lower])) {
             return $this->_values[$lower];
         }
-        $rel = $this->_table->getRelation($name);
 
         try {
             if ( ! isset($this->references[$name])) {
