@@ -45,3 +45,4 @@ interface Doctrine_EventListener_Interface {
     public function onCollectionDelete(Doctrine_Collection $collection);
     public function onPreCollectionDelete(Doctrine_Collection $collection);
 }
+</code>
