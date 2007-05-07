@@ -13,7 +13,6 @@ connection alias.
 // open first connection
  
 \$conn = \$manager->openConnection(new PDO('dsn','username','password'), 'connection 1');
-?>
 </code>
 
 
@@ -31,7 +30,6 @@ connection when no arguments have been speficied.
 \$conn2 = Doctrine_Manager::connection();
 
 // $conn2 == $conn
-?>
 </code>
 
 
@@ -48,7 +46,7 @@ The current connection is the lastly opened connection.
 \$conn2 = \$manager->openConnection(new PDO('dsn2','username2','password2'), 'connection 2');
 
 \$manager->getCurrentConnection(); // $conn2
-?></code>
+</code>
 
 
 
