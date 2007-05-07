@@ -3,13 +3,11 @@ Every record that is retrieved from database is persistent and every newly creat
 If a Doctrine_Record is retrieved from database but the only loaded property is its primary key, then this record
 has a state called proxy.
 
-
-
 Every transient and persistent Doctrine_Record is either clean or dirty. Doctrine_Record is clean when none of its properties are changed and
 dirty when atleast one of its properties has changed. 
 
 <code type="php">
-$state = $record->getState();
+$state = $record->state();
 
 switch($state):
     case Doctrine_Record::STATE_PROXY:

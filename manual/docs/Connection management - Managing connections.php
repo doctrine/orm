@@ -30,7 +30,7 @@ connection when no arguments have been speficied.
 
 \$conn2 = Doctrine_Manager::connection();
 
-// \$conn2 == \$conn
+// $conn2 == $conn
 ?>
 </code>
 
@@ -47,7 +47,7 @@ The current connection is the lastly opened connection.
 
 \$conn2 = \$manager->openConnection(new PDO('dsn2','username2','password2'), 'connection 2');
 
-\$manager->getCurrentConnection(); // \$conn2
+\$manager->getCurrentConnection(); // $conn2
 ?></code>
 
 
@@ -59,8 +59,8 @@ You can change the current connection by calling setCurrentConnection().
 <code type="php">
 \$manager->setCurrentConnection('connection 1');
 
-\$manager->getCurrentConnection(); // \$conn
-?>
+\$manager->getCurrentConnection(); // $conn
+
 </code>
 
 
@@ -76,5 +76,5 @@ special IteratorAggregate interface.
 foreach(\$manager as \$conn) {
 
 }
-?></code>
+</code>
 
