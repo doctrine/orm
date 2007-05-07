@@ -424,6 +424,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case 'enum':
                         $this->_data[$name] = $this->_table->enumValue($name, $tmp[$name]);
                         break;
+                    case 'boolean':
+                    case 'integer':
+                        if($tmp[$name] !== self::$null)
+                            settype($tmp[$name], $type);
                     default:
                         $this->_data[$name] = $tmp[$name];
                 }
