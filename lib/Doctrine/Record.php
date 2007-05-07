@@ -523,9 +523,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 unset($vars['_data'][$k]);
             } else {
                 switch ($this->_table->getTypeOf($k)) {
-                    case "array":
-                    case "object":
+                    case 'array':
+                    case 'object':
                         $vars['_data'][$k] = serialize($vars['_data'][$k]);
+                        break;
+                    case 'gzip':
+                        $vars['_data'][$k] = gzcompress($vars['_data'][$k]);
+                        break;
+                    case 'enum':
+                        $vars['_data'][$k] = $this->_table->enumIndex($k, $vars['_data'][$k]);
                         break;
                 }
             }
