@@ -19,6 +19,4 @@ $conn = Doctrine_Manager::connection($dbh);
 
 // connects database and performs a query
 $conn->query('FROM User u');
-
-?></code>
-
+</code>  
