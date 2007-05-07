@@ -8,7 +8,7 @@ connection alias.
 <code type="php">
 // Doctrine_Manager controls all the connections
 
-\$manager = Doctrine_Manager::getInstance();
+$manager = Doctrine_Manager::getInstance();
 
 // open first connection
  
@@ -25,9 +25,9 @@ connection when no arguments have been speficied.
 <code type="php">
 // open first connection
  
-\$conn = Doctrine_Manager::connection(new PDO('dsn','username','password'), 'connection 1');
+$conn = Doctrine_Manager::connection(new PDO('dsn','username','password'), 'connection 1');
 
-\$conn2 = Doctrine_Manager::connection();
+$conn2 = Doctrine_Manager::connection();
 
 // $conn2 == $conn
 </code>
@@ -43,9 +43,9 @@ The current connection is the lastly opened connection.
 <code type="php">
 // open second connection
 
-\$conn2 = \$manager->openConnection(new PDO('dsn2','username2','password2'), 'connection 2');
+$conn2 = $manager->openConnection(new PDO('dsn2','username2','password2'), 'connection 2');
 
-\$manager->getCurrentConnection(); // $conn2
+$manager->getCurrentConnection(); // $conn2
 </code>
 
 
@@ -55,9 +55,9 @@ You can change the current connection by calling setCurrentConnection().
 
 
 <code type="php">
-\$manager->setCurrentConnection('connection 1');
+$manager->setCurrentConnection('connection 1');
 
-\$manager->getCurrentConnection(); // $conn
+$manager->getCurrentConnection(); // $conn
 
 </code>
 
@@ -71,7 +71,7 @@ special IteratorAggregate interface.
 <code type="php">
 // iterating through connections
 
-foreach(\$manager as \$conn) {
+foreach($manager as $conn) {
 
 }
 </code>
