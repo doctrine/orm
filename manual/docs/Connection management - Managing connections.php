@@ -12,7 +12,7 @@ $manager = Doctrine_Manager::getInstance();
 
 // open first connection
  
-\$conn = \$manager->openConnection(new PDO('dsn','username','password'), 'connection 1');
+$conn = $manager->openConnection(new PDO('dsn','username','password'), 'connection 1');
 </code>
 
 

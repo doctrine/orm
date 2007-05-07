@@ -10,15 +10,15 @@ when using for example page caching, hence not actually needing a database conne
 <code type="php">
 // we may use PDO / PEAR like DSN
 // here we use PEAR like DSN
-\$dbh = new Doctrine_Db('mysql://username:password@localhost/test');
+$dbh = new Doctrine_Db('mysql://username:password@localhost/test');
 // !! no actual database connection yet !!
 
 // initalize a new Doctrine_Connection
-\$conn = Doctrine_Manager::connection(\$dbh);
+$conn = Doctrine_Manager::connection($dbh);
 // !! no actual database connection yet !!
 
 // connects database and performs a query
-\$conn->query('FROM User u');
+$conn->query('FROM User u');
 
 ?></code>
 
