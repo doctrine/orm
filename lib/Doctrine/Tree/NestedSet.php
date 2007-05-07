@@ -73,8 +73,8 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
             $record = $this->table->create();
         }
 
-        // if tree is many roots, then get next root id
-        if($root = $this->getAttribute('hasManyRoots')) {
+        // if tree is many roots, and no root id has been set, then get next root id
+        if ($root = $this->getAttribute('hasManyRoots') && $record->getNode()->getRootValue() <= 0) {
             $record->getNode()->setRootValue($this->getNextRootId());
         }
 
