@@ -538,6 +538,59 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
             $this->updateNode($dest->getNode()->getRightValue());
         }
     }
+    
+    /**
+     * Enter description here...
+     *
+     * @todo Exception handling/wrapping
+     */
+    public function makeRoot()
+    {
+        // TODO: throw exception instead?
+        if ($this->getLeftValue() == 1 || !$this->record->getTable()->getTree()->getAttribute('hasManyRoots')) {
+            return false;
+        }
+        
+        $oldRgt = $this->getRightValue();
+        $oldLft = $this->getLeftValue();
+        $oldRoot = $this->getRootValue();
+        
+        try {
+            $conn = $this->record->getTable()->getConnection();
+            $conn->beginTransaction();
+            
+            // Detach from old tree
+            $first = $oldRgt + 1;
+            $delta = $oldLft - $oldRgt - 1;
+            $this->shiftRLValues($first, $delta, $this->getRootValue());
+            
+            // Set new lft/rgt/root values for root node
+            $this->setLeftValue(1);
+            $this->setRightValue($oldRgt - $oldLft + 1);
+            $this->setRootValue($this->record->id);
+            
+            // Update descendants lft/rgt/root values
+            $diff = 1 - $oldLft;
+            $newRoot = $this->record->id;
+            $componentName = $this->record->getTable()->getComponentName();
+            $rootColName = $this->record->getTable()->getTree()->getAttribute('rootColumnName');
+            $q = $this->record->getTable()->createQuery();
+            $q = $q->update($componentName)
+                    ->set($componentName . '.lft', 'lft + ' . $diff)
+                    ->set($componentName . '.rgt', 'rgt + ' . $diff)
+                    ->set($componentName . '.' . $rootColName, $newRoot)
+                    ->where($componentName . '.lft > ? AND ' . $componentName . '.rgt < ?',
+                    array($oldLft, $oldRgt));
+            $q = $this->record->getTable()->getTree()->returnQueryWithRootId($q, $oldRoot);
+            $q->execute();
+            
+            $conn->commit();
+        }
+        catch (Exception $e) {
+            $conn->rollback();
+            throw $e;
+        }
+    }
 
     /**
      * adds node as last child of record
