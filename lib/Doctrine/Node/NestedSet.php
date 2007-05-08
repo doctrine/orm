@@ -21,13 +21,14 @@
 /**
  * Doctrine_Node_NestedSet
  *
- * @package         Doctrine
- * @license         http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category        Object Relational Mapping
- * @link                www.phpdoctrine.com
- * @since             1.0
- * @version         $Revision$
- * @author            Joe Simms <joe.simms@websites4.com>
+ * @package    Doctrine
+ * @license    http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category   Object Relational Mapping
+ * @link       www.phpdoctrine.com
+ * @since      1.0
+ * @version    $Revision$
+ * @author     Joe Simms <joe.simms@websites4.com>
+ * @author     Roman Borschel <roman@code-factory.org>     
  */
 class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Interface
 {
@@ -544,7 +545,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      *
      * @todo Exception handling/wrapping
      */
-    public function makeRoot()
+    public function makeRoot($newRootId)
     {
         // TODO: throw exception instead?
         if ($this->getLeftValue() == 1 || !$this->record->getTable()->getTree()->getAttribute('hasManyRoots')) {
@@ -567,11 +568,11 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
             // Set new lft/rgt/root values for root node
             $this->setLeftValue(1);
             $this->setRightValue($oldRgt - $oldLft + 1);
-            $this->setRootValue($this->record->id);
+            $this->setRootValue($newRootId);
             
             // Update descendants lft/rgt/root values
             $diff = 1 - $oldLft;
-            $newRoot = $this->record->id;
+            $newRoot = $newRootId;
             $componentName = $this->record->getTable()->getComponentName();
             $rootColName = $this->record->getTable()->getTree()->getAttribute('rootColumnName');
             $q = $this->record->getTable()->createQuery();
@@ -671,14 +672,14 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function delete()
     {
         // TODO: add the setting whether or not to delete descendants or relocate children
-
+        $oldRoot = $this->getRootValue();
         $q = $this->record->getTable()->createQuery();
         
         $componentName = $this->record->getTable()->getComponentName();
 
         $q = $q->where($componentName. '.lft >= ? AND ' . $componentName . '.rgt <= ?', array($this->getLeftValue(), $this->getRightValue()));
 
-        $q = $this->record->getTable()->getTree()->returnQueryWithRootId($q, $this->getRootValue());
+        $q = $this->record->getTable()->getTree()->returnQueryWithRootId($q, $oldRoot);
         
         $coll = $q->execute();
 
@@ -686,7 +687,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
 
         $first = $this->getRightValue() + 1;
         $delta = $this->getLeftValue() - $this->getRightValue() - 1;
-        $this->shiftRLValues($first, $delta);
+        $this->shiftRLValues($first, $delta, $oldRoot);
         
         return true; 
     }
