@@ -57,7 +57,7 @@ abstract class Doctrine_Collection_Iterator implements Iterator
      * constructor
      * @var Doctrine_Collection $collection
      */
-    public function __construct(Doctrine_Collection $collection)
+    public function __construct($collection)
     {
         $this->collection = $collection;
         $this->keys       = $this->collection->getKeys();
