@@ -32,7 +32,7 @@ Doctrine::autoload('Doctrine_Access');
  * @version     $Revision: 1255 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Hydrate2 extends Doctrine_Access
+class Doctrine_Hydrate2 extends Doctrine_Access
 {
     /**
      * QUERY TYPE CONSTANTS
@@ -178,12 +178,6 @@ abstract class Doctrine_Hydrate2 extends Doctrine_Access
         return $obj;
     }
     /**
-     * getQuery
-     *
-     * @return string
-     */
-    abstract public function getQuery();
-    /**
      * limitSubqueryUsed
      *
      * @return boolean
@@ -284,13 +278,12 @@ abstract class Doctrine_Hydrate2 extends Doctrine_Access
         $this->params = $params;
     }
     /**
-     * execute
-     * executes the dql query and populates all collections
+     * _fetch
      *
-     * @param string $params
-     * @return Doctrine_Collection            the root collection
+     *
      */
-    public function execute($params = array(), $return = Doctrine::FETCH_RECORD) {
+    public function _fetch($params = array(), $return = Doctrine::FETCH_RECORD)
+    {
         $params = $this->conn->convertBooleans(array_merge($this->params, $params));
 
         if ( ! $this->view) {
@@ -306,28 +299,68 @@ abstract class Doctrine_Hydrate2 extends Doctrine_Access
         }
         $stmt  = $this->conn->execute($query, $params);
 
-        if (count($this->tables) == 0) {
-            throw new Doctrine_Query_Exception('No components selected');
+
+        return $this->parseData($stmt);
+    }
+    
+    public function setAliasMap($map) 
+    {
+        $this->_aliasMap = $map;
+    }
+    public function getAliasMap() 
+    {
+        return $this->_aliasMap;
+    }
+    /**
+     * execute
+     * executes the dql query and populates all collections
+     *
+     * @param string $params
+     * @return Doctrine_Collection            the root collection
+     */
+    public function execute($params = array(), $return = Doctrine::FETCH_RECORD) 
+    {
+        $array = $this->_fetch($params = array(), $return = Doctrine::FETCH_RECORD);
+
+        $coll        = new Doctrine_Collection(key($this->_aliasMap));
+        $prev[$root] = $coll;
+
+        $previd = array();
+        /**
+         * iterate over the fetched data
+         * here $data is a two dimensional array
+         */
+        foreach ($array as $data) {
+            /**
+             * remove duplicated data rows and map data into objects
+             */
+            foreach ($data as $key => $row) {
+                if (empty($row)) {
+                    continue;
+                }
+                
+            }
+            
         }
+    }
+    /**
+     * execute
+     * executes the dql query and populates all collections
+     *
+     * @param string $params
+     * @return Doctrine_Collection            the root collection
+     */
+    public function execute2($params = array(), $return = Doctrine::FETCH_RECORD) {
+        $array = $this->_fetch($params = array(), $return = Doctrine::FETCH_RECORD);
 
         $keys  = array_keys($this->tables);
         $root  = $keys[0];
 
         $previd = array();
-
-        $coll        = $this->getCollection($root);
-        $prev[$root] = $coll;
-
-        if ($this->aggregate) {
-            $return = Doctrine::FETCH_ARRAY;
-        }
-
-        $array = $this->parseData($stmt);
-
-        if ($return == Doctrine::FETCH_ARRAY) {
-            return $array;
-        }
-
+        /**
+         * iterate over the fetched data
+         * here $data is a two dimensional array
+         */
         foreach ($array as $data) {
             /**
              * remove duplicated data rows and map data into objects
@@ -628,10 +661,10 @@ abstract class Doctrine_Hydrate2 extends Doctrine_Access
             foreach ($data as $key => $value) {
                 $e = explode('__', $key);
 
-                $field     = strtolower(array_pop($e));
-                $component = strtolower(implode('__', $e));
+                $field      = strtolower(array_pop($e));
+                $tableAlias = strtolower(implode('__', $e));
 
-                $data[$component][$field] = $value;
+                $data[$tableAlias][$field] = $value;
 
                 unset($data[$key]);
             }

@@ -22,7 +22,7 @@
 
 require_once('../draft/new-core/Record.php');
 require_once('../draft/new-core/Hydrate.php');
-require_once('../draft/new-core/Query.php');  
+require_once('../draft/new-core/Query.php');
 require_once('../draft/new-core/Collection.php');
 
 /**
@@ -42,7 +42,36 @@ class Doctrine_NewCore_TestCase extends Doctrine_UnitTestCase
 {
     public function testHydrate() 
     {
-        $q = new Doctrine_Query2();
-        $q->from('User u LEFT JOIN u.Phonenumber p')->execute();
+        $h = new Doctrine_Hydrate_Mock();
+        $h->setData(array(
+                        array(
+                            'e' => array('id' => 1, 'name' => 'zYne'),
+                            'p' => array('id' => 1, 'phonenumber' => '123 123', 'user_id' => 1)
+                            ),
+                        array(
+                            'e' => array('id' => 2, 'name' => 'John'),
+                            'p' => array('id' => 2, 'phonenumber' => '222 222', 'user_id' => 2)
+                            ),
+                        array(
+                            'e' => array('id' => 3, 'name' => 'Arnold'),
+                            'p' => array('id' => 3, 'phonenumber' => '333 333', 'user_id' => 3)
+                            )
+                        )
+                    );
+        $h->setAliasMap(array('u' => array('table' => $this->conn->getTable('User'))));
+    }
+}
+class Doctrine_Hydrate_Mock extends Doctrine_Hydrate2
+{
+    protected $data;
+
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
+
+    public function _fetch($params = array(), $return = Doctrine::FETCH_RECORD)
+    {
+        return $this->data;
     }
 }
