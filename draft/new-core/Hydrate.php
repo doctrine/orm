@@ -83,10 +83,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
      */
     protected $inheritanceApplied = false;
     /**
-     * @var boolean $aggregate
-     */
-    protected $aggregate  = false;
-    /**
      * @var array $compAliases
      */
     protected $compAliases  = array();
@@ -275,7 +271,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
                   "offset"    => false,
                 );
         $this->inheritanceApplied = false;
-        $this->aggregate        = false;
         $this->joins            = array();
         $this->tableIndexes     = array();
         $this->tableAliases     = array();
@@ -367,10 +362,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
             $params = array_merge($params, $params);
         }
         $stmt  = $this->conn->execute($query, $params);
-
-        if ($this->aggregate) {
-            return $stmt->fetchAll(Doctrine::FETCH_ASSOC);
-        }
 
         if (count($this->tables) == 0) {
             throw new Doctrine_Query_Exception('No components selected');
