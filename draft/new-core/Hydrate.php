@@ -262,7 +262,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
      */
     protected function clear()
     {
-        $this->fetchModes   = array();
         $this->tables       = array();
         $this->parts = array(
                   "select"    => array(),
@@ -277,8 +276,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
                 );
         $this->inheritanceApplied = false;
         $this->aggregate        = false;
-
-        $this->collections      = array();
         $this->joins            = array();
         $this->tableIndexes     = array();
         $this->tableAliases     = array();
@@ -356,8 +353,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
      * @return Doctrine_Collection            the root collection
      */
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD) {
-        $this->collections = array();
-
         $params = $this->conn->convertBooleans(array_merge($this->params, $params));
 
         if ( ! $this->view) {
