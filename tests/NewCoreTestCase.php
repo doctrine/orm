@@ -38,27 +38,52 @@ require_once('../draft/new-core/Collection.php');
  */
 
 
-class Doctrine_NewCore_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_NewCore_TestCase extends Doctrine_UnitTestCase
 {
+    protected $testData1 = array(
+                              array(
+                                  'e' => array('id' => 1, 'name' => 'zYne'),
+                                  'p' => array('id' => 1, 'phonenumber' => '123 123', 'user_id' => 1)
+                                  ),
+                              array(
+                                  'e' => array('id' => 2, 'name' => 'John'),
+                                  'p' => array('id' => 2, 'phonenumber' => '222 222', 'user_id' => 2)
+                                  ),
+                              array(
+                                  'e' => array('id' => 3, 'name' => 'Arnold'),
+                                  'p' => array('id' => 3, 'phonenumber' => '333 333', 'user_id' => 3)
+                                  )
+                              );
+
+    public function testExecuteForEmptyAliasMapThrowsException()
+    {
+        $h = new Doctrine_Hydrate_Mock();
+        
+        try {
+            $h->execute();
+            $this->fail('Should throw exception');
+        } catch(Doctrine_Hydrate_Exception $e) {
+            $this->pass();
+        }
+    }
+    public function testExecuteForEmptyTableAliasMapThrowsException()
+    {
+        $h = new Doctrine_Hydrate_Mock();
+        $h->setData($this->testData1);
+        $h->setAliasMap(array('u' => array('table' => $this->conn->getTable('User'))));
+        try {
+            $h->execute();
+            $this->fail('Should throw exception');
+        } catch(Doctrine_Hydrate_Exception $e) {
+            $this->pass();
+        }
+    }
     public function testHydrate() 
     {
         $h = new Doctrine_Hydrate_Mock();
-        $h->setData(array(
-                        array(
-                            'e' => array('id' => 1, 'name' => 'zYne'),
-                            'p' => array('id' => 1, 'phonenumber' => '123 123', 'user_id' => 1)
-                            ),
-                        array(
-                            'e' => array('id' => 2, 'name' => 'John'),
-                            'p' => array('id' => 2, 'phonenumber' => '222 222', 'user_id' => 2)
-                            ),
-                        array(
-                            'e' => array('id' => 3, 'name' => 'Arnold'),
-                            'p' => array('id' => 3, 'phonenumber' => '333 333', 'user_id' => 3)
-                            )
-                        )
-                    );
+        $h->setData($this->testData1);
         $h->setAliasMap(array('u' => array('table' => $this->conn->getTable('User'))));
+        $h->setTableAliases(array('e' => 'u'));
     }
 }
 class Doctrine_Hydrate_Mock extends Doctrine_Hydrate2

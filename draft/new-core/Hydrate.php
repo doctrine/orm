@@ -145,6 +145,10 @@ class Doctrine_Hydrate2 extends Doctrine_Access
     {
         return $this->tableAliases;
     }
+    public function setTableAliases(array $aliases)
+    {
+        $this->tableAliases = $aliases;
+    }
     /**
      * copyAliases
      *
@@ -299,7 +303,6 @@ class Doctrine_Hydrate2 extends Doctrine_Access
         }
         $stmt  = $this->conn->execute($query, $params);
 
-
         return $this->parseData($stmt);
     }
     
@@ -312,6 +315,31 @@ class Doctrine_Hydrate2 extends Doctrine_Access
         return $this->_aliasMap;
     }
     /**
+     * mapAggregateValues
+     * map the aggregate values of given dataset row to a given record
+     *
+     * @param Doctrine_Record $record
+     * @param array $row
+     */
+    public function mapAggregateValues($record, array $row)
+    {
+        // aggregate values have numeric keys
+        if (isset($row[0])) {
+            // map each aggregate value
+            foreach ($row as $index => $value) {
+                $agg = false;
+
+                if (isset($this->pendingAggregates[$alias][$index])) {
+                    $agg = $this->pendingAggregates[$alias][$index][3];
+                } elseif (isset($this->subqueryAggregates[$alias][$index])) {
+                    $agg = $this->subqueryAggregates[$alias][$index];
+                }
+                $record->mapValue($agg, $value);
+            }
+        } 
+        return $record;
+    }
+    /**
      * execute
      * executes the dql query and populates all collections
      *
@@ -320,12 +348,17 @@ class Doctrine_Hydrate2 extends Doctrine_Access
      */
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD) 
     {
-        $array = $this->_fetch($params = array(), $return = Doctrine::FETCH_RECORD);
+        $array = (array) $this->_fetch($params = array(), $return = Doctrine::FETCH_RECORD);
 
-        $coll        = new Doctrine_Collection(key($this->_aliasMap));
-        $prev[$root] = $coll;
+        if (empty($this->_aliasMap)) {
+            throw new Doctrine_Hydrate_Exception("Couldn't execute query. Component alias map was empty.");
+        }
 
-        $previd = array();
+        $rootMap     = current($this->_aliasMap);
+        $coll        = new Doctrine_Collection($rootMap['table']);
+        $prev[key($this->_aliasMap)] = $coll;
+
+        $prevRow = array();
         /**
          * iterate over the fetched data
          * here $data is a two dimensional array
@@ -334,13 +367,47 @@ class Doctrine_Hydrate2 extends Doctrine_Access
             /**
              * remove duplicated data rows and map data into objects
              */
-            foreach ($data as $key => $row) {
+            foreach ($data as $tableAlias => $row) {
                 if (empty($row)) {
                     continue;
                 }
                 
+                if ( ! isset($this->tableAliases[$tableAlias])) {
+                    throw new Doctrine_Hydrate_Exception('Unknown table alias ' . $tableAlias);
+                }
+                $alias = $this->tableAliases[$tableAlias];
+                $map   = $this->_aliasMap[$alias];
+
+                if ($prevRow[$tableAlias] !== $row) {
+                    // set internal data
+                    $this->tables[$name]->setData($row);
+    
+                    // initialize a new record
+                    $record = $this->tables[$name]->getRecord();
+    
+                    $this->mapAggregateValues($record, $row);
+
+    
+                    if ($name == $root) {
+                        // add record into root collection
+    
+                        $coll->add($record);
+                        unset($previd);
+    
+                    } else {
+                        $prev = $this->addRelated($prev, $name, $record);
+                    }
+    
+                    // following statement is needed to ensure that mappings
+                    // are being done properly when the result set doesn't
+                    // contain the rows in 'right order'
+    
+                    if ($prev[$name] !== $record) {
+                        $prev[$name] = $record;
+                    }
+                }
+                $prevRow[$tableAlias] = $row;
             }
-            
         }
     }
     /**
