@@ -58,14 +58,7 @@ abstract class Doctrine_Hydrate2 extends Doctrine_Access
      * constant for CREATE queries
      */
     const CREATE = 4;
-    /**
-     * @var array $tables                       an array containing all the tables used in the query
-     */
-    protected $tables      = array();
-    /**
-     * @var array $joins                        an array containing all table joins
-     */
-    protected $joins       = array();
+
     /**
      * @var array $params                       query input parameters
      */
@@ -79,24 +72,26 @@ abstract class Doctrine_Hydrate2 extends Doctrine_Access
      */
     protected $view;
     /**
-     * @var boolean $inheritanceApplied
+     * @var array $_aliasMap                    two dimensional array containing the map for query aliases
+     *      Main keys are component aliases
+     *
+     *          table               table object associated with given alias
+     *
+     *
      */
-    protected $inheritanceApplied = false;
-    /**
-     * @var array $compAliases
-     */
-    protected $compAliases  = array();
+    protected $_aliasMap        = array();
+
     /**
      * @var array $tableAliases
      */
     protected $tableAliases = array();
     /**
-     * @var array $tableIndexes
+     *
      */
-    protected $tableIndexes = array();
-
     protected $pendingAggregates = array();
-    
+    /** 
+     *
+     */
     protected $subqueryAggregates = array();
     /**
      * @var array $aggregateMap             an array containing all aggregate aliases, keys as dql aliases
@@ -142,15 +137,6 @@ abstract class Doctrine_Hydrate2 extends Doctrine_Access
         $this->aliasHandler = new Doctrine_Hydrate_Alias();
     }
     /**
-     * getComponentAliases
-     *
-     * @return array
-     */
-    public function getComponentAliases()
-    {
-        return $this->compAliases;
-    }
-    /**
      * getTableAliases
      *
      * @return array
@@ -158,24 +144,6 @@ abstract class Doctrine_Hydrate2 extends Doctrine_Access
     public function getTableAliases()
     {
         return $this->tableAliases;
-    }
-    /**
-     * getTableIndexes
-     *
-     * @return array
-     */
-    public function getTableIndexes()
-    {
-        return $this->tableIndexes;
-    }
-    /**
-     * getTables
-     *
-     * @return array
-     */
-    public function getTables()
-    {
-        return $this->tables;
     }
     /**
      * copyAliases
@@ -190,15 +158,6 @@ abstract class Doctrine_Hydrate2 extends Doctrine_Access
         $this->aliasHandler = $query->aliasHandler;
 
         return $this;
-    }
-
-    public function getPathAlias($path)
-    {
-        $s = array_search($path, $this->compAliases);
-        if ($s === false)
-            return $path;
-
-        return $s;
     }
     /**
      * createSubquery
@@ -315,22 +274,6 @@ abstract class Doctrine_Hydrate2 extends Doctrine_Access
     public function getParams()
     {
         return $this->params;                           	
-    }
-    /**
-     * getTableAlias
-     *
-     * @param string $path
-     * @return string
-     */
-    final public function getTableAlias($path)
-    {
-        if (isset($this->compAliases[$path])) {
-            $path = $this->compAliases[$path];
-        }
-        if ( ! isset($this->tableAliases[$path])) {
-            return false;
-        }
-        return $this->tableAliases[$path];
     }
     /**
      * setParams

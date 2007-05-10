@@ -19,6 +19,12 @@
  * <http://www.phpdoctrine.com>.
  */
 
+
+require_once('../draft/new-core/Record.php');
+require_once('../draft/new-core/Hydrate.php');
+require_once('../draft/new-core/Query.php');  
+require_once('../draft/new-core/Collection.php');
+
 /**
  * Doctrine_NewCore_TestCase
  *
@@ -30,10 +36,13 @@
  * @since       1.0
  * @version     $Revision$
  */
+
+
 class Doctrine_NewCore_TestCase extends Doctrine_UnitTestCase 
 {
     public function testHydrate() 
     {
-    	
-    }	
+        $q = new Doctrine_Query2();
+        $q->from('User u LEFT JOIN u.Phonenumber p')->execute();
+    }
 }
