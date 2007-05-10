@@ -1339,7 +1339,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param Doctrine_Relation $connector
      * @return boolean
      */
-    public function initReference(Doctrine_Collection $coll, Doctrine_Relation $connector)
+    public function initReference($coll, Doctrine_Relation $connector)
     {
         $alias = $connector->getAlias();
 
