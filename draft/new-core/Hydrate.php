@@ -59,18 +59,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
      */
     const CREATE = 4;
     /**
-     * @var array $fetchmodes                   an array containing all fetchmodes
-     */
-    protected $fetchModes  = array();
-    /**
      * @var array $tables                       an array containing all the tables used in the query
      */
     protected $tables      = array();
-    /**
-     * @var array $collections                  an array containing all collections
-     *                                          this hydrater has created/will create
-     */
-    protected $collections = array();
     /**
      * @var array $joins                        an array containing all table joins
      */
@@ -348,40 +339,6 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
             return false;
         }
         return $this->tableAliases[$path];
-    }
-    /**
-     * getCollection
-     *
-     * @parma string $name              component name
-     * @param integer $index
-     */
-    private function getCollection($name)
-    {
-        $table = $this->tables[$name];
-        if ( ! isset($this->fetchModes[$name])) {
-            return new Doctrine_Collection($table);
-        }
-        switch ($this->fetchModes[$name]) {
-            case Doctrine::FETCH_BATCH:
-                $coll = new Doctrine_Collection_Batch($table);
-                break;
-            case Doctrine::FETCH_LAZY:
-                $coll = new Doctrine_Collection_Lazy($table);
-                break;
-            case Doctrine::FETCH_OFFSET:
-                $coll = new Doctrine_Collection_Offset($table);
-                break;
-            case Doctrine::FETCH_IMMEDIATE:
-                $coll = new Doctrine_Collection_Immediate($table);
-                break;
-            case Doctrine::FETCH_LAZY_OFFSET:
-                $coll = new Doctrine_Collection_LazyOffset($table);
-                break;
-            default:
-                throw new Doctrine_Exception("Unknown fetchmode");
-        };
-
-        return $coll;
     }
     /**
      * setParams
@@ -748,9 +705,9 @@ abstract class Doctrine_Hydrate extends Doctrine_Access
                 $data[$component][$field] = $value;
 
                 unset($data[$key]);
-            };
+            }
             $array[] = $data;
-        };
+        }
 
         $stmt->closeCursor();
         return $array;
