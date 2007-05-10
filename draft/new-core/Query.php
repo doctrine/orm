@@ -20,7 +20,7 @@
  */
 Doctrine::autoload('Doctrine_Hydrate');
 /**
- * Doctrine_Query
+ * Doctrine_Query2
  *
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -30,7 +30,7 @@ Doctrine::autoload('Doctrine_Hydrate');
  * @version     $Revision: 1296 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query extends Doctrine_Hydrate implements Countable {
+class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
      */

@@ -31,7 +31,7 @@ Doctrine::autoload("Doctrine_Access");
  * @version     $Revision: 1207 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Collection extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
+class Doctrine_Collection2 extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
 {
     /**
      * @var array $data                     an array containing the data access objects of this collection

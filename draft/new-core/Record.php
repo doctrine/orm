@@ -31,7 +31,7 @@ Doctrine::autoload('Doctrine_Access');
  * @since       1.0
  * @version     $Revision: 1298 $
  */
-abstract class Doctrine_Record extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
+abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
 {
     /**
      * STATE CONSTANTS

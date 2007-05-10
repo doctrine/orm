@@ -32,7 +32,7 @@ Doctrine::autoload('Doctrine_Access');
  * @version     $Revision: 1255 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Hydrate extends Doctrine_Access
+abstract class Doctrine_Hydrate2 extends Doctrine_Access
 {
     /**
      * QUERY TYPE CONSTANTS
