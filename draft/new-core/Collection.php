@@ -46,21 +46,13 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     protected $reference;
     /**
-     * @var string $reference_field         the reference field of the collection
+     * @var string $referenceField         the reference field of the collection
      */
-    protected $reference_field;
+    protected $referenceField;
     /**
      * @var Doctrine_Relation               the record this collection is related to, if any
      */
     protected $relation;
-    /**
-     * @var boolean $expandable             whether or not this collection has been expanded
-     */
-    protected $expandable = true;
-    /**
-     * @var array $expanded
-     */
-    protected $expanded = array();
     /**
      * @var string $keyColumn               the name of the column that is used for collection key mapping
      */
@@ -111,27 +103,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return $this->table;
     }
     /**
-     * setAggregateValue
-     *
-     * @param string $name
-     * @param string $value
-     * @return void
-     */
-    public function setAggregateValue($name, $value)
-    {
-        $this->aggregateValues[$name] = $value;
-    }
-    /**
-     * getAggregateValue
-     *
-     * @param string $name
-     * @return mixed
-     */
-    public function getAggregateValue($name)
-    {
-        return $this->aggregateValues[$name];
-    }
-    /**
      * this method is automatically called when this Doctrine_Collection is serialized
      *
      * @return array
@@ -177,26 +148,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if ($name !== null) {
             $this->keyColumn = $name;
         }
-    }
-    /**
-     * isExpanded
-     *
-     * whether or not an offset batch has been expanded
-     * @return boolean
-     */
-    public function isExpanded($offset)
-    {
-        return isset($this->expanded[$offset]);
-    }
-    /**
-     * isExpandable
-     *
-     * whether or not this collection is expandable
-     * @return boolean
-     */
-    public function isExpandable()
-    {
-        return $this->expandable;
     }
     /**
      * setKeyColumn
@@ -269,15 +220,15 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
            || $relation instanceof Doctrine_Relation_LocalKey
         ) {
 
-            $this->reference_field = $relation->getForeign();
+            $this->referenceField = $relation->getForeign();
 
             $value = $record->get($relation->getLocal());
 
             foreach ($this->getNormalIterator() as $record) {
                 if ($value !== null) {
-                    $record->set($this->reference_field, $value, false);
+                    $record->set($this->referenceField, $value, false);
                 } else {
-                    $record->set($this->reference_field, $this->reference, false);
+                    $record->set($this->referenceField, $this->reference, false);
                 }
             }
         } elseif ($relation instanceof Doctrine_Relation_Association) {
@@ -292,127 +243,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function getReference()
     {
         return $this->reference;
-    }
-    /**
-     * expand
-     * expands the collection
-     *
-     * @return boolean
-     */
-    public function expand($key)
-    {
-        $where  = array();
-        $params = array();
-        $limit  = null;
-        $offset = null;
-
-        switch (get_class($this)) {
-            case "Doctrine_Collection_Offset":
-                $limit  = $this->getLimit();
-                $offset = (floor($key / $limit) * $limit);
-
-                if ( ! $this->expandable && isset($this->expanded[$offset])) {
-                    return false;
-                }
-                $fields = implode(", ",$this->table->getColumnNames());
-                break;
-            default:
-                if ( ! $this->expandable) {
-                    return false;
-                }
-
-                if ( ! isset($this->reference)) {
-                    return false;
-                }
-
-                $id = $this->reference->obtainIdentifier();
-
-                if (empty($id)) {
-                    return false;
-                }
-
-                switch (get_class($this)) {
-                    case "Doctrine_Collection_Immediate":
-                        $fields = implode(", ",$this->table->getColumnNames());
-                        break;
-                    default:
-                        $fields = implode(", ",$this->table->getPrimaryKeys());
-                    };
-         };
-
-        if (isset($this->relation)) {
-            if ($this->relation instanceof Doctrine_Relation_ForeignKey) {
-                $params[] = $this->reference->getIncremented();
-                $where[] = $this->reference_field." = ?";
-
-                if ( ! isset($offset)) {
-                    $ids = $this->getPrimaryKeys();
-
-                    if ( ! empty($ids)) {
-                        $where[] = $this->table->getIdentifier()." NOT IN (".substr(str_repeat("?, ",count($ids)),0,-2).")";
-                        $params  = array_merge($params,$ids);
-                    }
-
-                    $this->expandable = false;
-                }
-
-            } elseif ($this->relation instanceof Doctrine_Relation_Association) {
-
-                $asf     = $this->relation->getAssociationFactory();
-                $query   = 'SELECT '.$foreign." FROM ".$asf->getTableName()." WHERE ".$local."=".$this->getIncremented();
-
-                $table = $fk->getTable();
-                $graph   = new Doctrine_Query($table->getConnection());
-
-                $q       = 'FROM ' . $table->getComponentName() . ' WHERE ' . $table->getComponentName() . '.' . $table->getIdentifier()." IN ($query)";
-
-            }
-        }
-
-        $query  = "SELECT ".$fields." FROM ".$this->table->getTableName();
-
-        // apply column aggregation inheritance
-        $map = $this->table->inheritanceMap;
-        foreach ($map as $k => $v) {
-            $where[]  = $k." = ?";
-            $params[] = $v;
-        }
-        if ( ! empty($where)) {
-            $query .= " WHERE ".implode(" AND ",$where);
-        }
-
-        $coll   = $this->table->execute($query, $params, $limit, $offset);
-
-        if ( ! isset($offset)) {
-            foreach ($coll as $record) {
-                if (isset($this->reference_field)) {
-                    $record->set($this->reference_field,$this->reference, false);
-                }
-                $this->reference->addReference($record, $this->relation);
-            }
-        } else {
-            $i = $offset;
-
-            foreach ($coll as $record) {
-                if (isset($this->reference)) {
-                    $this->reference->addReference($record, $this->relation, $i);
-                } else {
-                    $this->data[$i] = $record;
-                }
-                $i++;
-            }
-
-            $this->expanded[$offset] = true;
-
-            // check if the fetched collection's record count is smaller
-            // than the query limit, if so this collection has been expanded to its max size
-
-            if (count($coll) < $limit) {
-                $this->expandable = false;
-            }
-        }
-
-        return $coll;
     }
     /**
      * remove
@@ -467,8 +297,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     	if ($key === null) {
     	    $record = $this->table->create();
 
-            if (isset($this->reference_field)) {
-                $record->set($this->reference_field, $this->reference, false);
+            if (isset($this->referenceField)) {
+                $record->set($this->referenceField, $this->reference, false);
             }
 
             $this->data[] = $record;
@@ -478,19 +308,16 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
 
         if ( ! isset($this->data[$key])) {
-            $this->expand($key);
-
             if ( ! isset($this->data[$key])) {
                 $this->data[$key] = $this->table->create();
             }
-            if (isset($this->reference_field)) {
+            if (isset($this->referenceField)) {
                 $value = $this->reference->get($this->relation->getLocal());
 
                 if ($value !== null) {
-                    $this->data[$key]->set($this->reference_field, $value, false);
+                    $this->data[$key]->set($this->referenceField, $value, false);
                 } else {
-
-                    $this->data[$key]->set($this->reference_field, $this->reference, false);
+                    $this->data[$key]->set($this->referenceField, $this->reference, false);
                 }
             }
         }
@@ -512,7 +339,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             } else {
                 $list[] = $record->getIncremented();
             }
-        };
+        }
         return $list;
     }
     /**
@@ -542,8 +369,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function set($key, Doctrine_Record $record)
     {
-        if (isset($this->reference_field)) {
-            $record->set($this->reference_field, $this->reference, false);
+        if (isset($this->referenceField)) {
+            $record->set($this->referenceField, $this->reference, false);
         }
         $this->data[$key] = $record;
     }
@@ -555,8 +382,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function add(Doctrine_Record $record,$key = null)
     {
-        if (isset($this->reference_field)) {
-            $record->set($this->reference_field, $this->reference, false);
+        if (isset($this->referenceField)) {
+            $record->set($this->referenceField, $this->reference, false);
         }
         /**
          * for some weird reason in_array cannot be used here (php bug ?)
@@ -720,7 +547,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         foreach ($this as $key => $record) {
             $record->save($conn);
-        };
+        }
 
         $conn->commit();
     }

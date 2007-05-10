@@ -112,10 +112,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private $references     = array();
     /**
-     * @var array $originals                an array containing all the original references
-     */
-    private $originals      = array();
-    /**
      * @var integer $index                  this index is used for creating object identifiers
      */
     private static $index   = 1;
@@ -611,8 +607,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
         }
 
-        if ($err)
+        if ($err) {
             throw new Doctrine_Record_State_Exception('Unknown record state ' . $state);
+        }
     }
     /**
      * refresh
@@ -622,7 +619,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *                                          this record represents does not exist anymore)
      * @return boolean
      */
-    final public function refresh()
+    public function refresh()
     {
         $id = $this->obtainIdentifier();
         if ( ! is_array($id)) {
@@ -661,7 +658,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @throws Doctrine_Record_Exception        When the primary key of this record doesn't match the primary key fetched from a collection
      * @return void
      */
-    final public function factoryRefresh()
+    public function factoryRefresh()
     {
         $this->_data = $this->_table->getData();
         $old  = $this->_id;
@@ -670,8 +667,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->prepareIdentifiers();
 
-        if ($this->_id != $old)
+        if ($this->_id != $old) {
             throw new Doctrine_Record_Exception("The refreshed primary key doesn't match the one in the record memory.", Doctrine::ERR_REFRESH);
+        }
 
         $this->_state    = Doctrine_Record::STATE_CLEAN;
         $this->_modified = array();
@@ -684,7 +682,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return object Doctrine_Table        a Doctrine_Table object
      */
-    final public function getTable()
+    public function getTable()
     {
         return $this->_table;
     }
@@ -694,7 +692,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return array                        an array containing all the properties
      */
-    final public function getData()
+    public function getData()
     {
         return $this->_data;
     }
@@ -707,7 +705,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @throws Doctrine_Record_Exception    if trying to get an unknown property
      * @return mixed
      */
-
     public function rawGet($name)
     {
         if ( ! isset($this->_data[$name])) {
@@ -718,7 +715,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         return $this->_data[$name];
     }
-
     /**
      * load
      * loads all the unitialized properties from the database
@@ -1165,19 +1161,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return new Doctrine_Record_Iterator($this);
     }
     /**
-     * getOriginals
-     * returns an original collection of related component
-     *
-     * @return Doctrine_Collection|false
-     */
-    public function obtainOriginals($name)
-    {
-        if (isset($this->originals[$name])) {
-            return $this->originals[$name];
-        }
-        return false;
-    }
-    /**
      * deletes this data access object and all the related composites
      * this operation is isolated by a transaction
      *
@@ -1254,17 +1237,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $this->_state     = Doctrine_Record::STATE_CLEAN;
             $this->_modified  = array();
         }
-    }
-    /**
-     * assignOriginals
-     *
-     * @param string $alias
-     * @param Doctrine_Collection $coll
-     * @return void
-     */
-    public function assignOriginals($alias, Doctrine_Collection $coll)
-    {
-        $this->originals[$alias] = $coll;
     }
     /**
      * returns the primary keys of this object
@@ -1347,24 +1319,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
         return false;
     }
-
-    public function lazyInitRelated(Doctrine_Collection $coll, Doctrine_Relation $connector)
-    {
-
-    }
-    /**
-     * addReference
-     * @param Doctrine_Record $record
-     * @param mixed $key
-     * @return void
-     */
-    public function addReference(Doctrine_Record $record, Doctrine_Relation $connector, $key = null)
-    {
-        $alias = $connector->getAlias();
-
-        $this->references[$alias]->add($record, $key);
-        $this->originals[$alias]->add($record, $key);
-    }
     /**
      * getReferences
      * @return array    all references
@@ -1372,17 +1326,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function getReferences()
     {
         return $this->references;
-    }
-    /**
-     * setRelated
-     *
-     * @param string $alias
-     * @param Doctrine_Access $coll
-     */
-    final public function setRelated($alias, Doctrine_Access $coll)
-    {
-        $this->references[$alias] = $coll;
-        $this->originals[$alias]  = $coll;
     }
     /**
      * loadReference
@@ -1394,7 +1337,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     final public function loadReference($name)
     {
-
         $fk      = $this->_table->getRelation($name);
 
         if ($fk->isOneToOne()) {
@@ -1404,7 +1346,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $coll = $fk->fetchRelatedFor($this);
 
             $this->references[$name] = $coll;
-            $this->originals[$name]  = clone $coll;
         }
     }
     /**
@@ -1561,17 +1502,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         } else {
             $this->_table->setOption($name, $value);
         }
-    }
-    /**
-     * index
-     * defines a foreignKey
-     *
-     * @param array $definition         the definition array
-     * @return void
-     */
-    public function foreignKey(array $definition = array())
-    {
-        return $this->_table->addForeignKey($definition);
     }
     /**
      * index
