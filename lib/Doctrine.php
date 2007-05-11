@@ -485,9 +485,10 @@ final class Doctrine
      * dumps a given variable
      *
      * @param mixed $var        a variable of any type
+     * @param boolean $output   whether to output the content
      * @return void|string
      */
-    public static function dump($var) 
+    public static function dump($var, $output = true)
     {
     	$ret = array();
         switch (gettype($var)) {
@@ -503,6 +504,9 @@ final class Doctrine
                 break;
             default:
                 $ret[] = var_export($var, true);
+        }
+        if ($output) {
+            print implode("\n", $ret);
         }
         return implode("\n", $ret);
     }
