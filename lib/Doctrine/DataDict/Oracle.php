@@ -92,7 +92,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
             case 'double':
                 return 'NUMBER';
             case 'decimal':
-                return 'NUMBER(*,'.$this->conn->options['decimal_places'].')';
+                return 'NUMBER(*,'.$this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES).')';
             default:
         }
         throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
@@ -188,7 +188,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
 
         return array('type'     => $type,
                      'length'   => $length,
-                     'unsigned' => $unsigned, 
+                     'unsigned' => $unsigned,
                      'fixed'    => $fixed);
     }
 }

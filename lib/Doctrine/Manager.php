@@ -115,6 +115,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_SEQCOL_NAME      => 'id',
                         Doctrine::ATTR_PORTABILITY      => Doctrine::PORTABILITY_ALL,
                         Doctrine::ATTR_EXPORT           => Doctrine::EXPORT_NONE,
+                        Doctrine::ATTR_DECIMAL_PLACES   => 2,
                         );
             foreach ($attributes as $attribute => $value) {
                 $old = $this->getAttribute($attribute);
@@ -255,9 +256,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
         return $this->connections[$name];
     }
-    /** 
+    /**
      * getComponentAlias
-     * retrieves the alias for given component name 
+     * retrieves the alias for given component name
      * if the alias couldn't be found, this method returns the given
      * component name
      *
@@ -269,7 +270,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         if (isset($this->componentAliases[$componentName])) {
             return $this->componentAliases[$componentName];
         }
-        
+
         return $componentName;
     }
     /**
@@ -281,10 +282,10 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @param string $alias
      * @return Doctrine_Manager
      */
-    public function setComponentAlias($componentName, $alias) 
+    public function setComponentAlias($componentName, $alias)
     {
         $this->componentAliases[$componentName] = $alias;
-        
+
         return $this;
     }
     /**
@@ -293,7 +294,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @param Doctrine_Connection $conn     connection object to be searched for
      * @return string                       the name of the connection
      */
-    public function getConnectionName(Doctrine_Connection $conn) 
+    public function getConnectionName(Doctrine_Connection $conn)
     {
         return array_search($conn, $this->connections, true);
     }
@@ -346,7 +347,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function closeConnection(Doctrine_Connection $connection)
     {
         $connection->close();
-        
+
         $key = array_search($connection, $this->connections, true);
 
         if ($key !== false) {
@@ -389,7 +390,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @param mixed $key                        the connection key
      * @return boolean
      */
-    public function contains($key) 
+    public function contains($key)
     {
         return isset($this->connections[$key]);
     }
