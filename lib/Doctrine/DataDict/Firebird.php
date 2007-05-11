@@ -93,7 +93,8 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
                 return 'DOUBLE PRECISION';
             case 'decimal':
                 $length = !empty($field['length']) ? $field['length'] : 18;
-                return 'DECIMAL('.$length.','.$this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES).')';
+                $scale = !empty($field['scale']) ? $field['scale'] : $this->conn->getAttribute(Doctrine::ATTR_DECIMAL_PLACES);
+                return 'DECIMAL('.$length.','.$scale.')';
         }
 
         throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
