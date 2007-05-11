@@ -4,7 +4,7 @@ class User extends Doctrine_Record {
     public function setUp() {
         $this->ownsMany('Phonenumber','Phonenumber.user_id');
     }
-    public function setTableDefition() {
+    public function setTableDefinition() {
         $this->hasColumn('name','string',50);
         $this->hasColumn('loginname','string',20);
         $this->hasColumn('password','string',16);
