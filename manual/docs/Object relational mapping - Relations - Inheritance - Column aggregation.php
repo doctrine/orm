@@ -76,10 +76,10 @@ $group->username='users';
 $group->password='password';
 $group->save();
 
-$q = Doctrine_Query();
+$q = new Doctrine_Query();
 $user = $q->from('Entity')->where('id=?')->execute(array($user->id))->getFirst();
 
-$q = Doctrine_Query();
+$q = new Doctrine_Query();
 $group = $q->from('Entity')->where('id=?')->execute(array($group->id))->getFirst();
 </code>
 
