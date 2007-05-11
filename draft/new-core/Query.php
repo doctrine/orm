@@ -43,6 +43,9 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
      * @param boolean $limitSubqueryUsed
      */
     private $limitSubqueryUsed = false;
+    
+    
+    protected $_status         = array('needsSubquery' => true);
     /**
      * @param boolean $isSubquery           whether or not this query object is a subquery of another 
      *                                      query object
@@ -1062,7 +1065,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
                 $relation = $table->getRelation($name);
                 $this->_aliasMap[$componentAlias] = array('parent' => $parent,
                                                           'relation' => $relation);
-                if( ! $fk->isOneToOne()) {
+                if( ! $relation->isOneToOne()) {
                    $this->needsSubquery = true;
                 }
 
@@ -1114,8 +1117,15 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
                                          . $fk->getLocal() . ' = ' . $tname2 . '.' . $fk->getForeign()
                                          . $joinCondition;
                 }
-
-
+            }
+            if ($loadFields) {
+                if(isset($this->pendingFields[$componentAlias])) {
+                    $this->processPendingFields($componentAlias);
+                }
+                if(isset($this->pendingAggregates[$componentAlias]) ||
+                  (current($this->tables) === $table && isset($this->pendingAggregates[0]))) {
+                    $this->processPendingAggregates($componentAlias);
+                }
             }
         }
     }
@@ -1180,29 +1190,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
                 $currPath .= '.' . $name;
 
                 if($key == 0) {
-                    $currPath = substr($currPath,1);
-
-                    $this->conn = Doctrine_Manager::getInstance()
-                                  ->getConnectionForComponent($name);
-
-                    $table = $this->conn->getTable($name);
-
-
-                    $tname = $this->aliasHandler->getShortAlias($table->getTableName());
-
-                    if( ! isset($this->tableAliases[$currPath])) {
-                        $this->tableIndexes[$tname] = 1;
-                    }
-
-                    $this->parts['from'] = $this->conn->quoteIdentifier($table->getTableName());
-                    
-                    if ($this->type === self::SELECT) {
-                         $this->parts['from'] .= ' ' . $tname;
-                    }
-
-                    $this->tableAliases[$currPath] = $tname;
-
-                    $tableName = $tname;
                 } else {
 
                     $index += strlen($e[($key - 1)]) + 1;
@@ -1260,40 +1247,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
                 $this->components[$currPath] = $table;
 
                 $this->tableStack[] = $table;
-
-                if( ! isset($this->tables[$tableName])) {
-                    $this->tables[$tableName] = $table;
-
-                    if ($loadFields) {
-
-                        $skip = false;
-
-                        if ( ! empty($this->pendingFields) ||
-                             ! empty($this->pendingAggregates)) {
-                            $skip = true;
-                        }
-
-                        if ($componentAlias) {
-                            $this->compAliases[$componentAlias] = $currPath;
-
-                            if(isset($this->pendingFields[$componentAlias])) {
-                                $this->processPendingFields($componentAlias);
-                                $skip = true;
-                            }
-                            if(isset($this->pendingAggregates[$componentAlias]) ||
-                              (current($this->tables) === $table && isset($this->pendingAggregates[0]))
-                               ) {
-                                $this->processPendingAggregates($componentAlias);
-                                $skip = true;
-                            }
-                        }
-
-                        if ( ! $skip) {
-                            $this->parseFields($fullname, $tableName, $e2, $currPath);
-                        }
-                    }
-                }
-
 
                 $prevPath  = $currPath;
                 $prevTable = $tableName;
