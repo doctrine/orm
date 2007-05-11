@@ -134,6 +134,7 @@ abstract class Doctrine_Configurable
             case Doctrine::ATTR_EMULATE_DATABASE:
             case Doctrine::ATTR_DEFAULT_SEQUENCE:
             case Doctrine::ATTR_EXPORT:
+            case Doctrine::ATTR_DECIMAL_PLACES:
 
                 break;
             case Doctrine::ATTR_SEQCOL_NAME:
