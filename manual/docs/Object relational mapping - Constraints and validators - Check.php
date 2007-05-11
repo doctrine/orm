@@ -8,7 +8,7 @@ Doctrine provides the following simple check operators:
 > less than constraint ( < )
 * '''gte'''
 > greater than or equal to constraint ( >= )
-* '''lte''' 
+* '''lte'''
 > less than or equal to constraint ( <= )
 
 
@@ -19,8 +19,8 @@ class Product extends Doctrine_Record
 {
     public function setTableDefinition()
     {
-    	$this->hasColumn('id', 'integer', 4, 'primary');
-        $this->hasColumn('price', 'numeric', 200, array('gt' => 0);
+        $this->hasColumn('id', 'integer', 4, 'primary');
+        $this->hasColumn('price', 'decimal', 18, array('gt' => 0);
     }
 }
 </code>
