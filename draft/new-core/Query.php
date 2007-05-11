@@ -49,14 +49,10 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
      */
     private $isSubquery;
 
-    private $tableStack;
-
     private $relationStack     = array();
 
     private $isDistinct        = false;
-    
-    protected $components      = array();
-    
+
     private $neededTables      = array();
     /**
      * @var array $pendingFields
@@ -123,16 +119,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
         return null;
     }
 
-    public function getTableStack()
-    {
-        return $this->tableStack;
-    }
-
-    public function getRelationStack()
-    {
-        return $this->relationStack;
-    }
-
     public function isDistinct($distinct = null)
     {
         if(isset($distinct))
@@ -146,7 +132,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
         $tableAlias = $this->getTableAlias($componentAlias);
 
         if ( ! isset($this->tables[$tableAlias]))
-            throw new Doctrine_Query_Exception('Unknown component path '.$componentAlias);
+            throw new Doctrine_Query_Exception('Unknown component path ' . $componentAlias);
 
         $table      = $this->tables[$tableAlias];
 
@@ -416,60 +402,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
 		return (int) $this->getConnection()->fetchOne($q, $params);
 	}
     /**
-     * loadFields
-     * loads fields for a given table and
-     * constructs a little bit of sql for every field
-     *
-     * fields of the tables become: [tablename].[fieldname] as [tablename]__[fieldname]
-     *
-     * @access private
-     * @param object Doctrine_Table $table          a Doctrine_Table object
-     * @param integer $fetchmode                    fetchmode the table is using eg. Doctrine::FETCH_LAZY
-     * @param array $names                          fields to be loaded (only used in lazy property loading)
-     * @return void
-     */
-    protected function loadFields(Doctrine_Table $table, $fetchmode, array $names, $cpath)
-    {
-        $name = $table->getComponentName();
-
-        switch($fetchmode):
-            case Doctrine::FETCH_OFFSET:
-                $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
-            case Doctrine::FETCH_IMMEDIATE:
-                if( ! empty($names)) {
-                    // only auto-add the primary key fields if this query object is not
-                    // a subquery of another query object
-                    $names = array_unique(array_merge($table->getPrimaryKeys(), $names));
-                } else {
-                    $names = $table->getColumnNames();
-                }
-            break;
-            case Doctrine::FETCH_LAZY_OFFSET:
-                $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
-            case Doctrine::FETCH_LAZY:
-            case Doctrine::FETCH_BATCH:
-                $names = array_unique(array_merge($table->getPrimaryKeys(), $names));
-            break;
-            default:
-                throw new Doctrine_Exception("Unknown fetchmode.");
-        endswitch;
-
-        $component          = $table->getComponentName();
-        $tablename          = $this->tableAliases[$cpath];
-
-        $this->fetchModes[$tablename] = $fetchmode;
-
-        $count = count($this->tables);
-
-        foreach($names as $name) {
-            if($count == 0) {
-                $this->parts['select'][] = $tablename . '.' . $name;
-            } else {
-                $this->parts['select'][] = $tablename . '.' . $name . ' AS ' . $tablename . '__' . $name;
-            }
-        }
-    }
-    /**
      * addFrom
      *
      * @param strint $from
@@ -659,35 +591,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
         return $this;
     }
     /**
-     * returns a query part
-     *
-     * @param $name         query part name
-     * @return mixed
-     */
-    public function get($name)
-    {
-        if( ! isset($this->parts[$name]))
-            return false;
-
-        return $this->parts[$name];
-    }
-    /**
-     * set
-     * sets a query SET part
-     * this method should only be used with UPDATE queries
-     *
-     * @param $name             name of the field
-     * @param $value            field value
-     * @return Doctrine_Query
-     */
-    public function set($name, $value)
-    {
-        $class = new Doctrine_Query_Set($this);
-        $this->parts['set'][] = $class->parse($name . ' = ' . $value);
-
-        return $this;
-    }
-    /**
      * @return boolean
      */
     public function isLimitSubqueryUsed() {
@@ -704,15 +607,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
     {
         switch ($this->type) {
             case self::DELETE:
-            /**
-                no longer needed? 
-
-                if ($this->conn->getName() == 'Mysql') {
-                    $q = 'DELETE '  . end($this->tableAliases) . ' FROM ';
-                } else {
-            */
-                    $q = 'DELETE FROM ';
-            //    }
+                $q = 'DELETE FROM ';
             break;
             case self::UPDATE:
                 $q = 'UPDATE ';
@@ -1058,49 +953,49 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
 
         foreach($parts as $k => $part) {
             $part = implode(' ', $part);
-            switch(strtoupper($k)) {
-                case 'CREATE':
+            switch(strtolower($k)) {
+                case 'create':
                     $this->type = self::CREATE;
                 break;
-                case 'INSERT':
+                case 'insert':
                     $this->type = self::INSERT;
                 break;
-                case 'DELETE':
+                case 'delete':
                     $this->type = self::DELETE;
                 break;
-                case 'SELECT':
+                case 'select':
                     $this->type = self::SELECT;
                     $this->parseSelect($part);
                 break;
-                case 'UPDATE':
+                case 'update':
                     $this->type = self::UPDATE;
                     $k = 'FROM';
 
-                case 'FROM':
+                case 'from':
                     $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
                     $parser = new $class($this);
                     $parser->parse($part);
                 break;
-                case 'SET':
+                case 'set':
                     $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
                     $parser = new $class($this);
                     $this->parts['set'][] = $parser->parse($part);
                 break;
-                case 'GROUP':
-                case 'ORDER':
+                case 'group':
+                case 'order':
                     $k .= 'by';
-                case 'WHERE':
-                case 'HAVING':
+                case 'where':
+                case 'having':
                     $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
                     $parser = new $class($this);
 
                     $name = strtolower($k);
                     $this->parts[$name][] = $parser->parse($part);
                 break;
-                case 'LIMIT':
+                case 'limit':
                     $this->parts['limit'] = trim($part);
                 break;
-                case 'OFFSET':
+                case 'offset':
                     $this->parts['offset'] = trim($part);
                 break;
             }
@@ -1121,220 +1016,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
         return $parser->parse($str);
     }
     /**
-     * returns Doctrine::FETCH_* constant
-     *
-     * @param string $mode
-     * @return integer
-     */
-    final public function parseFetchMode($mode)
-    {
-        switch(strtolower($mode)):
-            case "i":
-            case "immediate":
-                $fetchmode = Doctrine::FETCH_IMMEDIATE;
-            break;
-            case "b":
-            case "batch":
-                $fetchmode = Doctrine::FETCH_BATCH;
-            break;
-            case "l":
-            case "lazy":
-                $fetchmode = Doctrine::FETCH_LAZY;
-            break;
-            case "o":
-            case "offset":
-                $fetchmode = Doctrine::FETCH_OFFSET;
-            break;
-            case "lo":
-            case "lazyoffset":
-                $fetchmode = Doctrine::FETCH_LAZYOFFSET;
-            default:
-                throw new Doctrine_Query_Exception("Unknown fetchmode '$mode'. The availible fetchmodes are 'i', 'b' and 'l'.");
-        endswitch;
-        return $fetchmode;
-    }
-    /**
-     * trims brackets
-     *
-     * @param string $str
-     * @param string $e1        the first bracket, usually '('
-     * @param string $e2        the second bracket, usually ')'
-     */
-    public static function bracketTrim($str,$e1 = '(',$e2 = ')')
-    {
-        if(substr($str,0,1) == $e1 && substr($str,-1) == $e2)
-            return substr($str,1,-1);
-        else
-            return $str;
-    }
-    /**
-     * bracketExplode
-     *
-     * example:
-     *
-     * parameters:
-     *      $str = (age < 20 AND age > 18) AND email LIKE 'John@example.com'
-     *      $d = ' AND '
-     *      $e1 = '('
-     *      $e2 = ')'
-     *
-     * would return an array:
-     *      array("(age < 20 AND age > 18)",
-     *            "email LIKE 'John@example.com'")
-     *
-     * @param string $str
-     * @param string $d         the delimeter which explodes the string
-     * @param string $e1        the first bracket, usually '('
-     * @param string $e2        the second bracket, usually ')'
-     *
-     */
-    public static function bracketExplode($str, $d = ' ', $e1 = '(', $e2 = ')')
-    {
-        if(is_array($d)) {
-            $a = preg_split('/('.implode('|', $d).')/', $str);
-            $d = stripslashes($d[0]);
-        } else
-            $a = explode("$d",$str);
-
-        $i = 0;
-        $term = array();
-        foreach($a as $key=>$val) {
-            if (empty($term[$i])) {
-                $term[$i] = trim($val);
-                $s1 = substr_count($term[$i], "$e1");
-                $s2 = substr_count($term[$i], "$e2");
-                    if($s1 == $s2) $i++;
-            } else {
-                $term[$i] .= "$d".trim($val);
-                $c1 = substr_count($term[$i], "$e1");
-                $c2 = substr_count($term[$i], "$e2");
-                    if($c1 == $c2) $i++;
-            }
-        }
-        return $term;
-    }
-    /**
-     * quoteExplode
-     *
-     * example:
-     *
-     * parameters:
-     *      $str = email LIKE 'John@example.com'
-     *      $d = ' AND '
-     *
-     * would return an array:
-     *      array("email", "LIKE", "'John@example.com'")
-     *
-     * @param string $str
-     * @param string $d         the delimeter which explodes the string
-     */
-    public static function quoteExplode($str, $d = ' ')
-    {
-        if(is_array($d)) {
-            $a = preg_split('/('.implode('|', $d).')/', $str);
-            $d = stripslashes($d[0]);
-        } else
-            $a = explode("$d",$str);
-
-        $i = 0;
-        $term = array();
-        foreach($a as $key => $val) {
-            if (empty($term[$i])) {
-                $term[$i] = trim($val);
-
-                if( ! (substr_count($term[$i], "'") & 1))
-                    $i++;
-            } else {
-                $term[$i] .= "$d".trim($val);
-
-                if( ! (substr_count($term[$i], "'") & 1))
-                    $i++;
-            }
-        }
-        return $term;
-    }
-    /**
-     * sqlExplode
-     *
-     * explodes a string into array using custom brackets and
-     * quote delimeters
-     *
-     *
-     * example:
-     *
-     * parameters:
-     *      $str = "(age < 20 AND age > 18) AND name LIKE 'John Doe'"
-     *      $d   = ' '
-     *      $e1  = '('
-     *      $e2  = ')'
-     *
-     * would return an array:
-     *      array('(age < 20 AND age > 18)',
-     *            'name',
-     *            'LIKE',
-     *            'John Doe')
-     *
-     * @param string $str
-     * @param string $d         the delimeter which explodes the string
-     * @param string $e1        the first bracket, usually '('
-     * @param string $e2        the second bracket, usually ')'
-     *
-     * @return array
-     */
-    public static function sqlExplode($str, $d = ' ', $e1 = '(', $e2 = ')')
-    {
-    	if ($d == ' ') {
-    		$d = array(' ', '\s');
-    	}
-        if(is_array($d)) {
-        	if (in_array(' ', $d)) {
-        		$d[] = '\s';
-        	}
-            $str = preg_split('/('.implode('|', $d).')/', $str);
-            $d = stripslashes($d[0]);
-        } else {
-            $str = explode("$d",$str);
-        }
-
-        $i = 0;
-        $term = array();
-        foreach($str as $key => $val) {
-            if (empty($term[$i])) {
-                $term[$i] = trim($val);
-
-                $s1 = substr_count($term[$i],"$e1");
-                $s2 = substr_count($term[$i],"$e2");
-
-                if (substr($term[$i],0,1) == "(") {
-                    if($s1 == $s2) {
-                        $i++;
-                    }
-                } else {
-                    if ( ! (substr_count($term[$i], "'") & 1) &&
-                         ! (substr_count($term[$i], "\"") & 1) &&
-                         ! (substr_count($term[$i], "�") & 1)
-                       ) { $i++; }
-                }
-            } else {
-                $term[$i] .= "$d".trim($val);
-                $c1 = substr_count($term[$i],"$e1");
-                $c2 = substr_count($term[$i],"$e2");
-
-                if(substr($term[$i],0,1) == "(") {
-                    if($c1 == $c2) {
-                        $i++;
-                    }
-                } else {
-                    if ( ! (substr_count($term[$i], "'") & 1) &&
-                         ! (substr_count($term[$i], "\"") & 1) &&
-                         ! (substr_count($term[$i], "�") & 1)
-                       ) { $i++; }
-                }
-            }
-        }
-        return $term;
-    }
-    /**
      * generateAlias
      *
      * @param string $tableName
@@ -1349,7 +1030,34 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
             return $tableName;
         }
     }
+    public function load($path, $loadFields = true) 
+    {
+        // parse custom join conditions
+        $e = explode(' ON ', $path);
+        
+        $joinCondition = '';
 
+        if (count($e) > 1) {
+            $joinCondition = ' AND ' . $e[1];
+            $path = $e[0];
+        }
+
+        $tmp            = explode(' ', $path);
+        $componentAlias = (count($tmp) > 1) ? end($tmp) : false;
+
+
+        $e = preg_split("/[.:]/", $tmp[0], -1);
+        
+        foreach ($e as $key => $part) {
+
+            if ($key === 0) {
+                // process the root of the path
+
+            } else {
+
+            }
+        }
+    }
     /**
      * loads a component
      *
@@ -1358,18 +1066,8 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
      * @throws Doctrine_Query_Exception
      * @return Doctrine_Table
      */
-    final public function load($path, $loadFields = true)
+    final public function load2($path, $loadFields = true)
     {
-                
-        // parse custom join conditions
-        $e = explode(' ON ', $path);
-        
-        $joinCondition = '';
-        if(count($e) > 1) {
-            $joinCondition = ' AND ' . $e[1];
-            $path = $e[0];
-        }
-
         $tmp            = explode(' ',$path);
         $componentAlias = (count($tmp) > 1) ? end($tmp) : false;
 
@@ -1410,7 +1108,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
 
                     if( ! isset($this->tableAliases[$currPath])) {
                         $this->tableIndexes[$tname] = 1;
-                    }  
+                    }
 
                     $this->parts['from'] = $this->conn->quoteIdentifier($table->getTableName());
                     
@@ -1503,7 +1201,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
 
                         if ($fk instanceof Doctrine_Relation_Association_Self) {
                             $this->parts['join'][$tname][$tname2] .= ' OR ' . $tname2  . '.' . $table->getIdentifier() . ' = '
-                                                                           . $assocAlias . '.' . $fk->getLocal();
+                                                                            . $assocAlias . '.' . $fk->getLocal();
                         }
 
                     } else {
@@ -1576,105 +1274,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
         }
 
         return $table;
-    }
-    /**
-     * parseFields
-     *
-     * @param string $fullName
-     * @param string $tableName
-     * @param array $exploded
-     * @param string $currPath
-     * @return void
-     */
-    final public function parseFields($fullName, $tableName, array $exploded, $currPath)
-    {
-        $table = $this->tables[$tableName];
-
-        $fields = array();
-
-        if(strpos($fullName, '-') === false) {
-            $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
-
-            if(isset($exploded[1])) {
-                if(count($exploded) > 2) {
-                    $fields = $this->parseAggregateValues($fullName, $tableName, $exploded, $currPath);
-                } elseif(count($exploded) == 2) {
-                    $fields = explode(',',substr($exploded[1],0,-1));
-                }
-            }
-        } else {
-            if(isset($exploded[1])) {
-                $fetchmode = $this->parseFetchMode($exploded[1]);
-            } else
-                $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
-
-            if(isset($exploded[2])) {
-                if(substr_count($exploded[2], ')') > 1) {
-
-                } else {
-                    $fields = explode(',', substr($exploded[2],0,-1));
-                }
-            }
-
-        }
-        if( ! $this->aggregate)
-            $this->loadFields($table, $fetchmode, $fields, $currPath);
-    }
-    /**
-     * parseAggregateFunction
-     *
-     * @param string $func
-     * @param string $reference
-     * @return string
-     */
-    public function parseAggregateFunction($func,$reference)
-    {
-        $pos = strpos($func, '(');
-
-        if($pos !== false) {
-            $funcs  = array();
-
-            $name   = substr($func, 0, $pos);
-            $func   = substr($func, ($pos + 1), -1);
-            $params = Doctrine_Query::bracketExplode($func, ',', '(', ')');
-
-            foreach($params as $k => $param) {
-                $params[$k] = $this->parseAggregateFunction($param,$reference);
-            }
-
-            $funcs = $name . '(' . implode(', ', $params). ')';
-
-            return $funcs;
-
-        } else {
-            if( ! is_numeric($func)) {
-
-                $func = $this->getTableAlias($reference).'.'.$func;
-
-                return $func;
-            } else {
-
-                return $func;
-            }
-        }
-    }
-    /**
-     * parseAggregateValues
-     */
-    public function parseAggregateValues($fullName, $tableName, array $exploded, $currPath)
-    {
-        $this->aggregate = true;
-        $pos    = strpos($fullName, '(');
-        $name   = substr($fullName, 0, $pos);
-        $string = substr($fullName, ($pos + 1), -1);
-
-        $exploded     = Doctrine_Query::bracketExplode($string, ',');
-        foreach($exploded as $k => $value) {
-            $func         = $this->parseAggregateFunction($value, $currPath);
-            $exploded[$k] = $func;
-
-            $this->parts['select'][] = $exploded[$k];
-        }
     }
 }
 
