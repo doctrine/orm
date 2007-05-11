@@ -5,14 +5,14 @@ The entity table has a column called 'type' which tells whether an entity is a g
 The only thing we have to do is to create 3 records (the same as before) and add call the Doctrine_Table::setInheritanceMap() method inside the setUp() method.
 
 <code type='php'>
-class Entity extends Doctrine_Record { 
+class Entity extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn('name','string',30);
         $this->hasColumn('username','string',20);
         $this->hasColumn('password','string',16);
         $this->hasColumn('created','integer',11);
-        
-        // this column is used for column 
+
+        // this column is used for column
         // aggregation inheritance
         $this->hasColumn('type', 'integer', 11);
     }
@@ -34,17 +34,17 @@ class Group extends Entity {
 If we want to be able to fetch a record from the Entity table and automatically get a User record if the Entity we fetched is a user we have to do set the subclasses option in the parent class. The adjusted example:
 
 <code type='php'>
-class Entity extends Doctrine_Record { 
+class Entity extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn('name','string',30);
         $this->hasColumn('username','string',20);
         $this->hasColumn('password','string',16);
         $this->hasColumn('created','integer',11);
-        
-        // this column is used for column 
+
+        // this column is used for column
         // aggregation inheritance
         $this->hasColumn('type', 'integer', 11);
-		$this->option('subclasses', array('User', 'Group');
+        $this->option('subclasses', array('User', 'Group'));
     }
 }
 
@@ -84,4 +84,3 @@ $group = $q->from('Entity')->where('id=?')->execute(array($group->id))->getFirst
 </code>
 
 The user object is here an instance of User while the group object is an instance of Group.
-
