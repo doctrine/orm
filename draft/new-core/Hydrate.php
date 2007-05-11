@@ -158,9 +158,7 @@ class Doctrine_Hydrate2
      */
     public function copyAliases(Doctrine_Hydrate $query)
     {
-        $this->compAliases  = $query->getComponentAliases();
         $this->tableAliases = $query->getTableAliases();
-        $this->tableIndexes = $query->getTableIndexes();
         $this->aliasHandler = $query->aliasHandler;
 
         return $this;
@@ -230,8 +228,6 @@ class Doctrine_Hydrate2
                   "offset"    => false,
                 );
         $this->inheritanceApplied = false;
-        $this->joins            = array();
-        $this->tableIndexes     = array();
         $this->tableAliases     = array();
         $this->aliasHandler->clear();
     }
@@ -343,15 +339,6 @@ class Doctrine_Hydrate2
         return $record;
     }
     /**
-     * mapRelated
-     *
-     * @return
-     */
-    public function mapRelated() 
-    {
-    	
-    }
-    /**
      * execute
      * executes the dql query and populates all collections
      *
@@ -402,8 +389,14 @@ class Doctrine_Hydrate2
                     // set internal data
                     $map['table']->setData($row);
 
-                    // initialize a new record
-                    $record = $map['table']->getRecord();
+                    $identifiable = $this->isIdentifiable($row, $map['table']->getIdentifier());
+                    
+                    // only initialize record if the current data row is identifiable
+                    if ($identifiable) {
+                        // initialize a new record
+                        $record = $map['table']->getRecord();
+                    }
+
 
                     // map aggregate values (if any)
                     $this->mapAggregateValues($record, $row);
@@ -412,8 +405,10 @@ class Doctrine_Hydrate2
                     if ($alias == $rootAlias) {
                         // add record into root collection
     
-                        $coll->add($record);
-                        unset($prevRow);
+                        if ($identifiable) {
+                            $coll->add($record);
+                            unset($prevRow);
+                        }
                     } else {
 
                         $relation    = $map['relation'];
@@ -423,6 +418,9 @@ class Doctrine_Hydrate2
 
                         // check the type of the relation
                         if ($relation->isOneToOne()) {
+                            if ( ! $identifiable) {
+                                continue;
+                            }
                             $prev[$alias] = $record;
                         } else {
                             // one-to-many relation or many-to-many relation
@@ -435,7 +433,9 @@ class Doctrine_Hydrate2
                                 $prev[$alias] = $prev[$parentAlias]->getLast()->get($relation->getAlias());
                             }
                             // add record to the current collection
-                            $prev[$alias]->add($record);
+                            if ($identifiable) {
+                                $prev[$alias]->add($record);
+                            }
                         }
                         // initialize the relation from parent to the current collection/record
                         $parent->set($relation->getAlias(), $prev[$alias]);
@@ -455,104 +455,28 @@ class Doctrine_Hydrate2
         return $coll;
     }
     /**
-     * execute
-     * executes the dql query and populates all collections
-     *
-     * @param string $params
-     * @return Doctrine_Collection            the root collection
-     */
-    public function execute2($params = array(), $return = Doctrine::FETCH_RECORD) {
-        /**
-         * iterate over the fetched data
-         * here $data is a two dimensional array
-         */
-        foreach ($array as $data) {
-            /**
-             * remove duplicated data rows and map data into objects
-             */
-            foreach ($data as $key => $row) {
-                if (empty($row)) {
-                    continue;
-                }
-                //$key = array_search($key, $this->shortAliases);
-
-                foreach ($this->tables as $k => $t) {
-                    if ( ! strcasecmp($key, $k)) {
-                        $key = $k;
-                    }
-                }
-
-                if ( !isset($this->tables[$key]) ) {
-                    throw new Doctrine_Exception('No table named ' . $key . ' found.');
-                }
-                $ids     = $this->tables[$key]->getIdentifier();
-                $name    = $key;
-
-                if ($this->isIdentifiable($row, $ids)) {
-                    if ($name !== $root) {
-                        $prev = $this->initRelated($prev, $name);
-                    }
-                    // aggregate values have numeric keys
-                    if (isset($row[0])) {
-                        $component = $this->tables[$name]->getComponentName();
-
-                        // if the collection already has objects, get the last object
-                        // otherwise create a new one where the aggregate values are being mapped
-
-                        if ($prev[$name]->count() > 0) {
-                            $record = $prev[$name]->getLast();
-                        } else {
-                            $record = new $component();
-                            $prev[$name]->add($record);
-                        }
-
-                        $path    = array_search($name, $this->tableAliases);
-                        $alias   = $this->getPathAlias($path);
-
-                        // map each aggregate value
-                        foreach ($row as $index => $value) {
-                            $agg = false;
-
-                            if (isset($this->pendingAggregates[$alias][$index])) {
-                                $agg = $this->pendingAggregates[$alias][$index][3];
-                            } elseif (isset($this->subqueryAggregates[$alias][$index])) {
-                                $agg = $this->subqueryAggregates[$alias][$index];
-                            }
-
-                            $record->mapValue($agg, $value);
-                        }
-                    }
-
-                    continue;
-
-                }
-            }
-        }
-
-        return $coll;
-    }
-    /**
      * isIdentifiable
      * returns whether or not a given data row is identifiable (it contains
-     * all id fields specified in the second argument)
+     * all primary key fields specified in the second argument)
      *
      * @param array $row
-     * @param mixed $ids
+     * @param mixed $primaryKeys
      * @return boolean
      */
-    public function isIdentifiable(array $row, $ids)
+    public function isIdentifiable(array $row, $primaryKeys)
     {
-        if (is_array($ids)) {
-            foreach ($ids as $id) {
-                if ($row[$id] == null)
-                    return true;
+        if (is_array($primaryKeys)) {
+            foreach ($primaryKeys as $id) {
+                if ($row[$id] == null) {
+                    return false;
+                }
             }
         } else {
-            if ( ! isset($row[$ids])) {
-                return true;
+            if ( ! isset($row[$primaryKeys])) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
     /**
      * getType

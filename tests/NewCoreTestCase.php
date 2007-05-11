@@ -50,8 +50,16 @@ class Doctrine_NewCore_TestCase extends Doctrine_UnitTestCase
                                   'p' => array('id' => 2, 'phonenumber' => '222 222', 'user_id' => 2)
                                   ),
                               array(
+                                  'e' => array('id' => 2, 'name' => 'John'),
+                                  'p' => array('id' => 3, 'phonenumber' => '343 343', 'user_id' => 2)
+                                  ),
+                              array(
                                   'e' => array('id' => 3, 'name' => 'Arnold'),
-                                  'p' => array('id' => 3, 'phonenumber' => '333 333', 'user_id' => 3)
+                                  'p' => array('id' => 4, 'phonenumber' => '333 333', 'user_id' => 3)
+                                  ),
+                              array(
+                                  'e' => array('id' => 4, 'name' => 'Arnold'),
+                                  'p' => array('id' => null, 'phonenumber' => null, 'user_id' => null)
                                   )
                               );
 
@@ -82,8 +90,23 @@ class Doctrine_NewCore_TestCase extends Doctrine_UnitTestCase
     {
         $h = new Doctrine_Hydrate_Mock();
         $h->setData($this->testData1);
-        $h->setAliasMap(array('u' => array('table' => $this->conn->getTable('User'))));
-        $h->setTableAliases(array('e' => 'u'));
+        $h->setAliasMap(array('u' => array('table' => $this->conn->getTable('User')),
+                              'p' => array('table' => $this->conn->getTable('Phonenumber'),
+                                           'parent' => 'u',
+                                           'relation' => $this->conn->getTable('User')->getRelation('Phonenumber')))
+                        );
+        $h->setTableAliases(array('e' => 'u', 'p' => 'p'));
+        $coll = $h->execute();
+        
+        $this->assertTrue($coll instanceof Doctrine_Collection2, 'instance of Doctrine_Collection expected');
+        $this->assertEqual($coll->count(), 4);
+        $count = count($this->dbh);
+
+        $this->assertEqual($coll[0]->Phonenumber->count(), 1);
+        $this->assertEqual($coll[1]->Phonenumber->count(), 2);
+        $this->assertEqual($coll[2]->Phonenumber->count(), 1);
+        $this->assertEqual($coll[3]->Phonenumber->count(), 0);
+        $this->assertEqual(count($this->dbh), $count);
     }
 }
 class Doctrine_Hydrate_Mock extends Doctrine_Hydrate2
