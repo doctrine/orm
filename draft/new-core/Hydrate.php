@@ -190,7 +190,14 @@ class Doctrine_Hydrate2
     {
         return false;
     }
-
+    public function getQueryPart($part) 
+    {
+        if ( ! isset($this->parts[$part])) {
+            throw new Doctrine_Hydrate_Exception('Unknown query part ' . $part);
+        }
+        
+        return $this->parts[$part];
+    }
     /**
      * remove
      *
