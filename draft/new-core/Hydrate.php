@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Access');
+
 /**
  * Doctrine_Hydrate is a base class for Doctrine_RawSql and Doctrine_Query.
  * Its purpose is to populate object graphs.
@@ -32,7 +32,7 @@ Doctrine::autoload('Doctrine_Access');
  * @version     $Revision: 1255 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrate2 extends Doctrine_Access
+class Doctrine_Hydrate2
 {
     /**
      * QUERY TYPE CONSTANTS
@@ -77,7 +77,9 @@ class Doctrine_Hydrate2 extends Doctrine_Access
      *
      *          table               table object associated with given alias
      *
+     *          relation            the relation object owned by the parent
      *
+     *          parent              the alias of the parent
      */
     protected $_aliasMap        = array();
 
@@ -320,6 +322,7 @@ class Doctrine_Hydrate2 extends Doctrine_Access
      *
      * @param Doctrine_Record $record
      * @param array $row
+     * @return Doctrine_Record
      */
     public function mapAggregateValues($record, array $row)
     {
@@ -340,6 +343,15 @@ class Doctrine_Hydrate2 extends Doctrine_Access
         return $record;
     }
     /**
+     * mapRelated
+     *
+     * @return
+     */
+    public function mapRelated() 
+    {
+    	
+    }
+    /**
      * execute
      * executes the dql query and populates all collections
      *
@@ -353,10 +365,11 @@ class Doctrine_Hydrate2 extends Doctrine_Access
         if (empty($this->_aliasMap)) {
             throw new Doctrine_Hydrate_Exception("Couldn't execute query. Component alias map was empty.");
         }
-
+        // initialize some variables used within the main loop
         $rootMap     = current($this->_aliasMap);
-        $coll        = new Doctrine_Collection($rootMap['table']);
-        $prev[key($this->_aliasMap)] = $coll;
+        $rootAlias   = key($this->_aliasMap);
+        $coll        = new Doctrine_Collection2($rootMap['table']);
+        $prev[$rootAlias] = $coll;
 
         $prevRow = array();
         /**
@@ -368,47 +381,78 @@ class Doctrine_Hydrate2 extends Doctrine_Access
              * remove duplicated data rows and map data into objects
              */
             foreach ($data as $tableAlias => $row) {
+                // skip empty rows (not mappable)
                 if (empty($row)) {
                     continue;
                 }
-                
+                // check for validity
                 if ( ! isset($this->tableAliases[$tableAlias])) {
                     throw new Doctrine_Hydrate_Exception('Unknown table alias ' . $tableAlias);
                 }
                 $alias = $this->tableAliases[$tableAlias];
                 $map   = $this->_aliasMap[$alias];
 
+                // initialize previous row array if not set
+                if ( ! isset($prevRow[$tableAlias])) {
+                    $prevRow[$tableAlias] = array();
+                }
+
+                // don't map duplicate rows
                 if ($prevRow[$tableAlias] !== $row) {
                     // set internal data
-                    $this->tables[$name]->setData($row);
-    
+                    $map['table']->setData($row);
+
                     // initialize a new record
-                    $record = $this->tables[$name]->getRecord();
-    
+                    $record = $map['table']->getRecord();
+
+                    // map aggregate values (if any)
                     $this->mapAggregateValues($record, $row);
 
-    
-                    if ($name == $root) {
+
+                    if ($alias == $rootAlias) {
                         // add record into root collection
     
                         $coll->add($record);
-                        unset($previd);
-    
+                        unset($prevRow);
                     } else {
-                        $prev = $this->addRelated($prev, $name, $record);
+
+                        $relation    = $map['relation'];
+                        $parentAlias = $map['parent'];
+                        $parentMap   = $this->_aliasMap[$parentAlias];
+                        $parent      = $prev[$parentAlias]->getLast();
+
+                        // check the type of the relation
+                        if ($relation->isOneToOne()) {
+                            $prev[$alias] = $record;
+                        } else {
+                            // one-to-many relation or many-to-many relation
+                            if ( ! $prev[$parentAlias]->getLast()->hasReference($relation->getAlias())) {
+                                // initialize a new collection
+                                $prev[$alias] = new Doctrine_Collection2($parentMap['table']);
+                                $prev[$alias]->setReference($parent, $relation);
+                            } else {
+                                // previous entry found from memory
+                                $prev[$alias] = $prev[$parentAlias]->getLast()->get($relation->getAlias());
+                            }
+                            // add record to the current collection
+                            $prev[$alias]->add($record);
+                        }
+                        // initialize the relation from parent to the current collection/record
+                        $parent->set($relation->getAlias(), $prev[$alias]);
                     }
     
                     // following statement is needed to ensure that mappings
                     // are being done properly when the result set doesn't
                     // contain the rows in 'right order'
     
-                    if ($prev[$name] !== $record) {
-                        $prev[$name] = $record;
+                    if ($prev[$alias] !== $record) {
+                        $prev[$alias] = $record;
                     }
                 }
                 $prevRow[$tableAlias] = $row;
             }
         }
+        return $coll;
     }
     /**
      * execute
@@ -418,12 +462,6 @@ class Doctrine_Hydrate2 extends Doctrine_Access
      * @return Doctrine_Collection            the root collection
      */
     public function execute2($params = array(), $return = Doctrine::FETCH_RECORD) {
-        $array = $this->_fetch($params = array(), $return = Doctrine::FETCH_RECORD);
-
-        $keys  = array_keys($this->tables);
-        $root  = $keys[0];
-
-        $previd = array();
         /**
          * iterate over the fetched data
          * here $data is a two dimensional array
@@ -488,130 +526,10 @@ class Doctrine_Hydrate2 extends Doctrine_Access
                     continue;
 
                 }
-
-                if ( ! isset($previd[$name])) {
-                    $previd[$name] = array();
-                }              
-                if ($previd[$name] !== $row) {
-                    // set internal data
-
-                    $this->tables[$name]->setData($row);
-
-                    // initialize a new record
-
-                    $record = $this->tables[$name]->getRecord();
-
-                    // aggregate values have numeric keys
-                    if (isset($row[0])) {
-                        $path    = array_search($name, $this->tableAliases);
-                        $alias   = $this->getPathAlias($path);
-
-                        // map each aggregate value
-                        foreach ($row as $index => $value) {
-                            $agg = false;
-
-                            if (isset($this->pendingAggregates[$alias][$index])) {
-                                $agg = $this->pendingAggregates[$alias][$index][3];
-                            } elseif (isset($this->subqueryAggregates[$alias][$index])) {
-                                $agg = $this->subqueryAggregates[$alias][$index];
-                            }
-                            $record->mapValue($agg, $value);
-                        }
-                    }
-
-                    if ($name == $root) {
-                        // add record into root collection
-
-                        $coll->add($record);
-                        unset($previd);
-
-                    } else {
-                        $prev = $this->addRelated($prev, $name, $record);
-                    }
-
-                    // following statement is needed to ensure that mappings
-                    // are being done properly when the result set doesn't
-                    // contain the rows in 'right order'
-
-                    if ($prev[$name] !== $record) {
-                        $prev[$name] = $record;
-                    }
-                }
-
-                $previd[$name] = $row;
             }
         }
 
         return $coll;
-    }
-    /**
-     * initRelation
-     *
-     * @param array $prev
-     * @param string $name
-     * @return array
-     */
-    public function initRelated(array $prev, $name)
-    {
-        $pointer = $this->joins[$name];
-        $path    = array_search($name, $this->tableAliases);
-        $tmp     = explode('.', $path);
-        $alias   = end($tmp);
-
-        if ( ! isset($prev[$pointer]) ) {
-            return $prev;
-        }
-        $fk      = $this->tables[$pointer]->getRelation($alias);
-
-        if ( ! $fk->isOneToOne()) {
-            if ($prev[$pointer]->getLast() instanceof Doctrine_Record) {
-                if ( ! $prev[$pointer]->getLast()->hasReference($alias)) {
-                    $prev[$name] = $this->getCollection($name);
-                    $prev[$pointer]->getLast()->initReference($prev[$name],$fk);
-                } else {
-                    $prev[$name] = $prev[$pointer]->getLast()->get($alias);
-                }
-            }
-        }
-
-        return $prev;
-    }
-    /**
-     * addRelated
-     *
-     * @param array $prev
-     * @param string $name
-     * @return array
-     */
-    public function addRelated(array $prev, $name, Doctrine_Record $record)
-    {
-        $pointer = $this->joins[$name];
-
-        $path    = array_search($name, $this->tableAliases);
-        $tmp     = explode('.', $path);
-        $alias   = end($tmp);
-
-        $fk      = $this->tables[$pointer]->getRelation($alias);
-
-        if ($fk->isOneToOne()) {
-            $prev[$pointer]->getLast()->set($fk->getAlias(), $record);
-
-            $prev[$name] = $record;
-        } else {
-            // one-to-many relation or many-to-many relation
-
-            if ( ! $prev[$pointer]->getLast()->hasReference($alias)) {
-                $prev[$name] = $this->getCollection($name);
-                $prev[$pointer]->getLast()->initReference($prev[$name], $fk);
-
-            } else {
-                // previous entry found from memory
-                $prev[$name] = $prev[$pointer]->getLast()->get($alias);
-            }
-
-            $prev[$pointer]->getLast()->addReference($record, $fk);
-        }
-        return $prev;
     }
     /**
      * isIdentifiable

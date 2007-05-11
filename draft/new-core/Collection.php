@@ -31,7 +31,7 @@ Doctrine::autoload("Doctrine_Access");
  * @version     $Revision: 1207 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Collection2 extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
+class Doctrine_Collection2 extends Doctrine_Collection implements Countable, IteratorAggregate, Serializable
 {
     /**
      * @var array $data                     an array containing the data access objects of this collection
@@ -40,7 +40,7 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
     /**
      * @var Doctrine_Table $table           each collection has only records of specified table
      */
-    protected $table;
+    protected $_table;
     /**
      * @var Doctrine_Record $reference      collection can belong to a record
      */
@@ -75,7 +75,7 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
             $table = Doctrine_Manager::getInstance()
                         ->getTable($table);
         }
-        $this->table = $table;
+        $this->_table = $table;
 
         $name = $table->getAttribute(Doctrine::ATTR_COLL_KEY);
         if ($name !== null) {
@@ -100,7 +100,7 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
      */
     public function getTable()
     {
-        return $this->table;
+        return $this->_table;
     }
     /**
      * this method is automatically called when this Doctrine_Collection is serialized
@@ -139,12 +139,12 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
             $this->$name = $values;
         }
 
-        $this->table        = $connection->getTable($this->table);
+        $this->_table        = $connection->getTable($this->_table);
 
         $this->expanded     = array();
         $this->expandable   = true;
 
-        $name = $this->table->getAttribute(Doctrine::ATTR_COLL_KEY);
+        $name = $this->_table->getAttribute(Doctrine::ATTR_COLL_KEY);
         if ($name !== null) {
             $this->keyColumn = $name;
         }
@@ -294,8 +294,8 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
      */
     public function get($key)
     {
-    	if ($key === null) {
-    	    $record = $this->table->create();
+    	if ($key === null || ! isset($this->data[$key])) {
+    	    $record = $this->_table->create();
 
             if (isset($this->referenceField)) {
                 $record->set($this->referenceField, $this->reference, false);
@@ -306,22 +306,6 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
             return $record;
     	}
 
-
-        if ( ! isset($this->data[$key])) {
-            if ( ! isset($this->data[$key])) {
-                $this->data[$key] = $this->table->create();
-            }
-            if (isset($this->referenceField)) {
-                $value = $this->reference->get($this->relation->getLocal());
-
-                if ($value !== null) {
-                    $this->data[$key]->set($this->referenceField, $value, false);
-                } else {
-                    $this->data[$key]->set($this->referenceField, $this->reference, false);
-                }
-            }
-        }
-
         return $this->data[$key];
     }
 
@@ -331,7 +315,7 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
     public function getPrimaryKeys()
     {
         $list = array();
-        $name = $this->table->getIdentifier();
+        $name = $this->_table->getIdentifier();
 
         foreach ($this->data as $record) {
             if (is_array($record) && isset($record[$name])) {
@@ -380,7 +364,7 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
      * @param string $key                          optional key for the record
      * @return boolean
      */
-    public function add(Doctrine_Record $record,$key = null)
+    public function add(Doctrine_Record $record, $key = null)
     {
         if (isset($this->referenceField)) {
             $record->set($this->referenceField, $this->reference, false);
@@ -424,7 +408,7 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
     public function loadRelated($name = null)
     {
         $list = array();
-        $query   = new Doctrine_Query($this->table->getConnection());
+        $query   = new Doctrine_Query($this->_table->getConnection());
 
         if ( ! isset($name)) {
             foreach ($this->data as $record) {
@@ -433,13 +417,13 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
                     $list[] = $value;
                 }
             };
-            $query->from($this->table->getComponentName() . '(' . implode(", ",$this->table->getPrimaryKeys()) . ')');
-            $query->where($this->table->getComponentName() . '.id IN (' . substr(str_repeat("?, ", count($list)),0,-2) . ')');
+            $query->from($this->_table->getComponentName() . '(' . implode(", ",$this->_table->getPrimaryKeys()) . ')');
+            $query->where($this->_table->getComponentName() . '.id IN (' . substr(str_repeat("?, ", count($list)),0,-2) . ')');
 
             return $query;
         }
 
-        $rel     = $this->table->getRelation($name);
+        $rel     = $this->_table->getRelation($name);
 
         if ($rel instanceof Doctrine_Relation_LocalKey || $rel instanceof Doctrine_Relation_ForeignKey) {
             foreach ($this->data as $record) {
@@ -469,7 +453,7 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
      */
     public function populateRelated($name, Doctrine_Collection $coll)
     {
-        $rel     = $this->table->getRelation($name);
+        $rel     = $this->_table->getRelation($name);
         $table   = $rel->getTable();
         $foreign = $rel->getForeign();
         $local   = $rel->getLocal();
@@ -501,7 +485,7 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
                 $this->data[$key]->setRelated($name, $sub);
             }
         } elseif ($rel instanceof Doctrine_Relation_Association) {
-            $identifier = $this->table->getIdentifier();
+            $identifier = $this->_table->getIdentifier();
             $asf        = $rel->getAssociationFactory();
             $name       = $table->getComponentName();
 
@@ -541,7 +525,7 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
     public function save(Doctrine_Connection $conn = null)
     {
         if ($conn == null) {
-            $conn = $this->table->getConnection();
+            $conn = $this->_table->getConnection();
         }
         $conn->beginTransaction();
 
@@ -561,7 +545,7 @@ class Doctrine_Collection2 extends Doctrine_Access implements Countable, Iterato
     public function delete(Doctrine_Connection $conn = null)
     {
         if ($conn == null) {
-            $conn = $this->table->getConnection();
+            $conn = $this->_table->getConnection();
         }
 
         $conn->beginTransaction();
