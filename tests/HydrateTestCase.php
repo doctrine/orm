@@ -26,7 +26,7 @@ require_once('../draft/new-core/Query.php');
 require_once('../draft/new-core/Collection.php');
 
 /**
- * Doctrine_NewCore_TestCase
+ * Doctrine_Hydrate_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -38,7 +38,7 @@ require_once('../draft/new-core/Collection.php');
  */
 
 
-class Doctrine_NewCore_TestCase extends Doctrine_UnitTestCase
+class Doctrine_Hydrate_TestCase extends Doctrine_UnitTestCase
 {
     protected $testData1 = array(
                               array(

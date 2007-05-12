@@ -658,10 +658,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
         $q = $this->getQueryBase();
 
         $q .= $this->parts['from'];
-        /**
-        var_dump($this->pendingFields);
-        var_dump($this->subqueryAliases);  */
-        //var_dump($this->parts['join']);
 
         foreach($this->parts['join'] as $parts) {
             foreach($parts as $part) {
@@ -699,13 +695,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
                 $q .= ' ' . $part;
             }
         }
-        /**
-        if( ! empty($this->parts['join'])) {
-            foreach($this->parts['join'] as $part) {
-                $q .= ' '.implode(' ', $part);
-            }
-        }
-        */
 
         if( ! empty($this->parts['set'])) {
             $q .= ' SET ' . implode(', ', $this->parts['set']);
@@ -764,6 +753,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
         return $q;
     }
     /**
+     * getLimitSubquery
      * this is method is used by the record limit algorithm
      *
      * when fetching one-to-many, many-to-many associated data with LIMIT clause
@@ -1068,14 +1058,17 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
                 if( ! $relation->isOneToOne()) {
                    $this->needsSubquery = true;
                 }
+  
+                $localAlias   = $this->getShortAlias($parent, $table->getTableName());
+                $foreignAlias = $this->getShortAlias($componentAlias, $relation->getTable()->getTableName());
+                $aliasString  = $this->conn->quoteIdentifier($table->getTableName()) . ' AS ' . $localAlias;
 
                 $map = $relation->getTable()->inheritanceMap;
   
                 if( ! $loadFields || ! empty($map) || $joinCondition) {
-                    $this->subqueryAliases[] = $tname2;
+                    $this->subqueryAliases[] = $foreignAlias;
                 }
-  
-                //$foreignTable = $this->getShortAlias();
+
 
                 if ($relation instanceof Doctrine_Relation_Association) {
                     $asf = $relation->getAssociationFactory();
@@ -1094,31 +1087,32 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
                         $assocAlias = $this->aliasHandler->generateShortAlias($assocTableName);
                     }
   
-                    $this->parts['from'] = 'LEFT JOIN ' . $assocTableName . ' ' . $assocAlias . ' ON ' . $foreignTable  . '.'
+                    $queryPart = 'LEFT JOIN ' . $assocTableName . ' ' . $assocAlias . ' ON ' . $foreignAlias  . '.'
                                                                   . $table->getIdentifier() . ' = '
                                                                   . $assocAlias . '.' . $relation->getLocal();
 
                     if ($relation instanceof Doctrine_Relation_Association_Self) {
-                        $this->parts['join'] .= ' OR ' . $tname  . '.' . $table->getIdentifier() . ' = '
+                        $queryPart .= ' OR ' . $localAlias  . '.' . $table->getIdentifier() . ' = '
                                                                        . $assocAlias . '.' . $relation->getForeign();
                     }
 
-                    $this->parts['from'] = 'LEFT JOIN ' . $aliasString . ' ON ' . $foreignTable . '.'
+                    $queryPart = 'LEFT JOIN ' . $aliasString . ' ON ' . $foreignAlias . '.'
                                          . $relation->getTable()->getIdentifier() . ' = '
                                          . $assocAlias . '.' . $relation->getForeign()
                                          . $joinCondition;
   
                     if ($relation instanceof Doctrine_Relation_Association_Self) {
-                        $this->parts['join'] .= ' OR ' . $tname2  . '.' . $table->getIdentifier() . ' = '
+                        $queryPart .= ' OR ' . $foreignTable  . '.' . $table->getIdentifier() . ' = '
                                              . $assocAlias . '.' . $relation->getLocal();
                     }
 
                 } else {
-                    $this->parts['join'] = 'LEFT JOIN ' . $aliasString
-                                         . ' ON ' . $tname .  '.'
-                                         . $relation->getLocal() . ' = ' . $foreignTable . '.' . $relation->getForeign()
-                                         . $joinCondition;
+                    $queryPart = 'LEFT JOIN ' . $aliasString
+                                           . ' ON ' . $localAlias .  '.'
+                                           . $relation->getLocal() . ' = ' . $foreignAlias . '.' . $relation->getForeign()
+                                           . $joinCondition;
                 }
+                $this->parts['from'][] = $queryPart;
             }
             if ($loadFields) {
                 if(isset($this->pendingFields[$componentAlias])) {
@@ -1142,17 +1136,30 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
         // get the short alias for this table
         $tableAlias = $this->aliasHandler->getShortAlias($tableName);
         // quote table name
-        $this->parts['from'] = $this->conn->quoteIdentifier($tableName);
+        $queryPart = $this->conn->quoteIdentifier($tableName);
 
         if ($this->type === self::SELECT) {
-            $this->parts['from'] .= ' ' . $tableAlias;
+            $queryPart .= ' ' . $tableAlias;
         }
 
+        $this->parts['from'][] = $queryPart;
         $this->tableAliases[$tableAlias]  = $componentAlias;
         $this->_aliasMap[$componentAlias] = array('table' => $table);
         
         return $table;
     }
+    /**
+     * getShortAlias
+     * some database such as Oracle need the identifier lengths to be < ~30 chars
+     * hence Doctrine creates as short identifier aliases as possible
+     *
+     * this method is used for the creation of short table aliases, its also
+     * smart enough to check if an alias already exists for given component (componentAlias)
+     *
+     * @param string $componentAlias    the alias for the query component to search table alias for
+     * @param string $tableName         the table name from which the table alias is being created
+     * @return string                   the generated / fetched short alias
+     */
     public function getShortAlias($componentAlias, $tableName)
     {
         if (isset($this->tableAliases[$componentAlias])) {
@@ -1160,115 +1167,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
         }
         
         return $this->aliasHandler->getShortAlias($tableName);
-    }
-    /**
-     * loads a component
-     *
-     * @param string $path              the path of the loadable component
-     * @param integer $fetchmode        optional fetchmode, if not set the components default fetchmode will be used
-     * @throws Doctrine_Query_Exception
-     * @return Doctrine_Table
-     */
-    final public function load2($path, $loadFields = true)
-    {
-        $tmp            = explode(' ',$path);
-        $componentAlias = (count($tmp) > 1) ? end($tmp) : false;
-
-        $e = preg_split("/[.:]/", $tmp[0], -1);
-
-
-        if(isset($this->compAliases[$e[0]])) {
-            $end      = substr($tmp[0], strlen($e[0]));
-            $path     = $this->compAliases[$e[0]] . $end;
-            $e        = preg_split("/[.:]/", $path, -1);
-        } else {
-            $path     = $tmp[0];
-        }
-
-
-
-        $index = 0;
-        $currPath = '';
-        $this->tableStack = array();
-
-        foreach($e as $key => $fullname) {
-            try {
-                $e2    = preg_split("/[-(]/",$fullname);
-                $name  = $e2[0];
-
-                $currPath .= '.' . $name;
-
-                if($key == 0) {
-                } else {
-
-                    $index += strlen($e[($key - 1)]) + 1;
-                    // the mark here is either '.' or ':'
-                    $mark  = substr($path, ($index - 1), 1);
-
-                    if(isset($this->tableAliases[$prevPath])) {
-                        $tname = $this->tableAliases[$prevPath];
-                    } else {
-                        $tname = $this->aliasHandler->getShortAlias($table->getTableName());
-                    }
-
-                    $fk       = $table->getRelation($name);
-                    $name     = $fk->getTable()->getComponentName();
-                    $original = $fk->getTable()->getTableName();
-
-
-
-                    if (isset($this->tableAliases[$currPath])) {
-                        $tname2 = $this->tableAliases[$currPath];
-                    } else {
-                        $tname2 = $this->aliasHandler->generateShortAlias($original);
-                    }
-
-                    $aliasString = $this->conn->quoteIdentifier($original) . ' ' . $tname2;
-
-                    switch ($mark) {
-                        case ':':
-                            $join = 'INNER JOIN ';
-                        break;
-                        case '.':
-                            $join = 'LEFT JOIN ';
-                        break;
-                        default:
-                            throw new Doctrine_Query_Exception("Unknown operator '$mark'");
-                    }
-
-                    if( ! $fk->isOneToOne()) {
-                       $this->needsSubquery = true;
-                    }
-
-
-                    $this->joins[$tname2] = $prevTable;
-
-
-                    $table = $fk->getTable();
-
-                    $this->tableAliases[$currPath] = $tname2;
-
-                    $tableName = $tname2;
-
-                    $this->relationStack[] = $fk;
-                }
-
-                $this->components[$currPath] = $table;
-
-                $this->tableStack[] = $table;
-
-                $prevPath  = $currPath;
-                $prevTable = $tableName;
-            } catch(Exception $e) {
-                throw new Doctrine_Query_Exception($e->__toString());
-            }
-        }
-
-        if($componentAlias !== false) {
-            $this->compAliases[$componentAlias] = $currPath;
-        }
-
-        return $table;
     }
 }
 
