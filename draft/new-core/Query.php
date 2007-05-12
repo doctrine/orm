@@ -1069,14 +1069,16 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
                    $this->needsSubquery = true;
                 }
 
-                $map = $fk->getTable()->inheritanceMap;
+                $map = $relation->getTable()->inheritanceMap;
   
                 if( ! $loadFields || ! empty($map) || $joinCondition) {
                     $this->subqueryAliases[] = $tname2;
                 }
   
-                if ($fk instanceof Doctrine_Relation_Association) {
-                    $asf = $fk->getAssociationFactory();
+                //$foreignTable = $this->getShortAlias();
+
+                if ($relation instanceof Doctrine_Relation_Association) {
+                    $asf = $relation->getAssociationFactory();
   
                     $assocTableName = $asf->getTableName();
   
@@ -1092,29 +1094,29 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
                         $assocAlias = $this->aliasHandler->generateShortAlias($assocTableName);
                     }
   
-                    $this->parts['from'] = $join . $assocTableName . ' ' . $assocAlias . ' ON ' . $tname  . '.'
+                    $this->parts['from'] = 'LEFT JOIN ' . $assocTableName . ' ' . $assocAlias . ' ON ' . $foreignTable  . '.'
                                                                   . $table->getIdentifier() . ' = '
-                                                                  . $assocAlias . '.' . $fk->getLocal();
+                                                                  . $assocAlias . '.' . $relation->getLocal();
 
-                    if ($fk instanceof Doctrine_Relation_Association_Self) {
+                    if ($relation instanceof Doctrine_Relation_Association_Self) {
                         $this->parts['join'] .= ' OR ' . $tname  . '.' . $table->getIdentifier() . ' = '
-                                                                       . $assocAlias . '.' . $fk->getForeign();
+                                                                       . $assocAlias . '.' . $relation->getForeign();
                     }
 
-                    $this->parts['from'] = $join . $aliasString . ' ON ' . $tname2 . '.'
-                                         . $fk->getTable()->getIdentifier() . ' = '
-                                         . $assocAlias . '.' . $fk->getForeign()
+                    $this->parts['from'] = 'LEFT JOIN ' . $aliasString . ' ON ' . $foreignTable . '.'
+                                         . $relation->getTable()->getIdentifier() . ' = '
+                                         . $assocAlias . '.' . $relation->getForeign()
                                          . $joinCondition;
   
-                    if ($fk instanceof Doctrine_Relation_Association_Self) {
+                    if ($relation instanceof Doctrine_Relation_Association_Self) {
                         $this->parts['join'] .= ' OR ' . $tname2  . '.' . $table->getIdentifier() . ' = '
-                                             . $assocAlias . '.' . $fk->getLocal();
+                                             . $assocAlias . '.' . $relation->getLocal();
                     }
 
                 } else {
-                    $this->parts['join'] = $join . $aliasString
+                    $this->parts['join'] = 'LEFT JOIN ' . $aliasString
                                          . ' ON ' . $tname .  '.'
-                                         . $fk->getLocal() . ' = ' . $tname2 . '.' . $fk->getForeign()
+                                         . $relation->getLocal() . ' = ' . $foreignTable . '.' . $relation->getForeign()
                                          . $joinCondition;
                 }
             }
@@ -1122,8 +1124,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
                 if(isset($this->pendingFields[$componentAlias])) {
                     $this->processPendingFields($componentAlias);
                 }
-                if(isset($this->pendingAggregates[$componentAlias]) ||
-                  (current($this->tables) === $table && isset($this->pendingAggregates[0]))) {
+                if(isset($this->pendingAggregates[$componentAlias]) || isset($this->pendingAggregates[0])) {
                     $this->processPendingAggregates($componentAlias);
                 }
             }
@@ -1151,6 +1152,14 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
         $this->_aliasMap[$componentAlias] = array('table' => $table);
         
         return $table;
+    }
+    public function getShortAlias($componentAlias, $tableName)
+    {
+        if (isset($this->tableAliases[$componentAlias])) {
+            return $this->tableAliases[$componentAlias];
+        }
+        
+        return $this->aliasHandler->getShortAlias($tableName);
     }
     /**
      * loads a component
