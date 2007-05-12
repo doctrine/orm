@@ -52,8 +52,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
      */
     private $isSubquery;
 
-    private $relationStack     = array();
-
     private $isDistinct        = false;
 
     private $neededTables      = array();
@@ -129,19 +127,30 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable {
 
         return $this->isDistinct;
     }
-
+    /**
+     * processPendingFields
+     * the fields in SELECT clause cannot be parsed until the components
+     * in FROM clause are parsed, hence this method is called everytime a 
+     * specific component is being parsed.
+     *
+     * @throws Doctrine_Query_Exception     if unknown component alias has been given
+     * @param string $componentAlias        the alias of the component
+     * @return void
+     */
     public function processPendingFields($componentAlias)
     {
         $tableAlias = $this->getTableAlias($componentAlias);
 
-        if ( ! isset($this->tables[$tableAlias]))
-            throw new Doctrine_Query_Exception('Unknown component path ' . $componentAlias);
+        if ( ! isset($this->tables[$tableAlias])) {
+            throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
+        }
 
         $table      = $this->tables[$tableAlias];
 
         if (isset($this->pendingFields[$componentAlias])) {
             $fields = $this->pendingFields[$componentAlias];
 
+            // check for wildcards
             if (in_array('*', $fields)) {
                 $fields = $table->getColumnNames();
             } else {
