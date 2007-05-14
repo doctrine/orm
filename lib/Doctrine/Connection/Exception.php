@@ -35,7 +35,7 @@ class Doctrine_Connection_Exception extends Doctrine_Exception
     /**
      * @var array $errorMessages        an array containing messages for portable error codes
      */
-    protected static $errorMessages = array(
+    static protected $errorMessages = array(
                 Doctrine::ERR                    => 'unknown error',
                 Doctrine::ERR_ALREADY_EXISTS     => 'already exists',
                 Doctrine::ERR_CANNOT_CREATE      => 'can not create',
@@ -105,7 +105,7 @@ class Doctrine_Connection_Exception extends Doctrine_Exception
      * @return  string  error message, or false if the error code was
      *                  not recognized
      */
-    public static function errorMessage($value = null)
+    public function errorMessage($value = null)
     {
         return isset(self::$errorMessages[$value]) ?
            self::$errorMessages[$value] : self::$errorMessages[Doctrine::ERR];
