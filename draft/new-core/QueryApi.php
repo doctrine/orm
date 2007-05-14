@@ -33,6 +33,16 @@
 class Doctrine_Query 
 {
     /**
+     * create
+     * returns a new Doctrine_Query object
+     *
+     * @return Doctrine_Query
+     */
+    public static function create()
+    {
+        return new Doctrine_Query();
+    }
+    /**
      * addSelect
      * adds fields to the SELECT part of the query
      *
