@@ -364,6 +364,7 @@ class Doctrine_Hydrate2
             throw new Doctrine_Hydrate_Exception("Couldn't execute query. Component alias map was empty.");
         }
         // initialize some variables used within the main loop
+        reset($this->_aliasMap);
         $rootMap     = current($this->_aliasMap);
         $rootAlias   = key($this->_aliasMap);
         $coll        = new Doctrine_Collection2($rootMap['table']);
@@ -518,12 +519,13 @@ class Doctrine_Hydrate2
         // get the inheritance maps
         $array = array();
 
-        foreach ($this->tables as $alias => $table) {
-            $array[$alias][] = $table->inheritanceMap;
+        foreach ($this->_aliasMap as $componentAlias => $data) {
+            $tableAlias = $this->getTableAlias($componentAlias);
+            $array[$tableAlias][] = $data['table']->inheritanceMap;
         }
 
         // apply inheritance maps
-        $str = "";
+        $str = '';
         $c = array();
 
         $index = 0;
@@ -593,19 +595,6 @@ class Doctrine_Hydrate2
 
         $stmt->closeCursor();
         return $array;
-    }
-    /**
-     * returns a Doctrine_Table for given name
-     *
-     * @param string $name              component name
-     * @return Doctrine_Table|boolean
-     */
-    public function getTable($name)
-    {
-        if (isset($this->tables[$name])) {
-            return $this->tables[$name];
-        }
-        return false;
     }
     /**
      * @return string                   returns a string representation of this object
