@@ -79,15 +79,175 @@ class Doctrine_Query_From extends Doctrine_Query_Part
                     $reference = array_shift($e) . $operator . implode('.', $e);
                 }
 
-                $table     = $this->query->load($reference);
+                $table = $this->query->load($reference);
             }
 
             $operator = ($last == 'INNER') ? ':' : '.';
         }
     }
-
-    public function __toString()
+    public function load($path, $loadFields = true) 
     {
-        return ( ! empty($this->parts))?implode(", ", $this->parts):'';
+        // parse custom join conditions
+        $e = explode(' ON ', $path);
+        
+        $joinCondition = '';
+
+        if (count($e) > 1) {
+            $joinCondition = ' AND ' . $e[1];
+            $path = $e[0];
+        }
+
+        $tmp            = explode(' ', $path);
+        $componentAlias = (count($tmp) > 1) ? end($tmp) : false;
+
+        $e = preg_split("/[.:]/", $tmp[0], -1);
+
+        $fullPath = $tmp[0];
+        $prevPath = '';
+        $fullLength = strlen($fullPath);
+
+        if (isset($this->_aliasMap[$e[0]])) {
+            $table = $this->_aliasMap[$e[0]]['table'];
+
+            $prevPath = $parent = array_shift($e);
+        }
+
+        foreach ($e as $key => $name) {
+            // get length of the previous path
+            $length = strlen($prevPath);
+
+            // build the current component path
+            $prevPath = ($prevPath) ? $prevPath . '.' . $name : $name;
+
+            $delimeter = substr($fullPath, $length, 1);
+
+            // if an alias is not given use the current path as an alias identifier
+            if (strlen($prevPath) !== $fullLength || ! $componentAlias) {
+                $componentAlias = $prevPath;
+            }
+
+            if ( ! isset($table)) {
+                // process the root of the path
+                $table = $this->loadRoot($name, $componentAlias);
+            } else {
+
+    
+                $join = ($delimeter == ':') ? 'INNER JOIN ' : 'LEFT JOIN ';
+
+                $relation = $table->getRelation($name);
+                $this->_aliasMap[$componentAlias] = array('table'    => $relation->getTable(),
+                                                          'parent'   => $parent,
+                                                          'relation' => $relation);
+                if( ! $relation->isOneToOne()) {
+                   $this->needsSubquery = true;
+                }
+  
+                $localAlias   = $this->getShortAlias($parent, $table->getTableName());
+                $foreignAlias = $this->getShortAlias($componentAlias, $relation->getTable()->getTableName());
+                $localSql     = $this->conn->quoteIdentifier($table->getTableName()) . ' ' . $localAlias;
+                $foreignSql   = $this->conn->quoteIdentifier($relation->getTable()->getTableName()) . ' ' . $foreignAlias;
+
+                $map = $relation->getTable()->inheritanceMap;
+  
+                if ( ! $loadFields || ! empty($map) || $joinCondition) {
+                    $this->subqueryAliases[] = $foreignAlias;
+                }
+
+                if ($relation instanceof Doctrine_Relation_Association) {
+                    $asf = $relation->getAssociationFactory();
+  
+                    $assocTableName = $asf->getTableName();
+  
+                    if( ! $loadFields || ! empty($map) || $joinCondition) {
+                        $this->subqueryAliases[] = $assocTableName;
+                    }
+
+                    $assocPath = $prevPath . '.' . $asf->getComponentName();
+  
+                    $assocAlias = $this->getShortAlias($assocPath, $asf->getTableName());
+
+                    $queryPart = $join . $assocTableName . ' ' . $assocAlias . ' ON ' . $localAlias  . '.'
+                                                                  . $table->getIdentifier() . ' = '
+                                                                  . $assocAlias . '.' . $relation->getLocal();
+
+                    if ($relation instanceof Doctrine_Relation_Association_Self) {
+                        $queryPart .= ' OR ' . $localAlias  . '.' . $table->getIdentifier() . ' = '
+                                                                  . $assocAlias . '.' . $relation->getForeign();
+                    }
+
+                    $this->parts['from'][] = $queryPart;
+
+                    $queryPart = $join . $foreignSql . ' ON ' . $foreignAlias . '.'
+                                               . $relation->getTable()->getIdentifier() . ' = '
+                                               . $assocAlias . '.' . $relation->getForeign()
+                                               . $joinCondition;
+
+                    if ($relation instanceof Doctrine_Relation_Association_Self) {
+                        $queryPart .= ' OR ' . $foreignTable  . '.' . $table->getIdentifier() . ' = '
+                                             . $assocAlias . '.' . $relation->getLocal();
+                    }
+
+                } else {
+                    $queryPart = $join . $foreignSql
+                                       . ' ON ' . $localAlias .  '.'
+                                       . $relation->getLocal() . ' = ' . $foreignAlias . '.' . $relation->getForeign()
+                                       . $joinCondition;
+                }
+                $this->parts['from'][] = $queryPart;
+            }
+            if ($loadFields) {
+                             	
+                $restoreState = false;
+                // load fields if necessary
+                if ($loadFields && empty($this->pendingFields)) {
+                    $this->pendingFields[$componentAlias] = array('*');
+
+                    $restoreState = true;
+                }
+
+                if(isset($this->pendingFields[$componentAlias])) {
+                    $this->processPendingFields($componentAlias);
+                }
+
+                if ($restoreState) {
+                    $this->pendingFields = array();
+                }
+
+
+                if(isset($this->pendingAggregates[$componentAlias]) || isset($this->pendingAggregates[0])) {
+                    $this->processPendingAggregates($componentAlias);
+                }
+            }
+        }
+    }
+    /**
+     * loadRoot
+     *
+     * @param string $name
+     * @param string $componentAlias
+     */
+    public function loadRoot($name, $componentAlias)
+    {
+    	// get the connection for the component
+        $this->conn = Doctrine_Manager::getInstance()
+                      ->getConnectionForComponent($name);
+
+        $table = $this->conn->getTable($name);
+        $tableName = $table->getTableName();
+
+        // get the short alias for this table
+        $tableAlias = $this->aliasHandler->getShortAlias($componentAlias, $tableName);
+        // quote table name
+        $queryPart = $this->conn->quoteIdentifier($tableName);
+
+        if ($this->type === self::SELECT) {
+            $queryPart .= ' ' . $tableAlias;
+        }
+
+        $this->parts['from'][] = $queryPart;
+        $this->tableAliases[$tableAlias]  = $componentAlias;
+        $this->_aliasMap[$componentAlias] = array('table' => $table);
+        
+        return $table;
     }
 }

@@ -53,9 +53,4 @@ class Doctrine_Query_Groupby extends Doctrine_Query_Part
         }
         return implode(', ', $r);
     }
-
-    public function __toString()
-    {
-        return ( ! empty($this->parts))?implode(", ", $this->parts):'';
-    }
 }

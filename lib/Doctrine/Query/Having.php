@@ -60,7 +60,7 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
         } else {
             if ( ! is_numeric($func)) {
                 $a = explode('.', $func);
-                
+
                 if (count($a) > 1) {
                     $field     = array_pop($a);
                     $reference = implode('.', $a);
@@ -98,14 +98,5 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
         $r .= ' ' . $operator . ' ' . $value;
 
         return $r;
-    }
-    /**
-     * __toString
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return ( ! empty($this->parts))?implode(' AND ', $this->parts):'';
     }
 }

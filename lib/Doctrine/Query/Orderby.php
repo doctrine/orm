@@ -74,8 +74,4 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part
 
         return implode(', ', $ret);
     }
-    public function __toString()
-    {
-        return ( ! empty($this->parts))?implode(', ', $this->parts):'';
-    }
 }

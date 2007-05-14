@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload("Doctrine_Access");
+
 /**
  * Doctrine_Query_Part
  *
@@ -30,33 +30,18 @@ Doctrine::autoload("Doctrine_Access");
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Query_Part extends Doctrine_Access
+abstract class Doctrine_Query_Part
 {
     /**
      * @var Doctrine_Query $query           the query object associated with this parser
      */
     protected $query;
     /**
-     * @var string $name                    the name of this parser
-     */
-    protected $name;
-    /**
-     * @var array $parts
-     */
-    protected $parts = array();
-    /**
      * @param Doctrine_Query $query         the query object associated with this parser
      */
-    public function __construct(Doctrine_Query $query)
+    public function __construct($query)
     {
         $this->query = $query;
-    }
-    /**
-     * @return string $name                 the name of this parser
-     */
-    public function getName()
-    {
-        return $this->name;
     }
     /**
      * @return Doctrine_Query $query        the query object associated with this parser
@@ -65,20 +50,12 @@ abstract class Doctrine_Query_Part extends Doctrine_Access
     {
         return $this->query;
     }
-    /**
-     * add
-     *
-     * @param string $value
-     * @return void
-     */
-    public function add($value)
+    public function parse($dql, $append = false)
     {
-        $method = "parse".$this->name;
-        $this->query->$method($value);
-    }
+        $e = explode(' ', __CLASS__);
+        $name = end($e);
 
-    public function get($name)
-    { }
-    public function set($name, $value)
-    { }
+        $this->query->addDqlPart($name, $dql);
+        $this->_parse($dql);
+    }
 }
