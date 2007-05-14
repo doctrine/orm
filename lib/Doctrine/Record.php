@@ -426,8 +426,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                         break;
                     case 'boolean':
                     case 'integer':
-                        if($tmp[$name] !== self::$null)
+                        if ($tmp[$name] !== self::$null && ! ($tmp[$name] instanceof Doctrine_Record)) {
                             settype($tmp[$name], $type);
+                        }
                     default:
                         $this->_data[$name] = $tmp[$name];
                 }
