@@ -151,6 +151,10 @@ class Doctrine_Hydrate2
     {
         $this->tableAliases = $aliases;
     }
+    public function getTableAlias($componentAlias) 
+    {
+        return $this->aliasHandler->getShortAlias($componentAlias);
+    }
     /**
      * copyAliases
      *
@@ -195,7 +199,7 @@ class Doctrine_Hydrate2
         if ( ! isset($this->parts[$part])) {
             throw new Doctrine_Hydrate_Exception('Unknown query part ' . $part);
         }
-        
+
         return $this->parts[$part];
     }
     /**
