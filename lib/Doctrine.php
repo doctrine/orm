@@ -495,9 +495,9 @@ final class Doctrine
             case 'array':
                 $ret[] = 'Array(';
                 foreach ($var as $k => $v) {
-                    $ret[] = $k . ' : ' . Doctrine::dump($v);
+                    $ret[] = $k . ' : ' . Doctrine::dump($v, false);
                 }
-                $ret[] = ')';
+                $ret[] = ")";
                 break;
             case 'object':
                 $ret[] = 'Object(' . get_class($var) . ')';

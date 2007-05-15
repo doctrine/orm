@@ -110,7 +110,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                         foreach ($values as $value) {
                             $where[] = $alias . '.' . $relation->getLocal() 
                                      . ' IN (SELECT '.$relation->getForeign()
-                                     . ' FROM ' . $relation->getTable()->getTableName() 
+                                     . ' FROM ' . $relation->getTable()->getTableName()
                                      . ' WHERE ' . $field . $operator . $value . ')';
                         }
                         $where = implode(' AND ', $where);
@@ -178,8 +178,8 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                             $fieldname = $field;
                         }
                         
-                        $where      = $fieldname . ' ' 
-                                    . $operator . ' ' . $value;
+                        $where = $fieldname . ' '
+                               . $operator . ' ' . $value;
                 }
             }
         }
