@@ -155,6 +155,20 @@ class Doctrine_Hydrate2
     {
         return $this->aliasHandler->getShortAlias($componentAlias);
     }
+    public function addQueryPart($name, $part) 
+    {
+        if ( ! isset($this->parts[$name])) {
+            throw new Doctrine_Hydrate_Exception('Unknown query part ' . $name);
+        }
+        $this->parts[$name][] = $part;
+    }
+    public function setQueryPart($name, $part)
+    {
+        if ( ! isset($this->parts[$name])) {
+            throw new Doctrine_Hydrate_Exception('Unknown query part ' . $name);
+        }                         
+        $this->parts[$name] = array($part);
+    }
     /**
      * copyAliases
      *
@@ -331,8 +345,9 @@ class Doctrine_Hydrate2
      * @param array $row
      * @return Doctrine_Record
      */
-    public function mapAggregateValues($record, array $row)
+    public function mapAggregateValues($record, array $row, $alias)
     {
+    	$found = false;
         // aggregate values have numeric keys
         if (isset($row[0])) {
             // map each aggregate value
@@ -345,9 +360,10 @@ class Doctrine_Hydrate2
                     $agg = $this->subqueryAggregates[$alias][$index];
                 }
                 $record->mapValue($agg, $value);
+                $found = true;
             }
-        } 
-        return $record;
+        }
+        return $found;
     }
     /**
      * execute
@@ -384,11 +400,7 @@ class Doctrine_Hydrate2
                 if (empty($row)) {
                     continue;
                 }
-                // check for validity
-                if ( ! isset($this->tableAliases[$tableAlias])) {
-                    throw new Doctrine_Hydrate_Exception('Unknown table alias ' . $tableAlias);
-                }
-                $alias = $this->tableAliases[$tableAlias];
+                $alias = $this->aliasHandler->getComponentAlias($tableAlias);
                 $map   = $this->_aliasMap[$alias];
 
                 // initialize previous row array if not set
@@ -398,20 +410,20 @@ class Doctrine_Hydrate2
 
                 // don't map duplicate rows
                 if ($prevRow[$tableAlias] !== $row) {
-                    // set internal data
-                    $map['table']->setData($row);
-
                     $identifiable = $this->isIdentifiable($row, $map['table']->getIdentifier());
-                    
-                    // only initialize record if the current data row is identifiable
+
                     if ($identifiable) {
-                        // initialize a new record
-                        $record = $map['table']->getRecord();
+                        // set internal data
+                        $map['table']->setData($row);
                     }
 
+                    // initialize a new record
+                    $record = $map['table']->getRecord();
 
                     // map aggregate values (if any)
-                    $this->mapAggregateValues($record, $row);
+                    if($this->mapAggregateValues($record, $row, $alias)) {
+                        $identifiable = true;
+                    }
 
 
                     if ($alias == $rootAlias) {
@@ -438,7 +450,7 @@ class Doctrine_Hydrate2
                             // one-to-many relation or many-to-many relation
                             if ( ! $prev[$parentAlias]->getLast()->hasReference($relation->getAlias())) {
                                 // initialize a new collection
-                                $prev[$alias] = new Doctrine_Collection2($parentMap['table']);
+                                $prev[$alias] = new Doctrine_Collection2($map['table']);
                                 $prev[$alias]->setReference($parent, $relation);
                             } else {
                                 // previous entry found from memory

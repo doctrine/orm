@@ -338,10 +338,9 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
     }
     public function processPendingAggregates($componentAlias)
     {
-        $tableAlias = $this->getTableAlias($componentAlias);
+        $tableAlias = $this->getTableAlias($componentAlias);     
 
-        reset($this->_aliasMap);
-        $map   = current($this->tables);
+        $map   = reset($this->_aliasMap);
         $root  = $map['table'];
         $table = $this->_aliasMap[$componentAlias]['table'];
 
@@ -373,7 +372,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
 
                     $e[1]       = $table->getColumnName($e[1]);
 
-                    if( ! $table->hasColumn($e[1])) {
+                    if ( ! $table->hasColumn($e[1])) {
                         throw new Doctrine_Query_Exception('Unknown column ' . $e[1]);
                     }
 
@@ -385,7 +384,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
 
             $sqlAlias = $tableAlias . '__' . count($this->aggregateMap);
 
-            if(substr($name, 0, 1) !== '(') {
+            if (substr($name, 0, 1) !== '(') {
                 $this->parts['select'][] = $name . '(' . $distinct . implode(', ', $arglist) . ') AS ' . $sqlAlias;
             } else {
                 $this->parts['select'][] = $name . ' AS ' . $sqlAlias;
@@ -542,10 +541,10 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
             }
         }
 
-        $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']):'';
-        $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']):'';
-        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']):'';
-        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby']):'';
+        $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']) : '';
+        $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby'])  : '';
+        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']): '';
+        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])  : '';
 
         if ($modifyLimit) {
             $q = $this->conn->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
@@ -757,7 +756,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                 case 'set':
                     $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
                     $parser = new $class($this);
-                    $this->parts['set'][] = $parser->parse($part);
+                    $parser->parse($part);
                 break;
                 case 'group':
                 case 'order':
@@ -768,7 +767,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                     $parser = new $class($this);
 
                     $name = strtolower($k);
-                    $this->parts[$name][] = $parser->parse($part);
+                    $parser->parse($part);
                 break;
                 case 'limit':
                     $this->parts['limit'] = trim($part);
@@ -898,7 +897,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                 if ($loadFields && empty($this->pendingFields) 
                     && empty($this->pendingAggregates)
                     && empty($this->pendingSubqueries)) {
-                                                        	
+
                     $this->pendingFields[$componentAlias] = array('*');
 
                     $restoreState = true;
@@ -918,6 +917,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                 }
             }
         }
+        return end($this->_aliasMap);
     }
     /**
      * loadRoot
@@ -959,7 +959,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
     {
 		$oldParts = $this->parts;
 
-		$this->remove('select');
 		$join  = $this->join;
 		$where = $this->where;
 		$having = $this->having;
@@ -973,18 +972,11 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
             $q .= ' '.implode(' ',$j);
 		}
         $string = $this->applyInheritance();
-
-        if( ! empty($where)) {
-            $q .= ' WHERE ' . implode(' AND ', $where);
-            if( ! empty($string))
-                $q .= ' AND (' . $string . ')';
-        } else {
-            if( ! empty($string))
-                $q .= ' WHERE (' . $string . ')';
+        if ( ! empty($string)) {
+            $where[] = $string;
         }
-			
-		if( ! empty($having))
-			$q .= ' HAVING ' . implode(' AND ',$having);
+        $q .= ( ! empty($where)) ?  ' WHERE '  . implode(' AND ', $where) : '';
+		$q .= ( ! empty($having)) ? ' HAVING ' . implode(' AND ', $having): '';
 
         if( ! is_array($params)) {
             $params = array($params);
@@ -992,7 +984,6 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
 
         $params = array_merge($this->params, $params);
 
-		$this->parts = $oldParts;
 		return (int) $this->getConnection()->fetchOne($q, $params);
 	}
     /**
@@ -1136,7 +1127,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public function leftJoin($join)
     {
-        return $this->getParser('from')->parse('LERT JOIN ' . $join);
+        return $this->getParser('from')->parse('LEFT JOIN ' . $join);
     }
     /**
      * groupBy
@@ -1187,12 +1178,12 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      * orderBy
      * sets the ORDER BY part of the query
      *
-     * @param string $groupby      DQL ORDER BY part
+     * @param string $orderby      DQL ORDER BY part
      * @return Doctrine_Query
      */
-    public function orderBy($dql)
+    public function orderBy($orderby)
     {
-        return $this->getParser('orderby')->parse($dql);
+        return $this->getParser('orderby')->parse($orderby);
     }
     /**
      * limit
@@ -1203,7 +1194,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public function limit($limit)
     {
-        return $this->getParser('limit')->parse($dql);
+        return $this->getParser('limit')->parse($limit);
     }
     /**
      * offset
@@ -1212,9 +1203,9 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      * @param integer $offset       offset to be used for paginating the query
      * @return Doctrine_Query
      */
-    public function offset($dql)
+    public function offset($offset)
     {
-        return $this->getParser('offset')->parse($dql);
+        return $this->getParser('offset')->parse($offset);
     }
 }
 

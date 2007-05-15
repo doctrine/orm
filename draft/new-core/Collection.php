@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload("Doctrine_Access");
+Doctrine::autoload('Doctrine_Access');
 /**
  * Doctrine_Collection
  * Collection of Doctrine_Record objects.
@@ -62,7 +62,6 @@ class Doctrine_Collection2 extends Doctrine_Collection implements Countable, Ite
      */
     protected static $null;
 
-    protected $aggregateValues = array();
 
     /**
      * constructor
