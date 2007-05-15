@@ -192,11 +192,11 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $q->from('User.Phonenumber');
         $q->where('User.name = ?');
         $q->limit(5);
-        print $q;
+
         $users = $q->execute(array('zYne'));
         
         $this->assertEqual($users->count(), 1);
-        $this->connection->flush();
+        //$this->connection->flush();
     }
     public function testLimitWithManyToManyColumnAggInheritanceLeftJoin() 
     {
@@ -204,7 +204,6 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $q->from('User.Group')->limit(5);
 
         $users = $q->execute();
- 
 
         $this->assertEqual($users->count(), 5);
         
@@ -219,7 +218,8 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $user3->Group = $user->Group;
 
         $this->assertEqual($user->Group[0]->name, "Action Actors");
-        
+        $this->assertEqual(count($user->Group), 3);
+
         $this->connection->flush();
 
         $this->assertEqual($user->Group[0]->name, "Action Actors");
@@ -236,8 +236,8 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users->count(), 3);
 
         $this->connection->clear();
-        $q = new Doctrine_Query();
-        $q->from("User")->where("User.Group.id = ?")->orderby("User.id DESC");
+        $q = new Doctrine_Query2();
+        $q->from('User')->where('User.Group.id = ?')->orderby('User.id DESC');
         $users = $q->execute(array($user->Group[1]->id));
 
         $this->assertEqual($users->count(), 3);
@@ -287,6 +287,5 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($q->getQuery(), 
         "SELECT p.id AS p__id, p.name AS p__name FROM photo p LEFT JOIN phototag p2 ON p.id = p2.photo_id LEFT JOIN tag t ON t.id = p2.tag_id WHERE p.id IN (SELECT DISTINCT p3.id FROM photo p3 LEFT JOIN phototag p4 ON p3.id = p4.photo_id LEFT JOIN tag t2 ON t2.id = p4.tag_id WHERE t2.id = ? ORDER BY p3.id DESC LIMIT 100) AND t.id = ? ORDER BY p.id DESC");
     }
-
 }
 ?>

@@ -88,7 +88,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public static function create()
     {
-        return new Doctrine_Query();
+        return new Doctrine_Query2();
     }
     /**
      * isSubquery
@@ -604,7 +604,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                 if ( ! in_array($e[3], $this->subqueryAliases) &&
                      ! in_array($e[2], $this->subqueryAliases)) {
                     continue;
-                } 
+                }
             }
 
             $subquery .= ' ' . $part;
@@ -789,8 +789,8 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
             $path = $e[0];
         }
 
-        $tmp            = explode(' ', $path);
-        $componentAlias = (count($tmp) > 1) ? end($tmp) : false;
+        $tmp           = explode(' ', $path);
+        $originalAlias = (count($tmp) > 1) ? end($tmp) : null;
 
         $e = preg_split("/[.:]/", $tmp[0], -1);
 
@@ -814,26 +814,28 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
             $delimeter = substr($fullPath, $length, 1);
 
             // if an alias is not given use the current path as an alias identifier
-            if (strlen($prevPath) !== $fullLength || ! $componentAlias) {
+            if (strlen($prevPath) === $fullLength && isset($originalAlias)) {
+                $componentAlias = $originalAlias;
+            } else {
                 $componentAlias = $prevPath;
             }
 
             if ( ! isset($table)) {
                 // process the root of the path
+
                 $table = $this->loadRoot($name, $componentAlias);
             } else {
-
-    
                 $join = ($delimeter == ':') ? 'INNER JOIN ' : 'LEFT JOIN ';
 
                 $relation = $table->getRelation($name);
+
                 $this->_aliasMap[$componentAlias] = array('table'    => $relation->getTable(),
                                                           'parent'   => $parent,
                                                           'relation' => $relation);
-                if( ! $relation->isOneToOne()) {
+                if ( ! $relation->isOneToOne()) {
                    $this->needsSubquery = true;
                 }
-  
+
                 $localAlias   = $this->getShortAlias($parent, $table->getTableName());
                 $foreignAlias = $this->getShortAlias($componentAlias, $relation->getTable()->getTableName());
                 $localSql     = $this->conn->quoteIdentifier($table->getTableName()) . ' ' . $localAlias;
@@ -880,6 +882,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                     }
 
                 } else {
+
                     $queryPart = $join . $foreignSql
                                        . ' ON ' . $localAlias .  '.'
                                        . $relation->getLocal() . ' = ' . $foreignAlias . '.' . $relation->getForeign()
@@ -913,6 +916,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                     $this->pendingAggregates = array();
                 }
             }
+            $parent = $prevPath;
         }
         return end($this->_aliasMap);
     }
@@ -1020,7 +1024,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public function query($query, $params = array())
     {
-        $this->_parser->parseQuery($query);
+        $this->parseQuery($query);
 
         return $this->execute($params);
     }
