@@ -162,6 +162,14 @@ class Doctrine_Hydrate2
         }
         $this->parts[$name][] = $part;
     }
+    public function getDeclaration($name) 
+    {
+    	if ( ! isset($this->_aliasMap[$name])) {
+            throw new Doctrine_Hydrate_Exception('Unknown component alias ' . $name);
+    	}
+    	
+    	return $this->_aliasMap[$name];
+    }
     public function setQueryPart($name, $part)
     {
         if ( ! isset($this->parts[$name])) {

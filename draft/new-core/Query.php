@@ -454,7 +454,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
 
             if ( ! empty($e2)) {
                 $parser = new Doctrine_Query_JoinCondition($this);
-                $part  .= ' AND ' . $parser->parse(implode(' AND ', $e2));
+                $part  .= ' AND ' . $parser->_parse(implode(' AND ', $e2));
             }
 
             $q .= ' ' . $part;
@@ -949,42 +949,61 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
     }
 	/**
  	 * count
+ 	 * fetches the count of the query
+ 	 *
+ 	 * This method executes the main query without all the
+     * selected fields, ORDER BY part, LIMIT part and OFFSET part.
      *
-     * @param array $params
-	 * @return integer
+     * Example:
+     * Main query: 
+     *      SELECT u.*, p.phonenumber FROM User u
+     *          LEFT JOIN u.Phonenumber p 
+     *          WHERE p.phonenumber = '123 123' LIMIT 10
+     *
+     * The query this method executes: 
+     *      SELECT COUNT(DISTINCT u.id) FROM User u
+     *          LEFT JOIN u.Phonenumber p
+     *          WHERE p.phonenumber = '123 123'
+     *
+     * @param array $params        an array of prepared statement parameters
+	 * @return integer             the count of this query
      */
 	public function count($params = array())
     {
-		$oldParts = $this->parts;
+    	// initialize temporary variables
+		$where  = $this->parts['where'];
+		$having = $this->parts['having'];
+		$map    = reset($this->_aliasMap);
+		$componentAlias = key($this->_aliasMap);
+		$table = $map['table'];
 
-		$join  = $this->join;
-		$where = $this->where;
-		$having = $this->having;
-		$table  = reset($this->tables);
-
+        // build the query base
 		$q  = 'SELECT COUNT(DISTINCT ' . $this->aliasHandler->getShortAlias($table->getTableName())
             . '.' . $table->getIdentifier()
-            . ') FROM ' . $table->getTableName() . ' ' . $this->aliasHandler->getShortAlias($table->getTableName());
+            . ') FROM ' . $this->buildFromPart();
 
-		foreach($join as $j) {
-            $q .= ' '.implode(' ',$j);
-		}
+        // append column aggregation inheritance (if needed)
         $string = $this->applyInheritance();
+
         if ( ! empty($string)) {
             $where[] = $string;
         }
+        // append conditions
         $q .= ( ! empty($where)) ?  ' WHERE '  . implode(' AND ', $where) : '';
 		$q .= ( ! empty($having)) ? ' HAVING ' . implode(' AND ', $having): '';
 
-        if( ! is_array($params)) {
+        if ( ! is_array($params)) {
             $params = array($params);
         }
-
+        // append parameters
         $params = array_merge($this->params, $params);
 
 		return (int) $this->getConnection()->fetchOne($q, $params);
 	}
     /**
+     * isLimitSubqueryUsed
+     * whether or not limit subquery algorithm is used
+     *
      * @return boolean
      */
     public function isLimitSubqueryUsed() {
@@ -1099,6 +1118,31 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
     public function select($select)
     {
         return $this->getParser('select')->parse($select);
+    }
+    /**
+     * delete
+     * sets the query type to DELETE
+     *
+     * @return Doctrine_Query
+     */
+    public function delete()
+    {
+    	$this->type = self::DELETE;
+
+        return $this;
+    }
+    /**
+     * update
+     * sets the UPDATE part of the query
+     *
+     * @param string $update        DQL UPDATE part
+     * @return Doctrine_Query
+     */
+    public function update($update)
+    {
+    	$this->type = self::UPDATE;
+
+        return $this->getParser('from')->parse($update);
     }
     /**
      * from
