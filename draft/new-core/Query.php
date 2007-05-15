@@ -1123,6 +1123,33 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
         return $this->getParser('select')->parse($select);
     }
     /**
+     * distinct
+     * Makes the query SELECT DISTINCT.
+     *
+     * @param bool $flag            Whether or not the SELECT is DISTINCT (default true).
+     * @return Doctrine_Query
+     */
+    public function distinct($flag = true)
+    {
+        $this->_parts['distinct'] = (bool) $flag;
+        
+        return $this;
+    }
+
+    /**
+     * forUpdate
+     * Makes the query SELECT FOR UPDATE.
+     *
+     * @param bool $flag            Whether or not the SELECT is FOR UPDATE (default true).
+     * @return Doctrine_Query
+     */
+    public function forUpdate($flag = true)
+    {
+        $this->_parts[self::FOR_UPDATE] = (bool) $flag;
+
+        return $this;
+    }
+    /**
      * delete
      * sets the query type to DELETE
      *
