@@ -1145,6 +1145,17 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
         return $this->getParser('from')->parse($update);
     }
     /**
+     * set
+     * sets the SET part of the query
+     *
+     * @param string $update        DQL UPDATE part
+     * @return Doctrine_Query
+     */
+    public function set($key, $value)
+    {
+        return $this->getParser('set')->parse($key . ' = ' . $value);
+    }
+    /**
      * from
      * sets the FROM part of the query
      *

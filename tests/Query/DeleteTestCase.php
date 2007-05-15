@@ -35,13 +35,13 @@ class Doctrine_Query_Delete_TestCase extends Doctrine_UnitTestCase
 {
     public function testDeleteAllWithColumnAggregationInheritance() 
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->parseQuery('DELETE FROM User');
 
         $this->assertEqual($q->getQuery(), 'DELETE FROM entity WHERE (type = 0)');
 
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->delete()->from('User');
         
@@ -49,13 +49,13 @@ class Doctrine_Query_Delete_TestCase extends Doctrine_UnitTestCase
     }
     public function testDeleteAll() 
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->parseQuery('DELETE FROM Entity');
 
         $this->assertEqual($q->getQuery(), 'DELETE FROM entity');
         
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->delete()->from('Entity');
         
@@ -63,13 +63,13 @@ class Doctrine_Query_Delete_TestCase extends Doctrine_UnitTestCase
     }
     public function testDeleteWithCondition() 
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->parseQuery('DELETE FROM Entity WHERE id = 3');
 
         $this->assertEqual($q->getQuery(), 'DELETE FROM entity WHERE id = 3');
         
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->delete()->from('Entity')->where('id = 3');
         
@@ -77,13 +77,13 @@ class Doctrine_Query_Delete_TestCase extends Doctrine_UnitTestCase
     }
     public function testDeleteWithLimit() 
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->parseQuery('DELETE FROM Entity LIMIT 20');
 
         $this->assertEqual($q->getQuery(), 'DELETE FROM entity LIMIT 20');
         
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->delete()->from('Entity')->limit(20);
         
@@ -91,13 +91,13 @@ class Doctrine_Query_Delete_TestCase extends Doctrine_UnitTestCase
     }
     public function testDeleteWithLimitAndOffset() 
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->parseQuery('DELETE FROM Entity LIMIT 10 OFFSET 20');
 
         $this->assertEqual($q->getQuery(), 'DELETE FROM entity LIMIT 10 OFFSET 20');
 
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->delete()->from('Entity')->limit(10)->offset(20);
         

@@ -162,7 +162,7 @@ class Doctrine_Hydrate2
         }
         $this->parts[$name][] = $part;
     }
-    public function getDeclaration($name) 
+    public function getDeclaration($name)
     {
     	if ( ! isset($this->_aliasMap[$name])) {
             throw new Doctrine_Hydrate_Exception('Unknown component alias ' . $name);
@@ -174,8 +174,13 @@ class Doctrine_Hydrate2
     {
         if ( ! isset($this->parts[$name])) {
             throw new Doctrine_Hydrate_Exception('Unknown query part ' . $name);
+        }       
+
+        if ($name !== 'limit' && $name !== 'offset') {
+            $this->parts[$name] = array($part);
+        } else {
+            $this->parts[$name] = $part;
         }
-        $this->parts[$name] = array($part);
     }
     /**
      * copyAliases
@@ -249,16 +254,17 @@ class Doctrine_Hydrate2
     {
         $this->tables       = array();
         $this->parts = array(
-                  "select"    => array(),
-                  "from"      => array(),
-                  "join"      => array(),
-                  "where"     => array(),
-                  "groupby"   => array(),
-                  "having"    => array(),
-                  "orderby"   => array(),
-                  "limit"     => false,
-                  "offset"    => false,
-                );
+                    'select'    => array(),
+                    'from'      => array(),
+                    'set'       => array(),
+                    'join'      => array(),
+                    'where'     => array(),
+                    'groupby'   => array(),
+                    'having'    => array(),
+                    'orderby'   => array(),
+                    'limit'     => false,
+                    'offset'    => false,
+                    );
         $this->inheritanceApplied = false;
         $this->tableAliases     = array();
         $this->aliasHandler->clear();
