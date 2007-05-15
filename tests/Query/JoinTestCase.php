@@ -58,7 +58,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
     }
     public function testRecordHydrationWorksWithDeeplyNestedStructures()
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->select('c.*, c2.*, d.*')
           ->from('Record_Country c')->leftJoin('c.City c2')->leftJoin('c2.District d')
@@ -77,7 +77,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
     }
     public function testManyToManyJoinUsesProperTableAliases()
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->select('u.name')->from('User u INNER JOIN u.Group g');
 
@@ -86,7 +86,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
 
     public function testSelfReferentialAssociationJoinsAreSupported()
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->select('e.name')->from('Entity e INNER JOIN e.Entity e2');
         

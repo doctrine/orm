@@ -876,7 +876,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                                                . $joinCondition;
 
                     if ($relation instanceof Doctrine_Relation_Association_Self) {
-                        $queryPart .= ' OR ' . $foreignTable  . '.' . $table->getIdentifier() . ' = '
+                        $queryPart .= ' OR ' . $foreignAlias  . '.' . $table->getIdentifier() . ' = '
                                              . $assocAlias . '.' . $relation->getLocal();
                     }
 
