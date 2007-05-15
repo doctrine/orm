@@ -166,7 +166,7 @@ class Doctrine_Hydrate2
     {
         if ( ! isset($this->parts[$name])) {
             throw new Doctrine_Hydrate_Exception('Unknown query part ' . $name);
-        }                         
+        }
         $this->parts[$name] = array($part);
     }
     /**
@@ -174,9 +174,8 @@ class Doctrine_Hydrate2
      *
      * @return void
      */
-    public function copyAliases(Doctrine_Hydrate $query)
+    public function copyAliases($query)
     {
-        $this->tableAliases = $query->getTableAliases();
         $this->aliasHandler = $query->aliasHandler;
 
         return $this;
@@ -307,9 +306,11 @@ class Doctrine_Hydrate2
     /**
      * _fetch
      *
-     *
+     * @param array $params                 prepared statement parameters
+     * @param integer $fetchMode            the fetchmode
+     * @see Doctrine::FETCH_* constants
      */
-    public function _fetch($params = array(), $return = Doctrine::FETCH_RECORD)
+    public function _fetch($params = array(), $fetchMode = Doctrine::FETCH_RECORD)
     {
         $params = $this->conn->convertBooleans(array_merge($this->params, $params));
 
@@ -319,7 +320,7 @@ class Doctrine_Hydrate2
             $query = $this->view->getSelectSql();
         }
 
-        if ($this->isLimitSubqueryUsed() && 
+        if ($this->isLimitSubqueryUsed() &&
             $this->conn->getDBH()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
             
             $params = array_merge($params, $params);
@@ -374,7 +375,7 @@ class Doctrine_Hydrate2
      */
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD) 
     {
-        $array = (array) $this->_fetch($params = array(), $return = Doctrine::FETCH_RECORD);
+        $array = (array) $this->_fetch($params, $return = Doctrine::FETCH_RECORD);
 
         if (empty($this->_aliasMap)) {
             throw new Doctrine_Hydrate_Exception("Couldn't execute query. Component alias map was empty.");

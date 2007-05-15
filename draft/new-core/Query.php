@@ -316,14 +316,12 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
             list($dql, $alias) = $value;
 
             $sql = $this->createSubquery()->parseQuery($dql, false)->getQuery();
-            
-            reset($this->tableAliases);
-            
-            $tableAlias = current($this->tableAliases);
 
-            reset($this->compAliases);
-            
-            $componentAlias = key($this->compAliases);
+
+
+            reset($this->_aliasMap);
+            $componentAlias = key($this->_aliasMap);
+            $tableAlias = $this->getTableAlias($componentAlias);
 
             $sqlAlias = $tableAlias . '__' . count($this->aggregateMap);
     
@@ -1045,7 +1043,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public function addWhere($where, $params = array())
     {
-        if(is_array($params)) {
+        if (is_array($params)) {
             $this->params = array_merge($this->params, $params);
         } else {
             $this->params[] = $params;
@@ -1068,10 +1066,16 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      * adds conditions to the HAVING part of the query
      *
      * @param string $having        DQL HAVING part
+     * @param mixed $params         an array of parameters or a simple scalar
      * @return Doctrine_Query
      */
-    public function addHaving($having)
+    public function addHaving($having, $params = array())
     {
+        if (is_array($params)) {
+            $this->params = array_merge($this->params, $params);
+        } else {
+            $this->params[] = $params;
+        }
         return $this->getParser('having')->parse($having, true);
     }
     /**
@@ -1150,11 +1154,8 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public function where($where, $params = array())
     {
-        if(is_array($params)) {
-            $this->params = array_merge($this->params, $params);
-        } else {
-            $this->params[] = $params;
-        }
+        $this->params = (array) $params;
+
         return $this->getParser('where')->parse($where);
     }
     /**
@@ -1167,11 +1168,8 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public function having($having, $params)
     {
-        if(is_array($params)) {
-            $this->params = array_merge($this->params, $params);
-        } else {
-            $this->params[] = $params;
-        }
+        $this->params = (array) $params;
+        
         return $this->getParser('having')->parse($having);
     }
     /**
