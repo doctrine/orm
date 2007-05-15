@@ -34,13 +34,17 @@ Doctrine::autoload('Doctrine_Access');
 class Doctrine_Collection2 extends Doctrine_Collection implements Countable, IteratorAggregate, Serializable
 {
     /**
-     * @var array $data                     an array containing the data access objects of this collection
+     * @var array $data                     an array containing the records of this collection
      */
     protected $data = array();
     /**
      * @var Doctrine_Table $table           each collection has only records of specified table
      */
     protected $_table;
+    /**
+     * @var array $_snapshot                a snapshot of the fetched data
+     */
+    protected $_snapshot = array();
     /**
      * @var Doctrine_Record $reference      collection can belong to a record
      */
@@ -150,13 +154,16 @@ class Doctrine_Collection2 extends Doctrine_Collection implements Countable, Ite
     }
     /**
      * setKeyColumn
+     * sets the key column for this collection
      *
      * @param string $column
-     * @return void
+     * @return Doctrine_Collection
      */
     public function setKeyColumn($column)
     {
         $this->keyColumn = $column;
+        
+        return $this;
     }
     /**
      * getKeyColumn
@@ -169,6 +176,7 @@ class Doctrine_Collection2 extends Doctrine_Collection implements Countable, Ite
         return $this->column;
     }
     /**
+     * getData
      * returns all the records as an array
      *
      * @return array
@@ -176,13 +184,6 @@ class Doctrine_Collection2 extends Doctrine_Collection implements Countable, Ite
     public function getData()
     {
         return $this->data;
-    }
-    /**
-     * @param array $data
-     */
-    public function addData(array $data)
-    {
-        $this->data[] = $data;
     }
     /**
      * getFirst
@@ -467,9 +468,7 @@ class Doctrine_Collection2 extends Doctrine_Collection implements Countable, Ite
             }
         } elseif ($rel instanceof Doctrine_Relation_ForeignKey) {
             foreach ($this->data as $key => $record) {
-                if ($record->state() == Doctrine_Record::STATE_TCLEAN
-                   || $record->state() == Doctrine_Record::STATE_TDIRTY
-                ) {
+                if ( ! $record->exists()) {
                     continue;
                 }
                 $sub = new Doctrine_Collection($table);
@@ -489,9 +488,7 @@ class Doctrine_Collection2 extends Doctrine_Collection implements Countable, Ite
             $name       = $table->getComponentName();
 
             foreach ($this->data as $key => $record) {
-                if ($record->state() == Doctrine_Record::STATE_TCLEAN
-                   || $record->state() == Doctrine_Record::STATE_TDIRTY
-                ) {
+                if ( ! $record->exists()) {
                     continue;
                 }
                 $sub = new Doctrine_Collection($table);
@@ -516,10 +513,64 @@ class Doctrine_Collection2 extends Doctrine_Collection implements Countable, Ite
         return new Doctrine_Collection_Iterator_Normal($this);
     }
     /**
+     * takeSnapshot
+     * takes a snapshot from this collection
+     *
+     * snapshots are used for diff processing, for example
+     * when a fetched collection has three elements, then two of those
+     * are being removed the diff would contain one element
+     *
+     * Doctrine_Collection::save() attaches the diff with the help of last
+     * snapshot.
+     *
+     * @return Doctrine_Collection
+     */
+    public function takeSnapshot()
+    {
+        $this->_snapshot = $this->data;
+        
+        return $this;
+    }
+    /**
+     * getSnapshot
+     * returns the data of the last snapshot
+     *
+     * @return array    returns the data in last snapshot
+     */
+    public function getSnapshot()
+    {
+        return $this->_snapshot;
+    }
+    /**
+     * processDiff
+     * processes the difference of the last snapshot and the current data
+     *
+     * an example:
+     * Snapshot with the objects 1, 2 and 4
+     * Current data with objects 2, 3 and 5
+     *
+     * The process would:
+     * 1. remove object 4
+     * 2. add objects 3 and 5
+     *
+     * @return Doctrine_Collection
+     */
+    public function processDiff() 
+    {
+        foreach (array_diff($this->snapshot, $this->data) as $record) {
+            $record->delete();
+        }
+        foreach (array_diff($this->data, $this->snapshot) as $record) {
+            $record->save();
+        }
+        
+        return $this;
+    }
+    /**
      * save
      * saves all records of this collection
      *
-     * @return void
+     * @return Doctrine_Collection
      */
     public function save(Doctrine_Connection $conn = null)
     {
@@ -533,13 +584,16 @@ class Doctrine_Collection2 extends Doctrine_Collection implements Countable, Ite
         }
 
         $conn->commit();
+        
+        return $this;
     }
     /**
+     * delete
      * single shot delete
      * deletes all records from this collection
      * and uses only one database query to perform this operation
      *
-     * @return boolean
+     * @return Doctrine_Collection
      */
     public function delete(Doctrine_Connection $conn = null)
     {
@@ -556,6 +610,8 @@ class Doctrine_Collection2 extends Doctrine_Collection implements Countable, Ite
         $conn->commit();
 
         $this->data = array();
+        
+        return $this;
     }
     /**
      * getIterator
