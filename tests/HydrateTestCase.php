@@ -86,6 +86,7 @@ class Doctrine_Hydrate_TestCase extends Doctrine_UnitTestCase
             $this->pass();
         }
     }
+    /**
     public function testHydrate() 
     {
         $h = new Doctrine_Hydrate_Mock();
@@ -108,6 +109,7 @@ class Doctrine_Hydrate_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($coll[3]->Phonenumber->count(), 0);
         $this->assertEqual(count($this->dbh), $count);
     }
+    */
 }
 class Doctrine_Hydrate_Mock extends Doctrine_Hydrate2
 {

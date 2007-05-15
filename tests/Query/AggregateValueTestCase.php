@@ -36,7 +36,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
     { 
     }
 
-    
+
     public function testInitData() 
     {
         $users = new Doctrine_Collection('User');
@@ -77,7 +77,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
     }
     public function testAggregateValueIsMappedToNewRecordOnEmptyResultSet() 
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->select('COUNT(u.id) count')->from('User u');
     
@@ -86,12 +86,12 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users->count(), 1);
         $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_TCLEAN);
     }
-    public function testAggregateValueIsMappedToRecord() 
+    public function testAggregateValueIsMappedToRecord()
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->select('u.name, COUNT(u.id) count')->from('User u')->groupby('u.name');
-    
+
         $users = $q->execute();
 
         $this->assertEqual($users->count(), 2);
@@ -102,9 +102,10 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users[0]->count, 2);
         $this->assertEqual($users[1]->count, 2);
     }
+
     public function testAggregateValueMappingSupportsLeftJoins() 
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->select('u.name, COUNT(p.id) count')->from('User u')->leftJoin('u.Phonenumber p')->groupby('u.id');
     
@@ -119,18 +120,18 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
     }
     public function testAggregateValueMappingSupportsLeftJoins2()
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->select('MAX(u.name)')->from('User u')->leftJoin('u.Phonenumber p')->groupby('u.id');
 
         $this->assertEqual($q->getQuery(), 'SELECT MAX(e.name) AS e__0 FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0) GROUP BY e.id');
         $users = $q->execute();
 
-        $this->assertEqual($users->count(), 1);
+        $this->assertEqual($users->count(), 2);
     }
     public function testAggregateValueMappingSupportsMultipleValues()
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->select('u.name, COUNT(p.id) count, MAX(p.id) max')->from('User u')->innerJoin('u.Phonenumber p')->groupby('u.id');
 
@@ -140,7 +141,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
     }
     public function testAggregateValueMappingSupportsInnerJoins() 
     {
-        $q = new Doctrine_Query();
+        $q = new Doctrine_Query2();
 
         $q->select('u.name, COUNT(p.id) count')->from('User u')->innerJoin('u.Phonenumber p')->groupby('u.id');
 
