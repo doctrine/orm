@@ -340,12 +340,11 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
     {
         $tableAlias = $this->getTableAlias($componentAlias);
 
-        if ( ! isset($this->tables[$tableAlias])) {
-            throw new Doctrine_Query_Exception('Unknown component path ' . $componentAlias);
-        }
-        
-        $root       = current($this->tables);
-        $table      = $this->tables[$tableAlias];
+        reset($this->_aliasMap);
+        $map   = current($this->tables);
+        $root  = $map['table'];
+        $table = $this->_aliasMap[$componentAlias]['table'];
+
         $aggregates = array();
 
         if(isset($this->pendingAggregates[$componentAlias])) {
@@ -369,8 +368,8 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                 if (is_numeric($arg)) {
                     $arglist[]  = $arg;
                 } elseif (count($e) > 1) {
-                    //$tableAlias = $this->getTableAlias($e[0]);
-                    $table      = $this->tables[$tableAlias];
+                    $map    = $this->_aliasMap[$e[0]];
+                    $table  = $map['table'];
 
                     $e[1]       = $table->getColumnName($e[1]);
 
@@ -896,7 +895,10 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                              	
                 $restoreState = false;
                 // load fields if necessary
-                if ($loadFields && empty($this->pendingFields)) {
+                if ($loadFields && empty($this->pendingFields) 
+                    && empty($this->pendingAggregates)
+                    && empty($this->pendingSubqueries)) {
+                                                        	
                     $this->pendingFields[$componentAlias] = array('*');
 
                     $restoreState = true;
@@ -906,13 +908,13 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
                     $this->processPendingFields($componentAlias);
                 }
 
-                if ($restoreState) {
-                    $this->pendingFields = array();
-                }
-
-
                 if(isset($this->pendingAggregates[$componentAlias]) || isset($this->pendingAggregates[0])) {
                     $this->processPendingAggregates($componentAlias);
+                }
+
+                if ($restoreState) {
+                    $this->pendingFields = array();
+                    $this->pendingAggregates = array();
                 }
             }
         }
