@@ -477,10 +477,11 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
 
         $needsSubQuery = false;
         $subquery = '';
-        $k  = array_keys($this->_aliasMap);
-        $table = $this->_aliasMap[$k[0]]['table'];
+        $map   = reset($this->_aliasMap);
+        $table = $map['table'];
+        $rootAlias = key($this->_aliasMap);
 
-        if( ! empty($this->parts['limit']) && $this->needsSubquery && $table->getAttribute(Doctrine::ATTR_QUERY_LIMIT) == Doctrine::LIMIT_RECORDS) {
+        if ( ! empty($this->parts['limit']) && $this->needsSubquery && $table->getAttribute(Doctrine::ATTR_QUERY_LIMIT) == Doctrine::LIMIT_RECORDS) {
             $needsSubQuery = true;
             $this->limitSubqueryUsed = true;
         }
@@ -491,7 +492,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
         // build the basic query
 
         $str = '';
-        if($this->isDistinct()) {
+        if ($this->isDistinct()) {
             $str = 'DISTINCT ';
         }
 
@@ -512,26 +513,26 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
         $modifyLimit = true;
         if ( ! empty($this->parts["limit"]) || ! empty($this->parts["offset"])) {
 
-            if($needsSubQuery) {
+            if ($needsSubQuery) {
                 $subquery = $this->getLimitSubquery();
 
 
-                switch(strtolower($this->conn->getName())) {
+                switch (strtolower($this->conn->getName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
                         $list     = $this->conn->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
                         $subquery = implode(', ', $list);
-                    break;
+                        break;
                     case 'pgsql':
                         // pgsql needs special nested LIMIT subquery
                         $subquery = 'SELECT doctrine_subquery_alias.' . $table->getIdentifier(). ' FROM (' . $subquery . ') AS doctrine_subquery_alias';
-                    break;
+                        break;
                 }
 
-                $field    = $this->aliasHandler->getShortAlias($table->getTableName()) . '.' . $table->getIdentifier();
+                $field = $this->aliasHandler->getShortAlias($rootAlias) . '.' . $table->getIdentifier();
 
                 // only append the subquery if it actually contains something
-                if($subquery !== '') {
+                if ($subquery !== '') {
                     array_unshift($this->parts['where'], $field. ' IN (' . $subquery . ')');
                 }
 
@@ -569,11 +570,12 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public function getLimitSubquery()
     {
-        $k          = array_keys($this->tables);
-        $table      = $this->tables[$k[0]];
+        $map    = reset($this->_aliasMap);
+        $table  = $map['table'];
+        $componentAlias = key($this->_aliasMap);
 
         // get short alias
-        $alias      = $this->aliasHandler->getShortAlias($table->getTableName());
+        $alias      = $this->aliasHandler->getShortAlias($componentAlias);
         $primaryKey = $alias . '.' . $table->getIdentifier();
 
         // initialize the base of the subquery
@@ -592,23 +594,20 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
             }
         }
 
-        $subquery .= ' FROM ' . $this->conn->quoteIdentifier($table->getTableName()) . ' ' . $alias;
+        $subquery .= ' FROM';
 
-        foreach ($this->parts['join'] as $parts) {
-            foreach ($parts as $part) {
-                // preserve LEFT JOINs only if needed
-                if (substr($part,0,9) === 'LEFT JOIN') {
-                    $e = explode(' ', $part);
+        foreach ($this->parts['from'] as $part) {
+            // preserve LEFT JOINs only if needed
+            if (substr($part,0,9) === 'LEFT JOIN') {
+                $e = explode(' ', $part);
 
-                    if ( ! in_array($e[3], $this->subqueryAliases) &&
-                         ! in_array($e[2], $this->subqueryAliases)) {
-                        continue;
-                    }
-
-                }
-
-                $subquery .= ' ' . $part;
+                if ( ! in_array($e[3], $this->subqueryAliases) &&
+                     ! in_array($e[2], $this->subqueryAliases)) {
+                    continue;
+                } 
             }
+
+            $subquery .= ' ' . $part;
         }
 
         // all conditions must be preserved in subquery
