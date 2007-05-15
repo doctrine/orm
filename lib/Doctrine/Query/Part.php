@@ -50,6 +50,7 @@ abstract class Doctrine_Query_Part
     {
         return $this->query;
     }
+    /**
     public function parse($dql, $append = false)
     {
         $e = explode(' ', __CLASS__);
@@ -58,4 +59,5 @@ abstract class Doctrine_Query_Part
         $this->query->addDqlPart($name, $dql);
         $this->_parse($dql);
     }
+    */
 }
