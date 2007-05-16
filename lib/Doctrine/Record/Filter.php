@@ -38,6 +38,11 @@ class Doctrine_Record_Filter
      */
     protected $_record;
     /**
+     * @var Doctrine_Null $null             a Doctrine_Null object used for extremely fast
+     *                                      null value testing
+     */
+    private static $null;
+    /**
      * constructor
      *
      * @param Doctrine_Record $_record      the record object this filter belongs to
