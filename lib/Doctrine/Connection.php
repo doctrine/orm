@@ -492,7 +492,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         // prepare and execute the statement
         $this->execute($query, array_values($values));
-
+          print $query . '(' . implode(', ', $values) . ")<br>";
         return true;
     }
     /**

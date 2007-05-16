@@ -162,22 +162,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                     }
                 }
 
-            } elseif ($fk instanceof Doctrine_Relation_Association) {
-                $assocTable = $fk->getAssociationTable();
-                foreach ($v->getDeleteDiff() as $r) {
-                    $query = 'DELETE FROM ' . $assocTable->getTableName()
-                           . ' WHERE '      . $fk->getForeign() . ' = ?'
-                           . ' AND '        . $fk->getLocal()   . ' = ?';
-                    $this->query($r->getIncremented(), $record->getIncremented());
-                }
-                foreach ($v->getInsertDiff as $r) {
-                    $assocRecord = $assocTable->create();
-                    $assocRecord->set($fk->getForeign(), $r);
-                    $assocRecord->set($fk->getLocal(), $record);
-                    $assocRecord->save($this->conn);
-                }
-
-                $v->save($this->conn);
             }
         }
         return $saveLater;
@@ -199,11 +183,27 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function saveAssociations(Doctrine_Record $record)
     {
-        foreach ($record->getTable()->getRelations() as $rel) {
-            $table = $rel->getTable();
-            $alias = $rel->getAlias();
+        foreach ($record->getReferences() as $k => $v) {
+            $rel = $record->getTable()->getRelation($k);
             
+            if ($rel instanceof Doctrine_Relation_Association) {
+                $v->save($this->conn);
 
+                $assocTable = $rel->getAssociationTable();
+                foreach ($v->getDeleteDiff() as $r) {
+                    $query = 'DELETE FROM ' . $assocTable->getTableName()
+                           . ' WHERE ' . $rel->getForeign() . ' = ?'
+                           . ' AND ' . $rel->getLocal() . ' = ?';
+
+                    $this->query($r->getIncremented(), $record->getIncremented());
+                }
+                foreach ($v->getInsertDiff() as $r) {
+                    $assocRecord = $assocTable->create();
+                    $assocRecord->set($rel->getForeign(), $r);
+                    $assocRecord->set($rel->getLocal(), $record);
+                    $assocRecord->save($this->conn);
+                }
+            }
         }
     }
     /**

@@ -400,11 +400,10 @@ class Doctrine_Hydrate
         $rootAlias   = key($this->_aliasMap);
         $coll        = new Doctrine_Collection($rootMap['table']);
         $prev[$rootAlias] = $coll;
-        
+
         // we keep track of all the collections
         $colls   = array();
-        $colls[] = $coll;
-
+        $colls[] = $coll;      print_r($array);
         $prevRow = array();
         /**
          * iterate over the fetched data
