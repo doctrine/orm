@@ -549,26 +549,22 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * Snapshot with the objects 1, 2 and 4
      * Current data with objects 2, 3 and 5
      *
-     * The process would:
-     * 1. remove object 4
-     * 2. add objects 3 and 5
+     * The process would remove object 4
      *
      * @return Doctrine_Collection
      */
     public function processDiff() 
     {
-        foreach (array_diff($this->snapshot, $this->data) as $record) {
+        foreach (array_diff($this->_snapshot, $this->data) as $record) {   
             $record->delete();
         }
-        foreach (array_diff($this->data, $this->snapshot) as $record) {
-            $record->save();
-        }
-        
+
         return $this;
     }
     /**
      * save
-     * saves all records of this collection
+     * saves all records of this collection and processes the 
+     * difference of the last snapshot and the current data
      *
      * @return Doctrine_Collection
      */
@@ -578,6 +574,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $conn = $this->_table->getConnection();
         }
         $conn->beginTransaction();
+
+        $this->processDiff();
 
         foreach ($this as $key => $record) {
             $record->save($conn);

@@ -112,10 +112,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private $references     = array();
     /**
-     * @var array $originals                an array containing all the original references
-     */
-    private $originals      = array();
-    /**
      * @var integer $index                  this index is used for creating object identifiers
      */
     private static $index   = 1;
@@ -1176,19 +1172,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return new Doctrine_Record_Iterator($this);
     }
     /**
-     * getOriginals
-     * returns an original collection of related component
-     *
-     * @return Doctrine_Collection|false
-     */
-    public function obtainOriginals($name)
-    {
-        if (isset($this->originals[$name])) {
-            return $this->originals[$name];
-        }
-        return false;
-    }
-    /**
      * deletes this data access object and all the related composites
      * this operation is isolated by a transaction
      *
@@ -1267,17 +1250,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
     }
     /**
-     * assignOriginals
-     *
-     * @param string $alias
-     * @param Doctrine_Collection $coll
-     * @return void
-     */
-    public function assignOriginals($alias, Doctrine_Collection $coll)
-    {
-        $this->originals[$alias] = $coll;
-    }
-    /**
      * returns the primary keys of this object
      *
      * @return array
@@ -1334,36 +1306,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         throw new Doctrine_Record_Exception("Unknown reference $name");
     }
     /**
-     * initalizes a one-to-many / many-to-many relation
-     *
-     * @param Doctrine_Collection $coll
-     * @param Doctrine_Relation $connector
-     * @return boolean
-     */
-    public function initReference($coll, Doctrine_Relation $connector)
-    {
-        $alias = $connector->getAlias();
-
-        if (isset($this->references[$alias])) {
-            return false;
-        }
-        if ( ! $connector->isOneToOne()) {
-            if ( ! ($connector instanceof Doctrine_Relation_Association)) {
-                $coll->setReference($this, $connector);
-            }
-            $this->references[$alias] = $coll;
-            $this->originals[$alias]  = clone $coll;
-
-            return true;
-        }
-        return false;
-    }
-
-    public function lazyInitRelated(Doctrine_Collection $coll, Doctrine_Relation $connector)
-    {
-
-    }
-    /**
      * addReference
      * @param Doctrine_Record $record
      * @param mixed $key
@@ -1374,7 +1316,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $alias = $connector->getAlias();
 
         $this->references[$alias]->add($record, $key);
-        $this->originals[$alias]->add($record, $key);
     }
     /**
      * getReferences
@@ -1393,7 +1334,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     final public function setRelated($alias, Doctrine_Access $coll)
     {
         $this->references[$alias] = $coll;
-        $this->originals[$alias]  = $coll;
     }
     /**
      * loadReference
@@ -1410,12 +1350,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         if ($fk->isOneToOne()) {
             $this->references[$name] = $fk->fetchRelatedFor($this);
-
         } else {
             $coll = $fk->fetchRelatedFor($this);
 
             $this->references[$name] = $coll;
-            $this->originals[$name]  = clone $coll;
         }
     }
     /**

@@ -140,10 +140,10 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
     public function saveRelated(Doctrine_Record $record)
     {
         $saveLater = array();
-        foreach ($record->getReferences() as $k=>$v) {
+        foreach ($record->getReferences() as $k => $v) {
             $fk = $record->getTable()->getRelation($k);
             if ($fk instanceof Doctrine_Relation_ForeignKey ||
-               $fk instanceof Doctrine_Relation_LocalKey) {
+                $fk instanceof Doctrine_Relation_LocalKey) {
                 $local = $fk->getLocal();
                 $foreign = $fk->getForeign();
 
@@ -157,8 +157,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                     // ONE-TO-ONE relationship
                     $obj = $record->get($fk->getAlias());
 
-                    $state = $obj->state();
-                    if ( !($state == Doctrine_Record::STATE_CLEAN || $state == Doctrine_Record::STATE_TCLEAN) ) {
+                    if ($obj->exists()) {
                         $obj->save($this->conn);
                     }
                 }
@@ -189,8 +188,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
         foreach ($record->getTable()->getRelations() as $rel) {
             $table   = $rel->getTable();
             $alias   = $rel->getAlias();
-
-            $rel->processDiff($record, $this->conn);
         }
     }
     /**

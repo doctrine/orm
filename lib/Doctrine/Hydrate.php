@@ -447,7 +447,7 @@ class Doctrine_Hydrate
 
                     if ($alias == $rootAlias) {
                         // add record into root collection
-    
+
                         if ($identifiable) {
                             $coll->add($record);
                             unset($prevRow);
@@ -499,8 +499,8 @@ class Doctrine_Hydrate
             }
         }
         // take snapshots from all initialized collections
-        foreach(array_unique($colls) as $coll) {
-            $coll->takeSnapshot();
+        foreach(array_unique($colls) as $c) {
+            $c->takeSnapshot();
         }
 
         return $coll;
