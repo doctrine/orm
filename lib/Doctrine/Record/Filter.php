@@ -56,6 +56,46 @@ class Doctrine_Record_Filter
         return $this->_record;
     }
     /**
+     * initNullObject
+     *
+     * @param Doctrine_Null $null
+     * @return void
+     */
+    public static function initNullObject(Doctrine_Null $null)
+    {
+        self::$null = $null;
+    }
+    /**
+     * setDefaultValues
+     * sets the default values for records internal data
+     *
+     * @param boolean $overwrite                whether or not to overwrite the already set values
+     * @return boolean
+     */
+    public function assignDefaultValues($data, $overwrite = false)
+    {
+    	$table = $this->_record->getTable();
+
+        if ( ! $table->hasDefaultValues()) {
+            return false;
+        }
+        $modified = array();
+        foreach ($data as $column => $value) {
+            $default = $table->getDefaultValueOf($column);
+
+            if ($default === null) {
+                $default = self::$null;
+            }
+
+            if ($value === self::$null || $overwrite) {
+                $this->_record->rawSet($column, $default);
+                $modified[]    = $column;
+                $this->_record->state(Doctrine_Record::STATE_TDIRTY);
+            }
+        }
+        $this->_record->setModified($modified);
+    }
+    /**
      * cleanData
      * this method does several things to records internal data
      *
