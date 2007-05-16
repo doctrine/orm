@@ -31,7 +31,7 @@ Doctrine::autoload("Doctrine_Query_Part");
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Query_From extends Doctrine_Query_Part
-{      
+{
     /**
      * DQL FROM PARSER
      * parses the from part of the query string
@@ -39,11 +39,10 @@ class Doctrine_Query_From extends Doctrine_Query_Part
      * @param string $str
      * @return void
      */
-    final public function parse($str)
+    public function parse($str)
     {
-
         $str = trim($str);
-        $parts = Doctrine_Query::bracketExplode($str, 'JOIN');
+        $parts = Doctrine_Tokenizer::bracketExplode($str, 'JOIN');
 
         $operator = false;
 
@@ -52,7 +51,9 @@ class Doctrine_Query_From extends Doctrine_Query_Part
                 $operator = ':';
             case 'LEFT':
                 array_shift($parts);
+            break;
         }
+
 
         $last = '';
 
@@ -70,7 +71,7 @@ class Doctrine_Query_From extends Doctrine_Query_Part
             }
             $part = implode(' ', $e);
 
-            foreach (Doctrine_Query::bracketExplode($part, ',') as $reference) {
+            foreach (Doctrine_Tokenizer::bracketExplode($part, ',') as $reference) {
                 $reference = trim($reference);
                 $e         = explode('.', $reference);
 
@@ -83,6 +84,7 @@ class Doctrine_Query_From extends Doctrine_Query_Part
 
             $operator = ($last == 'INNER') ? ':' : '.';
         }
+        return $this->query;
     }
 
 }

@@ -53,7 +53,7 @@ class Doctrine_Record_Filter
      */
     public function getRecord()
     {
-        return $this->_record;	
+        return $this->_record;
     }
     /**
      * cleanData
@@ -100,8 +100,9 @@ class Doctrine_Record_Filter
                             if (is_string($tmp[$name])) {
                                 $value = unserialize($tmp[$name]);
 
-                                if ($value === false)
+                                if ($value === false) {
                                     throw new Doctrine_Record_Exception('Unserialization of ' . $name . ' failed.');
+                                }
                             } else {
                                 $value = $tmp[$name];
                             }
@@ -112,9 +113,10 @@ class Doctrine_Record_Filter
                         if ($tmp[$name] !== self::$null) {
                             $value = gzuncompress($tmp[$name]);
 
-                            if ($value === false)
+                            if ($value === false) {
                                 throw new Doctrine_Record_Exception('Uncompressing of ' . $name . ' failed.');
-
+                            }
+                            
                             $this->_data[$name] = $value;
                         }
                         break;
@@ -212,8 +214,9 @@ class Doctrine_Record_Filter
                     $a[$v] = $this->_table->enumIndex($v,$this->_data[$v]);
                     break;
                 default:
-                    if ($this->_data[$v] instanceof Doctrine_Record)
+                    if ($this->_data[$v] instanceof Doctrine_Record) {
                         $this->_data[$v] = $this->_data[$v]->getIncremented();
+                    }
 
                     $a[$v] = $this->_data[$v];
             }

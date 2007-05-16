@@ -36,7 +36,7 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
     {
         $condition = trim($condition);
 
-        $e         = Doctrine_Query::sqlExplode($condition);
+        $e         = Doctrine_Tokenizer::sqlExplode($condition);
 
         if(count($e) > 2) {
             $a         = explode('.', $e[0]);
@@ -46,15 +46,15 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
             $value     = $e[2];
 
             $alias     = $this->query->getTableAlias($reference);
-
-            $table     = $this->query->getTable($alias);
+            $map       = $this->query->getDeclaration($reference);
+            $table     = $map['table'];
             // check if value is enumerated value
             $enumIndex = $table->enumIndex($field, trim($value, "'"));
 
 
             if (substr($value, 0, 1) == '(') {
                 // trim brackets
-                $trimmed   = Doctrine_Query::bracketTrim($value);
+                $trimmed   = Doctrine_Tokenizer::bracketTrim($value);
 
                 if (substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
                     // subquery found
@@ -64,7 +64,7 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
                     $value = '(' . substr($trimmed, 4) . ')';
                 } else {
                     // simple in expression found
-                    $e     = Doctrine_Query::sqlExplode($trimmed, ',');
+                    $e     = Doctrine_Tokenizer::sqlExplode($trimmed, ',');
 
                     $value = array();
                     foreach ($e as $part) {

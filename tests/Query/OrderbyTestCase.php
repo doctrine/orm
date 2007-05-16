@@ -34,7 +34,7 @@ class Doctrine_Query_Orderby_TestCase extends Doctrine_UnitTestCase
 {
     public function testOrderByAggregateValueIsSupported()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->select('u.name, COUNT(p.phonenumber) count')
           ->from('User u')
@@ -45,7 +45,7 @@ class Doctrine_Query_Orderby_TestCase extends Doctrine_UnitTestCase
     }
     public function testOrderByRandomIsSupported()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         $q->select('u.name, RANDOM() rand')
           ->from('User u')

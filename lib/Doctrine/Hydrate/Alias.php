@@ -50,8 +50,9 @@ class Doctrine_Hydrate_Alias
             $name = substr($alias, 0, 1);
             $i    = ((int) substr($alias, 1));
 
-            if ($i == 0)
+            if ($i == 0) {
                 $i = 1;
+            }
 
             $newIndex  = ($this->shortAliasIndexes[$name] + $i);
 
@@ -65,6 +66,15 @@ class Doctrine_Hydrate_Alias
     {
         return (isset($this->shortAliases[$tableName]));
     }
+    
+    public function getComponentAlias($tableAlias)
+    {
+        if ( ! isset($this->shortAliases[$tableAlias])) {
+            throw new Doctrine_Hydrate_Exception('Unknown table alias ' . $tableAlias);
+        }
+        return $this->shortAliases[$tableAlias];
+    }
+
     public function getShortAliasIndex($alias)
     {
         if ( ! isset($this->shortAliasIndexes[$alias])) {
@@ -72,7 +82,7 @@ class Doctrine_Hydrate_Alias
         }
         return $this->shortAliasIndexes[$alias];
     }
-    public function generateShortAlias($tableName)
+    public function generateShortAlias($componentAlias, $tableName)
     {
         $char   = strtolower(substr($tableName, 0, 1));
 
@@ -84,18 +94,35 @@ class Doctrine_Hydrate_Alias
         while (isset($this->shortAliases[$alias])) {
             $alias = $char . ++$this->shortAliasIndexes[$alias];
         }
-        $this->shortAliases[$alias] = $tableName;
+
+        $this->shortAliases[$alias] = $componentAlias;
 
         return $alias;
     }
-
-    public function getShortAlias($tableName)
+    /**
+     * getShortAlias
+     * some database such as Oracle need the identifier lengths to be < ~30 chars
+     * hence Doctrine creates as short identifier aliases as possible
+     *
+     * this method is used for the creation of short table aliases, its also
+     * smart enough to check if an alias already exists for given component (componentAlias)
+     *
+     * @param string $componentAlias    the alias for the query component to search table alias for
+     * @param string $tableName         the table name from which the table alias is being created
+     * @return string                   the generated / fetched short alias
+     */
+    public function getShortAlias($componentAlias, $tableName = null)
     {
-        $alias = array_search($tableName, $this->shortAliases);
+        $alias = array_search($componentAlias, $this->shortAliases);
 
         if ($alias !== false) {
             return $alias;
         }
-        return $this->generateShortAlias($tableName);
+
+        if ($tableName === null) {
+            throw new Doctrine_Hydrate_Exception("Couldn't get short alias for " . $componentAlias);
+        }
+
+        return $this->generateShortAlias($componentAlias, $tableName);
     }
 }

@@ -792,7 +792,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $alias = $name;
         }
 
-        $this->bound[$alias] = array('field'    => $field,
+        $this->bound[$alias] = array('field' => $field,
             'type'     => $type,
             'class'    => $name,
             'alias'    => $alias);
@@ -1125,32 +1125,38 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function getRecord()
     {
-        $this->data = array_change_key_case($this->data, CASE_LOWER);
-
-        $key = $this->getIdentifier();
-
-        if ( ! is_array($key)) {
-            $key = array($key);
-        }
-
-        foreach ($key as $k) {
-            if ( ! isset($this->data[$k])) {
-                throw new Doctrine_Table_Exception("Primary key value for $k wasn't found");
+    	if ( ! empty($this->data)) {
+            $this->data = array_change_key_case($this->data, CASE_LOWER);
+    
+            $key = $this->getIdentifier();
+    
+            if ( ! is_array($key)) {
+                $key = array($key);
             }
-            $id[] = $this->data[$k];
-        }
-
-        $id = implode(' ', $id);
-
-        if (isset($this->identityMap[$id])) {
-            $record = $this->identityMap[$id];
-            $record->hydrate($this->data);
+    
+            foreach ($key as $k) {
+                if ( ! isset($this->data[$k])) {
+                    throw new Doctrine_Table_Exception("Primary key value for $k wasn't found");
+                }
+                $id[] = $this->data[$k];
+            }
+    
+            $id = implode(' ', $id);
+    
+            if (isset($this->identityMap[$id])) {
+                $record = $this->identityMap[$id];
+                $record->hydrate($this->data);
+            } else {
+                $recordName = $this->getClassnameToReturn();
+                $record = new $recordName($this);
+                $this->identityMap[$id] = $record;
+            }
+            $this->data = array();
         } else {
             $recordName = $this->getClassnameToReturn();
-            $record = new $recordName($this);
-            $this->identityMap[$id] = $record;
+            $record = new $recordName($this, true);
         }
-        $this->data = array();
+
 
         return $record;
     }

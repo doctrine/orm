@@ -63,13 +63,14 @@ class Doctrine_Lib
      */
     public static function getRecordAsString(Doctrine_Record $record)
     {
-        $r[] = "<pre>";
-        $r[] = "Component  : ".$record->getTable()->getComponentName();
-        $r[] = "ID         : ".$record->obtainIdentifier();
-        $r[] = "References : ".count($record->getReferences());
-        $r[] = "State      : ".Doctrine_Lib::getRecordStateAsString($record->getState());
-        $r[] = "OID        : ".$record->getOID();
-        $r[] = "</pre>";
+        $r[] = '<pre>';
+        $r[] = 'Component  : ' . $record->getTable()->getComponentName();
+        $r[] = 'ID         : ' . $record->obtainIdentifier();
+        $r[] = 'References : ' . count($record->getReferences());
+        $r[] = 'State      : ' . Doctrine_Lib::getRecordStateAsString($record->getState());
+        $r[] = 'OID        : ' . $record->getOID();
+        $r[] = 'data       : ' . Doctrine::dump($record->getData(), false);
+        $r[] = '</pre>';
         return implode("\n",$r)."<br />";
     }
     /**
@@ -84,12 +85,12 @@ class Doctrine_Lib
 
     public static function getCollectionAsXml(Doctrine_Collection $collection, SimpleXMLElement $incomming_xml = null){
 
-        $collection_name = Doctrine_Lib::plurelize($collection->getTable()->name);
+        $collectionName = Doctrine_Lib::plurelize($collection->getTable()->name);
 
-        if (!isset($incomming_xml)) {
-            $xml = new SimpleXMLElement("<" . $collection_name . "></" . $collection_name . ">");
+        if ( ! isset($incomming_xml)) {
+            $xml = new SimpleXMLElement("<" . $collectionName . "></" . $collectionName . ">");
         } else {
-            $xml = $incomming_xml->addChild($collection_name);
+            $xml = $incomming_xml->addChild($collectionName);
         }
         foreach ($collection as $key => $record) {
             Doctrine_Lib::getRecordAsXml($record, $xml);

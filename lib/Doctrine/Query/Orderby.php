@@ -39,7 +39,7 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part
      * @param string $str
      * @return void
      */
-    public function parse($str)
+    public function parse($str, $append = false)
     {
         $ret = array();
 
@@ -53,12 +53,10 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part
                 $reference = implode('.', $a);
                 $name      = end($a);
 
-                $this->query->load($reference, false);
-                $alias     = $this->query->getTableAlias($reference);
+                $map = $this->query->load($reference, false);
+                $tableAlias = $this->query->getTableAlias($reference);
 
-                $tname     = $this->query->getTable($alias)->getTableName();
-
-                $r = $alias . '.' . $field;
+                $r = $tableAlias . '.' . $field;
 
 
             } else {
@@ -72,6 +70,11 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part
             $ret[] = $r;
         }
 
-        return implode(', ', $ret);
+        if ($append) {
+            $this->query->addQueryPart('orderby', implode(', ', $ret));
+        } else {
+            $this->query->setQueryPart('orderby', implode(', ', $ret));
+        }
+        return $this->query;
     }
 }

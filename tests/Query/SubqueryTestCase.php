@@ -36,7 +36,7 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
 
     public function testSubqueryWithWherePartAndInExpression()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->from('User')->where("User.id NOT IN (SELECT User.id FROM User WHERE User.name = 'zYne')");
 
         $this->assertEqual($q->getQuery(),
@@ -49,7 +49,7 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
     }
     public function testSubqueryAllowsSelectingOfAnyField()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->from('User u')->where('u.id NOT IN (SELECT g.user_id FROM Groupuser g)');
 
         $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e WHERE e.id NOT IN (SELECT g.user_id AS g__user_id FROM groupuser g) AND (e.type = 0)");
@@ -58,7 +58,7 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
     public function testSubqueryInSelectPart()
     {
         // ticket #307
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         $q->parseQuery("SELECT u.name, (SELECT COUNT(p.id) FROM Phonenumber p WHERE p.entity_id = u.id) pcount FROM User u WHERE u.name = 'zYne' LIMIT 1");
 
@@ -77,7 +77,7 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
     public function testSubqueryInSelectPart2()
     {
         // ticket #307
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         $q->parseQuery("SELECT u.name, (SELECT COUNT(w.id) FROM User w WHERE w.id = u.id) pcount FROM User u WHERE u.name = 'zYne' LIMIT 1");
         

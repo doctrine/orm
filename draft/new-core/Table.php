@@ -19,9 +19,11 @@
  * <http://www.phpdoctrine.com>.
  */
 /**
- * Doctrine_Table   represents a database table
- *                  each Doctrine_Table holds the information of foreignKeys and associations
- *
+ * Doctrine_Table   
+ * 
+ * This class represents a database table.
+ * Each Doctrine_Table holds the information of foreignKeys and associations
+ * to other tables.
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
@@ -54,10 +56,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @var integer $identifierType                     the type of identifier this table uses
      */
     private $identifierType;
-    /**
-     * @var string $query                               cached simple query
-     */
-    private $query;
     /**
      * @var Doctrine_Connection $conn                   Doctrine_Connection object that created this table
      */
@@ -150,18 +148,18 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      *      -- treeOptions                  the tree options
      */
-    protected $options          = array('name'           => null,
-        'tableName'      => null,
-        'sequenceName'   => null,
-        'inheritanceMap' => array(),
-        'enumMap'        => array(),
-        'engine'         => null,
-        'charset'        => null,
-        'collation'      => null,
-        'treeImpl'       => null,
-        'treeOptions'    => null,
-        'indexes'        => array(),
-    );
+    protected $options = array('name'           => null,
+                               'tableName'      => null,
+                               'sequenceName'   => null,
+                               'inheritanceMap' => array(),
+                               'enumMap'        => array(),
+                               'engine'         => null,
+                               'charset'        => null,
+                               'collation'      => null,
+                               'treeImpl'       => null,
+                               'treeOptions'    => null,
+                               'indexes'        => array(),
+                               );
     /**
      * @var Doctrine_Tree $tree             tree object associated with this table
      */
@@ -284,19 +282,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                             $this->identifier = $pk;
                         }
                     }
-                };
-                /**
-                            if ( ! isset($definition['values'])) {
-                                throw new Doctrine_Table_Exception('No values set for enum column ' . $name);
-                            }
-
-                            if ( ! is_array($definition['values'])) {
-                                throw new Doctrine_Table_Exception('Enum column values should be specified as an array.');
-                            }
-
-                 */
-
-
+                }
             }
         } else {
             throw new Doctrine_Table_Exception("Class '$name' has no table definition.");
@@ -312,9 +298,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         // save parents
         array_pop($names);
         $this->options['parents']   = $names;
-
-        $this->query     = 'SELECT ' . implode(', ', array_keys($this->columns)) . ' FROM ' . $this->getTableName();
-
 
         $this->repository = new Doctrine_Table_Repository($this);
     }
@@ -1043,7 +1026,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 $id = array_values($id);
             }
 
-            $query  = $this->query . ' WHERE ' . implode(' = ? AND ', $this->primaryKeys) . ' = ?';
+            $query  = 'SELECT ' . implode(', ', array_keys($this->columns)) . ' FROM ' . $this->getTableName() . ' WHERE ' . implode(' = ? AND ', $this->primaryKeys) . ' = ?';
             $query  = $this->applyInheritance($query);
 
             $params = array_merge($id, array_values($this->options['inheritanceMap']));
@@ -1429,15 +1412,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $stmt = $this->conn->getDBH()->query($sql);
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return isset($data[0])?$data[0]:1;
-    }
-    /**
-     * returns simple cached query
-     *
-     * @return string
-     */
-    final public function getQuery()
-    {
-        return $this->query;
     }
     /**
      * returns internal data, used by Doctrine_Record instances

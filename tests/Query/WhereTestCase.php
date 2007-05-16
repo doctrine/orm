@@ -47,7 +47,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
         $user->name = 'someone';
         $user->save();
 
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->from('User')->addWhere('User.id = ?',1);
 
@@ -63,7 +63,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
         $user->name = 'someone.2';
         $user->save();
 
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->from('User')->addWhere('User.id IN (?, ?)', array(1, 2));
 
@@ -75,7 +75,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     }
     public function testDirectMultipleParameterSetting2() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->from('User')->where('User.id IN (?, ?)', array(1, 2));
         
@@ -98,7 +98,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     }
     public function testNotInExpression() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->from('User u')->addWhere('u.id NOT IN (?)', array(1));
         $users = $q->execute();
@@ -108,7 +108,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     }
     public function testExistsExpression() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         $user = new User();
         $user->name = 'someone with a group';
@@ -129,7 +129,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
 
     public function testNotExistsExpression() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         // find all users which don't have groups
         try {
@@ -145,7 +145,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     }
     public function testComponentAliases() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->from('User u')->addWhere('u.id IN (?, ?)', array(1,2));
 
@@ -158,7 +158,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     }
     public function testComponentAliases2() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->from('User u')->addWhere('u.name = ?', array('someone'));
 
@@ -169,7 +169,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     }
     public function testOperatorWithNoTrailingSpaces()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         $q->select('User.id')->from('User')->where("User.name='someone'");
 
@@ -180,7 +180,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     }
     public function testOperatorWithNoTrailingSpaces2() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         $q->select('User.id')->from('User')->where("User.name='foo.bar'");
 
@@ -191,7 +191,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     }
     public function testOperatorWithSingleTrailingSpace() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         $q->select('User.id')->from('User')->where("User.name= 'foo.bar'");
 
@@ -202,7 +202,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     }
     public function testOperatorWithSingleTrailingSpace2() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->select('User.id')->from('User')->where("User.name ='foo.bar'");
 

@@ -32,6 +32,15 @@ Doctrine::autoload('Doctrine_Query_Condition');
  */
 class Doctrine_Query_Having extends Doctrine_Query_Condition
 {
+    public function parse($str, $append = false)
+    {
+        if ($append) {
+            $this->query->addQueryPart('having', $this->_parse($str));
+        } else {
+            $this->query->setQueryPart('having', $this->_parse($str));
+        }
+        return $this->query;
+    }
     /**
      * DQL Aggregate Function parser
      *
@@ -47,7 +56,7 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
 
             $name   = substr($func, 0, $pos);
             $func   = substr($func, ($pos + 1), -1);
-            $params = Doctrine_Query::bracketExplode($func, ',', '(', ')');
+            $params = Doctrine_Tokenizer::bracketExplode($func, ',', '(', ')');
 
             foreach ($params as $k => $param) {
                 $params[$k] = $this->parseAggregateFunction($param);
@@ -64,8 +73,8 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
                 if (count($a) > 1) {
                     $field     = array_pop($a);
                     $reference = implode('.', $a);
-                    $table     = $this->query->load($reference, false);
-                    $field     = $table->getColumnName($field);
+                    $map       = $this->query->load($reference, false);
+                    $field     = $map['table']->getColumnName($field);
                     $func      = $this->query->getTableAlias($reference) . '.' . $field;
                 } else {
                     $field = end($a);
@@ -86,7 +95,7 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
      */
     final public function load($having)
     {
-        $e = Doctrine_Query::bracketExplode($having, ' ', '(', ')');
+        $e = Doctrine_Tokenizer::bracketExplode($having, ' ', '(', ')');
 
         $r = array_shift($e);
         $t = explode('(', $r);

@@ -77,7 +77,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
     }
     public function testAggregateValueIsMappedToNewRecordOnEmptyResultSet() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->select('COUNT(u.id) count')->from('User u');
     
@@ -88,7 +88,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
     }
     public function testAggregateValueIsMappedToRecord()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->select('u.name, COUNT(u.id) count')->from('User u')->groupby('u.name');
 
@@ -105,7 +105,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
 
     public function testAggregateValueMappingSupportsLeftJoins() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->select('u.name, COUNT(p.id) count')->from('User u')->leftJoin('u.Phonenumber p')->groupby('u.id');
     
@@ -120,7 +120,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
     }
     public function testAggregateValueMappingSupportsLeftJoins2()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->select('MAX(u.name)')->from('User u')->leftJoin('u.Phonenumber p')->groupby('u.id');
 
@@ -131,7 +131,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
     }
     public function testAggregateValueMappingSupportsMultipleValues()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->select('u.name, COUNT(p.id) count, MAX(p.id) max')->from('User u')->innerJoin('u.Phonenumber p')->groupby('u.id');
 
@@ -141,7 +141,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
     }
     public function testAggregateValueMappingSupportsInnerJoins() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->select('u.name, COUNT(p.id) count')->from('User u')->innerJoin('u.Phonenumber p')->groupby('u.id');
 

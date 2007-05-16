@@ -34,7 +34,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
 {
     public function testAggregateFunctionWithDistinctKeyword() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT COUNT(DISTINCT u.name) FROM User u');
 
@@ -43,7 +43,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
 
     public function testAggregateFunction() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT COUNT(u.id) FROM User u');
 
@@ -52,7 +52,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
 
     public function testSelectPartSupportsMultipleAggregateFunctions() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT MAX(u.id), MIN(u.name) FROM User u');
 
@@ -60,7 +60,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
     }
     public function testMultipleAggregateFunctionsWithMultipleComponents() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT MAX(u.id), MIN(u.name), COUNT(p.id) FROM User u, u.Phonenumber p');
 
@@ -68,7 +68,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
     }
     public function testEmptySelectPart() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         try {
             $q->select(null);
@@ -80,7 +80,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
     }
     public function testUnknownAggregateFunction() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         try {
             $q->parseQuery('SELECT UNKNOWN(u.id) FROM User');
@@ -91,7 +91,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
     }
     public function testAggregateFunctionValueHydration() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.id, COUNT(p.id) FROM User u, u.Phonenumber p GROUP BY u.id');
 
@@ -107,7 +107,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
 
     public function testSingleComponentWithAsterisk()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.* FROM User u');
 
@@ -115,7 +115,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
     }
     public function testSingleComponentWithMultipleColumns()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.name, u.type FROM User u'); 
         
@@ -123,7 +123,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
     }
     public function testMultipleComponentsWithAsterisk()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.*, p.* FROM User u, u.Phonenumber p');
 
@@ -131,7 +131,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
     }
     public function testMultipleComponentsWithMultipleColumns()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.id, u.name, p.id FROM User u, u.Phonenumber p');
 
@@ -140,7 +140,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
     public function testAggregateFunctionValueHydrationWithAliases()
     {
 
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.id, COUNT(p.id) count FROM User u, u.Phonenumber p GROUP BY u.id');
 
@@ -154,7 +154,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
     }
     public function testMultipleAggregateFunctionValueHydrationWithAliases()
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.id, COUNT(p.id) count, MAX(p.phonenumber) max FROM User u, u.Phonenumber p GROUP BY u.id');
 
@@ -175,7 +175,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
     {
         $this->connection->clear();
 
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.id, COUNT(p.id) count, MAX(p.phonenumber) max FROM User u, u.Phonenumber p GROUP BY u.id');
         

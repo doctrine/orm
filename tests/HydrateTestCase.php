@@ -111,7 +111,7 @@ class Doctrine_Hydrate_TestCase extends Doctrine_UnitTestCase
     }
     */
 }
-class Doctrine_Hydrate_Mock extends Doctrine_Hydrate2
+class Doctrine_Hydrate_Mock extends Doctrine_Hydrate
 {
     protected $data;
 

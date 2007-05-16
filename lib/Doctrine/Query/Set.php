@@ -34,11 +34,11 @@ class Doctrine_Query_Set extends Doctrine_Query_Part
 {
     public function parse($dql)
     {
-        $parts = Doctrine_Query::sqlExplode($dql, ',');
+        $parts = Doctrine_Tokenizer::sqlExplode($dql, ',');
 
         $result = array();
         foreach ($parts as $part) {
-            $set = Doctrine_Query::sqlExplode($part, '=');
+            $set = Doctrine_Tokenizer::sqlExplode($part, '=');
 
             $e   = explode('.', trim($set[0]));
             $field = array_pop($e);
@@ -46,12 +46,15 @@ class Doctrine_Query_Set extends Doctrine_Query_Part
             $reference = implode('.', $e);
 
             $alias     = $this->query->getTableAlias($reference);
-            $table     = $this->query->getTable($alias);
 
-            $result[]  = $table->getColumnName($field) . ' = ' . $set[1];
+            $map       = $this->query->getDeclaration($reference);
+
+            $result[]  = $map['table']->getColumnName($field) . ' = ' . $set[1];
         }
 
-        return implode(', ', $result);
+        $this->query->addQueryPart('set', implode(', ', $result));
+        
+        return $this->query;
     }
 }
 

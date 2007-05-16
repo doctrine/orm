@@ -999,7 +999,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             case Doctrine_Record::STATE_TCLEAN:
                 // do nothing
                 break;
-        };
+        }
 
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
     }

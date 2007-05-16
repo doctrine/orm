@@ -32,6 +32,15 @@ Doctrine::autoload('Doctrine_Query_Condition');
  */
 class Doctrine_Query_Where extends Doctrine_Query_Condition
 {
+    public function parse($str, $append = false)
+    {
+        if ($append) {
+            $this->query->addQueryPart('where', $this->_parse($str));
+        } else {
+            $this->query->setQueryPart('where', $this->_parse($str));
+        }
+        return $this->query;
+    }
     /**
      * load
      * returns the parsed query part
@@ -43,7 +52,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
     {
         $where = trim($where);
 
-        $e     = Doctrine_Query::sqlExplode($where);
+        $e     = Doctrine_Tokenizer::sqlExplode($where);
 
         if (count($e) > 1) {
             $tmp   = $e[0] . ' ' . $e[1];
@@ -56,7 +65,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
         }
 
         if (count($e) < 3) {
-            $e = Doctrine_Query::sqlExplode($where, array('=', '<', '>', '!='));
+            $e = Doctrine_Tokenizer::sqlExplode($where, array('=', '<', '>', '!='));
         }
         $r = array_shift($e);
 
@@ -83,7 +92,6 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 $field      = array_pop($a);
                 $reference  = implode('.', $a);
                 $table      = $this->query->load($reference, false);
-                
                 $field      = $table->getColumnName($field);
 
                 array_pop($a);
@@ -119,20 +127,20 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                         throw new Doctrine_Query_Exception('Unknown DQL function: '.$func);
                 }
             } else {
-                $table     = $this->query->load($reference, false);
-                $alias     = $this->query->getTableAlias($reference);
-                $table     = $this->query->getTable($alias);
-                
-                $field     = $table->getColumnName($field);
+                $map = $this->query->load($reference, false);
+
+                $alias = $this->query->getTableAlias($reference);
+                $table = $map['table'];
+
+                $field = $table->getColumnName($field);
                 // check if value is enumerated value
                 $enumIndex = $table->enumIndex($field, trim($value, "'"));
 
                 if (substr($value, 0, 1) == '(') {
                     // trim brackets
-                    $trimmed   = Doctrine_Query::bracketTrim($value);
+                    $trimmed   = Doctrine_Tokenizer::bracketTrim($value);
 
                     if (substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
-
                         // subquery found
                         $q     = new Doctrine_Query();
                         $value = '(' . $q->isSubquery(true)->parseQuery($trimmed)->getQuery() . ')';
@@ -141,11 +149,12 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                         $value = '(' . substr($trimmed, 4) . ')';
                     } else {
                         // simple in expression found
-                        $e     = Doctrine_Query::sqlExplode($trimmed, ',');
+                        $e     = Doctrine_Tokenizer::sqlExplode($trimmed, ',');
 
                         $value = array();
                         foreach ($e as $part) {
-                            $index   = $table->enumIndex($field, trim($part, "'"));
+                            $index = $table->enumIndex($field, trim($part, "'"));
+
                             if ($index !== false) {
                                 $value[] = $index;
                             } else {
@@ -198,10 +207,11 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
 
         $pos = strpos($where, '(');
 
-        if ($pos == false)
+        if ($pos == false) {
             throw new Doctrine_Query_Exception("Unknown expression, expected '('");
+        }
 
-        $sub = Doctrine_Query::bracketTrim(substr($where, $pos));
+        $sub = Doctrine_Tokenizer::bracketTrim(substr($where, $pos));
 
         return $operator . ' (' . $this->query->createSubquery()->parseQuery($sub, false)->getQuery() . ')';
     }
@@ -225,15 +235,5 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 break;
         }
         return $operator;
-    }
-    /**
-     * __toString
-     * return string representation of this object
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return ( ! empty($this->parts))?implode(' AND ', $this->parts):'';
     }
 }

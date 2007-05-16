@@ -30,7 +30,8 @@ Doctrine::autoload('Doctrine_Hydrate');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query extends Doctrine_Hydrate implements Countable {
+class Doctrine_Query extends Doctrine_Hydrate2 implements Countable 
+{
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
      */
@@ -43,20 +44,17 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @param boolean $limitSubqueryUsed
      */
     private $limitSubqueryUsed = false;
+
+    
+    protected $_status         = array('needsSubquery' => true);
     /**
      * @param boolean $isSubquery           whether or not this query object is a subquery of another 
      *                                      query object
      */
     private $isSubquery;
 
-    private $tableStack;
-
-    private $relationStack     = array();
-
     private $isDistinct        = false;
-    
-    protected $components      = array();
-    
+
     private $neededTables      = array();
     /**
      * @var array $pendingFields
@@ -71,9 +69,15 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @var boolean $subqueriesProcessed    Whether or not pending subqueries have already been processed.
      *                                      Consequent calls to getQuery would result badly constructed queries
      *                                      without this variable
+     *
+     *                                      Since subqueries can be correlated, they can only be processed when 
+     *                                      the main query is fully constructed
      */
     private $subqueriesProcessed = false;
-
+    /** 
+     * @var array $_parsers                 an array of parser objects
+     */
+    protected $_parsers = array();
 
 
     /**
@@ -123,16 +127,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         return null;
     }
 
-    public function getTableStack()
-    {
-        return $this->tableStack;
-    }
-
-    public function getRelationStack()
-    {
-        return $this->relationStack;
-    }
-
     public function isDistinct($distinct = null)
     {
         if(isset($distinct))
@@ -141,18 +135,48 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         return $this->isDistinct;
     }
 
+    /**
+     * getParser
+     * parser lazy-loader
+     *
+     * @throws Doctrine_Query_Exception     if unknown parser name given
+     * @return Doctrine_Query_Part
+     */
+    public function getParser($name)
+    {
+        if ( ! isset($this->_parsers[$name])) {
+            $class = 'Doctrine_Query_' . ucwords(strtolower($name));
+
+            Doctrine::autoload($class);
+            
+            if ( ! class_exists($class)) {
+                throw new Doctrine_Query_Exception('Unknown parser ' . $name);
+            }
+
+            $this->_parsers[$name] = new $class($this);
+        }
+        
+        return $this->_parsers[$name];
+    }
+    /**
+     * processPendingFields
+     * the fields in SELECT clause cannot be parsed until the components
+     * in FROM clause are parsed, hence this method is called everytime a 
+     * specific component is being parsed.
+     *
+     * @throws Doctrine_Query_Exception     if unknown component alias has been given
+     * @param string $componentAlias        the alias of the component
+     * @return void
+     */
     public function processPendingFields($componentAlias)
     {
         $tableAlias = $this->getTableAlias($componentAlias);
-
-        if ( ! isset($this->tables[$tableAlias]))
-            throw new Doctrine_Query_Exception('Unknown component path '.$componentAlias);
-
-        $table      = $this->tables[$tableAlias];
+        $table      = $this->_aliasMap[$componentAlias]['table'];
 
         if (isset($this->pendingFields[$componentAlias])) {
             $fields = $this->pendingFields[$componentAlias];
 
+            // check for wildcards
             if (in_array('*', $fields)) {
                 $fields = $table->getColumnNames();
             } else {
@@ -251,9 +275,10 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             $e2     = explode(' ', $args[0]);
     
             $distinct = '';
-            if(count($e2) > 1) {
-                if(strtoupper($e2[0]) == 'DISTINCT')
+            if (count($e2) > 1) {
+                if (strtoupper($e2[0]) == 'DISTINCT') {
                     $distinct  = 'DISTINCT ';
+                }
     
                 $args[0] = $e2[1];
             }
@@ -266,7 +291,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     
             $e3    = explode('.', $alias);
     
-            if(count($e3) > 1) {
+            if (count($e3) > 1) {
                 $alias = $e3[1];
                 $owner = $e3[0];
             }
@@ -291,14 +316,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             list($dql, $alias) = $value;
 
             $sql = $this->createSubquery()->parseQuery($dql, false)->getQuery();
-            
-            reset($this->tableAliases);
-            
-            $tableAlias = current($this->tableAliases);
 
-            reset($this->compAliases);
-            
-            $componentAlias = key($this->compAliases);
+
+
+            reset($this->_aliasMap);
+            $componentAlias = key($this->_aliasMap);
+            $tableAlias = $this->getTableAlias($componentAlias);
 
             $sqlAlias = $tableAlias . '__' . count($this->aggregateMap);
     
@@ -313,14 +336,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     }
     public function processPendingAggregates($componentAlias)
     {
-        $tableAlias = $this->getTableAlias($componentAlias);
+        $tableAlias = $this->getTableAlias($componentAlias);     
 
-        if ( ! isset($this->tables[$tableAlias])) {
-            throw new Doctrine_Query_Exception('Unknown component path ' . $componentAlias);
-        }
-        
-        $root       = current($this->tables);
-        $table      = $this->tables[$tableAlias];
+        $map   = reset($this->_aliasMap);
+        $root  = $map['table'];
+        $table = $this->_aliasMap[$componentAlias]['table'];
+
         $aggregates = array();
 
         if(isset($this->pendingAggregates[$componentAlias])) {
@@ -344,12 +365,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
                 if (is_numeric($arg)) {
                     $arglist[]  = $arg;
                 } elseif (count($e) > 1) {
-                    //$tableAlias = $this->getTableAlias($e[0]);
-                    $table      = $this->tables[$tableAlias];
+                    $map    = $this->_aliasMap[$e[0]];
+                    $table  = $map['table'];
 
                     $e[1]       = $table->getColumnName($e[1]);
 
-                    if( ! $table->hasColumn($e[1])) {
+                    if ( ! $table->hasColumn($e[1])) {
                         throw new Doctrine_Query_Exception('Unknown column ' . $e[1]);
                     }
 
@@ -361,7 +382,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
             $sqlAlias = $tableAlias . '__' . count($this->aggregateMap);
 
-            if(substr($name, 0, 1) !== '(') {
+            if (substr($name, 0, 1) !== '(') {
                 $this->parts['select'][] = $name . '(' . $distinct . implode(', ', $arglist) . ') AS ' . $sqlAlias;
             } else {
                 $this->parts['select'][] = $name . ' AS ' . $sqlAlias;
@@ -369,329 +390,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             $this->aggregateMap[$alias] = $sqlAlias;
             $this->neededTables[] = $tableAlias;
         }
-    }
-	/**
- 	 * count
-     *
-     * @param array $params
-	 * @return integer
-     */
-	public function count($params = array())
-    {
-		$parts_old = $this->parts;
-
-		$this->remove('select');
-		$join  = $this->join;
-		$where = $this->where;
-		$having = $this->having;
-		$table  = reset($this->tables);
-
-		$q  = 'SELECT COUNT(DISTINCT ' . $this->aliasHandler->getShortAlias($table->getTableName())
-            . '.' . $table->getIdentifier()
-            . ') FROM ' . $table->getTableName() . ' ' . $this->aliasHandler->getShortAlias($table->getTableName());
-
-		foreach($join as $j) {
-            $q .= ' '.implode(' ',$j);
-		}
-        $string = $this->applyInheritance();
-
-        if( ! empty($where)) {
-            $q .= ' WHERE ' . implode(' AND ', $where);
-            if( ! empty($string))
-                $q .= ' AND (' . $string . ')';
-        } else {
-            if( ! empty($string))
-                $q .= ' WHERE (' . $string . ')';
-        }
-			
-		if( ! empty($having))
-			$q .= ' HAVING ' . implode(' AND ',$having);
-
-        if( ! is_array($params))
-            $params = array($params);
-
-        $params = array_merge($this->params, $params);
-
-		$this->parts = $parts_old;
-		return (int) $this->getConnection()->fetchOne($q, $params);
-	}
-    /**
-     * loadFields
-     * loads fields for a given table and
-     * constructs a little bit of sql for every field
-     *
-     * fields of the tables become: [tablename].[fieldname] as [tablename]__[fieldname]
-     *
-     * @access private
-     * @param object Doctrine_Table $table          a Doctrine_Table object
-     * @param integer $fetchmode                    fetchmode the table is using eg. Doctrine::FETCH_LAZY
-     * @param array $names                          fields to be loaded (only used in lazy property loading)
-     * @return void
-     */
-    protected function loadFields(Doctrine_Table $table, $fetchmode, array $names, $cpath)
-    {
-        $name = $table->getComponentName();
-
-        switch($fetchmode):
-            case Doctrine::FETCH_OFFSET:
-                $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
-            case Doctrine::FETCH_IMMEDIATE:
-                if( ! empty($names)) {
-                    // only auto-add the primary key fields if this query object is not
-                    // a subquery of another query object
-                    $names = array_unique(array_merge($table->getPrimaryKeys(), $names));
-                } else {
-                    $names = $table->getColumnNames();
-                }
-            break;
-            case Doctrine::FETCH_LAZY_OFFSET:
-                $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
-            case Doctrine::FETCH_LAZY:
-            case Doctrine::FETCH_BATCH:
-                $names = array_unique(array_merge($table->getPrimaryKeys(), $names));
-            break;
-            default:
-                throw new Doctrine_Exception("Unknown fetchmode.");
-        endswitch;
-
-        $component          = $table->getComponentName();
-        $tablename          = $this->tableAliases[$cpath];
-
-        $this->fetchModes[$tablename] = $fetchmode;
-
-        $count = count($this->tables);
-
-        foreach($names as $name) {
-            if($count == 0) {
-                $this->parts['select'][] = $tablename . '.' . $name;
-            } else {
-                $this->parts['select'][] = $tablename . '.' . $name . ' AS ' . $tablename . '__' . $name;
-            }
-        }
-    }
-    /**
-     * addFrom
-     *
-     * @param strint $from
-     * @return Doctrine_Query
-     */
-    public function addFrom($from)
-    {
-        $class = 'Doctrine_Query_From';
-        $parser = new $class($this);
-        $parser->parse($from);
-
-        return $this;
-    }
-    /**
-     * leftJoin
-     *
-     * @param strint $join
-     * @return Doctrine_Query
-     */
-    public function leftJoin($join)
-    {
-        $class = 'Doctrine_Query_From';
-        $parser = new $class($this);
-        $parser->parse('LEFT JOIN ' . $join);
-
-        return $this;
-    }
-    /**
-     * innerJoin
-     *
-     * @param strint $join
-     * @return Doctrine_Query
-     */
-    public function innerJoin($join)
-    {
-        $class = 'Doctrine_Query_From';
-        $parser = new $class($this);
-        $parser->parse('INNER JOIN ' . $join);
-
-        return $this;
-    }
-    /**
-     * addOrderBy
-     *
-     * @param strint $orderby
-     * @return Doctrine_Query
-     */
-    public function addOrderBy($orderby)
-    {
-        if (empty($orderby)) {
-            return $this;
-        }
-        $class = 'Doctrine_Query_Orderby';
-        $parser = new $class($this);
-        $this->parts['orderby'][] = $parser->parse($orderby);
-
-        return $this;
-    }
-    /**
-     * addWhere
-     *
-     * @param string $where
-     * @param mixed $params
-     */
-    public function addWhere($where, $params = array())
-    {
-        $class  = 'Doctrine_Query_Where';
-        $parser = new $class($this);
-        $this->parts['where'][] = $parser->parse($where);
-
-        if(is_array($params)) {
-            $this->params = array_merge($this->params, $params);
-        } else {
-            $this->params[] = $params;
-        }
-        
-        return $this;
-    }
-    /**
-     * addSelect
-     *
-     * @param string $select
-     */
-    public function addSelect($select)
-    {
-        $this->type = self::SELECT;
-        
-        $this->parseSelect($select);
-        
-        return $this;
-    }
-    /**
-     * addHaving
-     *
-     * @param string $having
-     */
-    public function addHaving($having) 
-    {
-        $class = 'Doctrine_Query_Having';
-        $parser = new $class($this);
-        $this->parts['having'][] = $parser->parse($having);
-        
-        return $this;
-    }
-    /**
-     * sets a query part
-     *
-     * @param string $name
-     * @param array $args
-     * @return void
-     */
-    public function __call($name, $args)
-    {
-        $name = strtolower($name);
-
-        $method = 'parse' . ucwords($name);
-
-        switch($name) {
-            case 'select':
-                $this->type = self::SELECT;
-
-                if ( ! isset($args[0])) {
-                    throw new Doctrine_Query_Exception('Empty select part');
-                }
-                $this->parseSelect($args[0]);
-            break;
-            case 'delete':
-                $this->type = self::DELETE;
-            break;
-            case 'update':
-                $this->type = self::UPDATE;
-                $name       = 'from';
-            case 'from':
-                $this->parts['from']    = array();
-                $this->parts['select']  = array();
-                $this->parts['join']    = array();
-                $this->joins            = array();
-                $this->tables           = array();
-                $this->fetchModes       = array();
-                $this->tableIndexes     = array();
-                $this->tableAliases     = array();
-                $this->aliasHandler->clear();
-
-                $class = "Doctrine_Query_".ucwords($name);
-                $parser = new $class($this);
-
-                $parser->parse($args[0]);
-            break;
-            case 'where':
-                if(isset($args[1])) {
-                    if(is_array($args[1])) {
-                        $this->params = $args[1];
-                    } else {
-                        $this->params = array($args[1]);
-                    }
-                }
-            case 'having':
-            case 'orderby':
-            case 'groupby':
-                if (empty($args[0])) {
-                    return $this;
-                }
-
-                $class  = 'Doctrine_Query_' . ucwords($name);
-                $parser = new $class($this);
-
-                $this->parts[$name] = array($parser->parse($args[0]));
-            break;
-            case 'limit':
-            case 'offset':
-                if($args[0] == null) {
-                    $args[0] = false;
-                }
-
-                $this->parts[$name] = $args[0];
-            break;
-            default:
-                $this->parts[$name] = array();
-                if (method_exists($this, $method)) {
-                	$this->$method($args[0]);
-                }
-
-            throw new Doctrine_Query_Exception("Unknown overload method");
-        }
-
-
-        return $this;
-    }
-    /**
-     * returns a query part
-     *
-     * @param $name         query part name
-     * @return mixed
-     */
-    public function get($name)
-    {
-        if( ! isset($this->parts[$name]))
-            return false;
-
-        return $this->parts[$name];
-    }
-    /**
-     * set
-     * sets a query SET part
-     * this method should only be used with UPDATE queries
-     *
-     * @param $name             name of the field
-     * @param $value            field value
-     * @return Doctrine_Query
-     */
-    public function set($name, $value)
-    {
-        $class = new Doctrine_Query_Set($this);
-        $this->parts['set'][] = $class->parse($name . ' = ' . $value);
-
-        return $this;
-    }
-    /**
-     * @return boolean
-     */
-    public function isLimitSubqueryUsed() {
-        return $this->limitSubqueryUsed;
     }
     /**
      * getQueryBase
@@ -704,15 +402,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
     {
         switch ($this->type) {
             case self::DELETE:
-            /**
-                no longer needed? 
-
-                if ($this->conn->getName() == 'Mysql') {
-                    $q = 'DELETE '  . end($this->tableAliases) . ' FROM ';
-                } else {
-            */
-                    $q = 'DELETE FROM ';
-            //    }
+                $q = 'DELETE FROM ';
             break;
             case self::UPDATE:
                 $q = 'UPDATE ';
@@ -720,8 +410,54 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             case self::SELECT:
                 $distinct = ($this->isDistinct()) ? 'DISTINCT ' : '';
 
-                $q = 'SELECT '.$distinct.implode(', ', $this->parts['select']).' FROM ';
+                $q = 'SELECT ' . $distinct . implode(', ', $this->parts['select']) . ' FROM ';
             break;
+        }
+        return $q;
+    }
+    /**
+     * buildFromPart
+     *
+     * @return string
+     */
+    public function buildFromPart()
+    {
+    	$q = '';
+        foreach ($this->parts['from'] as $k => $part) {
+            if ($k === 0) {
+                $q .= $part;
+                continue;
+            }
+            // preserve LEFT JOINs only if needed
+
+            if (substr($part, 0, 9) === 'LEFT JOIN') {
+                $e = explode(' ', $part);
+
+                $aliases = array_merge($this->subqueryAliases,
+                            array_keys($this->neededTables));
+
+                if( ! in_array($e[3], $aliases) &&
+                    ! in_array($e[2], $aliases) &&
+
+                    ! empty($this->pendingFields)) {
+                    continue;
+                }
+
+            }
+
+            $e = explode(' ON ', $part);
+            
+            // we can always be sure that the first join condition exists
+            $e2 = explode(' AND ', $e[1]);
+
+            $part = $e[0] . ' ON ' . array_shift($e2);
+
+            if ( ! empty($e2)) {
+                $parser = new Doctrine_Query_JoinCondition($this);
+                $part  .= ' AND ' . $parser->_parse(implode(' AND ', $e2));
+            }
+
+            $q .= ' ' . $part;
         }
         return $q;
     }
@@ -735,15 +471,17 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     public function getQuery($params = array())
     {
-        if(empty($this->parts["select"]) || empty($this->parts["from"]))
+        if (empty($this->parts['select']) || empty($this->parts['from'])) {
             return false;
+        }
 
         $needsSubQuery = false;
         $subquery = '';
-        $k  = array_keys($this->tables);
-        $table = $this->tables[$k[0]];
+        $map   = reset($this->_aliasMap);
+        $table = $map['table'];
+        $rootAlias = key($this->_aliasMap);
 
-        if( ! empty($this->parts['limit']) && $this->needsSubquery && $table->getAttribute(Doctrine::ATTR_QUERY_LIMIT) == Doctrine::LIMIT_RECORDS) {
+        if ( ! empty($this->parts['limit']) && $this->needsSubquery && $table->getAttribute(Doctrine::ATTR_QUERY_LIMIT) == Doctrine::LIMIT_RECORDS) {
             $needsSubQuery = true;
             $this->limitSubqueryUsed = true;
         }
@@ -754,118 +492,74 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         // build the basic query
 
         $str = '';
-        if($this->isDistinct())
+        if ($this->isDistinct()) {
             $str = 'DISTINCT ';
-
-        $q = $this->getQueryBase();
-
-        $q .= $this->parts['from'];
-        /**
-        var_dump($this->pendingFields);
-        var_dump($this->subqueryAliases);  */
-        //var_dump($this->parts['join']);
-
-        foreach($this->parts['join'] as $parts) {
-            foreach($parts as $part) {
-                // preserve LEFT JOINs only if needed
-
-                if(substr($part, 0,9) === 'LEFT JOIN') {
-                    $e = explode(' ', $part);
-
-                    $aliases = array_merge($this->subqueryAliases, 
-                                array_keys($this->neededTables));
-
-
-                    if( ! in_array($e[3], $aliases) &&
-                        ! in_array($e[2], $aliases) &&
-
-                        ! empty($this->pendingFields)) {
-                        continue;
-                    }
-
-                }
-
-                $e = explode(' ON ', $part);
-                
-                // we can always be sure that the first join condition exists
-                $e2 = explode(' AND ', $e[1]);
-
-                $part = $e[0] . ' ON '
-                      . array_shift($e2);
-                      
-                if( ! empty($e2)) {
-                    $parser = new Doctrine_Query_JoinCondition($this);
-                    $part  .= ' AND ' . $parser->parse(implode(' AND ', $e2));
-                }
-
-                $q .= ' ' . $part;
-            }
         }
-        /**
-        if( ! empty($this->parts['join'])) {
-            foreach($this->parts['join'] as $part) {
-                $q .= ' '.implode(' ', $part);
-            }
-        }
-        */
 
-        if( ! empty($this->parts['set'])) {
+        $q  = $this->getQueryBase();
+        $q .= $this->buildFromPart();
+
+        if ( ! empty($this->parts['set'])) {
             $q .= ' SET ' . implode(', ', $this->parts['set']);
         }
 
         $string = $this->applyInheritance();
 
-        if( ! empty($string))
-            $this->parts['where'][] = '('.$string.')';
-
+        if ( ! empty($string)) {
+            $this->parts['where'][] = '(' . $string . ')';
+        }
 
 
         $modifyLimit = true;
-        if( ! empty($this->parts["limit"]) || ! empty($this->parts["offset"])) {
+        if ( ! empty($this->parts["limit"]) || ! empty($this->parts["offset"])) {
 
-            if($needsSubQuery) {
+            if ($needsSubQuery) {
                 $subquery = $this->getLimitSubquery();
 
 
-                switch(strtolower($this->conn->getName())) {
+                switch (strtolower($this->conn->getName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
                         $list     = $this->conn->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
                         $subquery = implode(', ', $list);
-                    break;
+                        break;
                     case 'pgsql':
                         // pgsql needs special nested LIMIT subquery
                         $subquery = 'SELECT doctrine_subquery_alias.' . $table->getIdentifier(). ' FROM (' . $subquery . ') AS doctrine_subquery_alias';
-                    break;
+                        break;
                 }
 
-                $field    = $this->aliasHandler->getShortAlias($table->getTableName()) . '.' . $table->getIdentifier();
+                $field = $this->aliasHandler->getShortAlias($rootAlias) . '.' . $table->getIdentifier();
 
                 // only append the subquery if it actually contains something
-                if($subquery !== '')
+                if ($subquery !== '') {
                     array_unshift($this->parts['where'], $field. ' IN (' . $subquery . ')');
+                }
 
                 $modifyLimit = false;
             }
         }
 
-        $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']):'';
-        $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']):'';
-        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']):'';
-        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby']):'';
+        $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']) : '';
+        $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby'])  : '';
+        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']): '';
+        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])  : '';
 
-        if($modifyLimit)
+        if ($modifyLimit) {
             $q = $this->conn->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
+        }
 
         // return to the previous state
-        if( ! empty($string))
+        if ( ! empty($string)) {
             array_pop($this->parts['where']);
-        if($needsSubQuery)
+        }
+        if ($needsSubQuery) {
             array_shift($this->parts['where']);
-
+        }
         return $q;
     }
     /**
+     * getLimitSubquery
      * this is method is used by the record limit algorithm
      *
      * when fetching one-to-many, many-to-many associated data with LIMIT clause
@@ -876,11 +570,12 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     public function getLimitSubquery()
     {
-        $k          = array_keys($this->tables);
-        $table      = $this->tables[$k[0]];
+        $map    = reset($this->_aliasMap);
+        $table  = $map['table'];
+        $componentAlias = key($this->_aliasMap);
 
         // get short alias
-        $alias      = $this->aliasHandler->getShortAlias($table->getTableName());
+        $alias      = $this->aliasHandler->getShortAlias($componentAlias);
         $primaryKey = $alias . '.' . $table->getIdentifier();
 
         // initialize the base of the subquery
@@ -899,23 +594,20 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
             }
         }
 
-        $subquery .= ' FROM ' . $this->conn->quoteIdentifier($table->getTableName()) . ' ' . $alias;
+        $subquery .= ' FROM';
 
-        foreach ($this->parts['join'] as $parts) {
-            foreach ($parts as $part) {
-                // preserve LEFT JOINs only if needed
-                if (substr($part,0,9) === 'LEFT JOIN') {
-                    $e = explode(' ', $part);
+        foreach ($this->parts['from'] as $part) {
+            // preserve LEFT JOINs only if needed
+            if (substr($part,0,9) === 'LEFT JOIN') {
+                $e = explode(' ', $part);
 
-                    if ( ! in_array($e[3], $this->subqueryAliases) &&
-                         ! in_array($e[2], $this->subqueryAliases)) {
-                        continue;
-                    }
-
+                if ( ! in_array($e[3], $this->subqueryAliases) &&
+                     ! in_array($e[2], $this->subqueryAliases)) {
+                    continue;
                 }
-
-                $subquery .= ' '.$part;
             }
+
+            $subquery .= ' ' . $part;
         }
 
         // all conditions must be preserved in subquery
@@ -927,7 +619,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         // add driver specific limit clause
         $subquery = $this->conn->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
 
-        $parts = self::quoteExplode($subquery, ' ', "'", "'");
+        $parts = Doctrine_Tokenizer::quoteExplode($subquery, ' ', "'", "'");
 
         foreach($parts as $k => $part) {
             if(strpos($part, "'") !== false) {
@@ -953,31 +645,7 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
         return $subquery;
     }
     /**
-     * query the database with DQL (Doctrine Query Language)
-     *
-     * @param string $query                 DQL query
-     * @param array $params                 parameters
-     */
-    public function query($query,$params = array())
-    {
-        $this->parseQuery($query);
-
-        if($this->aggregate) {
-            $keys  = array_keys($this->tables);
-            $query = $this->getQuery();
-            $stmt  = $this->tables[$keys[0]]->getConnection()->select($query, $this->parts["limit"], $this->parts["offset"]);
-            $data  = $stmt->fetch(PDO::FETCH_ASSOC);
-            if(count($data) == 1) {
-                return current($data);
-            } else {
-                return $data;
-            }
-        } else {
-            return $this->execute($params);
-        }
-    }
-    /**
-     * splitQuery
+     * tokenizeQuery
      * splits the given dql query into an array where keys
      * represent different query part names and values are
      * arrays splitted using sqlExplode method
@@ -995,9 +663,9 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      * @throws Doctrine_Query_Exception     if some generic parsing error occurs
      * @return array                        an array containing the query string parts
      */
-    public function splitQuery($query)
+    public function tokenizeQuery($query)
     {
-        $e = self::sqlExplode($query, ' ');
+        $e = Doctrine_Tokenizer::sqlExplode($query, ' ');
 
         foreach($e as $k=>$part) {
             $part = trim($part);
@@ -1047,60 +715,61 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
      */
     public function parseQuery($query, $clear = true)
     {
-        if($clear)
+        if ($clear) {
             $this->clear();
+        }
 
         $query = trim($query);
         $query = str_replace("\n", ' ', $query);
         $query = str_replace("\r", ' ', $query);
 
-        $parts = $this->splitQuery($query);
+        $parts = $this->tokenizeQuery($query);
 
         foreach($parts as $k => $part) {
             $part = implode(' ', $part);
-            switch(strtoupper($k)) {
-                case 'CREATE':
+            switch(strtolower($k)) {
+                case 'create':
                     $this->type = self::CREATE;
                 break;
-                case 'INSERT':
+                case 'insert':
                     $this->type = self::INSERT;
                 break;
-                case 'DELETE':
+                case 'delete':
                     $this->type = self::DELETE;
                 break;
-                case 'SELECT':
+                case 'select':
                     $this->type = self::SELECT;
                     $this->parseSelect($part);
                 break;
-                case 'UPDATE':
+                case 'update':
                     $this->type = self::UPDATE;
                     $k = 'FROM';
 
-                case 'FROM':
+                case 'from':
                     $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
                     $parser = new $class($this);
                     $parser->parse($part);
                 break;
-                case 'SET':
+                case 'set':
                     $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
                     $parser = new $class($this);
-                    $this->parts['set'][] = $parser->parse($part);
+                    $parser->parse($part);
                 break;
-                case 'GROUP':
-                case 'ORDER':
+                case 'group':
+                case 'order':
                     $k .= 'by';
-                case 'WHERE':
-                case 'HAVING':
+                case 'where':
+                case 'having':
                     $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
                     $parser = new $class($this);
 
                     $name = strtolower($k);
-                    $this->parts[$name][] = $parser->parse($part);
+                    $parser->parse($part);
                 break;
-                case 'LIMIT':
+                case 'limit':
                     $this->parts['limit'] = trim($part);
                 break;
-                case 'OFFSET':
+                case 'offset':
                     $this->parts['offset'] = trim($part);
                 break;
             }
@@ -1108,573 +777,518 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable {
 
         return $this;
     }
-    /**
-     * DQL ORDER BY PARSER
-     * parses the order by part of the query string
-     *
-     * @param string $str
-     * @return void
-     */
-    final public function parseOrderBy($str)
+    public function load($path, $loadFields = true) 
     {
-        $parser = new Doctrine_Query_Part_Orderby($this);
-        return $parser->parse($str);
-    }
-    /**
-     * returns Doctrine::FETCH_* constant
-     *
-     * @param string $mode
-     * @return integer
-     */
-    final public function parseFetchMode($mode)
-    {
-        switch(strtolower($mode)):
-            case "i":
-            case "immediate":
-                $fetchmode = Doctrine::FETCH_IMMEDIATE;
-            break;
-            case "b":
-            case "batch":
-                $fetchmode = Doctrine::FETCH_BATCH;
-            break;
-            case "l":
-            case "lazy":
-                $fetchmode = Doctrine::FETCH_LAZY;
-            break;
-            case "o":
-            case "offset":
-                $fetchmode = Doctrine::FETCH_OFFSET;
-            break;
-            case "lo":
-            case "lazyoffset":
-                $fetchmode = Doctrine::FETCH_LAZYOFFSET;
-            default:
-                throw new Doctrine_Query_Exception("Unknown fetchmode '$mode'. The availible fetchmodes are 'i', 'b' and 'l'.");
-        endswitch;
-        return $fetchmode;
-    }
-    /**
-     * trims brackets
-     *
-     * @param string $str
-     * @param string $e1        the first bracket, usually '('
-     * @param string $e2        the second bracket, usually ')'
-     */
-    public static function bracketTrim($str,$e1 = '(',$e2 = ')')
-    {
-        if(substr($str,0,1) == $e1 && substr($str,-1) == $e2)
-            return substr($str,1,-1);
-        else
-            return $str;
-    }
-    /**
-     * bracketExplode
-     *
-     * example:
-     *
-     * parameters:
-     *      $str = (age < 20 AND age > 18) AND email LIKE 'John@example.com'
-     *      $d = ' AND '
-     *      $e1 = '('
-     *      $e2 = ')'
-     *
-     * would return an array:
-     *      array("(age < 20 AND age > 18)",
-     *            "email LIKE 'John@example.com'")
-     *
-     * @param string $str
-     * @param string $d         the delimeter which explodes the string
-     * @param string $e1        the first bracket, usually '('
-     * @param string $e2        the second bracket, usually ')'
-     *
-     */
-    public static function bracketExplode($str, $d = ' ', $e1 = '(', $e2 = ')')
-    {
-        if(is_array($d)) {
-            $a = preg_split('/('.implode('|', $d).')/', $str);
-            $d = stripslashes($d[0]);
-        } else
-            $a = explode("$d",$str);
-
-        $i = 0;
-        $term = array();
-        foreach($a as $key=>$val) {
-            if (empty($term[$i])) {
-                $term[$i] = trim($val);
-                $s1 = substr_count($term[$i], "$e1");
-                $s2 = substr_count($term[$i], "$e2");
-                    if($s1 == $s2) $i++;
-            } else {
-                $term[$i] .= "$d".trim($val);
-                $c1 = substr_count($term[$i], "$e1");
-                $c2 = substr_count($term[$i], "$e2");
-                    if($c1 == $c2) $i++;
-            }
-        }
-        return $term;
-    }
-    /**
-     * quoteExplode
-     *
-     * example:
-     *
-     * parameters:
-     *      $str = email LIKE 'John@example.com'
-     *      $d = ' AND '
-     *
-     * would return an array:
-     *      array("email", "LIKE", "'John@example.com'")
-     *
-     * @param string $str
-     * @param string $d         the delimeter which explodes the string
-     */
-    public static function quoteExplode($str, $d = ' ')
-    {
-        if(is_array($d)) {
-            $a = preg_split('/('.implode('|', $d).')/', $str);
-            $d = stripslashes($d[0]);
-        } else
-            $a = explode("$d",$str);
-
-        $i = 0;
-        $term = array();
-        foreach($a as $key => $val) {
-            if (empty($term[$i])) {
-                $term[$i] = trim($val);
-
-                if( ! (substr_count($term[$i], "'") & 1))
-                    $i++;
-            } else {
-                $term[$i] .= "$d".trim($val);
-
-                if( ! (substr_count($term[$i], "'") & 1))
-                    $i++;
-            }
-        }
-        return $term;
-    }
-    /**
-     * sqlExplode
-     *
-     * explodes a string into array using custom brackets and
-     * quote delimeters
-     *
-     *
-     * example:
-     *
-     * parameters:
-     *      $str = "(age < 20 AND age > 18) AND name LIKE 'John Doe'"
-     *      $d   = ' '
-     *      $e1  = '('
-     *      $e2  = ')'
-     *
-     * would return an array:
-     *      array('(age < 20 AND age > 18)',
-     *            'name',
-     *            'LIKE',
-     *            'John Doe')
-     *
-     * @param string $str
-     * @param string $d         the delimeter which explodes the string
-     * @param string $e1        the first bracket, usually '('
-     * @param string $e2        the second bracket, usually ')'
-     *
-     * @return array
-     */
-    public static function sqlExplode($str, $d = ' ', $e1 = '(', $e2 = ')')
-    {
-    	if ($d == ' ') {
-    		$d = array(' ', '\s');
-    	}
-        if(is_array($d)) {
-        	if (in_array(' ', $d)) {
-        		$d[] = '\s';
-        	}
-            $str = preg_split('/('.implode('|', $d).')/', $str);
-            $d = stripslashes($d[0]);
-        } else {
-            $str = explode("$d",$str);
-        }
-
-        $i = 0;
-        $term = array();
-        foreach($str as $key => $val) {
-            if (empty($term[$i])) {
-                $term[$i] = trim($val);
-
-                $s1 = substr_count($term[$i],"$e1");
-                $s2 = substr_count($term[$i],"$e2");
-
-                if (substr($term[$i],0,1) == "(") {
-                    if($s1 == $s2) {
-                        $i++;
-                    }
-                } else {
-                    if ( ! (substr_count($term[$i], "'") & 1) &&
-                         ! (substr_count($term[$i], "\"") & 1) &&
-                         ! (substr_count($term[$i], "�") & 1)
-                       ) { $i++; }
-                }
-            } else {
-                $term[$i] .= "$d".trim($val);
-                $c1 = substr_count($term[$i],"$e1");
-                $c2 = substr_count($term[$i],"$e2");
-
-                if(substr($term[$i],0,1) == "(") {
-                    if($c1 == $c2) {
-                        $i++;
-                    }
-                } else {
-                    if ( ! (substr_count($term[$i], "'") & 1) &&
-                         ! (substr_count($term[$i], "\"") & 1) &&
-                         ! (substr_count($term[$i], "�") & 1)
-                       ) { $i++; }
-                }
-            }
-        }
-        return $term;
-    }
-    /**
-     * generateAlias
-     *
-     * @param string $tableName
-     * @return string
-     */
-    public function generateAlias($tableName)
-    {
-        if(isset($this->tableIndexes[$tableName])) {
-            return $tableName.++$this->tableIndexes[$tableName];
-        } else {
-            $this->tableIndexes[$tableName] = 1;
-            return $tableName;
-        }
-    }
-
-    /**
-     * loads a component
-     *
-     * @param string $path              the path of the loadable component
-     * @param integer $fetchmode        optional fetchmode, if not set the components default fetchmode will be used
-     * @throws Doctrine_Query_Exception
-     * @return Doctrine_Table
-     */
-    final public function load($path, $loadFields = true)
-    {
-                
         // parse custom join conditions
         $e = explode(' ON ', $path);
         
         $joinCondition = '';
-        if(count($e) > 1) {
+
+        if (count($e) > 1) {
             $joinCondition = ' AND ' . $e[1];
             $path = $e[0];
         }
 
-        $tmp            = explode(' ',$path);
-        $componentAlias = (count($tmp) > 1) ? end($tmp) : false;
+        $tmp           = explode(' ', $path);
+        $originalAlias = (count($tmp) > 1) ? end($tmp) : null;
 
         $e = preg_split("/[.:]/", $tmp[0], -1);
 
+        $fullPath = $tmp[0];
+        $prevPath = '';
+        $fullLength = strlen($fullPath);
 
-        if(isset($this->compAliases[$e[0]])) {
-            $end      = substr($tmp[0], strlen($e[0]));
-            $path     = $this->compAliases[$e[0]] . $end;
-            $e        = preg_split("/[.:]/", $path, -1);
-        } else {
-            $path     = $tmp[0];
+        if (isset($this->_aliasMap[$e[0]])) {
+            $table = $this->_aliasMap[$e[0]]['table'];
+
+            $prevPath = $parent = array_shift($e);
         }
 
+        foreach ($e as $key => $name) {
+            // get length of the previous path
+            $length = strlen($prevPath);
 
+            // build the current component path
+            $prevPath = ($prevPath) ? $prevPath . '.' . $name : $name;
 
-        $index = 0;
-        $currPath = '';
-        $this->tableStack = array();
+            $delimeter = substr($fullPath, $length, 1);
 
-        foreach($e as $key => $fullname) {
-            try {
-                $e2    = preg_split("/[-(]/",$fullname);
-                $name  = $e2[0];
+            // if an alias is not given use the current path as an alias identifier
+            if (strlen($prevPath) === $fullLength && isset($originalAlias)) {
+                $componentAlias = $originalAlias;
+            } else {
+                $componentAlias = $prevPath;
+            }
 
-                $currPath .= '.' . $name;
+            if ( ! isset($table)) {
+                // process the root of the path
 
-                if($key == 0) {
-                    $currPath = substr($currPath,1);
+                $table = $this->loadRoot($name, $componentAlias);
+            } else {
+                $join = ($delimeter == ':') ? 'INNER JOIN ' : 'LEFT JOIN ';
 
-                    $this->conn = Doctrine_Manager::getInstance()
-                                  ->getConnectionForComponent($name);
+                $relation = $table->getRelation($name);
 
-                    $table = $this->conn->getTable($name);
+                $this->_aliasMap[$componentAlias] = array('table'    => $relation->getTable(),
+                                                          'parent'   => $parent,
+                                                          'relation' => $relation);
+                if ( ! $relation->isOneToOne()) {
+                   $this->needsSubquery = true;
+                }
 
+                $localAlias   = $this->getShortAlias($parent, $table->getTableName());
+                $foreignAlias = $this->getShortAlias($componentAlias, $relation->getTable()->getTableName());
+                $localSql     = $this->conn->quoteIdentifier($table->getTableName()) . ' ' . $localAlias;
+                $foreignSql   = $this->conn->quoteIdentifier($relation->getTable()->getTableName()) . ' ' . $foreignAlias;
 
-                    $tname = $this->aliasHandler->getShortAlias($table->getTableName());
+                $map = $relation->getTable()->inheritanceMap;
+  
+                if ( ! $loadFields || ! empty($map) || $joinCondition) {
+                    $this->subqueryAliases[] = $foreignAlias;
+                }
 
-                    if( ! isset($this->tableAliases[$currPath])) {
-                        $this->tableIndexes[$tname] = 1;
-                    }  
-
-                    $this->parts['from'] = $this->conn->quoteIdentifier($table->getTableName());
-                    
-                    if ($this->type === self::SELECT) {
-                         $this->parts['from'] .= ' ' . $tname;
+                if ($relation instanceof Doctrine_Relation_Association) {
+                    $asf = $relation->getAssociationFactory();
+  
+                    $assocTableName = $asf->getTableName();
+  
+                    if( ! $loadFields || ! empty($map) || $joinCondition) {
+                        $this->subqueryAliases[] = $assocTableName;
                     }
 
-                    $this->tableAliases[$currPath] = $tname;
+                    $assocPath = $prevPath . '.' . $asf->getComponentName();
+  
+                    $assocAlias = $this->getShortAlias($assocPath, $asf->getTableName());
 
-                    $tableName = $tname;
+                    $queryPart = $join . $assocTableName . ' ' . $assocAlias . ' ON ' . $localAlias  . '.'
+                                                                  . $table->getIdentifier() . ' = '
+                                                                  . $assocAlias . '.' . $relation->getLocal();
+
+                    if ($relation instanceof Doctrine_Relation_Association_Self) {
+                        $queryPart .= ' OR ' . $localAlias  . '.' . $table->getIdentifier() . ' = '
+                                                                  . $assocAlias . '.' . $relation->getForeign();
+                    }
+
+                    $this->parts['from'][] = $queryPart;
+
+                    $queryPart = $join . $foreignSql . ' ON ' . $foreignAlias . '.'
+                                               . $relation->getTable()->getIdentifier() . ' = '
+                                               . $assocAlias . '.' . $relation->getForeign()
+                                               . $joinCondition;
+
+                    if ($relation instanceof Doctrine_Relation_Association_Self) {
+                        $queryPart .= ' OR ' . $foreignAlias  . '.' . $table->getIdentifier() . ' = '
+                                             . $assocAlias . '.' . $relation->getLocal();
+                    }
+
                 } else {
 
-                    $index += strlen($e[($key - 1)]) + 1;
-                    // the mark here is either '.' or ':'
-                    $mark  = substr($path, ($index - 1), 1);
-
-                    if(isset($this->tableAliases[$prevPath])) {
-                        $tname = $this->tableAliases[$prevPath];
-                    } else {
-                        $tname = $this->aliasHandler->getShortAlias($table->getTableName());
-                    }
-
-                    $fk       = $table->getRelation($name);
-                    $name     = $fk->getTable()->getComponentName();
-                    $original = $fk->getTable()->getTableName();
-
-
-
-                    if (isset($this->tableAliases[$currPath])) {
-                        $tname2 = $this->tableAliases[$currPath];
-                    } else {
-                        $tname2 = $this->aliasHandler->generateShortAlias($original);
-                    }
-
-                    $aliasString = $this->conn->quoteIdentifier($original) . ' ' . $tname2;
-
-                    switch ($mark) {
-                        case ':':
-                            $join = 'INNER JOIN ';
-                        break;
-                        case '.':
-                            $join = 'LEFT JOIN ';
-                        break;
-                        default:
-                            throw new Doctrine_Query_Exception("Unknown operator '$mark'");
-                    }
-
-                    if( ! $fk->isOneToOne()) {
-                       $this->needsSubquery = true;
-                    }
-
-
-                    $map = $fk->getTable()->inheritanceMap;
-
-                    if( ! $loadFields || ! empty($map) || $joinCondition) {
-                        $this->subqueryAliases[] = $tname2;
-                    }
-
-
-                    if ($fk instanceof Doctrine_Relation_Association) {
-                        $asf = $fk->getAssociationFactory();
-
-                        $assocTableName = $asf->getTableName();
-
-                        if( ! $loadFields || ! empty($map) || $joinCondition) {
-                            $this->subqueryAliases[] = $assocTableName;
-                        }
-                        
-                        $assocPath = $prevPath . '.' . $asf->getComponentName();
-
-                        if (isset($this->tableAliases[$assocPath])) {
-                            $assocAlias = $this->tableAliases[$assocPath];
-                        } else {
-                            $assocAlias = $this->aliasHandler->generateShortAlias($assocTableName);
-                        }
-
-                        $this->parts['join'][$tname][$assocTableName] = $join . $assocTableName . ' ' . $assocAlias . ' ON ' . $tname  . '.'
-                                                                      . $table->getIdentifier() . ' = '
-                                                                      . $assocAlias . '.' . $fk->getLocal();
-                                                                      
-                        if ($fk instanceof Doctrine_Relation_Association_Self) {
-                            $this->parts['join'][$tname][$assocTableName] .= ' OR ' . $tname  . '.' . $table->getIdentifier() . ' = '
-                                                                           . $assocAlias . '.' . $fk->getForeign();
-                        }
-
-                        $this->parts['join'][$tname][$tname2]         = $join . $aliasString    . ' ON ' . $tname2 . '.'
-                                                                      . $fk->getTable()->getIdentifier() . ' = '
-                                                                      . $assocAlias . '.' . $fk->getForeign()
-                                                                      . $joinCondition;
-
-                        if ($fk instanceof Doctrine_Relation_Association_Self) {
-                            $this->parts['join'][$tname][$tname2] .= ' OR ' . $tname2  . '.' . $table->getIdentifier() . ' = '
-                                                                           . $assocAlias . '.' . $fk->getLocal();
-                        }
-
-                    } else {
-                        $this->parts['join'][$tname][$tname2]         = $join . $aliasString
-                                                                      . ' ON ' . $tname .  '.'
-                                                                      . $fk->getLocal() . ' = ' . $tname2 . '.' . $fk->getForeign()
-                                                                      . $joinCondition;
-                    }
-
-
-                    $this->joins[$tname2] = $prevTable;
-
-
-                    $table = $fk->getTable();
-
-                    $this->tableAliases[$currPath] = $tname2;
-
-                    $tableName = $tname2;
-
-                    $this->relationStack[] = $fk;
+                    $queryPart = $join . $foreignSql
+                                       . ' ON ' . $localAlias .  '.'
+                                       . $relation->getLocal() . ' = ' . $foreignAlias . '.' . $relation->getForeign()
+                                       . $joinCondition;
                 }
-
-                $this->components[$currPath] = $table;
-
-                $this->tableStack[] = $table;
-
-                if( ! isset($this->tables[$tableName])) {
-                    $this->tables[$tableName] = $table;
-
-                    if ($loadFields) {
-
-                        $skip = false;
-
-                        if ( ! empty($this->pendingFields) ||
-                             ! empty($this->pendingAggregates)) {
-                            $skip = true;
-                        }
-
-                        if ($componentAlias) {
-                            $this->compAliases[$componentAlias] = $currPath;
-
-                            if(isset($this->pendingFields[$componentAlias])) {
-                                $this->processPendingFields($componentAlias);
-                                $skip = true;
-                            }
-                            if(isset($this->pendingAggregates[$componentAlias]) ||
-                              (current($this->tables) === $table && isset($this->pendingAggregates[0]))
-                               ) {
-                                $this->processPendingAggregates($componentAlias);
-                                $skip = true;
-                            }
-                        }
-
-                        if ( ! $skip) {
-                            $this->parseFields($fullname, $tableName, $e2, $currPath);
-                        }
-                    }
-                }
-
-
-                $prevPath  = $currPath;
-                $prevTable = $tableName;
-            } catch(Exception $e) {
-                throw new Doctrine_Query_Exception($e->__toString());
+                $this->parts['from'][] = $queryPart;
             }
+            if ($loadFields) {
+                             	
+                $restoreState = false;
+                // load fields if necessary
+                if ($loadFields && empty($this->pendingFields) 
+                    && empty($this->pendingAggregates)
+                    && empty($this->pendingSubqueries)) {
+
+                    $this->pendingFields[$componentAlias] = array('*');
+
+                    $restoreState = true;
+                }
+
+                if(isset($this->pendingFields[$componentAlias])) {
+                    $this->processPendingFields($componentAlias);
+                }
+
+                if(isset($this->pendingAggregates[$componentAlias]) || isset($this->pendingAggregates[0])) {
+                    $this->processPendingAggregates($componentAlias);
+                }
+
+                if ($restoreState) {
+                    $this->pendingFields = array();
+                    $this->pendingAggregates = array();
+                }
+            }
+            $parent = $prevPath;
+        }
+        return end($this->_aliasMap);
+    }
+    /**
+     * loadRoot
+     *
+     * @param string $name
+     * @param string $componentAlias
+     */
+    public function loadRoot($name, $componentAlias)
+    {
+    	// get the connection for the component
+        $this->conn = Doctrine_Manager::getInstance()
+                      ->getConnectionForComponent($name);
+
+        $table = $this->conn->getTable($name);
+        $tableName = $table->getTableName();
+
+        // get the short alias for this table
+        $tableAlias = $this->aliasHandler->getShortAlias($componentAlias, $tableName);
+        // quote table name
+        $queryPart = $this->conn->quoteIdentifier($tableName);
+
+        if ($this->type === self::SELECT) {
+            $queryPart .= ' ' . $tableAlias;
         }
 
-        if($componentAlias !== false) {
-            $this->compAliases[$componentAlias] = $currPath;
-        }
-
+        $this->parts['from'][] = $queryPart;
+        $this->tableAliases[$tableAlias]  = $componentAlias;
+        $this->_aliasMap[$componentAlias] = array('table' => $table);
+        
         return $table;
     }
-    /**
-     * parseFields
+	/**
+ 	 * count
+ 	 * fetches the count of the query
+ 	 *
+ 	 * This method executes the main query without all the
+     * selected fields, ORDER BY part, LIMIT part and OFFSET part.
      *
-     * @param string $fullName
-     * @param string $tableName
-     * @param array $exploded
-     * @param string $currPath
-     * @return void
+     * Example:
+     * Main query: 
+     *      SELECT u.*, p.phonenumber FROM User u
+     *          LEFT JOIN u.Phonenumber p 
+     *          WHERE p.phonenumber = '123 123' LIMIT 10
+     *
+     * The query this method executes: 
+     *      SELECT COUNT(DISTINCT u.id) FROM User u
+     *          LEFT JOIN u.Phonenumber p
+     *          WHERE p.phonenumber = '123 123'
+     *
+     * @param array $params        an array of prepared statement parameters
+	 * @return integer             the count of this query
      */
-    final public function parseFields($fullName, $tableName, array $exploded, $currPath)
+	public function count($params = array())
     {
-        $table = $this->tables[$tableName];
+    	// initialize temporary variables
+		$where  = $this->parts['where'];
+		$having = $this->parts['having'];
+		$map    = reset($this->_aliasMap);
+		$componentAlias = key($this->_aliasMap);
+		$table = $map['table'];
 
-        $fields = array();
+        // build the query base
+		$q  = 'SELECT COUNT(DISTINCT ' . $this->aliasHandler->getShortAlias($table->getTableName())
+            . '.' . $table->getIdentifier()
+            . ') FROM ' . $this->buildFromPart();
 
-        if(strpos($fullName, '-') === false) {
-            $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
+        // append column aggregation inheritance (if needed)
+        $string = $this->applyInheritance();
 
-            if(isset($exploded[1])) {
-                if(count($exploded) > 2) {
-                    $fields = $this->parseAggregateValues($fullName, $tableName, $exploded, $currPath);
-                } elseif(count($exploded) == 2) {
-                    $fields = explode(',',substr($exploded[1],0,-1));
-                }
-            }
-        } else {
-            if(isset($exploded[1])) {
-                $fetchmode = $this->parseFetchMode($exploded[1]);
-            } else
-                $fetchmode = $table->getAttribute(Doctrine::ATTR_FETCHMODE);
-
-            if(isset($exploded[2])) {
-                if(substr_count($exploded[2], ')') > 1) {
-
-                } else {
-                    $fields = explode(',', substr($exploded[2],0,-1));
-                }
-            }
-
+        if ( ! empty($string)) {
+            $where[] = $string;
         }
-        if( ! $this->aggregate)
-            $this->loadFields($table, $fetchmode, $fields, $currPath);
+        // append conditions
+        $q .= ( ! empty($where)) ?  ' WHERE '  . implode(' AND ', $where) : '';
+		$q .= ( ! empty($having)) ? ' HAVING ' . implode(' AND ', $having): '';
+
+        if ( ! is_array($params)) {
+            $params = array($params);
+        }
+        // append parameters
+        $params = array_merge($this->params, $params);
+
+		return (int) $this->getConnection()->fetchOne($q, $params);
+	}
+    /**
+     * isLimitSubqueryUsed
+     * whether or not limit subquery algorithm is used
+     *
+     * @return boolean
+     */
+    public function isLimitSubqueryUsed() {
+        return $this->limitSubqueryUsed;
+    }
+
+    /**
+     * query
+     * query the database with DQL (Doctrine Query Language)
+     *
+     * @param string $query     DQL query
+     * @param array $params     prepared statement parameters
+     * @see Doctrine::FETCH_* constants
+     * @return mixed
+     */
+    public function query($query, $params = array())
+    {
+        $this->parseQuery($query);
+
+        return $this->execute($params);
     }
     /**
-     * parseAggregateFunction
+     * getShortAlias
+     * some database such as Oracle need the identifier lengths to be < ~30 chars
+     * hence Doctrine creates as short identifier aliases as possible
      *
-     * @param string $func
-     * @param string $reference
-     * @return string
+     * this method is used for the creation of short table aliases, its also
+     * smart enough to check if an alias already exists for given component (componentAlias)
+     *
+     * @param string $componentAlias    the alias for the query component to search table alias for
+     * @param string $tableName         the table name from which the table alias is being created
+     * @return string                   the generated / fetched short alias
      */
-    public function parseAggregateFunction($func,$reference)
+    public function getShortAlias($componentAlias, $tableName)
     {
-        $pos = strpos($func, '(');
-
-        if($pos !== false) {
-            $funcs  = array();
-
-            $name   = substr($func, 0, $pos);
-            $func   = substr($func, ($pos + 1), -1);
-            $params = Doctrine_Query::bracketExplode($func, ',', '(', ')');
-
-            foreach($params as $k => $param) {
-                $params[$k] = $this->parseAggregateFunction($param,$reference);
-            }
-
-            $funcs = $name . '(' . implode(', ', $params). ')';
-
-            return $funcs;
-
-        } else {
-            if( ! is_numeric($func)) {
-
-                $func = $this->getTableAlias($reference).'.'.$func;
-
-                return $func;
-            } else {
-
-                return $func;
-            }
-        }
+        return $this->aliasHandler->getShortAlias($componentAlias, $tableName);
     }
     /**
-     * parseAggregateValues
+     * addSelect
+     * adds fields to the SELECT part of the query
+     *
+     * @param string $select        DQL SELECT part
+     * @return Doctrine_Query
      */
-    public function parseAggregateValues($fullName, $tableName, array $exploded, $currPath)
+    public function addSelect($select)
     {
-        $this->aggregate = true;
-        $pos    = strpos($fullName, '(');
-        $name   = substr($fullName, 0, $pos);
-        $string = substr($fullName, ($pos + 1), -1);
-
-        $exploded     = Doctrine_Query::bracketExplode($string, ',');
-        foreach($exploded as $k => $value) {
-            $func         = $this->parseAggregateFunction($value, $currPath);
-            $exploded[$k] = $func;
-
-            $this->parts['select'][] = $exploded[$k];
+        return $this->getParser('select')->parse($select, true);
+    }
+    /**
+     * addWhere
+     * adds conditions to the WHERE part of the query
+     *
+     * @param string $where         DQL WHERE part
+     * @param mixed $params         an array of parameters or a simple scalar
+     * @return Doctrine_Query
+     */
+    public function addWhere($where, $params = array())
+    {
+        if (is_array($params)) {
+            $this->params = array_merge($this->params, $params);
+        } else {
+            $this->params[] = $params;
         }
+        return $this->getParser('where')->parse($where, true);
+    }
+    /**
+     * addGroupBy
+     * adds fields to the GROUP BY part of the query
+     *
+     * @param string $groupby       DQL GROUP BY part
+     * @return Doctrine_Query
+     */
+    public function addGroupBy($groupby)
+    {
+        return $this->getParser('groupby')->parse($groupby, true);
+    }
+    /**
+     * addHaving
+     * adds conditions to the HAVING part of the query
+     *
+     * @param string $having        DQL HAVING part
+     * @param mixed $params         an array of parameters or a simple scalar
+     * @return Doctrine_Query
+     */
+    public function addHaving($having, $params = array())
+    {
+        if (is_array($params)) {
+            $this->params = array_merge($this->params, $params);
+        } else {
+            $this->params[] = $params;
+        }
+        return $this->getParser('having')->parse($having, true);
+    }
+    /**
+     * addOrderBy
+     * adds fields to the ORDER BY part of the query
+     *
+     * @param string $orderby       DQL ORDER BY part
+     * @return Doctrine_Query
+     */
+    public function addOrderBy($orderby)
+    {
+        return $this->getParser('orderby')->parse($orderby, true);
+    }
+    /**
+     * select
+     * sets the SELECT part of the query
+     *
+     * @param string $select        DQL SELECT part
+     * @return Doctrine_Query
+     */
+    public function select($select)
+    {
+        return $this->getParser('select')->parse($select);
+    }
+    /**
+     * distinct
+     * Makes the query SELECT DISTINCT.
+     *
+     * @param bool $flag            Whether or not the SELECT is DISTINCT (default true).
+     * @return Doctrine_Query
+     */
+    public function distinct($flag = true)
+    {
+        $this->_parts['distinct'] = (bool) $flag;
+
+        return $this;
+    }
+
+    /**
+     * forUpdate
+     * Makes the query SELECT FOR UPDATE.
+     *
+     * @param bool $flag            Whether or not the SELECT is FOR UPDATE (default true).
+     * @return Doctrine_Query
+     */
+    public function forUpdate($flag = true)
+    {
+        $this->_parts[self::FOR_UPDATE] = (bool) $flag;
+
+        return $this;
+    }
+    /**
+     * delete
+     * sets the query type to DELETE
+     *
+     * @return Doctrine_Query
+     */
+    public function delete()
+    {
+    	$this->type = self::DELETE;
+
+        return $this;
+    }
+    /**
+     * update
+     * sets the UPDATE part of the query
+     *
+     * @param string $update        DQL UPDATE part
+     * @return Doctrine_Query
+     */
+    public function update($update)
+    {
+    	$this->type = self::UPDATE;
+
+        return $this->getParser('from')->parse($update);
+    }
+    /**
+     * set
+     * sets the SET part of the query
+     *
+     * @param string $update        DQL UPDATE part
+     * @return Doctrine_Query
+     */
+    public function set($key, $value)
+    {
+        return $this->getParser('set')->parse($key . ' = ' . $value);
+    }
+    /**
+     * from
+     * sets the FROM part of the query
+     *
+     * @param string $from          DQL FROM part
+     * @return Doctrine_Query
+     */
+    public function from($from)
+    {
+        return $this->getParser('from')->parse($from);
+    }
+    /**
+     * innerJoin
+     * appends an INNER JOIN to the FROM part of the query
+     *
+     * @param string $join         DQL INNER JOIN
+     * @return Doctrine_Query
+     */
+    public function innerJoin($join)
+    {
+        return $this->getParser('from')->parse('INNER JOIN ' . $join);
+    }
+    /**
+     * leftJoin
+     * appends a LEFT JOIN to the FROM part of the query
+     *
+     * @param string $join         DQL LEFT JOIN
+     * @return Doctrine_Query
+     */
+    public function leftJoin($join)
+    {
+        return $this->getParser('from')->parse('LEFT JOIN ' . $join);
+    }
+    /**
+     * groupBy
+     * sets the GROUP BY part of the query
+     *
+     * @param string $groupby      DQL GROUP BY part
+     * @return Doctrine_Query
+     */
+    public function groupBy($groupby)
+    {
+        return $this->getParser('groupby')->parse($groupby);
+    }
+    /**
+     * where
+     * sets the WHERE part of the query
+     *
+     * @param string $join         DQL WHERE part
+     * @param mixed $params        an array of parameters or a simple scalar
+     * @return Doctrine_Query
+     */
+    public function where($where, $params = array())
+    {
+        $this->params = (array) $params;
+
+        return $this->getParser('where')->parse($where);
+    }
+    /**
+     * having
+     * sets the HAVING part of the query
+     *
+     * @param string $having       DQL HAVING part
+     * @param mixed $params        an array of parameters or a simple scalar
+     * @return Doctrine_Query
+     */
+    public function having($having, $params)
+    {
+        $this->params = (array) $params;
+        
+        return $this->getParser('having')->parse($having);
+    }
+    /**
+     * orderBy
+     * sets the ORDER BY part of the query
+     *
+     * @param string $orderby      DQL ORDER BY part
+     * @return Doctrine_Query
+     */
+    public function orderBy($orderby)
+    {
+        return $this->getParser('orderby')->parse($orderby);
+    }
+    /**
+     * limit
+     * sets the DQL query limit
+     *
+     * @param integer $limit        limit to be used for limiting the query results
+     * @return Doctrine_Query
+     */
+    public function limit($limit)
+    {
+        return $this->getParser('limit')->parse($limit);
+    }
+    /**
+     * offset
+     * sets the DQL query offset
+     *
+     * @param integer $offset       offset to be used for paginating the query
+     * @return Doctrine_Query
+     */
+    public function offset($offset)
+    {
+        return $this->getParser('offset')->parse($offset);
     }
 }
 

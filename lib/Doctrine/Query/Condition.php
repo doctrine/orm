@@ -39,32 +39,32 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
      * @param string $str
      * @return string
      */
-    final public function parse($str)
+    public function _parse($str)
     {
         $tmp = trim($str);
 
-        $parts = Doctrine_Query::bracketExplode($str, array(' \&\& ', ' AND '), '(', ')');
+        $parts = Doctrine_Tokenizer::bracketExplode($str, array(' \&\& ', ' AND '), '(', ')');
 
         if (count($parts) > 1) {
             $ret = array();
             foreach ($parts as $part) {
-                $part = Doctrine_Query::bracketTrim($part, '(', ')');
-                $ret[] = $this->parse($part);
+                $part = Doctrine_Tokenizer::bracketTrim($part, '(', ')');
+                $ret[] = $this->_parse($part);
             }
-            $r = implode(' AND ',$ret);
+            $r = implode(' AND ', $ret);
         } else {
 
-            $parts = Doctrine_Query::bracketExplode($str, array(' \|\| ', ' OR '), '(', ')');
+            $parts = Doctrine_Tokenizer::bracketExplode($str, array(' \|\| ', ' OR '), '(', ')');
             if (count($parts) > 1) {
                 $ret = array();
                 foreach ($parts as $part) {
-                    $part = Doctrine_Query::bracketTrim($part, '(', ')');
-                    $ret[] = $this->parse($part);
+                    $part = Doctrine_Tokenizer::bracketTrim($part, '(', ')');
+                    $ret[] = $this->_parse($part);
                 }
                 $r = implode(' OR ', $ret);
             } else {
-                if (substr($parts[0],0,1) == '(' && substr($parts[0],-1) == ')') {
-                    return $this->parse(substr($parts[0],1,-1));
+                if (substr($parts[0],0,1) == '(' && substr($parts[0], -1) == ')') {
+                    return $this->_parse(substr($parts[0], 1, -1));
                 } else {
                     return $this->load($parts[0]);
                 }
@@ -73,6 +73,9 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
 
         return '(' . $r . ')';
     }
+
+
+
     /**
      * parses a literal value and returns the parsed value
      *
@@ -88,7 +91,7 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
         if (strpos($value, '\'') === false) {
             // parse booleans
             $value = $this->query->getConnection()
-                     ->dataDict->parseBoolean($value);  
+                     ->dataDict->parseBoolean($value);
 
             $a = explode('.', $value);
 

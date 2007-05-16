@@ -87,30 +87,30 @@ class Doctrine_RawSql extends Doctrine_Hydrate
         foreach ($e as $k => $part) {
             $low = strtolower($part);
             switch (strtolower($part)) {
-                case "select":
-                case "from":
-                case "where":
-                case "limit":
-                case "offset":
-                case "having":
+                case 'select':
+                case 'from':
+                case 'where':
+                case 'limit':
+                case 'offset':
+                case 'having':
                     $p = $low;
                     if ( ! isset($parts[$low])) {
                         $parts[$low] = array();
                     }
                     break;
-                case "order":
-                case "group":
+                case 'order':
+                case 'group':
                     $i = ($k + 1);
-                    if (isset($e[$i]) && strtolower($e[$i]) === "by") {
+                    if (isset($e[$i]) && strtolower($e[$i]) === 'by') {
                         $p = $low;
-                        $p .= "by";
-                        $parts[$low."by"] = array();
+                        $p .= 'by';
+                        $parts[$low.'by'] = array();
 
                     } else {
                         $parts[$p][] = $part;
                     }
                     break;
-                case "by":
+                case 'by':
                     continue;
                 default:
                     if ( ! isset($parts[$p][0])) {
@@ -118,11 +118,11 @@ class Doctrine_RawSql extends Doctrine_Hydrate
                     } else {
                         $parts[$p][0] .= ' '.$part;
                     }
-            };
-        };
+            }
+        }
 
         $this->parts = $parts;
-        $this->parts["select"] = array();
+        $this->parts['select'] = array();
 
         return $this;
     }
@@ -149,12 +149,12 @@ class Doctrine_RawSql extends Doctrine_Hydrate
 
             if ($e[1] == '*') {
                 foreach ($this->tables[$e[0]]->getColumnNames() as $name) {
-                    $field = $e[0].".".$name;
-                    $this->parts["select"][$field] = $field." AS ".$e[0]."__".$name;
+                    $field = $e[0] . '.' . $name;
+                    $this->parts['select'][$field] = $field . ' AS ' . $e[0] . '__' . $name;
                 }
             } else {
-                $field = $e[0].".".$e[1];
-                $this->parts["select"][$field] = $field." AS ".$e[0]."__".$e[1];
+                $field = $e[0] . '.' . $e[1];
+                $this->parts['select'][$field] = $field . ' AS ' . $e[0] . '__' . $e[1];
             }
         }
 
@@ -163,13 +163,13 @@ class Doctrine_RawSql extends Doctrine_Hydrate
         foreach ($this->tableAliases as $alias) {
             foreach ($this->tables[$alias]->getPrimaryKeys() as $key) {
                 $field = $alias . '.' . $key;
-                if ( ! isset($this->parts["select"][$field])) {
-                    $this->parts["select"][$field] = $field." AS ".$alias."__".$key;
+                if ( ! isset($this->parts['select'][$field])) {
+                    $this->parts['select'][$field] = $field . ' AS ' . $alias . '__' . $key;
                 }
             }
         }
 
-        $q = 'SELECT '.implode(', ', $this->parts['select']);
+        $q = 'SELECT ' . implode(', ', $this->parts['select']);
 
         $string = $this->applyInheritance();
         if ( ! empty($string)) {
@@ -183,8 +183,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate
         $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']) : '';
         $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' ', $this->parts['having']) : '';
         $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(' ', $this->parts['orderby']) : '';
-        $q .= ( ! empty($this->parts['limit']))?   ' LIMIT ' . implode(' ', $this->parts['limit']) : '';
-        $q .= ( ! empty($this->parts['offset']))?  ' OFFSET ' . implode(' ', $this->parts['offset']) : '';
+        $q .= ( ! empty($this->parts['limit']))?   ' LIMIT '    . implode(' ', $this->parts['limit']) : '';
+        $q .= ( ! empty($this->parts['offset']))?  ' OFFSET '   . implode(' ', $this->parts['offset']) : '';
 
         if ( ! empty($string)) {
             array_pop($this->parts['where']);
@@ -216,8 +216,10 @@ class Doctrine_RawSql extends Doctrine_Hydrate
 
         foreach ($e as $k => $component) {
             $currPath .= '.' . $component;
-            if ($k == 0)
+            
+            if ($k == 0) {
                 $currPath = substr($currPath,1);
+            }
 
             if (isset($this->tableAliases[$currPath])) {
                 $alias = $this->tableAliases[$currPath];
@@ -230,12 +232,12 @@ class Doctrine_RawSql extends Doctrine_Hydrate
             }
             $table = $this->conn->getTable($component);
             $this->tables[$alias]           = $table;
-            $this->fetchModes[$alias]       = Doctrine::FETCH_IMMEDIATE;
             $this->tableAliases[$currPath]  = $alias;
 
             if ($k !== 0) {
                 $this->joins[$alias]        = $prevAlias;
             }
+
             $prevAlias = $alias;
             $prevPath  = $currPath;
         }

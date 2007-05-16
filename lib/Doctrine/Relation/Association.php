@@ -126,7 +126,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
      */
     public function fetchRelatedFor(Doctrine_Record $record)
     {
-        $id      = $record->getIncremented();
+        $id = $record->getIncremented();
         if (empty($id)) {
             $coll = new Doctrine_Collection($this->getTable());
         } else {

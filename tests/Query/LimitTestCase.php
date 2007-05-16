@@ -45,7 +45,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
 
     public function testLimitWithOneToOneLeftJoin() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->select('u.id, e.*')->from('User u, u.Email e')->limit(5);
 
         $users = $q->execute();
@@ -55,7 +55,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
     }
     public function testLimitWithOneToOneInnerJoin() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->select('u.id, e.*')->from('User u, u:Email e')->limit(5);
 
         $users = $q->execute();
@@ -64,7 +64,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
     }
     public function testLimitWithOneToManyLeftJoin() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->select('u.id, p.*')->from('User u, u.Phonenumber p')->limit(5);
 
         $sql = $q->getQuery();
@@ -91,7 +91,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
 
     public function testLimitWithOneToManyLeftJoinAndCondition() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->select('User.name')->from('User')->where("User.Phonenumber.phonenumber LIKE '%123%'")->limit(5);
 
         $users = $q->execute();
@@ -111,7 +111,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
 
     public function testLimitWithOneToManyLeftJoinAndOrderBy() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->select('User.name')->from('User')->where("User.Phonenumber.phonenumber LIKE '%123%'")->orderby('User.Email.address')->limit(5);
         
 
@@ -128,7 +128,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
 
     public function testLimitWithOneToManyInnerJoin() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->select('u.id, p.*')->from('User u INNER JOIN u.Phonenumber p');
         $q->limit(5);
 
@@ -156,7 +156,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
 
     public function testLimitWithPreparedQueries() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->select('u.id, p.id')->from('User u LEFT JOIN u.Phonenumber p');
         $q->where('u.name = ?');
         $q->limit(5);
@@ -170,7 +170,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($q->getQuery(),
         'SELECT e.id AS e__id, p.id AS p__id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE e.id IN (SELECT DISTINCT e2.id FROM entity e2 WHERE e2.name = ? AND (e2.type = 0) LIMIT 5) AND e.name = ? AND (e.type = 0)');
 
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->select('u.id, p.id')->from('User u LEFT JOIN u.Phonenumber p');
         $q->where("u.name LIKE ? || u.name LIKE ?");
         $q->limit(5);
@@ -188,7 +188,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
     }
     public function testConnectionFlushing() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->from('User.Phonenumber');
         $q->where('User.name = ?');
         $q->limit(5);
@@ -200,7 +200,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
     }
     public function testLimitWithManyToManyColumnAggInheritanceLeftJoin() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->from('User.Group')->limit(5);
 
         $users = $q->execute();
@@ -227,7 +227,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
 
 
 
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->from("User")->where("User.Group.id = ?")->orderby("User.id ASC")->limit(5);
 
 
@@ -236,7 +236,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users->count(), 3);
 
         $this->connection->clear();
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->from('User')->where('User.Group.id = ?')->orderby('User.id DESC');
         $users = $q->execute(array($user->Group[1]->id));
 
@@ -248,7 +248,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_ROWS);
         
         $this->connection->clear();
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->from("User")->where("User.Group.id = ?")->orderby("User.id DESC")->limit(5);
         $users = $q->execute(array(3));
 
@@ -260,7 +260,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
 
     public function testLimitWithManyToManyAndColumnAggregationInheritance() 
     {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->from('User u, u.Group g')->where('g.id > 1')->orderby('u.name DESC')->limit(10); 
 
     }
@@ -279,7 +279,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $coll[3]->name = "photo 4";
         $this->connection->flush();
 
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         $q->from("Photo")->where("Photo.Tag.id = ?")->orderby("Photo.id DESC")->limit(100);
 
         $photos = $q->execute(array(1));

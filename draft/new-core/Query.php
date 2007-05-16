@@ -20,7 +20,7 @@
  */
 Doctrine::autoload('Doctrine_Hydrate');
 /**
- * Doctrine_Query2
+ * Doctrine_Query
  *
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -30,7 +30,7 @@ Doctrine::autoload('Doctrine_Hydrate');
  * @version     $Revision: 1296 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable 
+class Doctrine_Query extends Doctrine_Hydrate2 implements Countable 
 {
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
@@ -88,7 +88,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public static function create()
     {
-        return new Doctrine_Query2();
+        return new Doctrine_Query();
     }
     /**
      * isSubquery
@@ -205,7 +205,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public function parseSelect($dql)
     {
-        $refs = Doctrine_Query::bracketExplode($dql, ',');
+        $refs = Doctrine_Tokenizer::bracketExplode($dql, ',');
 
         foreach ($refs as $reference) {
             if (strpos($reference, '(') !== false) {
@@ -237,7 +237,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
      */
     public function parseSubselect($reference) 
     {
-        $e     = Doctrine_Query::bracketExplode($reference, ' ');
+        $e     = Doctrine_Tokenizer::bracketExplode($reference, ' ');
         $alias = $e[1];
 
         if (count($e) > 2) {
@@ -253,7 +253,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
     }
     public function parseAggregateFunction2($func)
     {
-        $e    = Doctrine_Query::bracketExplode($func, ' ');
+        $e    = Doctrine_Tokenizer::bracketExplode($func, ' ');
         $func = $e[0];
 
         $pos  = strpos($func, '(');
@@ -1132,7 +1132,7 @@ class Doctrine_Query2 extends Doctrine_Hydrate2 implements Countable
     public function distinct($flag = true)
     {
         $this->_parts['distinct'] = (bool) $flag;
-        
+
         return $this;
     }
 

@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Where.php 1352 2007-05-15 10:07:05Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -18,44 +18,24 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Query_Part');
+
 /**
- * Doctrine_Query_Groupby
+ * Doctrine_Query_Offset
  *
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
- * @version     $Revision$
+ * @version     $Revision: 1352 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query_Groupby extends Doctrine_Query_Part
+class Doctrine_Query_Offset extends Doctrine_Query_Part
 {
-    /**
-     * DQL GROUP BY PARSER
-     * parses the group by part of the query string
-
-     * @param string $str
-     * @return void
-     */
-    public function parse($str, $append = false)
+    public function parse($offset)
     {
-        $r = array();
-        foreach (explode(',', $str) as $reference) {
-            $reference = trim($reference);
-            $e     = explode('.', $reference);
-            $field = array_pop($e);
-            $ref   = implode('.', $e);
-            $this->query->load($ref);
-
-            $r[] = $this->query->getTableAlias($ref) . '.' . $field;
-        }
-        if ($append) {
-            $this->query->addQueryPart('groupby', implode(', ', $r));
-        } else {
-            $this->query->setQueryPart('groupby', implode(', ', $r));
-        }
+        $this->query->setQueryPart('offset', (int) $offset);
+        
         return $this->query;
     }
 }

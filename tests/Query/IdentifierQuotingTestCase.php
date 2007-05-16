@@ -39,7 +39,7 @@ class Doctrine_Query_IdentifierQuoting_TestCase extends Doctrine_UnitTestCase {
     public function testQuerySupportsIdentifierQuoting() {
         $this->connection->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
 
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         $q->parseQuery('SELECT MAX(u.id), MIN(u.name) FROM User u');
 
@@ -47,7 +47,7 @@ class Doctrine_Query_IdentifierQuoting_TestCase extends Doctrine_UnitTestCase {
 
     }
     public function testQuerySupportsIdentifierQuotingWithJoins() {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
 
         $q->parseQuery('SELECT u.name FROM User u LEFT JOIN u.Phonenumber p');
 
@@ -55,7 +55,7 @@ class Doctrine_Query_IdentifierQuoting_TestCase extends Doctrine_UnitTestCase {
     }
     
     public function testLimitSubqueryAlgorithmSupportsIdentifierQuoting() {
-        $q = new Doctrine_Query2();
+        $q = new Doctrine_Query();
         
         $q->parseQuery('SELECT u.name FROM User u INNER JOIN u.Phonenumber p')->limit(5); 
         
