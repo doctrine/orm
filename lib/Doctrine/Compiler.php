@@ -167,6 +167,7 @@ class Doctrine_Compiler
                                    'RawSql',
                                    'Record',
                                    'Record_Exception',
+                                   'Record_Filter',
                                    'Record_Iterator',
                                    'Record_State_Exception',
                                    'Relation',
