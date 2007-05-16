@@ -30,7 +30,7 @@ Doctrine::autoload('Doctrine_Hydrate');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query extends Doctrine_Hydrate2 implements Countable 
+class Doctrine_Query extends Doctrine_Hydrate implements Countable 
 {
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries

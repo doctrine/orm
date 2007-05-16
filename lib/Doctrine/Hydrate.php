@@ -398,8 +398,12 @@ class Doctrine_Hydrate
         reset($this->_aliasMap);
         $rootMap     = current($this->_aliasMap);
         $rootAlias   = key($this->_aliasMap);
-        $coll        = new Doctrine_Collection2($rootMap['table']);
+        $coll        = new Doctrine_Collection($rootMap['table']);
         $prev[$rootAlias] = $coll;
+        
+        // we keep track of all the collections
+        $colls   = array();
+        $colls[] = $coll;
 
         $prevRow = array();
         /**
@@ -471,6 +475,9 @@ class Doctrine_Hydrate
                                 // previous entry found from memory
                                 $prev[$alias] = $prev[$parentAlias]->getLast()->get($relation->getAlias());
                             }
+                            
+                            $colls[] = $prev[$alias];
+
                             // add record to the current collection
                             if ($identifiable) {
                                 $prev[$alias]->add($record);
@@ -491,6 +498,11 @@ class Doctrine_Hydrate
                 $prevRow[$tableAlias] = $row;
             }
         }
+        // take snapshots from all initialized collections
+        foreach(array_unique($colls) as $coll) {
+            $coll->takeSnapshot();
+        }
+
         return $coll;
     }
     /**
