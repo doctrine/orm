@@ -93,9 +93,9 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
                   ' = ?';
 
         $q->select('{'.$tableName.'.*}, {'.$assocTable.'.*}')
-          ->from($tableName.' INNER JOIN '.$assocTable.' ON '.
-                 $tableName.'.'.$identifier.' = '.$assocTable.'.'.$this->getLocal().' OR '.
-                 $tableName.'.'.$identifier.' = '.$assocTable.'.'.$this->getForeign()
+          ->from($tableName . ' INNER JOIN '.$assocTable.' ON '.
+                 $tableName . '.' . $identifier . ' = ' . $assocTable . '.' . $this->getLocal() . ' OR ' .
+                 $tableName . '.' . $identifier . ' = ' . $assocTable . '.' . $this->getForeign()
                  )
           ->where($tableName.'.'.$identifier.' IN ('.$sub.') OR '.
                   $tableName.'.'.$identifier.' IN ('.$sub2.')'
