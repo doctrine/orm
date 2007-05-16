@@ -178,39 +178,20 @@ class Doctrine_Record_Filter
      */
     private function prepareIdentifiers($exists = true)
     {
-        switch ($this->_table->getIdentifierType()) {
-            case Doctrine_Identifier::AUTO_INCREMENT:
-            case Doctrine_Identifier::SEQUENCE:
-                $name = $this->_table->getIdentifier();
-
-                if ($exists) {
-                    if (isset($this->_data[$name]) && $this->_data[$name] !== self::$null) {
-                        $this->_id[$name] = $this->_data[$name];
-                    }
-                }
-
-                unset($this->_data[$name]);
-
-                break;
-            case Doctrine_Identifier::NORMAL:
-                $this->_id   = array();
-                $name       = $this->_table->getIdentifier();
-
-                if (isset($this->_data[$name]) && $this->_data[$name] !== self::$null) {
+        $id = $this->_table->getIdentifier();
+    	$this->_id   = array();
+        if (count($id) > 1) {
+            foreach ($id as $name) {
+                if ($this->_data[$name] === self::$null) {
+                    $this->_id[$name] = null;
+                } else {
                     $this->_id[$name] = $this->_data[$name];
                 }
-                break;
-            case Doctrine_Identifier::COMPOSITE:
-                $names      = $this->_table->getIdentifier();
-
-                foreach ($names as $name) {
-                    if ($this->_data[$name] === self::$null) {
-                        $this->_id[$name] = null;
-                    } else {
-                        $this->_id[$name] = $this->_data[$name];
-                    }
-                }
-                break;
+            }
+    	} else {
+            if (isset($this->_data[$id]) && $this->_data[$id] !== self::$null) {
+                $this->_id[$id] = $this->_data[$id];
+            }
         }
     }
     /**
