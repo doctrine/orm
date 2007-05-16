@@ -19,12 +19,6 @@
  * <http://www.phpdoctrine.com>.
  */
 
-
-require_once('../draft/new-core/Record.php');
-require_once('../draft/new-core/Hydrate.php');
-require_once('../draft/new-core/Query.php');
-require_once('../draft/new-core/Collection.php');
-
 /**
  * Doctrine_Hydrate_TestCase
  *
@@ -36,8 +30,6 @@ require_once('../draft/new-core/Collection.php');
  * @since       1.0
  * @version     $Revision$
  */
-
-
 class Doctrine_Hydrate_TestCase extends Doctrine_UnitTestCase
 {
     protected $testData1 = array(

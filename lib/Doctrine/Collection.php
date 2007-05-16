@@ -555,11 +555,19 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function processDiff() 
     {
-        foreach (array_diff($this->_snapshot, $this->data) as $record) {   
+        foreach (array_diff($this->_snapshot, $this->data) as $record) {
             $record->delete();
         }
 
         return $this;
+    }
+    public function getDeleteDiff()
+    {
+        return array_diff($this->_snapshot, $this->data);
+    }
+    public function getInsertDiff()
+    {
+        return array_diff($this->data, $this->_snapshot);
     }
     /**
      * save

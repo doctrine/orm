@@ -228,10 +228,10 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         }
     }
     public function setUp() {
-        if( ! $this->init) $this->init(); 
-        
-        if(isset($this->objTable))
-            $this->objTable->clear();
+        if ( ! $this->init) {
+            $this->init();
+        }
+        $this->objTable->clear();
         
         $this->init    = true;
     }

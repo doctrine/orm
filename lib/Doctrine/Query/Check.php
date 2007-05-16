@@ -83,7 +83,7 @@ class Doctrine_Query_Check
      */
     public function parseClause($dql)
     {
-        $parts = Doctrine_Query::sqlExplode($dql, ' AND ');
+        $parts = Doctrine_Tokenizer::sqlExplode($dql, ' AND ');
 
         if (count($parts) > 1) {
             $ret = array();
@@ -93,7 +93,7 @@ class Doctrine_Query_Check
 
             $r = implode(' AND ', $ret);
         } else {
-            $parts = Doctrine_Query::quoteExplode($dql, ' OR ');
+            $parts = Doctrine_Tokenizer::quoteExplode($dql, ' OR ');
             if (count($parts) > 1) {
                 $ret = array();
                 foreach ($parts as $part) {

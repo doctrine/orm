@@ -31,14 +31,14 @@
  * @version     $Revision$
  */
 class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
-         /**
+
     public function prepareTables() {
         $this->tables[] = "enumTest";
         $this->tables[] = "fieldNameTest";
         $this->tables[] = "GzipTest";
         parent::prepareTables();
     }
-    */
+
     public function testIssetForPrimaryKey() {
         $this->assertTrue(isset($this->users[0]->id));
         $this->assertTrue(isset($this->users[0]['id']));
@@ -50,7 +50,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertFalse(isset($user['id']));
         $this->assertFalse($user->contains('id'));
     }
-    /**
+
     public function testUnknownColumn() {
                                         	
     }
@@ -299,14 +299,6 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->name, null);
 
     }
-
-    public function testDateTimeType() {
-        $date = new DateTest();
-
-                                       	
-    }   
-
-
     public function testSerialize() {
         $user = $this->connection->getTable("User")->find(4);
         $str = serialize($user);
@@ -324,9 +316,6 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $user->call('substr', 'name', 0, 1);
         $this->assertEqual($user->name, 'z');
     }
-
-
-
     public function testCompositePK() {
         $record = new EntityReference();
         $this->assertEqual($record->getTable()->getIdentifier(), array("entity1","entity2"));
@@ -711,8 +700,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($new->loginname, 'jackd');
     }
 
-    public function testReferences() {
-
+    public function testReferences() 
+    {
         $user = $this->objTable->find(5);
 
         $pf   = $this->connection->getTable("Phonenumber");
@@ -946,13 +935,15 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
     }
 
 
-    public function testCount() {
+    public function testCount() 
+    {
         $user = $this->connection->getTable("User")->find(4);
 
         $this->assertTrue(is_integer($user->count()));
     }
 
-    public function testGetReference() {
+    public function testGetReference()
+    {
         $user = $this->connection->getTable("User")->find(4);
 
         $this->assertTrue($user->Email instanceof Doctrine_Record);
@@ -961,10 +952,10 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertTrue($user->Phonenumber->count() == 1);
     }
-    public function testGetIterator() {
+    public function testGetIterator()
+    {
         $user = $this->connection->getTable("User")->find(4);
         $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
-    */
 }
 ?>

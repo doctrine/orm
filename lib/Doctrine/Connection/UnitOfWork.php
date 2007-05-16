@@ -30,7 +30,7 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implements IteratorAggregate, Countable
+class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 {
     /**
      * buildFlushTree
@@ -163,6 +163,20 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                 }
 
             } elseif ($fk instanceof Doctrine_Relation_Association) {
+                $assocTable = $fk->getAssociationTable();
+                foreach ($v->getDeleteDiff() as $r) {
+                    $query = 'DELETE FROM ' . $assocTable->getTableName()
+                           . ' WHERE '      . $fk->getForeign() . ' = ?'
+                           . ' AND '        . $fk->getLocal()   . ' = ?';
+                    $this->query($r->getIncremented(), $record->getIncremented());
+                }
+                foreach ($v->getInsertDiff as $r) {
+                    $assocRecord = $assocTable->create();
+                    $assocRecord->set($fk->getForeign(), $r);
+                    $assocRecord->set($fk->getLocal(), $record);
+                    $assocRecord->save($this->conn);
+                }
+
                 $v->save($this->conn);
             }
         }
@@ -186,8 +200,10 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
     public function saveAssociations(Doctrine_Record $record)
     {
         foreach ($record->getTable()->getRelations() as $rel) {
-            $table   = $rel->getTable();
-            $alias   = $rel->getAlias();
+            $table = $rel->getTable();
+            $alias = $rel->getAlias();
+            
+
         }
     }
     /**
@@ -206,7 +222,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
                     $obj = $record->get($fk->getAlias());
                     $obj->delete($this->conn);
                     break;
-            };
+            }
         }
     }
     /**
@@ -347,9 +363,4 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module implemen
 
         return true;
     }
-    public function getIterator()
-    { }
-
-    public function count()
-    { }
 }

@@ -42,6 +42,10 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     {
         return $this->definition['assocTable'];
     }
+    public function getAssociationTable()
+    {
+    	return $this->definition['assocTable'];
+    }
     /**
      * processDiff
      *
