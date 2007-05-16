@@ -1,7 +1,40 @@
 <?php
-class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
+/*
+ *  $Id: RawSqlTestCase.php 1181 2007-03-20 23:22:51Z gnat $
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.com>.
+ */
 
-    public function testQueryParser() {
+/**
+ * Doctrine_RawSql_TestCase
+ * This class tests the functinality of Doctrine_RawSql component
+ *
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision: 1181 $
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ */
+class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase 
+{
+    public function testQueryParser() 
+    {
         $sql = "SELECT {p.*} FROM photos p";
         $query = new Doctrine_RawSql($this->connection);
         $query->parseQuery($sql);
@@ -16,8 +49,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($query->where, array('p.can_see = -1 AND t.tag_id = 62'));
         $this->assertEqual($query->limit, array(200));
     }
-
-    public function testAsteriskOperator() {
+    public function testAsteriskOperator() 
+    {
         // Selecting with *
 
         $query = new Doctrine_RawSql($this->connection);
@@ -32,8 +65,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($coll->count(), 11);
     }
-
-    public function testLazyPropertyLoading() {
+    public function testLazyPropertyLoading() 
+    {
         $query = new Doctrine_RawSql($this->connection);
         $this->connection->clear();
 
@@ -52,8 +85,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($coll[0]->state(), Doctrine_Record::STATE_PROXY);
         $this->assertEqual($coll[3]->state(), Doctrine_Record::STATE_PROXY); 
     }
-
-    public function testSmartMapping() {
+    public function testSmartMapping() 
+    {
         $query = new Doctrine_RawSql($this->connection);
         // smart component mapping (no need for additional addComponent call
         
@@ -70,7 +103,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($coll[3]->state(), Doctrine_Record::STATE_PROXY);
     }
 
-    public function testMultipleComponents() {
+    public function testMultipleComponents() 
+    {
         $query = new Doctrine_RawSql($this->connection);
         // multi component fetching
 
@@ -90,7 +124,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $coll[5]->Phonenumber[0]->phonenumber;
         $this->assertEqual($count, $this->dbh->count());
     }
-    public function testPrimaryKeySelectForcing() {
+    public function testPrimaryKeySelectForcing() 
+    {
         // forcing the select of primary key fields
         
         $query = new Doctrine_RawSql($this->connection);
@@ -104,7 +139,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($coll[3]->id));
         $this->assertTrue(is_numeric($coll[7]->id));
     }
-    public function testMethodOverloading() {
+    public function testMethodOverloading() 
+    {
         $query = new Doctrine_RawSql($this->connection);
         $query->select('{entity.name}')->from('entity');
         $query->addComponent("entity", "User");
@@ -116,7 +152,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($coll[7]->id));
     }
 
-    public function testColumnAggregationInheritance() {
+    public function testColumnAggregationInheritance() 
+    {
         // forcing the select of primary key fields
         
         $query = new Doctrine_RawSql($this->connection);
@@ -131,7 +168,8 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($coll[7]->id));
     }
 
-    public function testColumnAggregationInheritanceWithOrderBy() {
+    public function testColumnAggregationInheritanceWithOrderBy() 
+    {
         // forcing the select of primary key fields
 
         $query = new Doctrine_RawSql($this->connection);
@@ -150,68 +188,9 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($coll[7]->id));
 
     }
-    public function testsqlExplode() {
-        $str = "word1 word2 word3";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "word2", "word3"));
-        
-        $str = "word1 (word2 word3)";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "(word2 word3)"));
-        
-        $str = "word1 'word2 word3'";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "'word2 word3'"));
 
-        $str = "word1 ´word2 word3´";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "´word2 word3´"));
-
-        $str = "word1 \"word2 word3\"";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "\"word2 word3\""));
-
-        $str = "word1 ((word2) word3)";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "((word2) word3)"));
-
-        $str = "word1 ( (word2) 'word3')";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "( (word2) 'word3')"));
-
-        $str = "word1 ( \"(word2) 'word3')";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "( \"(word2) 'word3')"));
-
-        $str = "word1 ( ´´(word2) 'word3')";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "( ´´(word2) 'word3')"));
-
-        $str = "word1 ( ´()()´(word2) 'word3')";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "( ´()()´(word2) 'word3')"));
-
-        $str = "word1 'word2)() word3'";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "'word2)() word3'"));
-
-        $str = "word1 ´word2)() word3´";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "´word2)() word3´"));
-
-        $str = "word1 \"word2)() word3\"";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("word1", "\"word2)() word3\""));
-
-        $str = "something (subquery '')";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("something", "(subquery '')"));
-
-        $str = "something ((  ))";
-        $a   = Doctrine_Query::sqlExplode($str);
-        $this->assertEqual($a, array("something", "((  ))"));
-    }
-    public function testQueryParser2() {
+    public function testQueryParser2() 
+    {
         $query = new Doctrine_RawSql();
         
         $query->parseQuery("SELECT {entity.name} FROM (SELECT entity.name FROM entity WHERE entity.name = 'something') WHERE entity.id = 2 ORDER BY entity.name");
