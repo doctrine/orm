@@ -67,31 +67,28 @@ class Doctrine_Record_Filter
      *
      * example:
      *
-     * $data = array("name"=>"John","lastname"=> null, "id" => 1,"unknown" => "unknown");
-     * $names = array("name", "lastname", "id");
+     * $data = array("name" => "John", "lastname" => null, "id" => 1, "unknown" => "unknown");
      * $data after operation:
-     * $data = array("name"=>"John","lastname" => Object(Doctrine_Null));
+     * $data = array("name" => "John", "lastname" => Object(Doctrine_Null));
      *
      * here column 'id' is removed since its auto-incremented primary key (read-only)
      *
      * @throws Doctrine_Record_Exception        if unserialization of array/object typed column fails or
      *                                          if uncompression of gzip typed column fails
      *
+     * @param array $data                       data array to be cleaned
      * @return integer
      */
-    public function cleanData() 
+    public function cleanData($data)
     {
-        $tmp = $this->_data;
-
-        $this->_data = array();
-
-        $count = 0;
+        $tmp  = $data;
+        $data = array();  
 
         foreach ($this->_table->getColumnNames() as $name) {
             $type = $this->_table->getTypeOf($name);
 
             if ( ! isset($tmp[$name])) {
-                $this->_data[$name] = self::$null;
+                $data[$name] = self::$null;
             } else {
                 switch ($type) {
                     case 'array':
@@ -106,7 +103,7 @@ class Doctrine_Record_Filter
                             } else {
                                 $value = $tmp[$name];
                             }
-                            $this->_data[$name] = $value;
+                            $data[$name] = $value;
                         }
                         break;
                     case 'gzip':
@@ -117,20 +114,20 @@ class Doctrine_Record_Filter
                                 throw new Doctrine_Record_Exception('Uncompressing of ' . $name . ' failed.');
                             }
                             
-                            $this->_data[$name] = $value;
+                            $data[$name] = $value;
                         }
                         break;
                     case 'enum':
-                        $this->_data[$name] = $this->_table->enumValue($name, $tmp[$name]);
+                        $data[$name] = $this->_table->enumValue($name, $tmp[$name]);
                         break;
                     default:
-                        $this->_data[$name] = $tmp[$name];
+                        $data[$name] = $tmp[$name];
                 }
-                $count++;
+
             }
         }
 
-        return $count;
+        return $data;
     }
     /**
      * prepareIdentifiers

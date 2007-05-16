@@ -403,7 +403,7 @@ class Doctrine_Hydrate
 
         // we keep track of all the collections
         $colls   = array();
-        $colls[] = $coll;      print_r($array);
+        $colls[] = $coll;      
         $prevRow = array();
         /**
          * iterate over the fetched data

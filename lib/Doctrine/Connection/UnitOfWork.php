@@ -77,8 +77,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 $type   = $rel->getType();
 
                 // skip self-referenced relations
-                if ($name === $nm)
+                if ($name === $nm) {
                     continue;
+                }    
 
                 if ($rel instanceof Doctrine_Relation_ForeignKey) {
                     if ($index2 !== false) {

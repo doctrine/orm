@@ -108,6 +108,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     protected $_errorStack;
     /**
+     * @var Doctrine_Record_Filter          the filter object
+     */
+    protected $_filter;
+    /**
      * @var array $references               an array containing all the references
      */
     private $references     = array();
@@ -149,6 +153,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
             $exists = false;
         }
+        
+        // initialize the filter object
+        $this->_filter = new Doctrine_Record_Filter($this);
 
         // Check if the current connection has the records table in its registry
         // If not this record is only used for creating table definition and setting up
@@ -176,7 +183,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $count = count($this->_data);
 
             // clean data array
-            $this->cleanData();
+            $this->_data = $this->_filter->cleanData($this->_data);
 
             $this->prepareIdentifiers($exists);
 
@@ -355,86 +362,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
     }
     /**
-     * cleanData
-     * this method does several things to records internal data
-     *
-     * 1. It unserializes array and object typed columns
-     * 2. Uncompresses gzip typed columns
-     * 3. Gets the appropriate enum values for enum typed columns
-     * 4. Initializes special null object pointer for null values (for fast column existence checking purposes)
-     *
-     *
-     * example:
-     *
-     * $data = array("name"=>"John","lastname"=> null, "id" => 1,"unknown" => "unknown");
-     * $names = array("name", "lastname", "id");
-     * $data after operation:
-     * $data = array("name"=>"John","lastname" => Object(Doctrine_Null));
-     *
-     * here column 'id' is removed since its auto-incremented primary key (read-only)
-     *
-     * @throws Doctrine_Record_Exception        if unserialization of array/object typed column fails or
-     *                                          if uncompression of gzip typed column fails
-     *
-     * @return integer
-     */
-    private function cleanData()
-    {
-        $tmp = $this->_data;
-
-        $this->_data = array();
-
-        $count = 0;
-
-        foreach ($this->_table->getColumnNames() as $name) {
-            $type = $this->_table->getTypeOf($name);
-
-            if ( ! isset($tmp[$name])) {
-                $this->_data[$name] = self::$null;
-            } else {
-                switch ($type) {
-                    case 'array':
-                    case 'object':
-                        if ($tmp[$name] !== self::$null) {
-                            if (is_string($tmp[$name])) {
-                                $value = unserialize($tmp[$name]);
-
-                                if ($value === false)
-                                    throw new Doctrine_Record_Exception('Unserialization of ' . $name . ' failed.');
-                            } else {
-                                $value = $tmp[$name];
-                            }
-                            $this->_data[$name] = $value;
-                        }
-                        break;
-                    case 'gzip':
-                        if ($tmp[$name] !== self::$null) {
-                            $value = gzuncompress($tmp[$name]);
-
-                            if ($value === false)
-                                throw new Doctrine_Record_Exception('Uncompressing of ' . $name . ' failed.');
-
-                            $this->_data[$name] = $value;
-                        }
-                        break;
-                    case 'enum':
-                        $this->_data[$name] = $this->_table->enumValue($name, $tmp[$name]);
-                        break;
-                    case 'boolean':
-                    case 'integer':
-                        if ($tmp[$name] !== self::$null && ! ($tmp[$name] instanceof Doctrine_Record)) {
-                            settype($tmp[$name], $type);
-                        }
-                    default:
-                        $this->_data[$name] = $tmp[$name];
-                }
-                $count++;
-            }
-        }
-
-        return $count;
-    }
-    /**
      * hydrate
      * hydrates this object from given array
      *
@@ -446,7 +373,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach ($data as $k => $v) {
             $this->_data[$k] = $v;
         }
-        $this->cleanData();
+        $this->_data = $this->_filter->cleanData($this->_data);
         $this->prepareIdentifiers();
     }
     /**
@@ -562,7 +489,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $this->_table->getRepository()->add($this);
 
-        $this->cleanData();
+        $this->_data = $this->_filter->cleanData($this->_data);
 
         $this->prepareIdentifiers($this->exists());
 
@@ -640,10 +567,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
         $id = array_values($id);
 
-        $query          = $this->_table->getQuery()." WHERE ".implode(" = ? AND ",$this->_table->getPrimaryKeys())." = ?";
-        $stmt           = $this->_table->getConnection()->execute($query,$id);
+        $query = $this->_table->getQuery() . ' WHERE ' . implode(' = ? AND ', $this->_table->getPrimaryKeys()) . ' = ?';
+        $stmt  = $this->_table->getConnection()->execute($query,$id);
 
-        $this->_data     = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ( ! $this->_data)
             throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist anymore');
@@ -673,7 +600,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $this->_data = $this->_table->getData();
         $old  = $this->_id;
 
-        $this->cleanData();
+        $this->_data = $this->_filter->cleanData($this->_data);
 
         $this->prepareIdentifiers();
 
@@ -1234,7 +1161,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     {
         if ($id === false) {
             $this->_id       = array();
-            $this->cleanData();
+            $this->_data = $this->_filter->cleanData($this->_data);
             $this->_state    = Doctrine_Record::STATE_TCLEAN;
             $this->_modified = array();
         } elseif ($id === true) {
@@ -1266,8 +1193,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     final public function getIncremented()
     {
         $id = current($this->_id);
-        if ($id === false)
+        if ($id === false) {
             return null;
+        }
 
         return $id;
     }
@@ -1304,18 +1232,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             return $this->references[$name];
         }
         throw new Doctrine_Record_Exception("Unknown reference $name");
-    }
-    /**
-     * addReference
-     * @param Doctrine_Record $record
-     * @param mixed $key
-     * @return void
-     */
-    public function addReference(Doctrine_Record $record, Doctrine_Relation $connector, $key = null)
-    {
-        $alias = $connector->getAlias();
-
-        $this->references[$alias]->add($record, $key);
     }
     /**
      * getReferences
