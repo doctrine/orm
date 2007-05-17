@@ -129,8 +129,8 @@ class Doctrine_Record_Filter
         $tmp  = $data;
         $data = array();  
 
-        foreach ($this->_table->getColumnNames() as $name) {
-            $type = $this->_table->getTypeOf($name);
+        foreach ($this->_record->getTable()->getColumnNames() as $name) {
+            $type = $this->_record->getTable()->getTypeOf($name);
 
             if ( ! isset($tmp[$name])) {
                 $data[$name] = self::$null;
@@ -163,7 +163,7 @@ class Doctrine_Record_Filter
                         }
                         break;
                     case 'enum':
-                        $data[$name] = $this->_table->enumValue($name, $tmp[$name]);
+                        $data[$name] = $this->_record->getTable()->enumValue($name, $tmp[$name]);
                         break;
                     default:
                         $data[$name] = $tmp[$name];
