@@ -1387,7 +1387,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return array_keys($this->columns);
     }
-
     /**
      * getDefinitionOf
      *

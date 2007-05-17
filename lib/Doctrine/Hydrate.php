@@ -109,6 +109,8 @@ class Doctrine_Hydrate
      */
     protected $parts = array(
         'select'    => array(),
+        'distinct'  => false,
+        'forUpdate' => false,
         'from'      => array(),
         'set'       => array(),
         'join'      => array(),
@@ -255,6 +257,8 @@ class Doctrine_Hydrate
         $this->tables       = array();
         $this->parts = array(
                     'select'    => array(),
+                    'distinct'  => false,
+                    'forUpdate' => false,
                     'from'      => array(),
                     'set'       => array(),
                     'join'      => array(),
@@ -327,6 +331,7 @@ class Doctrine_Hydrate
     public function _fetch($params = array(), $fetchMode = Doctrine::FETCH_RECORD)
     {
         $params = $this->conn->convertBooleans(array_merge($this->params, $params));
+        $params = $this->convertEnums($params);
 
         if ( ! $this->view) {
             $query = $this->getQuery($params);
@@ -336,19 +341,23 @@ class Doctrine_Hydrate
 
         if ($this->isLimitSubqueryUsed() &&
             $this->conn->getDBH()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
-            
+
             $params = array_merge($params, $params);
         }
+
         $stmt  = $this->conn->execute($query, $params);
 
         return $this->parseData($stmt);
     }
-    
+    public function convertEnums($params)
+    {
+        return $params;
+    }
     public function setAliasMap($map) 
     {
         $this->_aliasMap = $map;
     }
-    public function getAliasMap() 
+    public function getAliasMap()
     {
         return $this->_aliasMap;
     }
@@ -403,7 +412,7 @@ class Doctrine_Hydrate
 
         // we keep track of all the collections
         $colls   = array();
-        $colls[] = $coll;      
+        $colls[] = $coll;
         $prevRow = array();
         /**
          * iterate over the fetched data

@@ -35,15 +35,15 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
      */
-    private $subqueryAliases  = array();
+    protected $subqueryAliases  = array();
     /**
      * @param boolean $needsSubquery
      */
-    private $needsSubquery    = false;
+    protected $needsSubquery    = false;
     /**
      * @param boolean $limitSubqueryUsed
      */
-    private $limitSubqueryUsed = false;
+    protected $limitSubqueryUsed = false;
 
     
     protected $_status         = array('needsSubquery' => true);
@@ -51,20 +51,20 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
      * @param boolean $isSubquery           whether or not this query object is a subquery of another 
      *                                      query object
      */
-    private $isSubquery;
+    protected $isSubquery;
 
-    private $isDistinct        = false;
+    protected $isDistinct        = false;
 
-    private $neededTables      = array();
+    protected $neededTables      = array();
     /**
      * @var array $pendingFields
      */
-    private $pendingFields     = array();
+    protected $pendingFields     = array();
     /**
      * @var array $pendingSubqueries        SELECT part subqueries, these are called pending subqueries since
      *                                      they cannot be parsed directly (some queries might be correlated)
      */
-    private $pendingSubqueries = array();
+    protected $pendingSubqueries = array();
     /**
      * @var boolean $subqueriesProcessed    Whether or not pending subqueries have already been processed.
      *                                      Consequent calls to getQuery would result badly constructed queries
@@ -73,12 +73,15 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
      *                                      Since subqueries can be correlated, they can only be processed when 
      *                                      the main query is fully constructed
      */
-    private $subqueriesProcessed = false;
+    protected $subqueriesProcessed = false;
     /** 
      * @var array $_parsers                 an array of parser objects
      */
     protected $_parsers = array();
-
+    /**
+     * @var array $_enumParams              an array containing the keys of the parameters that should be enumerated
+     */
+    protected $_enumParams = array();
 
     /**
      * create
@@ -89,6 +92,50 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
     public static function create()
     {
         return new Doctrine_Query();
+    }
+    /** 
+     * addEnumParam
+     * sets input parameter as an enumerated parameter
+     *
+     * @param string $key   the key of the input parameter
+     * @return Doctrine_Query
+     */
+    public function addEnumParam($key, $table = null, $column = null)
+    {
+    	$array = (isset($table) || isset($column)) ? array($table, $column) : array();
+
+    	if ($key === '?') {
+    	    $this->_enumParams[] = $array;
+        } else {
+            $this->_enumParams[$key] = $array;
+        }
+    }
+    /**
+     * getEnumParams
+     * get all enumerated parameters
+     *
+     * @return array    all enumerated parameters
+     */
+    public function getEnumParams()
+    {
+        return $this->_enumParams;
+    }
+    /**
+     * convertEnums
+     * convert enum parameters to their integer equivalents
+     *
+     * @return array    converted parameter array
+     */
+    public function convertEnums($params) 
+    {
+        foreach ($this->_enumParams as $key => $values) {
+            if (isset($params[$key])) {
+                if ( ! empty($values)) {
+                    $params[$key] = $values[0]->enumIndex($values[1], $params[$key]);
+                }
+            }
+        }
+        return $params;
     }
     /**
      * isSubquery

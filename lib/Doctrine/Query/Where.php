@@ -163,6 +163,13 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                         }
                         $value = '(' . implode(', ', $value) . ')';
                     }
+                } elseif(substr($value, 0, 1) == ':' || $value === '?') {
+                    // placeholder found
+                    if ($table->getTypeOf($field) == 'enum') {
+                        $this->query->addEnumParam($value, $table, $field);
+                    } else {
+                        $this->query->addEnumParam($value, null, null);
+                    }
                 } else {
                     if ($enumIndex !== false) {
                         $value = $enumIndex;
