@@ -660,9 +660,13 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      *
      * @return bool            
      */
-    public function isValidNode()
+    public function isValidNode(Doctrine_Record $record = null)
     {
-        return ($this->getRightValue() > $this->getLeftValue());
+        if ($record === null) {
+          return ($this->getRightValue() > $this->getLeftValue());
+        } else {
+          return ($record->getNode()->getRightValue() > $record->getNode()->getLeftValue());
+        }
     }
 
     /**
