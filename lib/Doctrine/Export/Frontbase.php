@@ -224,7 +224,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
                     $oldFieldName = $fieldName;
                 }
                 $oldFieldName = $this->conn->quoteIdentifier($oldFieldName, true);
-                $query.= "CHANGE $oldFieldName " . $this->conn->getDeclaration($field['definition']['type'], $oldFieldName, $field['definition']);
+                $query.= 'CHANGE ' . $oldFieldName . ' ' . $this->conn->getDeclaration($field['definition']['type'], $oldFieldName, $field['definition']);
             }
         }
 
@@ -244,7 +244,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
         }
 
         $name = $this->conn->quoteIdentifier($name, true);
-        return $this->conn->exec("ALTER TABLE $name $query");
+        return $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
     }
     /**
      * create sequence
