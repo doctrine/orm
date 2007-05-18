@@ -143,7 +143,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
      * @param boolean $check     indicates whether the function should just check if the DBMS driver
      *                             can perform the requested table alterations if the value is true or
      *                             actually perform them otherwise.
-     * @throws PDOException
+     * @throws Doctrine_Connection_Exception
      * @return boolean
      */
     public function alterTable($name, array $changes, $check)
@@ -166,38 +166,38 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         }
 
         if (isset($changes['add']) && is_array($changes['add'])) {
-            foreach ($changes['add'] as $field_name => $field) {
-                $query = 'ADD ' . $this->conn->getDeclaration($field['type'], $field_name, $field);
+            foreach ($changes['add'] as $fieldName => $field) {
+                $query = 'ADD ' . $this->conn->getDeclaration($field['type'], $fieldName, $field);
                 $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
             }
         }
 
         if (isset($changes['remove']) && is_array($changes['remove'])) {
-            foreach ($changes['remove'] as $field_name => $field) {
-                $field_name = $this->conn->quoteIdentifier($field_name, true);
-                $query = 'DROP ' . $field_name;
+            foreach ($changes['remove'] as $fieldName => $field) {
+                $fieldName = $this->conn->quoteIdentifier($fieldName, true);
+                $query = 'DROP ' . $fieldName;
                 $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
             }
         }
 
         if (isset($changes['change']) && is_array($changes['change'])) {
-            foreach ($changes['change'] as $field_name => $field) {
-                $fieldName = $this->conn->quoteIdentifier($field_name, true);
+            foreach ($changes['change'] as $fieldName => $field) {
+                $fieldName = $this->conn->quoteIdentifier($fieldName, true);
                 if (isset($field['type'])) {
-                    $server_info = $this->conn->getServerVersion();
+                    $serverInfo = $this->conn->getServerVersion();
 
-                    if (is_array($server_info) && $server_info['major'] < 8) {
+                    if (is_array($serverInfo) && $serverInfo['major'] < 8) {
                         throw new Doctrine_Export_Exception('changing column type for "'.$field['type'].'\" requires PostgreSQL 8.0 or above');
                     }
-                    $query = "ALTER $field_name TYPE ".$this->conn->datatype->getTypeDeclaration($field['definition']);
+                    $query = 'ALTER ' . $fieldName . ' TYPE ' . $this->conn->datatype->getTypeDeclaration($field['definition']);
                     $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);;
                 }
                 if (array_key_exists('default', $field)) {
-                    $query = "ALTER $field_name SET DEFAULT ".$this->conn->quote($field['definition']['default'], $field['definition']['type']);
+                    $query = 'ALTER ' . $fieldName . ' SET DEFAULT ' . $this->conn->quote($field['definition']['default'], $field['definition']['type']);
                     $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
                 }
                 if (!empty($field['notnull'])) {
-                    $query = "ALTER $field_name ".($field['definition']['notnull'] ? "SET" : "DROP").' NOT NULL';
+                    $query = 'ALTER ' . $fieldName . ' ' . ($field['definition']['notnull'] ? 'SET' : 'DROP') . ' NOT NULL';
                     $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
                 }
             }
@@ -205,7 +205,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
 
         if (isset($changes['rename']) && is_array($changes['rename'])) {
             foreach ($changes['rename'] as $fieldName => $field) {
-                $field_name = $this->conn->quoteIdentifier($fieldName, true);
+                $fieldName = $this->conn->quoteIdentifier($fieldName, true);
                 $this->conn->exec('ALTER TABLE ' . $name . ' RENAME COLUMN ' . $fieldName . ' TO ' . $this->conn->quoteIdentifier($field['name'], true));
             }
         }
