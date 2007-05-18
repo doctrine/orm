@@ -118,16 +118,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * @var integer $index                  this index is used for creating object identifiers
      */
-    private static $index   = 1;
+    private static $_index = 1;
     /**
      * @var Doctrine_Null $null             a Doctrine_Null object used for extremely fast
      *                                      null value testing
      */
-    private static $null;
+    private static $_null;
     /**
      * @var integer $oid                    object identifier, each Record object has a unique object identifier
      */
-    private $oid;
+    private $_oid;
 
     /**
      * constructor
@@ -162,9 +162,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         // relations.
 
         if ($this->_table->getConnection()->hasTable($this->_table->getComponentName())) {
-            $this->oid = self::$index;
+            $this->_oid = self::$_index;
 
-            self::$index++;
+            self::$_index++;
 
             $keys = $this->_table->getPrimaryKeys();
 
@@ -226,14 +226,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public static function initNullObject(Doctrine_Null $null)
     {
-        self::$null = $null;
+        self::$_null = $null;
     }
     /**
      * @return Doctrine_Null
      */
     public static function getNullObject()
     {
-        return self::$null;
+        return self::$_null;
     }
     /**
      * setUp
@@ -254,14 +254,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function construct()
     { }
     /**
-     * getOID
+     * getOid
      * returns the object identifier
      *
      * @return integer
      */
-    public function getOID()
+    public function getOid()
     {
-        return $this->oid;
+        return $this->_oid;
     }
     /**
      * isValid
@@ -352,9 +352,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $default = $this->_table->getDefaultValueOf($column);
 
             if ($default === null)
-                $default = self::$null;
+                $default = self::$_null;
 
-            if ($value === self::$null || $overwrite) {
+            if ($value === self::$_null || $overwrite) {
                 $this->_data[$column] = $default;
                 $this->_modified[]    = $column;
                 $this->_state = Doctrine_Record::STATE_TDIRTY;
@@ -391,7 +391,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $name = $this->_table->getIdentifier();
 
                 if ($exists) {
-                    if (isset($this->_data[$name]) && $this->_data[$name] !== self::$null) {
+                    if (isset($this->_data[$name]) && $this->_data[$name] !== self::$_null) {
                         $this->_id[$name] = $this->_data[$name];
                     }
                 }
@@ -403,7 +403,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->_id   = array();
                 $name       = $this->_table->getIdentifier();
 
-                if (isset($this->_data[$name]) && $this->_data[$name] !== self::$null) {
+                if (isset($this->_data[$name]) && $this->_data[$name] !== self::$_null) {
                     $this->_id[$name] = $this->_data[$name];
                 }
                 break;
@@ -411,7 +411,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $names      = $this->_table->getIdentifier();
 
                 foreach ($names as $name) {
-                    if ($this->_data[$name] === self::$null) {
+                    if ($this->_data[$name] === self::$_null) {
                         $this->_id[$name] = null;
                     } else {
                         $this->_id[$name] = $this->_data[$name];
@@ -443,7 +443,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach ($this->_data as $k => $v) {
             if ($v instanceof Doctrine_Record) {
                 unset($vars['_data'][$k]);
-            } elseif ($v === self::$null) {
+            } elseif ($v === self::$_null) {
                 unset($vars['_data'][$k]);
             } else {
                 switch ($this->_table->getTypeOf($k)) {
@@ -647,7 +647,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if ( ! isset($this->_data[$name])) {
             throw new Doctrine_Record_Exception('Unknown property '. $name);
         }
-        if ($this->_data[$name] === self::$null)
+        if ($this->_data[$name] === self::$_null)
             return null;
 
         return $this->_data[$name];
@@ -682,18 +682,18 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function get($name, $invoke = true)
     {
-        $value    = self::$null;
+        $value    = self::$_null;
         $lower    = strtolower($name);
 
         $lower    = $this->_table->getColumnName($lower);
 
         if (isset($this->_data[$lower])) {
-            // check if the property is null (= it is the Doctrine_Null object located in self::$null)
-            if ($this->_data[$lower] === self::$null) {
+            // check if the property is null (= it is the Doctrine_Null object located in self::$_null)
+            if ($this->_data[$lower] === self::$_null) {
                 $this->load();
             }
 
-            if ($this->_data[$lower] === self::$null) {
+            if ($this->_data[$lower] === self::$_null) {
                 $value = null;
             } else {
                 $value = $this->_data[$lower];
@@ -701,7 +701,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         }
 
-        if ($value !== self::$null) {
+        if ($value !== self::$_null) {
             $value = $this->_table->invokeGet($this, $name, $value);
 
             if ($invoke && $name !== $this->_table->getIdentifier()) {
@@ -787,7 +787,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $value = $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onSetProperty($this, $name, $value);
 
                 if ($value === null)
-                    $value = self::$null;
+                    $value = self::$_null;
 
                 $this->_data[$lower] = $value;
                 $this->_modified[]   = $lower;
@@ -991,7 +991,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach ($array as $k => $v) {
             $type = $this->_table->getTypeOf($v);
 
-            if ($this->_data[$v] === self::$null) {
+            if ($this->_data[$v] === self::$_null) {
                 $a[$v] = null;
                 continue;
             }
