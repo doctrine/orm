@@ -792,10 +792,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $alias = $name;
         }
 
-        $this->bound[$alias] = array('field' => $field,
-            'type'     => $type,
-            'class'    => $name,
-            'alias'    => $alias);
+        $this->bound[$alias] = array('field'    => $field,
+                                     'type'     => $type,
+                                     'class'    => $name,
+                                     'alias'    => $alias);
         if ($options !== null) {
             $opt = array();
             if (is_string($options)) {
@@ -860,7 +860,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
             $definition = $this->bound[$name];
 
-            list($component, $definition['foreign']) = explode('.', $definition['field']);
+            list($component, $tmp) = explode('.', $definition['field']);
+            
+            if ( ! isset($definition['foreign'])) {
+                $definition['foreign'] = $tmp;
+            }
+
             unset($definition['field']);
 
             $definition['table'] = $this->conn->getTable($definition['class'], $allowExport);
