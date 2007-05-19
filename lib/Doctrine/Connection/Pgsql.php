@@ -103,10 +103,14 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
     {
     	if (is_array($item)) {
             foreach ($item as $key => $value) {
-                $item[$key] = ($value) ? 'true' : 'false';
+                if (is_bool($value)) {
+                    $item[$key] = ($value) ? 'true' : 'false';
+                }
             }
     	} else {
-    	   $item = ($item) ? 'true' : 'false';      	
+    	   if (is_bool($item)) {
+    	       $item = ($item) ? 'true' : 'false';
+    	   }
     	}
         return $item;
     }
