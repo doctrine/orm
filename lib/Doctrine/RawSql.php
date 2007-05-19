@@ -65,7 +65,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate
     public function get($name)
     {
         if ( ! isset($this->parts[$name])) {
-            throw new Doctrine_RawSql_Exception('Unknown query part '.$name);
+            throw new Doctrine_RawSql_Exception('Unknown query part ' . $name);
         }
         return $this->parts[$name];
     }
@@ -135,26 +135,26 @@ class Doctrine_RawSql extends Doctrine_Hydrate
     public function getQuery()
     {
         foreach ($this->fields as $field) {
-            $e = explode(".", $field);
+            $e = explode('.', $field);
             if ( ! isset($e[1])) {
-                throw new Doctrine_RawSql_Exception("All selected fields in Sql query must be in format tableAlias.fieldName");
+                throw new Doctrine_RawSql_Exception('All selected fields in Sql query must be in format tableAlias.fieldName');
             }
             if ( ! isset($this->tables[$e[0]])) {
                 try {
                     $this->addComponent($e[0], ucwords($e[0]));
                 } catch(Doctrine_Exception $exception) {
-                    throw new Doctrine_RawSql_Exception("The associated component for table alias $e[0] couldn't be found.");
+                    throw new Doctrine_RawSql_Exception('The associated component for table alias ' . $e[0] . ' couldn\'t be found.');
                 }
             }
 
             if ($e[1] == '*') {
                 foreach ($this->tables[$e[0]]->getColumnNames() as $name) {
-                    $field = $e[0].".".$name;
-                    $this->parts["select"][$field] = $field." AS ".$e[0]."__".$name;
+                    $field = $e[0].'.'.$name;
+                    $this->parts['select'][$field] = $field.' AS '.$e[0].'__'.$name;
                 }
             } else {
-                $field = $e[0].".".$e[1];
-                $this->parts["select"][$field] = $field." AS ".$e[0]."__".$e[1];
+                $field = $e[0].'.'.$e[1];
+                $this->parts['select'][$field] = $field.' AS '.$e[0].'__'.$e[1];
             }
         }
 
@@ -169,7 +169,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate
             }
         }
 
-        $q = 'SELECT '.implode(', ', $this->parts['select']);
+        $q = 'SELECT ' . implode(', ', $this->parts['select']);
 
         $string = $this->applyInheritance();
         if ( ! empty($string)) {
