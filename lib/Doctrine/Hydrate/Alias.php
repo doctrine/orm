@@ -99,6 +99,10 @@ class Doctrine_Hydrate_Alias
 
         return $alias;
     }
+    public function addAlias($tableAlias, $componentAlias)
+    {
+        $this->shortAliases[$tableAlias] = $componentAlias;
+    }
     /**
      * getShortAlias
      * some database such as Oracle need the identifier lengths to be < ~30 chars
