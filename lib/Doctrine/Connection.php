@@ -228,7 +228,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 }
             }
         } else {
-            $item = (int) $item;      	
+            if (is_bool($item)) {
+                $item = (int) $item; 
+            }
         }
         return $item;
     }
