@@ -61,9 +61,10 @@ class Doctrine_RawSql extends Doctrine_Hydrate
     }
     /**
      * parseQuery
+     * parses an sql query and adds the parts to internal array
      *
-     * @param string $query
-     * @return Doctrine_RawSql
+     * @param string $query         query to be parsed
+     * @return Doctrine_RawSql      this object
      */
     public function parseQuery($query)
     {
@@ -118,9 +119,9 @@ class Doctrine_RawSql extends Doctrine_Hydrate
     }
     /**
      * getQuery
+     * builds the sql query from the given query parts
      *
-     *
-     * @return string
+     * @return string       the built sql query
      */
     public function getQuery()
     {
@@ -130,7 +131,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate
                 throw new Doctrine_RawSql_Exception('All selected fields in Sql query must be in format tableAlias.fieldName');
             }
             // try to auto-add component
-            if ( ! $this->aliasHandler->getComponentAlias($e[0])) {
+            if ( ! $this->aliasHandler->hasAlias($e[0])) {
                 try {
                     $this->addComponent($e[0], ucwords($e[0]));
                 } catch(Doctrine_Exception $exception) {
@@ -139,7 +140,9 @@ class Doctrine_RawSql extends Doctrine_Hydrate
             }
 
             if ($e[1] == '*') {
-                foreach ($this->tables[$e[0]]->getColumnNames() as $name) {
+                $componentAlias = $this->aliasHandler->getComponentAlias($e[0]);
+
+                foreach ($this->_aliasMap[$componentAlias]['table']->getColumnNames() as $name) {
                     $field = $e[0] . '.' . $name;
                     $this->parts['select'][$field] = $field . ' AS ' . $e[0] . '__' . $name;
                 }
@@ -151,11 +154,14 @@ class Doctrine_RawSql extends Doctrine_Hydrate
 
         // force-add all primary key fields
 
-        foreach ($this->tableAliases as $alias) {
-            foreach ($this->tables[$alias]->getPrimaryKeys() as $key) {
-                $field = $alias . '.' . $key;
+        foreach ($this->aliasHandler->getAliases() as $tableAlias => $componentAlias) {
+            $map = $this->_aliasMap[$componentAlias];
+
+            foreach ($map['table']->getPrimaryKeys() as $key) {
+                $field = $tableAlias . '.' . $key;
+
                 if ( ! isset($this->parts['select'][$field])) {
-                    $this->parts['select'][$field] = $field . ' AS ' . $alias . '__' . $key;
+                    $this->parts['select'][$field] = $field . ' AS ' . $tableAlias . '__' . $key;
                 }
             }
         }
@@ -184,8 +190,9 @@ class Doctrine_RawSql extends Doctrine_Hydrate
     }
     /**
      * getFields
+     * returns the fields associated with this parser
      *
-     * @return array
+     * @return array    all the fields associated with this parser
      */
     public function getFields()
     {
@@ -209,22 +216,21 @@ class Doctrine_RawSql extends Doctrine_Hydrate
         $fullLength = strlen($fullPath);
 
         $table = null;
-        
+
+        $currPath = '';
+
         if (isset($this->_aliasMap[$e[0]])) {
             $table = $this->_aliasMap[$e[0]]['table'];
 
-            $prevPath = $parent = array_shift($e);
+            $currPath = $parent = array_shift($e);
         }
-
-
-        $currPath = '';
 
         foreach ($e as $k => $component) {
             // get length of the previous path
             $length = strlen($currPath);
 
             // build the current component path
-            $prevPath = ($currPath) ? $currPath . '.' . $component : $component;
+            $currPath = ($currPath) ? $currPath . '.' . $component : $component;
 
             $delimeter = substr($fullPath, $length, 1);
 
@@ -236,22 +242,20 @@ class Doctrine_RawSql extends Doctrine_Hydrate
             }
             if ( ! isset($table)) {
                 $conn = Doctrine_Manager::getInstance()
-                        ->getConnectionForComponent($name);
+                        ->getConnectionForComponent($component);
                         
                 $table = $conn->getTable($component);
                 $this->_aliasMap[$componentAlias] = array('table' => $table);
             } else {
-                $relation = $table->getRelation($name);
+                $relation = $table->getRelation($component);
 
                 $this->_aliasMap[$componentAlias] = array('table'    => $relation->getTable(),
                                                           'parent'   => $parent,
                                                           'relation' => $relation);
             }
-            $this->aliasHandler->addAlias($componentAlias, $tableAlias);
+            $this->aliasHandler->addAlias($tableAlias, $componentAlias);
 
-            $this->tableAliases[$currPath]  = $alias;
-            
-            $parent = $prevPath;
+            $parent = $currPath;
         }
 
         return $this;

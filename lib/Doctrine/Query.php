@@ -40,20 +40,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
      * @param boolean $needsSubquery
      */
     protected $needsSubquery    = false;
-    /**
-     * @param boolean $limitSubqueryUsed
-     */
-    protected $limitSubqueryUsed = false;
 
-    
     protected $_status         = array('needsSubquery' => true);
     /**
      * @param boolean $isSubquery           whether or not this query object is a subquery of another 
      *                                      query object
      */
     protected $isSubquery;
-
-    protected $isDistinct        = false;
 
     protected $neededTables      = array();
     /**
@@ -65,15 +58,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
      *                                      they cannot be parsed directly (some queries might be correlated)
      */
     protected $pendingSubqueries = array();
-    /**
-     * @var boolean $subqueriesProcessed    Whether or not pending subqueries have already been processed.
-     *                                      Consequent calls to getQuery would result badly constructed queries
-     *                                      without this variable
-     *
-     *                                      Since subqueries can be correlated, they can only be processed when 
-     *                                      the main query is fully constructed
-     */
-    protected $subqueriesProcessed = false;
     /** 
      * @var array $_parsers                 an array of parser objects
      */
@@ -173,15 +157,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
         
         return null;
     }
-
-    public function isDistinct($distinct = null)
-    {
-        if(isset($distinct))
-            $this->isDistinct = (bool) $distinct;
-
-        return $this->isDistinct;
-    }
-
     /**
      * getParser
      * parser lazy-loader
@@ -355,10 +330,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
     }
     public function processPendingSubqueries() 
     {
-    	if ($this->subqueriesProcessed === true) {
-            return false;
-    	}
-
     	foreach ($this->pendingSubqueries as $value) {
             list($dql, $alias) = $value;
 
@@ -371,15 +342,13 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
             $tableAlias = $this->getTableAlias($componentAlias);
 
             $sqlAlias = $tableAlias . '__' . count($this->aggregateMap);
-    
+
             $this->parts['select'][] = '(' . $sql . ') AS ' . $sqlAlias;
-    
+
             $this->aggregateMap[$alias] = $sqlAlias;
             $this->subqueryAggregates[$componentAlias][] = $alias;
         }
-        $this->subqueriesProcessed = true;
-        
-        return true;
+        $this->pendingSubqueries = array();
     }
     public function processPendingAggregates($componentAlias)
     {
@@ -530,7 +499,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
 
         if ( ! empty($this->parts['limit']) && $this->needsSubquery && $table->getAttribute(Doctrine::ATTR_QUERY_LIMIT) == Doctrine::LIMIT_RECORDS) {
             $needsSubQuery = true;
-            $this->limitSubqueryUsed = true;
         }
 
         // process all pending SELECT part subqueries
@@ -1050,15 +1018,6 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
 
 		return (int) $this->getConnection()->fetchOne($q, $params);
 	}
-    /**
-     * isLimitSubqueryUsed
-     * whether or not limit subquery algorithm is used
-     *
-     * @return boolean
-     */
-    public function isLimitSubqueryUsed() {
-        return $this->limitSubqueryUsed;
-    }
 
     /**
      * query
