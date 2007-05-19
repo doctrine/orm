@@ -254,7 +254,6 @@ class Doctrine_Hydrate
      */
     protected function clear()
     {
-        $this->tables       = array();
         $this->parts = array(
                     'select'    => array(),
                     'distinct'  => false,
@@ -270,7 +269,6 @@ class Doctrine_Hydrate
                     'offset'    => false,
                     );
         $this->inheritanceApplied = false;
-        $this->tableAliases     = array();
         $this->aliasHandler->clear();
     }
     /**

@@ -182,8 +182,8 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
         $q .= ( ! empty($this->parts['from']))?    ' FROM '     . implode(' ', $this->parts['from']) : '';
         $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']) : '';
         $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']) : '';
-        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' ', $this->parts['having']) : '';
-        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(' ', $this->parts['orderby']) : '';
+        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']) : '';
+        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby']) : '';
         $q .= ( ! empty($this->parts['limit']))?   ' LIMIT ' . implode(' ', $this->parts['limit']) : '';
         $q .= ( ! empty($this->parts['offset']))?  ' OFFSET ' . implode(' ', $this->parts['offset']) : '';
 

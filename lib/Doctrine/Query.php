@@ -35,13 +35,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
      */
-    protected $subqueryAliases  = array();
+    protected $subqueryAliases   = array();
     /**
      * @param boolean $needsSubquery
      */
-    protected $needsSubquery    = false;
+    protected $needsSubquery     = false;
 
-    protected $_status         = array('needsSubquery' => true);
+    protected $_status           = array('needsSubquery' => true);
     /**
      * @param boolean $isSubquery           whether or not this query object is a subquery of another 
      *                                      query object
@@ -58,14 +58,31 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      *                                      they cannot be parsed directly (some queries might be correlated)
      */
     protected $pendingSubqueries = array();
-    /** 
+    /**
      * @var array $_parsers                 an array of parser objects
      */
-    protected $_parsers = array();
+    protected $_parsers    = array();
     /**
      * @var array $_enumParams              an array containing the keys of the parameters that should be enumerated
      */
     protected $_enumParams = array();
+    /**
+     * @var array $_dqlParts                an array containing all DQL query parts
+     */
+    protected $_dqlParts   = array(
+                            'select'    => array(),
+                            'distinct'  => false,
+                            'forUpdate' => false,
+                            'from'      => array(),
+                            'set'       => array(),
+                            'join'      => array(),
+                            'where'     => array(),
+                            'groupby'   => array(),
+                            'having'    => array(),
+                            'orderby'   => array(),
+                            'limit'     => false,
+                            'offset'    => false,
+                            );
 
     /**
      * create
@@ -182,7 +199,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     }
     /**
      * parseQueryPart
-     * parses given query part
+     * parses given DQL query part
      *
      * @param string $queryPartName     the name of the query part
      * @param string $queryPart         query part to be parsed
@@ -193,7 +210,34 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function parseQueryPart($queryPartName, $queryPart, $append = false) 
     {
+    	if ($append) {
+    	    $this->_dqlParts[$queryPartName][] = $queryPart;
+    	} else {
+            $this->_dqlParts[$queryPartName] = $queryPart;
+    	}
     	return $this->getParser($queryPartName)->parse($queryPart);
+    }
+    /**
+     * getDql
+     * returns the DQL query associated with this object
+     *
+     * the query is built from $_dqlParts
+     *
+     * @return string   the DQL query
+     */
+    public function getDql()
+    {
+    	$q = '';
+    	$q .= ( ! empty($this->parts['select']))?  'SELECT '    . implode(', ', $this->parts['select']) : '';
+        $q .= ( ! empty($this->parts['from']))?    ' FROM '     . implode(' ', $this->parts['from']) : '';
+        $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']) : '';
+        $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']) : '';
+        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']) : '';
+        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby']) : '';
+        $q .= ( ! empty($this->parts['limit']))?   ' LIMIT ' . implode(' ', $this->parts['limit']) : '';
+        $q .= ( ! empty($this->parts['offset']))?  ' OFFSET ' . implode(' ', $this->parts['offset']) : '';
+        
+        return $q;
     }
     /**
      * processPendingFields
