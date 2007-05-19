@@ -62,7 +62,7 @@ class Doctrine_Hydrate_Alias
         return $alias;
     }
 
-    public function hasAliasFor($tableName)
+    public function hasAlias($tableName)
     {
         return (isset($this->shortAliases[$tableName]));
     }
@@ -98,6 +98,10 @@ class Doctrine_Hydrate_Alias
         $this->shortAliases[$alias] = $componentAlias;
 
         return $alias;
+    }
+    public function getAliases()
+    {
+        return $this->shortAliases;	
     }
     public function addAlias($tableAlias, $componentAlias)
     {

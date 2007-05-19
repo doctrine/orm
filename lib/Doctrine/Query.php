@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Hydrate');
+Doctrine::autoload('Doctrine_Query_Abstract');
 /**
  * Doctrine_Query
  *
@@ -30,7 +30,7 @@ Doctrine::autoload('Doctrine_Hydrate');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query extends Doctrine_Hydrate implements Countable
+class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 {
     /**
      * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
@@ -179,6 +179,21 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
         }
         
         return $this->_parsers[$name];
+    }
+    /**
+     * parseQueryPart
+     * parses given query part
+     *
+     * @param string $queryPartName     the name of the query part
+     * @param string $queryPart         query part to be parsed
+     * @param boolean $append           whether or not to append the query part to its stack
+     *                                  if false is given, this method will overwrite 
+     *                                  the given query part stack with $queryPart
+     * @return Doctrine_Query           this object
+     */
+    public function parseQueryPart($queryPartName, $queryPart, $append = false) 
+    {
+    	return $this->getParser($queryPartName)->parse($queryPart);
     }
     /**
      * processPendingFields
@@ -1050,251 +1065,4 @@ class Doctrine_Query extends Doctrine_Hydrate implements Countable
     {
         return $this->aliasHandler->getShortAlias($componentAlias, $tableName);
     }
-    /**
-     * addSelect
-     * adds fields to the SELECT part of the query
-     *
-     * @param string $select        DQL SELECT part
-     * @return Doctrine_Query
-     */
-    public function addSelect($select)
-    {
-        return $this->getParser('select')->parse($select, true);
-    }
-    /**
-     * addWhere
-     * adds conditions to the WHERE part of the query
-     *
-     * @param string $where         DQL WHERE part
-     * @param mixed $params         an array of parameters or a simple scalar
-     * @return Doctrine_Query
-     */
-    public function addWhere($where, $params = array())
-    {
-        if (is_array($params)) {
-            $this->params = array_merge($this->params, $params);
-        } else {
-            $this->params[] = $params;
-        }
-        return $this->getParser('where')->parse($where, true);
-    }
-    /**
-     * addGroupBy
-     * adds fields to the GROUP BY part of the query
-     *
-     * @param string $groupby       DQL GROUP BY part
-     * @return Doctrine_Query
-     */
-    public function addGroupBy($groupby)
-    {
-        return $this->getParser('groupby')->parse($groupby, true);
-    }
-    /**
-     * addHaving
-     * adds conditions to the HAVING part of the query
-     *
-     * @param string $having        DQL HAVING part
-     * @param mixed $params         an array of parameters or a simple scalar
-     * @return Doctrine_Query
-     */
-    public function addHaving($having, $params = array())
-    {
-        if (is_array($params)) {
-            $this->params = array_merge($this->params, $params);
-        } else {
-            $this->params[] = $params;
-        }
-        return $this->getParser('having')->parse($having, true);
-    }
-    /**
-     * addOrderBy
-     * adds fields to the ORDER BY part of the query
-     *
-     * @param string $orderby       DQL ORDER BY part
-     * @return Doctrine_Query
-     */
-    public function addOrderBy($orderby)
-    {
-        return $this->getParser('orderby')->parse($orderby, true);
-    }
-    /**
-     * select
-     * sets the SELECT part of the query
-     *
-     * @param string $select        DQL SELECT part
-     * @return Doctrine_Query
-     */
-    public function select($select)
-    {
-        return $this->getParser('select')->parse($select);
-    }
-    /**
-     * distinct
-     * Makes the query SELECT DISTINCT.
-     *
-     * @param bool $flag            Whether or not the SELECT is DISTINCT (default true).
-     * @return Doctrine_Query
-     */
-    public function distinct($flag = true)
-    {
-        $this->_parts['distinct'] = (bool) $flag;
-
-        return $this;
-    }
-
-    /**
-     * forUpdate
-     * Makes the query SELECT FOR UPDATE.
-     *
-     * @param bool $flag            Whether or not the SELECT is FOR UPDATE (default true).
-     * @return Doctrine_Query
-     */
-    public function forUpdate($flag = true)
-    {
-        $this->_parts[self::FOR_UPDATE] = (bool) $flag;
-
-        return $this;
-    }
-    /**
-     * delete
-     * sets the query type to DELETE
-     *
-     * @return Doctrine_Query
-     */
-    public function delete()
-    {
-    	$this->type = self::DELETE;
-
-        return $this;
-    }
-    /**
-     * update
-     * sets the UPDATE part of the query
-     *
-     * @param string $update        DQL UPDATE part
-     * @return Doctrine_Query
-     */
-    public function update($update)
-    {
-    	$this->type = self::UPDATE;
-
-        return $this->getParser('from')->parse($update);
-    }
-    /**
-     * set
-     * sets the SET part of the query
-     *
-     * @param string $update        DQL UPDATE part
-     * @return Doctrine_Query
-     */
-    public function set($key, $value)
-    {
-        return $this->getParser('set')->parse($key . ' = ' . $value);
-    }
-    /**
-     * from
-     * sets the FROM part of the query
-     *
-     * @param string $from          DQL FROM part
-     * @return Doctrine_Query
-     */
-    public function from($from)
-    {
-        return $this->getParser('from')->parse($from);
-    }
-    /**
-     * innerJoin
-     * appends an INNER JOIN to the FROM part of the query
-     *
-     * @param string $join         DQL INNER JOIN
-     * @return Doctrine_Query
-     */
-    public function innerJoin($join)
-    {
-        return $this->getParser('from')->parse('INNER JOIN ' . $join);
-    }
-    /**
-     * leftJoin
-     * appends a LEFT JOIN to the FROM part of the query
-     *
-     * @param string $join         DQL LEFT JOIN
-     * @return Doctrine_Query
-     */
-    public function leftJoin($join)
-    {
-        return $this->getParser('from')->parse('LEFT JOIN ' . $join);
-    }
-    /**
-     * groupBy
-     * sets the GROUP BY part of the query
-     *
-     * @param string $groupby      DQL GROUP BY part
-     * @return Doctrine_Query
-     */
-    public function groupBy($groupby)
-    {
-        return $this->getParser('groupby')->parse($groupby);
-    }
-    /**
-     * where
-     * sets the WHERE part of the query
-     *
-     * @param string $join         DQL WHERE part
-     * @param mixed $params        an array of parameters or a simple scalar
-     * @return Doctrine_Query
-     */
-    public function where($where, $params = array())
-    {
-        $this->params = (array) $params;
-
-        return $this->getParser('where')->parse($where);
-    }
-    /**
-     * having
-     * sets the HAVING part of the query
-     *
-     * @param string $having       DQL HAVING part
-     * @param mixed $params        an array of parameters or a simple scalar
-     * @return Doctrine_Query
-     */
-    public function having($having, $params)
-    {
-        $this->params = (array) $params;
-        
-        return $this->getParser('having')->parse($having);
-    }
-    /**
-     * orderBy
-     * sets the ORDER BY part of the query
-     *
-     * @param string $orderby      DQL ORDER BY part
-     * @return Doctrine_Query
-     */
-    public function orderBy($orderby)
-    {
-        return $this->getParser('orderby')->parse($orderby);
-    }
-    /**
-     * limit
-     * sets the DQL query limit
-     *
-     * @param integer $limit        limit to be used for limiting the query results
-     * @return Doctrine_Query
-     */
-    public function limit($limit)
-    {
-        return $this->getParser('limit')->parse($limit);
-    }
-    /**
-     * offset
-     * sets the DQL query offset
-     *
-     * @param integer $offset       offset to be used for paginating the query
-     * @return Doctrine_Query
-     */
-    public function offset($offset)
-    {
-        return $this->getParser('offset')->parse($offset);
-    }
 }
-

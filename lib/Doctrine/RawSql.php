@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Hydrate');
+Doctrine::autoload('Doctrine_Query_Abstract');
 /**
  * Doctrine_RawSql
  *
@@ -30,32 +30,36 @@ Doctrine::autoload('Doctrine_Hydrate');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_RawSql extends Doctrine_Hydrate
+class Doctrine_RawSql extends Doctrine_Query_Abstract
 {
     /**
      * @var array $fields
      */
     private $fields = array();
     /**
-     * __call
-     * method overloader
+     * parseQueryPart
+     * parses given query part
      *
-     * @param string $name
-     * @param array $args
-     * @return Doctrine_RawSql
+     * @param string $queryPartName     the name of the query part
+     * @param string $queryPart         query part to be parsed
+     * @param boolean $append           whether or not to append the query part to its stack
+     *                                  if false is given, this method will overwrite 
+     *                                  the given query part stack with $queryPart
+     * @return Doctrine_Query           this object
      */
-    public function __call($name, $args)
+    public function parseQueryPart($queryPartName, $queryPart, $append = false) 
     {
-        if ( ! isset($this->parts[$name])) {
-            throw new Doctrine_RawSql_Exception("Unknown overload method $name. Availible overload methods are ".implode(" ",array_keys($this->parts)));
-        }
-        if ($name == 'select') {
-            preg_match_all('/{([^}{]*)}/U', $args[0], $m);
+        if ($queryPartName == 'select') {
+            preg_match_all('/{([^}{]*)}/U', $queryPart, $m);
 
             $this->fields = $m[1];
-            $this->parts["select"] = array();
+            $this->parts['select'] = array();
         } else {
-            $this->parts[$name][] = $args[0];
+            if ( ! $append) {
+                $this->parts[$queryPartName] = array($queryPart);
+            } else {
+                $this->parts[$queryPartName][] = $queryPart;
+            }
         }
         return $this;
     }
@@ -109,8 +113,8 @@ class Doctrine_RawSql extends Doctrine_Hydrate
                     } else {
                         $parts[$p][0] .= ' '.$part;
                     }
-            };
-        };
+            }
+        }
 
         $this->parts = $parts;
         $this->parts['select'] = array();
