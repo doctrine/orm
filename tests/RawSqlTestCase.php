@@ -161,11 +161,12 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(is_numeric($coll[3]->id));
         $this->assertTrue(is_numeric($coll[7]->id));
     }
-    public function testMethodOverloading() 
+    public function testConvenienceMethods() 
     {
         $query = new Doctrine_RawSql($this->connection);
         $query->select('{entity.name}')->from('entity');
         $query->addComponent('entity', 'User');
+
         $coll = $query->execute();
 
         $this->assertEqual($coll->count(), 8);
