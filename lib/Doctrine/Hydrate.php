@@ -68,9 +68,10 @@ class Doctrine_Hydrate
      */
     protected $conn;
     /**
-     * @var Doctrine_View $view                 Doctrine_View object
+     * @var Doctrine_View $_view                Doctrine_View object, when set this object will use the
+     *                                          the query given by the view object for object population
      */
-    protected $view;
+    protected $_view;
     /**
      * @var array $_aliasMap                    two dimensional array containing the map for query aliases
      *      Main keys are component aliases
@@ -82,11 +83,6 @@ class Doctrine_Hydrate
      *          parent              the alias of the parent
      */
     protected $_aliasMap        = array();
-
-    /**
-     * @var array $tableAliases
-     */
-    protected $tableAliases = array();
     /**
      *
      */
@@ -101,7 +97,8 @@ class Doctrine_Hydrate
      */
     protected $aggregateMap      = array();
     /**
-     * @var Doctrine_Hydrate_Alias $aliasHandler
+     * @var Doctrine_Hydrate_Alias $aliasHandler    handles the creation and storage of table aliases and
+     *                                              binds the aliases to component aliases / paths
      */
     protected $aliasHandler;
     /**
@@ -140,19 +137,7 @@ class Doctrine_Hydrate
         $this->conn = $connection;
         $this->aliasHandler = new Doctrine_Hydrate_Alias();
     }
-    /**
-     * getTableAliases
-     *
-     * @return array
-     */
-    public function getTableAliases()
-    {
-        return $this->tableAliases;
-    }
-    public function setTableAliases(array $aliases)
-    {
-        $this->tableAliases = $aliases;
-    }
+
     public function getTableAlias($componentAlias) 
     {
         return $this->aliasHandler->getShortAlias($componentAlias);
@@ -290,7 +275,7 @@ class Doctrine_Hydrate
      */
     public function setView(Doctrine_View $view)
     {
-        $this->view = $view;
+        $this->_view = $view;
     }
     /**
      * getView
@@ -300,7 +285,7 @@ class Doctrine_Hydrate
      */
     public function getView()
     {
-        return $this->view;
+        return $this->_view;
     }
     /**
      * getParams
@@ -331,10 +316,10 @@ class Doctrine_Hydrate
         $params = $this->conn->convertBooleans(array_merge($this->params, $params));
         $params = $this->convertEnums($params);
 
-        if ( ! $this->view) {
+        if ( ! $this->_view) {
             $query = $this->getQuery($params);
         } else {
-            $query = $this->view->getSelectSql();
+            $query = $this->_view->getSelectSql();
         }
 
         if ($this->isLimitSubqueryUsed() &&
