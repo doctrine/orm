@@ -134,6 +134,12 @@ class Doctrine_Relation_Parser
             }
         }
     }
+    /**
+     * Completes the given association definition
+     *
+     * @param array $def    definition array to be completed
+     * @return array        completed definition array
+     */
     public function completeAssocDefinition($def) 
     {
     	$conn = $this->_table->getConnection();
@@ -159,6 +165,15 @@ class Doctrine_Relation_Parser
 
         return $def;
     }
+    /** 
+     * getIdentifiers
+     * gives a list of identifiers from given table
+     *
+     * the identifiers are in format:
+     * [componentName].[identifier]
+     *
+     * @param Doctrine_Table $table     table object to retrieve identifiers from
+     */
     public function getIdentifiers(Doctrine_Table $table)
     {
     	if (is_array($table->getIdentifier())) {
@@ -174,6 +189,12 @@ class Doctrine_Relation_Parser
 
         return $columns;
     }
+    /**
+     * Completes the given definition
+     *
+     * @param array $def    definition array to be completed
+     * @return array        completed definition array
+     */
     public function completeDefinition($def)
     {
     	$conn = $this->_table->getConnection();
@@ -261,14 +282,6 @@ class Doctrine_Relation_Parser
             unset($definition['field']);
 
             $definition['table'] = $this->conn->getTable($definition['class'], $allowExport);
-            $definition['constraint'] = false;
-
-                    // MANY-TO-MANY
-                    // only aggregate relations allowed
-
-                    if ($definition['type'] != Doctrine_Relation::MANY_AGGREGATE) {
-                        throw new Doctrine_Table_Exception("Only aggregate relations are allowed for many-to-many relations");
-                    }
 
                     $classes = array_merge($this->options['parents'], array($this->options['name']));
 
@@ -282,9 +295,7 @@ class Doctrine_Relation_Parser
                         throw new Doctrine_Table_Exception("Couldn't map many-to-many relation for "
                             . $this->options['name'] . " and $name. Components use different join tables.");
                     }
-                    if ( ! isset($definition['local'])) {
-                        $definition['local'] = $this->identifier;
-                    }
+
                     $e2     = explode('.', $bound['field']);
                     $fields = explode('-', $e2[1]);
 
