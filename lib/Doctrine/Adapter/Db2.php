@@ -21,7 +21,7 @@
 Doctrine::autoload('Doctrine_Adapter');
 /**
  * Doctrine_Adapter_Db2
- * IBM DB2 Adapter
+ * IBM DB2 Adapter  [BORROWED FROM ZEND FRAMEWORK]
  *
  * @package     Doctrine
  * @subpackage  Doctrine_Adapter
