@@ -736,10 +736,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @return void
      */
     public function unbindAll()
-    {            throw new Exception();
-    $this->bound        = array();
-    $this->relations    = array();
-    $this->boundAliases = array();
+    {
+        $this->bound        = array();
+        $this->relations    = array();
+        $this->boundAliases = array();
     }
     /**
      * unbinds a relation
@@ -965,9 +965,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                         } else {
                             // auto initialize a new one-to-one relationships for association table
                             $associationTable->bind($this->getComponentName(),  
-                            $associationTable->getComponentName(). '.' . $e2[1], 
-                            Doctrine_Relation::ONE_AGGREGATE
-                        );
+                                                    $associationTable->getComponentName(). '.' . $e2[1],
+                                                    Doctrine_Relation::ONE_AGGREGATE
+                                                    );
 
                             $associationTable->bind($definition['table']->getComponentName(),
                                 $associationTable->getComponentName(). '.' . $definition['foreign'],
