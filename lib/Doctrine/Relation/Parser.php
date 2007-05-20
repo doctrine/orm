@@ -38,15 +38,15 @@ class Doctrine_Relation_Parser
     /**
      * @var array $_relations               an array containing all the Doctrine_Relation objects for this table
      */
-    protected $_relations    = array();
+    protected $_relations = array();
     /**
-     * @var array $_bound                   bound relations
+     * @var array $_pending                 relations waiting for parsing
      */
-    protected $_bound        = array();
+    protected $_pending   = array();
     /**
-     * @var array $_boundAliases            bound relation aliases
+     * @var array $_relationAliases         relation aliases
      */
-    protected $_boundAliases = array();
+    protected $_aliases   = array();
     /**
      * constructor
      *
@@ -63,9 +63,21 @@ class Doctrine_Relation_Parser
      */
     public function getTable()
     {
-        return $this->_table;	
+        return $this->_table;
     }
-
+    /**
+     * getPendingRelation
+     *
+     * @return array            an array defining a pending relation
+     */
+    public function getPendingRelation($name) 
+    {
+    	if ( ! isset($this->_pending[$name])) {
+            throw new Doctrine_Relation_Exception('Unknown pending relation ' . $name);
+    	}
+    	
+    	return $this->_pending[$name];
+    }
     /**
      * binds a relation
      *
@@ -73,7 +85,7 @@ class Doctrine_Relation_Parser
      * @param string $field
      * @return void
      */
-    public function bind($name, $field, $type, $options = null)
+    public function bind($name, $options = array())
     {
         if (isset($this->relations[$name])) {
             unset($this->relations[$name]);
@@ -81,8 +93,8 @@ class Doctrine_Relation_Parser
 
         $lower = strtolower($name);
 
-        if (isset($this->columns[$lower])) {
-            throw new Doctrine_Table_Exception("Couldn't bind relation. Column with name " . $lower . ' already exists!');
+        if ($this->_table->hasColumn($lower)) {
+            throw new Doctrine_Relation_Exception("Couldn't bind relation. Column with name " . $lower . ' already exists!');
         }
 
         $e    = explode(' as ', $name);
@@ -90,25 +102,12 @@ class Doctrine_Relation_Parser
 
         if (isset($e[1])) {
             $alias = $e[1];
-            $this->boundAliases[$name] = $alias;
+            $this->_aliases[$name] = $alias;
         } else {
             $alias = $name;
         }
 
-        $this->bound[$alias] = array('field'    => $field,
-                                     'type'     => $type,
-                                     'class'    => $name,
-                                     'alias'    => $alias);
-        if ($options !== null) {
-            $opt = array();
-            if (is_string($options)) {
-                $opt['local'] = $options;
-            } else {
-                $opt = (array) $options;
-            }
-
-            $this->bound[$alias] = array_merge($this->bound[$alias], $opt);
-        }
+        $this->_pending[$alias] = array_merge($options, array('class' => $name, 'alias' => $alias));
     }
     /**
      * getRelation
