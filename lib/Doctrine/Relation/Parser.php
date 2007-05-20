@@ -109,13 +109,86 @@ class Doctrine_Relation_Parser
 
         $this->_pending[$alias] = array_merge($options, array('class' => $name, 'alias' => $alias));
     }
+    
+    public function getRelation($name, $recursive = true)
+    {
+        if (isset($this->_relations[$name])) {
+            return $this->_relations[$name];
+        }
+
+        if (isset($this->_pending[$name])) {
+            $def = $this->_pending[$name];
+
+
+        }
+    }
+    public function completeDefinition($def)
+    {
+        $def['table'] = $this->_table->getConnection()->getTable($def['class']);
+
+        if (isset($def['local'])) {
+            if ( ! isset($def['foreign'])) {
+                // local key is set, but foreign key is not
+                // try to guess the foreign key
+
+                if ($def['local'] === $this->_table->getIdentifier()) {
+                    $column = strtolower($this->_table->getComponentName())
+                            . '_' . $this->_table->getIdentifier();
+
+                    if ( ! $def['table']->hasColumn($column)) {
+                        // auto-add column
+                    }
+                    
+                    $def['foreign'] = $column;
+                } else {
+                    // the foreign field is likely to be the
+                    // identifier of the foreign class
+                    $def['foreign'] = $def['table']->getIdentifier();
+                }
+            }
+        } else {
+            if (isset($def['foreign'])) {
+                // local key not set, but foreign key is set
+                // try to guess the local key
+                if ($def['foreign'] === $this->_table->getIdentifier()) {
+                    $column = strtolower($def['table']->getComponentName())
+                            . '_' . $def['table']->getIdentifier();
+                    
+                    $def['local'] = $column;
+                } else {
+                    $def['local'] = $this->_table->getIdentifier();
+                }
+            } else {
+                // neither local or foreign key is being set
+                // try to guess both keys
+                
+                $column = strtolower($this->_table->getComponentName())
+                        . '_' . $this->_table->getIdentifier();
+
+                if ($def['table']->hasColumn($column)) {
+                    $def['foreign'] = $column;
+                    $def['local']   = $this->_table->getIdentifier();
+                } else {
+
+                    $column = strtolower($def['table']->getComponentName())
+                            . '_' . $def['table']->getIdentifier();
+                            
+                    if ($this->_table->hasColumn($column)) {
+                        $def['foreign'] = $def['table']->getIdentifier();
+                        $def['local']   = $column;
+                    }
+                }
+            }
+        }
+        return $def;
+    }
     /**
      * getRelation
      *
      * @param string $name              component name of which a foreign key object is bound
      * @return Doctrine_Relation
      */
-    public function getRelation($name, $recursive = true)
+    public function getRelation2($name, $recursive = true)
     {
         if (isset($this->relations[$name])) {
             return $this->relations[$name];
