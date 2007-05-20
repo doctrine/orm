@@ -126,9 +126,53 @@ class Doctrine_Relation_Parser
 
         if (isset($this->_pending[$name])) {
             $def = $this->_pending[$name];
-
-
+        
+            if (isset($def['refClass'])) {
+                $def = $this->completeAssocDefinition($def);
+            } else {
+                $def = $this->completeDefinition($def);
+            }
         }
+    }
+    public function completeAssocDefinition($def) 
+    {
+    	$conn = $this->_table->getConnection();
+        $def['table']    = $conn->getTable($def['class']);
+        $def['definer']  = $conn->getTable($def['definer']);
+        $def['refTable'] = $conn->getTable($def['refClass']);
+
+        if ( ! isset($def['foreign'])) {
+            // foreign key not set
+            // try to guess the foreign key
+
+            $columns = $this->getIdentifiers($def['table']);
+
+            $def['foreign'] = $columns;
+        }
+        if ( ! isset($def['local'])) {
+            // local key not set
+            // try to guess the local key
+            $columns = $this->getIdentifiers($this->_table);
+
+            $def['local'] = $columns;
+        } 
+
+        return $def;
+    }
+    public function getIdentifiers(Doctrine_Table $table)
+    {
+    	if (is_array($table->getIdentifier())) {
+            $columns = array();
+            foreach((array) $table->getIdentifier() as $identifier) {
+                $columns[] = strtolower($table->getComponentName())
+                           . '_' . $table->getIdentifier();
+            }
+    	} else {
+            $columns = strtolower($table->getComponentName())
+                           . '_' . $table->getIdentifier();
+    	}
+
+        return $columns;
     }
     public function completeDefinition($def)
     {
@@ -142,14 +186,9 @@ class Doctrine_Relation_Parser
                 // try to guess the foreign key
 
                 if ($def['local'] === $def['definer']->getIdentifier()) {
-                    $column = strtolower($def['definer']->getComponentName())
-                            . '_' . $def['definer']->getIdentifier();
+                    $columns = $this->getIdentifiers($def['definer']);
 
-                    if ( ! $def['table']->hasColumn($column)) {
-                        // auto-add column
-                    }
-                    
-                    $def['foreign'] = $column;
+                    $def['foreign'] = $columns;
                 } else {
                     // the foreign field is likely to be the
                     // identifier of the foreign class
@@ -161,10 +200,9 @@ class Doctrine_Relation_Parser
                 // local key not set, but foreign key is set
                 // try to guess the local key
                 if ($def['foreign'] === $def['definer']->getIdentifier()) {
-                    $column = strtolower($def['table']->getComponentName())
-                            . '_' . $def['table']->getIdentifier();
+                    $columns = $this->getIdentifiers($def['table']);
                     
-                    $def['local'] = $column;
+                    $def['local'] = $columns;
                 } else {
                     $def['local'] = $def['definer']->getIdentifier();
                 }
@@ -225,48 +263,6 @@ class Doctrine_Relation_Parser
             $definition['table'] = $this->conn->getTable($definition['class'], $allowExport);
             $definition['constraint'] = false;
 
-            if ($component == $this->options['name'] || in_array($component, $this->options['parents'])) {
-
-                // ONE-TO-ONE
-                if ($definition['type'] == Doctrine_Relation::ONE_COMPOSITE ||
-                    $definition['type'] == Doctrine_Relation::ONE_AGGREGATE) {
-                        // tree structure parent relation found
-
-                        if ( ! isset($definition['local'])) {
-                            $definition['local']   = $definition['foreign'];
-                            $definition['foreign'] = $definition['table']->getIdentifier();
-                        }
-
-                        $relation = new Doctrine_Relation_LocalKey($definition);
-
-                    } else {
-                        // tree structure children relation found
-
-                        if ( ! isset($definition['local'])) {
-                            $tmp = $definition['table']->getIdentifier();
-
-                            $definition['local'] = $tmp;
-                        }
-
-                        //$definition['foreign'] = $tmp;  
-                        $definition['constraint'] = true;
-
-                        $relation = new Doctrine_Relation_ForeignKey($definition);
-                    }
-
-            } elseif ($component == $definition['class'] ||
-                ($component == $definition['alias'])) {     //  && ($name == $this->options['name'] || in_array($name,$this->parents))
-
-                    if ( ! isset($defintion['local'])) {
-                        $definition['local'] = $this->identifier;
-                    }
-
-                    $definition['constraint'] = true;
-
-                    // ONE-TO-MANY or ONE-TO-ONE
-                    $relation = new Doctrine_Relation_ForeignKey($definition);
-
-                } else {
                     // MANY-TO-MANY
                     // only aggregate relations allowed
 
@@ -318,7 +314,7 @@ class Doctrine_Relation_Parser
 
                         } else {
                             // auto initialize a new one-to-one relationships for association table
-                            $associationTable->bind($this->getComponentName(),  
+                            $associationTable->bind($this->getComponentName(),
                                                     $associationTable->getComponentName(). '.' . $e2[1],
                                                     Doctrine_Relation::ONE_AGGREGATE
                                                     );
@@ -343,8 +339,6 @@ class Doctrine_Relation_Parser
                             $relation = new Doctrine_Relation_Association($definition);
                         }
                     }
-                }
-
             $this->relations[$name] = $relation;
 
             return $this->relations[$name];

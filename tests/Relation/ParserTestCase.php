@@ -130,4 +130,28 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($d['foreign'], 'id');
         $this->assertEqual($d['local'], 'email_id');
     }
+    public function testRelationParserSupportsForeignColumnGuessingForAssociations()
+    {
+        $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
+
+        $d = $r->completeAssocDefinition(array('class'    => 'Group',
+                                               'type'     => Doctrine_Relation::MANY,
+                                               'local'    => 'user_id',
+                                               'refClass' => 'GroupUser',
+                                               'definer'  => 'User'));
+
+        $this->assertEqual($d['foreign'], 'group_id');
+    }
+    public function testRelationParserSupportsLocalColumnGuessingForAssociations()
+    {
+        $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
+
+        $d = $r->completeAssocDefinition(array('class'    => 'Group',
+                                               'type'     => Doctrine_Relation::MANY,
+                                               'foreign'  => 'group_id',
+                                               'refClass' => 'GroupUser',
+                                               'definer'  => 'User'));
+
+        $this->assertEqual($d['local'], 'user_id');
+    }
 }
