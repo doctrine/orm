@@ -34,22 +34,39 @@
 class Doctrine_Cache_Sqlite extends Doctrine_Cache_Driver implements Countable
 {
     /**
+     * @var array $_options      an array of options
+     */
+    protected $_options = array('connection' => ':sqlite::memory');
+    /**
      * Test if a cache is available for the given id and (if yes) return it (false else)
-     * 
+     *
      * Note : return value is always "string" (unserialization is done by the core not by the backend)
-     * 
+     *
      * @param string $id cache id
      * @param boolean $testCacheValidity        if set to false, the cache validity won't be tested
      * @return string cached datas (or false)
      */
-    public function fetch($id, $testCacheValidity = true) 
+    public function fetch($id, $testCacheValidity = true)
     {
         $sql    = 'SELECT data, expires FROM cache WHERE id = ?';
-        $params = array($id);
-
-        $result = $this->conn->fetchAssoc($sql, $params);
+        $result = $this->getConnection()->fetchAssoc($sql, array($id));
 
         return unserialize($result['data']);
+    }
+    /**
+     * getConnection
+     * returns the connection object associated with this cache driver
+     *
+     * @return Doctrine_Connection      connection object
+     */
+    public function getConnection()
+    {
+        if (isset($this->_options['connection'])) {
+            return $this->_options['connection'];
+        }
+
+        throw new Doctrine_Cache_Exception('Connection object not availible. ' .
+                                           'For setting the connection use setOption().');
     }
     /**
      * Test if a cache is available or not (for the given id)
@@ -59,7 +76,9 @@ class Doctrine_Cache_Sqlite extends Doctrine_Cache_Driver implements Countable
      */
     public function contains($id) 
     {
-    	
+        $sql    = 'SELECT expires FROM cache WHERE id = ?';
+
+        return $this->getConnection()->fetchOne($sql, array($id));
     }
     /**
      * Save some string datas into a cache record
@@ -73,11 +92,11 @@ class Doctrine_Cache_Sqlite extends Doctrine_Cache_Driver implements Countable
      */
     public function save($data, $id, $lifeTime = false)
     {
-        $sql    = 'INSERT INTO cache (id, data, expires) VALUES (?, ?, ?)';
+        $sql = 'INSERT INTO cache (id, data, expires) VALUES (?, ?, ?)';
 
         $params = array($id, serialize($data), (time() + $lifeTime));
 
-        return (bool) $this->conn->exec($sql, $params);
+        return (bool) $this->getConnection()->exec($sql, $params);
     }
     /**
      * Remove a cache record
@@ -87,9 +106,9 @@ class Doctrine_Cache_Sqlite extends Doctrine_Cache_Driver implements Countable
      */
     public function delete($id) 
     {
-        $sql    = 'DELETE FROM cache WHERE id = ?';
+        $sql = 'DELETE FROM cache WHERE id = ?';
 
-        return (bool) $this->conn->exec($sql, array($id));
+        return (bool) $this->getConnection()->exec($sql, array($id));
     }
     /**
      * count
@@ -99,6 +118,6 @@ class Doctrine_Cache_Sqlite extends Doctrine_Cache_Driver implements Countable
      */
     public function count()
     {
-        return (int) $this->conn->fetchOne('SELECT COUNT(*) FROM cache');
+        return (int) $this->getConnection()->fetchOne('SELECT COUNT(*) FROM cache');
     }
 }
