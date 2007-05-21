@@ -167,6 +167,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     protected $tree;
     /**
+     * @var Doctrine_Relation_Parser $_parser   relation parser object
+     */
+    protected $_parser;
+    /**
      * the constructor
      * @throws Doctrine_Connection_Exception    if there are no opened connections
      * @throws Doctrine_Table_Exception         if there is already an instance of this table
@@ -179,9 +183,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $this->setParent($this->conn);
 
         $this->options['name'] = $name;
+        $this->_parser = new Doctrine_Relation_Parser($this);
 
         if ( ! class_exists($name) || empty($name)) {
-            throw new Doctrine_Exception("Couldn't find class $name");
+            throw new Doctrine_Exception("Couldn't find class " . $name);
         }
         $record = new $name($this);
 
@@ -192,8 +197,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         // get parent classes
 
         do {
-            if ($class == "Doctrine_Record")
-                break;
+            if ($class == "Doctrine_Record") {
+                break;                        
+            }
 
             $name  = $class;
             $names[] = $name;
@@ -207,9 +213,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $record->setTableDefinition();
 
             // set the table definition for the given tree implementation
-            if($this->isTree())
+            if ($this->isTree()) {
                 $this->getTree()->setTableDefinition();
-
+            }
+            
             $this->columnCount = count($this->columns);
 
             if (isset($this->columns)) {
@@ -284,19 +291,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                             $this->identifier = $pk;
                         }
                     }
-                };
-                /**
-                            if ( ! isset($definition['values'])) {
-                                throw new Doctrine_Table_Exception('No values set for enum column ' . $name);
-                            }
-
-                            if ( ! is_array($definition['values'])) {
-                                throw new Doctrine_Table_Exception('Enum column values should be specified as an array.');
-                            }
-
-                 */
-
-
+                }
             }
         } else {
             throw new Doctrine_Table_Exception("Class '$name' has no table definition.");
@@ -312,9 +307,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         // save parents
         array_pop($names);
         $this->options['parents']   = $names;
-
-        $this->query     = 'SELECT ' . implode(', ', array_keys($this->columns)) . ' FROM ' . $this->getTableName();
-
 
         $this->repository = new Doctrine_Table_Repository($this);
     }
@@ -412,7 +404,17 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             throw $e;
         }
     }
-    /** 
+    /**
+     * getRelationParser
+     * return the relation parser associated with this table
+     *
+     * @return Doctrine_Relation_Parser     relation parser object
+     */
+    public function getRelationParser()
+    {
+        return $this->_parser;
+    }
+    /**
      * __get
      * an alias for getOption
      *
@@ -1048,7 +1050,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 $id = array_values($id);
             }
 
-            $query  = $this->query . ' WHERE ' . implode(' = ? AND ', $this->primaryKeys) . ' = ?';
+            $query  = 'SELECT ' . implode(', ', array_keys($this->columns)) . ' FROM ' . $this->getTableName() 
+                    . ' WHERE ' . implode(' = ? AND ', $this->primaryKeys) . ' = ?';
             $query  = $this->applyInheritance($query);
 
             $params = array_merge($id, array_values($this->options['inheritanceMap']));
