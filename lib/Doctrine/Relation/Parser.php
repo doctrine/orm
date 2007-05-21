@@ -112,20 +112,41 @@ class Doctrine_Relation_Parser
 
         $this->_pending[$alias] = array_merge($options, array('class' => $name, 'alias' => $alias));
     }
-    
-    public function getRelation($name, $recursive = true)
+    /**
+     * getRelation
+     *
+     * @param string $alias      relation alias
+     */
+    public function getRelation($alias, $recursive = true)
     {
-        if (isset($this->_relations[$name])) {
-            return $this->_relations[$name];
+        if (isset($this->_relations[$alias])) {
+            return $this->_relations[$alias];
         }
 
-        if (isset($this->_pending[$name])) {
-            $def = $this->_pending[$name];
+        if (isset($this->_pending[$alias])) {
+            $def = $this->_pending[$alias];
         
             if (isset($def['refClass'])) {
                 $def = $this->completeAssocDefinition($def);
+                $localClasses = array_merge($this->_table->getOption('parents'), array($this->_table->getComponentName()));
+
+                if ( ! isset($this->_pending[$def['refClass']]) && 
+                     ! isset($this->_relations[$def['refClass']])) {
+                    
+                    $def['refTable']->getRelationParser()->bind($this->_table->getComponentName(),
+                                                                array('type' => Doctrine_Relation::ONE));
+
+                    $this->bind($def['refClass'], array('type' => Doctrine_Relation::MANY));
+                }
+                if (in_array($def['class'], $localClasses)) {
+                    return new Doctrine_Relation_Association_Self($def);
+                } else {
+                    return new Doctrine_Relation_Association($def);
+                }
             } else {
                 $def = $this->completeDefinition($def);
+                
+                return new Doctrine_Relation_ForeignKey($def);
             }
         }
     }
@@ -139,7 +160,6 @@ class Doctrine_Relation_Parser
     {
     	$conn = $this->_table->getConnection();
         $def['table']    = $conn->getTable($def['class']);
-        $def['definer']  = $conn->getTable($def['definer']);
         $def['refTable'] = $conn->getTable($def['refClass']);
 
         if ( ! isset($def['foreign'])) {
@@ -248,140 +268,41 @@ class Doctrine_Relation_Parser
             } else {
                 // neither local or foreign key is being set
                 // try to guess both keys
+
+                $conn = $this->_table->getConnection();
+
+                // the following loops are needed for covering inheritance
+                foreach ($localClasses as $class) {
+                    $table  = $conn->getTable($class);
+                    $column = strtolower($table->getComponentName())
+                            . '_' . $table->getIdentifier();
                 
-                $column = strtolower($this->_table->getComponentName())
-                        . '_' . $this->_table->getIdentifier();
+                    foreach ($foreignClasses as $class2) {
+                        $table2 = $conn->getTable($class2);
+                        if ($table2->hasColumn($column)) {
+                            $def['foreign'] = $column;
+                            $def['local']   = $table->getIdentifier();
+                            return $def;
+                        }
+                    }
+                }
 
-                if ($def['table']->hasColumn($column)) {
-                    $def['foreign'] = $column;
-                    $def['local']   = $this->_table->getIdentifier();
-                } else {
-
-                    $column = strtolower($def['table']->getComponentName())
-                            . '_' . $def['table']->getIdentifier();
-                            
-                    if ($this->_table->hasColumn($column)) {
-                        $def['foreign'] = $def['table']->getIdentifier();
-                        $def['local']   = $column;
+                foreach ($foreignClasses as $class) {
+                    $table  = $conn->getTable($class);
+                    $column = strtolower($table->getComponentName())
+                            . '_' . $table->getIdentifier();
+                
+                    foreach ($localClasses as $class2) {
+                        $table2 = $conn->getTable($class2);
+                        if ($table2->hasColumn($column)) {
+                            $def['foreign'] = $table->getIdentifier();
+                            $def['local']   = $column;
+                            return $def;
+                        }
                     }
                 }
             }
         }
         return $def;
-    }
-    /**
-     * getRelation
-     *
-     * @param string $name              component name of which a foreign key object is bound
-     * @return Doctrine_Relation
-     */
-    public function getRelation2($name, $recursive = true)
-    {
-        if (isset($this->relations[$name])) {
-            return $this->relations[$name];
-        }
-
-        if ( ! $this->conn->hasTable($this->options['name'])) {
-            $allowExport = true;
-        } else {
-            $allowExport = false;
-        }
-
-        if (isset($this->bound[$name])) {
-
-            $definition = $this->bound[$name];
-
-            list($component, $tmp) = explode('.', $definition['field']);
-            
-            if ( ! isset($definition['foreign'])) {
-                $definition['foreign'] = $tmp;
-            }
-
-            unset($definition['field']);
-
-            $definition['table'] = $this->conn->getTable($definition['class'], $allowExport);
-
-                    $classes = array_merge($this->options['parents'], array($this->options['name']));
-
-                    foreach (array_reverse($classes) as $class) {
-                        try {
-                            $bound = $definition['table']->getBoundForName($class, $component);
-                            break;
-                        } catch(Doctrine_Table_Exception $exc) { }
-                    }
-                    if ( ! isset($bound)) {
-                        throw new Doctrine_Table_Exception("Couldn't map many-to-many relation for "
-                            . $this->options['name'] . " and $name. Components use different join tables.");
-                    }
-
-                    $e2     = explode('.', $bound['field']);
-                    $fields = explode('-', $e2[1]);
-
-                    if ($e2[0] != $component) {
-                        throw new Doctrine_Table_Exception($e2[0] . ' doesn\'t match ' . $component);
-                    }
-                    $associationTable = $this->conn->getTable($e2[0], $allowExport);
-
-                    if (count($fields) > 1) {
-                        // SELF-REFERENCING THROUGH JOIN TABLE
-
-                        $def['table']   = $associationTable;
-                        $def['local']   = $this->identifier;
-                        $def['foreign'] = $fields[0];
-                        $def['alias']   = $e2[0];
-                        $def['class']   = $e2[0];
-                        $def['type']    = Doctrine_Relation::MANY_COMPOSITE;
-
-                        $this->relations[$e2[0]] = new Doctrine_Relation_ForeignKey($def);
-
-                        $definition['assocTable'] = $associationTable;
-                        $definition['local']      = $fields[0];
-                        $definition['foreign']    = $fields[1];
-                        $relation = new Doctrine_Relation_Association_Self($definition);
-                    } else {
-                        if($definition['table'] === $this) {
-
-                        } else {
-                            // auto initialize a new one-to-one relationships for association table
-                            $associationTable->bind($this->getComponentName(),
-                                                    $associationTable->getComponentName(). '.' . $e2[1],
-                                                    Doctrine_Relation::ONE_AGGREGATE
-                                                    );
-
-                            $associationTable->bind($definition['table']->getComponentName(),
-                                $associationTable->getComponentName(). '.' . $definition['foreign'],
-                                Doctrine_Relation::ONE_AGGREGATE
-                            );
-
-                            // NORMAL MANY-TO-MANY RELATIONSHIP
-
-                            $def['table']   = $associationTable;
-                            $def['foreign'] = $e2[1];
-                            $def['local']   = $definition['local'];
-                            $def['alias']   = $e2[0];
-                            $def['class']   = $e2[0];
-                            $def['type']    = Doctrine_Relation::MANY_COMPOSITE;
-                            $this->relations[$e2[0]] = new Doctrine_Relation_ForeignKey($def);
-
-                            $definition['local']      = $e2[1];
-                            $definition['assocTable'] = $associationTable;
-                            $relation = new Doctrine_Relation_Association($definition);
-                        }
-                    }
-            $this->relations[$name] = $relation;
-
-            return $this->relations[$name];
-        }
-
-
-        // load all relations
-        $this->getRelations();
-
-        if ($recursive) {
-            return $this->getRelation($name, false);
-        } else {
-            throw new Doctrine_Table_Exception($this->options['name'] . " doesn't have a relation to " . $name);
-        }
-
     }
 }
