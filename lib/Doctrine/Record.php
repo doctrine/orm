@@ -112,9 +112,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     protected $_filter;
     /**
-     * @var array $references               an array containing all the references
+     * @var array $_references              an array containing all the references
      */
-    private $references     = array();
+    protected $_references     = array();
     /**
      * @var integer $index                  this index is used for creating object identifiers
      */
@@ -722,14 +722,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
 
         try {
-            if ( ! isset($this->references[$name])) {
+            if ( ! isset($this->_references[$name])) {
                 $this->loadReference($name);
             }
         } catch(Doctrine_Table_Exception $e) { 
             throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
         }
 
-        return $this->references[$name];
+        return $this->_references[$name];
     }
     /**
      * mapValue
@@ -841,7 +841,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
         }
 
-        $this->references[$name] = $value;
+        $this->_references[$name] = $value;
     }
     /**
      * contains
@@ -859,7 +859,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if (isset($this->_id[$lower])) {
             return true;
         }
-        if (isset($this->references[$name])) {
+        if (isset($this->_references[$name])) {
             return true;
         }
         return false;
@@ -904,8 +904,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $table   = $fk->getTable();
             $alias   = $this->_table->getAlias($table->getComponentName());
 
-            if (isset($this->references[$alias])) {
-                $obj = $this->references[$alias];
+            if (isset($this->_references[$alias])) {
+                $obj = $this->_references[$alias];
                 $obj->save($conn);
             }
         }
@@ -1139,7 +1139,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function copyDeep(){
         $copy = $this->copy();
 
-        foreach ($this->references as $key => $value) {
+        foreach ($this->_references as $key => $value) {
             if ($value instanceof Doctrine_Collection) {
                 foreach ($value as $record) {
                     $copy->{$key}[] = $record->copyDeep();
@@ -1218,7 +1218,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function hasReference($name)
     {
-        return isset($this->references[$name]);
+        return isset($this->_references[$name]);
     }
     /**
      * obtainReference
@@ -1228,8 +1228,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function obtainReference($name)
     {
-        if (isset($this->references[$name])) {
-            return $this->references[$name];
+        if (isset($this->_references[$name])) {
+            return $this->_references[$name];
         }
         throw new Doctrine_Record_Exception("Unknown reference $name");
     }
@@ -1239,7 +1239,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function getReferences()
     {
-        return $this->references;
+        return $this->_references;
     }
     /**
      * setRelated
@@ -1249,7 +1249,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     final public function setRelated($alias, Doctrine_Access $coll)
     {
-        $this->references[$alias] = $coll;
+        $this->_references[$alias] = $coll;
     }
     /**
      * loadReference
@@ -1265,11 +1265,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $fk      = $this->_table->getRelation($name);
 
         if ($fk->isOneToOne()) {
-            $this->references[$name] = $fk->fetchRelatedFor($this);
+            $this->_references[$name] = $fk->fetchRelatedFor($this);
         } else {
             $coll = $fk->fetchRelatedFor($this);
 
-            $this->references[$name] = $coll;
+            $this->_references[$name] = $coll;
         }
     }
     /**
