@@ -87,7 +87,7 @@ class Doctrine_Hydrate
      *
      */
     protected $pendingAggregates = array();
-    /** 
+    /**
      *
      */
     protected $subqueryAggregates = array();
@@ -138,11 +138,11 @@ class Doctrine_Hydrate
         $this->aliasHandler = new Doctrine_Hydrate_Alias();
     }
 
-    public function getTableAlias($componentAlias) 
+    public function getTableAlias($componentAlias)
     {
         return $this->aliasHandler->getShortAlias($componentAlias);
     }
-    public function addQueryPart($name, $part) 
+    public function addQueryPart($name, $part)
     {
         if ( ! isset($this->parts[$name])) {
             throw new Doctrine_Hydrate_Exception('Unknown query part ' . $name);
@@ -151,17 +151,17 @@ class Doctrine_Hydrate
     }
     public function getDeclaration($name)
     {
-    	if ( ! isset($this->_aliasMap[$name])) {
+        if ( ! isset($this->_aliasMap[$name])) {
             throw new Doctrine_Hydrate_Exception('Unknown component alias ' . $name);
-    	}
-    	
-    	return $this->_aliasMap[$name];
+        }
+
+        return $this->_aliasMap[$name];
     }
     public function setQueryPart($name, $part)
     {
         if ( ! isset($this->parts[$name])) {
             throw new Doctrine_Hydrate_Exception('Unknown query part ' . $name);
-        }       
+        }
 
         if ($name !== 'limit' && $name !== 'offset') {
             $this->parts[$name] = array($part);
@@ -207,7 +207,7 @@ class Doctrine_Hydrate
     {
         return false;
     }
-    public function getQueryPart($part) 
+    public function getQueryPart($part)
     {
         if ( ! isset($this->parts[$part])) {
             throw new Doctrine_Hydrate_Exception('Unknown query part ' . $part);
@@ -294,7 +294,7 @@ class Doctrine_Hydrate
      */
     public function getParams()
     {
-        return $this->params;                           	
+        return $this->params;
     }
     /**
      * setParams
@@ -304,39 +304,11 @@ class Doctrine_Hydrate
     public function setParams(array $params = array()) {
         $this->params = $params;
     }
-    /**
-     * _fetch
-     *
-     * @param array $params                 prepared statement parameters
-     * @param integer $fetchMode            the fetchmode
-     * @see Doctrine::FETCH_* constants
-     */
-    public function _fetch($params = array(), $fetchMode = Doctrine::FETCH_RECORD)
-    {
-        $params = $this->conn->convertBooleans(array_merge($this->params, $params));
-        $params = $this->convertEnums($params);
-
-        if ( ! $this->_view) {
-            $query = $this->getQuery($params);
-        } else {
-            $query = $this->_view->getSelectSql();
-        }
-
-        if ($this->isLimitSubqueryUsed() &&
-            $this->conn->getDBH()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
-
-            $params = array_merge($params, $params);
-        }
-
-        $stmt  = $this->conn->execute($query, $params);
-
-        return $this->parseData($stmt);
-    }
     public function convertEnums($params)
     {
         return $params;
     }
-    public function setAliasMap($map) 
+    public function setAliasMap($map)
     {
         $this->_aliasMap = $map;
     }
@@ -354,7 +326,7 @@ class Doctrine_Hydrate
      */
     public function mapAggregateValues($record, array $row, $alias)
     {
-    	$found = false;
+        $found = false;
         // aggregate values have numeric keys
         if (isset($row[0])) {
             // map each aggregate value
@@ -379,13 +351,29 @@ class Doctrine_Hydrate
      * @param string $params
      * @return Doctrine_Collection            the root collection
      */
-    public function execute($params = array(), $return = Doctrine::FETCH_RECORD) 
+    public function execute($params = array(), $return = Doctrine::FETCH_RECORD)
     {
-    	if ($this->type !== self::SELECT) {
-    	   return $this->conn->exec($query, $params);                                	
-    	}
+        $params = $this->conn->convertBooleans(array_merge($this->params, $params));
+        $params = $this->convertEnums($params);
 
-        $array = (array) $this->_fetch($params, $return = Doctrine::FETCH_RECORD);
+        if ( ! $this->_view) {
+            $query = $this->getQuery($params);
+        } else {
+            $query = $this->_view->getSelectSql();
+        }
+
+        if ($this->isLimitSubqueryUsed() &&
+            $this->conn->getDBH()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
+
+            $params = array_merge($params, $params);
+        }
+
+        if ($this->type !== self::SELECT) {
+            return $this->conn->exec($query, $params);
+        }
+
+        $stmt  = $this->conn->execute($query, $params);
+        $array = (array) $this->parseData($stmt);
 
         if (empty($this->_aliasMap)) {
             throw new Doctrine_Hydrate_Exception("Couldn't execute query. Component alias map was empty.");
@@ -470,7 +458,7 @@ class Doctrine_Hydrate
                                 // previous entry found from memory
                                 $prev[$alias] = $prev[$parentAlias]->getLast()->get($relation->getAlias());
                             }
-                            
+
                             $colls[] = $prev[$alias];
 
                             // add record to the current collection
@@ -481,11 +469,11 @@ class Doctrine_Hydrate
                         // initialize the relation from parent to the current collection/record
                         $parent->set($relation->getAlias(), $prev[$alias]);
                     }
-    
+
                     // following statement is needed to ensure that mappings
                     // are being done properly when the result set doesn't
                     // contain the rows in 'right order'
-    
+
                     if ($prev[$alias] !== $record) {
                         $prev[$alias] = $record;
                     }
@@ -538,7 +526,7 @@ class Doctrine_Hydrate
      *
      * @return integer      return the query type
      */
-    public function getType() 
+    public function getType()
     {
         return $this->type;
     }
@@ -565,7 +553,7 @@ class Doctrine_Hydrate
         $index = 0;
         foreach ($array as $tableAlias => $maps) {
             $a = array();
-            
+
             // don't use table aliases if the query isn't a select query
             if ($this->type !== Doctrine_Query::SELECT) {
                 $tableAlias = '';
