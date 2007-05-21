@@ -381,6 +381,10 @@ class Doctrine_Hydrate
      */
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD) 
     {
+    	if ($this->type !== self::SELECT) {
+    	   return $this->conn->exec($query, $params);                                	
+    	}
+
         $array = (array) $this->_fetch($params, $return = Doctrine::FETCH_RECORD);
 
         if (empty($this->_aliasMap)) {
