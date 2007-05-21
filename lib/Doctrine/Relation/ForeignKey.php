@@ -43,15 +43,16 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
      */
     public function fetchRelatedFor(Doctrine_Record $record)
     {
-        $id = $record->get($this->definition['local']);
-
+    	$id = array();
+    	foreach ((array) $this->definition['local'] as $local) {
+    	   $id = $record->get($local);
+        }
         if ($this->isOneToOne()) {
             if (empty($id)) {
                 $related = $this->getTable()->create();
             } else {
                 $dql  = 'FROM ' . $this->getTable()->getComponentName()
-                      . ' WHERE ' . $this->getTable()->getComponentName()
-                      . '.' . $this->definition['foreign'] . ' = ?';
+                      . ' WHERE ' . $this->getCondition();
 
                 $coll = $this->getTable()->getConnection()->query($dql, array($id));
                 $related = $coll[0];
@@ -70,5 +71,21 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
             $related->setReference($record, $this);
         }
         return $related;
+    }
+    /**
+     * getCondition
+     *
+     * @param string $alias
+     */
+    public function getCondition($alias = null)
+    {
+    	if ( ! $alias) {
+    	   $alias = $this->getTable()->getComponentName();
+    	}
+    	$conditions = array();
+        foreach ((array) $this->definition['foreign'] as $foreign) {
+            $conditions[] = $alias . '.' . $foreign . ' = ?';
+        }
+        return implode(' AND ', $conditions);
     }
 }

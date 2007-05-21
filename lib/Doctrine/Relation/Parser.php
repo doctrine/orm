@@ -106,11 +106,6 @@ class Doctrine_Relation_Parser
         } else {
             $alias = $name;
         }
-
-        if ( ! isset($options['definer'])) {
-            throw new Doctrine_Relation_Exception('Relation definer not set.');
-        }
-
         if ( ! isset($options['type'])) {
             throw new Doctrine_Relation_Exception('Relation type not set.');
         }
@@ -189,6 +184,32 @@ class Doctrine_Relation_Parser
 
         return $columns;
     }
+    public function guessColumns($classes, Doctrine_Table $foreignTable)
+    {
+        $conn = $this->_table->getConnection();
+
+        foreach ($classes as $class) {
+            $table   = $conn->getTable($class);
+            $columns = $this->getIdentifiers($table);
+            $found   = true;
+
+            foreach ((array) $columns as $column) {
+                if ( ! $foreignTable->hasColumn($column)) {
+                    $found = false;
+                    break;
+                }
+            }
+            if ($found) {
+                break;
+            }
+        }
+        
+        if ( ! $found) {
+            throw new Doctrine_Relation_Exception("Couldn't find columns.");
+        }
+
+        return $columns;
+    }
     /**
      * Completes the given definition
      *
@@ -198,18 +219,17 @@ class Doctrine_Relation_Parser
     public function completeDefinition($def)
     {
     	$conn = $this->_table->getConnection();
-        $def['table']   = $conn->getTable($def['class']);
-        $def['definer'] = $conn->getTable($def['definer']);
+        $def['table'] = $conn->getTable($def['class']);
+        $foreignClasses = array_merge($def['table']->getOption('parents'), array($def['class']));
+        $localClasses   = array_merge($this->_table->getOption('parents'), array($this->_table->getComponentName()));
 
         if (isset($def['local'])) {
             if ( ! isset($def['foreign'])) {
                 // local key is set, but foreign key is not
                 // try to guess the foreign key
 
-                if ($def['local'] === $def['definer']->getIdentifier()) {
-                    $columns = $this->getIdentifiers($def['definer']);
-
-                    $def['foreign'] = $columns;
+                if ($def['local'] === $this->_table->getIdentifier()) {
+                    $def['foreign'] = $this->guessColumns($localClasses, $def['table']);
                 } else {
                     // the foreign field is likely to be the
                     // identifier of the foreign class
@@ -220,29 +240,27 @@ class Doctrine_Relation_Parser
             if (isset($def['foreign'])) {
                 // local key not set, but foreign key is set
                 // try to guess the local key
-                if ($def['foreign'] === $def['definer']->getIdentifier()) {
-                    $columns = $this->getIdentifiers($def['table']);
-                    
-                    $def['local'] = $columns;
+                if ($def['foreign'] === $def['table']->getIdentifier()) {
+                    $def['local'] = $this->guessColumns($foreignClasses, $this->_table);
                 } else {
-                    $def['local'] = $def['definer']->getIdentifier();
+                    $def['local'] = $this->_table->getIdentifier();
                 }
             } else {
                 // neither local or foreign key is being set
                 // try to guess both keys
                 
-                $column = strtolower($def['definer']->getComponentName())
-                        . '_' . $def['definer']->getIdentifier();
+                $column = strtolower($this->_table->getComponentName())
+                        . '_' . $this->_table->getIdentifier();
 
                 if ($def['table']->hasColumn($column)) {
                     $def['foreign'] = $column;
-                    $def['local']   = $def['definer']->getIdentifier();
+                    $def['local']   = $this->_table->getIdentifier();
                 } else {
 
                     $column = strtolower($def['table']->getComponentName())
                             . '_' . $def['table']->getIdentifier();
                             
-                    if ($def['definer']->hasColumn($column)) {
+                    if ($this->_table->hasColumn($column)) {
                         $def['foreign'] = $def['table']->getIdentifier();
                         $def['local']   = $column;
                     }
