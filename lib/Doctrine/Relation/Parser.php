@@ -140,18 +140,42 @@ class Doctrine_Relation_Parser
                                                         'foreign' => $def['local']));
                 }
                 if (in_array($def['class'], $localClasses)) {
-                    return new Doctrine_Relation_Association_Self($def);
+                    $rel = new Doctrine_Relation_Association_Self($def);
                 } else {
-                    return new Doctrine_Relation_Association($def);
+                    $rel = new Doctrine_Relation_Association($def);
                 }
             } else {
                 $def = $this->completeDefinition($def);
                     if ( ! isset($def['foreign'])) {
                         Doctrine::dump($def);
                     }
-                return new Doctrine_Relation_ForeignKey($def);
+                $rel = new Doctrine_Relation_ForeignKey($def);
+            }
+            if (isset($rel)) {
+                unset($this->_pending[$name]);
+                
+                return $rel;
             }
         }
+        if ($recursive) {
+            return $this->getRelation($name, false);
+        } else {
+            throw new Doctrine_Table_Exception($this->options['name'] . " doesn't have a relation to " . $name);
+        }
+    }
+    /**
+     * getRelations
+     * returns an array containing all relation objects
+     *
+     * @return array        an array of Doctrine_Relation objects
+     */
+    public function getRelations()
+    {
+        foreach ($this->_pending as $k => $v) {
+            $this->getRelation($k);
+        }
+
+        return $this->_relations;
     }
     /**
      * Completes the given association definition
@@ -310,8 +334,8 @@ class Doctrine_Relation_Parser
                             return $def;
                         }
                     }
-                }
-                
+                }   Doctrine::dump($this->_table->getComponentName());
+                    Doctrine::dump($def);
                 throw new Doctrine_Relation_Parser_Exception("Couldn't complete relation definition.");
             }
         }

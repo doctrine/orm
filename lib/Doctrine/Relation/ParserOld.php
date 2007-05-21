@@ -178,8 +178,8 @@ class Doctrine_Relation_ParserOld
 
         $lower = strtolower($name);
 
-        if (isset($this->columns[$lower])) {
-            throw new Doctrine_Table_Exception("Couldn't bind relation. Column with name " . $lower . ' already exists!');
+        if ($this->_table->hasColumn($lower)) {
+            throw new Doctrine_Relation_Exception("Couldn't bind relation. Column with name " . $lower . ' already exists!');
         }
 
         $e    = explode(' as ', $name);
