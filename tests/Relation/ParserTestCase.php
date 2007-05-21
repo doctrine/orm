@@ -37,37 +37,21 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
         $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
         
         $p = array('type' => Doctrine_Relation::ONE, 
-                   'local' => 'email_id',
-                   'definer' => 'User');
+                   'local' => 'email_id');
 
         $r->bind('Email', $p);
                                 
         $this->assertEqual($r->getPendingRelation('Email'), array('type' => Doctrine_Relation::ONE, 
                                                                   'local' => 'email_id',
                                                                   'class' => 'Email',
-                                                                  'alias' => 'Email',
-                                                                  'definer' => 'User'
+                                                                  'alias' => 'Email'
                                                                   ));
-    }
-    public function testBindThrowsExceptionIfDefinerNotSet() 
-    {
-        $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
-        
-        $p = array('type' => Doctrine_Relation::ONE, 
-                   'local' => 'email_id');
-        try {
-            $r->bind('Email', $p);
-            $this->fail('should throw exception');
-        } catch(Doctrine_Relation_Exception $e) {
-            $this->pass();
-        }
     }
     public function testBindThrowsExceptionIfTypeNotSet()
     {
         $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
 
-        $p = array('local' => 'email_id',
-                   'definer' => 'User');
+        $p = array('local' => 'email_id');
         try {
             $r->bind('Email', $p);
             $this->fail('should throw exception');
@@ -81,9 +65,8 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
 
         $d = $r->completeDefinition(array('class'   => 'Phonenumber',
                                           'type'    => Doctrine_Relation::MANY,
-                                          'foreign' => 'entity_id',
-                                          'definer' => 'Entity'));
-        
+                                          'foreign' => 'entity_id'));
+
         $this->assertEqual($d['local'], 'id');
     }
     public function testRelationParserSupportsLocalColumnGuessing2()
@@ -92,8 +75,7 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
 
         $d = $r->completeDefinition(array('class'   => 'Email',
                                           'type'    => Doctrine_Relation::ONE,
-                                          'foreign' => 'id',
-                                          'definer' => 'User'));
+                                          'foreign' => 'id'));
 
         $this->assertEqual($d['local'], 'email_id');
     }
@@ -103,8 +85,7 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
 
         $d = $r->completeDefinition(array('class' => 'Phonenumber',
                                           'type'  => Doctrine_Relation::MANY,
-                                          'local' => 'id',
-                                          'definer' => 'Entity'));
+                                          'local' => 'id'));
 
         $this->assertEqual($d['foreign'], 'entity_id');
     }
@@ -114,8 +95,7 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
 
         $d = $r->completeDefinition(array('class' => 'Email',
                                           'type'  => Doctrine_Relation::ONE,
-                                          'local' => 'email_id',
-                                          'definer' => 'User'));
+                                          'local' => 'email_id'));
 
         $this->assertEqual($d['foreign'], 'id');
     }
@@ -124,8 +104,7 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
         $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
 
         $d = $r->completeDefinition(array('class' => 'Email',
-                                          'type'  => Doctrine_Relation::MANY,
-                                          'definer' => 'User'));
+                                          'type'  => Doctrine_Relation::MANY));
 
         $this->assertEqual($d['foreign'], 'id');
         $this->assertEqual($d['local'], 'email_id');
