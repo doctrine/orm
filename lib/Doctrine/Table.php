@@ -492,7 +492,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->repository;
     }
-
+    /**
+     * setOption
+     * sets an option and returns this object in order to 
+     * allow flexible method chaining
+     *
+     * @see Doctrine_Table::$_options   for available options
+     * @param string $name              the name of the option to set
+     * @param mixed $value              the value of the option
+     * @return Doctrine_Table           this object
+     */
     public function setOption($name, $value)
     {
         switch ($name) {
@@ -510,6 +519,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         $this->options[$name] = $value;
     }
+    /**
+     * getOption
+     * returns the value of given option
+     *
+     * @param string $name  the name of the option
+     * @return mixed        the value of given option
+     */
     public function getOption($name)
     {
         if (isset($this->options[$name])) {
