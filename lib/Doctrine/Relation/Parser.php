@@ -136,7 +136,8 @@ class Doctrine_Relation_Parser
                     $def['refTable']->getRelationParser()->bind($this->_table->getComponentName(),
                                                                 array('type' => Doctrine_Relation::ONE));
 
-                    $this->bind($def['refClass'], array('type' => Doctrine_Relation::MANY));
+                    $this->bind($def['refClass'], array('type' => Doctrine_Relation::MANY, 
+                                                        'foreign' => $def['local']));
                 }
                 if (in_array($def['class'], $localClasses)) {
                     return new Doctrine_Relation_Association_Self($def);
@@ -206,7 +207,14 @@ class Doctrine_Relation_Parser
 
         return $columns;
     }
-    public function guessColumns($classes, Doctrine_Table $foreignTable)
+    /**
+     * guessColumns
+     *
+     * @param array $classes                    an array of class names
+     * @param Doctrine_Table $foreignTable      foreign table object
+     * @return array                            an array of column names
+     */
+    public function guessColumns(array $classes, Doctrine_Table $foreignTable)
     {
         $conn = $this->_table->getConnection();
 
@@ -304,7 +312,7 @@ class Doctrine_Relation_Parser
                     }
                 }
                 
-                throw new Relation_Parser_Exception("Couldn't complete relation definition.");
+                throw new Doctrine_Relation_Parser_Exception("Couldn't complete relation definition.");
             }
         }
         return $def;
