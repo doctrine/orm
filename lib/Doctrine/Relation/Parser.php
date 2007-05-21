@@ -145,7 +145,9 @@ class Doctrine_Relation_Parser
                 }
             } else {
                 $def = $this->completeDefinition($def);
-                
+                    if ( ! isset($def['foreign'])) {
+                        Doctrine::dump($def);
+                    }
                 return new Doctrine_Relation_ForeignKey($def);
             }
         }
@@ -301,6 +303,8 @@ class Doctrine_Relation_Parser
                         }
                     }
                 }
+                
+                throw new Relation_Parser_Exception("Couldn't complete relation definition.");
             }
         }
         return $def;
