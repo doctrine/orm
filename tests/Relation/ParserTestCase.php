@@ -40,7 +40,7 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
                    'local' => 'email_id');
 
         $r->bind('Email', $p);
-                                
+
         $this->assertEqual($r->getPendingRelation('Email'), array('type' => Doctrine_Relation::ONE, 
                                                                   'local' => 'email_id',
                                                                   'class' => 'Email',
@@ -104,10 +104,21 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
         $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
 
         $d = $r->completeDefinition(array('class' => 'Email',
-                                          'type'  => Doctrine_Relation::MANY));
+                                          'type'  => Doctrine_Relation::ONE));
 
         $this->assertEqual($d['foreign'], 'id');
         $this->assertEqual($d['local'], 'email_id');
+    }
+
+    public function testRelationParserSupportsGuessingOfBothColumns2()
+    {
+        $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
+
+        $d = $r->completeDefinition(array('class' => 'Phonenumber',
+                                          'type'  => Doctrine_Relation::MANY));
+
+        $this->assertEqual($d['foreign'], 'entity_id');
+        $this->assertEqual($d['local'], 'id');
     }
     public function testRelationParserSupportsForeignColumnGuessingForAssociations()
     {
@@ -116,8 +127,7 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
         $d = $r->completeAssocDefinition(array('class'    => 'Group',
                                                'type'     => Doctrine_Relation::MANY,
                                                'local'    => 'user_id',
-                                               'refClass' => 'GroupUser',
-                                               'definer'  => 'User'));
+                                               'refClass' => 'GroupUser'));
 
         $this->assertEqual($d['foreign'], 'group_id');
     }
@@ -128,9 +138,61 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
         $d = $r->completeAssocDefinition(array('class'    => 'Group',
                                                'type'     => Doctrine_Relation::MANY,
                                                'foreign'  => 'group_id',
-                                               'refClass' => 'GroupUser',
-                                               'definer'  => 'User'));
+                                               'refClass' => 'GroupUser'));
 
         $this->assertEqual($d['local'], 'user_id');
+    }
+    public function testGetRelationReturnsForeignKeyObjectForOneToOneRelation()
+    {
+        $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
+        $p = array('type' => Doctrine_Relation::ONE, 
+                   'local' => 'email_id');
+
+        $r->bind('Email', $p);
+
+        $rel = $r->getRelation('Email');
+        
+        $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
+    }
+    public function testGetRelationReturnsForeignKeyObjectForOneToManyRelation()
+    {
+        $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
+        $p = array('type' => Doctrine_Relation::MANY);
+
+        $r->bind('Phonenumber', $p);
+
+        $rel = $r->getRelation('Phonenumber');
+        
+        $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
+    }
+    public function testGetRelationReturnsForeignKeyObjectForManytToManyRelation()
+    {
+        $r = new Doctrine_Relation_Parser($this->conn->getTable('User'));
+        $p = array('type' => Doctrine_Relation::MANY,
+                   'refClass' => 'GroupUser');
+
+        $r->bind('Group', $p);
+
+        $rel = $r->getRelation('Group');
+        
+        $this->assertTrue($rel instanceof Doctrine_Relation_Association);
+        $rel = $r->getRelation('GroupUser');
+        $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
+    }
+    public function testGetRelationReturnsForeignKeyObjectForNestRelation()
+    {
+        $r = new Doctrine_Relation_Parser($this->conn->getTable('Entity'));
+        $p = array('type' => Doctrine_Relation::MANY,
+                   'refClass' => 'EntityReference',
+                   'local' => 'entity1',
+                   'foreign' => 'entity2');
+
+        $r->bind('Entity', $p);
+
+        $rel = $r->getRelation('Entity');
+        $this->assertTrue($rel instanceof Doctrine_Relation_Association_Self);
+
+        $rel = $r->getRelation('EntityReference');
+        $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
     }
 }
