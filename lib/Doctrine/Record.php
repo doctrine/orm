@@ -432,10 +432,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         $vars = get_object_vars($this);
 
-        unset($vars['references']);
-        unset($vars['originals']);
+        unset($vars['_references']);
         unset($vars['_table']);
         unset($vars['_errorStack']);
+        unset($vars['_filter']);
+        unset($vars['_modified']);
+        unset($vars['_node']);
 
         $name = $this->_table->getIdentifier();
         $this->_data = array_merge($this->_data, $this->_id);
@@ -476,18 +478,19 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $manager    = Doctrine_Manager::getInstance();
         $connection = $manager->getConnectionForComponent(get_class($this));
 
-        $this->oid  = self::$index;
-        self::$index++;
+        $this->_oid = self::$_index;
+        self::$_index++;
 
         $this->_table = $connection->getTable(get_class($this));
 
         $array = unserialize($serialized);
 
-        foreach ($array as $name => $values) {
-            $this->$name = $values;
+        foreach($array as $k => $v) {
+            $this->$k = $v;
         }
-
+        
         $this->_table->getRepository()->add($this);
+        $this->_filter = new Doctrine_Record_Filter($this);
 
         $this->_data = $this->_filter->cleanData($this->_data);
 
@@ -575,7 +578,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if ( ! $this->_data) {
             throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist anymore');
         }
-        
+
         $this->_data     = array_change_key_case($this->_data, CASE_LOWER);
 
         $this->_modified = array();
@@ -596,7 +599,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @throws Doctrine_Record_Exception        When the primary key of this record doesn't match the primary key fetched from a collection
      * @return void
      */
-    final public function factoryRefresh()
+    public function factoryRefresh()
     {
         $this->_data = $this->_table->getData();
         $old  = $this->_id;
@@ -619,7 +622,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return object Doctrine_Table        a Doctrine_Table object
      */
-    final public function getTable()
+    public function getTable()
     {
         return $this->_table;
     }
@@ -629,7 +632,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *
      * @return array                        an array containing all the properties
      */
-    final public function getData()
+    public function getData()
     {
         return $this->_data;
     }
@@ -1352,13 +1355,22 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function countRelated($name)
     {
+
         $rel            = $this->_table->getRelation($name);
         $componentName  = $rel->getTable()->getComponentName();
-        $alias          = $rel->getTable()->getAlias(get_class($this));
         $query          = new Doctrine_Query();
-        $query->from($componentName. '(' . 'COUNT(1)' . ')')->where($componentName. '.' .$alias. '.' . $this->getTable()->getIdentifier(). ' = ?');
-        $array = $query->execute(array($this->getIncremented()));
+        /**
+        $query->select('COUNT(p.id)')
+              ->from($componentName)
+              ->where($componentName. '.' . $rel->getAlias()
+                      . '.' . $this->getTable()->getIdentifier(). ' = ?');
+           */
+        //$array = $query->execute(array($this->getIncremented()));
+
+        return 0;
         return $array[0]['COUNT(1)'];
+
+
     }
     /**
      * merge

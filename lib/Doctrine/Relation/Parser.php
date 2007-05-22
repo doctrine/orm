@@ -328,7 +328,7 @@ class Doctrine_Relation_Parser
                         if ($table2->hasColumn($column)) {
                             $def['foreign'] = $column;
                             $def['local']   = $table->getIdentifier();
-                            $def['localKey'] = true;
+
                             return $def;
                         }
                     }
@@ -344,6 +344,7 @@ class Doctrine_Relation_Parser
                         if ($table2->hasColumn($column)) {
                             $def['foreign'] = $table->getIdentifier();
                             $def['local']   = $column;
+                            $def['localKey'] = true;
                             return $def;
                         }
                     }

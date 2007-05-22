@@ -229,7 +229,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             }
         } else {
             if (is_bool($item)) {
-                $item = (int) $item; 
+                $item = (int) $item;
             }
         }
         return $item;
@@ -696,6 +696,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         } catch(Doctrine_Adapter_Exception $e) {
         } catch(PDOException $e) { }
 
+        
         $this->rethrowException($e);
     }
     /**

@@ -58,7 +58,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
         switch ($context) {
             case "record":
                 $sub    = 'SQL:SELECT ' . $this->definition['foreign'].
-                          ' FROM '  . $this->definition['assocTable']->getTableName().
+                          ' FROM '  . $this->definition['refTable']->getTableName().
                           ' WHERE ' . $this->definition['local'] .
                           ' IN ('   . substr(str_repeat("?, ", $count),0,-2) .
                           ')';
