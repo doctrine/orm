@@ -170,7 +170,6 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     	    } else {
     		    foreach ($deletes as $k => $record) {
                     $ids[] = $record->getIncremented();
-                    $record->assignIdentifier(false);
     		    }
     		    if ($record instanceof Doctrine_Record) {
         			$params = substr(str_repeat('?, ', count($ids)),0,-2);
