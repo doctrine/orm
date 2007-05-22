@@ -556,7 +556,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      *                                          this record represents does not exist anymore)
      * @return boolean
      */
-    final public function refresh()
+    public function refresh()
     {
         $id = $this->obtainIdentifier();
         if ( ! is_array($id)) {
@@ -567,18 +567,19 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
         $id = array_values($id);
 
-        $query = $this->_table->getQuery() . ' WHERE ' . implode(' = ? AND ', $this->_table->getPrimaryKeys()) . ' = ?';
+        $query = 'SELECT * FROM ' . $this->_table->getOption('tableName') . ' WHERE ' . implode(' = ? AND ', $this->_table->getPrimaryKeys()) . ' = ?';
         $stmt  = $this->_table->getConnection()->execute($query,$id);
 
         $this->_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ( ! $this->_data)
+        if ( ! $this->_data) {
             throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist anymore');
-
+        }
+        
         $this->_data     = array_change_key_case($this->_data, CASE_LOWER);
 
         $this->_modified = array();
-        $this->cleanData(true);
+        $this->_data     = $this->_filter->cleanData($this->_data);
 
         $this->prepareIdentifiers();
 
