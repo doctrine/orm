@@ -44,10 +44,6 @@ class Doctrine_Relation_Parser
      */
     protected $_pending   = array();
     /**
-     * @var array $_relationAliases         relation aliases
-     */
-    protected $_aliases   = array();
-    /**
      * constructor
      *
      * @param Doctrine_Table $table         the table object this parser belongs to
@@ -99,13 +95,8 @@ class Doctrine_Relation_Parser
 
         $e    = explode(' as ', $name);
         $name = $e[0];
+        $alias = isset($e[1]) ? $e[1] : $name;
 
-        if (isset($e[1])) {
-            $alias = $e[1];
-            $this->_aliases[$name] = $alias;
-        } else {
-            $alias = $name;
-        }
         if ( ! isset($options['type'])) {
             throw new Doctrine_Relation_Exception('Relation type not set.');
         }
@@ -139,6 +130,7 @@ class Doctrine_Relation_Parser
                                                                 array('type'    => Doctrine_Relation::ONE,
                                                                       'local'   => $def['local'],
                                                                       'foreign' => $this->_table->getIdentifier(),
+                                                                      'localKey' => true,
                                                                       ));
 
                     $this->bind($def['refClass'], array('type' => Doctrine_Relation::MANY, 
