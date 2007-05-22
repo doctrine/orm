@@ -54,7 +54,7 @@ abstract class Doctrine_Relation
     const MANY_COMPOSITE        = 3;
 
     const ONE   = 0;
-    const MANY  = 1;
+    const MANY  = 2;
     
     protected $definition = array('alias'       => true,
                                   'foreign'     => true,

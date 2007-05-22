@@ -239,10 +239,9 @@ class Doctrine_Lib
     {
         $r[] = "<pre>";
         $r[] = get_class($collection);
+        $r[] = 'data : ' . Doctrine::dump($collection->getData(), false);
+        //$r[] = 'snapshot : ' . Doctrine::dump($collection->getSnapshot());
 
-        foreach ($collection as $key => $record) {
-            $r[] = "Key : ".$key." ID : ".$record->obtainIdentifier();
-        }
         $r[] = "</pre>";
         return implode("\n",$r);
     }

@@ -187,7 +187,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         foreach ($record->getReferences() as $k => $v) {
             $rel = $record->getTable()->getRelation($k);
             
-            if ($rel instanceof Doctrine_Relation_Association) {
+            if ($rel instanceof Doctrine_Relation_Association) {   
                 $v->save($this->conn);
 
                 $assocTable = $rel->getAssociationTable();
@@ -196,7 +196,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                            . ' WHERE ' . $rel->getForeign() . ' = ?'
                            . ' AND ' . $rel->getLocal() . ' = ?';
 
-                    $this->query($r->getIncremented(), $record->getIncremented());
+                    $this->conn->execute($query, array($r->getIncremented(), $record->getIncremented()));
                 }
                 foreach ($v->getInsertDiff() as $r) {
                     $assocRecord = $assocTable->create();

@@ -1168,7 +1168,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     {
         if ($id === false) {
             $this->_id       = array();
-            $this->_data = $this->_filter->cleanData($this->_data);
+            $this->_data     = $this->_filter->cleanData($this->_data);
             $this->_state    = Doctrine_Record::STATE_TCLEAN;
             $this->_modified = array();
         } elseif ($id === true) {

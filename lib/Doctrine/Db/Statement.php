@@ -205,10 +205,6 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
         $skip = $this->adapter->getListener()->onPreExecute($event);
 
         if ( ! $skip) {
-                      	if (isset($params[0]) && is_array($params[0])) {
-                             print_r($params);
-                      	     throw new Exception();
-                      	}
             $this->stmt->execute((array) $params);
             $this->adapter->incrementQueryCount();
         }
