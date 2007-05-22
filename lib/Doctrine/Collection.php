@@ -106,6 +106,16 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         return $this->_table;
     }
     /**
+     * setData
+     *
+     * @param array $data
+     * @return Doctrine_Collection
+     */
+    public function setData(array $data) 
+    {
+    	$this->data = $data;
+    }
+    /**
      * this method is automatically called when this Doctrine_Collection is serialized
      *
      * @return array

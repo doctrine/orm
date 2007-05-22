@@ -488,7 +488,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach($array as $k => $v) {
             $this->$k = $v;
         }
-        
+
         $this->_table->getRepository()->add($this);
         $this->_filter = new Doctrine_Record_Filter($this);
 
@@ -825,7 +825,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 if ( ! ($value instanceof Doctrine_Collection)) {
                     throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Collection when setting one-to-many references.");
                 }
-                $value->setReference($this,$rel);
+                if (isset($this->_references[$name])) {
+                    $this->_references[$name]->setData($value->getData());
+                    return $this;
+                }
             } else {
                 // one-to-one relation found
                 if ( ! ($value instanceof Doctrine_Record)) {

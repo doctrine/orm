@@ -696,7 +696,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         } catch(Doctrine_Adapter_Exception $e) {
         } catch(PDOException $e) { }
 
-        
+         print Doctrine_Lib::formatSql($query);
         $this->rethrowException($e);
     }
     /**
