@@ -67,6 +67,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     protected $_enumParams = array();
     /**
+     * @var array $_options                 an array of options
+     */
+    protected $_options    = array(
+                            'fetchMode' => Doctrine::FETCH_RECORD,
+                            'cacheMode' => null,
+                            );
+    /**
      * @var array $_dqlParts                an array containing all DQL query parts
      */
     protected $_dqlParts   = array(
@@ -483,7 +490,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $q = 'UPDATE ';
             break;
             case self::SELECT:
-                $distinct = ($this->isDistinct()) ? 'DISTINCT ' : '';
+                $distinct = ($this->parts['distinct']) ? 'DISTINCT ' : '';
 
                 $q = 'SELECT ' . $distinct . implode(', ', $this->parts['select']) . ' FROM ';
             break;
@@ -564,11 +571,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $this->processPendingSubqueries();
 
         // build the basic query
-
-        $str = '';
-        if ($this->isDistinct()) {
-            $str = 'DISTINCT ';
-        }
 
         $q  = $this->getQueryBase();
         $q .= $this->buildFromPart();

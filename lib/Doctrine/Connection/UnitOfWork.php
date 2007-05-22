@@ -79,7 +79,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 // skip self-referenced relations
                 if ($name === $nm) {
                     continue;
-                }    
+                }
 
                 if ($rel instanceof Doctrine_Relation_ForeignKey) {
                     if ($index2 !== false) {
@@ -257,10 +257,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }
     }
     /**
+     * update
      * updates the given record
      *
-     * @param Doctrine_Record $record
-     * @return boolean
+     * @param Doctrine_Record $record   record to be updated
+     * @return boolean                  whether or not the update was successful
      */
     public function update(Doctrine_Record $record)
     {
@@ -301,7 +302,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
               . ' WHERE ' . implode(' = ? AND ', $record->getTable()->getPrimaryKeys())
               . ' = ?';
 
-        $stmt = $this->conn->getDBH()->prepare($sql);
+        $stmt = $this->conn->getDbh()->prepare($sql);
         $stmt->execute($params);
 
         $record->assignIdentifier(true);
@@ -335,7 +336,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             $id             = $this->conn->sequence->nextId($seq);
             $name           = $record->getTable()->getIdentifier();
             $array[$name]   = $id;
-            
+
             $record->assignIdentifier($id);
         }
 

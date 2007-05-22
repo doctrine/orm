@@ -45,7 +45,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
     {
     	$id = array();
     	foreach ((array) $this->definition['local'] as $local) {
-    	   $id = $record->get($local);
+    	   $id[] = $record->get($local);
         }
         if ($this->isOneToOne()) {
             if (empty($id)) {
@@ -54,7 +54,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
                 $dql  = 'FROM ' . $this->getTable()->getComponentName()
                       . ' WHERE ' . $this->getCondition();
 
-                $coll = $this->getTable()->getConnection()->query($dql, array($id));
+                $coll = $this->getTable()->getConnection()->query($dql, $id);
                 $related = $coll[0];
             }
 
@@ -66,7 +66,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
                 $related = new Doctrine_Collection($this->getTable());
             } else {
                 $query      = $this->getRelationDql(1);
-                $related    = $this->getTable()->getConnection()->query($query, array($id));
+                $related    = $this->getTable()->getConnection()->query($query, $id);
             }
             $related->setReference($record, $this);
         }

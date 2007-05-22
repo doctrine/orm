@@ -901,8 +901,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
 
         foreach ($saveLater as $fk) {
-            $table   = $fk->getTable();
-            $alias   = $this->_table->getAlias($table->getComponentName());
+            $alias = $fk->getAlias();
 
             if (isset($this->_references[$alias])) {
                 $obj = $this->_references[$alias];
@@ -1011,8 +1010,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     $a[$v] = $this->_table->enumIndex($v,$this->_data[$v]);
                     break;
                 default:
-                    if ($this->_data[$v] instanceof Doctrine_Record)
+                    if ($this->_data[$v] instanceof Doctrine_Record) {
                         $this->_data[$v] = $this->_data[$v]->getIncremented();
+                    }
 
                     $a[$v] = $this->_data[$v];
             }
@@ -1273,48 +1273,61 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
     }
     /**
+     * ownsOne
      * binds One-to-One composite relation
      *
-     * @param string $objTableName
-     * @param string $fkField
-     * @return void
+     * @param string $componentName     the name of the related component
+     * @param string $options           relation options
+     * @see Doctrine_Relation::_$definition
+     * @return Doctrine_Record          this object
      */
-    final public function ownsOne($componentName, $foreignKey, $options = null)
+    public function ownsOne()
     {
-        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_COMPOSITE, $options);
+        $this->_table->bind(func_get_args(), Doctrine_Relation::ONE_COMPOSITE);
+        
+        return $this;
     }
     /**
-     * binds One-to-Many composite relation
+     * ownsMany
+     * binds One-to-Many / Many-to-Many composite relation
      *
-     * @param string $objTableName
-     * @param string $fkField
-     * @return void
+     * @param string $componentName     the name of the related component
+     * @param string $options           relation options
+     * @see Doctrine_Relation::_$definition
+     * @return Doctrine_Record          this object
      */
-    final public function ownsMany($componentName, $foreignKey, $options = null)
+    public function ownsMany()
     {
-        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_COMPOSITE, $options);
+        $this->_table->bind(func_get_args(), Doctrine_Relation::MANY_COMPOSITE);
+        return $this;
     }
     /**
+     * hasOne
      * binds One-to-One aggregate relation
      *
-     * @param string $objTableName
-     * @param string $fkField
-     * @return void
+     * @param string $componentName     the name of the related component
+     * @param string $options           relation options
+     * @see Doctrine_Relation::_$definition
+     * @return Doctrine_Record          this object
      */
-    final public function hasOne($componentName, $foreignKey, $options = null)
+    public function hasOne()
     {
-        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_AGGREGATE, $options);
+        $this->_table->bind(func_get_args(), Doctrine_Relation::ONE_AGGREGATE);
+        return $this;
     }
     /**
-     * binds One-to-Many aggregate relation
+     * hasMany
+     * binds One-to-Many / Many-to-Many aggregate relation
      *
-     * @param string $objTableName
-     * @param string $fkField
-     * @return void
+     * @param string $componentName     the name of the related component
+     * @param string $options           relation options
+     * @see Doctrine_Relation::_$definition
+     * @return Doctrine_Record          this object
      */
-    final public function hasMany($componentName, $foreignKey, $options = null)
+    public function hasMany()
     {
-        $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_AGGREGATE, $options);
+        $this->_table->bind(func_get_args(), Doctrine_Relation::MANY_AGGREGATE);
+        return $this;
     }
     /**
      * hasColumn

@@ -62,7 +62,7 @@ abstract class Doctrine_Relation
                                   'class'       => true,
                                   'type'        => true,
                                   'name'        => false,
-                                  'assocTable'  => false,
+                                  'refTable'    => false,
                                   'onDelete'    => false,
                                   'onUpdate'    => false,
                                   'deferred'    => false,
@@ -80,7 +80,7 @@ abstract class Doctrine_Relation
      *
      *          table                   the foreign table object
      *
-     *          assocTable              the association table object (if any)
+     *          refTable                the reference table object (if any)
      *
      *          onDelete                referential delete action
      *  

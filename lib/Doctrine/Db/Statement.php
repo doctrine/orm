@@ -44,7 +44,7 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
         $this->stmt    = $stmt;
         
         if ($stmt === false) {
-            throw new Doctrine_Db_Exception('Unknown statement object given.');                    	
+            throw new Doctrine_Db_Exception('Unknown statement object given.');
         }
     }
     /**
@@ -205,7 +205,11 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
         $skip = $this->adapter->getListener()->onPreExecute($event);
 
         if ( ! $skip) {
-            $this->stmt->execute($params);
+                      	if (isset($params[0]) && is_array($params[0])) {
+                             print_r($params);
+                      	     throw new Exception();
+                      	}
+            $this->stmt->execute((array) $params);
             $this->adapter->incrementQueryCount();
         }
 

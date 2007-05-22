@@ -40,11 +40,11 @@ class Doctrine_Relation_Association extends Doctrine_Relation
      */
     public function getAssociationFactory()
     {
-        return $this->definition['assocTable'];
+        return $this->definition['refTable'];
     }
     public function getAssociationTable()
     {
-    	return $this->definition['assocTable'];
+    	return $this->definition['refTable'];
     }
     /**
      * getRelationDql
@@ -54,7 +54,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
      */
     public function getRelationDql($count, $context = 'record')
     {
-    	$component = $this->definition['assocTable']->getComponentName();
+    	$component = $this->definition['refTable']->getComponentName();
         switch ($context) {
             case "record":
                 $sub    = 'SQL:SELECT ' . $this->definition['foreign'].
