@@ -154,8 +154,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         $this->_table        = $connection->getTable($this->_table);
 
-        $this->expanded     = array();
-        $this->expandable   = true;
 
         $name = $this->_table->getAttribute(Doctrine::ATTR_COLL_KEY);
         if ($name !== null) {
@@ -263,12 +261,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function remove($key)
     {
-        if ( ! isset($this->data[$key])) {
-            $this->expand($key);
-
-            throw new Doctrine_Collection_Exception('Unknown key ' . $key);
-        }
-
         $removed = $this->data[$key];
 
         unset($this->data[$key]);
@@ -366,6 +358,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if (isset($this->referenceField)) {
             $record->set($this->referenceField, $this->reference, false);
         }
+
         $this->data[$key] = $record;
     }
     /**
@@ -426,7 +419,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 if ($value !== null) {
                     $list[] = $value;
                 }
-            };
+            }
             $query->from($this->_table->getComponentName() . '(' . implode(", ",$this->_table->getPrimaryKeys()) . ')');
             $query->where($this->_table->getComponentName() . '.id IN (' . substr(str_repeat("?, ", count($list)),0,-2) . ')');
 
@@ -584,6 +577,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * saves all records of this collection and processes the 
      * difference of the last snapshot and the current data
      *
+     * @param Doctrine_Connection $conn     optional connection parameter
      * @return Doctrine_Collection
      */
     public function save(Doctrine_Connection $conn = null)
@@ -592,10 +586,11 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $conn = $this->_table->getConnection();
         }
         $conn->beginTransaction();
+        $conn->transaction->addCollection($this);
 
         $this->processDiff();
 
-        foreach ($this as $key => $record) {
+        foreach ($this->getData() as $key => $record) {
             $record->save($conn);
         }
 
@@ -618,6 +613,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
 
         $conn->beginTransaction();
+        $conn->transaction->addCollection($this);
 
         foreach ($this as $key => $record) {
             $record->delete($conn);

@@ -64,6 +64,19 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      */
     protected $savePoints       = array();
     /**
+     * @var array $_collections             an array of Doctrine_Collection objects that were affected during the Transaction
+     */
+    protected $_collections     = array();
+    /** 
+     * addCollection
+     *
+     * @param Doctrine_Collection $coll
+     */
+    public function addCollection(Doctrine_Collection $coll)
+    {
+        $this->_collections[] = $coll;
+    }
+    /**
      * getState
      * returns the state of this connection
      *
@@ -252,6 +265,12 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
                     throw new Doctrine_Validator_Exception($tmp);
                 }
+
+                // take snapshots of all collections used within this transaction
+                foreach (array_unique($this->_collections) as $coll) {
+                    $coll->takeSnapshot();
+                }
+                $this->_collections = array();
 
                 $this->conn->getDbh()->commit();
 
