@@ -67,10 +67,16 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * @var array $_collections             an array of Doctrine_Collection objects that were affected during the Transaction
      */
     protected $_collections     = array();
-    /** 
+    /**
      * addCollection
+     * adds a collection in the internal array of collections
      *
-     * @param Doctrine_Collection $coll
+     * at the end of each commit this array is looped over and
+     * of every collection Doctrine then takes a snapshot in order
+     * to keep the collections up to date with the database
+     *
+     * @param Doctrine_Collection $coll     a collection to be added
+     * @return void
      */
     public function addCollection(Doctrine_Collection $coll)
     {
@@ -97,8 +103,11 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         }
     }
     /**
+     * addDelete
      * adds record into pending delete list
-     * @param Doctrine_Record $record
+     *
+     * @param Doctrine_Record $record       a record to be added
+     * @return void
      */
     public function addDelete(Doctrine_Record $record)
     {
