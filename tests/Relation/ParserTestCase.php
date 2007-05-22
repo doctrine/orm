@@ -152,7 +152,7 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
 
         $rel = $r->getRelation('Email');
         
-        $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
+        $this->assertTrue($rel instanceof Doctrine_Relation_LocalKey);
     }
     public function testGetRelationReturnsForeignKeyObjectForOneToManyRelation()
     {
@@ -162,7 +162,7 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
         $r->bind('Phonenumber', $p);
 
         $rel = $r->getRelation('Phonenumber');
-        
+
         $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
     }
     public function testGetRelationReturnsForeignKeyObjectForManytToManyRelation()
