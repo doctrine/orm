@@ -45,7 +45,10 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
     {
     	$id = array();
     	foreach ((array) $this->definition['local'] as $local) {
-    	   $id[] = $record->get($local);
+    	   $value = $record->get($local);
+           if (isset($value)) {
+               $id[] = $value;
+           }
         }
         if ($this->isOneToOne()) {
             if (empty($id)) {
@@ -60,7 +63,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
 
             $related->set($this->definition['foreign'], $record, false);
 
-        } else {    
+        } else {
 
             if (empty($id)) {
                 $related = new Doctrine_Collection($this->getTable());
