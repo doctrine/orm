@@ -70,11 +70,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     const STATE_DELETED     = 6;
     /**
-     * the following protected variables use '_' prefixes, the reason for this is to allow child
-     * classes call for example $this->id, $this->state for getting the values of columns named 'id' and 'state'
-     * rather than the values of these protected variables
-     */
-    /**
      * @var object Doctrine_Table $_table   the factory that created this data access object
      */
     protected $_table;
@@ -526,7 +521,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
         $err = false;
         if (is_integer($state)) {
-
             if ($state >= 1 && $state <= 6) {
                 $this->_state = $state;
             } else {
@@ -548,8 +542,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
         }
 
-        if ($err)
+        if ($this->_state === Doctrine_Record::STATE_TCLEAN ||
+            $this->_state === Doctrine_Record::STATE_CLEAN) {
+            
+            $this->_modified = array();
+        }
+
+        if ($err) {
             throw new Doctrine_Record_State_Exception('Unknown record state ' . $state);
+        }
     }
     /**
      * refresh
@@ -779,7 +780,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 if ($value === null) {
                     $value = self::$_null;
                 }
-                
+
                 $this->_data[$lower] = $value;
                 $this->_modified[]   = $lower;
                 switch ($this->_state) {

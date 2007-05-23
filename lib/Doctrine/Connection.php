@@ -1026,6 +1026,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $record->getTable()->getListener()->onDelete($record);
 
+        $record->state(Doctrine_Record::STATE_TCLEAN);
+
         $this->commit();
 
         return true;
