@@ -160,9 +160,9 @@ class Doctrine_Relation_Parser
             }
         }
         if ($recursive) {
-            return $this->getRelation($name, false);
+            return $this->getRelation($alias, false);
         } else {
-            throw new Doctrine_Table_Exception($this->options['name'] . " doesn't have a relation to " . $name);
+            throw new Doctrine_Table_Exception('Unknown relation alias ' . $alias);
         }
     }
     /**
@@ -341,7 +341,6 @@ class Doctrine_Relation_Parser
                         }
                     }
                 }
-                Doctrine::dump($def);
                 throw new Doctrine_Relation_Parser_Exception("Couldn't complete relation definition.");
             }
         }
