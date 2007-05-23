@@ -232,7 +232,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
             $value = $record->get($relation->getLocal());
 
-            foreach ($this->getNormalIterator() as $record) {
+            foreach ($this->data as $record) {
                 if ($value !== null) {
                     $record->set($this->referenceField, $value, false);
                 } else {
@@ -300,7 +300,13 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     	    $record = $this->_table->create();
 
             if (isset($this->referenceField)) {
-                $record->set($this->referenceField, $this->reference, false);
+                $value = $this->reference->get($this->relation->getLocal());
+
+                if ($value !== null) {
+                    $record->set($this->referenceField, $value, false);
+                } else {
+                    $record->set($this->referenceField, $this->reference, false);
+                }
             }
 
             $this->data[] = $record;
@@ -370,7 +376,13 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function add(Doctrine_Record $record, $key = null)
     {
         if (isset($this->referenceField)) {
-            $record->set($this->referenceField, $this->reference, false);
+            $value = $this->reference->get($this->relation->getLocal());
+
+            if ($value !== null) {
+                $record->set($this->referenceField, $value, false);
+            } else {
+                $record->set($this->referenceField, $this->reference, false);
+            }
         }
         /**
          * for some weird reason in_array cannot be used here (php bug ?)
