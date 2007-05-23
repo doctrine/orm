@@ -702,17 +702,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             } else {
                 $value = $this->_data[$lower];
             }
-
-        }
-
-        if ($value !== self::$_null) {
-            $value = $this->_table->invokeGet($this, $name, $value);
-
-            if ($invoke && $name !== $this->_table->getIdentifier()) {
-                return $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onGetProperty($this, $name, $value);
-            } else {
-                return $value;
-            }
+            return $value;
         }
 
         if (isset($this->_id[$lower])) {
@@ -786,13 +776,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
 
             if ($old !== $value) {
-                $value = $this->_table->invokeSet($this, $name, $value);
-
-                $value = $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onSetProperty($this, $name, $value);
-
-                if ($value === null)
+                if ($value === null) {
                     $value = self::$_null;
-
+                }
+                
                 $this->_data[$lower] = $value;
                 $this->_modified[]   = $lower;
                 switch ($this->_state) {
