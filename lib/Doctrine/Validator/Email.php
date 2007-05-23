@@ -74,7 +74,7 @@ class Doctrine_Validator_Email
         $local_part = "$word(\\x2e$word)*";
         $addr_spec = "$local_part\\x40$domain";
 
-        return (bool)preg_match("!^$addr_spec$!", $value);
+        return (bool)preg_match("!^$addr_spec$!D", $value);
     }
 
 }
