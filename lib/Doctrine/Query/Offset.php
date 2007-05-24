@@ -34,8 +34,6 @@ class Doctrine_Query_Offset extends Doctrine_Query_Part
 {
     public function parse($offset)
     {
-        $this->query->setQueryPart('offset', (int) $offset);
-        
-        return $this->query;
+        return (int) $offset;
     }
 }

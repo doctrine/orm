@@ -69,12 +69,6 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part
             }
             $ret[] = $r;
         }
-
-        if ($append) {
-            $this->query->addQueryPart('orderby', implode(', ', $ret));
-        } else {
-            $this->query->setQueryPart('orderby', implode(', ', $ret));
-        }
-        return $this->query;
+        return implode(', ', $ret);
     }
 }

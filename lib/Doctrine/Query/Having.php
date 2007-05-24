@@ -32,15 +32,6 @@ Doctrine::autoload('Doctrine_Query_Condition');
  */
 class Doctrine_Query_Having extends Doctrine_Query_Condition
 {
-    public function parse($str, $append = false)
-    {
-        if ($append) {
-            $this->query->addQueryPart('having', $this->_parse($str));
-        } else {
-            $this->query->setQueryPart('having', $this->_parse($str));
-        }
-        return $this->query;
-    }
     /**
      * DQL Aggregate Function parser
      *

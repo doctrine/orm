@@ -34,8 +34,6 @@ class Doctrine_Query_Limit extends Doctrine_Query_Part
 {
     public function parse($limit) 
     {
-        $this->query->setQueryPart('limit', (int) $limit);
-        
-        return $this->query;
+        return (int) $limit;
     }
 }

@@ -39,7 +39,7 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
      * @param string $str
      * @return string
      */
-    public function _parse($str)
+    public function parse($str)
     {
         $tmp = trim($str);
 
@@ -49,7 +49,7 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
             $ret = array();
             foreach ($parts as $part) {
                 $part = Doctrine_Tokenizer::bracketTrim($part, '(', ')');
-                $ret[] = $this->_parse($part);
+                $ret[] = $this->parse($part);
             }
             $r = implode(' AND ', $ret);
         } else {
@@ -59,12 +59,12 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
                 $ret = array();
                 foreach ($parts as $part) {
                     $part = Doctrine_Tokenizer::bracketTrim($part, '(', ')');
-                    $ret[] = $this->_parse($part);
+                    $ret[] = $this->parse($part);
                 }
                 $r = implode(' OR ', $ret);
             } else {
                 if (substr($parts[0],0,1) == '(' && substr($parts[0], -1) == ')') {
-                    return $this->_parse(substr($parts[0], 1, -1));
+                    return $this->parse(substr($parts[0], 1, -1));
                 } else {
                     return $this->load($parts[0]);
                 }

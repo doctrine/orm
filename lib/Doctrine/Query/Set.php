@@ -45,15 +45,13 @@ class Doctrine_Query_Set extends Doctrine_Query_Part
 
             $reference = implode('.', $e);
 
-            $alias     = $this->query->getTableAlias($reference);   
+            $alias     = $this->query->getTableAlias($reference);
             $map       = $this->query->getAliasDeclaration($reference);
 
             $result[]  = $map['table']->getColumnName($field) . ' = ' . $set[1];
         }
-
-        $this->query->addQueryPart('set', implode(', ', $result));
         
-        return $this->query;
+        return implode(', ', $result);
     }
 }
 

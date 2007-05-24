@@ -171,7 +171,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function set($key, $value)
     {
-        return $this->parseQueryPart('set', $key . ' = ' . $value);
+        return $this->parseQueryPart('set', $key . ' = ' . $value, true);
     }
     /**
      * from

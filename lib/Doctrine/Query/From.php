@@ -84,7 +84,7 @@ class Doctrine_Query_From extends Doctrine_Query_Part
 
             $operator = ($last == 'INNER') ? ':' : '.';
         }
-        return $this->query;
+        return null;
     }
 
 }

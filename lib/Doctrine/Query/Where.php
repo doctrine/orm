@@ -32,15 +32,6 @@ Doctrine::autoload('Doctrine_Query_Condition');
  */
 class Doctrine_Query_Where extends Doctrine_Query_Condition
 {
-    public function parse($str, $append = false)
-    {
-        if ($append) {
-            $this->query->addQueryPart('where', $this->_parse($str));
-        } else {
-            $this->query->setQueryPart('where', $this->_parse($str));
-        }
-        return $this->query;
-    }
     /**
      * load
      * returns the parsed query part

@@ -34,11 +34,8 @@ class Doctrine_Query_Select extends Doctrine_Query_Part
 {
     public function parse($dql) 
     {
-    	if ($dql === '' || $dql === null) {
-    	   throw new Doctrine_Query_Exception('Empty select part given.');                                  	
-    	}
         $this->query->parseSelect($dql);
         
-        return $this->query;
+        return null;
     }
 }

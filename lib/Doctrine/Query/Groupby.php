@@ -51,11 +51,6 @@ class Doctrine_Query_Groupby extends Doctrine_Query_Part
 
             $r[] = $this->query->getTableAlias($ref) . '.' . $field;
         }
-        if ($append) {
-            $this->query->addQueryPart('groupby', implode(', ', $r));
-        } else {
-            $this->query->setQueryPart('groupby', implode(', ', $r));
-        }
-        return $this->query;
+        return implode(', ', $r);
     }
 }

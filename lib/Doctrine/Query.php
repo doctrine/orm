@@ -241,13 +241,27 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function parseQueryPart($queryPartName, $queryPart, $append = false) 
     {
+    	if ($queryPart === '' || $queryPart === null) {
+            throw new Doctrine_Query_Exception('Empty ' . $queryPartName . ' part given.');
+    	}
+
     	if ($append) {
     	    $this->_dqlParts[$queryPartName][] = $queryPart;
     	} else {
             $this->_dqlParts[$queryPartName] = array($queryPart);
     	}
     	if ( ! $this->_options['resultSetCache'] && ! $this->_options['parserCache']) {
-    	   $this->getParser($queryPartName)->parse($queryPart);
+    	    $parser = $this->getParser($queryPartName);
+                         
+            $sql = $parser->parse($queryPart);
+
+            if (isset($sql)) {
+                if ($append) {
+                    $this->addQueryPart($queryPartName, $sql);
+                } else {
+                    $this->setQueryPart($queryPartName, $sql);
+                }                
+            }
     	}
     	   
         return $this;
@@ -562,7 +576,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
             if ( ! empty($e2)) {
                 $parser = new Doctrine_Query_JoinCondition($this);
-                $part  .= ' AND ' . $parser->_parse(implode(' AND ', $e2));
+                $part  .= ' AND ' . $parser->parse(implode(' AND ', $e2));
             }
 
             $q .= ' ' . $part;
@@ -856,7 +870,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         foreach($parts as $k => $part) {
             $part = implode(' ', $part);
-            switch(strtolower($k)) {
+            $k = strtolower($k);
+            switch ($k) {
                 case 'create':
                     $this->type = self::CREATE;
                 break;
@@ -868,38 +883,26 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 break;
                 case 'select':
                     $this->type = self::SELECT;
-                    $this->parseSelect($part);
+                    $this->parseQueryPart($k, $part);
                 break;
                 case 'update':
                     $this->type = self::UPDATE;
                     $k = 'FROM';
 
                 case 'from':
-                    $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
-                    $parser = new $class($this);
-                    $parser->parse($part);
+                    $this->parseQueryPart($k, $part);
                 break;
                 case 'set':
-                    $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
-                    $parser = new $class($this);
-                    $parser->parse($part);
+                    $this->parseQueryPart($k, $part, true);
                 break;
                 case 'group':
                 case 'order':
                     $k .= 'by';
                 case 'where':
                 case 'having':
-                    $class  = 'Doctrine_Query_' . ucwords(strtolower($k));
-                    $parser = new $class($this);
-
-                    $name = strtolower($k);
-                    $parser->parse($part);
-                break;
                 case 'limit':
-                    $this->parts['limit'] = trim($part);
-                break;
                 case 'offset':
-                    $this->parts['offset'] = trim($part);
+                    $this->parseQueryPart($k, $part);
                 break;
             }
         }
