@@ -38,23 +38,23 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $user = $this->connection->getTable('User')->find(4);
 
 
-        $album = $this->connection->create("Album");
+        $album = $this->connection->create('Album');
         $album->Song[0];
 
-        $user->Album[0]->name = "Damage Done";
-        $user->Album[1]->name = "Haven";
+        $user->Album[0]->name = 'Damage Done';
+        $user->Album[1]->name = 'Haven';
 
-        $user->Album[0]->Song[0]->title = "Damage Done";
-        $user->Album[0]->Song[1]->title = "The Treason Wall";
-        $user->Album[0]->Song[2]->title = "Monochromatic Stains";
+        $user->Album[0]->Song[0]->title = 'Damage Done';
+        $user->Album[0]->Song[1]->title = 'The Treason Wall';
+        $user->Album[0]->Song[2]->title = 'Monochromatic Stains';
 
         $this->assertEqual(count($user->Album[0]->Song), 3);
 
 
-        $user->Album[1]->Song[0]->title = "Not Built To Last";
-        $user->Album[1]->Song[1]->title = "The Wonders At Your Feet";
-        $user->Album[1]->Song[2]->title = "Feast Of Burden";
-        $user->Album[1]->Song[3]->title = "Fabric";
+        $user->Album[1]->Song[0]->title = 'Not Built To Last';
+        $user->Album[1]->Song[1]->title = 'The Wonders At Your Feet';
+        $user->Album[1]->Song[2]->title = 'Feast Of Burden';
+        $user->Album[1]->Song[3]->title = 'Fabric';
         $this->assertEqual(count($user->Album[1]->Song), 4);
 
         $user->save();
@@ -67,10 +67,10 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         
         $user = $this->connection->getTable('User')->find(5);
         
-        $user->Album[0]->name = "Clayman";
-        $user->Album[1]->name = "Colony";
-        $user->Album[1]->Song[0]->title = "Colony";
-        $user->Album[1]->Song[1]->title = "Ordinary Story";
+        $user->Album[0]->name = 'Clayman';
+        $user->Album[1]->name = 'Colony';
+        $user->Album[1]->Song[0]->title = 'Colony';
+        $user->Album[1]->Song[1]->title = 'Ordinary Story';
         
         $user->save();
         
@@ -82,7 +82,7 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
 
         $query = new Doctrine_Query();
 
-        $users = $query->query("FROM User.Album.Song, User.Phonenumber WHERE User.id IN (4,5)");
+        $users = $query->query('FROM User.Album.Song, User.Phonenumber WHERE User.id IN (4,5)');
 
         $this->assertEqual($users->count(), 2);
 
@@ -110,7 +110,7 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[1]->Phonenumber[1]->phonenumber, '456 456');
         $this->assertEqual($users[1]->Phonenumber[2]->phonenumber, '789 789');
     }
-    
+    /**
     public function testInitializeMoreData() {
         $user = $this->connection->getTable('User')->find(4);
         $user->Book[0]->name = 'The Prince';
@@ -177,54 +177,5 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
 
         $users = $query->query("FROM User.Album.Song WHERE User.id IN (4,5) ORDER BY User.Album.Song.title DESC");
     }
+    */
 }
-/**
-class Record_District extends Record
-{
-	public function setUp ()
-	{
-		$this->hasOne('Record_Card as Card', 'Record_District.district_id');
-		$this->hasOne('Record_City as City', 'Record_District.city_id');
-		$this->hasMany('Record_Building as Building', 'Record_BuildingDistrict.building_id');
-	}
-
-	public function setTableDefinition ()
-	{
-		$this->setTableName('district');
-
-		$this->hasColumn('district_id', 'integer', 8, array('primary', 'unsigned', 'notnull', 'default' => 0));
-		$this->hasColumn('city_id', 'integer', 8, array('unsigned', 'notnull'));
-		$this->hasColumn('city', 'string', 50, array('notnull', 'default' => ''));
-		$this->hasColumn('district', 'string', 50, array('notnull', 'default' => ''));
-		$this->hasColumn('matchword', 'string', 50);
-		
-		$this->has_coord_columns();
-		$this->has_status_columns();
-	}
-}
-
-
-
-$dql_building =
-	"
-		FROM Record_Building b
-		LEFT JOIN b.District d
-		LEFT JOIN d.City c
-		LEFT JOIN b.Address a
-		WHERE b.building_id = {$id}
-	";
-
-
-
-$collection = $this->db->query($dql_building);
-$br = $collection[0];
-
-echo "building:{$br->building_id}\n";
-
-foreach ($br->District as $district) {
-	echo "district:{$district->district_id} {$district->district} {$district->City->city}\n";
-}
-
-// Notice: Trying to get property of non-object in /www/igglo2_doctrine/core/class/BuildingDAO.php on line 92
-
-*/
