@@ -81,16 +81,14 @@ class Doctrine_Hydrate
      *          relation            the relation object owned by the parent
      *
      *          parent              the alias of the parent
+     *
+     *          subAgg              the subquery aggregates of this component
      */
     protected $_aliasMap        = array();
     /**
      *
      */
     protected $pendingAggregates = array();
-    /**
-     *
-     */
-    protected $subqueryAggregates = array();
     /**
      * @var array $aggregateMap             an array containing all aggregate aliases, keys as dql aliases
      *                                      and values as sql aliases
@@ -335,8 +333,8 @@ class Doctrine_Hydrate
 
                 if (isset($this->pendingAggregates[$alias][$index])) {
                     $agg = $this->pendingAggregates[$alias][$index][3];
-                } elseif (isset($this->subqueryAggregates[$alias][$index])) {
-                    $agg = $this->subqueryAggregates[$alias][$index];
+                } elseif (isset($this->_aliasMap[$alias]['subAgg'][$index])) {
+                    $agg = $this->_aliasMap[$alias]['subAgg'][$index];
                 }
                 $record->mapValue($agg, $value);
                 $found = true;

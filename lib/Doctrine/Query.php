@@ -32,9 +32,6 @@ Doctrine::autoload('Doctrine_Query_Abstract');
  */
 class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 {
-    /**
-     * @param array $subqueryAliases        the table aliases needed in some LIMIT subqueries
-     */
     protected $subqueryAliases   = array();
     /**
      * @param boolean $needsSubquery
@@ -441,7 +438,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $this->parts['select'][] = '(' . $sql . ') AS ' . $sqlAlias;
 
             $this->aggregateMap[$alias] = $sqlAlias;
-            $this->subqueryAggregates[$componentAlias][] = $alias;
+            $this->_aliasMap[$componentAlias]['subAgg'][] = $alias;
         }
         $this->pendingSubqueries = array();
     }
