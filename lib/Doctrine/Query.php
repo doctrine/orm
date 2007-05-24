@@ -73,7 +73,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     protected $_options    = array(
                             'fetchMode' => Doctrine::FETCH_RECORD,
-                            'cacheMode' => null,
+                            'cacheMode' => Doctrine::CACHE_NONE,
+                            'cache'     => false,
                             );
     /**
      * @var array $_dqlParts                an array containing all DQL query parts
@@ -89,19 +90,34 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                             'groupby'   => array(),
                             'having'    => array(),
                             'orderby'   => array(),
-                            'limit'     => false,
-                            'offset'    => false,
+                            'limit'     => array(),
+                            'offset'    => array(),
                             );
 
     /**
      * create
      * returns a new Doctrine_Query object
      *
+     * @param Doctrine_Connection $conn     optional connection parameter
      * @return Doctrine_Query
      */
-    public static function create()
+    public static function create($conn = null)
     {
-        return new Doctrine_Query();
+        return new Doctrine_Query($conn);
+    }
+    /**
+     * setOption
+     *
+     * @param string $name      option name
+     * @param string $value     option value
+     * @return Doctrine_Query   this object
+     */
+    public function setOption($name, $value)
+    {
+        if ( ! isset($this->_options[$name])) {
+            throw new Doctrine_Query_Exception('Unknown option ' . $name);
+        }
+        $this->_options[$name] = $value;
     }
     /** 
      * addEnumParam
@@ -231,9 +247,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     	if ($append) {
     	    $this->_dqlParts[$queryPartName][] = $queryPart;
     	} else {
-            $this->_dqlParts[$queryPartName] = $queryPart;
+            $this->_dqlParts[$queryPartName] = array($queryPart);
     	}
-    	return $this->getParser($queryPartName)->parse($queryPart);
+    	if ($this->_options['cache'] === Doctrine::CACHE_NONE) {
+    	   $this->getParser($queryPartName)->parse($queryPart);
+    	}
+    	   
+        return $this;
     }
     /**
      * getDql
@@ -246,14 +266,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function getDql()
     {
     	$q = '';
-    	$q .= ( ! empty($this->parts['select']))?  'SELECT '    . implode(', ', $this->parts['select']) : '';
-        $q .= ( ! empty($this->parts['from']))?    ' FROM '     . implode(' ', $this->parts['from']) : '';
-        $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']) : '';
-        $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']) : '';
-        $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']) : '';
-        $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby']) : '';
-        $q .= ( ! empty($this->parts['limit']))?   ' LIMIT ' . implode(' ', $this->parts['limit']) : '';
-        $q .= ( ! empty($this->parts['offset']))?  ' OFFSET ' . implode(' ', $this->parts['offset']) : '';
+    	$q .= ( ! empty($this->_dqlParts['select']))?  'SELECT '    . implode(', ', $this->_dqlParts['select']) : '';
+        $q .= ( ! empty($this->_dqlParts['from']))?    ' FROM '     . implode(' ', $this->_dqlParts['from']) : '';
+        $q .= ( ! empty($this->_dqlParts['where']))?   ' WHERE '    . implode(' AND ', $this->_dqlParts['where']) : '';
+        $q .= ( ! empty($this->_dqlParts['groupby']))? ' GROUP BY ' . implode(', ', $this->_dqlParts['groupby']) : '';
+        $q .= ( ! empty($this->_dqlParts['having']))?  ' HAVING '   . implode(' AND ', $this->_dqlParts['having']) : '';
+        $q .= ( ! empty($this->_dqlParts['orderby']))? ' ORDER BY ' . implode(', ', $this->_dqlParts['orderby']) : '';
+        $q .= ( ! empty($this->_dqlParts['limit']))?   ' LIMIT '    . implode(' ', $this->_dqlParts['limit']) : '';
+        $q .= ( ! empty($this->_dqlParts['offset']))?  ' OFFSET '   . implode(' ', $this->_dqlParts['offset']) : '';
         
         return $q;
     }
@@ -564,6 +584,31 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function getQuery($params = array())
     {
+    	// check if parser cache is on
+    	if ($this->_options['cacheMode'] === Doctrine::CACHE_PARSER) {
+            if ( ! $this->_options['cache']) {
+                throw new Doctrine_Query_Exception('Cache not availible. Use setOption() for setting the cache container.');
+            }
+
+            $dql  = $this->getDql();
+            // calculate hash for dql query
+            $hash = strlen($dql) . md5($dql);
+            
+            // check if cache has sql equivalent for given hash
+            $sql = $this->_options['cache']->fetch($hash, true);
+    	    if ($sql !== null) {
+    	        return $sql;
+    	    }
+
+            // cache miss, build sql query from dql parts
+    	    foreach ($this->_dqlParts as $queryPartName => $queryParts) {
+                if (is_array($queryParts)) {
+                    foreach ($queryParts as $queryPart) {
+                        $this->getParser($queryPartName)->parse($queryPart);
+                    }
+                }
+    	    }
+        }
         if (empty($this->parts['select']) || empty($this->parts['from'])) {
             return false;
         }
@@ -643,6 +688,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         if ($needsSubQuery) {
             array_shift($this->parts['where']);
+        }
+
+        // append sql query into cache
+    	if ($this->_options['cacheMode'] === Doctrine::CACHE_PARSER) {
+            $this->_options['cache']->save($hash, $q);
         }
         return $q;
     }
@@ -1056,7 +1106,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      *          LEFT JOIN u.Phonenumber p 
      *          WHERE p.phonenumber = '123 123' LIMIT 10
      *
-     * The query this method executes: 
+     * The modified DQL query:
      *      SELECT COUNT(DISTINCT u.id) FROM User u
      *          LEFT JOIN u.Phonenumber p
      *          WHERE p.phonenumber = '123 123'
