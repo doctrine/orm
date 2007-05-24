@@ -379,7 +379,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $argStr = substr($func, ($pos + 1), -1);
             $args   = explode(',', $argStr);
     
-            $func   = call_user_func_array(array($this->conn->expression, $name), $args);
+            $func   = call_user_func_array(array($this->_conn->expression, $name), $args);
     
             if(substr($func, 0, 1) !== '(') {
                 $pos  = strpos($func, '(');
@@ -641,10 +641,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $subquery = $this->getLimitSubquery();
 
 
-                switch (strtolower($this->conn->getName())) {
+                switch (strtolower($this->_conn->getName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
-                        $list     = $this->conn->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
+                        $list     = $this->_conn->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
                         $subquery = implode(', ', $list);
                         break;
                     case 'pgsql':
@@ -670,7 +670,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])  : '';
 
         if ($modifyLimit) {
-            $q = $this->conn->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
+            $q = $this->_conn->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
         }
 
         // return to the previous state
@@ -710,7 +710,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         // initialize the base of the subquery
         $subquery   = 'SELECT DISTINCT ' . $primaryKey;
 
-        if ($this->conn->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'pgsql') {
+        if ($this->_conn->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'pgsql') {
             // pgsql needs the order by fields to be preserved in select clause
 
             foreach ($this->parts['orderby'] as $part) {
@@ -746,7 +746,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $subquery .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])   : '';
 
         // add driver specific limit clause
-        $subquery = $this->conn->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
+        $subquery = $this->_conn->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
 
         $parts = Doctrine_Tokenizer::quoteExplode($subquery, ' ', "'", "'");
 
@@ -972,8 +972,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
                 $localAlias   = $this->getShortAlias($parent, $table->getTableName());
                 $foreignAlias = $this->getShortAlias($componentAlias, $relation->getTable()->getTableName());
-                $localSql     = $this->conn->quoteIdentifier($table->getTableName()) . ' ' . $localAlias;
-                $foreignSql   = $this->conn->quoteIdentifier($relation->getTable()->getTableName()) . ' ' . $foreignAlias;
+                $localSql     = $this->_conn->quoteIdentifier($table->getTableName()) . ' ' . $localAlias;
+                $foreignSql   = $this->_conn->quoteIdentifier($relation->getTable()->getTableName()) . ' ' . $foreignAlias;
 
                 $map = $relation->getTable()->inheritanceMap;
   
@@ -1063,16 +1063,16 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function loadRoot($name, $componentAlias)
     {
     	// get the connection for the component
-        $this->conn = Doctrine_Manager::getInstance()
+        $this->_conn = Doctrine_Manager::getInstance()
                       ->getConnectionForComponent($name);
 
-        $table = $this->conn->getTable($name);
+        $table = $this->_conn->getTable($name);
         $tableName = $table->getTableName();
 
         // get the short alias for this table
         $tableAlias = $this->getShortAlias($componentAlias, $tableName);
         // quote table name
-        $queryPart = $this->conn->quoteIdentifier($tableName);
+        $queryPart = $this->_conn->quoteIdentifier($tableName);
 
         if ($this->type === self::SELECT) {
             $queryPart .= ' ' . $tableAlias;

@@ -66,7 +66,7 @@ class Doctrine_Hydrate
     /**
      * @var Doctrine_Connection $conn           Doctrine_Connection object
      */
-    protected $conn;
+    protected $_conn;
     /**
      * @var Doctrine_View $_view                Doctrine_View object, when set this object will use the
      *                                          the query given by the view object for object population
@@ -94,11 +94,6 @@ class Doctrine_Hydrate
      *                                      and values as sql aliases
      */
     protected $aggregateMap      = array();
-    /**
-     * @var Doctrine_Hydrate_Alias $aliasHandler    handles the creation and storage of table aliases and
-     *                                              binds the aliases to component aliases / paths
-     */
-    protected $aliasHandler;
     /**
      * @var array $parts            SQL query string parts
      */
@@ -136,7 +131,7 @@ class Doctrine_Hydrate
         if ( ! ($connection instanceof Doctrine_Connection)) {
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
         }
-        $this->conn = $connection;
+        $this->_conn = $connection;
     }
     public function generateNewAlias($alias)
     {
@@ -262,10 +257,16 @@ class Doctrine_Hydrate
     }
     /**
      * copyAliases
+     * copy aliases from another Hydrate object
      *
-     * @return void
+     * this method is needed by DQL subqueries which need the aliases
+     * of the parent query
+     *
+     * @param Doctrine_Hydrate $query   the query object from which the
+     *                                  aliases are copied from
+     * @return Doctrine_Hydrate         this object
      */
-    public function copyAliases($query)
+    public function copyAliases(Doctrine_Hydrate $query)
     {
         $this->shortAliases = $query->shortAliases;
 
@@ -273,6 +274,7 @@ class Doctrine_Hydrate
     }
     /**
      * createSubquery
+     * creates a subquery
      *
      * @return Doctrine_Hydrate
      */
@@ -353,7 +355,7 @@ class Doctrine_Hydrate
      */
     public function getConnection()
     {
-        return $this->conn;
+        return $this->_conn;
     }
     /**
      * setView
@@ -443,7 +445,7 @@ class Doctrine_Hydrate
      */
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD)
     {
-        $params = $this->conn->convertBooleans(array_merge($this->params, $params));
+        $params = $this->_conn->convertBooleans(array_merge($this->params, $params));
         $params = $this->convertEnums($params);
 
         if ( ! $this->_view) {
@@ -453,16 +455,16 @@ class Doctrine_Hydrate
         }
 
         if ($this->isLimitSubqueryUsed() &&
-            $this->conn->getDBH()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
+            $this->_conn->getDBH()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
 
             $params = array_merge($params, $params);
         }
 
         if ($this->type !== self::SELECT) {
-            return $this->conn->exec($query, $params);
+            return $this->_conn->exec($query, $params);
         }
 
-        $stmt  = $this->conn->execute($query, $params);
+        $stmt  = $this->_conn->execute($query, $params);
         $array = (array) $this->parseData($stmt);
         if (empty($this->_aliasMap)) {
             throw new Doctrine_Hydrate_Exception("Couldn't execute query. Component alias map was empty.");
