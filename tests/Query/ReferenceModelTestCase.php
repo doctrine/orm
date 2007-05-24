@@ -93,7 +93,7 @@ class Doctrine_Query_ReferenceModel_TestCase extends Doctrine_UnitTestCase {
 
         $this->connection->clear();
     }
-
+    /**
     public function testSelfReferencingWithDoubleNesting() {
         $query = new Doctrine_Query();
         $category = new Forum_Category();
@@ -198,6 +198,6 @@ class Doctrine_Query_ReferenceModel_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($category->Subcategory[1]->Subcategory[1]->name, 'Sub 2 Sub 2');
         $this->assertEqual($count, count($this->dbh));
     }
-
+    */
 }
 ?>
