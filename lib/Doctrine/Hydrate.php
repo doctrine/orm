@@ -374,7 +374,6 @@ class Doctrine_Hydrate
 
         $stmt  = $this->conn->execute($query, $params);
         $array = (array) $this->parseData($stmt);
-
         if (empty($this->_aliasMap)) {
             throw new Doctrine_Hydrate_Exception("Couldn't execute query. Component alias map was empty.");
         }

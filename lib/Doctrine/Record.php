@@ -346,8 +346,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach ($this->_data as $column => $value) {
             $default = $this->_table->getDefaultValueOf($column);
 
-            if ($default === null)
+            if ($default === null) {
                 $default = self::$_null;
+            }
 
             if ($value === self::$_null || $overwrite) {
                 $this->_data[$column] = $default;
@@ -790,7 +791,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     case Doctrine_Record::STATE_TCLEAN:
                         $this->_state = Doctrine_Record::STATE_TDIRTY;
                         break;
-                };
+                }
             }
         } else {
             try {
@@ -886,7 +887,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $conn = $this->_table->getConnection();
         }
         $conn->beginTransaction();
-
         $saveLater = $conn->unitOfWork->saveRelated($this);
 
         if ($this->isValid()) {

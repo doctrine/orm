@@ -689,7 +689,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             if ( ! empty($params)) {
                 $stmt = $this->dbh->prepare($query);
                 $stmt->execute($params);
-                return $stmt;
+                return $stmt;      
             } else {
                 return $this->dbh->query($query);
             }

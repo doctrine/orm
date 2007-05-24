@@ -64,12 +64,6 @@ abstract class Doctrine_Configurable
     public function setAttribute($attribute,$value)
     {
         switch ($attribute) {
-            case Doctrine::ATTR_BATCH_SIZE:
-                if ($value < 0) {
-                    throw new Doctrine_Exception("Batch size should be greater than or equal to zero");
-                }
-                break;
-
             case Doctrine::ATTR_FETCHMODE:
                 if ($value < 0) {
                    throw new Doctrine_Exception("Unknown fetchmode. See Doctrine::FETCH_* constants.");
@@ -120,6 +114,15 @@ abstract class Doctrine_Configurable
                 }
                 if ($value !== null && ! $this->hasColumn($value)) {
                     throw new Doctrine_Exception("Couldn't set collection key attribute. No such column '$value'");
+                }
+                break;
+            case Doctrine::ATTR_DQL_CACHE:
+            case Doctrine::ATTR_DQL_PARSER_CACHE:
+            case Doctrine::ATTR_SQL_CACHE:
+                if ($value !== null) {
+                    if ( ! ($value instanceof Doctrine_Cache_Interface)) {
+                        throw new Doctrine_Exception('Cache driver should implement Doctrine_Cache_Interface');
+                    }                     
                 }
                 break;
             case Doctrine::ATTR_VLD:
@@ -225,8 +228,9 @@ abstract class Doctrine_Configurable
     {
         $attribute = (int) $attribute;
 
-        if ($attribute < 0)
+        if ($attribute < 0) {
             throw new Doctrine_Exception('Unknown attribute.');
+        }
 
         if ( ! isset($this->attributes[$attribute])) {
             if (isset($this->parent)) {

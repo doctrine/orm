@@ -72,9 +72,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @var array $_options                 an array of options
      */
     protected $_options    = array(
-                            'fetchMode' => Doctrine::FETCH_RECORD,
-                            'cacheMode' => Doctrine::CACHE_NONE,
-                            'cache'     => false,
+                            'fetchMode'      => Doctrine::FETCH_RECORD,
+                            'parserCache'    => false,
+                            'resultSetCache' => false,
                             );
     /**
      * @var array $_dqlParts                an array containing all DQL query parts
@@ -249,7 +249,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     	} else {
             $this->_dqlParts[$queryPartName] = array($queryPart);
     	}
-    	if ($this->_options['cache'] === Doctrine::CACHE_NONE) {
+    	if ($this->_options['resultSetCache'] || $this->_options['parserCache']) {
     	   $this->getParser($queryPartName)->parse($queryPart);
     	}
     	   
@@ -585,17 +585,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function getQuery($params = array())
     {
     	// check if parser cache is on
-    	if ($this->_options['cacheMode'] === Doctrine::CACHE_PARSER) {
-            if ( ! $this->_options['cache']) {
-                throw new Doctrine_Query_Exception('Cache not availible. Use setOption() for setting the cache container.');
-            }
-
+    	if ($this->_options['parserCache'] !== false) {
             $dql  = $this->getDql();
             // calculate hash for dql query
             $hash = strlen($dql) . md5($dql);
             
             // check if cache has sql equivalent for given hash
-            $sql = $this->_options['cache']->fetch($hash, true);
+            $sql = $this->_options['parserCache']->fetch($hash, true);
     	    if ($sql !== null) {
     	        return $sql;
     	    }
@@ -691,8 +687,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
 
         // append sql query into cache
-    	if ($this->_options['cacheMode'] === Doctrine::CACHE_PARSER) {
-            $this->_options['cache']->save($hash, $q);
+    	if ($this->_options['parserCache'] !== false) {  
+            $this->_options['parserCache']->save($hash, $q);
         }
         return $q;
     }

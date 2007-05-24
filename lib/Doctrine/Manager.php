@@ -100,9 +100,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         if ( ! $init) {
             $init = true;
             $attributes = array(
-                        Doctrine::ATTR_FETCHMODE        => Doctrine::FETCH_IMMEDIATE,
-                        Doctrine::ATTR_BATCH_SIZE       => 5,
-                        Doctrine::ATTR_COLL_LIMIT       => 5,
+                        Doctrine::ATTR_DQL_PARSER_CACHE => null,
+                        Doctrine::ATTR_DQL_CACHE        => null,
+                        Doctrine::ATTR_SQL_CACHE        => null,
                         Doctrine::ATTR_LISTENER         => new Doctrine_EventListener(),
                         Doctrine::ATTR_LOCKMODE         => 1,
                         Doctrine::ATTR_VLD              => false,
