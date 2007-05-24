@@ -113,9 +113,10 @@ class Doctrine_Locking_Manager_Pessimistic
             $dbh = $this->conn->getDbh();
             $dbh->beginTransaction();
 
-            $stmt = $dbh->prepare("INSERT INTO $this->_lockTable
-                                          (object_type, object_key, user_ident, timestamp_obtained)
-                                   VALUES (:object_type, :object_key, :user_ident, :ts_obtained)");
+            $stmt = $dbh->prepare('INSERT INTO ' . $this->_lockTable
+                                  . ' (object_type, object_key, user_ident, timestamp_obtained)'
+                                  . ' VALUES (:object_type, :object_key, :user_ident, :ts_obtained)');
+
             $stmt->bindParam(':object_type', $objectType);
             $stmt->bindParam(':object_key', $key);
             $stmt->bindParam(':user_ident', $userIdent);
@@ -130,15 +131,16 @@ class Doctrine_Locking_Manager_Pessimistic
                 // PK violation occured => existing lock!
             }
 
-            if (!$gotLock) {
+            if ( ! $gotLock) {
                 $lockingUserIdent = $this->_getLockingUserIdent($objectType, $key);
                 if ($lockingUserIdent !== null && $lockingUserIdent == $userIdent) {
                     $gotLock = true; // The requesting user already has a lock
                     // Update timestamp
-                    $stmt = $dbh->prepare("UPDATE $this->_lockTable SET timestamp_obtained = :ts
-                                           WHERE object_type = :object_type AND
-                                                 object_key  = :object_key  AND
-                                                 user_ident  = :user_ident");
+                    $stmt = $dbh->prepare('UPDATE ' . $this->_lockTable 
+                                          . ' SET timestamp_obtained = :ts'
+                                          . ' WHERE object_type = :object_type AND'
+                                          . ' object_key  = :object_key  AND'
+                                          . ' user_ident  = :user_ident');
                     $stmt->bindParam(':ts', $time);
                     $stmt->bindParam(':object_type', $objectType);
                     $stmt->bindParam(':object_key', $key);
@@ -209,9 +211,8 @@ class Doctrine_Locking_Manager_Pessimistic
 
         try {
             $dbh = $this->conn->getDbh();
-            $stmt = $dbh->prepare("SELECT user_ident
-                                   FROM $this->_lockTable
-                                   WHERE object_type = :object_type AND object_key = :object_key");
+            $stmt = $dbh->prepare('SELECT user_ident FROM ' . $this->_lockTable
+                                  . ' WHERE object_type = :object_type AND object_key = :object_key');
             $stmt->bindParam(':object_type', $objectType);
             $stmt->bindParam(':object_key', $key);
             $success = $stmt->execute();
