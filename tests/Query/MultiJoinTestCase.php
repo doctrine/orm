@@ -110,15 +110,15 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[1]->Phonenumber[1]->phonenumber, '456 456');
         $this->assertEqual($users[1]->Phonenumber[2]->phonenumber, '789 789');
     }
-    /**
+
     public function testInitializeMoreData() {
         $user = $this->connection->getTable('User')->find(4);
         $user->Book[0]->name = 'The Prince';
         $user->Book[0]->Author[0]->name = 'Niccolo Machiavelli';
-        $user->Book[1]->Author[1]->name = 'Someone';
+        $user->Book[0]->Author[1]->name = 'Someone';
         $user->Book[1]->name = 'The Art of War';
         $user->Book[1]->Author[0]->name = 'Someone';
-        $user->Book[0]->Author[1]->name = 'Niccolo Machiavelli';
+        $user->Book[1]->Author[1]->name = 'Niccolo Machiavelli';
 
 
         $user->save();
@@ -126,10 +126,10 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $user = $this->connection->getTable('User')->find(5);
         $user->Book[0]->name = 'Zadig';
         $user->Book[0]->Author[0]->name = 'Voltaire';
-        $user->Book[1]->Author[1]->name = 'Someone';
+        $user->Book[0]->Author[1]->name = 'Someone';
         $user->Book[1]->name = 'Candide';
         $user->Book[1]->Author[0]->name = 'Someone';
-        $user->Book[0]->Author[1]->name = 'Voltaire';
+        $user->Book[1]->Author[1]->name = 'Voltaire';
         $user->save();
 
         $this->connection->clear();
@@ -153,10 +153,10 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[0]->Album[1]->Song[3]->title, 'Fabric');
         
         $this->assertEqual($users[0]->Book[0]->Author[0]->name, 'Niccolo Machiavelli');
-        $this->assertEqual($users[0]->Book[1]->Author[1]->name, 'Someone');
+        $this->assertEqual($users[0]->Book[0]->Author[1]->name, 'Someone');
         $this->assertEqual($users[0]->Book[1]->name, 'The Art of War');
         $this->assertEqual($users[0]->Book[1]->Author[0]->name, 'Someone');
-        $this->assertEqual($users[0]->Book[0]->Author[1]->name, 'Niccolo Machiavelli');
+        $this->assertEqual($users[0]->Book[1]->Author[1]->name, 'Niccolo Machiavelli');
 
         $this->assertEqual($users[1]->id, 5);
         $this->assertEqual($users[1]->Album[0]->name, 'Clayman');
@@ -166,10 +166,10 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users[1]->Book[0]->name, 'Zadig');
         $this->assertEqual($users[1]->Book[0]->Author[0]->name, 'Voltaire');
-        $this->assertEqual($users[1]->Book[1]->Author[1]->name, 'Someone');
+        $this->assertEqual($users[1]->Book[0]->Author[1]->name, 'Someone');
         $this->assertEqual($users[1]->Book[1]->name, 'Candide');
         $this->assertEqual($users[1]->Book[1]->Author[0]->name, 'Someone');
-        $this->assertEqual($users[1]->Book[0]->Author[1]->name, 'Voltaire');
+        $this->assertEqual($users[1]->Book[1]->Author[1]->name, 'Voltaire');
     }
 
     public function testMultipleOneToManyFetchingWithOrderBy() {
@@ -177,5 +177,4 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
 
         $users = $query->query("FROM User.Album.Song WHERE User.id IN (4,5) ORDER BY User.Album.Song.title DESC");
     }
-    */
 }
