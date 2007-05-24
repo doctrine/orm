@@ -48,7 +48,9 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation
         if (empty($id)) {
             $related = $this->getTable()->create();
         } else {
-            if ( ! ($related = $this->getTable()->find($id))) {
+            $related = $this->getTable()->find($id);
+            
+            if ( ! $related) {
                 $related = $this->getTable()->create();
             }
         }
