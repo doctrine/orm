@@ -142,25 +142,23 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     {
         $saveLater = array();
         foreach ($record->getReferences() as $k => $v) {
-            $fk = $record->getTable()->getRelation($k);
-            if ($fk instanceof Doctrine_Relation_ForeignKey ||
-                $fk instanceof Doctrine_Relation_LocalKey) {
-                $local = $fk->getLocal();
-                $foreign = $fk->getForeign();
+            $rel = $record->getTable()->getRelation($k);
 
-                if ($record->getTable()->hasPrimaryKey($fk->getLocal())) {
+            if ($rel instanceof Doctrine_Relation_ForeignKey ||
+                $rel instanceof Doctrine_Relation_LocalKey) {
+                $local = $rel->getLocal();
+                $foreign = $rel->getForeign();
+
+                if ($record->getTable()->hasPrimaryKey($rel->getLocal())) {
                     if ( ! $record->exists()) {
-                        $saveLater[$k] = $fk;
+                        $saveLater[$k] = $rel;
                     } else {
                         $v->save($this->conn);
                     }
                 } else {
                     // ONE-TO-ONE relationship
-                    $obj = $record->get($fk->getAlias());
-
-                    if ($obj->exists()) {
-                        $obj->save($this->conn);
-                    }
+                    $obj = $record->get($rel->getAlias());
+                    $obj->save($this->conn);
                 }
 
             }
