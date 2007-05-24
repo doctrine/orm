@@ -98,5 +98,16 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($users[0]->Group[0]->name, 'PHP');
         $this->assertEqual($users[0]->Group[1]->name, 'Web');
+    
+        unset($user->Group[0]);
+
+        $user->save();
+
+        $this->assertEqual(count($user->Group->getSnapshot()), 1);
+        unset($user->Group[1]);
+        $this->assertEqual(count($user->Group->getSnapshot()), 1);
+        $user->save();
+
+        $this->assertEqual(count($user->Group->getSnapshot()), 0);
     }
 }
