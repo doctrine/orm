@@ -135,7 +135,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
                 throw new Doctrine_RawSql_Exception('All selected fields in Sql query must be in format tableAlias.fieldName');
             }
             // try to auto-add component
-            if ( ! $this->hasAlias($e[0])) {
+            if ( ! $this->hasTableAlias($e[0])) {
                 try {
                     $this->addComponent($e[0], ucwords($e[0]));
                 } catch(Doctrine_Exception $exception) {

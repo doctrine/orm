@@ -162,12 +162,24 @@ class Doctrine_Hydrate
 
         return $alias;
     }
-
-    public function hasAlias($tableName)
+    /**
+     * hasTableAlias
+     * whether or not this object has given tableAlias
+     *
+     * @param string $tableAlias    the table alias to be checked
+     * @return boolean              true if this object has given alias, otherwise false
+     */
+    public function hasTableAlias($tableAlias)
     {
-        return (isset($this->_tableAliases[$tableName]));
+        return (isset($this->_tableAliases[$tableAlias]));
     }
-    
+    /**
+     * getComponentAlias
+     * get component alias associated with given table alias
+     *
+     * @param string $tableAlias    the table alias that identifies the component alias
+     * @return string               component alias
+     */
     public function getComponentAlias($tableAlias)
     {
         if ( ! isset($this->_tableAliases[$tableAlias])) {

@@ -755,7 +755,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 continue;
             }
 
-            if($this->hasAlias($part)) {
+            if($this->hasTableAlias($part)) {
                 $parts[$k] = $this->generateNewTableAlias($part);
             }
 
