@@ -239,7 +239,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      * @param mixed $params        an array of parameters or a simple scalar
      * @return Doctrine_Query
      */
-    public function having($having, $params)
+    public function having($having, $params = array())
     {
         $this->params = (array) $params;
         
