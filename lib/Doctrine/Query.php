@@ -921,8 +921,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $join = ($delimeter == ':') ? 'INNER JOIN ' : 'LEFT JOIN ';
 
                 $relation = $table->getRelation($name);
-
-                $this->_aliasMap[$componentAlias] = array('table'    => $relation->getTable(),
+                $table    = $relation->getTable();
+                $this->_aliasMap[$componentAlias] = array('table'    => $table,
                                                           'parent'   => $parent,
                                                           'relation' => $relation);
                 if ( ! $relation->isOneToOne()) {
