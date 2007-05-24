@@ -76,7 +76,7 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection
      */
     public function setDateFormat($format = 'YYYY-MM-DD HH24:MI:SS')
     {
-      $this->exec('ALTER SESSION SET NLS_DATE_FORMAT "'.$format.'";');
+      $this->exec('ALTER SESSION SET NLS_DATE_FORMAT = "' . $format . '"');
     }
     /**
      * Adds an driver-specific LIMIT clause to the query
