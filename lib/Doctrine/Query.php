@@ -249,7 +249,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     	} else {
             $this->_dqlParts[$queryPartName] = array($queryPart);
     	}
-    	if ($this->_options['resultSetCache'] || $this->_options['parserCache']) {
+    	if ( ! $this->_options['resultSetCache'] && ! $this->_options['parserCache']) {
     	   $this->getParser($queryPartName)->parse($queryPart);
     	}
     	   
@@ -431,8 +431,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             list($dql, $alias) = $value;
 
             $sql = $this->createSubquery()->parseQuery($dql, false)->getQuery();
-
-
 
             reset($this->_aliasMap);
             $componentAlias = key($this->_aliasMap);
@@ -687,7 +685,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
 
         // append sql query into cache
-    	if ($this->_options['parserCache'] !== false) {  
+    	if ($this->_options['parserCache'] !== false) {
             $this->_options['parserCache']->save($hash, $q);
         }
         return $q;
