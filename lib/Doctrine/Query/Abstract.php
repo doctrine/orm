@@ -227,7 +227,12 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function where($where, $params = array())
     {
-        $this->params = (array) $params;
+        $this->params = array();
+        if (is_array($params)) {
+            $this->params = $params;
+        } else {
+            $this->params[] = $params;
+        }
 
         return $this->parseQueryPart('where', $where);
     }
@@ -241,7 +246,12 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function having($having, $params = array())
     {
-        $this->params = (array) $params;
+        $this->params = array();
+        if (is_array($params)) {
+            $this->params = $params;
+        } else {
+            $this->params[] = $params;
+        }
         
         return $this->parseQueryPart('having', $having);
     }
