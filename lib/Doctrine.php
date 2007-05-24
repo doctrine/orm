@@ -255,40 +255,15 @@ final class Doctrine
      */
 
     const FETCH_ARRAY           = 3;
-
-
-    /**
-     * ACCESSOR CONSTANTS
-     */
-
-    /**
-     * constant for no accessors
-     */
-    const ACCESSOR_NONE         = 0;
-    /**
-     * constant for get accessors
-     */
-    const ACCESSOR_GET          = 1;
-    /**
-     * constant for set accessors
-     */
-    const ACCESSOR_SET          = 2;
-    /**
-     * constant for both accessors get and set
-     */
-    const ACCESSOR_BOTH         = 3;
-
     /**
      * PORTABILITY CONSTANTS
      */
-
 
     /**
      * Portability: turn off all portability features.
      * @see Doctrine::ATTR_PORTABILITY
      */
-    const PORTABILITY_NONE      = 0;
-
+    const PORTABILITY_NONE          = 0;
     /**
      * Portability: convert names of tables and fields to case defined in the
      * "field_case" option when using the query*(), fetch*() methods.
@@ -301,7 +276,6 @@ final class Doctrine
      * @see Doctrine::ATTR_PORTABILITY
      */
     const PORTABILITY_RTRIM         = 2;
-
     /**
      * Portability: force reporting the number of rows deleted.
      * @see Doctrine::ATTR_PORTABILITY
@@ -379,6 +353,14 @@ final class Doctrine
      * constant for composite identifier
      */
     const IDENTIFIER_COMPOSITE      = 4;
+    /**
+     * CACHING CONSTANTS
+     */
+    const CACHE_NONE                = 0;
+    
+    const CACHE_PARSER              = 1;
+    
+    const CACHE_RESULTSET           = 2;
     /**
      * constructor
      */
