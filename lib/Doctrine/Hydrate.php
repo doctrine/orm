@@ -62,7 +62,7 @@ class Doctrine_Hydrate
     /**
      * @var array $params                       query input parameters
      */
-    protected $params      = array();
+    protected $_params      = array();
     /**
      * @var Doctrine_Connection $conn           Doctrine_Connection object
      */
@@ -84,7 +84,7 @@ class Doctrine_Hydrate
      *
      *          subAgg              the subquery aggregates of this component
      */
-    protected $_aliasMap        = array();
+    protected $_aliasMap         = array();
     /**
      *
      */
@@ -386,7 +386,7 @@ class Doctrine_Hydrate
      */
     public function getParams()
     {
-        return $this->params;
+        return $this->_params;
     }
     /**
      * setParams
@@ -394,7 +394,7 @@ class Doctrine_Hydrate
      * @param array $params
      */
     public function setParams(array $params = array()) {
-        $this->params = $params;
+        $this->_params = $params;
     }
     public function convertEnums($params)
     {
@@ -445,7 +445,7 @@ class Doctrine_Hydrate
      */
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD)
     {
-        $params = $this->_conn->convertBooleans(array_merge($this->params, $params));
+        $params = $this->_conn->convertBooleans(array_merge($this->_params, $params));
         $params = $this->convertEnums($params);
 
         if ( ! $this->_view) {
