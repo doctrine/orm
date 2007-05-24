@@ -46,7 +46,7 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
             $value     = $e[2];
 
             $alias     = $this->query->getTableAlias($reference);
-            $map       = $this->query->getDeclaration($reference);
+            $map       = $this->query->getAliasDeclaration($reference);
             $table     = $map['table'];
             // check if value is enumerated value
             $enumIndex = $table->enumIndex($field, trim($value, "'"));

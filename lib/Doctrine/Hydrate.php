@@ -295,13 +295,20 @@ class Doctrine_Hydrate
 
         return $this;
     }
-    public function getDeclaration($name)
+    /**
+     * getAliasDeclaration
+     * get the declaration for given component alias
+     *
+     * @param string $componentAlias    the component alias the retrieve the declaration from
+     * @return array                    the alias declaration
+     */
+    public function getAliasDeclaration($componentAlias)
     {
-        if ( ! isset($this->_aliasMap[$name])) {
-            throw new Doctrine_Hydrate_Exception('Unknown component alias ' . $name);
+        if ( ! isset($this->_aliasMap[$componentAlias])) {
+            throw new Doctrine_Hydrate_Exception('Unknown component alias ' . $componentAlias);
         }
 
-        return $this->_aliasMap[$name];
+        return $this->_aliasMap[$componentAlias];
     }
     /**
      * setQueryPart
@@ -364,6 +371,7 @@ class Doctrine_Hydrate
     }
     /**
      * limitSubqueryUsed
+     * whether or not limit subquery was used
      *
      * @return boolean
      */
@@ -485,10 +493,25 @@ class Doctrine_Hydrate
     {
         return $params;
     }
-    public function setAliasMap($map)
+    /**
+     * setAliasMap
+     * sets the whole component alias map
+     *
+     * @param array $map            alias map
+     * @return Doctrine_Hydrate     this object
+     */
+    public function setAliasMap(array $map)
     {
         $this->_aliasMap = $map;
+
+        return $this;
     }
+    /**
+     * getAliasMap
+     * returns the component alias map
+     *
+     * @return array    component alias map
+     */
     public function getAliasMap()
     {
         return $this->_aliasMap;
