@@ -122,6 +122,10 @@ class Doctrine_Hydrate
      * @see Doctrine_Query::* constants
      */
     protected $type            = self::SELECT;
+
+    protected $shortAliases      = array();
+
+    protected $shortAliasIndexes = array();
     /**
      * constructor
      *
@@ -133,12 +137,101 @@ class Doctrine_Hydrate
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
         }
         $this->conn = $connection;
-        $this->aliasHandler = new Doctrine_Hydrate_Alias();
+    }
+    public function generateNewAlias($alias)
+    {
+        if (isset($this->shortAliases[$alias])) {
+            // generate a new alias
+            $name = substr($alias, 0, 1);
+            $i    = ((int) substr($alias, 1));
+
+            if ($i == 0) {
+                $i = 1;
+            }
+
+            $newIndex  = ($this->shortAliasIndexes[$name] + $i);
+
+            return $name . $newIndex;
+        }
+
+        return $alias;
+    }
+
+    public function hasAlias($tableName)
+    {
+        return (isset($this->shortAliases[$tableName]));
+    }
+    
+    public function getComponentAlias($tableAlias)
+    {
+        if ( ! isset($this->shortAliases[$tableAlias])) {
+            throw new Doctrine_Hydrate_Exception('Unknown table alias ' . $tableAlias);
+        }
+        return $this->shortAliases[$tableAlias];
+    }
+
+    public function getShortAliasIndex($alias)
+    {
+        if ( ! isset($this->shortAliasIndexes[$alias])) {
+            return 0;
+        }
+        return $this->shortAliasIndexes[$alias];
+    }
+    public function generateShortAlias($componentAlias, $tableName)
+    {
+        $char   = strtolower(substr($tableName, 0, 1));
+
+        $alias  = $char;
+
+        if ( ! isset($this->shortAliasIndexes[$alias])) {
+            $this->shortAliasIndexes[$alias] = 1;
+        }
+        while (isset($this->shortAliases[$alias])) {
+            $alias = $char . ++$this->shortAliasIndexes[$alias];
+        }
+
+        $this->shortAliases[$alias] = $componentAlias;
+
+        return $alias;
+    }
+    public function getAliases()
+    {
+        return $this->shortAliases;
+    }
+    public function addAlias($tableAlias, $componentAlias)
+    {
+        $this->shortAliases[$tableAlias] = $componentAlias;
+    }
+    /**
+     * getShortAlias
+     * some database such as Oracle need the identifier lengths to be < ~30 chars
+     * hence Doctrine creates as short identifier aliases as possible
+     *
+     * this method is used for the creation of short table aliases, its also
+     * smart enough to check if an alias already exists for given component (componentAlias)
+     *
+     * @param string $componentAlias    the alias for the query component to search table alias for
+     * @param string $tableName         the table name from which the table alias is being created
+     * @return string                   the generated / fetched short alias
+     */
+    public function getShortAlias($componentAlias, $tableName = null)
+    {
+        $alias = array_search($componentAlias, $this->shortAliases);
+
+        if ($alias !== false) {
+            return $alias;
+        }
+
+        if ($tableName === null) {
+            throw new Doctrine_Hydrate_Exception("Couldn't get short alias for " . $componentAlias);
+        }
+
+        return $this->generateShortAlias($componentAlias, $tableName);
     }
 
     public function getTableAlias($componentAlias)
     {
-        return $this->aliasHandler->getShortAlias($componentAlias);
+        return $this->getShortAlias($componentAlias);
     }
     public function addQueryPart($name, $part)
     {
@@ -174,7 +267,7 @@ class Doctrine_Hydrate
      */
     public function copyAliases($query)
     {
-        $this->aliasHandler = $query->aliasHandler;
+        $this->shortAliases = $query->shortAliases;
 
         return $this;
     }
@@ -252,7 +345,6 @@ class Doctrine_Hydrate
                     'offset'    => false,
                     );
         $this->inheritanceApplied = false;
-        $this->aliasHandler->clear();
     }
     /**
      * getConnection
@@ -399,7 +491,7 @@ class Doctrine_Hydrate
                 if (empty($row)) {
                     continue;
                 }
-                $alias = $this->aliasHandler->getComponentAlias($tableAlias);
+                $alias = $this->getComponentAlias($tableAlias);
                 $map   = $this->_aliasMap[$alias];
 
                 // initialize previous row array if not set

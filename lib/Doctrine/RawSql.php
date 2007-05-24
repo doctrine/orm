@@ -135,7 +135,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
                 throw new Doctrine_RawSql_Exception('All selected fields in Sql query must be in format tableAlias.fieldName');
             }
             // try to auto-add component
-            if ( ! $this->aliasHandler->hasAlias($e[0])) {
+            if ( ! $this->hasAlias($e[0])) {
                 try {
                     $this->addComponent($e[0], ucwords($e[0]));
                 } catch(Doctrine_Exception $exception) {
@@ -144,7 +144,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
             }
 
             if ($e[1] == '*') {
-                $componentAlias = $this->aliasHandler->getComponentAlias($e[0]);
+                $componentAlias = $this->getComponentAlias($e[0]);
 
                 foreach ($this->_aliasMap[$componentAlias]['table']->getColumnNames() as $name) {
                     $field = $e[0] . '.' . $name;
@@ -158,7 +158,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
 
         // force-add all primary key fields
 
-        foreach ($this->aliasHandler->getAliases() as $tableAlias => $componentAlias) {
+        foreach ($this->getAliases() as $tableAlias => $componentAlias) {
             $map = $this->_aliasMap[$componentAlias];
 
             foreach ($map['table']->getPrimaryKeys() as $key) {
@@ -257,7 +257,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
                                                           'parent'   => $parent,
                                                           'relation' => $relation);
             }
-            $this->aliasHandler->addAlias($tableAlias, $componentAlias);
+            $this->addAlias($tableAlias, $componentAlias);
 
             $parent = $currPath;
         }

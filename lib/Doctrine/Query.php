@@ -653,7 +653,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                         break;
                 }
 
-                $field = $this->aliasHandler->getShortAlias($rootAlias) . '.' . $table->getIdentifier();
+                $field = $this->getShortAlias($rootAlias) . '.' . $table->getIdentifier();
 
                 // only append the subquery if it actually contains something
                 if ($subquery !== '') {
@@ -704,7 +704,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $componentAlias = key($this->_aliasMap);
 
         // get short alias
-        $alias      = $this->aliasHandler->getShortAlias($componentAlias);
+        $alias      = $this->getShortAlias($componentAlias);
         $primaryKey = $alias . '.' . $table->getIdentifier();
 
         // initialize the base of the subquery
@@ -727,7 +727,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         foreach ($this->parts['from'] as $part) {
             // preserve LEFT JOINs only if needed
-            if (substr($part,0,9) === 'LEFT JOIN') {
+            if (substr($part, 0, 9) === 'LEFT JOIN') {
                 $e = explode(' ', $part);
 
                 if ( ! in_array($e[3], $this->subqueryAliases) &&
@@ -755,8 +755,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 continue;
             }
 
-            if($this->aliasHandler->hasAlias($part)) {
-                $parts[$k] = $this->aliasHandler->generateNewAlias($part);
+            if($this->hasAlias($part)) {
+                $parts[$k] = $this->generateNewAlias($part);
             }
 
             if(strpos($part, '.') !== false) {
@@ -765,7 +765,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $trimmed = ltrim($e[0], '( ');
                 $pos     = strpos($e[0], $trimmed);
 
-                $e[0] = substr($e[0], 0, $pos) . $this->aliasHandler->generateNewAlias($trimmed);
+                $e[0] = substr($e[0], 0, $pos) . $this->generateNewAlias($trimmed);
                 $parts[$k] = implode('.', $e);
             }
         }
@@ -1070,7 +1070,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $tableName = $table->getTableName();
 
         // get the short alias for this table
-        $tableAlias = $this->aliasHandler->getShortAlias($componentAlias, $tableName);
+        $tableAlias = $this->getShortAlias($componentAlias, $tableName);
         // quote table name
         $queryPart = $this->conn->quoteIdentifier($tableName);
 
@@ -1115,7 +1115,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 		$table = $map['table'];
 
         // build the query base
-		$q  = 'SELECT COUNT(DISTINCT ' . $this->aliasHandler->getShortAlias($table->getTableName())
+		$q  = 'SELECT COUNT(DISTINCT ' . $this->getShortAlias($table->getTableName())
             . '.' . $table->getIdentifier()
             . ') FROM ' . $this->buildFromPart();
 
@@ -1152,21 +1152,5 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $this->parseQuery($query);
 
         return $this->execute($params);
-    }
-    /**
-     * getShortAlias
-     * some database such as Oracle need the identifier lengths to be < ~30 chars
-     * hence Doctrine creates as short identifier aliases as possible
-     *
-     * this method is used for the creation of short table aliases, its also
-     * smart enough to check if an alias already exists for given component (componentAlias)
-     *
-     * @param string $componentAlias    the alias for the query component to search table alias for
-     * @param string $tableName         the table name from which the table alias is being created
-     * @return string                   the generated / fetched short alias
-     */
-    public function getShortAlias($componentAlias, $tableName)
-    {
-        return $this->aliasHandler->getShortAlias($componentAlias, $tableName);
     }
 }
