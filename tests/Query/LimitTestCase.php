@@ -76,9 +76,6 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users->count(), 5);
         $users[0]->Phonenumber[0];
         $this->assertEqual($count, $this->dbh->count());
-        
-
-
 
         $q->offset(2);
 
@@ -186,6 +183,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($q->getQuery(),
         "SELECT e.id AS e__id, p.id AS p__id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE e.id IN (SELECT DISTINCT e2.id FROM entity e2 WHERE (e2.name LIKE ? OR e2.name LIKE ?) AND (e2.type = 0) LIMIT 5) AND (e.name LIKE ? OR e.name LIKE ?) AND (e.type = 0)");
     }
+
     public function testConnectionFlushing() 
     {
         $q = new Doctrine_Query();
@@ -249,8 +247,8 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         
         $this->connection->clear();
         $q = new Doctrine_Query();
-        $q->from("User")->where("User.Group.id = ?")->orderby("User.id DESC")->limit(5);
-        $users = $q->execute(array(3));
+        $q->from('User')->where('User.Group.id = ?')->orderby('User.id DESC')->limit(5);
+        $users = $q->execute(array(12));
 
         $this->assertEqual($users->count(), 3);
 
@@ -287,5 +285,6 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($q->getQuery(), 
         "SELECT p.id AS p__id, p.name AS p__name FROM photo p LEFT JOIN phototag p2 ON p.id = p2.photo_id LEFT JOIN tag t ON t.id = p2.tag_id WHERE p.id IN (SELECT DISTINCT p3.id FROM photo p3 LEFT JOIN phototag p4 ON p3.id = p4.photo_id LEFT JOIN tag t2 ON t2.id = p4.tag_id WHERE t2.id = ? ORDER BY p3.id DESC LIMIT 100) AND t.id = ? ORDER BY p.id DESC");
     }
+
 }
 ?>

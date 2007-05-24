@@ -51,6 +51,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
 
         $c->City[0]->District->name = 'District 1';
         $c->City[2]->District->name = 'District 2';
+        $this->assertTrue($c->City[0]->get('district_id') === $c->City[0]->District);
 
         $c->save();
 
@@ -92,14 +93,4 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e INNER JOIN entity_reference e3 ON e.id = e3.entity1 OR e.id = e3.entity2 INNER JOIN entity e2 ON e2.id = e3.entity2 OR e2.id = e3.entity1');
     }
-    /**
-    public function testSelfReferentialNestJoin()
-    {
-        $nest = new NestTest();
-        $rel = $nest->getTable()->getRelation('Parents');
-
-        $this->assertEqual($rel->getLocal(), 'parent_id');
-        $this->assertTrue($rel instanceof Doctrine_Association);
-    }
-    */
 }
