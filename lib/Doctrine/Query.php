@@ -47,6 +47,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      *                                      query object
      */
     protected $isSubquery;
+    
+    protected $isLimitSubqueryUsed = false;
 
     protected $neededTables      = array();
     /**
@@ -127,6 +129,15 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function getEnumParams()
     {
         return $this->_enumParams;
+    }
+    /**
+     * limitSubqueryUsed
+     *
+     * @return boolean
+     */
+    public function isLimitSubqueryUsed()
+    {
+        return $this->isLimitSubqueryUsed;
     }
     /**
      * convertEnums
@@ -564,6 +575,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $rootAlias = key($this->_aliasMap);
 
         if ( ! empty($this->parts['limit']) && $this->needsSubquery && $table->getAttribute(Doctrine::ATTR_QUERY_LIMIT) == Doctrine::LIMIT_RECORDS) {
+            $this->isLimitSubqueryUsed = true;
             $needsSubQuery = true;
         }
 
@@ -702,7 +714,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 continue;
             }
 
-            if($this->aliasHandler->hasAliasFor($part)) {
+            if($this->aliasHandler->hasAlias($part)) {
                 $parts[$k] = $this->aliasHandler->generateNewAlias($part);
             }
 
@@ -894,6 +906,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $componentAlias = $originalAlias;
             } else {
                 $componentAlias = $prevPath;
+            }
+            
+            // if the current alias already exists, skip it
+            if (isset($this->_aliasMap[$componentAlias])) {
+                continue;
             }
 
             if ( ! isset($table)) {
