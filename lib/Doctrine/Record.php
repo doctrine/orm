@@ -544,7 +544,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         if ($this->_state === Doctrine_Record::STATE_TCLEAN ||
             $this->_state === Doctrine_Record::STATE_CLEAN) {
-            
+
             $this->_modified = array();
         }
 
@@ -1554,11 +1554,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function deleteNode() {
         $this->getNode()->delete();
     }
+    public function toString()
+    {
+        return Doctrine::dump(get_object_vars($this));
+    }
     /**
      * returns a string representation of this object
      */
     public function __toString()
     {
-        return Doctrine_Lib::getRecordAsString($this);
+        return (string) $this->_oid;
     }
 }
