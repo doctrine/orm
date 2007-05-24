@@ -257,7 +257,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
                                                           'parent'   => $parent,
                                                           'relation' => $relation);
             }
-            $this->addAlias($tableAlias, $componentAlias);
+            $this->addTableAlias($tableAlias, $componentAlias);
 
             $parent = $currPath;
         }

@@ -189,16 +189,32 @@ class Doctrine_Hydrate
 
         return $alias;
     }
+    /**
+     * getAliases
+     * returns all aliases
+     *
+     * @return array
+     */
     public function getAliases()
     {
         return $this->shortAliases;
     }
-    public function addAlias($tableAlias, $componentAlias)
+    /** 
+     * addTableAlias
+     * adds an alias for table and associates it with given component alias
+     *
+     * @param string $componentAlias    the alias for the query component associated with given tableAlias
+     * @param string $tableAlias        the table alias to be added
+     * @return Doctrine_Hydrate
+     */
+    public function addTableAlias($tableAlias, $componentAlias)
     {
         $this->shortAliases[$tableAlias] = $componentAlias;
+        
+        return $this;
     }
     /**
-     * getShortAlias
+     * getTableAlias
      * some database such as Oracle need the identifier lengths to be < ~30 chars
      * hence Doctrine creates as short identifier aliases as possible
      *
@@ -209,7 +225,7 @@ class Doctrine_Hydrate
      * @param string $tableName         the table name from which the table alias is being created
      * @return string                   the generated / fetched short alias
      */
-    public function getShortAlias($componentAlias, $tableName = null)
+    public function getTableAlias($componentAlias, $tableName = null)
     {
         $alias = array_search($componentAlias, $this->shortAliases);
 
@@ -223,17 +239,23 @@ class Doctrine_Hydrate
 
         return $this->generateShortAlias($componentAlias, $tableName);
     }
-
-    public function getTableAlias($componentAlias)
-    {
-        return $this->getShortAlias($componentAlias);
-    }
+    /**
+     * addQueryPart
+     * adds a query part in the query part array
+     *
+     * @param string $name          the name of the query part to be added
+     * @param string $part          query part string
+     * @throws Doctrine_Hydrate_Exception   if trying to add unknown query part
+     * @return Doctrine_Hydrate     this object
+     */
     public function addQueryPart($name, $part)
     {
         if ( ! isset($this->parts[$name])) {
             throw new Doctrine_Hydrate_Exception('Unknown query part ' . $name);
         }
         $this->parts[$name][] = $part;
+
+        return $this;
     }
     public function getDeclaration($name)
     {
@@ -243,6 +265,15 @@ class Doctrine_Hydrate
 
         return $this->_aliasMap[$name];
     }
+    /**
+     * setQueryPart
+     * sets a query part in the query part array
+     *
+     * @param string $name          the name of the query part to be set
+     * @param string $part          query part string
+     * @throws Doctrine_Hydrate_Exception   if trying to set unknown query part
+     * @return Doctrine_Hydrate     this object
+     */
     public function setQueryPart($name, $part)
     {
         if ( ! isset($this->parts[$name])) {
@@ -254,6 +285,8 @@ class Doctrine_Hydrate
         } else {
             $this->parts[$name] = $part;
         }
+        
+        return $this;
     }
     /**
      * copyAliases

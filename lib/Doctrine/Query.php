@@ -653,7 +653,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                         break;
                 }
 
-                $field = $this->getShortAlias($rootAlias) . '.' . $table->getIdentifier();
+                $field = $this->getTableAlias($rootAlias) . '.' . $table->getIdentifier();
 
                 // only append the subquery if it actually contains something
                 if ($subquery !== '') {
@@ -704,7 +704,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $componentAlias = key($this->_aliasMap);
 
         // get short alias
-        $alias      = $this->getShortAlias($componentAlias);
+        $alias      = $this->getTableAlias($componentAlias);
         $primaryKey = $alias . '.' . $table->getIdentifier();
 
         // initialize the base of the subquery
@@ -970,8 +970,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                    $this->needsSubquery = true;
                 }
 
-                $localAlias   = $this->getShortAlias($parent, $table->getTableName());
-                $foreignAlias = $this->getShortAlias($componentAlias, $relation->getTable()->getTableName());
+                $localAlias   = $this->getTableAlias($parent, $table->getTableName());
+                $foreignAlias = $this->getTableAlias($componentAlias, $relation->getTable()->getTableName());
                 $localSql     = $this->_conn->quoteIdentifier($table->getTableName()) . ' ' . $localAlias;
                 $foreignSql   = $this->_conn->quoteIdentifier($relation->getTable()->getTableName()) . ' ' . $foreignAlias;
 
@@ -992,7 +992,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
                     $assocPath = $prevPath . '.' . $asf->getComponentName();
   
-                    $assocAlias = $this->getShortAlias($assocPath, $asf->getTableName());
+                    $assocAlias = $this->getTableAlias($assocPath, $asf->getTableName());
 
                     $queryPart = $join . $assocTableName . ' ' . $assocAlias . ' ON ' . $localAlias  . '.'
                                                                   . $table->getIdentifier() . ' = '
@@ -1070,7 +1070,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $tableName = $table->getTableName();
 
         // get the short alias for this table
-        $tableAlias = $this->getShortAlias($componentAlias, $tableName);
+        $tableAlias = $this->getTableAlias($componentAlias, $tableName);
         // quote table name
         $queryPart = $this->_conn->quoteIdentifier($tableName);
 
@@ -1115,7 +1115,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 		$table = $map['table'];
 
         // build the query base
-		$q  = 'SELECT COUNT(DISTINCT ' . $this->getShortAlias($table->getTableName())
+		$q  = 'SELECT COUNT(DISTINCT ' . $this->getTableAlias($table->getTableName())
             . '.' . $table->getIdentifier()
             . ') FROM ' . $this->buildFromPart();
 
