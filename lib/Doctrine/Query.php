@@ -756,7 +756,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
 
             if($this->hasAlias($part)) {
-                $parts[$k] = $this->generateNewAlias($part);
+                $parts[$k] = $this->generateNewTableAlias($part);
             }
 
             if(strpos($part, '.') !== false) {
@@ -765,7 +765,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $trimmed = ltrim($e[0], '( ');
                 $pos     = strpos($e[0], $trimmed);
 
-                $e[0] = substr($e[0], 0, $pos) . $this->generateNewAlias($trimmed);
+                $e[0] = substr($e[0], 0, $pos) . $this->generateNewTableAlias($trimmed);
                 $parts[$k] = implode('.', $e);
             }
         }

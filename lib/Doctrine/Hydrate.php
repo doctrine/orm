@@ -118,9 +118,13 @@ class Doctrine_Hydrate
      */
     protected $type            = self::SELECT;
 
-    protected $shortAliases      = array();
-
-    protected $shortAliasIndexes = array();
+    protected $_tableAliases      = array();
+    /**
+     * @var array $_tableAliasSeeds         A simple array keys representing table aliases and values
+     *                                      as table alias seeds. The seeds are used for generating short table
+     *                                      aliases.
+     */
+    protected $_tableAliasSeeds = array();
     /**
      * constructor
      *
@@ -133,18 +137,25 @@ class Doctrine_Hydrate
         }
         $this->_conn = $connection;
     }
-    public function generateNewAlias($alias)
+    /**
+     * generateNewTableAlias
+     * generates a new alias from given table alias
+     *
+     * @param string $tableAlias    table alias from which to generate the new alias from
+     * @return string               the created table alias
+     */
+    public function generateNewTableAlias($tableAlias)
     {
-        if (isset($this->shortAliases[$alias])) {
+        if (isset($this->_tableAliases[$tableAlias])) {
             // generate a new alias
-            $name = substr($alias, 0, 1);
-            $i    = ((int) substr($alias, 1));
+            $name = substr($tableAlias, 0, 1);
+            $i    = ((int) substr($tableAlias, 1));
 
             if ($i == 0) {
                 $i = 1;
             }
 
-            $newIndex  = ($this->shortAliasIndexes[$name] + $i);
+            $newIndex  = ($this->_tableAliasSeeds[$name] + $i);
 
             return $name . $newIndex;
         }
@@ -154,38 +165,53 @@ class Doctrine_Hydrate
 
     public function hasAlias($tableName)
     {
-        return (isset($this->shortAliases[$tableName]));
+        return (isset($this->_tableAliases[$tableName]));
     }
     
     public function getComponentAlias($tableAlias)
     {
-        if ( ! isset($this->shortAliases[$tableAlias])) {
+        if ( ! isset($this->_tableAliases[$tableAlias])) {
             throw new Doctrine_Hydrate_Exception('Unknown table alias ' . $tableAlias);
         }
-        return $this->shortAliases[$tableAlias];
+        return $this->_tableAliases[$tableAlias];
     }
-
-    public function getShortAliasIndex($alias)
+    /**
+     * getTableAliasSeed
+     * returns the alias seed for given table alias
+     *
+     * @param string $tableAlias    table alias that identifies the alias seed
+     * @return integer              table alias seed
+     */
+    public function getTableAliasSeed($tableAlias)
     {
-        if ( ! isset($this->shortAliasIndexes[$alias])) {
+        if ( ! isset($this->_tableAliasSeeds[$tableAlias])) {
             return 0;
         }
-        return $this->shortAliasIndexes[$alias];
+        return $this->_tableAliasSeeds[$tableAlias];
     }
-    public function generateShortAlias($componentAlias, $tableName)
+    /**
+     * generateTableAlias
+     * generates a table alias from given table name and associates 
+     * it with given component alias
+     *
+     * @param string $componentAlias    the component alias to be associated with generated table alias
+     * @param string $tableName         the table name from which to generate the table alias
+     * @return string                   the generated table alias
+     */
+    public function generateTableAlias($componentAlias, $tableName)
     {
         $char   = strtolower(substr($tableName, 0, 1));
 
         $alias  = $char;
 
-        if ( ! isset($this->shortAliasIndexes[$alias])) {
-            $this->shortAliasIndexes[$alias] = 1;
+        if ( ! isset($this->_tableAliasSeeds[$alias])) {
+            $this->_tableAliasSeeds[$alias] = 1;
         }
-        while (isset($this->shortAliases[$alias])) {
-            $alias = $char . ++$this->shortAliasIndexes[$alias];
+        while (isset($this->_tableAliases[$alias])) {
+            $alias = $char . ++$this->_tableAliasSeeds[$alias];
         }
 
-        $this->shortAliases[$alias] = $componentAlias;
+        $this->_tableAliases[$alias] = $componentAlias;
 
         return $alias;
     }
@@ -197,7 +223,7 @@ class Doctrine_Hydrate
      */
     public function getAliases()
     {
-        return $this->shortAliases;
+        return $this->_tableAliases;
     }
     /** 
      * addTableAlias
@@ -209,7 +235,7 @@ class Doctrine_Hydrate
      */
     public function addTableAlias($tableAlias, $componentAlias)
     {
-        $this->shortAliases[$tableAlias] = $componentAlias;
+        $this->_tableAliases[$tableAlias] = $componentAlias;
         
         return $this;
     }
@@ -227,7 +253,7 @@ class Doctrine_Hydrate
      */
     public function getTableAlias($componentAlias, $tableName = null)
     {
-        $alias = array_search($componentAlias, $this->shortAliases);
+        $alias = array_search($componentAlias, $this->_tableAliases);
 
         if ($alias !== false) {
             return $alias;
@@ -237,7 +263,7 @@ class Doctrine_Hydrate
             throw new Doctrine_Hydrate_Exception("Couldn't get short alias for " . $componentAlias);
         }
 
-        return $this->generateShortAlias($componentAlias, $tableName);
+        return $this->generateTableAlias($componentAlias, $tableName);
     }
     /**
      * addQueryPart
@@ -301,7 +327,7 @@ class Doctrine_Hydrate
      */
     public function copyAliases(Doctrine_Hydrate $query)
     {
-        $this->shortAliases = $query->shortAliases;
+        $this->_tableAliases = $query->_tableAliases;
 
         return $this;
     }
@@ -333,6 +359,15 @@ class Doctrine_Hydrate
     {
         return false;
     }
+    /**
+     * setQueryPart
+     * sets a query part in the query part array
+     *
+     * @param string $name          the name of the query part to be set
+     * @param string $part          query part string
+     * @throws Doctrine_Hydrate_Exception   if trying to set unknown query part
+     * @return Doctrine_Hydrate     this object
+     */
     public function getQueryPart($part)
     {
         if ( ! isset($this->parts[$part])) {
@@ -342,18 +377,23 @@ class Doctrine_Hydrate
         return $this->parts[$part];
     }
     /**
-     * remove
+     * removeQueryPart
+     * removes a query part from the query part array
      *
-     * @param $name
+     * @param string $name          the name of the query part to be removed
+     * @throws Doctrine_Hydrate_Exception   if trying to remove unknown query part
+     * @return Doctrine_Hydrate     this object
      */
-    public function remove($name)
+    public function removeQueryPart($name)
     {
         if (isset($this->parts[$name])) {
-            if ($name == "limit" || $name == "offset") {
+            if ($name == 'limit' || $name == 'offset') {
                 $this->parts[$name] = false;
             } else {
                 $this->parts[$name] = array();
             }
+        } else {
+            throw new Doctrine_Hydrate_Exception('Unknown query part ' . $part);
         }
         return $this;
     }
