@@ -296,7 +296,7 @@ class Doctrine_Relation_ParserOld
             } elseif ($component == $definition['class'] ||
                 ($component == $definition['alias'])) {     //  && ($name == $this->options['name'] || in_array($name,$this->parents))
 
-                    if ( ! isset($defintion['local'])) {
+                    if ( ! isset($definition['local'])) {
                         $definition['local'] = $this->identifier;
                     }
 
