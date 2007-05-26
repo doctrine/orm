@@ -477,7 +477,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
             $e = explode('.', $args[1]);
             if (in_array($e[0], $classes)) {
-                $options['local'] = $e[1];
+                if ($options['type'] >= Doctrine_Relation::MANY) {
+                    $options['foreign'] = $e[1];                                             	
+                } else {
+                    $options['local'] = $e[1];
+                }
             } else {
                 $e2 = explode(' as ', $args[0]);
                 if ($e[0] !== $e2[0] && ( ! isset($e2[1]) || $e[0] !== $e2[1])) {
