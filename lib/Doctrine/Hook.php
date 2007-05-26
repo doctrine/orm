@@ -132,7 +132,8 @@ class Doctrine_Hook
                 list($alias, $column) = $e;
 
                 $tableAlias = $this->query->getTableAlias($alias);
-                $table = $this->query->getTable($tableAlias);
+                $map   = $this->query->getAliasDeclaration($alias);
+                $table = $map['table'];
 
                 if ( ! $table) {
                     throw new Doctrine_Exception('Unknown table alias ' . $tableAlias);
@@ -181,7 +182,8 @@ class Doctrine_Hook
                 list($alias, $column) = $e;
 
                 $tableAlias = $this->query->getTableAlias($alias);
-                $table = $this->query->getTable($tableAlias);
+                $map   = $this->query->getAliasDeclaration($alias);
+                $table = $map['table'];
 
                 if ($def = $table->getDefinitionOf($column)) {
                     $this->query->addOrderBy($alias . '.' . $column . ' ' . $order);
