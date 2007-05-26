@@ -98,7 +98,7 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($coll->count(), 1);
         $this->assertEqual($coll[0]->name, 'zYne');
     }
-    */
+
 
     public function testLoadRelatedForNormalAssociation() 
     {
@@ -130,7 +130,7 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($resource[1]->Type[1]->type, 'type 4');
         $this->assertEqual(($count + 1), $this->dbh->count());
     }
-
+         */
     public function testAdd() 
     {
         $coll = new Doctrine_Collection($this->objTable);
@@ -232,7 +232,7 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase
     }
     public function testExpand() 
     {
-        $users = $this->connection->query("FROM User-b.Phonenumber-l WHERE User.Phonenumber.phonenumber LIKE '%123%'");
+        $users = $this->connection->query("FROM User.Phonenumber WHERE User.Phonenumber.phonenumber LIKE '%123%'");
 
         $this->assertTrue($users instanceof Doctrine_Collection_Batch);
         $this->assertTrue($users[1] instanceof User);
