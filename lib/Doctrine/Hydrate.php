@@ -82,7 +82,7 @@ class Doctrine_Hydrate
      *
      *          parent              the alias of the parent
      *
-     *          subAgg              the subquery aggregates of this component
+     *          agg                 the aggregates of this component
      */
     protected $_aliasMap         = array();
     /**
@@ -118,7 +118,7 @@ class Doctrine_Hydrate
      */
     protected $type            = self::SELECT;
 
-    protected $_tableAliases      = array();
+    protected $_tableAliases   = array();
     /**
      * @var array $_tableAliasSeeds         A simple array keys representing table aliases and values
      *                                      as table alias seeds. The seeds are used for generating short table
@@ -529,14 +529,12 @@ class Doctrine_Hydrate
         $found = false;
         // aggregate values have numeric keys
         if (isset($row[0])) {
-            // map each aggregate value
+            // map each aggregate value   
             foreach ($row as $index => $value) {
                 $agg = false;
 
-                if (isset($this->pendingAggregates[$alias][$index])) {
-                    $agg = $this->pendingAggregates[$alias][$index][3];
-                } elseif (isset($this->_aliasMap[$alias]['subAgg'][$index])) {
-                    $agg = $this->_aliasMap[$alias]['subAgg'][$index];
+                if (isset($this->_aliasMap[$alias]['agg'][$index])) {
+                    $agg = $this->_aliasMap[$alias]['agg'][$index];
                 }
                 $record->mapValue($agg, $value);
                 $found = true;

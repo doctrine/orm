@@ -37,8 +37,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @param boolean $needsSubquery
      */
     protected $needsSubquery     = false;
-
-    protected $_status           = array('needsSubquery' => true);
     /**
      * @param boolean $isSubquery           whether or not this query object is a subquery of another 
      *                                      query object
@@ -46,8 +44,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     protected $isSubquery;
     
     protected $isLimitSubqueryUsed = false;
-
-    protected $neededTables      = array();
+    /**
+     * @var array $_neededTableAliases      an array containing the needed table aliases
+     */
+    protected $_neededTables     = array();
     /**
      * @var array $pendingFields
      */
@@ -58,7 +58,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     protected $pendingSubqueries = array();
     /**
-     * @var array $_parsers                 an array of parser objects
+     * @var array $_parsers                 an array of parser objects, each DQL query part has its own parser
      */
     protected $_parsers    = array();
     /**
@@ -191,10 +191,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $this->isSubquery = (bool) $bool;
         return $this;
     }
-
     /**
      * getAggregateAlias
      * 
+     * @param string $dqlAlias      the dql alias of an aggregate value
      * @return string
      */
     public function getAggregateAlias($dqlAlias)
@@ -241,16 +241,20 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function parseQueryPart($queryPartName, $queryPart, $append = false) 
     {
+    	// sanity check
     	if ($queryPart === '' || $queryPart === null) {
             throw new Doctrine_Query_Exception('Empty ' . $queryPartName . ' part given.');
     	}
 
+        // add query part to the dql part array
     	if ($append) {
     	    $this->_dqlParts[$queryPartName][] = $queryPart;
     	} else {
             $this->_dqlParts[$queryPartName] = array($queryPart);
     	}
-    	if ( ! $this->_options['resultSetCache'] && ! $this->_options['parserCache']) {
+    	
+        // check for cache
+        if ( ! $this->_options['resultSetCache'] && ! $this->_options['parserCache']) {
     	    $parser = $this->getParser($queryPartName);
                          
             $sql = $parser->parse($queryPart);
@@ -343,7 +347,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     // subselect found in SELECT part
                     $this->parseSubselect($reference);
                 } else {
-                    $this->parseAggregateFunction2($reference);
+                    $this->parseAggregateFunction($reference);
                 }
             } else {
 
@@ -381,7 +385,16 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         
         $this->pendingSubqueries[] = array($subquery, $alias);
     }
-    public function parseAggregateFunction2($func)
+    /**
+     * parseAggregateFunction
+     * parses an aggregate function and returns the parsed form
+     *
+     * @see Doctrine_Expression
+     * @param string $func                  DQL aggregate function
+     * @throws Doctrine_Query_Exception     if unknown aggregate function given
+     * @return array                        parsed form of given function
+     */
+    public function parseAggregateFunction($func)
     {
         $e    = Doctrine_Tokenizer::bracketExplode($func, ' ');
         $func = $e[0];
@@ -436,6 +449,15 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             throw new Doctrine_Query_Exception('Unknown function ' . $func . '.');
         }
     }
+    /**
+     * processPendingSubqueries
+     * processes pending subqueries
+     *
+     * subqueries can only be processed when the query is fully constructed
+     * since some subqueries may be correlated
+     *
+     * @return void
+     */
     public function processPendingSubqueries() 
     {
     	foreach ($this->pendingSubqueries as $value) {
@@ -452,10 +474,17 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $this->parts['select'][] = '(' . $sql . ') AS ' . $sqlAlias;
 
             $this->aggregateMap[$alias] = $sqlAlias;
-            $this->_aliasMap[$componentAlias]['subAgg'][] = $alias;
+            $this->_aliasMap[$componentAlias]['agg'][] = $alias;
         }
         $this->pendingSubqueries = array();
     }
+    /** 
+     * processPendingAggregates
+     * processes pending aggregate values for given component alias
+     *
+     * @param string $componentAlias    dql component alias
+     * @return void
+     */
     public function processPendingAggregates($componentAlias)
     {
         $tableAlias = $this->getTableAlias($componentAlias);     
@@ -501,8 +530,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     $arglist[]  = $e[0];
                 }
             }
-
-            $sqlAlias = $tableAlias . '__' . count($this->aggregateMap);
+            $index    = count($this->aggregateMap);
+            $sqlAlias = $tableAlias . '__' . $index;
 
             if (substr($name, 0, 1) !== '(') {
                 $this->parts['select'][] = $name . '(' . $distinct . implode(', ', $arglist) . ') AS ' . $sqlAlias;
@@ -510,6 +539,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $this->parts['select'][] = $name . ' AS ' . $sqlAlias;
             }
             $this->aggregateMap[$alias] = $sqlAlias;
+            $this->_aliasMap[$componentAlias]['agg'][$index] = $alias;
+
             $this->neededTables[] = $tableAlias;
         }
     }
@@ -539,8 +570,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     }
     /**
      * buildFromPart
+     * builds the from part of the query and returns it
      *
-     * @return string
+     * @return string   the query sql from part
      */
     public function buildFromPart()
     {
