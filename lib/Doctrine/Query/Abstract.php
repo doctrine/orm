@@ -193,7 +193,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function innerJoin($join)
     {
-        return $this->parseQueryPart('from', 'INNER JOIN ' . $join);
+        return $this->parseQueryPart('from', 'INNER JOIN ' . $join, true);
     }
     /**
      * leftJoin
@@ -204,7 +204,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function leftJoin($join)
     {
-        return $this->parseQueryPart('from', 'LEFT JOIN ' . $join);
+        return $this->parseQueryPart('from', 'LEFT JOIN ' . $join, true);
     }
     /**
      * groupBy
