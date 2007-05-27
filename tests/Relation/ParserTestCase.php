@@ -195,4 +195,6 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
         $rel = $r->getRelation('EntityReference');
         $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
     }
+    
+    // TODO: BETTER ASSOCIATION TABLE GUESSING
 }

@@ -13,7 +13,7 @@ print "<pre>";
 $manager = Doctrine_Manager::getInstance();
 $dbh = Doctrine_Db::getConnection('sqlite::memory:');
 $conn = $manager->openConnection($dbh);
-
+/**
 $user = new User();
 $user->name = 'zYne';
 $user->Phonenumber[0]->phonenumber = '123 123';
@@ -27,16 +27,12 @@ $city->District->name = 'District 1';
 if ($city->District === $city->district_id) {
     print 'case 2 works\n';
 }
-
+*/
 
 $c = new Record_Country();
 $c->name = 'Some country';
-$c->City[0]->name = 'City 1';
-$c->City[0]->District->name = 'District 1';
+$city = $c->City[0];
+$city->name = 'City 1';
+$city->District->name = 'District 1';
 
-print $c->City[0]->District . "\n";
-print $c->City[0]->get('district_id'). "\n";
-
-if ($c->City[0]->get('district_id') == $c->City[0]->District) {
-    print "case 3 works!\n";
-}
+$c->save();

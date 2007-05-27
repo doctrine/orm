@@ -4,7 +4,9 @@ class Entity extends Doctrine_Record {
         $this->ownsOne('Email', 'Entity.email_id');
         $this->ownsMany('Phonenumber', 'Phonenumber.entity_id');
         $this->ownsOne('Account', 'Account.entity_id');
-        $this->hasMany('Entity', array('local' => 'entity1', 'foreign' => 'entity2'));
+        $this->hasMany('Entity', array('local' => 'entity1', 
+                                       'refClass' => 'EntityReference',
+                                       'foreign' => 'entity2'));
     }
     public function setTableDefinition() {
         $this->hasColumn('id', 'integer',20, 'autoincrement|primary');
@@ -43,7 +45,7 @@ class Account extends Doctrine_Record {
 
 class EntityAddress extends Doctrine_Record {
     public function setTableDefinition() {
-        $this->hasColumn('entity_id', 'integer');
+        $this->hasColumn('user_id', 'integer');
         $this->hasColumn('address_id', 'integer');
     }
 }
@@ -617,7 +619,7 @@ class ValidatorTest_Person extends Doctrine_Record {
 
 class ValidatorTest_FootballPlayer extends Doctrine_Record {
    public function setTableDefinition() {
-      $this->hasColumn('person_id', 'string', 255, 'primary');     
+      $this->hasColumn('person_id', 'string', 255);     
       $this->hasColumn('team_name', 'string', 255);
       $this->hasColumn('goals_count', 'integer', 4);
    }

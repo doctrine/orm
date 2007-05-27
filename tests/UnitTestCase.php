@@ -231,7 +231,9 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         if ( ! $this->init) {
             $this->init();
         }
-        $this->objTable->clear();
+        if (isset($this->objTable)) {
+            $this->objTable->clear();
+        }
         
         $this->init    = true;
     }

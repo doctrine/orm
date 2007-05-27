@@ -60,7 +60,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 // DATABASE ABSTRACTION tests
-
+/**
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -138,7 +138,7 @@ $test->addTestCase(new Doctrine_Expression_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Expression_Sqlite_TestCase());
 
 // Core
-
+   */
 $test->addTestCase(new Doctrine_Access_TestCase());
 //$test->addTestCase(new Doctrine_Configurable_TestCase());
 
@@ -150,15 +150,16 @@ $test->addTestCase(new Doctrine_Table_TestCase());
 $test->addTestCase(new Doctrine_UnitOfWork_TestCase());
 $test->addTestCase(new Doctrine_Connection_Transaction_TestCase());
 
-$test->addTestCase(new Doctrine_Collection_TestCase());
+//$test->addTestCase(new Doctrine_Collection_TestCase());
 // Relation handling
 
 $test->addTestCase(new Doctrine_TreeStructure_TestCase());
 $test->addTestCase(new Doctrine_Relation_TestCase());
 
-$test->addTestCase(new Doctrine_Relation_Access_TestCase());
-$test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
+//$test->addTestCase(new Doctrine_Relation_Access_TestCase());
+//$test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
 $test->addTestCase(new Doctrine_Relation_OneToOne_TestCase());
+$test->addTestCase(new Doctrine_Relation_Parser_TestCase());
 
 // Datatypes
 $test->addTestCase(new Doctrine_Enum_TestCase());
@@ -167,9 +168,9 @@ $test->addTestCase(new Doctrine_Boolean_TestCase());
 
 // Utility components
 
-$test->addTestCase(new Doctrine_PessimisticLocking_TestCase());
+//$test->addTestCase(new Doctrine_PessimisticLocking_TestCase());
 
-$test->addTestCase(new Doctrine_RawSql_TestCase());
+
 $test->addTestCase(new Doctrine_View_TestCase());
 
 $test->addTestCase(new Doctrine_Validator_TestCase());
@@ -185,67 +186,87 @@ $test->addTestCase(new Doctrine_Db_Profiler_TestCase());
 $test->addTestCase(new Doctrine_EventListener_TestCase());
 $test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
 
-// Record
-$test->addTestCase(new Doctrine_Record_TestCase());
-$test->addTestCase(new Doctrine_Record_State_TestCase());
-//$test->addTestCase(new Doctrine_Record_Filter_TestCase());
 
-// Old test cases (should be removed)
+
+$test->addTestCase(new Doctrine_Record_Filter_TestCase());
 
 $test->addTestCase(new Doctrine_SchemaTestCase());
-$test->addTestCase(new Doctrine_BatchIterator_TestCase());
+
 $test->addTestCase(new Doctrine_Query_Condition_TestCase());
 
 $test->addTestCase(new Doctrine_CustomPrimaryKey_TestCase());
 $test->addTestCase(new Doctrine_CustomResultSetOrderTestCase());
-//$test->addTestCase(new Doctrine_Collection_Offset_TestCase());
 
 
 // Query tests
+
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 
 $test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());
 
-$test->addTestCase(new Doctrine_Query_TestCase());
+
 $test->addTestCase(new Doctrine_Query_ShortAliases_TestCase());
-$test->addTestCase(new Doctrine_Query_Delete_TestCase());
-$test->addTestCase(new Doctrine_Query_Where_TestCase());
-$test->addTestCase(new Doctrine_Query_Limit_TestCase());
-$test->addTestCase(new Doctrine_Query_IdentifierQuoting_TestCase());
-$test->addTestCase(new Doctrine_Query_Update_TestCase());
-$test->addTestCase(new Doctrine_Query_AggregateValue_TestCase());
-$test->addTestCase(new Doctrine_Query_Select_TestCase());
+
 $test->addTestCase(new Doctrine_Query_Expression_TestCase());
-$test->addTestCase(new Doctrine_Query_Having_TestCase());
 
-$test->addTestCase(new Doctrine_Query_From_TestCase());
-$test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
-$test->addTestCase(new Doctrine_ColumnAlias_TestCase());
 $test->addTestCase(new Doctrine_ColumnAggregationInheritance_TestCase());
+$test->addTestCase(new Doctrine_ColumnAlias_TestCase());
 
 
 
-$test->addTestCase(new Doctrine_Query_Join_TestCase());
-
-$test->addTestCase(new Doctrine_Query_Orderby_TestCase());
-
-$test->addTestCase(new Doctrine_Cache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Apc_TestCase());
 $test->addTestCase(new Doctrine_Cache_Memcache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Sqlite_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Check_TestCase());
+$test->addTestCase(new Doctrine_Query_Limit_TestCase());
+
+
+$test->addTestCase(new Doctrine_Query_IdentifierQuoting_TestCase());
+$test->addTestCase(new Doctrine_Query_Update_TestCase());
+$test->addTestCase(new Doctrine_Query_Delete_TestCase());
+$test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
+
+$test->addTestCase(new Doctrine_Query_Join_TestCase());
+
+$test->addTestCase(new Doctrine_Query_Having_TestCase());
+
+$test->addTestCase(new Doctrine_Query_Where_TestCase());
+
+$test->addTestCase(new Doctrine_RawSql_TestCase());
+
+$test->addTestCase(new Doctrine_Query_Orderby_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 
+$test->addTestCase(new Doctrine_Query_AggregateValue_TestCase());
 
+$test->addTestCase(new Doctrine_Query_Select_TestCase());
+$test->addTestCase(new Doctrine_Query_From_TestCase());
+$test->addTestCase(new Doctrine_NewCore_TestCase());
+
+$test->addTestCase(new Doctrine_Tokenizer_TestCase());
+
+$test->addTestCase(new Doctrine_Collection_Snapshot_TestCase());
+
+// Record
+$test->addTestCase(new Doctrine_Record_TestCase());
+$test->addTestCase(new Doctrine_Record_State_TestCase());
+
+
+
+$test->addTestCase(new Doctrine_Query_Cache_TestCase());
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
 //$test->addTestCase(new Doctrine_Cache_SqliteTestCase());
-
+//$test->addTestCase(new Doctrine_Collection_Offset_TestCase());
+//$test->addTestCase(new Doctrine_BatchIterator_TestCase());
+//$test->addTestCase(new Doctrine_Hydrate_TestCase());
+//$test->addTestCase(new Doctrine_Cache_TestCase());
+//$test->addTestCase(new Doctrine_Query_TestCase());
 
 class MyReporter extends HtmlReporter {
     public function paintHeader() {}

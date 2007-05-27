@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Query_Cache_TestCase
+ * Doctrine_NewCore_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -30,45 +30,19 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Query_Cache_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_NewCore_TestCase extends Doctrine_UnitTestCase 
 {
-    public function testResultSetCacheAddsResultSetsIntoCache()
+    public function testFromParser()
     {
         $q = new Doctrine_Query();
+        
+        $q->load('User u', true);
 
-        $cache = new Doctrine_Cache_Array();
-        $q->setCache($cache);
-        $q->select('u.name')->from('User u');
-        $coll = $q->execute();
+        $this->assertEqual($q->getQueryPart('from'), array('entity e'));
+        $this->assertEqual(count($q->getAliasMap()), 1);
 
-        $this->assertEqual($cache->count(), 1);
-        $this->assertTrue($coll instanceof Doctrine_Collection);
-        $this->assertEqual($coll->count(), 8);
+        $q->load('u.Phonenumber p', false);
 
-        $coll = $q->execute();
-
-        $this->assertEqual($cache->count(), 1);
-        $this->assertTrue($coll instanceof Doctrine_Collection);
-        $this->assertEqual($coll->count(), 8);
+        $this->assertEqual($q->getQueryPart('from'), array('entity e', 'LEFT JOIN phonenumber p ON e.id = p.entity_id'));
     }
-    public function testResultSetCacheSupportsQueriesWithJoins()
-    {
-        $q = new Doctrine_Query();
-
-        $cache = new Doctrine_Cache_Array();
-        $q->setCache($cache);
-        $q->select('u.name')->from('User u')->leftJoin('u.Phonenumber p');
-        $coll = $q->execute();
-
-        $this->assertEqual($cache->count(), 1);
-        $this->assertTrue($coll instanceof Doctrine_Collection);
-        $this->assertEqual($coll->count(), 8);
-
-        $coll = $q->execute();
-
-        $this->assertEqual($cache->count(), 1);
-        $this->assertTrue($coll instanceof Doctrine_Collection);
-        $this->assertEqual($coll->count(), 8);
-    }
-
 }
