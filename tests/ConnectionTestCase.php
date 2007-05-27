@@ -135,7 +135,7 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase {
     }
     public function testDelete() {
         $user = $this->connection->create('User');
-        $this->connection->delete($user);
+        $this->connection->unitOfWork->delete($user);
         $this->assertEqual($user->state(),Doctrine_Record::STATE_TCLEAN);
     }
     public function testGetTable() {
@@ -185,15 +185,15 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
         $this->connection->beginTransaction();
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),1);
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_ACTIVE);
+        $this->assertEqual($this->connection->transaction->getState(), Doctrine_Transaction::STATE_ACTIVE);
         $this->connection->beginTransaction();
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_BUSY);
+        $this->assertEqual($this->connection->transaction->getState(), Doctrine_Transaction::STATE_BUSY);
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),2);
         $this->connection->commit();
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_ACTIVE);
+        $this->assertEqual($this->connection->transaction->getState(), Doctrine_Transaction::STATE_ACTIVE);
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),1);
         $this->connection->commit();
-        $this->assertEqual($this->connection->transaction->getState(),Doctrine_Transaction::STATE_SLEEP);
+        $this->assertEqual($this->connection->transaction->getState(), Doctrine_Transaction::STATE_SLEEP);
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
     }
 }

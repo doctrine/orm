@@ -38,8 +38,7 @@ class Doctrine_PessimisticLocking_TestCase extends Doctrine_UnitTestCase {
      *
      * Creates a locking manager and a test record to work with.
      */
-    public function setUp() {
-        parent::setUp();
+    public function testInitData() {
         $this->lockingManager = new Doctrine_Locking_Manager_Pessimistic($this->connection);
         
         // Create sample data to test on
@@ -97,7 +96,7 @@ class Doctrine_PessimisticLocking_TestCase extends Doctrine_UnitTestCase {
         $released = $this->lockingManager->releaseAgedLocks(-1, 'Forum_Entry', 'romanb'); // should release the lock
         $this->assertEqual(1, $released);
     }
-    
+
     /**
      * Tests the retrieving of a lock's owner.
      * This test implicitly tests getLock().
