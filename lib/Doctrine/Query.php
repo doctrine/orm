@@ -65,14 +65,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @var array $_enumParams              an array containing the keys of the parameters that should be enumerated
      */
     protected $_enumParams = array();
-    /**
-     * @var array $_options                 an array of options
-     */
-    protected $_options    = array(
-                            'fetchMode'      => Doctrine::FETCH_RECORD,
-                            'parserCache'    => false,
-                            'resultSetCache' => false,
-                            );
+
     /**
      * @var array $_dqlParts                an array containing all DQL query parts
      */
@@ -626,20 +619,21 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function getQuery($params = array())
     {
     	// check if parser cache is on
-    	if ($this->_options['parserCache'] !== false) {
+    	if ($this->_options['resultSetCache'] !== false) {
+/**
             $dql  = $this->getDql();
             // calculate hash for dql query
             $hash = strlen($dql) . md5($dql);
-            
+
             // check if cache has sql equivalent for given hash
             $sql = $this->_options['parserCache']->fetch($hash, true);
     	    if ($sql !== null) {
     	        return $sql;
     	    }
-
+   */
             // cache miss, build sql query from dql parts
     	    foreach ($this->_dqlParts as $queryPartName => $queryParts) {
-                if (is_array($queryParts)) {
+                if (is_array($queryParts) && ! empty($queryParts)) {
                     foreach ($queryParts as $queryPart) {
                         $this->getParser($queryPartName)->parse($queryPart);
                     }

@@ -32,7 +32,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrate
+class Doctrine_Hydrate implements Serializable
 {
     /**
      * QUERY TYPE CONSTANTS
@@ -95,6 +95,14 @@ class Doctrine_Hydrate
      */
     protected $aggregateMap      = array();
     /**
+     * @var array $_options                 an array of options
+     */
+    protected $_options    = array(
+                            'fetchMode'      => Doctrine::FETCH_RECORD,
+                            'parserCache'    => false,
+                            'resultSetCache' => false,
+                            );
+    /**
      * @var array $parts            SQL query string parts
      */
     protected $parts = array(
@@ -136,6 +144,33 @@ class Doctrine_Hydrate
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
         }
         $this->_conn = $connection;
+    }
+
+    public function getSql()
+    {
+        return $this->getQuery();
+    }
+    /**
+     * serialize
+     * this method is automatically called when this Doctrine_Hydrate is serialized
+     *
+     * @return array    an array of serialized properties
+     */
+    public function serialize()
+    {
+        $vars = get_object_vars($this);
+
+    }
+    /**
+     * unseralize
+     * this method is automatically called everytime a Doctrine_Hydrate object is unserialized
+     *
+     * @param string $serialized                Doctrine_Record as serialized string
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+
     }
     /**
      * generateNewTableAlias
@@ -228,12 +263,12 @@ class Doctrine_Hydrate
         return $alias;
     }
     /**
-     * getAliases
-     * returns all aliases
+     * getTableAliases
+     * returns all table aliases
      *
-     * @return array
+     * @return array        table aliases as an array
      */
-    public function getAliases()
+    public function getTableAliases()
     {
         return $this->_tableAliases;
     }
@@ -296,19 +331,42 @@ class Doctrine_Hydrate
         return $this;
     }
     /**
-     * getAliasDeclaration
-     * get the declaration for given component alias
+     * setQueryPart
+     * sets a query part in the query part array
      *
-     * @param string $componentAlias    the component alias the retrieve the declaration from
-     * @return array                    the alias declaration
+     * @param string $name          the name of the query part to be set
+     * @param string $part          query part string
+     * @throws Doctrine_Hydrate_Exception   if trying to set unknown query part
+     * @return Doctrine_Hydrate     this object
      */
-    public function getAliasDeclaration($componentAlias)
+    public function getQueryPart($part)
     {
-        if ( ! isset($this->_aliasMap[$componentAlias])) {
-            throw new Doctrine_Hydrate_Exception('Unknown component alias ' . $componentAlias);
+        if ( ! isset($this->parts[$part])) {
+            throw new Doctrine_Hydrate_Exception('Unknown query part ' . $part);
         }
 
-        return $this->_aliasMap[$componentAlias];
+        return $this->parts[$part];
+    }
+    /**
+     * removeQueryPart
+     * removes a query part from the query part array
+     *
+     * @param string $name          the name of the query part to be removed
+     * @throws Doctrine_Hydrate_Exception   if trying to remove unknown query part
+     * @return Doctrine_Hydrate     this object
+     */
+    public function removeQueryPart($name)
+    {
+        if (isset($this->parts[$name])) {
+            if ($name == 'limit' || $name == 'offset') {
+                $this->parts[$name] = false;
+            } else {
+                $this->parts[$name] = array();
+            }
+        } else {
+            throw new Doctrine_Hydrate_Exception('Unknown query part ' . $part);
+        }
+        return $this;
     }
     /**
      * setQueryPart
@@ -332,6 +390,21 @@ class Doctrine_Hydrate
         }
         
         return $this;
+    }
+    /**
+     * getAliasDeclaration
+     * get the declaration for given component alias
+     *
+     * @param string $componentAlias    the component alias the retrieve the declaration from
+     * @return array                    the alias declaration
+     */
+    public function getAliasDeclaration($componentAlias)
+    {
+        if ( ! isset($this->_aliasMap[$componentAlias])) {
+            throw new Doctrine_Hydrate_Exception('Unknown component alias ' . $componentAlias);
+        }
+
+        return $this->_aliasMap[$componentAlias];
     }
     /**
      * copyAliases
@@ -378,44 +451,6 @@ class Doctrine_Hydrate
     public function isLimitSubqueryUsed()
     {
         return false;
-    }
-    /**
-     * setQueryPart
-     * sets a query part in the query part array
-     *
-     * @param string $name          the name of the query part to be set
-     * @param string $part          query part string
-     * @throws Doctrine_Hydrate_Exception   if trying to set unknown query part
-     * @return Doctrine_Hydrate     this object
-     */
-    public function getQueryPart($part)
-    {
-        if ( ! isset($this->parts[$part])) {
-            throw new Doctrine_Hydrate_Exception('Unknown query part ' . $part);
-        }
-
-        return $this->parts[$part];
-    }
-    /**
-     * removeQueryPart
-     * removes a query part from the query part array
-     *
-     * @param string $name          the name of the query part to be removed
-     * @throws Doctrine_Hydrate_Exception   if trying to remove unknown query part
-     * @return Doctrine_Hydrate     this object
-     */
-    public function removeQueryPart($name)
-    {
-        if (isset($this->parts[$name])) {
-            if ($name == 'limit' || $name == 'offset') {
-                $this->parts[$name] = false;
-            } else {
-                $this->parts[$name] = array();
-            }
-        } else {
-            throw new Doctrine_Hydrate_Exception('Unknown query part ' . $part);
-        }
-        return $this;
     }
     /**
      * clear
@@ -542,14 +577,24 @@ class Doctrine_Hydrate
         }
         return $found;
     }
-    /**
-     * execute
-     * executes the dql query and populates all collections
-     *
-     * @param string $params
-     * @return Doctrine_Collection            the root collection
-     */
-    public function execute($params = array(), $return = Doctrine::FETCH_RECORD)
+    public function getCachedForm(array $resultSet)
+    {
+        $map = '';
+
+        foreach ($this->getAliasMap() as $k => $v) {
+            if ( ! isset($v['parent'])) {
+                $map[$k][] = $v['table']->getComponentName();
+            } else {
+                $map[$k][] = $v['parent'] . '.' . $v['relation']->getAlias();
+            }
+            if (isset($v['agg'])) {
+                $map[$k][] = $v['agg'];
+            }
+        }
+
+        return serialize(array($resultSet, $map, $this->getTableAliases()));
+    }
+    public function _execute($params, $return = Doctrine::FETCH_RECORD)
     {
         $params = $this->_conn->convertBooleans(array_merge($this->_params, $params));
         $params = $this->convertEnums($params);
@@ -571,7 +616,60 @@ class Doctrine_Hydrate
         }
 
         $stmt  = $this->_conn->execute($query, $params);
-        $array = (array) $this->parseData($stmt);
+        return (array) $this->parseData($stmt);
+    }
+    /**
+     * execute
+     * executes the query and populates the data set
+     *
+     * @param string $params
+     * @return Doctrine_Collection            the root collection
+     */
+    public function execute($params = array(), $return = Doctrine::FETCH_RECORD)
+    {
+    	if ($this->_options['resultSetCache']) {
+            $dql  = $this->getDql();
+            // calculate hash for dql query
+            $hash = strlen($dql) . md5($dql);
+
+            $cached = $this->_options['resultSetCache']->fetch($hash);
+
+            if ($cached === null) {
+                // cache miss
+                $array = $this->_execute($params, $return);
+
+                $cached = $this->getCachedForm($array);
+                
+                $this->_options['resultSetCache']->save($hash, $cached);
+            } else {
+                $cached = unserialize($cached);
+                $this->_tableAliases = $cached[2];
+                $array = $cached[0];
+
+                $map   = array();
+                foreach ($cached[1] as $k => $v) {
+                    $e = explode('.', $v[0]);
+                    if (count($e) === 1) {
+                        $map[$k]['table'] = $this->_conn->getTable($e[0]);
+                    } else {
+                        $map[$k]['parent']   = $e[0];
+                        $map[$k]['relation'] = $map[$e[0]]['table']->getRelation($e[1]);
+                        $map[$k]['table']    = $map[$k]['relation']->getTable();
+                    }
+                    if (isset($v[1])) {
+                        $map[$k]['agg'] = $v[1];
+                    }
+                }
+                $this->_aliasMap = $map;
+            }
+        } else {
+            $array = $this->_execute($params, $return);
+        }
+        
+        if ($return === Doctrine::FETCH_ARRAY) {
+            return $array;                                      	
+        }
+
         if (empty($this->_aliasMap)) {
             throw new Doctrine_Hydrate_Exception("Couldn't execute query. Component alias map was empty.");
         }
