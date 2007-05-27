@@ -24,6 +24,8 @@ while ($i--) {
 $coll->save();
 $conn->clear();
 
+print "<pre>DQL BENCHMARK \n";
+
 $timepoint = microtime(true);
 
 $i = 100;
@@ -34,7 +36,7 @@ while ($i--) {
     $query->from('Entity e')->where('e.id > 0');
     $coll = $query->execute(array(), Doctrine::FETCH_ARRAY);
 }
-print 'EXECUTED 100 QUERIES WITH CACHING ENABLED + FETCH_ARRAY : ' . (microtime(true) - $timepoint) . "<br \>";
+print 'EXECUTED 100 QUERIES WITH CACHING ENABLED + FETCH_ARRAY : ' . (microtime(true) - $timepoint) . "\n";
 
 $timepoint = microtime(true);
 
@@ -45,7 +47,7 @@ while ($i--) {
     $query->from('Entity e')->where('e.id > 0');
     $coll = $query->execute(array(), Doctrine::FETCH_ARRAY);
 }
-print 'EXECUTED 100 QUERIES WITHOUT CACHING + FETCH_ARRAY : ' . (microtime(true) - $timepoint);
+print 'EXECUTED 100 QUERIES WITHOUT CACHING + FETCH_ARRAY : ' . (microtime(true) - $timepoint) . "\n";
 
 $timepoint = microtime(true);
 
@@ -57,7 +59,7 @@ while ($i--) {
     $query->from('Entity e')->where('e.id > 0');
     $coll = $query->execute();
 }
-print 'EXECUTED 100 QUERIES WITH CACHING ENABLED + FETCH_RECORD : ' . (microtime(true) - $timepoint) . "<br \>";
+print 'EXECUTED 100 QUERIES WITH CACHING ENABLED + FETCH_RECORD : ' . (microtime(true) - $timepoint) . "\n";
 
 $timepoint = microtime(true);
 
@@ -68,4 +70,4 @@ while ($i--) {
     $query->from('Entity e')->where('e.id > 0');
     $coll = $query->execute();
 }
-print 'EXECUTED 100 QUERIES WITHOUT CACHING + FETCH_RECORD : ' . (microtime(true) - $timepoint);
+print 'EXECUTED 100 QUERIES WITHOUT CACHING + FETCH_RECORD : ' . (microtime(true) - $timepoint) . "\n";
