@@ -902,25 +902,24 @@ class Doctrine_Hydrate implements Serializable
     public function parseData($stmt)
     {
         $array = array();
-
+        $cache = array();
+        
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            /**
-             * parse the data into two-dimensional array
-             */
             foreach ($data as $key => $value) {
-                $e = explode('__', $key);
-
-                $field      = strtolower(array_pop($e));
-                $tableAlias = strtolower(implode('__', $e));
-
-                $data[$tableAlias][$field] = $value;
+                if (!isset($cache[$key])) {
+                    $e = explode('__', $key);
+                    $cache[$key]['field']     = strtolower(array_pop($e));
+                    $cache[$key]['component'] = strtolower(implode('__', $e));
+                }
+                
+                $data[$cache[$key]['component']][$cache[$key]['field']] = $value;
 
                 unset($data[$key]);
-            }
+            };
             $array[] = $data;
-        }
-
+        };
         $stmt->closeCursor();
+        unset($cache);
         return $array;
     }
     /**

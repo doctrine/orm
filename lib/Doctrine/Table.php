@@ -591,6 +591,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function getColumnName($alias)
     {
+        $alias = strtolower($alias);
         if(isset($this->columnAliases[$alias])) {
             return $this->columnAliases[$alias];
         }
