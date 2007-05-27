@@ -51,9 +51,35 @@ class Doctrine_Query_Cache_TestCase extends Doctrine_UnitTestCase
         $cache = new Doctrine_Cache_Array();
         $q->setOption('resultSetCache', $cache);
         $q->select('u.name')->from('User u');
-
-        Doctrine::dump($q->getCachedForm());
+        $coll = $q->execute();
 
         $this->assertEqual($cache->count(), 1);
+        $this->assertTrue($coll instanceof Doctrine_Collection);
+        $this->assertEqual($coll->count(), 8);
+
+        $coll = $q->execute();
+
+        $this->assertEqual($cache->count(), 1);
+        $this->assertTrue($coll instanceof Doctrine_Collection);
+        $this->assertEqual($coll->count(), 8);
+    }
+    public function testResultSetCacheAddsResultSetsIntoCache2()
+    {
+        $q = new Doctrine_Query();
+
+        $cache = new Doctrine_Cache_Array();
+        $q->setOption('resultSetCache', $cache);
+        $q->select('u.name')->from('User u')->leftJoin('u.Phonenumber p');
+        $coll = $q->execute();
+
+        $this->assertEqual($cache->count(), 1);
+        $this->assertTrue($coll instanceof Doctrine_Collection);
+        $this->assertEqual($coll->count(), 8);
+
+        $coll = $q->execute();
+
+        $this->assertEqual($cache->count(), 1);
+        $this->assertTrue($coll instanceof Doctrine_Collection);
+        $this->assertEqual($coll->count(), 8);
     }
 }
