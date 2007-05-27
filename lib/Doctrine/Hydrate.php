@@ -125,6 +125,8 @@ class Doctrine_Hydrate implements Serializable
      * @see Doctrine_Query::* constants
      */
     protected $type            = self::SELECT;
+    
+    protected $_cache;
 
     protected $_tableAliases   = array();
     /**
@@ -149,6 +151,14 @@ class Doctrine_Hydrate implements Serializable
     public function getSql()
     {
         return $this->getQuery();
+    }
+    public function setCache(Doctrine_Cache_Interface $cache) 
+    {
+        $this->_cache = $cache;
+    }
+    public function getCache()
+    {
+        return $this->_cache;
     }
     /**
      * serialize
@@ -627,12 +637,12 @@ class Doctrine_Hydrate implements Serializable
      */
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD)
     {
-    	if ($this->_options['resultSetCache']) {
+    	if ($this->_cache) {
             $dql  = $this->getDql();
             // calculate hash for dql query
             $hash = strlen($dql) . md5($dql);
 
-            $cached = $this->_options['resultSetCache']->fetch($hash);
+            $cached = $this->_cache->fetch($hash);
 
             if ($cached === null) {
                 // cache miss
@@ -640,7 +650,7 @@ class Doctrine_Hydrate implements Serializable
 
                 $cached = $this->getCachedForm($array);
                 
-                $this->_options['resultSetCache']->save($hash, $cached);
+                $this->_cache->save($hash, $cached);
             } else {
                 $cached = unserialize($cached);
                 $this->_tableAliases = $cached[2];

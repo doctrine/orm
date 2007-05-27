@@ -247,7 +247,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     	}
     	
         // check for cache
-        if ( ! $this->_options['resultSetCache'] && ! $this->_options['parserCache']) {
+        if ( ! $this->_options['resultSetCache']) {
     	    $parser = $this->getParser($queryPartName);
                          
             $sql = $parser->parse($queryPart);
@@ -619,21 +619,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function getQuery($params = array())
     {
     	// check if parser cache is on
-    	if ($this->_options['resultSetCache'] !== false) {
-/**
-            $dql  = $this->getDql();
-            // calculate hash for dql query
-            $hash = strlen($dql) . md5($dql);
-
-            // check if cache has sql equivalent for given hash
-            $sql = $this->_options['parserCache']->fetch($hash, true);
-    	    if ($sql !== null) {
-    	        return $sql;
-    	    }
-   */
-            // cache miss, build sql query from dql parts
+    	if ($this->_cache) {
     	    foreach ($this->_dqlParts as $queryPartName => $queryParts) {
                 if (is_array($queryParts) && ! empty($queryParts)) {
+
                     foreach ($queryParts as $queryPart) {
                         $this->getParser($queryPartName)->parse($queryPart);
                     }
@@ -721,10 +710,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             array_shift($this->parts['where']);
         }
 
-        // append sql query into cache
-    	if ($this->_options['parserCache'] !== false) {
-            $this->_options['parserCache']->save($hash, $q);
-        }
         return $q;
     }
     /**
