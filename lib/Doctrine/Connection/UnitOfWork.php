@@ -40,8 +40,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * 'correct' order. Basically this means that the records of those
      * components can be saved safely in the order specified by the returned array.
      *
-     * @param array $tables
-     * @return array
+     * @param array $tables     an array of Doctrine_Table objects or component names
+     * @return array            an array of component names in flushing order
      */
     public function buildFlushTree(array $tables)
     {
@@ -130,6 +130,61 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
         }
         return array_values($tree);
+    }
+    /**
+     * saves the given record
+     *
+     * @param Doctrine_Record $record
+     * @return void
+     */
+    public function save(Doctrine_Record $record)
+    {
+        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
+
+        switch ($record->state()) {
+            case Doctrine_Record::STATE_TDIRTY:
+                $this->insert($record);
+                break;
+            case Doctrine_Record::STATE_DIRTY:
+            case Doctrine_Record::STATE_PROXY:
+                $this->update($record);
+                break;
+            case Doctrine_Record::STATE_CLEAN:
+            case Doctrine_Record::STATE_TCLEAN:
+                // do nothing
+                break;
+        }
+
+        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
+    }
+    /**
+     * deletes this data access object and all the related composites
+     * this operation is isolated by a transaction
+     *
+     * this event can be listened by the onPreDelete and onDelete listeners
+     *
+     * @return boolean      true on success, false on failure
+     */
+    public function delete(Doctrine_Record $record)
+    {
+        if ( ! $record->exists()) {
+            return false;
+        }
+        $this->conn->beginTransaction();
+
+        $record->getTable()->getListener()->onPreDelete($record);
+
+        $this->deleteComposites($record);
+
+        $this->conn->transaction->addDelete($record);
+
+        $record->getTable()->getListener()->onDelete($record);
+
+        $record->state(Doctrine_Record::STATE_TCLEAN);
+
+        $this->conn->commit();
+
+        return true;
     }
     /**
      * saveRelated
@@ -241,7 +296,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             $table = $this->conn->getTable($name);
 
             foreach ($table->getRepository() as $record) {
-                $this->conn->save($record);
+                $this->save($record);
             }
         }
 
@@ -275,19 +330,16 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             $set[] = $name . ' = ?';
 
             if ($value instanceof Doctrine_Record) {
-                switch ($value->state()) {
-                    case Doctrine_Record::STATE_TCLEAN:
-                    case Doctrine_Record::STATE_TDIRTY:
-                        $record->save($this->conn);
-                    default:
-                        $array[$name] = $value->getIncremented();
-                        $record->set($name, $value->getIncremented());
+                if ( ! $value->exists()) {
+                    $record->save($this->conn);
                 }
+                $array[$name] = $value->getIncremented();
+                $record->set($name, $value->getIncremented());
             }
         }
 
-        $params   = array_values($array);
-        $id       = $record->obtainIdentifier();
+        $params = array_values($array);
+        $id     = $record->obtainIdentifier();
 
         if ( ! is_array($id)) {
             $id = array($id);

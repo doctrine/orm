@@ -890,7 +890,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $saveLater = $conn->unitOfWork->saveRelated($this);
 
         if ($this->isValid()) {
-            $conn->save($this);
+            $conn->unitOfWork->save($this);
         } else {
             $conn->transaction->addInvalid($this);
         }
@@ -1106,7 +1106,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if ($conn == null) {
             $conn = $this->_table->getConnection();
         }
-        return $conn->delete($this);
+        return $conn->unitOfWork->delete($this);
     }
     /**
      * copy
@@ -1152,7 +1152,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param integer $id
      * @return void
      */
-    final public function assignIdentifier($id = false)
+    public function assignIdentifier($id = false)
     {
         if ($id === false) {
             $this->_id       = array();

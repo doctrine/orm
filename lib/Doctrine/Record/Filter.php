@@ -171,7 +171,6 @@ class Doctrine_Record_Filter
 
             }
         }
-
         return $data;
     }
     /**

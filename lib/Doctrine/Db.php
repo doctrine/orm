@@ -20,19 +20,11 @@
  */
 /**
  * Doctrine_Db
- * A thin wrapper layer on top of PDO / Doctrine_Adapter
+ * 
  *
  * Doctrine_Db provides the following things to underlying database hanlder
  *
- * 1. Event listeners
- *    An easy to use, pluggable eventlistener architecture. Aspects such as
- *    logging, query profiling and caching can be easily implemented through
- *    the use of these listeners
- *
- * 2. Lazy-connecting
- *    Creating an instance of Doctrine_Db does not connect
- *    to database. Connecting to database is only invoked when actually needed
- *    (for example when query() is being called)
+
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL

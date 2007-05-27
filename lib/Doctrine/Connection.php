@@ -22,6 +22,28 @@ Doctrine::autoload('Doctrine_Configurable');
 /**
  * Doctrine_Connection
  *
+ * A wrapper layer on top of PDO / Doctrine_Adapter
+ *
+ * Doctrine_Connection is the heart of any Doctrine based application.
+ *
+ * 1. Event listeners
+ *    An easy to use, pluggable eventlistener architecture. Aspects such as
+ *    logging, query profiling and caching can be easily implemented through
+ *    the use of these listeners
+ *
+ * 2. Lazy-connecting
+ *    Creating an instance of Doctrine_Connection does not connect
+ *    to database. Connecting to database is only invoked when actually needed
+ *    (for example when query() is being called) 
+ *
+ * 3. Convenience methods
+ *    Doctrine_Connection provides many convenience methods.
+ *
+ * 4. Modular structure
+ *    Higher level functionality such as schema importing, exporting, sequence handling etc.
+ *    is divided into modules. For a full list of connection modules see 
+ *    Doctrine_Connection::$_modules
+ *
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
@@ -70,12 +92,19 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      *              sequence                    Doctrine_Sequence driver, handles sequential id generation and retrieval
      *
+     *              unitOfWork                  Doctrine_Connection_UnitOfWork handles many orm functionalities such as object
+     *                                          deletion and saving
+     *
+     *              formatter                   Doctrine_Formatter handles data formatting, quoting and escaping
+     *
      * @see Doctrine_Connection::__get()
      * @see Doctrine_DataDict
      * @see Doctrine_Expression
      * @see Doctrine_Export
      * @see Doctrine_Transaction
      * @see Doctrine_Sequence
+     * @see Doctrine_Connection_UnitOfWork
+     * @see Doctrine_Formatter
      */
     private $modules = array('transaction' => false,
                              'expression'  => false,
@@ -84,22 +113,18 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                              'import'      => false,
                              'sequence'    => false,
                              'unitOfWork'  => false,
+                             'formatter'   => false
                              );
     /**
      * @var array $properties               an array of connection properties
      */
     protected $properties = array('sql_comments'        => array(array('start' => '--', 'end' => "\n", 'escape' => false),
-                                                                 array('start' => '/*', 'end' => '*/', 'escape' => false)
-                                                                 ),
-                                  'identifier_quoting'  => array('start' => '"',
-                                                                 'end' => '"',
-                                                                 'escape' => '"'
-                                                                 ),
+                                                                 array('start' => '/*', 'end' => '*/', 'escape' => false)),
+                                  'identifier_quoting'  => array('start' => '"', 'end' => '"','escape' => '"'),
                                   'string_quoting'      => array('start' => "'",
                                                                  'end' => "'",
                                                                  'escape' => false,
-                                                                 'escape_pattern' => false
-                                                                 ),
+                                                                 'escape_pattern' => false),
                                   'wildcards'           => array('%', '_'),
                                   'varchar_max_length'  => 255,
                                   );
@@ -179,6 +204,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 case 'unitOfWork':
                     $this->modules[$name] = new Doctrine_Connection_UnitOfWork($this);
                     break;
+                case 'formatter':
+                    $this->modules[$name] = new Doctrine_Formatter($this);
+                    break;
                 default:
                     $class = 'Doctrine_' . ucwords($name) . '_' . $this->getName();
                     $this->modules[$name] = new $class($this);
@@ -186,97 +214,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
 
         return $this->modules[$name];
-    }
-    /**
-     * Quotes pattern (% and _) characters in a string)
-     *
-     * EXPERIMENTAL
-     *
-     * WARNING: this function is experimental and may change signature at
-     * any time until labelled as non-experimental
-     *
-     * @param   string  the input string to quote
-     *
-     * @return  string  quoted string
-     */
-    public function escapePattern($text)
-    {
-        if ($this->string_quoting['escape_pattern']) {
-            $text = str_replace($this->string_quoting['escape_pattern'], $this->string_quoting['escape_pattern'] . $this->string_quoting['escape_pattern'], $text);
-            foreach ($this->wildcards as $wildcard) {
-                $text = str_replace($wildcard, $this->string_quoting['escape_pattern'] . $wildcard, $text);
-            }
-        }
-        return $text;
-    }
-    /**
-     * convertBoolean
-     * some drivers need the boolean values to be converted into integers
-     * when using DQL API
-     *
-     * This method takes care of that conversion
-     *
-     * @param array $item
-     * @return void
-     */
-    public function convertBooleans($item)
-    {
-    	if (is_array($item)) {
-            foreach ($item as $k => $value) {
-                if (is_bool($item)) {
-                    $item[$k] = (int) $value;
-                }
-            }
-        } else {
-            if (is_bool($item)) {
-                $item = (int) $item;
-            }
-        }
-        return $item;
-    }
-    /**
-     * Quote a string so it can be safely used as a table or column name
-     *
-     * Delimiting style depends on which database driver is being used.
-     *
-     * NOTE: just because you CAN use delimited identifiers doesn't mean
-     * you SHOULD use them.  In general, they end up causing way more
-     * problems than they solve.
-     *
-     * Portability is broken by using the following characters inside
-     * delimited identifiers:
-     *   + backtick (<kbd>`</kbd>) -- due to MySQL
-     *   + double quote (<kbd>"</kbd>) -- due to Oracle
-     *   + brackets (<kbd>[</kbd> or <kbd>]</kbd>) -- due to Access
-     *
-     * Delimited identifiers are known to generally work correctly under
-     * the following drivers:
-     *   + mssql
-     *   + mysql
-     *   + mysqli
-     *   + oci8
-     *   + pgsql
-     *   + sqlite
-     *
-     * InterBase doesn't seem to be able to use delimited identifiers
-     * via PHP 4.  They work fine under PHP 5.
-     *
-     * @param string $str           identifier name to be quoted
-     * @param bool $checkOption     check the 'quote_identifier' option
-     *
-     * @return string               quoted identifier string
-     */
-    public function quoteIdentifier($str, $checkOption = true)
-    {
-        if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
-            return $str;
-        }
-        $str = str_replace($this->properties['identifier_quoting']['end'],
-                           $this->properties['identifier_quoting']['escape'] .
-                           $this->properties['identifier_quoting']['end'], $str);
-
-        return $this->properties['identifier_quoting']['start']
-               . $str . $this->properties['identifier_quoting']['end'];
     }
     /**
      * returns the manager that created this connection
@@ -313,100 +250,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function supports($feature)
     {
         return (isset($this->supported[$feature])
-            && ($this->supported[$feature] === 'emulated'
-                || $this->supported[$feature]
-            )
-       );
+                  && ($this->supported[$feature] === 'emulated'
+                   || $this->supported[$feature]));
     }
-    /**
-     * quote
-     * quotes given input parameter
-     *
-     * @param mixed $input      parameter to be quoted
-     * @param string $type
-     * @return mixed
-     */
-    public function quote($input, $type = null)
-    {
-        if ($type == null) {
-            $type = gettype($input);
-        }
-        switch ($type) {
-            case 'integer':
-            case 'enum':
-            case 'boolean':
-            case 'double':
-            case 'float':
-            case 'bool':
-            case 'int':
-                return $input;
-            case 'array':
-            case 'object':
-                $input = serialize($input);
-            case 'string':
-            case 'char':
-            case 'varchar':
-            case 'text':
-            case 'gzip':
-            case 'blob':
-            case 'clob':
-                return $this->dbh->quote($input);
-        }
-    }
-    /**
-     * Removes any formatting in an sequence name using the 'seqname_format' option
-     *
-     * @param string $sqn string that containts name of a potential sequence
-     * @return string name of the sequence with possible formatting removed
-     */
-    public function fixSequenceName($sqn)
-    {
-        $seqPattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)',  $this->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT)).'$/i';
-        $seqName    = preg_replace($seqPattern, '\\1', $sqn);
-
-        if ($seqName && ! strcasecmp($sqn, $this->getSequenceName($seqName))) {
-            return $seqName;
-        }
-        return $sqn;
-    }
-    /**
-     * Removes any formatting in an index name using the 'idxname_format' option
-     *
-     * @param string $idx string that containts name of anl index
-     * @return string name of the index with possible formatting removed
-     */
-    public function fixIndexName($idx)
-    {
-        $indexPattern   = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', $this->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT)).'$/i';
-        $indexName      = preg_replace($indexPattern, '\\1', $idx);
-        if ($indexName && ! strcasecmp($idx, $this->getIndexName($indexName))) {
-            return $indexName;
-        }
-        return $idx;
-    }
-    /**
-     * adds sequence name formatting to a sequence name
-     *
-     * @param string    name of the sequence
-     * @return string   formatted sequence name
-     */
-    public function getSequenceName($sqn)
-    {
-        return sprintf($this->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT),
-            preg_replace('/[^a-z0-9_\$.]/i', '_', $sqn));
-    }
-    /**
-     * adds index name formatting to a index name
-     *
-     * @param string    name of the index
-     * @return string   formatted index name
-     */
-    public function getIndexName($idx)
-    {
-        return sprintf($this->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT),
-                preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
-    }
-
     /**
      * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
      * query, except that if there is already a row in the table with the same
@@ -507,6 +353,68 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function setCharset($charset)
     {
 
+    }
+    /**
+     * Quote a string so it can be safely used as a table or column name
+     *
+     * Delimiting style depends on which database driver is being used.
+     *
+     * NOTE: just because you CAN use delimited identifiers doesn't mean
+     * you SHOULD use them.  In general, they end up causing way more
+     * problems than they solve.
+     *
+     * Portability is broken by using the following characters inside
+     * delimited identifiers:
+     *   + backtick (<kbd>`</kbd>) -- due to MySQL
+     *   + double quote (<kbd>"</kbd>) -- due to Oracle
+     *   + brackets (<kbd>[</kbd> or <kbd>]</kbd>) -- due to Access
+     *
+     * Delimited identifiers are known to generally work correctly under
+     * the following drivers:
+     *   + mssql
+     *   + mysql
+     *   + mysqli
+     *   + oci8
+     *   + pgsql
+     *   + sqlite
+     *
+     * InterBase doesn't seem to be able to use delimited identifiers
+     * via PHP 4.  They work fine under PHP 5.
+     *
+     * @param string $str           identifier name to be quoted
+     * @param bool $checkOption     check the 'quote_identifier' option
+     *
+     * @return string               quoted identifier string
+     */
+    public function quoteIdentifier($str, $checkOption = true)
+    {
+        return $this->formatter->quoteIdentifier($str, $checkOption);
+    }
+    /**
+     * convertBooleans
+     * some drivers need the boolean values to be converted into integers
+     * when using DQL API
+     *
+     * This method takes care of that conversion
+     *
+     * @param array $item
+     * @return void
+     */
+    public function convertBooleans($item)
+    {
+        return $this->formatter->convertBooleans($item);
+    }
+    /**
+     * quote
+     * quotes given input parameter
+     *
+     * @param mixed $input      parameter to be quoted
+     * @param string $type
+     * @return mixed
+     */
+    public function quote($input, $type = null)
+    {
+        return $this->formatter->quote($input, $type);
     }
     /**
      * Set the date/time format for the current connection
@@ -689,7 +597,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             if ( ! empty($params)) {
                 $stmt = $this->dbh->prepare($query);
                 $stmt->execute($params);
-                return $stmt;      
+                return $stmt;
             } else {
                 return $this->dbh->query($query);
             }
@@ -976,61 +884,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function rollback()
     {
         $this->transaction->rollback();
-    }
-    /**
-     * saves the given record
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function save(Doctrine_Record $record)
-    {
-        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
-
-        switch ($record->state()) {
-            case Doctrine_Record::STATE_TDIRTY:
-                $this->unitOfWork->insert($record);
-                break;
-            case Doctrine_Record::STATE_DIRTY:
-            case Doctrine_Record::STATE_PROXY:
-                $this->unitOfWork->update($record);
-                break;
-            case Doctrine_Record::STATE_CLEAN:
-            case Doctrine_Record::STATE_TCLEAN:
-                // do nothing
-                break;
-        }
-
-        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
-    }
-    /**
-     * deletes this data access object and all the related composites
-     * this operation is isolated by a transaction
-     *
-     * this event can be listened by the onPreDelete and onDelete listeners
-     *
-     * @return boolean      true on success, false on failure
-     */
-    public function delete(Doctrine_Record $record)
-    {
-        if ( ! $record->exists()) {
-            return false;
-        }
-        $this->beginTransaction();
-
-        $record->getTable()->getListener()->onPreDelete($record);
-
-        $this->unitOfWork->deleteComposites($record);
-
-        $this->transaction->addDelete($record);
-
-        $record->getTable()->getListener()->onDelete($record);
-
-        $record->state(Doctrine_Record::STATE_TCLEAN);
-
-        $this->commit();
-
-        return true;
     }
     /**
      * returns a string representation of this object

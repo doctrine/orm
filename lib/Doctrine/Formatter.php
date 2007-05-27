@@ -58,7 +58,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
         return $text;
     }
     /**
-     * convertBoolean
+     * convertBooleans
      * some drivers need the boolean values to be converted into integers
      * when using DQL API
      *
@@ -116,15 +116,15 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
      */
     public function quoteIdentifier($str, $checkOption = true)
     {
-        if ($checkOption && ! $this->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
+        if ($checkOption && ! $this->conn->getAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER)) {
             return $str;
         }
-        $str = str_replace($this->properties['identifier_quoting']['end'],
-                           $this->properties['identifier_quoting']['escape'] .
-                           $this->properties['identifier_quoting']['end'], $str);
+        $tmp = $this->conn->identifier_quoting;
+        $str = str_replace($tmp['end'],
+                           $tmp['escape'] .
+                           $tmp['end'], $str);
 
-        return $this->properties['identifier_quoting']['start']
-               . $str . $this->properties['identifier_quoting']['end'];
+        return $tmp['start'] . $str . $tmp['end'];
     }
     /**
      * quote
@@ -158,7 +158,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
             case 'gzip':
             case 'blob':
             case 'clob':
-                return $this->dbh->quote($input);
+                return $this->conn->getDbh()->quote($input);
         }
     }
     /**
@@ -169,7 +169,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
      */
     public function fixSequenceName($sqn)
     {
-        $seqPattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)',  $this->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT)).'$/i';
+        $seqPattern = '/^'.preg_replace('/%s/', '([a-z0-9_]+)',  $this->conn->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT)).'$/i';
         $seqName    = preg_replace($seqPattern, '\\1', $sqn);
 
         if ($seqName && ! strcasecmp($sqn, $this->getSequenceName($seqName))) {
@@ -185,7 +185,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
      */
     public function fixIndexName($idx)
     {
-        $indexPattern   = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', $this->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT)).'$/i';
+        $indexPattern   = '/^'.preg_replace('/%s/', '([a-z0-9_]+)', $this->conn->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT)).'$/i';
         $indexName      = preg_replace($indexPattern, '\\1', $idx);
         if ($indexName && ! strcasecmp($idx, $this->getIndexName($indexName))) {
             return $indexName;
@@ -200,7 +200,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
      */
     public function getSequenceName($sqn)
     {
-        return sprintf($this->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT),
+        return sprintf($this->conn->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT),
             preg_replace('/[^a-z0-9_\$.]/i', '_', $sqn));
     }
     /**
@@ -211,7 +211,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
      */
     public function getIndexName($idx)
     {
-        return sprintf($this->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT),
+        return sprintf($this->conn->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT),
                 preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
     }
 }

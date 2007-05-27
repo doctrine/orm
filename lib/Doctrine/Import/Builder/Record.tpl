@@ -4,7 +4,7 @@
  * Created: %s
  */
 class %s extends Doctrine_Record
-{
+{%s
     public function setTableDefinition()
     {
 %s
@@ -12,5 +12,5 @@ class %s extends Doctrine_Record
     public function setUp()
     {
 
-    }
+    }%s
 }

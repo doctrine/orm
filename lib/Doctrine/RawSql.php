@@ -158,7 +158,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
 
         // force-add all primary key fields
 
-        foreach ($this->getAliases() as $tableAlias => $componentAlias) {
+        foreach ($this->getTableAliases() as $tableAlias => $componentAlias) {
             $map = $this->_aliasMap[$componentAlias];
 
             foreach ($map['table']->getPrimaryKeys() as $key) {

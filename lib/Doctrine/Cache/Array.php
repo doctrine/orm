@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Cache_Array implements Countable
+class Doctrine_Cache_Array implements Countable, Doctrine_Cache_Interface
 {
     /**
      * @var array $data         an array of cached data

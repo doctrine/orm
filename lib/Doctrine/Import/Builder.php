@@ -140,9 +140,9 @@ class Doctrine_Import_Builder
             $i++;
         }
 
-        $content   = sprintf(self::$tpl, $created, $className, implode("\n", $columns));
+        $content = sprintf(self::$tpl, $created, $className, implode("\n", $columns));
 
-        $bytes     = file_put_contents($fileName, $content);
+        $bytes   = file_put_contents($fileName, $content);
 
         if ($bytes === false) {
             throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $fileName);
