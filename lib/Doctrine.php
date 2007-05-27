@@ -192,7 +192,9 @@ final class Doctrine
     const ATTR_NS_GAP_SIZE          = 131;
     const ATTR_NS_GAP_DECREASE_EXP  = 132;
 
-
+    const ATTR_DQL_PARSER_CACHE     = 150;
+    const ATTR_DQL_CACHE            = 151;
+    const ATTR_SQL_CACHE            = 152;
 
     /**
      * LIMIT CONSTANTS
@@ -353,14 +355,6 @@ final class Doctrine
      * constant for composite identifier
      */
     const IDENTIFIER_COMPOSITE      = 4;
-    /**
-     * CACHING CONSTANTS
-     */
-    const CACHE_NONE                = 0;
-    
-    const CACHE_PARSER              = 1;
-    
-    const CACHE_RESULTSET           = 2;
     /**
      * constructor
      */
