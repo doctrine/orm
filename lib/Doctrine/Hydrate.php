@@ -626,7 +626,7 @@ class Doctrine_Hydrate implements Serializable
         }
 
         $stmt  = $this->_conn->execute($query, $params);
-        return (array) $this->parseData($stmt);
+        return $stmt;
     }
     /**
      * execute
@@ -646,7 +646,8 @@ class Doctrine_Hydrate implements Serializable
 
             if ($cached === null) {
                 // cache miss
-                $array = $this->_execute($params, $return);
+                $stmt = $this->_execute($params, $return);
+                $array = $this->parseData($stmt);
 
                 $cached = $this->getCachedForm($array);
                 
@@ -673,11 +674,12 @@ class Doctrine_Hydrate implements Serializable
                 $this->_aliasMap = $map;
             }
         } else {
-            $array = $this->_execute($params, $return);
-        }
-        
-        if ($return === Doctrine::FETCH_ARRAY) {
-            return $array;                                      	
+            $stmt = $this->_execute($params, $return);
+            if ($return === Doctrine::FETCH_ARRAY) {
+                return $this->parseData2($stmt);
+            } else {
+                $array = $this->parseData($stmt);
+            }
         }
 
         if (empty($this->_aliasMap)) {
@@ -899,6 +901,127 @@ class Doctrine_Hydrate implements Serializable
      * @param mixed $stmt
      * @return array
      */
+    public function parseData2($stmt)
+    {
+        $array = array();
+        $cache = array();
+        $rootMap   = reset($this->_aliasMap);
+        $rootAlias = key($this->_aliasMap);
+        $index = 0;
+        $incr  = true;
+        $lastAlias = '';
+        $currData  = array();
+
+
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            foreach ($data as $key => $value) {
+                if ( ! isset($cache[$key])) {
+                    $e = explode('__', $key);
+                    $cache[$key]['field'] = $field = strtolower(array_pop($e));
+                    $componentAlias       = $this->_tableAliases[strtolower(implode('__', $e))];
+
+                    $cache[$key]['alias'] = $componentAlias;
+
+                    if (isset($this->_aliasMap[$componentAlias]['relation'])) {
+                        $cache[$key]['component'] = $this->_aliasMap[$componentAlias]['relation']->getAlias();
+                        $cache[$key]['parent']    = $this->_aliasMap[$componentAlias]['parent'];
+                    } else {
+                        $cache[$key]['component'] = $this->_aliasMap[$componentAlias]['table']->getComponentName();
+                    }
+
+                }
+
+                $tmp = array();
+                $alias = $cache[$key]['alias'];
+                $component = $cache[$key]['component'];
+
+
+                if ( ! isset($currData[$alias])) {
+                    $currData[$alias] = array();
+                }
+                if ( ! isset($prev[$alias])) {
+                    $prev[$alias] = array();
+                }        
+
+                if ($lastAlias !== $alias) {
+                    // component changed
+
+                    if ($alias === $rootAlias) {
+                        // dealing with root component
+    
+                        if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
+                            if ( ! empty($currData[$alias])) {
+    
+                                $array[$index] = $currData[$alias];
+                                $prev[$alias]  =& $array[$index];
+                                $index++;
+                            }
+                        }
+                    } else {
+                        $parent   = $cache[$key]['parent'];
+                        $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
+    
+                        if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
+                            if ($relation->getType() >= Doctrine_Relation::MANY) {
+                                $prev[$parent][$component][] = $currData[$alias];
+                            } else {
+                                $prev[$parent][$component] = $currData[$alias];
+                            }
+                        }
+                    }
+                    if (isset($currData[$alias])) {
+                        $prevData[$alias] = $currData[$alias];
+                    } else {
+                        $prevData[$alias] = array();
+                    }
+
+                } else {
+                    $field = $cache[$key]['field'];
+                    $currData[$alias][$field] = $value;
+                }
+
+                $lastAlias = $alias;
+            }
+        }
+
+        foreach ($currData as $alias => $data) {
+            if ($alias === $rootAlias) {
+                // dealing with root component
+
+                if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
+                    if ( ! empty($currData[$alias])) {
+
+                        $array[$index] = $currData[$alias];
+                        $prev[$alias]  =& $array[$index];
+                        $index++;
+                    }
+                }
+            } else {
+                $parent   = $cache[$key]['parent'];
+                $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
+
+                if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
+                    if ($relation->getType() >= Doctrine_Relation::MANY) {
+                        $prev[$parent][$component][] = $currData[$alias];
+                    } else {
+                        $prev[$parent][$component] = $currData[$alias];
+                    }
+                }
+            }
+        }
+
+
+        $stmt->closeCursor();
+        unset($cache);
+        return $array;
+    }
+    /**
+     * parseData
+     * parses the data returned by statement object
+     *
+     * @param mixed $stmt
+     * @return array
+     */
     public function parseData($stmt)
     {
         $array = array();
@@ -906,7 +1029,7 @@ class Doctrine_Hydrate implements Serializable
         
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
             foreach ($data as $key => $value) {
-                if (!isset($cache[$key])) {
+                if ( ! isset($cache[$key])) {
                     $e = explode('__', $key);
                     $cache[$key]['field']     = strtolower(array_pop($e));
                     $cache[$key]['component'] = strtolower(implode('__', $e));
@@ -915,11 +1038,11 @@ class Doctrine_Hydrate implements Serializable
                 $data[$cache[$key]['component']][$cache[$key]['field']] = $value;
 
                 unset($data[$key]);
-            };
+            }
             $array[] = $data;
-        };
+        }
         $stmt->closeCursor();
-        unset($cache);
+
         return $array;
     }
     /**
