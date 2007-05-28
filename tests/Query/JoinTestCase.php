@@ -93,4 +93,32 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e INNER JOIN entity_reference e3 ON e.id = e3.entity1 OR e.id = e3.entity2 INNER JOIN entity e2 ON e2.id = e3.entity2 OR e2.id = e3.entity1');
     }
+    public function testMultipleJoins()
+    {
+        $q = new Doctrine_Query();
+        $q->select('u.id, g.id, e.id')->from('User u')
+          ->leftJoin('u.Group g')->leftJoin('g.Email e');
+        
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e2.id AS e2__id, e3.id AS e3__id FROM entity e LEFT JOIN groupuser g ON e.id = g.user_id LEFT JOIN entity e2 ON e2.id = g.group_id LEFT JOIN email e3 ON e2.email_id = e3.id WHERE (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))');
+        try {
+            $q->execute();
+            $this->pass();
+        } catch (Doctrine_Exception $e) {
+            $this->fail();
+        }
+    }
+    public function testMultipleJoins2()
+    {
+        $q = new Doctrine_Query();
+        $q->select('u.id, g.id, e.id')->from('Group g')
+          ->leftJoin('g.User u')->leftJoin('u.Account a');
+        
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e2.id AS e2__id FROM entity e LEFT JOIN groupuser g ON e.id = g.group_id LEFT JOIN entity e2 ON e2.id = g.user_id LEFT JOIN account a ON e2.id = a.entity_id WHERE (e.type = 1 AND (e2.type = 0 OR e2.type IS NULL))');
+        try {
+            $q->execute();
+            $this->pass();
+        } catch (Doctrine_Exception $e) {
+            $this->fail();
+        }
+    }
 }
