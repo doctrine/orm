@@ -202,6 +202,8 @@ $test->addTestCase(new Doctrine_CustomResultSetOrderTestCase());
 
 $test->addTestCase(new Doctrine_Query_MultiJoin_TestCase());
 
+$test->addTestCase(new Doctrine_Query_MultiJoin2_TestCase());
+
 $test->addTestCase(new Doctrine_Query_ReferenceModel_TestCase());
 
 $test->addTestCase(new Doctrine_Query_ComponentAlias_TestCase());

@@ -625,4 +625,99 @@ class ValidatorTest_FootballPlayer extends Doctrine_Record {
    }
 } 
 
+class QueryTest_Category extends Doctrine_Record
+{    
+    /**
+     * The depth of the category inside the tree.
+     * Non-persistent field. 
+     * 
+     * @var integer
+     */
+    public $depth;
+    
+    /**
+     * Table definition.
+     */
+    public function setTableDefinition()
+    {        
+        $this->hasColumn('rootCategoryId as rootCategoryId', 'integer', 4,
+                array('default' => 0));
+        $this->hasColumn('parentCategoryId as parentCategoryId', 'integer', 4,
+                array('notnull', 'default' => 0));
+        $this->hasColumn('name as name', 'string', 50,
+                array('notnull', 'unique'));
+        $this->hasColumn('position as position', 'integer', 4,
+                array('default' => 0, 'notnull'));
+    }
+    
+    /**
+     * Relations definition.
+     */
+    public function setUp()
+    {
+        $this->ownsMany('QueryTest_Category as subCategories','subCategories.parentCategoryId');
+        $this->hasOne('QueryTest_Category as rootCategory','QueryTest_Category.rootCategoryId');
+        $this->ownsMany('QueryTest_Board as boards', 'QueryTest_Board.categoryId');
+    }
+}
+
+class QueryTest_Board extends Doctrine_Record
+{
+    /**
+     * Initializes the table definition.
+     */
+    public function setTableDefinition()
+    {        
+        $this->hasColumn('categoryId as categoryId', 'integer', 4,
+                array('notnull'));
+        $this->hasColumn('name as name', 'string', 100,
+                array('notnull', 'unique'));
+        $this->hasColumn('lastEntryId as lastEntryId', 'integer', 4,
+                array('default' => 0, 'notnull'));
+        $this->hasColumn('position as position', 'integer', 4,
+                array('default' => 0, 'notnull'));
+    }
+    
+    /**
+     * Initializes the relations.
+     */
+    public function setUp()
+    {
+        $this->hasOne('QueryTest_Category as category', 'QueryTest_Board.categoryId');
+        $this->ownsOne('QueryTest_Entry as lastEntry', 'QueryTest_Board.lastEntryId');
+    }
+}
+
+class QueryTest_Entry extends Doctrine_Record
+{
+    /**
+     * Table structure.
+     */
+    public function setTableDefinition()
+    {        
+        $this->hasColumn('authorId as authorId', 'integer', 4,
+                array('notnull'));
+        $this->hasColumn('date as date', 'integer', 4,
+                array('notnull'));
+    }
+    
+    /**
+     * Runtime definition of the relationships to other entities.
+     */
+    public function setUp()
+    {
+        $this->hasOne('QueryTest_User as author', 'QueryTest_Entry.authorId');
+    }
+}
+
+class QueryTest_User extends Doctrine_Record 
+{   
+
+    public function setTableDefinition()
+    {        
+        $this->hasColumn('username as username', 'string', 50,
+                array('notnull', 'unique'));
+    }
+}
+    
 ?>
