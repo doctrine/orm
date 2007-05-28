@@ -640,7 +640,7 @@ class Doctrine_Hydrate implements Serializable
     	if ($this->_cache) {
             $dql  = $this->getDql();
             // calculate hash for dql query
-            $hash = strlen($dql) . md5($dql);
+            $hash = strlen($dql) . md5($dql . var_export($params, true));
 
             $cached = $this->_cache->fetch($hash);
 
