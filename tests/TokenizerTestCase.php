@@ -33,6 +33,10 @@
  */
 class Doctrine_Tokenizer_TestCase extends Doctrine_UnitTestCase 
 {
+    public function prepareData() 
+    { }
+    public function prepareTables() 
+    { }
     public function testSqlExplode()
     {
         $str = "word1 word2 word3";
@@ -93,6 +97,6 @@ class Doctrine_Tokenizer_TestCase extends Doctrine_UnitTestCase
 
         $str = "something ((  ))";
         $a   = Doctrine_Tokenizer::sqlExplode($str);
-        $this->assertEqual($a, array("something", "((  ))"));
+        $this->assertEqual($a, array("something", "((  ))")); 
     }
 }
