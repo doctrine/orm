@@ -41,6 +41,10 @@ class Doctrine_Hydrate_Array
     {
         return $data;
     }
+    public function registerCollection($coll)
+    {
+
+    }
     public function flush()
     {
     	

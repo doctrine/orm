@@ -44,6 +44,15 @@ class Doctrine_Hydrate_Record
 
         return $coll;
     }
+    public function registerCollection($coll)
+    {
+
+    	if ( ! is_object($coll)) {
+    	   throw new Exception();
+    	}
+        $this->_collections[] = $coll;
+
+    }
     public function getElement(array $data, $component)
     {
         $record = new $component();
@@ -56,8 +65,8 @@ class Doctrine_Hydrate_Record
     public function flush()
     {
         // take snapshots from all initialized collections
-        foreach (array_unique($this->_collections) as $c) {
-            $c->takeSnapshot();
+        foreach (array_unique($this->_collections) as $key => $coll) {
+            $coll->takeSnapshot();
         }
 
         foreach ($this->_records as $record) {
