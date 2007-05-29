@@ -367,6 +367,18 @@ final class Doctrine
      */
     private static $path;
     /**
+     * @var boolean $_debug
+     */
+    private static $_debug = false;
+
+    public static function debug($bool = null)
+    {
+        if ($bool !== null) {
+            self::$_debug = (bool) $bool;
+        }
+        return self::$_debug;
+    }
+    /**
      * getPath
      * returns the doctrine root
      *
