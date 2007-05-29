@@ -834,9 +834,11 @@ class Doctrine_Hydrate implements Serializable
                 if ( ! isset($currData[$alias])) {
                     $currData[$alias] = array();
                 }
+
                 if ( ! isset($prev[$alias])) {
                     $prev[$alias] = array();
-                }        
+                }  
+
 
                 if ($alias !== $lastAlias || $parse) {
                     // component changed
@@ -849,6 +851,7 @@ class Doctrine_Hydrate implements Serializable
 
                                 $array[$index] = $driver->getElement($currData[$alias], $componentName);
                                 $prev[$alias]  =& $array[$index];
+
                                 $index++;
                             }
                         }
@@ -857,11 +860,16 @@ class Doctrine_Hydrate implements Serializable
                         $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
 
                         if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
-                            // check the type of the relation
-                            if ( ! $relation->isOneToOne()) {
-                                $prev[$parent][$component][] = $driver->getElement($currData[$alias], $componentName);
-                            } else {
-                                $prev[$parent][$component] = $driver->getElement($currData[$alias], $componentName);
+                            if ( ! empty($currData[$alias])) {
+                                // check the type of the relation
+                                if ( ! $relation->isOneToOne()) {  
+    
+                                    $prev[$parent][$component][] = $driver->getElement($currData[$alias], $componentName);
+    
+                                    $driver->registerCollection($prev[$parent][$component]);
+                                } else {
+                                    $prev[$parent][$component] = $driver->getElement($currData[$alias], $componentName);
+                                }
                             }
                         }
                     }
@@ -905,6 +913,7 @@ class Doctrine_Hydrate implements Serializable
                     // check the type of the relation
                     if ( ! $relation->isOneToOne()) {
                         $prev[$parent][$component][] = $driver->getElement($currData[$alias], $componentName);
+                        $driver->registerCollection($prev[$parent][$component]);
                     } else {
                         $prev[$parent][$component] = $driver->getElement($currData[$alias], $componentName);
                     }
