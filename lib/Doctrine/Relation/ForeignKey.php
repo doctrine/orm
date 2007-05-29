@@ -51,7 +51,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
            }
         }
         if ($this->isOneToOne()) {
-            if (empty($id)) {
+            if ( ! $record->exists() || empty($id)) {
                 $related = $this->getTable()->create();
             } else {
                 $dql  = 'FROM ' . $this->getTable()->getComponentName()
@@ -65,7 +65,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
 
         } else {
 
-            if (empty($id)) {
+            if ( ! $record->exists() || empty($id)) {
                 $related = new Doctrine_Collection($this->getTable());
             } else {
                 $query      = $this->getRelationDql(1);
