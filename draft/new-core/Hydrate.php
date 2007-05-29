@@ -647,7 +647,7 @@ class Doctrine_Hydrate implements Serializable
             if ($cached === null) {
                 // cache miss
                 $stmt = $this->_execute($params, $return);
-                $array = $this->parseData($stmt);
+                $array = $this->parseData2($stmt);
 
                 $cached = $this->getCachedForm($array);
                 
@@ -675,127 +675,10 @@ class Doctrine_Hydrate implements Serializable
             }
         } else {
             $stmt = $this->_execute($params, $return);
-            //if ($return === Doctrine::FETCH_ARRAY) {
-                return $this->parseData2($stmt, $return);
-            /**
-            } else {
-                $array = $this->parseData($stmt);
-            }
-            */
+
+            $array = $this->parseData2($stmt, $return);
         }
-
-        if (empty($this->_aliasMap)) {
-            throw new Doctrine_Hydrate_Exception("Couldn't execute query. Component alias map was empty.");
-        }
-        // initialize some variables used within the main loop
-        reset($this->_aliasMap);
-        $rootMap     = current($this->_aliasMap);
-        $rootAlias   = key($this->_aliasMap);
-        $coll        = new Doctrine_Collection($rootMap['table']);
-        $prev[$rootAlias] = $coll;
-
-        // we keep track of all the collections
-        $colls   = array();
-        $colls[] = $coll;
-        $prevRow = array();
-        /**
-         * iterate over the fetched data
-         * here $data is a two dimensional array
-         */
-        foreach ($array as $data) {
-            /**
-             * remove duplicated data rows and map data into objects
-             */
-            foreach ($data as $tableAlias => $row) {
-                // skip empty rows (not mappable)
-                if (empty($row)) {
-                    continue;
-                }
-                $alias = $this->getComponentAlias($tableAlias);
-                $map   = $this->_aliasMap[$alias];
-
-                // initialize previous row array if not set
-                if ( ! isset($prevRow[$tableAlias])) {
-                    $prevRow[$tableAlias] = array();
-                }
-
-                // don't map duplicate rows
-                if ($prevRow[$tableAlias] !== $row) {
-                    $identifiable = $this->isIdentifiable($row, $map['table']->getIdentifier());
-
-                    if ($identifiable) {
-                        // set internal data
-                        $map['table']->setData($row);
-                    }
-
-                    // initialize a new record
-                    $record = $map['table']->getRecord();
-
-                    // map aggregate values (if any)
-                    if($this->mapAggregateValues($record, $row, $alias)) {
-                        $identifiable = true;
-                    }
-
-
-                    if ($alias == $rootAlias) {
-                        // add record into root collection
-
-                        if ($identifiable) {
-                            $coll->add($record);
-                            unset($prevRow);
-                        }
-                    } else {
-
-                        $relation    = $map['relation'];
-                        $parentAlias = $map['parent'];
-                        $parentMap   = $this->_aliasMap[$parentAlias];
-                        $parent      = $prev[$parentAlias]->getLast();
-
-                        // check the type of the relation
-                        if ($relation->isOneToOne()) {
-                            if ( ! $identifiable) {
-                                continue;
-                            }
-                            $prev[$alias] = $record;
-                        } else {
-                            // one-to-many relation or many-to-many relation
-                            if ( ! $prev[$parentAlias]->getLast()->hasReference($relation->getAlias())) {
-                                // initialize a new collection
-                                $prev[$alias] = new Doctrine_Collection($map['table']);
-                                $prev[$alias]->setReference($parent, $relation);
-                            } else {
-                                // previous entry found from memory
-                                $prev[$alias] = $prev[$parentAlias]->getLast()->get($relation->getAlias());
-                            }
-
-                            $colls[] = $prev[$alias];
-
-                            // add record to the current collection
-                            if ($identifiable) {
-                                $prev[$alias]->add($record);
-                            }
-                        }
-                        // initialize the relation from parent to the current collection/record
-                        $parent->set($relation->getAlias(), $prev[$alias]);
-                    }
-
-                    // following statement is needed to ensure that mappings
-                    // are being done properly when the result set doesn't
-                    // contain the rows in 'right order'
-
-                    if ($prev[$alias] !== $record) {
-                        $prev[$alias] = $record;
-                    }
-                }
-                $prevRow[$tableAlias] = $row;
-            }
-        }
-        // take snapshots from all initialized collections
-        foreach(array_unique($colls) as $c) {
-            $c->takeSnapshot();
-        }
-
-        return $coll;
+        return $array;
     }
     /**
      * isIdentifiable
@@ -1041,90 +924,10 @@ class Doctrine_Hydrate implements Serializable
         return $array;
     }
     /**
-     * parseData
-     * parses the data returned by statement object
-     *
-     * @param mixed $stmt
-     * @return array
-     */
-    public function parseData($stmt)
-    {
-        $array = array();
-        $cache = array();
-        
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            foreach ($data as $key => $value) {
-                if ( ! isset($cache[$key])) {
-                    $e = explode('__', $key);
-                    $cache[$key]['field']     = strtolower(array_pop($e));
-                    $cache[$key]['component'] = strtolower(implode('__', $e));
-                }
-                
-                $data[$cache[$key]['component']][$cache[$key]['field']] = $value;
-
-                unset($data[$key]);
-            }
-            $array[] = $data;
-        }
-        $stmt->closeCursor();
-
-        return $array;
-    }
-    /**
      * @return string                   returns a string representation of this object
      */
     public function __toString()
     {
         return Doctrine_Lib::formatSql($this->getQuery());
     }
-}
-class Doctrine_Hydrate_Array 
-{
-    public function getElementCollection($component)
-    {
-        return array();
-    }
-    public function getElement(array $data, $component)
-    {
-        return $data;
-    }
-    public function flush()
-    {
-    	
-    }
-}
-class Doctrine_Hydrate_Record
-{
-    protected $_collections = array();
-    
-    protected $_records = array();
-
-    public function getElementCollection($component)
-    {
-        $coll = new Doctrine_Collection($component);
-        $this->_collections[] = $coll;
-
-        return $coll;
-    }
-    public function getElement(array $data, $component)
-    {
-        $record = new $component();
-
-        $record->hydrate($data);
-        $this->_records[] = $record;
-
-        return $record;
-    }
-    public function flush()
-    {
-        // take snapshots from all initialized collections
-        foreach (array_unique($this->_collections) as $c) {
-            $c->takeSnapshot();
-        }
-
-        foreach ($this->_records as $record) {
-            $record->state(Doctrine_Record::STATE_CLEAN);
-        }
-
-    }
-}
+} 
