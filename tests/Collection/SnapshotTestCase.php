@@ -38,6 +38,7 @@
  */
 class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
 {
+
     public function testDiffForSimpleCollection()
     {
         $coll = Doctrine_Query::create()->from('User u')->orderby('u.id')->execute();
@@ -55,34 +56,41 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
         $this->connection->clear();
         $coll = Doctrine_Query::create()->from('User u')->execute();
         $this->assertEqual($coll->count(), 7);
+
     }
 
     public function testDiffForOneToManyRelatedCollection()
     {
-        $q = Doctrine_Query::create()->from('User u LEFT JOIN u.Phonenumber p')
-                ->where('u.id = 8');
+        $q = new Doctrine_Query();
+        $q->from('User u LEFT JOIN u.Phonenumber p')
+             ->where('u.id = 8');
 
         $coll = $q->execute();
 
         $this->assertEqual($coll->count(), 1);
 
         $this->assertEqual($coll[0]->Phonenumber->count(), 3);
+        $this->assertTrue($coll[0]->Phonenumber instanceof Doctrine_Collection);
 
         unset($coll[0]->Phonenumber[0]);
         $coll[0]->Phonenumber->remove(2);
 
+        $this->assertEqual(count($coll[0]->Phonenumber->getSnapshot()), 3);
         $coll[0]->save();
 
         $this->assertEqual($coll[0]->Phonenumber->count(), 1);
 
         $this->connection->clear();
 
+        $q = new Doctrine_Query();
         $q = Doctrine_Query::create()->from('User u LEFT JOIN u.Phonenumber p')->where('u.id = 8');
 
         $coll = $q->execute();
 
         $this->assertEqual($coll[0]->Phonenumber->count(), 1);
+
     }
+
     public function testDiffForManyToManyRelatedCollection()
     {
         $user = new User();
@@ -110,4 +118,5 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual(count($user->Group->getSnapshot()), 0);
     }
+
 }

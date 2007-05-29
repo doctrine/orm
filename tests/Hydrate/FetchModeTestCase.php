@@ -32,6 +32,7 @@
  */
 class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase 
 {
+    /**
     public function testFetchArraySupportsOneToManyRelations()
     {
         $q = new Doctrine_Query();
@@ -79,5 +80,70 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual(count($users), 8);
         $this->assertEqual($users[0]['Email']['address'], 'zYne@example.com');
+    }
+    public function testFetchArraySupportsOneToOneRelations2()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('u.*, e.*')->from('User u')->innerJoin('u.Email e')->where("u.name = 'zYne'");
+        
+        $users = $q->execute(array(), Doctrine::FETCH_ARRAY);
+
+        $this->assertEqual(count($users), 1);
+        $this->assertEqual($users[0]['Email']['address'], 'zYne@example.com');
+    }
+             */
+    public function testFetchRecordSupportsOneToOneRelations()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('u.*, e.*')->from('User u')->innerJoin('u.Email e');
+        $count = count($this->dbh);
+        $users = $q->execute(array(), Doctrine::FETCH_RECORD);
+
+        $this->assertEqual(count($users), 8);
+
+        $this->assertEqual($users[0]['Email']['address'], 'zYne@example.com');
+        $this->assertTrue($users[0] instanceof User);
+        $this->assertTrue($users instanceof Doctrine_Collection);  
+        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($users[0]->id, 4);
+
+        $this->assertTrue($users[0]['Email'] instanceof Email);
+        $this->assertEqual($users[0]['email_id'], 1);
+        $this->assertEqual(count($this->dbh), $count + 1);
+    }
+
+    public function testFetchRecordSupportsOneToManyRelations()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('u.*, p.*')->from('User u')->innerJoin('u.Phonenumber p');
+        $count = count($this->dbh);
+        $users = $q->execute(array(), Doctrine::FETCH_RECORD);
+
+        $this->assertEqual(count($users), 8);
+        $this->assertTrue($users[0] instanceof User);
+        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertTrue($users instanceof Doctrine_Collection);
+        $this->assertTrue($users[0]->Phonenumber instanceof Doctrine_Collection);
+
+        $this->assertEqual(count($this->dbh), $count + 1);
+    }
+
+    public function testFetchRecordSupportsSimpleFetching()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('u.*')->from('User u');
+        $count = count($this->dbh);
+        $users = $q->execute(array(), Doctrine::FETCH_RECORD);
+
+        $this->assertEqual(count($users), 8);
+        $this->assertTrue($users[0] instanceof User);
+        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_CLEAN);
+
+
+        $this->assertEqual(count($this->dbh), $count + 1);
     }
 }
