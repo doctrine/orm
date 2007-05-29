@@ -1,0 +1,82 @@
+<?php
+class GroupTest
+{
+    protected $_testCases = array();
+
+    public function addTestCase(UnitTestCase $testCase)
+    {
+        $this->_testCases[] = $testCase;
+    }
+    public function run(HtmlReporter $reporter)
+    {
+    	foreach ($this->_testCases as $testCase) {
+    	    $testCase->run();
+    	}
+        $reporter->setTestCase($this);
+        
+        $reporter->paintHeader();
+        $reporter->paintFooter();
+    }
+    public function getFailCount()
+    {
+    	$fails = 0;
+        foreach ($this->_testCases as $testCase) {
+            $fails += $testCase->getFailCount();
+        }
+        return $fails;
+    }
+    public function getTestCaseCount()
+    {
+        return count($this->_testCases);
+    }
+    public function getPassCount()
+    {
+    	$passes = 0;
+        foreach ($this->_testCases as $testCase) {
+            $passes += $testCase->getPassCount();
+        }
+        return $passes;
+    }
+}
+class HtmlReporter
+{
+    protected $_test;
+    
+    public function setTestCase(GroupTest $test) 
+    {
+        $this->_test = $test;
+    }
+}
+class UnitTestCase
+{
+    protected $_passed = 0;
+    
+    protected $_failed = 0;
+
+    public function assertEqual($value, $value2)
+    {
+        if ($value == $value2) {
+            $this->_passed++;
+        } else {
+            $this->_failed++;
+        }
+    }
+    public function run() 
+    {
+        foreach (get_class_methods($this) as $method) {
+            if (substr($method, 0, 4) === 'test') {
+                $this->setUp();
+
+                $this->$method();
+            }
+        }
+    }
+    public function getFailCount()
+    {
+        return $this->_failed;
+    }
+    public function getPassCount()
+    {
+        return $this->_passed;
+    }
+}
