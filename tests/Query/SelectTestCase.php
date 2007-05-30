@@ -32,7 +32,6 @@
  */
 class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase 
 {
-    /**
     public function testAggregateFunctionWithDistinctKeyword() 
     {
         $q = new Doctrine_Query();
@@ -91,7 +90,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
         }
 
     }
-    */
+
     public function testAggregateFunctionValueHydration() 
     {
         $q = new Doctrine_Query();
