@@ -36,6 +36,8 @@ class Doctrine_Hydrate_Record
     protected $_collections = array();
     
     protected $_records = array();
+    
+    protected $_tables = array();
 
     public function getElementCollection($component)
     {
@@ -46,19 +48,46 @@ class Doctrine_Hydrate_Record
     }
     public function registerCollection($coll)
     {
-
-    	if ( ! is_object($coll)) {
-    	   throw new Exception();
-    	}
         $this->_collections[] = $coll;
+    }
+    /**
+     * isIdentifiable
+     * returns whether or not a given data row is identifiable (it contains
+     * all primary key fields specified in the second argument)
+     *
+     * @param array $row
+     * @param Doctrine_Table $table
+     * @return boolean
+     */
+    public function isIdentifiable(array $row, Doctrine_Table $table)
+    {
+    	$primaryKeys = $table->getIdentifier();
 
+        if (is_array($primaryKeys)) {
+            foreach ($primaryKeys as $id) {
+                if ( ! isset($row[$id])) {
+                    return false;
+                }
+            }
+        } else {
+            if ( ! isset($row[$primaryKeys])) {
+                return false;
+            }
+        }
+        return true;
     }
     public function getElement(array $data, $component)
     {
-        $record = new $component();
-
-        $record->hydrate($data);
+    	if ( ! isset($this->_tables[$component])) {
+            $this->_tables[$component] = Doctrine_Manager::getInstance()->getTable($component);
+        }
+        $this->_tables[$component]->setData($data);
+        $record = $this->_tables[$component]->getRecord();
         $this->_records[] = $record;
+        
+
+        $this->_tables[$component]->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
+
 
         return $record;
     }
@@ -68,10 +97,8 @@ class Doctrine_Hydrate_Record
         foreach (array_unique($this->_collections) as $key => $coll) {
             $coll->takeSnapshot();
         }
-
-        foreach ($this->_records as $record) {
-            $record->state(Doctrine_Record::STATE_CLEAN);
+        foreach ($this->_tables as $table) {
+            $table->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, true);
         }
-
     }
 }

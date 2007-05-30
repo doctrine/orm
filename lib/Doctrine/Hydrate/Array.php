@@ -41,6 +41,10 @@ class Doctrine_Hydrate_Array
     {
         return $data;
     }
+    public function isIdentifiable(array $data, Doctrine_Table $table)
+    {
+        return true;
+    }
     public function registerCollection($coll)
     {
 
