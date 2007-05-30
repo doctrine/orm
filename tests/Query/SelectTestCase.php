@@ -32,6 +32,7 @@
  */
 class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase 
 {
+    /**
     public function testAggregateFunctionWithDistinctKeyword() 
     {
         $q = new Doctrine_Query();
@@ -88,21 +89,23 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
         } catch(Doctrine_Query_Exception $e) {
             $this->pass();
         }
+
     }
+    */
     public function testAggregateFunctionValueHydration() 
     {
         $q = new Doctrine_Query();
 
-        $q->parseQuery('SELECT u.id, COUNT(p.id) FROM User u, u.Phonenumber p GROUP BY u.id');
+        $q->parseQuery('SELECT u.id, COUNT(p.id) FROM User u LEFT JOIN u.Phonenumber p GROUP BY u.id');
 
         $users = $q->execute();
 
         $this->assertEqual($users[0]->Phonenumber[0]->COUNT, 1);
+
         $this->assertEqual($users[1]->Phonenumber[0]->COUNT, 3);
         $this->assertEqual($users[2]->Phonenumber[0]->COUNT, 1);
         $this->assertEqual($users[3]->Phonenumber[0]->COUNT, 1);
         $this->assertEqual($users[4]->Phonenumber[0]->COUNT, 3);
-
     }
 
     public function testSingleComponentWithAsterisk()

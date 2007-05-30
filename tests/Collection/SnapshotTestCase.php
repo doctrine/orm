@@ -38,7 +38,6 @@
  */
 class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
 {
-
     public function testDiffForSimpleCollection()
     {
         $coll = Doctrine_Query::create()->from('User u')->orderby('u.id')->execute();
@@ -56,9 +55,7 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
         $this->connection->clear();
         $coll = Doctrine_Query::create()->from('User u')->execute();
         $this->assertEqual($coll->count(), 7);
-
     }
-
     public function testDiffForOneToManyRelatedCollection()
     {
         $q = new Doctrine_Query();
@@ -98,7 +95,7 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
         $user->Group[0]->name = 'PHP';
         $user->Group[1]->name = 'Web';
         $user->save();
-        
+
         $this->connection->clear();
 
         $users = Doctrine_Query::create()->from('User u LEFT JOIN u.Group g')
@@ -117,6 +114,7 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
         $user->save();
 
         $this->assertEqual(count($user->Group->getSnapshot()), 0);
+
     }
 
 }

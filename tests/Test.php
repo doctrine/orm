@@ -17,6 +17,14 @@ class GroupTest
         $reporter->paintHeader();
         $reporter->paintFooter();
     }
+    public function getMessages()
+    {
+    	$messages = array();
+        foreach($this->_testCases as $testCase) {
+            $messages += $testCase->getMessages();
+        }
+        return $messages;
+    }
     public function getFailCount()
     {
     	$fails = 0;
@@ -52,14 +60,62 @@ class UnitTestCase
     protected $_passed = 0;
     
     protected $_failed = 0;
+    
+    protected $_messages = array();
 
     public function assertEqual($value, $value2)
     {
         if ($value == $value2) {
             $this->_passed++;
         } else {
-            $this->_failed++;
+            $this->fail();
         }
+    }
+    public function assertNotEqual($value, $value2)
+    {
+        if ($value != $value2) {
+            $this->_passed++;
+        } else {
+            $this->fail();
+        }
+    }
+    public function assertTrue($expr)
+    {
+        if ($expr) {
+            $this->_passed++;
+        } else {
+            $this->fail();
+        }
+    }
+    public function assertFalse($expr)
+    {
+        if ( ! $expr) {
+            $this->_passed++;
+        } else {
+            $this->fail();
+        }
+    }
+    public function pass() 
+    {
+        $this->_passed++;
+    }
+    public function fail()
+    {
+    	$trace = debug_backtrace();
+    	array_shift($trace);
+
+
+        foreach ($trace as $stack) {
+            if (substr($stack['function'], 0, 4) === 'test') {
+                $class = new ReflectionClass($stack['class']);
+
+                $this->_messages[] = $class->getName() . ' : method ' . $stack['function'] . ' failed on line ' . $line;
+                break;
+            }
+            $line = $stack['line'];
+    	}
+
+        $this->_failed++;
     }
     public function run() 
     {
@@ -70,6 +126,10 @@ class UnitTestCase
                 $this->$method();
             }
         }
+    }
+    public function getMessages() 
+    {
+        return $this->_messages;
     }
     public function getFailCount()
     {
