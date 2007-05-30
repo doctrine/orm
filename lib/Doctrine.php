@@ -195,6 +195,7 @@ final class Doctrine
     const ATTR_DQL_PARSER_CACHE     = 150;
     const ATTR_DQL_CACHE            = 151;
     const ATTR_SQL_CACHE            = 152;
+    const ATTR_LOAD_REFERENCES      = 153;
 
     /**
      * LIMIT CONSTANTS
