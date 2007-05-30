@@ -680,30 +680,7 @@ class Doctrine_Hydrate implements Serializable
         }
         return $array;
     }
-    /**
-     * isIdentifiable
-     * returns whether or not a given data row is identifiable (it contains
-     * all primary key fields specified in the second argument)
-     *
-     * @param array $row
-     * @param mixed $primaryKeys
-     * @return boolean
-     */
-    public function isIdentifiable(array $row, $primaryKeys)
-    {
-        if (is_array($primaryKeys)) {
-            foreach ($primaryKeys as $id) {
-                if ($row[$id] == null) {
-                    return false;
-                }
-            }
-        } else {
-            if ( ! isset($row[$primaryKeys])) {
-                return false;
-            }
-        }
-        return true;
-    }
+
     /**
      * getType
      *
@@ -829,6 +806,7 @@ class Doctrine_Hydrate implements Serializable
                 $alias = $cache[$key]['alias'];
                 $component = $cache[$key]['component'];
                 $componentName = $this->_aliasMap[$cache[$key]['alias']]['table']->getComponentName();
+                $table = $this->_aliasMap[$cache[$key]['alias']]['table'];
 
 
                 if ( ! isset($currData[$alias])) {
@@ -842,30 +820,23 @@ class Doctrine_Hydrate implements Serializable
 
                 if ($alias !== $lastAlias || $parse) {
                     // component changed
-
-                    if ($alias === $rootAlias) {
-                        // dealing with root component
-
-                        if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
-                            if ( ! empty($currData[$alias])) {
-
-                                $array[$index] = $driver->getElement($currData[$alias], $componentName);
-                                $prev[$alias]  =& $array[$index];
-
-                                $index++;
-                            }
-                        }
-                    } else {
-                        $parent   = $cache[$key]['parent'];
-                        $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
-
-                        if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
-                            if ( ! empty($currData[$alias])) {
+                    if ( ! isset($prevData[$alias]) || (isset($currData[$alias]) && $currData[$alias] !== $prevData[$alias])) {
+                        if ( ! empty($currData[$alias]) && $driver->isIdentifiable($currData[$alias], $table)) {
+                            if ($alias === $rootAlias) {
+                                // dealing with root component
+    
+                                    $array[$index] = $driver->getElement($currData[$alias], $componentName);
+                                    $prev[$alias]  =& $array[$index];
+    
+                                    $index++;
+                            } else {
+                                $parent   = $cache[$key]['parent'];
+                                $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
                                 // check the type of the relation
-                                if ( ! $relation->isOneToOne()) {  
-    
+                                if ( ! $relation->isOneToOne()) {
+
                                     $prev[$parent][$component][] = $driver->getElement($currData[$alias], $componentName);
-    
+
                                     $driver->registerCollection($prev[$parent][$component]);
                                 } else {
                                     $prev[$parent][$component] = $driver->getElement($currData[$alias], $componentName);
@@ -892,30 +863,25 @@ class Doctrine_Hydrate implements Serializable
         }
         foreach ($currData as $alias => $data) {
             $componentName = $this->_aliasMap[$alias]['table']->getComponentName();
-            if ($alias === $rootAlias) {
-                // dealing with root component
+            if ( ! isset($prevData[$alias]) || (isset($currData[$alias]) && $currData[$alias] !== $prevData[$alias])) {
+                if ( ! empty($currData[$alias]) && $driver->isIdentifiable($currData[$alias], $table)) {
 
-                if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
-                    if ( ! empty($currData[$alias])) {
-
+                    if ($alias === $rootAlias) {
+                        // dealing with root component
                         $array[$index] = $driver->getElement($currData[$alias], $componentName);
                         $prev[$alias]  =& $array[$index];
                         $index++;
-                    }
-                }
-            } else {
-                $parent   = $this->_aliasMap[$alias]['parent'];
-                $relation = $this->_aliasMap[$alias]['relation'];
-                $componentAlias = $relation->getAlias();
-
-
-                if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
-                    // check the type of the relation
-                    if ( ! $relation->isOneToOne()) {
-                        $prev[$parent][$component][] = $driver->getElement($currData[$alias], $componentName);
-                        $driver->registerCollection($prev[$parent][$component]);
                     } else {
-                        $prev[$parent][$component] = $driver->getElement($currData[$alias], $componentName);
+                        $parent   = $this->_aliasMap[$alias]['parent'];
+                        $relation = $this->_aliasMap[$alias]['relation'];
+                        $componentAlias = $relation->getAlias();
+                        // check the type of the relation
+                        if ( ! $relation->isOneToOne()) {
+                            $prev[$parent][$component][] = $driver->getElement($currData[$alias], $componentName);
+                            $driver->registerCollection($prev[$parent][$component]);
+                        } else {
+                            $prev[$parent][$component] = $driver->getElement($currData[$alias], $componentName);
+                        }
                     }
                 }
             }
