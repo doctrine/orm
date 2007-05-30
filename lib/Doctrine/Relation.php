@@ -61,6 +61,7 @@ abstract class Doctrine_Relation
                                   'local'       => true,
                                   'class'       => true,
                                   'type'        => true,
+                                  'table'       => true,
                                   'name'        => false,
                                   'refTable'    => false,
                                   'onDelete'    => false,
@@ -129,7 +130,7 @@ abstract class Doctrine_Relation
 
         $this->definition = $def;
     }
-    /** 
+    /**
      * toArray
      *
      * @return array

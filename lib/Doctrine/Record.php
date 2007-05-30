@@ -145,10 +145,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             // get the table of this class
             $this->_table = Doctrine_Manager::getInstance()
                             ->getTable(get_class($this));
-
             $exists = false;
         }
-        
+
         // initialize the filter object
         $this->_filter = new Doctrine_Record_Filter($this);
 
@@ -370,7 +369,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $this->_data[$k] = $v;
         }
         $this->_data = $this->_filter->cleanData($this->_data);
-        $this->prepareIdentifiers();
+        $this->prepareIdentifiers(true);
     }
     /**
      * prepareIdentifiers
@@ -1254,18 +1253,10 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param string $name
      * @return void
      */
-    final public function loadReference($name)
+    public function loadReference($name)
     {
-
-        $fk      = $this->_table->getRelation($name);
-
-        if ($fk->isOneToOne()) {
-            $this->_references[$name] = $fk->fetchRelatedFor($this);
-        } else {
-            $coll = $fk->fetchRelatedFor($this);
-
-            $this->_references[$name] = $coll;
-        }
+        $rel = $this->_table->getRelation($name);
+        $this->_references[$name] = $rel->fetchRelatedFor($this);
     }
     /**
      * ownsOne

@@ -45,7 +45,7 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation
     {
         $id = $record->get($this->definition['local']);
 
-        if (empty($id)) {
+        if (empty($id) || ! $this->definition['table']->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
             $related = $this->getTable()->create();
         } else {
             $related = $this->getTable()->find($id);
