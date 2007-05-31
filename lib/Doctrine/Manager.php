@@ -109,7 +109,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_VLD              => false,
                         Doctrine::ATTR_AUTO_LENGTH_VLD  => true,
                         Doctrine::ATTR_AUTO_TYPE_VLD    => true,
-                        Doctrine::ATTR_CREATE_TABLES    => true,
                         Doctrine::ATTR_QUERY_LIMIT      => Doctrine::LIMIT_RECORDS,
                         Doctrine::ATTR_IDXNAME_FORMAT   => "%s_idx",
                         Doctrine::ATTR_SEQNAME_FORMAT   => "%s_seq",
