@@ -11,3 +11,8 @@ Pleaes use xmllint to validate your changes BEFORE committing.
 Please follow the intenting format used in the file.
 *2 SPACES* for indenting.
 That's SPACES not TABS :)
+
+For documentation about docbook XSL, visit:
+http://www.sagehill.net/docbookxsl/index.html
+
+For information about docbook itself, google - there's LOTS of sites.

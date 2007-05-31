@@ -88,6 +88,8 @@
           list is quite high traffic, as every commit to the repository results
           in an email containing the changelog entry and diffs of the changed
           files.
+          To subscribe to this list, send a blank email to
+          <email>doctrine-svn+subscribe@lists.pengus.net</email>
         </para>
       </sect2>
       <sect2 id="community-irc">
