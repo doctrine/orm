@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding='ISO-8859-1'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+
+[
+<!ENTITY version "2.0">
+]>
+
+<book id="doctrinebook">
+
+  <bookinfo>
+    <title>Doctrine Documentation</title>
+    <author>
+      <firstname>Ian</firstname>
+      <surname>Christian</surname>
+      <email>pookey@pookey.co.uk</email>
+    </author>
+    <copyright>
+      <holder>Doctrine Project</holder>
+      <year>2007</year>
+    </copyright>
+    <legalnotice id="legalnotice">
+      <para>
+        The contents of this document are licensed under the Creative Commons
+        <ulink url="http://creativecommons.org/licenses/by-sa/2.0/">Attribution-ShareAlike License</ulink>.
+      </para>
+    </legalnotice>
+
+    <abstract>
+      <para>
+        Documentation for the PHP Doctrine project
+      </para>
+    </abstract>
+  </bookinfo>
+</book>
