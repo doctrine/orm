@@ -103,14 +103,6 @@
       </sect2>
     </sect1>
 
-    <sect1 id="getting-started">
-      <title>Getting Started</title>
-      <para>
-        The installation of doctrine is very easy. Just get the latest revision of Doctrine from
-        <ulink url="http://doctrine.pengus.net/svn/trunk">http://doctrine.pengus.net/svn/trunk</ulink>.
-      </para>
-    </sect1>
-
     <sect1 id="contributing">
       <title>Contributing</title>
       <para>
@@ -122,6 +114,97 @@
         access to commit to the SVN repository, please visit the IRC channel, or
         email the users mailing list.
       </para>
+    </sect1>
+
+    <sect1 id="installation">
+      <title>Installation</title>
+      <para>
+        As of the time of writing, there is no stable release of doctrine.  That is not to say
+        that it's unstable, but simply that the best way to install it is to aquire it from
+        SVN.
+      </para>
+      <para>
+        To get the latest copy, simple check out 'trunk' from SVN.  You will need subversion
+        install to check out doctrine.  If you are unable to install subversion for whatever
+        reason, see below for details on downloading a snapshot.
+      </para>
+      <screen>
+        <prompt>bash $</prompt><command>svn checkout http://doctrine.pengus.net/svn/trunk</command>
+      </screen>
+      <para>
+        Daily snapshots can be found at 
+        <ulink url="http://doctrine.pengus.net/downloads/">http://doctrine.pengus.net/downloads/</ulink>
+        and the latest daily snapshot can always be found at
+        <ulink url="http://doctrine.pengus.net/downloads/latest-snapshot.tar.gz">http://doctrine.pengus.net/downloads/latest-snapshot.tar.gz</ulink>
+      </para>
+    </sect1>
+
+    <sect1 id="include-and-autoload">
+      <title>Include and autoload</title>
+      <para>
+        In order to use Doctrine in your project it must first be included.
+      </para>
+      <programlisting role="php"><![CDATA[
+<?php
+  require_once('path-to-doctrine/lib/Doctrine.php');
+?>
+      ]]>
+      </programlisting>
+
+      <para>
+        Doctrine support <ulink
+        url="http://www.php.net/autoload">Autoloading</ulink> for including
+        files so that you do not have to include anything more then the base
+        file. There are two different strategies that can be used to do this:
+      </para>
+
+      <para>
+        If you do use the <emphasis>__autoload</emphasis> function for your own
+        logic you can use it.
+      </para>
+      <programlisting role="php"><![CDATA[
+<?php
+  function __autoload($class) {
+    Doctrine::autoload($class);
+  }
+?>
+      ]]>
+      </programlisting>
+    
+      <para>
+        If your project uses autoload and/or you have other libraries that use
+        it you could use <ulink
+        url="http://www.php.net/manual/en/function.spl-autoload-register.php">spl_autoload_register</ulink>
+        to register more then one autoloading function.
+      </para>
+
+      <programlisting role="php"><![CDATA[
+<?php
+  spl_autoload_register(array('Doctrine', 'autoload'));
+?>
+      ]]>
+      </programlisting>
+    </sect1>
+
+    <sect1 id="compiling">
+      <title>Compiling</title>
+      <para>
+        Compiling is a method for making a single file of most used doctrine
+        runtime components including the compiled file instead of multiple files
+        (in worst cases dozens of files) can improve performance by an order of
+        magnitude. In cases where this might fail, a Doctrine_Exception is throw
+        detailing the error.
+      </para>
+      <programlisting role="php"><![CDATA[
+<?php
+  Doctrine::compile();
+
+  // on some other script:
+  require_once('path_to_doctrine/Doctrine.compiled.php');
+?>
+      ]]>
+      </programlisting>
+      
     </sect1>
   </chapter>
 
@@ -172,34 +255,33 @@
     </para>
 
     <programlisting role="php"><![CDATA[
-    <?php 
-    // DO NOT USE THE FOLLOWING CODE 
-    // (using many sql queries for object population):
-     
-    $users = $conn->getTable('User')->findAll();
-    foreach($users as $user) {
-        print $user->name."\n";
-        foreach($user->Phonenumber as $phonenumber) {
-            print $phonenumber."\n";
-        }
-    }
-     
-    // same thing implemented much more efficiently: 
-    // (using only one sql query for object population)
-     
-    $users = $conn->query("FROM User.Phonenumber");
-    foreach($users as $user) {
-        print $user->name."\n";
-        foreach($user->Phonenumber as $phonenumber) {
-            print $phonenumber."\n";
-        }
-    }
+<?php 
+  // DO NOT USE THE FOLLOWING CODE 
+  // (using many sql queries for object population):
 
-    ?>
+  $users = $conn->getTable('User')->findAll();
+  foreach($users as $user) {
+    print $user->name."\n";
+    foreach($user->Phonenumber as $phonenumber) {
+        print $phonenumber."\n";
+    }
+  }
+
+  // same thing implemented much more efficiently: 
+  // (using only one sql query for object population)
+
+  $users = $conn->query("FROM User.Phonenumber");
+  foreach($users as $user) {
+    print $user->name."\n";
+    foreach($user->Phonenumber as $phonenumber) {
+        print $phonenumber."\n";
+    }
+  }
+?>
     ]]>
     </programlisting>
   </sect1>
-  
+
   </chapter>
 
   <chapter id="native-sql">
