@@ -1,0 +1,58 @@
+<html>
+<head>
+<title>Syntax highlighting for DocBook program listings</title>
+</head>
+<body style="background:#ffffff;">
+<h1>Syntax highlighting for DocBook program listings</h1>
+<p>Highlight content of <tt>ProgramListing</tt> using <a href="http://xsieve.sourceforge.net/">XSieve</a> and Vim. Example:</p>
+<table border="0" cellspacing="5" cellpadding="5">
+  <tr>
+    <th valign="top">DocBook</th>
+    <td>
+<pre style="background:#f0f0f0;">&lt;programlisting role=&quot;xml&quot;&gt;
+&amp;lt;para&gt;Hello, &lt;emphasis&gt;&amp;amp;who;&lt;/emphasis
+ &gt;!&amp;lt;/para&gt; &lt;co id=&quot;who-entity&quot;/&gt;
+&lt;/programlisting&gt;</pre>
+    </td>
+  </tr>
+  <tr>
+    <th>HTML&nbsp;result&nbsp;&nbsp;&nbsp;</th>
+    <td>
+<pre style="background:#f0f0f0;">
+<span style="color:#008B8B;">&lt;para&gt;</span>Hello, <span class="emphasis"><em><span style="color:#2E8B57; font-weight:bold;">&amp;</span><span style="color:#A52A2A; font-weight:bold;">who</span><span style="color:#2E8B57; font-weight:bold;">;</span></em></span>!<span style="color:#008B8B;">&lt;/para&gt;</span> (1)</pre>
+    </td>
+  </tr>
+</table>
+
+<a href="xsieve-programlisting.zip">Download</a> xsieve-programlisting.zip.
+
+<h2>Usage</h2>
+
+<p>Set the correct path to the script <tt>vimcolor-wrapper</tt> in <tt>colorer.xsl</tt>.</p>
+
+<p>Create an XSLT wrapper which imports DocBook and colorer stylesheets:</p>
+
+<pre style="background:#f0f0f0;">
+<font color="#008b8b">&lt;</font><font color="#6a5acd">xsl</font><font color="#0000ff">:</font><font color="#a52a2a"><b>stylesheet</b></font><font color="#008b8b"> ...&gt;</font>
+...
+<font color="#008b8b">&lt;</font><font color="#6a5acd">xsl</font><font color="#0000ff">:</font><font color="#a52a2a"><b>import</b></font><font color="#008b8b"> </font><font color="#2e8b57"><b>href</b></font>=<font color="#ff00ff">&quot;..../docbook.xsl&quot;</font><font color="#008b8b">&gt;</font>       (1)
+<font color="#008b8b">&lt;</font><font color="#6a5acd">xsl</font><font color="#0000ff">:</font><font color="#a52a2a"><b>import</b></font><font color="#008b8b"> </font><font color="#2e8b57"><b>href</b></font>=<font color="#ff00ff">&quot;..../colorer.xsl&quot;</font><font color="#008b8b">&gt;</font>       (2)
+<font color="#008b8b">&lt;</font><font color="#6a5acd">xsl</font><font color="#0000ff">:</font><font color="#a52a2a"><b>import</b></font><font color="#008b8b"> </font><font color="#2e8b57"><b>href</b></font>=<font color="#ff00ff">&quot;..../colorer-html.xsl&quot;</font><font color="#008b8b">&gt;</font>  (3)
+
+... Your DocBook customization layer ...
+
+<font color="#008b8b">&lt;/</font><font color="#6a5acd">xsl</font><font color="#0000ff">:</font><font color="#a52a2a"><b>stylesheet</b></font><font color="#008b8b">&gt;</font>
+</pre>
+
+<p><b>(1)</b> The path to the DocBook XSLT stylesheet. For example, <tt>/usr/share/xml/docbook/xsl-stylesheets/html/docbook.xsl</tt><br />
+<b>(2)</b> The path to the colorer XSLT stylesheet.<br />
+<b>(3)</b> Or <tt>colorer-fo.xsl</tt> for FO output.</p>
+
+<h2>Test data</h2>
+
+<p>The package contains test files <tt>test.xml</tt>, <tt>testdoc.xsl</tt> and <tt>testdoc.html</tt>. Use them as the starting point:</p>
+
+<pre>xsieve -o testdoc.html --param callout.graphics 0 testdoc.xsl test.xml</pre>
+
+</body>
+</html>

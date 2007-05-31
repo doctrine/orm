@@ -1,0 +1,25 @@
+Text::VimColor
+--------------
+
+This module tries to markup text files according to their syntax.  It can
+be used to produce web pages with pretty-printed colourful source code
+samples.  It can produce output in the following formats:
+
+The module comes with a command line program, text-vimcolor, which makes
+it easy to do 'ad-hoc' syntax coloring jobs.
+
+
+   Geoff Richards <qef@laxan.com>
+
+
+Release procedure
+-----------------
+
+ * Update the version number in lib/Text/VimColor.pm and META.yml
+ * Update the changelog with a new section for a matching version number
+   and the correct date and time
+ * Copy the ChangeLog into place (from 'debian' directory in my CVS)
+ * Realclean, make and test
+ * Make the dist, take it to another machine and build and test there
+ * Commit everything, and set tag like 'Release_0_07-1'
+ * Upload to CPAN

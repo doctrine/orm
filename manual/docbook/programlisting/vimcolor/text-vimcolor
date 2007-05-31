@@ -1,0 +1,278 @@
+#!/usr/bin/perl -w
+use strict;
+
+use Text::VimColor;
+use Getopt::Long;
+use File::Temp qw( tempfile );
+use IO::File;
+use Path::Class qw( file );
+
+my $XSL_STYLESHEET = file($Text::VimColor::SHARED, 'light.xsl');
+
+# Default values for options.
+my $filetype;
+my $format;
+my $usage;
+my $output_filename;
+my $html_full_page;
+my $html_no_inline_stylesheet;
+my @let;
+my @unlet;
+
+my $option = GetOptions(
+   'debug' => \$Text::VimColor::DEBUG,
+   'filetype=s' => \$filetype,
+   'format=s' => \$format,
+   'help' => \$usage,
+   'output=s' => \$output_filename,
+   'full-page' => \$html_full_page,
+   'no-inline-stylesheet' => \$html_no_inline_stylesheet,
+   'let=s' => \@let,
+   'unlet=s' => \@unlet,
+   'usage' => \$usage,
+);
+
+if ($usage) {
+   print STDERR
+      "Usage: $0 --format html|xml [options] filename\n",
+      "       $0 --format pdf --output foo.pdf [options] filename\n",
+      "(the output is written to standard output, except in PDF\n",
+      "mode, where you have to supply a filename for the output.)\n",
+      "\n",
+      "Options:\n",
+      "    --debug      turn on Text::VimColor debugging mode\n",
+      "    --filetype   set Vim filetype name, if it can't be guessed from\n",
+      "                 the file's name or contents\n",
+      "    --format     set format to use for output, can be xml,\n",
+      "                 html, or pdf\n",
+      "    --help       show this helpful message\n",
+      "    --output     set filename to write output to (required with\n",
+      "                 PDF format, otherwise defaults to standard output)\n",
+      "    --full-page  output a complete HTML page, not just a fragment\n",
+      "    --no-inline-stylesheet\n",
+      "                 don't include the stylesheet in a complete HTML page\n",
+      "    --let        set a Vim variable with the Vim :let command\n",
+      "    --unlet      turn off default setting of a Vim variable\n";
+}
+
+defined $format
+   or die "$0: an output format must be specified (html, pdf or xml).\n";
+
+$format = lc $format;
+$format eq 'html' || $format eq 'pdf' || $format eq 'xml'
+   or die "$0: invalid output format '$format' (must be html, pdf or xml).\n";
+
+my $output;
+if (defined $output_filename) {
+   $output = IO::File->new($output_filename, 'w')
+      or die "$0: error opening output file '$output_filename': $!\n";
+}
+else {
+   $format ne 'pdf'
+      or die "$0: an output file must be specified with '--format pdf'.\n";
+
+   $output = \*STDOUT;
+   $output_filename = '<stdout>';
+}
+
+@ARGV <= 1
+   or die "$0: only one input filename should be specified.\n";
+
+my $file = @ARGV ? shift : \*STDIN;
+
+my $syntax = Text::VimColor->new(
+   filetype => $filetype,
+   html_full_page => $html_full_page,
+   html_inline_stylesheet => !$html_no_inline_stylesheet,
+);
+
+# Handle the --let and --unlet options.
+foreach (@unlet) {
+   $syntax->vim_let($_ => undef);
+}
+foreach (@let) {
+   my ($name, $value) = /^(.*?)=(.*)\z/
+      or die "$0: bad --let option '$_'\n";
+   print STDERR "[$name] [$value]\n";
+   $syntax->vim_let($name => $value);
+}
+
+$syntax->syntax_mark_file($file);
+
+if ($format eq 'xml') {
+   print $output $syntax->xml
+      or die "$0: error writing to output file '$output_filename': $!\n";
+}
+elsif ($format eq 'html') {
+   print $output $syntax->html
+      or die "$0: error writing to output file '$output_filename': $!\n";
+}
+else {   # ($format eq 'pdf')
+   my ($fh, $tmp_filename) = tempfile();
+   print $fh $syntax->xml
+      or die "$0: error writing to temporary file '$tmp_filename': $!\n";
+
+   system('fop', '-xsl', $XSL_STYLESHEET,
+                 '-xml', $tmp_filename,
+                 '-pdf', $output_filename) == 0
+      or die "$0: error running 'fop' (exit code was $?).\n";
+
+   unlink $tmp_filename
+      or die "$0: error deleting temporary file '$tmp_filename': $!\n";
+}
+
+exit 0;
+
+__END__
+
+=head1 NAME
+
+text-vimcolor - command-line program to syntax color a file in HTML, XML or PDF
+
+=head1 SYNOPSIS
+
+   $ text-vimcolor --format html --full-page FILENAME > OUTPUT.html
+   $ text-vimcolor --format xml FILENAME > OUTPUT.xml
+   $ text-vimcolor --format pdf FILENAME --output OUTPUT.pdf
+
+=head1 DESCRIPTION
+
+This program uses the Vim text editor to highlight text according to its
+syntax, and turn the highlighting into HTML, XML or PDF output.  It works
+with any file type which Vim itself can highlight.  Usually Vim will be
+able to autodetect the file format based on the filename (and sometimes the
+contents of the file).
+
+Exactly one filename should be given on the command line to name the input
+file.  If none is given input will instead be read from stdin (the standard
+input).
+
+If Vim can't guess the file type automatically, it can be specified explicitly
+using the C<--filetype> option.  For example:
+
+   $ text-vimcolor --format html --filetype prolog foo.pl > foo.html
+
+This program is a command line interface to the Perl module Text::VimColor.
+
+=head1 OPTIONS
+
+The following options are understood:
+
+=over 4
+
+=item --help
+
+Show a summary of the usage, including a list of options.
+
+=item --debug
+
+Turns on debugging in the underlying Perl module.  This makes it print
+the command used to run Vim.
+
+=item --filetype I<file-type>
+
+Set the type of the file explicitly.  The I<file-type> argument should be
+something which Vim will recognise when set with its C<filetype> option.
+Examples are C<perl>, C<cpp> (for C++) and C<sh> (for Unix shell scripts).
+These names are case sensitive, and should usually be all-lowercase.
+
+=item --format I<output-format>
+
+The output format to generate.  Must be one of the following:
+
+=over 4
+
+=item html
+
+Generate XHTML output, with text marked with C<E<lt>spanE<gt>> elements
+with C<class> attributes.  A CSS stylesheet should be used to define the
+coloring, etc., for the output.  See the C<--full-page> option below.
+
+=item xml
+
+Output is in a simple XML vocabulary.  This can then be used by other
+software to do further transformations (e.g., using XSLT).
+
+=item pdf
+
+XML output is generated and fed to the FOP XSL-FO processor, with an
+appropriate XSL style sheet.  The stylesheet uses XSLT to transform the
+normal XML output into XSL-FO, which is then rendered to PDF.  For this
+to work, the command C<fop> must be available.  An output file must be
+specified with C<--output> with this format.
+
+=back
+
+Full details of the HTML and XML output formats can be found in the
+documentation for Text::VimColor.
+
+=item --output I<output-filename>
+
+Specifies the name of the output file (which will end up containing either
+HTML, XML or PDF).  If this option is omitted, the output will be sent
+to stdout (the standard output).  This option is required when the output
+format is PDF (because of limitations in FOP).
+
+=item --full-page
+
+When the output format is HTML, this option will make the output a complete
+HTML page, rather than just a fragment of HTML.  A CSS stylesheet will be
+inserted inline into the output, so the output will be useable as it is.
+
+=item --no-inline-stylesheet
+
+When the output format is HTML and C<--fullpage> is given, a stylesheet
+is normally inserted in-line in the output file.  If this option is given it
+will instead be referenced with a C<E<lt>linkE<gt>> element.
+
+=item --let I<name>=I<value>
+
+When Vim is run the value of I<name> will be set to I<value> using
+Vim's C<let> command.  More than one of these options can be set.
+The value is not quoted or escaped in any way, so it can be an expression.
+These settings take precedence over C<--unlet> options.
+
+This option corresponds to the C<vim_let> setting and method in
+the Perl module.
+
+=item --unlet I<name>
+
+Prevent the value of I<name> being set with Vim's C<let> command.
+This can be used to turn off default settings.
+
+This option corresponds to the C<vim_let> setting and method in
+the Perl module, when used with a value of C<undef>.
+
+=back
+
+=head1 BUGS
+
+=over 4
+
+=item *
+
+The PDF output option often doesn't work, because it is dependent on FOP,
+which often doesn't work.  This is also why it is mind numbingly slow.
+
+=item *
+
+FOP (0.20.3) seems to ignore the C<background-color> property on
+C<E<lt>fo:inlineE<gt>>.  If that's what it's meant to do, how do you set the
+background color on part of a line?
+
+=back
+
+=head1 AUTHOR
+
+Geoff Richards E<lt>qef@laxan.comE<gt>
+
+=head1 COPYRIGHT
+
+Copyright 2002-2006, Geoff Richards.
+
+This program is free software; you can redistribute it and/or
+modify it under the same terms as Perl.
+
+=cut
+
+# vi:ts=3 sw=3 expandtab

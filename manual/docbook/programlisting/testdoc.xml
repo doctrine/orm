@@ -1,0 +1,7 @@
+<article>
+  <title>Article with code</title>
+  <para>A sample code:</para>
+  <example>
+    <xi:include href="test.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  </example>
+</article>

@@ -1,0 +1,8 @@
+Command-line syntax highlighting based on vim
+
+It uses Perl modules Text::VimColor and Path::Class.
+Perl libraries of these modules are copied to "lib".
+
+The program "vimcolor-wrapper" sets the path to the
+local copy of the libraries and runs the original
+script "text-vimcolor".
