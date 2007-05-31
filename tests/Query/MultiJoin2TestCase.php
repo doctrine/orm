@@ -55,18 +55,23 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase {
         $lastEntry->authorId = $author->id;
         $lastEntry->date = 1234;
         $lastEntry->save();
-        
+
     }
     public function testMultipleJoinFetchingWithDeepJoins() {
         $query = new Doctrine_Query($this->connection);
-        $categories = $query->select("c.*, subCats.*, b.*, le.*, a.*")
-                    ->from("QueryTest_Category c")
-                    ->leftJoin("c.subCategories subCats")
-                    ->leftJoin("c.boards b")
-                    ->leftJoin("b.lastEntry le")
-                    ->leftJoin("le.author a")
-                    ->where("c.parentCategoryId = 0")
-                    ->orderBy("c.position ASC, subCats.position ASC, b.position ASC")
+        try {
+            $categories = $query->select('c.*, subCats.*, b.*, le.*, a.*')
+                    ->from('QueryTest_Category c')
+                    ->leftJoin('c.subCategories subCats')
+                    ->leftJoin('c.boards b')
+                    ->leftJoin('b.lastEntry le')
+                    ->leftJoin('le.author a')
+                    ->where('c.parentCategoryId = 0')
+                    ->orderBy('c.position ASC, subCats.position ASC, b.position ASC')
                     ->execute();
+            $this->pass();
+        } catch (Doctrine_Exception $e) {
+            $this->fail();                                	
+        }
     }
 }

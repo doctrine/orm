@@ -31,6 +31,7 @@
  * @version     $Revision$
  */
 class Doctrine_Query_ComponentAlias_TestCase extends Doctrine_UnitTestCase {
+    /**
     public function testQueryWithSingleAlias() {
         $this->connection->clear();
         $q = new Doctrine_Query();
@@ -43,12 +44,12 @@ class Doctrine_Query_ComponentAlias_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($users->count(), 8);
         $this->assertTrue($users[0]->Phonenumber instanceof Doctrine_Collection);
-        $this->assertEqual($q->getQuery(), 
+        $this->assertEqual($q->getQuery(),
         "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id, p.id AS p__id, p.phonenumber AS p__phonenumber, p.entity_id AS p__entity_id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)");
         $this->assertEqual($count, count($this->dbh));
     }
-
-    public function testQueryWithNestedAliases() {
+    */
+    public function testQueryWithNestedAliases() {  print "<pre>";
         $this->connection->clear();
         $q = new Doctrine_Query();
 
