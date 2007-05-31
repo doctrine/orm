@@ -96,12 +96,7 @@ abstract class Doctrine_Configurable
                 }
                 break;
             case Doctrine::ATTR_ACCESSORS:
-                $accessors = array('none','get','set','both');
-
-               // if ( ! in_array($value,$accessors)) {
-               //     throw new Doctrine_Exception();
-               // }
-
+                    throw new Doctrine_Exception("Get / Set filtering is deprecated (slowed down Doctrine too much)."); 
                 break;
             case Doctrine::ATTR_COLL_LIMIT:
                 if ($value < 1) {
