@@ -147,10 +147,7 @@
       <programlisting role="php"><![CDATA[
 <?php
   require_once('path-to-doctrine/lib/Doctrine.php');
-?>
-      ]]>
-      </programlisting>
-
+?>]]></programlisting>
       <para>
         Doctrine support <ulink
         url="http://www.php.net/autoload">Autoloading</ulink> for including
@@ -167,9 +164,7 @@
   function __autoload($class) {
     Doctrine::autoload($class);
   }
-?>
-      ]]>
-      </programlisting>
+?>]]></programlisting>
     
       <para>
         If your project uses autoload and/or you have other libraries that use
@@ -181,9 +176,7 @@
       <programlisting role="php"><![CDATA[
 <?php
   spl_autoload_register(array('Doctrine', 'autoload'));
-?>
-      ]]>
-      </programlisting>
+?>]]></programlisting>
     </sect1>
 
     <sect1 id="compiling">
@@ -201,10 +194,7 @@
 
   // on some other script:
   require_once('path_to_doctrine/Doctrine.compiled.php');
-?>
-      ]]>
-      </programlisting>
-      
+?>]]></programlisting>
     </sect1>
   </chapter>
 
@@ -277,9 +267,7 @@
         print $phonenumber."\n";
     }
   }
-?>
-    ]]>
-    </programlisting>
+?>]]></programlisting>
   </sect1>
 
   </chapter>
