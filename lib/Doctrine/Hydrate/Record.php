@@ -46,7 +46,7 @@ class Doctrine_Hydrate_Record
 
         return $coll;
     }
-    public function registerCollection($coll)
+    public function registerCollection(Doctrine_Collection $coll)
     {
         $this->_collections[] = $coll;
     }
@@ -76,18 +76,16 @@ class Doctrine_Hydrate_Record
         }
         return true;
     }
+
     public function getElement(array $data, $component)
     {
     	if ( ! isset($this->_tables[$component])) {
             $this->_tables[$component] = Doctrine_Manager::getInstance()->getTable($component);
+            $this->_tables[$component]->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
         }
         $this->_tables[$component]->setData($data);
         $record = $this->_tables[$component]->getRecord();
         $this->_records[] = $record;
-        
-
-        $this->_tables[$component]->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
-
 
         return $record;
     }

@@ -288,4 +288,17 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('offset', $offset);
     }
+    
+    /**
+     * parseQueryPart
+     * parses given DQL query part
+     *
+     * @param string $queryPartName     the name of the query part
+     * @param string $queryPart         query part to be parsed
+     * @param boolean $append           whether or not to append the query part to its stack
+     *                                  if false is given, this method will overwrite 
+     *                                  the given query part stack with $queryPart
+     * @return Doctrine_Query           this object
+     */
+    abstract public function parseQueryPart($queryPartName, $queryPart, $append = false);
 }

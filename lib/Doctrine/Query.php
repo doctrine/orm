@@ -233,7 +233,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @return Doctrine_Query           this object
      */
     public function parseQueryPart($queryPartName, $queryPart, $append = false) 
-    {
+    {              
+
     	// sanity check
     	if ($queryPart === '' || $queryPart === null) {
             throw new Doctrine_Query_Exception('Empty ' . $queryPartName . ' part given.');

@@ -581,7 +581,11 @@ class Doctrine_Hydrate implements Serializable
                 if (isset($this->_aliasMap[$alias]['agg'][$index])) {
                     $agg = $this->_aliasMap[$alias]['agg'][$index];
                 }
-                $record->mapValue($agg, $value);
+                if (is_array($record)) {
+                    $record[$agg] = $value;
+                } else {
+                    $record->mapValue($agg, $value);
+                }
                 $found = true;
             }
         }
@@ -647,7 +651,7 @@ class Doctrine_Hydrate implements Serializable
             if ($cached === null) {
                 // cache miss
                 $stmt = $this->_execute($params, $return);
-                $array = $this->parseData($stmt);
+                $array = $this->parseData2($stmt);
 
                 $cached = $this->getCachedForm($array);
                 
@@ -675,150 +679,12 @@ class Doctrine_Hydrate implements Serializable
             }
         } else {
             $stmt = $this->_execute($params, $return);
-            if ($return === Doctrine::FETCH_ARRAY) {
-                return $this->parseData2($stmt);
-            } else {
-                $array = $this->parseData($stmt);
-            }
+
+            $array = $this->parseData2($stmt, $return);
         }
-
-        if (empty($this->_aliasMap)) {
-            throw new Doctrine_Hydrate_Exception("Couldn't execute query. Component alias map was empty.");
-        }
-        // initialize some variables used within the main loop
-        reset($this->_aliasMap);
-        $rootMap     = current($this->_aliasMap);
-        $rootAlias   = key($this->_aliasMap);
-        $coll        = new Doctrine_Collection($rootMap['table']);
-        $prev[$rootAlias] = $coll;
-
-        // we keep track of all the collections
-        $colls   = array();
-        $colls[] = $coll;
-        $prevRow = array();
-        /**
-         * iterate over the fetched data
-         * here $data is a two dimensional array
-         */
-        foreach ($array as $data) {
-            /**
-             * remove duplicated data rows and map data into objects
-             */
-            foreach ($data as $tableAlias => $row) {
-                // skip empty rows (not mappable)
-                if (empty($row)) {
-                    continue;
-                }
-                $alias = $this->getComponentAlias($tableAlias);
-                $map   = $this->_aliasMap[$alias];
-
-                // initialize previous row array if not set
-                if ( ! isset($prevRow[$tableAlias])) {
-                    $prevRow[$tableAlias] = array();
-                }
-
-                // don't map duplicate rows
-                if ($prevRow[$tableAlias] !== $row) {
-                    $identifiable = $this->isIdentifiable($row, $map['table']->getIdentifier());
-
-                    if ($identifiable) {
-                        // set internal data
-                        $map['table']->setData($row);
-                    }
-
-                    // initialize a new record
-                    $record = $map['table']->getRecord();
-
-                    // map aggregate values (if any)
-                    if($this->mapAggregateValues($record, $row, $alias)) {
-                        $identifiable = true;
-                    }
-
-
-                    if ($alias == $rootAlias) {
-                        // add record into root collection
-
-                        if ($identifiable) {
-                            $coll->add($record);
-                            unset($prevRow);
-                        }
-                    } else {
-
-                        $relation    = $map['relation'];
-                        $parentAlias = $map['parent'];
-                        $parentMap   = $this->_aliasMap[$parentAlias];
-                        $parent      = $prev[$parentAlias]->getLast();
-
-                        // check the type of the relation
-                        if ($relation->isOneToOne()) {
-                            if ( ! $identifiable) {
-                                continue;
-                            }
-                            $prev[$alias] = $record;
-                        } else {
-                            // one-to-many relation or many-to-many relation
-                            if ( ! $prev[$parentAlias]->getLast()->hasReference($relation->getAlias())) {
-                                // initialize a new collection
-                                $prev[$alias] = new Doctrine_Collection($map['table']);
-                                $prev[$alias]->setReference($parent, $relation);
-                            } else {
-                                // previous entry found from memory
-                                $prev[$alias] = $prev[$parentAlias]->getLast()->get($relation->getAlias());
-                            }
-
-                            $colls[] = $prev[$alias];
-
-                            // add record to the current collection
-                            if ($identifiable) {
-                                $prev[$alias]->add($record);
-                            }
-                        }
-                        // initialize the relation from parent to the current collection/record
-                        $parent->set($relation->getAlias(), $prev[$alias]);
-                    }
-
-                    // following statement is needed to ensure that mappings
-                    // are being done properly when the result set doesn't
-                    // contain the rows in 'right order'
-
-                    if ($prev[$alias] !== $record) {
-                        $prev[$alias] = $record;
-                    }
-                }
-                $prevRow[$tableAlias] = $row;
-            }
-        }
-        // take snapshots from all initialized collections
-        foreach(array_unique($colls) as $c) {
-            $c->takeSnapshot();
-        }
-
-        return $coll;
+        return $array;
     }
-    /**
-     * isIdentifiable
-     * returns whether or not a given data row is identifiable (it contains
-     * all primary key fields specified in the second argument)
-     *
-     * @param array $row
-     * @param mixed $primaryKeys
-     * @return boolean
-     */
-    public function isIdentifiable(array $row, $primaryKeys)
-    {
-        if (is_array($primaryKeys)) {
-            foreach ($primaryKeys as $id) {
-                if ($row[$id] == null) {
-                    return false;
-                }
-            }
-        } else {
-            if ( ! isset($row[$primaryKeys])) {
-                return false;
-            }
-        }
-        return true;
-    }
+
     /**
      * getType
      *
@@ -901,19 +767,28 @@ class Doctrine_Hydrate implements Serializable
      * @param mixed $stmt
      * @return array
      */
-    public function parseData2($stmt)
+    public function parseData2($stmt, $return)
     {
-        $array = array();
+
         $cache = array();
         $rootMap   = reset($this->_aliasMap);
         $rootAlias = key($this->_aliasMap);
+        $componentName = $rootMap['table']->getComponentName();
         $index = 0;
         $incr  = true;
         $lastAlias = '';
         $currData  = array();
 
+        if ($return === Doctrine::FETCH_ARRAY) {
+            $driver = new Doctrine_Hydrate_Array();
+        } else {
+            $driver = new Doctrine_Hydrate_Record();
+        }
+
+        $array = $driver->getElementCollection($componentName);
 
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $parse = true;
             foreach ($data as $key => $value) {
                 if ( ! isset($cache[$key])) {
                     $e = explode('__', $key);
@@ -934,115 +809,136 @@ class Doctrine_Hydrate implements Serializable
                 $tmp = array();
                 $alias = $cache[$key]['alias'];
                 $component = $cache[$key]['component'];
+                $componentName = $this->_aliasMap[$cache[$key]['alias']]['table']->getComponentName();
+                $table = $this->_aliasMap[$cache[$key]['alias']]['table'];
 
 
                 if ( ! isset($currData[$alias])) {
                     $currData[$alias] = array();
                 }
+                
+                if ( ! isset($prevData[$alias])) {
+                    $prevData[$alias] = array();
+                }
+                if ( ! isset($prevElement[$alias])) {
+                    $prevElement[$alias] = array();
+                }
                 if ( ! isset($prev[$alias])) {
                     $prev[$alias] = array();
-                }        
+                }
 
-                if ($lastAlias !== $alias) {
+                if ($alias !== $lastAlias || $parse) {
+
                     // component changed
+                    $identifiable = $driver->isIdentifiable($currData[$alias], $table);
+
+                    $element = $driver->getElement($currData[$alias], $componentName);
+
+                    // map aggregate values (if any)
+                    if ($this->mapAggregateValues($element, $currData[$alias], $alias)) {
+                        $identifiable = true;
+                    }
+
+                    if ($currData[$alias] !== $prevData[$alias] || $element !== $prevElement[$alias]) {
+                        if ($identifiable) {
+                            if ($alias === $rootAlias) {
+                                // dealing with root component
+
+                                    $array[$index] = $element;
+                                    $prev[$alias]  =& $array[$index];
+    
+                                    $index++;
+                            } else {
+                                $parent   = $cache[$key]['parent'];
+                                $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
+                                // check the type of the relation
+                                if ( ! $relation->isOneToOne()) {
+                                    if ($prev[$parent][$component] instanceof Doctrine_Record) {
+                                        throw new Exception();
+                                    }
+                                    $prev[$parent][$component][] = $element;
+
+                                    $driver->registerCollection($prev[$parent][$component]);
+                                } else {
+                                    $prev[$parent][$component] = $element;
+                                }
+
+                                if (is_array($prev[$parent][$component])) {
+                                    $prev[$alias] = end($prev[$parent][$component]);
+                                } else {
+                                    $prev[$alias] = $prev[$parent][$component]->getLast();
+                                }
+                            }
+                            if (isset($currData[$alias])) {
+                                $prevData[$alias] = $currData[$alias];
+                            } else {
+                                $prevData[$alias] = array();
+                            }
+                            $currData[$alias] = array();
+                            
+                            $prevElement[$alias] = $element;
+                        }
+                    }
+
+
+                }
+                
+                $field = $cache[$key]['field'];
+
+                $currData[$alias][$field] = $value;
+                //print_r($currData[$alias]);
+                $lastAlias = $alias;
+                $parse = false;
+            }
+        }
+        foreach ($currData as $alias => $data) {
+            $componentName = $this->_aliasMap[$alias]['table']->getComponentName();
+            // component changed
+            $identifiable = $driver->isIdentifiable($currData[$alias], $table);
+
+            $element = $driver->getElement($currData[$alias], $componentName, $identifiable);
+
+            // map aggregate values (if any)
+            if($this->mapAggregateValues($element, $currData[$alias], $alias)) {
+                $identifiable = true;
+            }            
+
+            if ( ! isset($prevData[$alias]) || (isset($currData[$alias]) && $currData[$alias] !== $prevData[$alias]) || $element !== $prevElement[$alias]) {
+                if ($identifiable) {
 
                     if ($alias === $rootAlias) {
                         // dealing with root component
-    
-                        if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
-                            if ( ! empty($currData[$alias])) {
-    
-                                $array[$index] = $currData[$alias];
-                                $prev[$alias]  =& $array[$index];
-                                $index++;
-                            }
-                        }
-                    } else {
-                        $parent   = $cache[$key]['parent'];
-                        $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
-    
-                        if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
-                            if ($relation->getType() >= Doctrine_Relation::MANY) {
-                                $prev[$parent][$component][] = $currData[$alias];
-                            } else {
-                                $prev[$parent][$component] = $currData[$alias];
-                            }
-                        }
-                    }
-                    if (isset($currData[$alias])) {
-                        $prevData[$alias] = $currData[$alias];
-                    } else {
-                        $prevData[$alias] = array();
-                    }
-
-                } else {
-                    $field = $cache[$key]['field'];
-                    $currData[$alias][$field] = $value;
-                }
-
-                $lastAlias = $alias;
-            }
-        }
-
-        foreach ($currData as $alias => $data) {
-            if ($alias === $rootAlias) {
-                // dealing with root component
-
-                if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
-                    if ( ! empty($currData[$alias])) {
-
-                        $array[$index] = $currData[$alias];
+                        $array[$index] = $element;
                         $prev[$alias]  =& $array[$index];
                         $index++;
-                    }
-                }
-            } else {
-                $parent   = $cache[$key]['parent'];
-                $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
-
-                if ( ! isset($prevData[$alias]) || $currData[$alias] !== $prevData[$alias]) {
-                    if ($relation->getType() >= Doctrine_Relation::MANY) {
-                        $prev[$parent][$component][] = $currData[$alias];
                     } else {
-                        $prev[$parent][$component] = $currData[$alias];
+                        $parent   = $this->_aliasMap[$alias]['parent'];
+                        $relation = $this->_aliasMap[$alias]['relation'];
+                        $componentAlias = $relation->getAlias();
+                        // check the type of the relation
+
+                        if ( ! $relation->isOneToOne()) {
+                            $prev[$parent][$componentAlias][] = $element;
+                            $driver->registerCollection($prev[$parent][$componentAlias]);
+                        } else {
+                            $prev[$parent][$componentAlias] = $element;
+                        }
                     }
                 }
             }
-        }
-
-
-        $stmt->closeCursor();
-        unset($cache);
-        return $array;
-    }
-    /**
-     * parseData
-     * parses the data returned by statement object
-     *
-     * @param mixed $stmt
-     * @return array
-     */
-    public function parseData($stmt)
-    {
-        $array = array();
-        $cache = array();
-        
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            foreach ($data as $key => $value) {
-                if ( ! isset($cache[$key])) {
-                    $e = explode('__', $key);
-                    $cache[$key]['field']     = strtolower(array_pop($e));
-                    $cache[$key]['component'] = strtolower(implode('__', $e));
-                }
-                
-                $data[$cache[$key]['component']][$cache[$key]['field']] = $value;
-
-                unset($data[$key]);
+            if (isset($currData[$alias])) {
+                $prevData[$alias] = $currData[$alias];
+            } else {
+                $prevData[$alias] = array();
             }
-            $array[] = $data;
-        }
-        $stmt->closeCursor();
+            $currData[$alias] = array();
 
+            $prevElement[$alias] = $element;
+        }
+
+        $driver->flush();
+
+        $stmt->closeCursor();
         return $array;
     }
     /**
@@ -1052,4 +948,4 @@ class Doctrine_Hydrate implements Serializable
     {
         return Doctrine_Lib::formatSql($this->getQuery());
     }
-}
+} 

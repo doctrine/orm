@@ -201,7 +201,7 @@ class Doctrine_Db_Statement implements Doctrine_Adapter_Statement_Interface
     public function execute($params = null)
     {
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::EXECUTE, $this->stmt->queryString, $params);
-        //print $this->stmt->queryString . print_r($params, true) . "<br>"; 
+        // print $this->stmt->queryString . print_r($params, true) . "<br>"; 
         $skip = $this->adapter->getListener()->onPreExecute($event);
 
         if ( ! $skip) {

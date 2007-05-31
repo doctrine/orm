@@ -230,6 +230,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return self::$_null;
     }
     /**
+     * _index
+     *
+     * @return integer
+     */
+    public static function _index()
+    {
+        return self::$_index;
+    }
+    /**
      * setUp
      * this method is used for setting up relations and attributes
      * it should be implemented by child classes

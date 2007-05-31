@@ -857,13 +857,26 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 $key = array($key);
             }
     
+            $found = false;
             foreach ($key as $k) {
                 if ( ! isset($this->data[$k])) {
-                    throw new Doctrine_Table_Exception("Primary key value for $k wasn't found");
+                    // primary key column not found return new record
+                    $found = true;
+                    break;
                 }
                 $id[] = $this->data[$k];
             }
-    
+            
+            if ($found) {
+                $this->data = array();
+                $recordName = $this->getClassnameToReturn();
+                $record = new $recordName($this, true);    
+
+                
+                return $record;
+            }
+
+
             $id = implode(' ', $id);
     
             if (isset($this->identityMap[$id])) {
