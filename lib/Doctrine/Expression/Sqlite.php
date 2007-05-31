@@ -62,7 +62,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression
     public static function concatImpl()
     {
         $args = func_get_args();
-        return join( '', $args );
+        return join('', $args);
     }
     /**
      * locate
