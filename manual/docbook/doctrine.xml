@@ -105,5 +105,71 @@
         <ulink url="http://doctrine.pengus.net/svn/trunk">http://doctrine.pengus.net/svn/trunk</ulink>.
       </para>
     </sect1>
+
+    <sect1 id="contributing">
+      <title>Contributing</title>
+      <para>
+        Doctrine is constantly under development, and is always happy for new
+        developers to contribute to the project.
+      </para>
+      <para>
+        To get an account on trac to submit bugs and make suggestions, or to get
+        access to commit to the SVN repository, please visit the IRC channel, or
+        email the users mailing list.
+      </para>
+    </sect1>
   </chapter>
+
+  <chapter id="connection-management">
+  <title>Connection Management</title>
+  </chapter>
+
+  <chapter id="object-relational-mapping">
+  <title>Object Relational Mapping</title>
+  </chapter>
+
+  <chapter id="working-with-objects">
+  <title>Working With Objects</title>
+  </chapter>
+
+  <chapter id="configuration">
+  <title>Configuration</title>
+  </chapter>
+
+  <chapter id="advanced-components">
+  <title>Advanced Components</title>
+  </chapter>
+
+  <chapter id="dql">
+  <title>DQL (Doctrine Query Lanaguage)</title>
+  </chapter>
+
+  <chapter id="native-sql">
+  <title>Native SQL</title>
+  </chapter>
+
+  <chapter id="transactions">
+  <title>Transactions</title>
+  </chapter>
+
+  <chapter id="caching">
+  <title>Caching</title>
+  </chapter>
+
+  <chapter id="database-abstraction">
+  <title>Database Abstraction</title>
+  </chapter>
+
+  <chapter id="technology">
+  <title>Technology</title>
+  </chapter>
+
+  <chapter id="real-world-examples">
+  <title>Real World Examples</title>
+  </chapter>
+
+  <chapter id="coding-standards">
+  <title>Coding Standards</title>
+  </chapter>
+
 </book>
