@@ -31,4 +31,30 @@
       </para>
     </abstract>
   </bookinfo>
+
+  <chapter id="introduction">
+    <title>Introduction</title>
+    <para>
+    </para>
+
+    <sect1 id="requirements">
+      <title>Requirements</title>
+      <para>
+        Doctrine requires PHP >= 5.1, and it doesn't require any external libraries.
+      </para>
+      <para>
+        For database abstraction Doctrine uses PDO which is bundled with php by
+        default. Doctrine also requires a little adodb-hack for table creation,
+        which comes with doctrine.
+      </para>
+    </sect1>
+
+    <sect1 id="getting-started">
+      <title>Getting Started</title>
+      <para>
+        The installation of doctrine is very easy. Just get the latest revision of Doctrine from
+        <ulink url="http://doctrine.pengus.net/svn/trunk">http://doctrine.pengus.net/svn/trunk</ulink>.
+      </para>
+    </sect1>
+  </chapter>
 </book>

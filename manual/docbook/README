@@ -5,3 +5,9 @@ Please feel free to contribute, but these docs are currently being developed
 by Ian P. Christian <pookey@pookey.co.uk>.
 
 Find me on IRC and talk to me if you want to help.
+
+Pleaes use xmllint to validate your changes BEFORE committing.
+
+Please follow the intenting format used in the file.
+*2 SPACES* for indenting.
+That's SPACES not TABS :)
