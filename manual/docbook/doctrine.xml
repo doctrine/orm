@@ -196,6 +196,17 @@
   require_once('path_to_doctrine/Doctrine.compiled.php');
 ?>]]></programlisting>
     </sect1>
+
+    <sect1 id="new-project">
+      <title>Starting a new project</title>
+      <para>
+        Doctrine_Record is the basic component of every doctrine-based project.
+        There should be atleast one Doctrine_Record for each of your database
+        tables.  Doctrine_Record follows the <ulink
+        url="http://www.martinfowler.com/eaaCatalog/activeRecord.html">Active
+        Record pattern</ulink>
+      </para>
+    </sect1>
   </chapter>
 
   <chapter id="connection-management">
