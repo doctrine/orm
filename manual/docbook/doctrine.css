@@ -2,3 +2,8 @@ body, p, td
 {
   font-family: arial, "lucida console", sans-serif
 }
+.programlisting
+{
+    margin: 10px;
+    background-color: #eeeeee;
+}

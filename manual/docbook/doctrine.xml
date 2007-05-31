@@ -171,7 +171,7 @@
       If the power of DQL isn't enough, you should consider using the rawSql API for object population.
     </para>
 
-    <programlisting><![CDATA[
+    <programlisting role="php"><![CDATA[
     <?php 
     // DO NOT USE THE FOLLOWING CODE 
     // (using many sql queries for object population):
