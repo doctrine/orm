@@ -4,4 +4,6 @@
 <xsl:import href="/home/clients/jhassine/doctrine/trunk/manual/docbook/programlisting/colorer.xsl"/>
 <xsl:import href="/home/clients/jhassine/doctrine/trunk/manual/docbook/programlisting/colorer-html.xsl"/>
 <xsl:param name="html.stylesheet" select="'doctrine.css'"/>
+<xsl:param name="section.autolabel" select="1"/>
+<xsl:param name="section.label.includes.component.label" select="1"/><!-- adds section numbering, ie '1.3.1. Mailing Lists' -->
 </xsl:stylesheet>
