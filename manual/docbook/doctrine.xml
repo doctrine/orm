@@ -12,11 +12,14 @@
     <author>
       <firstname>Konsta</firstname>
       <surname>Vesterinen</surname>
+      <authorblurb>The creator and lead developer.</authorblurb>
     </author>
     <author>
       <firstname>Ian</firstname>
+      <othername>P.</othername>
       <surname>Christian</surname>
       <email>pookey@pookey.co.uk</email>
+      <authorblurb>Junior developer and documentation maintainer.</authorblurb>
     </author>
     <copyright>
       <holder>Doctrine Project</holder>
@@ -46,7 +49,7 @@
       <para>
         Doctrine is a Object Relational Mapping and database abstraction
         framework for PHP. The DBAL part of Doctrine derives from MDB2. The key
-        idea was to provide very intuitive and easy-to-use persistency solution
+        idea is to provide very intuitive and easy-to-use persistency solution
         (eg. RoR ActiveRecord) with all the advanced features from the more
         heavy-weight solutions (eg. Hibernate).
       </para>
@@ -54,6 +57,58 @@
         Doctrine Query Language implements EJB 3 OQL specificiation and expands
         it a bit further (it has special LIMIT and OFFSET clauses).
       </para>
+      <sect2 id="intro-example">
+        <title>Example</title>
+        <para>
+          You might not understand exactly what's happening at this stage, but
+          this example is to give you a general idea of the power of Doctrine.
+        </para>
+
+        <programlisting role="php"><![CDATA[
+<?php 
+
+    // include the doctrine library
+    require_once('lib/Doctrine.php');
+
+    // register the doctrine autoload function
+    spl_autoload_register(array('Doctrine', 'autoload'));
+
+    // define the user class
+    class User extends Doctrine_Record { 
+        public function setTableDefinition() {
+            // set 'user' table columns, note that
+            // id column is always auto-created
+            
+            $this->hasColumn('name','string',30);
+            $this->hasColumn('username','string',20);
+            $this->hasColumn('password','string',16);
+            $this->hasColumn('created','integer',11);
+        }
+    }
+
+    // create a new user
+    $user = new User();
+    $user->username = "Pookey";
+    $user->password = "a password!";
+    $user->created = time();
+
+    // save the user
+    $user->save();
+
+    // lets find the user....
+    $query = new Doctrine_Query();
+    $query->query('SELECT u.* FROM User u WHERE u.username = ?');
+    $users = $query->execute(array('pookey'));
+    if (count($users))
+    {
+      // we found our user!
+    }
+    else
+    {
+      // we didn't find our user, oh no!
+    }
+?>]]></programlisting>
+      </sect2>
     </sect1>
 
     <sect1 id="requirements">
@@ -101,10 +156,17 @@
           The #doctrine IRC channel can be found on the freenode network.
         </para>
       </sect2>
+      <sect2 id="community-wiki">
+        <title>Wiki and Trac</title>
+        <para>
+          A wiki/trac install can be found at <ulink
+          url="http://doctrine.pengus.net/trac">http://doctrine.pengus.net/trac</ulink>
+        </para>
+      </sect2>
     </sect1>
 
     <sect1 id="contributing">
-      <title>Contributing</title>
+      <title>Contributing/Reporting Bugs</title>
       <para>
         Doctrine is constantly under development, and is always happy for new
         developers to contribute to the project.
@@ -113,6 +175,11 @@
         To get an account on trac to submit bugs and make suggestions, or to get
         access to commit to the SVN repository, please visit the IRC channel, or
         email the users mailing list.
+      </para>
+      <para>
+        If you are unsure as to wether you have found a bug or not, please
+        consider joining us on IRC, or maining the user mailing list to confirm
+        your problem.
       </para>
     </sect1>
 
@@ -124,12 +191,15 @@
         SVN.
       </para>
       <para>
-        To get the latest copy, simple check out 'trunk' from SVN.  You will need subversion
-        install to check out doctrine.  If you are unable to install subversion for whatever
-        reason, see below for details on downloading a snapshot.
+        To get the latest copy, simple check out 'trunk' from SVN.  You will
+        need <ulink url="http://subversion.tigris.org/">subversion</ulink>
+        install to check out doctrine.  If you are unable to install subversion
+        for whatever reason, see below for details on downloading a snapshot.
       </para>
       <screen>
-        <prompt>bash $</prompt><command>svn checkout http://doctrine.pengus.net/svn/trunk</command>
+        <prompt>bash $</prompt><command>mkdir <replaceable>doctrine</replaceable></command>
+        <prompt>bash $</prompt><command>cd <replacable>doctrine</replacable></command>
+        <prompt>bash $</prompt><command>svn checkout http://doctrine.pengus.net/svn/trunk .</command>
       </screen>
       <para>
         Daily snapshots can be found at 
@@ -185,8 +255,11 @@
         Compiling is a method for making a single file of most used doctrine
         runtime components including the compiled file instead of multiple files
         (in worst cases dozens of files) can improve performance by an order of
-        magnitude. In cases where this might fail, a Doctrine_Exception is throw
-        detailing the error.
+        magnitude.
+      </para>
+      <para>
+        In cases where this might fail, a Doctrine_Exception is throw detailing
+        the error.
       </para>
       <programlisting role="php"><![CDATA[
 <?php
@@ -209,12 +282,12 @@
       <para>
         Doctrine auto-creates database tables and always adds a primary key
         column named 'id' to tables that doesn't have any primary keys
-        specified. Only thing you need to for creating database tables is
+        specified. The only thing you need to do to create database tables is
         defining a class which extends Doctrine_Record and setting a
         setTableDefinition method with hasColumn() method calls.
       </para>
       <para>
-        An short example:
+        Below is a short example:
       </para>
       <para>
         We want to create a database table called 'user' with columns

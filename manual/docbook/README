@@ -1,5 +1,4 @@
-PLEASE DO NOT USE
------------------
+WORK IN PROGRESS!!!
 
 Please feel free to contribute, but these docs are currently being developed
 by Ian P. Christian <pookey@pookey.co.uk>.
@@ -18,6 +17,8 @@ http://www.sagehill.net/docbookxsl/index.html
 For information about docbook itself, google - there's LOTS of sites.
 This is a good reference:
 http://xml.web.cern.ch/XML/goossens/dbatcern/index.html
+the 'definitive guide' can be found here:
+http://www.docbook.org/tdg/en/html/docbook.html
 
 Xsieve is used for syntax highlighting:
 
