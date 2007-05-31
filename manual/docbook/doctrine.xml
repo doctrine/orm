@@ -14,6 +14,10 @@
       <surname>Christian</surname>
       <email>pookey@pookey.co.uk</email>
     </author>
+    <author>
+      <firstname>Konsta</firstname>
+      <surname>Vesterinen</surname>
+    </author>
     <copyright>
       <holder>Doctrine Project</holder>
       <year>2007</year>
@@ -35,6 +39,18 @@
   <chapter id="introduction">
     <title>Introduction</title>
     <para>
+      Doctrine is a Object Relational Mapping and database abstraction
+      framework for PHP. The DBAL part of Doctrine derives from MDB2. The key
+      idea was to provide very intuitive and easy-to-use persistency solution
+      (eg. RoR ActiveRecord) with all the advanced features from the more
+      heavy-weight solutions (eg. Hibernate).
+    </para>
+    <para>
+      Doctrine Query Language implements EJB 3 OQL specificiation and expands
+      it a bit further (it has special LIMIT and OFFSET clauses).
+    </para>
+    <para>
+      
     </para>
 
     <sect1 id="requirements">
@@ -47,6 +63,39 @@
         default. Doctrine also requires a little adodb-hack for table creation,
         which comes with doctrine.
       </para>
+    </sect1>
+
+    <sect1 id="community">
+      <title>Community</title>
+      <para>
+        Doctrine has 3 mailing lists, an IRC forum, and a wiki.
+      </para>
+      <sect2 id="community-mailinglist">
+        <title>Mailing Lists</title>
+        <para>
+          The 'user' mailing list is for discussing the usage of doctrine.
+          To subscribe to this list, send a blank email to
+          <email>doctrine-user+subscribe@lists.pengus.net</email>
+        </para>
+        <para>
+          The 'dev' mailing list is used for discussion of the development
+          of doctrine.  To subscribe to this list, send a blank email to
+          <email>doctrine-dev+subscribe@lists.pengus.net</email>
+        </para>
+        <para>
+          The 'svn' mailing list is a read-only list, which users and developers
+          can subscribe to to receive commit logs to the SVN repository.  This
+          list is quite high traffic, as every commit to the repository results
+          in an email containing the changelog entry and diffs of the changed
+          files.
+        </para>
+      </sect2>
+      <sect2 id="community-irc">
+        <title>IRC</title>
+        <para>
+          The #doctrine IRC channel can be found on the freenode network.
+        </para>
+      </sect2>
     </sect1>
 
     <sect1 id="getting-started">
