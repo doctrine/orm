@@ -751,14 +751,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         $subquery .= ' FROM';
 
+
         foreach ($this->parts['from'] as $part) {
             // preserve LEFT JOINs only if needed
             if (substr($part, 0, 9) === 'LEFT JOIN') {
                 $e = explode(' ', $part);
-
-                if ( ! in_array($e[3], $this->subqueryAliases) &&
-                     ! in_array($e[2], $this->subqueryAliases)) {
-                    continue;
+                
+                if (empty($this->parts['orderby']) && empty($this->parts['where'])) {
+                    continue;                                                                   	
                 }
             }
 
