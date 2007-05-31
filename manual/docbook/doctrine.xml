@@ -10,13 +10,13 @@
   <bookinfo>
     <title>Doctrine Documentation</title>
     <author>
+      <firstname>Konsta</firstname>
+      <surname>Vesterinen</surname>
+    </author>
+    <author>
       <firstname>Ian</firstname>
       <surname>Christian</surname>
       <email>pookey@pookey.co.uk</email>
-    </author>
-    <author>
-      <firstname>Konsta</firstname>
-      <surname>Vesterinen</surname>
     </author>
     <copyright>
       <holder>Doctrine Project</holder>
@@ -31,27 +31,30 @@
 
     <abstract>
       <para>
-        Documentation for the PHP Doctrine project
+        Documentation for the PHP Doctrine project.
+      </para>
+      <para>
+        This document was generated <?dbtimestamp format="Y-m-d H:M:S"?>.
       </para>
     </abstract>
   </bookinfo>
 
   <chapter id="introduction">
     <title>Introduction</title>
-    <para>
-      Doctrine is a Object Relational Mapping and database abstraction
-      framework for PHP. The DBAL part of Doctrine derives from MDB2. The key
-      idea was to provide very intuitive and easy-to-use persistency solution
-      (eg. RoR ActiveRecord) with all the advanced features from the more
-      heavy-weight solutions (eg. Hibernate).
-    </para>
-    <para>
-      Doctrine Query Language implements EJB 3 OQL specificiation and expands
-      it a bit further (it has special LIMIT and OFFSET clauses).
-    </para>
-    <para>
-      
-    </para>
+    <sect1 id="about-doctrine">
+      <title>About Doctrine</title>
+      <para>
+        Doctrine is a Object Relational Mapping and database abstraction
+        framework for PHP. The DBAL part of Doctrine derives from MDB2. The key
+        idea was to provide very intuitive and easy-to-use persistency solution
+        (eg. RoR ActiveRecord) with all the advanced features from the more
+        heavy-weight solutions (eg. Hibernate).
+      </para>
+      <para>
+        Doctrine Query Language implements EJB 3 OQL specificiation and expands
+        it a bit further (it has special LIMIT and OFFSET clauses).
+      </para>
+    </sect1>
 
     <sect1 id="requirements">
       <title>Requirements</title>
@@ -144,6 +147,59 @@
 
   <chapter id="dql">
   <title>DQL (Doctrine Query Lanaguage)</title>
+  <sect1 id="dql-intro">
+    <title>Introduction</title>
+    <para>
+    Doctrine Query Language(DQL) is an Object Query Language created for helping users in complex object retrieval.
+    </para>
+    <para>
+    You should always consider using DQL(or raw SQL) when retrieving relational data efficiently (eg. when fetching users and their phonenumbers).
+    </para>
+    <para>
+    When compared to using raw SQL, DQL has several benefits:
+    </para>
+
+    <itemizedlist>
+      <listitem><para>From the start it has been designed to retrieve records(objects) not result set rows.</para></listitem>
+      <listitem><para>DQL understands relations so you don't have to type manually sql joins and join conditions.</para></listitem>
+      <listitem><para>DQL is portable on different databases</para></listitem>
+      <listitem><para>DQL has some very complex built-in algorithms like (the record limit algorithm) which can help developer to efficiently retrieve objects.</para></listitem>
+      <listitem><para>It supports some functions that can save time when dealing with one-to-many, many-to-many relational data with conditional fetching.</para></listitem>
+    </itemizedlist>
+
+    <para>
+      If the power of DQL isn't enough, you should consider using the rawSql API for object population.
+    </para>
+
+    <programlisting><![CDATA[
+    <?php 
+    // DO NOT USE THE FOLLOWING CODE 
+    // (using many sql queries for object population):
+     
+    $users = $conn->getTable('User')->findAll();
+    foreach($users as $user) {
+        print $user->name."\n";
+        foreach($user->Phonenumber as $phonenumber) {
+            print $phonenumber."\n";
+        }
+    }
+     
+    // same thing implemented much more efficiently: 
+    // (using only one sql query for object population)
+     
+    $users = $conn->query("FROM User.Phonenumber");
+    foreach($users as $user) {
+        print $user->name."\n";
+        foreach($user->Phonenumber as $phonenumber) {
+            print $phonenumber."\n";
+        }
+    }
+
+    ?>
+    ]]>
+    </programlisting>
+  </sect1>
+  
   </chapter>
 
   <chapter id="native-sql">
