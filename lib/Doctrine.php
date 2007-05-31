@@ -356,6 +356,10 @@ final class Doctrine
      * constant for composite identifier
      */
     const IDENTIFIER_COMPOSITE      = 4;
+    
+    const ACCESSOR_BOTH = 0;
+    const ACCESSOR_SET  = 1;
+    const ACCESSOR_GET  = 2;
     /**
      * constructor
      */
