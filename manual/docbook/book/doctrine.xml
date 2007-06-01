@@ -3,6 +3,7 @@
 
 [
 <!ENTITY chap1 SYSTEM "intro.xml">
+<!ENTITY chap2 SYSTEM "conn-mgt.xml">
 ]>
 
 <book id="doctrinebook">
@@ -42,11 +43,8 @@
     </abstract>
   </bookinfo>
 
-   &chap1;
-
-  <chapter id="connection-management">
-  <title>Connection Management</title>
-  </chapter>
+  &chap1;
+  &chap2;
 
   <chapter id="object-relational-mapping">
   <title>Object Relational Mapping</title>

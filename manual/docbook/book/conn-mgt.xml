@@ -1,0 +1,191 @@
+<chapter id="connection-management">
+  <title>Connection Management</title>
+  <sect1 id="dsn">
+    <title>DSN, the Data Source Name</title>
+    <para>
+      In order to connect to a database through Doctrine, you have to create a
+      valid DSN - data source name.
+    </para>
+    <para>
+      Doctrine supports both PEAR DB/MDB2 like data source names as well as PDO
+      style data source names. The following section deals with PEAR like data
+      source names. If you need more info about the PDO-style data source names
+      see <ulink
+      url="http://www.php.net/manual/en/function.PDO-construct.php">http://www.php.net/manual/en/function.PDO-construct.php.</ulink>
+    </para>
+    <para>
+      The DSN consists in the following parts:
+    </para>
+    <variablelist>
+      <title>DSN components</title>
+      <varlistentry>
+        <term>phptype</term>
+        <listitem>
+          Database backend used in PHP (i.e. mysql , pgsql etc.) 
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>dbsyntax</term>
+        <listitem>
+          Database used with regards to SQL syntax etc.
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>protocol</term>
+        <listitem>
+          Communication protocol to use ( i.e. tcp, unix etc.)
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>hostspec</term>
+        <listitem>
+          Host specification (hostname[:port])
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>database</term>
+        <listitem>
+          Database to use on the DBMS server
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>username</term>
+        <listitem>
+          User name for login
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>password</term>
+        <listitem>
+          Password for login
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>proto_opts</term>
+        <listitem>
+          Maybe used with protocol
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>option</term>
+        <listitem>
+          option: Additional connection options in URI query string format. options get separated by &amp;. The Following table shows a non complete list of options:
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <variablelist>
+      <title>List of Options</title>
+      <varlistentry>
+        <term>name</term>
+        <listitem>
+          Some backends support setting the client charset.
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>new_link</term>
+        <listitem>
+          Some RDBMS do not create new connections when connecting to the same
+          host multiple times. This option will attempt to force a new
+          connection
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>
+      The DSN can either be provided as an associative array or as a string. The
+      string format of the supplied DSN is in its fullest form:
+    </para>
+    <programlisting>
+phptype(dbsyntax)://username:password@protocol+hostspec/database?option=value
+    </programlisting>
+
+
+    <para>
+      Most variations are allowed:
+    </para>
+    <programlisting>
+  phptype://username:password@protocol+hostspec:110//usr/db_file.db
+  phptype://username:password@hostspec/database
+  phptype://username:password@hostspec
+  phptype://username@hostspec
+  phptype://hostspec/database
+  phptype://hostspec
+  phptype:///database
+  phptype:///database?option=value&amp;anotheroption=anothervalue
+  phptype(dbsyntax)
+  phptype
+    </programlisting>
+
+    <para>
+      The currently supported database backends are:
+    </para>
+    fbsql   -> FrontBase?
+    ibase   -> InterBase? / Firebird (requires PHP 5)
+    mssql   -> Microsoft SQL Server (NOT for Sybase. Compile PHP --with-mssql)
+    mysql   -> MySQL?
+    mysqli  -> MySQL? (supports new authentication protocol) (requires PHP 5)
+    oci8    -> Oracle 7/8/9/10
+    pgsql   -> PostgreSQL?
+    querysim    -> QuerySim?
+    sqlite  -> SQLite 2
+
+    <para>
+      A second DSN format is supported phptype(syntax)://user:pass@protocol(proto_opts)/database
+    </para>
+
+
+    <para>
+      If your database, option values, username or password contain characters used to delineate DSN parts, you can escape them via URI hex encodings:
+    </para>
+    : = %3a
+    / = %2f
+    @ = %40
+    + = %2b
+    ( = %28
+    ) = %29
+    ? = %3f
+    = = %3d
+    &amp; = %26
+
+
+    <important>
+    Please note, that some features may be not supported by all database backends.
+    </important>
+
+    <example>
+      <title>Connect to database through a socket</title>
+      <programlisting>
+  mysql://user@unix(/path/to/socket)/pear
+      </programlisting>
+    </example>
+
+    <example>
+      <title>Connect to database on a non standard port</title>
+      <programlisting>
+  pgsql://user:pass@tcp(localhost:5555)/pear
+      </programlisting>
+    </example>
+
+    <example>
+      <title>Connect to SQLite on a Unix machine using options</title>
+      <programlisting>
+  sqlite:////full/unix/path/to/file.db?mode=0666
+      </programlisting>
+    </example>
+
+    <example>
+      <title>Connect to SQLite on a Windows machine using options</title>
+      <programlisting>
+  sqlite:///c:/full/windows/path/to/file.db?mode=0666
+      </programlisting>
+    </example>
+
+    <example>
+      <title>Connect to MySQLi using SSL</title>
+      <programlisting>
+  mysqli://user:pass@localhost/pear?key=client-key.pem&amp;cert=client-cert.pem
+      </programlisting>
+    </example>
+  </sect1>
+</chapter>
