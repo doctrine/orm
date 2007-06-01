@@ -192,11 +192,15 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function getAggregateAlias($dqlAlias)
     {
-        if(isset($this->aggregateMap[$dqlAlias])) {
+        if (isset($this->aggregateMap[$dqlAlias])) {
             return $this->aggregateMap[$dqlAlias];
         }
-        
-        return null;
+        if ( ! empty($this->pendingAggregates)) {
+            $this->processPendingAggregates();
+            
+            return $this->getAggregateAlias($dqlAlias);
+        }
+        throw new Doctrine_Query_Exception('Unknown aggregate alias ' . $dqlAlias);
     }
     /**
      * getParser
@@ -336,6 +340,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $refs = Doctrine_Tokenizer::bracketExplode($dql, ',');
 
         foreach ($refs as $reference) {
+            $reference = trim($reference);
             if (strpos($reference, '(') !== false) {
                 if (substr($reference, 0, 1) === '(') {
                     // subselect found in SELECT part
@@ -384,64 +389,58 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * parses an aggregate function and returns the parsed form
      *
      * @see Doctrine_Expression
-     * @param string $func                  DQL aggregate function
+     * @param string $expr                  DQL aggregate function
      * @throws Doctrine_Query_Exception     if unknown aggregate function given
      * @return array                        parsed form of given function
      */
-    public function parseAggregateFunction($func)
+    public function parseAggregateFunction($expr, $nestedCall = false)
     {
-        $e    = Doctrine_Tokenizer::bracketExplode($func, ' ');
+        $e    = Doctrine_Tokenizer::bracketExplode($expr, ' ');
         $func = $e[0];
 
         $pos  = strpos($func, '(');
-        $name = substr($func, 0, $pos);
+        if ($pos === false) {
+            return $expr;
+        }
 
+        // get the name of the function
+        $name   = substr($func, 0, $pos);
+        $argStr = substr($func, ($pos + 1), -1);
+
+        $args   = array();
+        // parse args
+        foreach (Doctrine_Tokenizer::bracketExplode($argStr, ',') as $expr) {
+           $args[] = $this->parseAggregateFunction($expr, true);
+        }
+
+        // convert DQL function to its RDBMS specific equivalent
         try {
-            $argStr = substr($func, ($pos + 1), -1);
-            $args   = explode(',', $argStr);
-    
-            $func   = call_user_func_array(array($this->_conn->expression, $name), $args);
-    
-            if(substr($func, 0, 1) !== '(') {
-                $pos  = strpos($func, '(');
-                $name = substr($func, 0, $pos);
-            } else {
-                $name = $func;
-            }
-    
-            $e2     = explode(' ', $args[0]);
-    
-            $distinct = '';
-            if (count($e2) > 1) {
-                if (strtoupper($e2[0]) == 'DISTINCT') {
-                    $distinct  = 'DISTINCT ';
-                }
-    
-                $args[0] = $e2[1];
-            }
-    
-    
-    
-            $parts = explode('.', $args[0]);
-            $owner = $parts[0];
-            $alias = (isset($e[1])) ? $e[1] : $name;
-    
-            $e3    = explode('.', $alias);
-    
-            if (count($e3) > 1) {
-                $alias = $e3[1];
-                $owner = $e3[0];
-            }
-    
-            // a function without parameters eg. RANDOM()
-            if ($owner === '') {
-                $owner = 0;
-            }
-    
-            $this->pendingAggregates[$owner][] = array($name, $args, $distinct, $alias);
+            $expr = call_user_func_array(array($this->_conn->expression, $name), $args);
         } catch(Doctrine_Expression_Exception $e) {
             throw new Doctrine_Query_Exception('Unknown function ' . $func . '.');
         }
+
+        if ( ! $nestedCall) {
+            // try to find all component references
+            preg_match_all("/[a-z0-9_]+\.[a-z0-9_]+[\.[a-z0-9]+]*/i", $argStr, $m);
+
+            if (isset($e[1])) {
+                if (strtoupper($e[1]) === 'AS') {
+                    if ( ! isset($e[2])) {
+                        throw new Doctrine_Query_Exception('Missing aggregate function alias.');
+                    }
+                    $alias = $e[2];
+                } else {
+                    $alias = $e[1];
+                }
+            } else {
+                $alias = substr($expr, 0, strpos($expr, '('));
+            }
+
+            $this->pendingAggregates[] = array($expr, $m[0], $alias);
+        }
+
+        return $expr;
     }
     /**
      * processPendingSubqueries
@@ -476,67 +475,65 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * processPendingAggregates
      * processes pending aggregate values for given component alias
      *
-     * @param string $componentAlias    dql component alias
      * @return void
      */
-    public function processPendingAggregates($componentAlias)
+    public function processPendingAggregates()
     {
-        $tableAlias = $this->getTableAlias($componentAlias);     
+    	// iterate trhough all aggregates
+        foreach ($this->pendingAggregates as $aggregate) {
+            list ($expression, $components, $alias) = $aggregate;
 
-        $map   = reset($this->_aliasMap);
-        $root  = $map['table'];
-        $table = $this->_aliasMap[$componentAlias]['table'];
+            $tableAliases = array();
 
-        $aggregates = array();
-
-        if(isset($this->pendingAggregates[$componentAlias])) {
-            $aggregates = $this->pendingAggregates[$componentAlias];
-        }
-        
-        if ($root === $table) {
-            if (isset($this->pendingAggregates[0])) {
-                $aggregates += $this->pendingAggregates[0];
-            }
-        }
-
-        foreach($aggregates as $parts) {
-            list($name, $args, $distinct, $alias) = $parts;
-
-            $arglist = array();
-            foreach($args as $arg) {
-                $e = explode('.', $arg);
-
-
-                if (is_numeric($arg)) {
-                    $arglist[]  = $arg;
-                } elseif (count($e) > 1) {
-                    $map    = $this->_aliasMap[$e[0]];
-                    $table  = $map['table'];
-
-                    $e[1]       = $table->getColumnName($e[1]);
-
-                    if ( ! $table->hasColumn($e[1])) {
-                        throw new Doctrine_Query_Exception('Unknown column ' . $e[1]);
+            // iterate through the component references within the aggregate function
+            if ( ! empty ($components)) {
+                foreach ($components as $component) {
+                    $e = explode('.', $component);
+    
+                    $field = array_pop($e);
+                    $componentAlias = implode('.', $e);
+    
+                    // check the existence of the component alias
+                    if ( ! isset($this->_aliasMap[$componentAlias])) {
+                        throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
                     }
-
-                    $arglist[]  = $tableAlias . '.' . $e[1];
-                } else {
-                    $arglist[]  = $e[0];
+    
+                    $table = $this->_aliasMap[$componentAlias]['table'];
+    
+                    $field = $table->getColumnName($field);
+    
+                    // check column existence
+                    if ( ! $table->hasColumn($field)) {
+                        throw new Doctrine_Query_Exception('Unknown column ' . $field);
+                    }
+    
+                    $tableAlias = $this->getTableAlias($componentAlias);
+    
+                    $tableAliases[$tableAlias] = true;
+    
+                    // build sql expression
+                    $expression = str_replace($component, $tableAlias . '.' . $field, $expression);
                 }
             }
+
+            if (count($tableAliases) !== 1) {
+                $componentAlias = reset($this->tableAliases);
+                $tableAlias = key($this->tableAliases);
+            }
+
             $index    = count($this->aggregateMap);
             $sqlAlias = $tableAlias . '__' . $index;
 
-            if (substr($name, 0, 1) !== '(') {
-                $this->parts['select'][] = $name . '(' . $distinct . implode(', ', $arglist) . ') AS ' . $sqlAlias;
-            } else {
-                $this->parts['select'][] = $name . ' AS ' . $sqlAlias;
-            }
+            $this->parts['select'][] = $expression . ' AS ' . $sqlAlias;
+
             $this->aggregateMap[$alias] = $sqlAlias;
+
             $this->_aliasMap[$componentAlias]['agg'][$index] = $alias;
 
             $this->neededTables[] = $tableAlias;
         }
+        // reset the state
+        $this->pendingAggregates = array();
     }
     /**
      * getQueryBase
@@ -630,7 +627,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 }
     	    }
         }
-        if (empty($this->parts['select']) || empty($this->parts['from'])) {
+        if (empty($this->parts['from'])) {
             return false;
         }
 
@@ -647,6 +644,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         // process all pending SELECT part subqueries
         $this->processPendingSubqueries();
+        $this->processPendingAggregates();
 
         // build the basic query
 
@@ -758,7 +756,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $e = explode(' ', $part);
                 
                 if (empty($this->parts['orderby']) && empty($this->parts['where'])) {
-                    continue;                                                                   	
+                    continue;
                 }
             }
 
@@ -1055,10 +1053,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 if(isset($this->pendingFields[$componentAlias])) {
                     $this->processPendingFields($componentAlias);
                 }
-
+                /**
                 if(isset($this->pendingAggregates[$componentAlias]) || isset($this->pendingAggregates[0])) {
                     $this->processPendingAggregates($componentAlias);
                 }
+                */
 
                 if ($restoreState) {
                     $this->pendingFields = array();

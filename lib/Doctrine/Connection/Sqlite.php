@@ -74,7 +74,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
         $this->options['server_version'] = '';
         */
         parent::__construct($manager, $adapter);
-        //$this->initFunctions();
+        $this->initFunctions();
     }
     /**
      * initializes database functions missing in sqlite
@@ -84,9 +84,16 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
      */
     public function initFunctions()
     {
-        $this->dbh->sqliteCreateFunction('md5',    array('Doctrine_Expression_Sqlite', 'md5Impl'), 1);
-        $this->dbh->sqliteCreateFunction('mod',    array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
-        $this->dbh->sqliteCreateFunction('concat', array('Doctrine_Expression_Sqlite', 'concatImpl'));
-        $this->dbh->sqliteCreateFunction('now', 'time', 0);
+    	if ($this->dbh instanceof Doctrine_Db) {
+    	   $this->dbh->connect();
+    	   $adapter = $this->dbh->getDbh();
+    	} else {
+    	   $adapter = $this->dbh;
+    	}
+
+        $adapter->sqliteCreateFunction('md5',    array('Doctrine_Expression_Sqlite', 'md5Impl'), 1);
+        $adapter->sqliteCreateFunction('mod',    array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
+        $adapter->sqliteCreateFunction('concat', array('Doctrine_Expression_Sqlite', 'concatImpl'));
+        $adapter->sqliteCreateFunction('now', 'time', 0);
     }
 }

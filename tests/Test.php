@@ -106,8 +106,13 @@ class UnitTestCase
 
 
         foreach ($trace as $stack) {
+
             if (substr($stack['function'], 0, 4) === 'test') {
                 $class = new ReflectionClass($stack['class']);
+
+                if ( ! isset($line)) {
+                    $line = $stack['line'];                    	
+                }
 
                 $this->_messages[] = $class->getName() . ' : method ' . $stack['function'] . ' failed on line ' . $line;
                 break;

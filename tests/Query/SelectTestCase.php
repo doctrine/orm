@@ -32,6 +32,18 @@
  */
 class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase 
 {
+    public function testAggregateFunctionParsingSupportsMultipleComponentReferences()
+    {
+        $q = new Doctrine_Query();
+        $q->select("CONCAT(u.name, ' ', e.address) value")
+          ->from('User u')->innerJoin('u.Email e');
+
+        $this->assertEqual($q->getQuery(), "SELECT CONCAT(e.name, ' ', e2.address) AS e__0 FROM entity e INNER JOIN email e2 ON e.email_id = e2.id WHERE (e.type = 0)");
+
+        $users = $q->execute();
+        $this->assertEqual($users[0]->value, 'zYne zYne@example.com');
+    }
+
     public function testAggregateFunctionWithDistinctKeyword() 
     {
         $q = new Doctrine_Query();
@@ -40,7 +52,6 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($q->getQuery(), 'SELECT COUNT(DISTINCT e.name) AS e__0 FROM entity e WHERE (e.type = 0)');
     }
-
     public function testAggregateFunction() 
     {
         $q = new Doctrine_Query();
@@ -90,8 +101,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
         }
 
     }
-
-    public function testAggregateFunctionValueHydration() 
+    public function testAggregateFunctionValueHydration()
     {
         $q = new Doctrine_Query();
 

@@ -269,7 +269,7 @@ class Doctrine_Expression extends Doctrine_Connection_Module
      *
      * @param string|array(string) strings that will be concatinated.
      */
-    public function concat($args)
+    public function concat()
     {
     	$args = func_get_args();
 

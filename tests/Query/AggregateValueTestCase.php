@@ -160,5 +160,51 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users[1]->Phonenumber[0]->count, 2);
         $this->assertEqual($users[2]->Phonenumber[0]->count, 1);
     }
+    public function testAggregateFunctionParser()
+    {
+        $q = new Doctrine_Query();
+        $func = $q->parseAggregateFunction('SUM(i.price)');
+    
+        $this->assertEqual($func, 'SUM(i.price)');
+    }
+    public function testAggregateFunctionParser2()
+    {
+        $q = new Doctrine_Query();
+        $func = $q->parseAggregateFunction('SUM(i.price * i.quantity)');
+    
+        $this->assertEqual($func, 'SUM(i.price * i.quantity)');
+    }
+    public function testAggregateFunctionParser3()
+    {
+        $q = new Doctrine_Query();
+        $func = $q->parseAggregateFunction('MOD(i.price, i.quantity)');
+
+        $this->assertEqual($func, 'MOD(i.price, i.quantity)');
+    }
+    public function testAggregateFunctionParser4()
+    {
+        $q = new Doctrine_Query();
+        $func = $q->parseAggregateFunction('CONCAT(i.price, i.quantity)');
+
+        $this->assertEqual($func, 'CONCAT(i.price, i.quantity)');
+    }
+    public function testAggregateFunctionParsingSupportsMultipleComponentReferences()
+    {
+        $q = new Doctrine_Query();
+        $q->select('SUM(i.price * i.quantity)')
+          ->from('QueryTest_Item i');
+          
+        $this->assertEqual($q->getQuery(), "SELECT SUM(q.price * q.quantity) AS q__0 FROM query_test__item q");
+    }
+
+
+}
+class QueryTest_Item extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('price', 'decimal');
+        $this->hasColumn('quantity', 'integer');
+    }
 }
 ?>

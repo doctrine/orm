@@ -32,6 +32,16 @@
  */
 class Doctrine_Query_Orderby_TestCase extends Doctrine_UnitTestCase 
 {
+    public function testOrderByRandomIsSupported()
+    {
+        $q = new Doctrine_Query();
+        
+        $q->select('u.name, RANDOM() rand')
+          ->from('User u')
+          ->orderby('rand DESC');
+
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, ((RANDOM() + 2147483648) / 4294967296) AS e__0 FROM entity e WHERE (e.type = 0) ORDER BY e__0 DESC');
+    }
     public function testOrderByAggregateValueIsSupported()
     {
         $q = new Doctrine_Query();
@@ -42,15 +52,5 @@ class Doctrine_Query_Orderby_TestCase extends Doctrine_UnitTestCase
           ->orderby('count DESC');
 
         $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, COUNT(p.phonenumber) AS p__0 FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0) ORDER BY p__0 DESC');
-    }
-    public function testOrderByRandomIsSupported()
-    {
-        $q = new Doctrine_Query();
-        
-        $q->select('u.name, RANDOM() rand')
-          ->from('User u')
-          ->orderby('rand DESC');
-
-        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, ((RANDOM() + 2147483648) / 4294967296) AS e__0 FROM entity e WHERE (e.type = 0) ORDER BY e__0 DESC');
     }
 }

@@ -578,9 +578,11 @@ class Doctrine_Hydrate implements Serializable
             foreach ($row as $index => $value) {
                 $agg = false;
 
+
                 if (isset($this->_aliasMap[$alias]['agg'][$index])) {
                     $agg = $this->_aliasMap[$alias]['agg'][$index];
                 }
+
                 if (is_array($record)) {
                     $record[$agg] = $value;
                 } else {

@@ -9,7 +9,11 @@ function autoload($class) {
     $e      = explode('_', $class);
     $count  = count($e);
 
-    array_shift($e);
+    $prefix = array_shift($e);
+
+    if ($prefix !== 'Doctrine') {
+        return false;
+    }
 
     $dir    = array_shift($e);
 
@@ -23,7 +27,7 @@ function autoload($class) {
 
     // create a test case file if it doesn't exist
 
-    if( ! file_exists($file)) {
+    if ( ! file_exists($file)) {
         $contents = file_get_contents('template.tpl');
         $contents = sprintf($contents, $class, $class);
 
@@ -47,11 +51,12 @@ spl_autoload_register('autoload');
 
 require_once dirname(__FILE__) . '/../models/location.php';
 require_once dirname(__FILE__) . '/classes.php';
+/**
 require_once dirname(__FILE__) . '/../vendor/simpletest/unit_tester.php';
 require_once dirname(__FILE__) . '/../vendor/simpletest/reporter.php';
-
+*/
+require_once dirname(__FILE__) . '/Test.php';
 require_once dirname(__FILE__) . '/UnitTestCase.php';
-require_once dirname(__FILE__) . '/DriverTestCase.php';
 
 error_reporting(E_ALL);
 
@@ -138,7 +143,7 @@ $test->addTestCase(new Doctrine_Expression_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Expression_Sqlite_TestCase());
 
 // Core
-
+    */
 $test->addTestCase(new Doctrine_Access_TestCase());
 //$test->addTestCase(new Doctrine_Configurable_TestCase());
 
@@ -214,6 +219,7 @@ $test->addTestCase(new Doctrine_Query_ShortAliases_TestCase());
 $test->addTestCase(new Doctrine_Query_Expression_TestCase());
 
 $test->addTestCase(new Doctrine_ColumnAggregationInheritance_TestCase());
+
 $test->addTestCase(new Doctrine_ColumnAlias_TestCase());
 
 
@@ -223,6 +229,7 @@ $test->addTestCase(new Doctrine_Cache_Memcache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Sqlite_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Check_TestCase());
+
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 
 
@@ -246,6 +253,7 @@ $test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 $test->addTestCase(new Doctrine_Query_AggregateValue_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Select_TestCase());
+
 $test->addTestCase(new Doctrine_Query_From_TestCase());
 $test->addTestCase(new Doctrine_NewCore_TestCase());
 
@@ -256,7 +264,7 @@ $test->addTestCase(new Doctrine_Record_State_TestCase());
 //$test->addTestCase(new Doctrine_Query_Cache_TestCase());
 
 $test->addTestCase(new Doctrine_Tokenizer_TestCase());
-*/
+
 
 $test->addTestCase(new Doctrine_Collection_Snapshot_TestCase());
 
@@ -277,33 +285,27 @@ class MyReporter extends HtmlReporter {
     public function paintHeader() {}
     public function paintFooter()
     {
-        $colour = ($this->getFailCount() + $this->getExceptionCount() > 0 ? "red" : "green");
+    	print "<pre>";
+    	foreach ($this->_test->getMessages() as $message) {
+    	   print $message . "\n";
+    	}
+    	print "</pre>";
+        $colour = ($this->_test->getFailCount() > 0 ? "red" : "green");
         print "<div style=\"";
         print "padding: 8px; margin-top: 1em; background-color: $colour; color: white;";
         print "\">";
-        print $this->getTestCaseProgress() . "/" . $this->getTestCaseCount();
+        print $this->_test->getTestCaseCount() . ' test cases';
         print " test cases complete:\n";
-        print "<strong>" . $this->getPassCount() . "</strong> passes, ";
-        print "<strong>" . $this->getFailCount() . "</strong> fails and ";
-        print "<strong>" . $this->getExceptionCount() . "</strong> exceptions.";
+        print "<strong>" . $this->_test->getPassCount() . "</strong> passes, ";
+        print "<strong>" . $this->_test->getFailCount() . "</strong> fails and ";
         print "</div>\n";
     }
 }
 
-if (TextReporter::inCli()) {
-    if ($argc == 4)
-    {
-        $dsn = $argv[1];
-        $username = $argv[2];
-        $password = $argv[3];
-    }
-    exit ($test->run(new TextReporter()) ? 0 : 1);
-}
 
 ?>
 <html>
 <head>
-
   <title>Doctrine Unit Tests</title>
   <style>
 .fail { color: red; } pre { background-color: lightgray; }
@@ -313,60 +315,10 @@ if (TextReporter::inCli()) {
 <body>
 
 <h1>Doctrine Unit Tests</h1>
-<h3>DSN Settings</h3>
-<form method="post">
-<table>
-<tr>
-  <th>DSN</th>
-  <td><input type="text" name="dsn" /></td>
-</tr>
-<tr>
-  <th>Username</th>
-  <td><input type="text" name="username" /></td>
-</tr>
-<tr>
-  <th>Password</th>
-  <td><input type="text" name="password" /></td>
-</tr>
-<tr>
-  <td>&nbsp;</td>
-  <td><input type="submit" name="submit" /></td>
-</tr>
-</table>
-</form>
-<h3>Tests</h3>
-<pre>
+
 <?php
-
-    ob_start();
-    if (isset($_POST))
-    {
-        $dsn        = isset($_POST["dsn"])?$_POST["dsn"]:null;
-        $username   = isset($_POST["username"])?$_POST["username"]:null;
-        $password   = isset($_POST["password"])?$_POST["password"]:null;
-    }
-    $test->run(new MyReporter());
-    $output = ob_get_clean();
-
-/**
-$cache = Doctrine_Manager::getInstance()->getCurrentConnection()->getCacheHandler();
-if(isset($cache)) {
-    $a     = $cache->getQueries();
-    print "Executed cache queries: ".count($a)."\n";
-
-    foreach($a as $query) {
-        print $query."\n";
-    }
-
-}
-*/
+$test->run(new MyReporter());
 ?>
-<?php echo $output; ?>
-</pre>
-<h3>Queries</h3>
-<pre>
-
-</pre>
 </body>
 </html>
 
