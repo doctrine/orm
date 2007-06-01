@@ -271,9 +271,9 @@
         for whatever reason, see below for details on downloading a snapshot.
       </para>
       <screen>
-        <prompt>bash $</prompt><command>mkdir <replaceable>doctrine</replaceable></command>
-        <prompt>bash $</prompt><command>cd <replacable>doctrine</replacable></command>
-        <prompt>bash $</prompt><command>svn checkout http://doctrine.pengus.net/svn/trunk .</command>
+        <prompt>bash $ </prompt><command>mkdir <replaceable>doctrine</replaceable></command>
+        <prompt>bash $ </prompt><command>cd <replaceable>doctrine</replaceable></command>
+        <prompt>bash $ </prompt><command>svn checkout http://doctrine.pengus.net/svn/trunk .</command>
       </screen>
       <para>
         Daily snapshots can be found at 
@@ -286,22 +286,24 @@
     <sect1 id="include-and-autoload">
       <title>Include and autoload</title>
       <para>
-        In order to use Doctrine in your project it must first be included.
+        In order to use Doctrine in your project, you must first include the main
+        library file called 'Doctrine.php'.
       </para>
       <programlisting role="php"><![CDATA[
 <?php
   require_once('path-to-doctrine/lib/Doctrine.php');
 ?>]]></programlisting>
       <para>
-        Doctrine support <ulink
+        Doctrine supports <ulink
         url="http://www.php.net/autoload">Autoloading</ulink> for including
-        files so that you do not have to include anything more then the base
-        file. There are two different strategies that can be used to do this:
+        files so that you don't have to include anything more then the base
+        file. There are two different strategies that can be used to do this,
+        as shown below.
       </para>
 
       <para>
-        If you do use the <emphasis>__autoload</emphasis> function for your own
-        logic you can use it.
+        You can use the <emphasis>__autoload</emphasis> function to call the
+        'Doctrine::autoload($class)' method, for example:
       </para>
       <programlisting role="php"><![CDATA[
 <?php
@@ -311,10 +313,10 @@
 ?>]]></programlisting>
     
       <para>
-        If your project uses autoload and/or you have other libraries that use
-        it you could use <ulink
+        If your project already uses autoload or you have other libraries
+        that use it, you can use <ulink
         url="http://www.php.net/manual/en/function.spl-autoload-register.php">spl_autoload_register</ulink>
-        to register more then one autoloading function.
+        to register multiple autoloading functions.
       </para>
 
       <programlisting role="php"><![CDATA[
@@ -326,13 +328,13 @@
     <sect1 id="compiling">
       <title>Compiling</title>
       <para>
-        Compiling is a method for making a single file of most used doctrine
-        runtime components including the compiled file instead of multiple files
+        Compiling is a method for making a single file of the most used doctrine
+        runtime components.  Including this compiled file instead of multiple files
         (in worst cases dozens of files) can improve performance by an order of
         magnitude.
       </para>
       <para>
-        In cases where this might fail, a Doctrine_Exception is throw detailing
+        In cases where this might fail, a Doctrine_Exception is thrown detailing
         the error.
       </para>
       <programlisting role="php"><![CDATA[
@@ -355,7 +357,7 @@
       </para>
       <para>
         Doctrine auto-creates database tables and always adds a primary key
-        column named 'id' to tables that doesn't have any primary keys
+        column named 'id' to tables that don't have any primary keys
         specified. The only thing you need to do to create database tables is
         defining a class which extends Doctrine_Record and setting a
         setTableDefinition method with hasColumn() method calls.
