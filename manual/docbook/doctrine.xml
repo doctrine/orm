@@ -88,7 +88,7 @@
 
     // create a new user
     $user = new User();
-    $user->username = "Pookey";
+    $user->username = "pookey";
     $user->password = "a password!";
     $user->created = time();
 
@@ -151,58 +151,67 @@
         <listitem>LIMIT / OFFSET emulation </listitem>
       </itemizedlist>
 
-      <para>
+      <sect3 id="features-orm">
+        <title>
         Object Relational Mapping
-      </para>
-      <para>
-        General Features
-      </para>
-      <itemizedlist>
-        <listitem>Validators</listitem>
-        <listitem>Transactional errorStack for easy retrieval of all errors</listitem>
-        <listitem>EventListeners</listitem>
-        <listitem>UnitOfWork pattern (easy saving of all pending objects)</listitem>
-        <listitem>Uses ActiveRecord pattern</listitem>
-        <listitem>State-wise records and transactions</listitem>
-        <listitem>Importing existing database schemas to Doctrine ActiveRecord objects</listitem>
-        <listitem>Exporting Doctrine ActiveRecords to database (= automatic table creation)</listitem>
-      </itemizedlist>
-      
-      <para>
-        Mapping
-      </para>
-      <itemizedlist>
-        <listitem>Composite, Natural, Autoincremented and Sequential identifiers</listitem>
-        <listitem>PHP Array / Object data types for columns (automatic serialization/unserialization)</listitem>
-        <listitem>Gzip datatype for all databases</listitem>
-        <listitem>Emulated enum datatype for all databases</listitem>
-        <listitem>Datatype abstraction</listitem>
-        <listitem>Column aggregation inheritance</listitem>
-        <listitem>One-class-one-table inheritance as well as One-table</listitem>
-        <listitem>One-to-many, many-to-one, one-to-one and many-to-many relations</listitem>
-        <listitem>Self-referencing relations even for association table relations</listitem>
-        <listitem>Relation aliases</listitem>
-      </itemizedlist>
+        </title>
+        <sect4 id="features-orm-general">
+          <title>
+            General Features
+          </title>
+          <itemizedlist>
+            <listitem>Validators</listitem>
+            <listitem>Transactional errorStack for easy retrieval of all errors</listitem>
+            <listitem>EventListeners</listitem>
+            <listitem>UnitOfWork pattern (easy saving of all pending objects)</listitem>
+            <listitem>Uses ActiveRecord pattern</listitem>
+            <listitem>State-wise records and transactions</listitem>
+            <listitem>Importing existing database schemas to Doctrine ActiveRecord objects</listitem>
+            <listitem>Exporting Doctrine ActiveRecords to database (= automatic table creation)</listitem>
+          </itemizedlist>
+        </sect4>
+        <sect4 id="features-orm-mapping">
+          <title>
+            Mapping
+          </title>
+          <itemizedlist>
+            <listitem>Composite, Natural, Autoincremented and Sequential identifiers</listitem>
+            <listitem>PHP Array / Object data types for columns (automatic serialization/unserialization)</listitem>
+            <listitem>Gzip datatype for all databases</listitem>
+            <listitem>Emulated enum datatype for all databases</listitem>
+            <listitem>Datatype abstraction</listitem>
+            <listitem>Column aggregation inheritance</listitem>
+            <listitem>One-class-one-table inheritance as well as One-table</listitem>
+            <listitem>One-to-many, many-to-one, one-to-one and many-to-many relations</listitem>
+            <listitem>Self-referencing relations even for association table relations</listitem>
+            <listitem>Relation aliases</listitem>
+          </itemizedlist>
+        </sect4>
 
-      <para>
-        Object population
-      </para>
-      <itemizedlist>
-        <listitem>DQL (Doctrine Query Language), an EJB 3 spec compliant OQL</listitem>
-        <listitem>The limit-subquery-algorithm</listitem>
-        <listitem>OO-style query API for both DQL and raw SQL</listitem>
-        <listitem>Object population from database views</listitem>
-        <listitem>Object population through raw SQL</listitem>
-      </itemizedlist>
-      
-      <para>
-        Transactions and locking
-      </para>
-      <itemizedlist>
-        <listitem>Pessimistic offline locking</listitem>
-        <listitem>Savepoints, transaction isolation levels and nested transactions</listitem>
-        <listitem>Transactional query optimization (gathering of DELETE statements) </listitem>
-      </itemizedlist>
+        <sect4 id="features-orm-population">
+          <title>
+            Object population
+          </title>
+          <itemizedlist>
+            <listitem>DQL (Doctrine Query Language), an EJB 3 spec compliant OQL</listitem>
+            <listitem>The limit-subquery-algorithm</listitem>
+            <listitem>OO-style query API for both DQL and raw SQL</listitem>
+            <listitem>Object population from database views</listitem>
+            <listitem>Object population through raw SQL</listitem>
+          </itemizedlist>
+        </sect4>
+
+        <sect4 id="features-orm-locking">
+          <title>
+            Transactions and locking
+          </title>
+          <itemizedlist>
+            <listitem>Pessimistic offline locking</listitem>
+            <listitem>Savepoints, transaction isolation levels and nested transactions</listitem>
+            <listitem>Transactional query optimization (gathering of DELETE statements) </listitem>
+          </itemizedlist>
+        </sect4>
+      </sect3>
     </sect1>
 
     <sect1 id="requirements">
