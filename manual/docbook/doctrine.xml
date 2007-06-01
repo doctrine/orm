@@ -111,6 +111,100 @@
       </sect2>
     </sect1>
 
+    <sect1 id="features">
+      <title>Features</title>
+      <para>
+        General Features
+      </para>
+      <itemizedlist>
+        <listitem>Fully object-oriented following best practices and design patterns</listitem>
+        <listitem>Multiple databases</listitem>
+        <listitem>Database connection pooling with connection-record -registry</listitem>
+        <listitem>Runtime configuration (no XML needed!)</listitem>
+        <listitem>Very modular structure (only uses the needed features)</listitem>
+        <listitem>The runtime components can be compiled into a single fileM</listitem>
+        <listitem>Leveled configuration (attributes can be set at global, connection and table levels)</listitem>
+      </itemizedlist>
+
+      <para>
+        Database Abstraction
+      </para>
+      <itemizedlist>
+        <listitem>A DSN (data source name) or array format for specifying database servers</listitem>
+        <listitem>Datatype abstraction and on demand datatype conversion</listitem>
+        <listitem>supports PDO</listitem>
+        <listitem>Database query profiling</listitem>
+        <listitem>Query caching</listitem>
+        <listitem>Sequence / autoincrement emulation</listitem>
+        <listitem>Replace emulation</listitem>
+        <listitem>RDBMS management methods (creating, dropping, altering)</listitem>
+        <listitem>SQL function call abstraction</listitem>
+        <listitem>SQL expression abstraction</listitem>
+        <listitem>Pattern matching abstraction</listitem>
+        <listitem>Portable error codes</listitem>
+        <listitem>Nested transactions</listitem>
+        <listitem>Transaction isolation abstraction</listitem>
+        <listitem>Transaction savepoint abstraction</listitem>
+        <listitem>Index/Unique Key/Primary Key support</listitem>
+        <listitem>Ability to read the information schema</listitem>
+        <listitem>Reverse engineering schemas from an existing database</listitem>
+        <listitem>LIMIT / OFFSET emulation </listitem>
+      </itemizedlist>
+
+      <para>
+        Object Relational Mapping
+      </para>
+      <para>
+        General Features
+      </para>
+      <itemizedlist>
+        <listitem>Validators</listitem>
+        <listitem>Transactional errorStack for easy retrieval of all errors</listitem>
+        <listitem>EventListeners</listitem>
+        <listitem>UnitOfWork pattern (easy saving of all pending objects)</listitem>
+        <listitem>Uses ActiveRecord pattern</listitem>
+        <listitem>State-wise records and transactions</listitem>
+        <listitem>Importing existing database schemas to Doctrine ActiveRecord objects</listitem>
+        <listitem>Exporting Doctrine ActiveRecords to database (= automatic table creation)</listitem>
+      </itemizedlist>
+      
+      <para>
+        Mapping
+      </para>
+      <itemizedlist>
+        <listitem>Composite, Natural, Autoincremented and Sequential identifiers</listitem>
+        <listitem>PHP Array / Object data types for columns (automatic serialization/unserialization)</listitem>
+        <listitem>Gzip datatype for all databases</listitem>
+        <listitem>Emulated enum datatype for all databases</listitem>
+        <listitem>Datatype abstraction</listitem>
+        <listitem>Column aggregation inheritance</listitem>
+        <listitem>One-class-one-table inheritance as well as One-table</listitem>
+        <listitem>One-to-many, many-to-one, one-to-one and many-to-many relations</listitem>
+        <listitem>Self-referencing relations even for association table relations</listitem>
+        <listitem>Relation aliases</listitem>
+      </itemizedlist>
+
+      <para>
+        Object population
+      </para>
+      <itemizedlist>
+        <listitem>DQL (Doctrine Query Language), an EJB 3 spec compliant OQL</listitem>
+        <listitem>The limit-subquery-algorithm</listitem>
+        <listitem>OO-style query API for both DQL and raw SQL</listitem>
+        <listitem>Object population from database views</listitem>
+        <listitem>Object population through raw SQL</listitem>
+      </itemizedlist>
+      
+      <para>
+        Transactions and locking
+      </para>
+      <itemizedlist>
+        <listitem>Pessimistic offline locking</listitem>
+        <listitem>Savepoints, transaction isolation levels and nested transactions</listitem>
+        <listitem>Transactional query optimization (gathering of DELETE statements) </listitem>
+      </itemizedlist>
+    </sect1>
+
     <sect1 id="requirements">
       <title>Requirements</title>
       <para>
@@ -126,8 +220,15 @@
     <sect1 id="community">
       <title>Community</title>
       <para>
-        Doctrine has 3 mailing lists, an IRC forum, and a wiki.
+        Doctrine has 3 mailing lists, an IRC channel, a forum, and a wiki.
       </para>
+      <sect2 id="community-forum">
+        <title>Forum</title>
+        <para>
+          The Doctrine forum can be found here:
+          <ulink url="http://www.phpbbserver.com/phpdoctrine/">http://www.phpbbserver.com/phpdoctrine/</ulink>
+        </para>
+      </sect2>
       <sect2 id="community-mailinglist">
         <title>Mailing Lists</title>
         <para>
