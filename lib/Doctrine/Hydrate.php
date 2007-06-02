@@ -855,9 +855,9 @@ class Doctrine_Hydrate implements Serializable
                                 $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
                                 // check the type of the relation
                                 if ( ! $relation->isOneToOne()) {
-                                    if ($prev[$parent][$component] instanceof Doctrine_Record) {
+                                    /*if ($prev[$parent][$component] instanceof Doctrine_Record) {
                                         throw new Exception();
-                                    }
+                                    }*/
                                     $prev[$parent][$component][] = $element;
 
                                     $driver->registerCollection($prev[$parent][$component]);
@@ -894,7 +894,8 @@ class Doctrine_Hydrate implements Serializable
             }
         }
         foreach ($currData as $alias => $data) {
-            $componentName = $this->_aliasMap[$alias]['table']->getComponentName();
+            $table = $this->_aliasMap[$alias]['table'];
+            $componentName = $table->getComponentName();
             // component changed
             $identifiable = $driver->isIdentifiable($currData[$alias], $table);
 
