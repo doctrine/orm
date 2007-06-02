@@ -98,9 +98,15 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
      *  3    | 2      | Third    | NULL
      */
     public function testQueryWithOrdering() {
-        $categories = $this->connection->query("FROM CategoryWithPosition.Boards
-                ORDER BY CategoryWithPosition.position ASC, CategoryWithPosition.Boards.position ASC");
+        $q = new Doctrine_Query($this->connection);
+        $categories = $q->select("c.*, b.*")
+                ->from("CategoryWithPosition c")
+                ->leftJoin("c.Boards b")
+                ->orderBy("c.position ASC, b.position ASC")
+                ->execute();
         
+        $this->assertEqual(3, $categories->count(), "Some categories were doubled!");
+                
         // Check each category
         foreach ($categories as $category) {
             
@@ -117,7 +123,7 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
                 case "Third":
                     // The third has no boards as expected.
                     $this->assertEqual(0, $category->Boards->count());
-                break;  
+                break;
             }
             
         }

@@ -59,6 +59,7 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase {
     }
     public function testMultipleJoinFetchingWithDeepJoins() {
         $query = new Doctrine_Query($this->connection);
+        $queryCount = $this->connection->getDbh()->count();
         try {
             $categories = $query->select('c.*, subCats.*, b.*, le.*, a.*')
                     ->from('QueryTest_Category c')
@@ -69,6 +70,31 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase {
                     ->where('c.parentCategoryId = 0')
                     ->orderBy('c.position ASC, subCats.position ASC, b.position ASC')
                     ->execute();
+            // Test that accessing a loaded (but empty) relation doesnt trigger an extra query
+            $this->assertEqual($queryCount + 1, $this->connection->getDbh()->count());
+            $categories[0]->subCategories;
+            $this->assertEqual($queryCount + 1, $this->connection->getDbh()->count());
+        } catch (Doctrine_Exception $e) {
+            $this->fail();                                	
+        }
+    }
+    
+    public function testMultipleJoinFetchingWithArrayFetching() {
+        $query = new Doctrine_Query($this->connection);
+        $queryCount = $this->connection->getDbh()->count();
+        try {
+            $categories = $query->select('c.*, subCats.*, b.*, le.*, a.*')
+                    ->from('QueryTest_Category c')
+                    ->leftJoin('c.subCategories subCats')
+                    ->leftJoin('c.boards b')
+                    ->leftJoin('b.lastEntry le')
+                    ->leftJoin('le.author a')
+                    ->where('c.parentCategoryId = 0')
+                    ->orderBy('c.position ASC, subCats.position ASC, b.position ASC')
+                    ->execute(array(), Doctrine::FETCH_ARRAY);
+            //echo "<pre>";
+            //var_dump($categories);
+            //echo "</pre>";
             $this->pass();
         } catch (Doctrine_Exception $e) {
             $this->fail();                                	

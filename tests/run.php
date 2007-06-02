@@ -200,7 +200,7 @@ $test->addTestCase(new Doctrine_SchemaTestCase());
 $test->addTestCase(new Doctrine_Query_Condition_TestCase());
 
 $test->addTestCase(new Doctrine_CustomPrimaryKey_TestCase());
-$test->addTestCase(new Doctrine_CustomResultSetOrderTestCase());
+$test->addTestCase(new Doctrine_CustomResultSetOrder_TestCase());
 
 
 // Query tests
