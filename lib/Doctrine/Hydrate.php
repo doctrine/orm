@@ -800,6 +800,10 @@ class Doctrine_Hydrate implements Serializable
             $parse = true;
 
             foreach ($data as $key => $value) {
+
+                // The following little cache solution ensures that field aliases are
+                // parsed only once. This increases speed on large result sets by an order
+                // of magnitude.
                 if ( ! isset($cache[$key])) {
                     $e = explode('__', $key);
                     $cache[$key]['field'] = $field = strtolower(array_pop($e));
@@ -872,21 +876,8 @@ class Doctrine_Hydrate implements Serializable
                         $coll =& $prev[$parent][$componentAlias];
                     }
 
-                    if ($index !== false) {
-                        $prev[$alias] =& $coll[$index];
-                    } else {
-                        // first check the count (we do not want to get the last element
-                        // of an empty collection/array)
-                        if (count($coll) > 0) {
-                            // check the type
-                            if (is_array($coll)) {
-                                end($coll);
-                                $prev[$alias] =& $coll[key($coll)];
-                            } else {
-                                $prev[$alias] = $coll->getLast();
-                            }
-                        }
-                    }
+                    $this->_setLastElement($prev, $coll, $index, $alias);
+                    
                     $currData[$alias] = array();
                     $identifiable[$alias] = null;
                 }
@@ -948,20 +939,7 @@ class Doctrine_Hydrate implements Serializable
                     $coll =& $prev[$parent][$componentAlias];
                 }
 
-                if ($index !== false) {
-                    $prev[$alias] =& $coll[$index];
-                } else {
-                    // first check the count (we do not want to get the last element
-                    // of an empty collection/array)
-                    if (count($coll) > 0) {
-                        if (is_array($coll)) {
-                            end($coll);
-                            $prev[$alias] =& $coll[key($coll)];
-                        } else {
-                            $prev[$alias] = $coll->getLast();
-                        }
-                    }
-                }
+                $this->_setLastElement($prev, $coll, $index, $alias);
             $index = false;
             $currData[$alias] = array();
             unset($identifiable[$alias]);
@@ -971,6 +949,32 @@ class Doctrine_Hydrate implements Serializable
 
         $stmt->closeCursor();
         return $array;
+    }
+    /**
+     * _setLastElement
+     *
+     * sets the last element of given data array / collection
+     * as previous element
+     *
+     * @param boolean|integer $index
+     * @return void
+     */
+    public function _setLastElement(&$prev, &$coll, $index, $alias)
+    {
+        if ($index !== false) {
+            $prev[$alias] =& $coll[$index];
+        } else {
+            // first check the count (we do not want to get the last element
+            // of an empty collection/array)
+            if (count($coll) > 0) {
+                if (is_array($coll)) {
+                    end($coll);
+                    $prev[$alias] =& $coll[key($coll)];
+                } else {
+                    $prev[$alias] = $coll->getLast();
+                }
+            }
+        }    	
     }
     /**
      * @return string                   returns a string representation of this object
