@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrate_Array 
+class Doctrine_Hydrate_Array
 {
     public function getElementCollection($component)
     {
@@ -48,6 +48,28 @@ class Doctrine_Hydrate_Array
     public function registerCollection($coll)
     {
 
+    }
+    public function initRelated(array &$data, $name)
+    {
+    	if ( ! isset($data[$name])) {
+            $data[$name] = array();
+        }
+        return true;
+    }
+    public function search(array $element, array $data)
+    {
+        foreach ($data as $key => $val) {
+            $found = true;
+            foreach ($element as $k => $e) {
+                if ($val[$k] !== $e) {
+                    $found = false;
+                }
+            }
+            if ($found) {
+                return $key;
+            }
+        }
+        return false;
     }
     public function flush()
     {
