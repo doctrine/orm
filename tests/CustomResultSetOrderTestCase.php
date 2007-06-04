@@ -84,7 +84,52 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
 		$this->tables[] = "BoardWithPosition";
         parent::prepareTables();
     }
-    
+    /**
+     * Checks whether the boards are correctly assigned to the categories.
+     *
+     * The 'evil' result set that confuses the object population is displayed below.
+     * 
+     * catId | catPos | catName  | boardPos | board.category_id
+     *  1    | 0      | First    | 0        | 1
+     *  2    | 0      | Second   | 0        | 2   <-- The split that confuses the object population
+     *  1    | 0      | First    | 1        | 1
+     *  1    | 0      | First    | 2        | 1
+     *  3    | 2      | Third    | NULL
+     */
+
+    public function testQueryWithOrdering2() {
+        $q = new Doctrine_Query($this->connection);
+        print '<pre>';
+        $categories = $q->select('c.*, b.*')
+                ->from('CategoryWithPosition c')
+                ->leftJoin('c.Boards b')
+                ->orderBy('c.position ASC, b.position ASC')
+                ->execute(array(), Doctrine::FETCH_ARRAY);
+
+        $this->assertEqual(3, count($categories), 'Some categories were doubled!');
+                
+        // Check each category
+        foreach ($categories as $category) {
+            switch ($category['name']) {
+                case 'First':
+                    // The first category should have 3 boards, right?
+                    // It has only 1! The other two slipped to the 2nd category!
+                    $this->assertEqual(3, count($category['Boards']));
+                break;
+                case 'Second':
+                    // The second category should have 1 board, but it got 3 now
+                    $this->assertEqual(1, count($category['Boards']));;
+                break;
+                case 'Third':
+                    // The third has no boards as expected.
+                    //print $category->Boards[0]->position;
+                    $this->assertEqual(0, count($category['Boards']));
+                break;
+            }
+            
+        }
+    }
+
     /**
      * Checks whether the boards are correctly assigned to the categories.
      *
@@ -97,31 +142,35 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
      *  1    | 0      | First    | 2        | 1
      *  3    | 2      | Third    | NULL
      */
+
     public function testQueryWithOrdering() {
         $q = new Doctrine_Query($this->connection);
-        $categories = $q->select("c.*, b.*")
-                ->from("CategoryWithPosition c")
-                ->leftJoin("c.Boards b")
-                ->orderBy("c.position ASC, b.position ASC")
+        $categories = $q->select('c.*, b.*')
+                ->from('CategoryWithPosition c')
+                ->leftJoin('c.Boards b')
+                ->orderBy('c.position ASC, b.position ASC')
                 ->execute();
-        
-        $this->assertEqual(3, $categories->count(), "Some categories were doubled!");
+
+        $this->assertEqual(3, $categories->count(), 'Some categories were doubled!');
                 
         // Check each category
         foreach ($categories as $category) {
             
             switch ($category->name) {
-                case "First":
+                case 'First':
                     // The first category should have 3 boards, right?
                     // It has only 1! The other two slipped to the 2nd category!
+                    print $category->Boards->count();
                     $this->assertEqual(3, $category->Boards->count());
                 break;
-                case "Second":
+                case 'Second':
                     // The second category should have 1 board, but it got 3 now
+                    print $category->Boards->count();
                     $this->assertEqual(1, $category->Boards->count());
                 break;
-                case "Third":
+                case 'Third':
                     // The third has no boards as expected.
+                    //print $category->Boards[0]->position;
                     $this->assertEqual(0, $category->Boards->count());
                 break;
             }
