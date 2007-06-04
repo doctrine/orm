@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Hydrate.php 1504 2007-05-28 19:03:57Z zYne $
+ *  $Id: Hydrate.php 1564 2007-06-02 20:33:41Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,7 +29,7 @@
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
- * @version     $Revision: 1504 $
+ * @version     $Revision: 1564 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Hydrate implements Serializable
@@ -578,10 +578,16 @@ class Doctrine_Hydrate implements Serializable
             foreach ($row as $index => $value) {
                 $agg = false;
 
+
                 if (isset($this->_aliasMap[$alias]['agg'][$index])) {
                     $agg = $this->_aliasMap[$alias]['agg'][$index];
                 }
-                $record->mapValue($agg, $value);
+
+                if (is_array($record)) {
+                    $record[$agg] = $value;
+                } else {
+                    $record->mapValue($agg, $value);
+                }
                 $found = true;
             }
         }
@@ -760,6 +766,12 @@ class Doctrine_Hydrate implements Serializable
      * parseData
      * parses the data returned by statement object
      *
+     * This is method defines the core of Doctrine object population algorithm
+     * hence this method strives to be as fast as possible
+     *
+     * The key idea is the loop over the rowset only once doing all the needed operations
+     * within this massive loop.
+     *
      * @param mixed $stmt
      * @return array
      */
@@ -782,9 +794,11 @@ class Doctrine_Hydrate implements Serializable
         }
 
         $array = $driver->getElementCollection($componentName);
+        $identifiable = array();
 
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $parse = true;
+
             foreach ($data as $key => $value) {
                 if ( ! isset($cache[$key])) {
                     $e = explode('__', $key);
@@ -802,7 +816,6 @@ class Doctrine_Hydrate implements Serializable
 
                 }
 
-                $tmp = array();
                 $alias = $cache[$key]['alias'];
                 $component = $cache[$key]['component'];
                 $componentName = $this->_aliasMap[$cache[$key]['alias']]['table']->getComponentName();
@@ -812,75 +825,160 @@ class Doctrine_Hydrate implements Serializable
                 if ( ! isset($currData[$alias])) {
                     $currData[$alias] = array();
                 }
+                if ( ! isset($prevData[$alias])) {
+                    $prevData[$alias] = array();
+                }
+                if ( ! isset($prevElement[$alias])) {
+                    $prevElement[$alias] = array();
+                }
 
                 if ( ! isset($prev[$alias])) {
                     $prev[$alias] = array();
-                }  
+                }
 
 
-                if ($alias !== $lastAlias || $parse) {
+                $skip = false;
+                if (($alias !== $lastAlias || $parse) && ! empty($currData[$alias])) {
+
                     // component changed
-                    if ( ! isset($prevData[$alias]) || (isset($currData[$alias]) && $currData[$alias] !== $prevData[$alias])) {
-                        if ( ! empty($currData[$alias]) && $driver->isIdentifiable($currData[$alias], $table)) {
-                            if ($alias === $rootAlias) {
-                                // dealing with root component
-    
-                                    $array[$index] = $driver->getElement($currData[$alias], $componentName);
-                                    $prev[$alias]  =& $array[$index];
-    
-                                    $index++;
+                    $element = $driver->getElement($currData[$alias], $componentName);
+
+                    // map aggregate values (if any)
+                    $this->mapAggregateValues($element, $currData[$alias], $alias);
+
+                    if ($currData[$alias] !== $prevData[$alias] || $element !== $prevElement[$alias]) {
+
+                        if ($alias === $rootAlias) {
+                            // dealing with root component
+                            
+                            $index = $driver->search($element, $array);
+                            if ($index === false) {
+                                $array[] = $element;
+                            }
+
+                            $coll =& $array;
+                        } else {
+                            $parent   = $cache[$key]['parent'];
+                            $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
+                            // check the type of the relation
+                            if ( ! $relation->isOneToOne()) {
+                                // initialize the collection
+                                $driver->initRelated($prev[$parent], $component);
+        
+                                // append element
+                                if (isset($identifiable[$alias])) {
+                                    $index = $driver->search($element, $prev[$parent][$component]);
+                                    
+                                    if ($index === false) {
+                                        $prev[$parent][$component][] = $element;
+                                    }
+                                }
+                                // register collection for later snapshots
+                                $driver->registerCollection($prev[$parent][$component]);
                             } else {
-                                $parent   = $cache[$key]['parent'];
-                                $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
-                                // check the type of the relation
-                                if ( ! $relation->isOneToOne()) {
+                                $prev[$parent][$component] = $element;
+                            }
+                            $coll =& $prev[$parent][$component];
+                        }
 
-                                    $prev[$parent][$component][] = $driver->getElement($currData[$alias], $componentName);
-
-                                    $driver->registerCollection($prev[$parent][$component]);
+                        if ($index !== false) {
+                            $prev[$alias] =& $coll[$index];
+                        } else {
+                            // first check the count (we do not want to get the last element
+                            // of an empty collection/array)
+                            if (count($coll) > 0) {
+                                // check the type
+                                if (is_array($coll)) {
+                                    end($coll);
+                                    $prev[$alias] =& $coll[key($coll)];
                                 } else {
-                                    $prev[$parent][$component] = $driver->getElement($currData[$alias], $componentName);
+                                    $prev[$alias] = $coll->getLast();
                                 }
                             }
                         }
-                    }
-                    if (isset($currData[$alias])) {
-                        $prevData[$alias] = $currData[$alias];
-                    } else {
-                        $prevData[$alias] = array();
-                    }
-                    $currData[$alias] = array();
 
+                        if (isset($currData[$alias])) {
+                            $prevData[$alias] = $currData[$alias];
+                        } else {
+                            $prevData[$alias] = array();
+                        }
+                        $currData[$alias] = array();
+                        $identifiable[$alias] = null;
+
+                        $prevElement[$alias] =& $element;
+
+                    }
                 }
-                
                 $field = $cache[$key]['field'];
-
                 $currData[$alias][$field] = $value;
-
+                
+                if ($value !== null) {
+                    $identifiable[$alias] = true;
+                }
                 $lastAlias = $alias;
                 $parse = false;
             }
-        }
-        foreach ($currData as $alias => $data) {
-            $componentName = $this->_aliasMap[$alias]['table']->getComponentName();
-            if ( ! isset($prevData[$alias]) || (isset($currData[$alias]) && $currData[$alias] !== $prevData[$alias])) {
-                if ( ! empty($currData[$alias]) && $driver->isIdentifiable($currData[$alias], $table)) {
 
-                    if ($alias === $rootAlias) {
-                        // dealing with root component
-                        $array[$index] = $driver->getElement($currData[$alias], $componentName);
-                        $prev[$alias]  =& $array[$index];
-                        $index++;
+        }
+        $identifiable = array();
+        foreach ($currData as $alias => $data) {
+            $table = $this->_aliasMap[$alias]['table'];
+            $componentName = $table->getComponentName();
+            // component changed       
+
+            $element = $driver->getElement($currData[$alias], $componentName);
+
+            // map aggregate values (if any)
+            $this->mapAggregateValues($element, $currData[$alias], $alias);
+
+            if ( ! isset($prevData[$alias]) || (isset($currData[$alias]) && $currData[$alias] !== $prevData[$alias]) 
+                || $element !== $prevElement[$alias]) {
+
+
+                if ($alias === $rootAlias) {
+                    // dealing with root component
+                    $index = $driver->search($element, $array);
+                    if ($index === false) {
+                        $array[] = $element;
+                    }
+                    $coll =& $array;
+                } else {
+                    $parent   = $this->_aliasMap[$alias]['parent'];
+                    $relation = $this->_aliasMap[$alias]['relation'];
+                    $componentAlias = $relation->getAlias();
+
+                    // check the type of the relation
+                    if ( ! $relation->isOneToOne()) {
+                        // initialize the collection
+                        $driver->initRelated($prev[$parent], $componentAlias);
+
+                        // append element
+                        if (isset($identifiable[$alias])) {
+                            $index = $driver->search($element, $prev[$parent][$component]);
+                                    
+                            if ($index === false) {
+                                $prev[$parent][$componentAlias][] = $element;
+                            }
+                        }
+                        // register collection for later snapshots
+                        $driver->registerCollection($prev[$parent][$componentAlias]);
                     } else {
-                        $parent   = $this->_aliasMap[$alias]['parent'];
-                        $relation = $this->_aliasMap[$alias]['relation'];
-                        $componentAlias = $relation->getAlias();
-                        // check the type of the relation
-                        if ( ! $relation->isOneToOne()) {
-                            $prev[$parent][$component][] = $driver->getElement($currData[$alias], $componentName);
-                            $driver->registerCollection($prev[$parent][$component]);
+                        $prev[$parent][$componentAlias] = $element;
+                    }
+                    $coll =& $prev[$parent][$componentAlias];
+                }
+
+                if ($index !== false) {
+                    $prev[$alias] =& $coll[$index];
+                } else {
+                    // first check the count (we do not want to get the last element
+                    // of an empty collection/array)
+                    if (count($coll) > 0) {
+                        if (is_array($coll)) {
+                            end($coll);
+                            $prev[$alias] =& $coll[key($coll)];
                         } else {
-                            $prev[$parent][$component] = $driver->getElement($currData[$alias], $componentName);
+                            $prev[$alias] = $coll->getLast();
                         }
                     }
                 }
@@ -891,6 +989,9 @@ class Doctrine_Hydrate implements Serializable
                 $prevData[$alias] = array();
             }
             $currData[$alias] = array();
+            unset($identifiable[$alias]);
+
+            $prevElement[$alias] = $element;
         }
 
         $driver->flush();
