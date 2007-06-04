@@ -21,7 +21,7 @@ class GroupTest
     {
     	$messages = array();
         foreach($this->_testCases as $testCase) {
-            $messages += $testCase->getMessages();
+            $messages = array_merge($messages, $testCase->getMessages());
         }
         return $messages;
     }
