@@ -46,6 +46,19 @@ class Doctrine_Hydrate_Record
 
         return $coll;
     }
+    public function search(Doctrine_Record $record, Doctrine_Collection $coll)
+    {
+        return array_search($record, $coll->getData(), true);
+    }
+    public function initRelated($record, $name)
+    {
+    	if ( ! is_array($record)) {
+            $record[$name];
+
+            return true;
+        }
+        return false;
+    }
     public function registerCollection(Doctrine_Collection $coll)
     {
         $this->_collections[] = $coll;

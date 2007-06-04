@@ -690,11 +690,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * returns a value of a property or a related component
      *
      * @param mixed $name                       name of the property or related component
-     * @param boolean $invoke                   whether or not to invoke the onGetProperty listener
+     * @param boolean $load                     whether or not to invoke the loading procedure
      * @throws Doctrine_Record_Exception        if trying to get a value of unknown property / related component
      * @return mixed
      */
-    public function get($name, $invoke = true)
+    public function get($name, $load = true)
     {
         $value    = self::$_null;
         $lower    = strtolower($name);
@@ -726,9 +726,14 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         }
 
         try {
-            if ( ! isset($this->_references[$name])) {
-                $this->loadReference($name);
+
+            if ( ! isset($this->_references[$name]) && $load) {
+
+                $rel = $this->_table->getRelation($name);
+
+                $this->_references[$name] = $rel->fetchRelatedFor($this);
             }
+
         } catch(Doctrine_Table_Exception $e) { 
             throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
         }
@@ -816,7 +821,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
         // one-to-many or one-to-one relation
         if ($rel instanceof Doctrine_Relation_ForeignKey ||
-           $rel instanceof Doctrine_Relation_LocalKey) {
+            $rel instanceof Doctrine_Relation_LocalKey) {
             if ( ! $rel->isOneToOne()) {
                 // one-to-many relation found
                 if ( ! ($value instanceof Doctrine_Collection)) {

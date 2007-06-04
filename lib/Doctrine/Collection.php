@@ -277,6 +277,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return isset($this->data[$key]);
     }
+    public function search(Doctrine_Record $record)
+    {
+        return array_search($record, $this->data, true);
+    }
     /**
      * get
      * returns a record for given key
