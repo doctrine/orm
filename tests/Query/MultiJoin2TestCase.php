@@ -30,11 +30,18 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase {
-    public function testInitializeData() {
+class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase 
+{
+    public function prepareData()
+    { }
+    public function prepareTables()
+    { }
+    public function testInitializeData() 
+    {
         $query = new Doctrine_Query($this->connection);
         
         $cat = new QueryTest_Category();
+
         $cat->rootCategoryId = 0;
         $cat->parentCategoryId = 0;
         $cat->name = "Cat1";
@@ -57,7 +64,8 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase {
         $lastEntry->save();
 
     }
-    public function testMultipleJoinFetchingWithDeepJoins() {
+    public function testMultipleJoinFetchingWithDeepJoins() 
+    {
         $query = new Doctrine_Query($this->connection);
         $queryCount = $this->connection->getDbh()->count();
         try {
@@ -72,6 +80,7 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase {
                     ->execute();
             // Test that accessing a loaded (but empty) relation doesnt trigger an extra query
             $this->assertEqual($queryCount + 1, $this->connection->getDbh()->count());
+
             $categories[0]->subCategories;
             $this->assertEqual($queryCount + 1, $this->connection->getDbh()->count());
         } catch (Doctrine_Exception $e) {
@@ -79,7 +88,8 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase {
         }
     }
     
-    public function testMultipleJoinFetchingWithArrayFetching() {
+    public function testMultipleJoinFetchingWithArrayFetching() 
+    {
         $query = new Doctrine_Query($this->connection);
         $queryCount = $this->connection->getDbh()->count();
         try {
