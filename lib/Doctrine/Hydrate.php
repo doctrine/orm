@@ -803,23 +803,20 @@ class Doctrine_Hydrate implements Serializable
                 if ( ! isset($cache[$key])) {
                     $e = explode('__', $key);
                     $cache[$key]['field'] = $field = strtolower(array_pop($e));
-                    $componentAlias       = $this->_tableAliases[strtolower(implode('__', $e))];
-
-                    $cache[$key]['alias'] = $componentAlias;
-
-                    if (isset($this->_aliasMap[$componentAlias]['relation'])) {
-                        $cache[$key]['component'] = $this->_aliasMap[$componentAlias]['relation']->getAlias();
-                        $cache[$key]['parent']    = $this->_aliasMap[$componentAlias]['parent'];
-                    } else {
-                        $cache[$key]['component'] = $this->_aliasMap[$componentAlias]['table']->getComponentName();
-                    }
-
+                    $cache[$key]['alias'] = $this->_tableAliases[strtolower(implode('__', $e))];
                 }
 
+
+                $map   = $this->_aliasMap[$cache[$key]['alias']];
+                $table = $map['table'];
                 $alias = $cache[$key]['alias'];
-                $component = $cache[$key]['component'];
-                $componentName = $this->_aliasMap[$cache[$key]['alias']]['table']->getComponentName();
-                $table = $this->_aliasMap[$cache[$key]['alias']]['table'];
+
+                $componentName  = $map['table']->getComponentName();
+                if (isset($map['relation'])) {
+                    $componentAlias = $map['relation']->getAlias();
+                } else {
+                    $componentAlias = $map['table']->getComponentName();
+                }
 
 
                 if ( ! isset($currData[$alias])) {
@@ -850,29 +847,29 @@ class Doctrine_Hydrate implements Serializable
 
                         $coll =& $array;
                     } else {
-                        $parent   = $cache[$key]['parent'];
-                        $relation = $this->_aliasMap[$cache[$key]['alias']]['relation'];
+                        $parent   = $map['parent'];
+                        $relation = $map['relation'];
                         // check the type of the relation
                         if ( ! $relation->isOneToOne()) {
                             // initialize the collection
 
-                            if ($driver->initRelated($prev[$parent], $component)) {
+                            if ($driver->initRelated($prev[$parent], $componentAlias)) {
 
                                 // append element
                                 if (isset($identifiable[$alias])) {
-                                    $index = $driver->search($element, $prev[$parent][$component]);
+                                    $index = $driver->search($element, $prev[$parent][$componentAlias]);
     
                                     if ($index === false) {
-                                        $prev[$parent][$component][] = $element;
+                                        $prev[$parent][$componentAlias][] = $element;
                                     }
                                 }
                                 // register collection for later snapshots
-                                $driver->registerCollection($prev[$parent][$component]);
+                                $driver->registerCollection($prev[$parent][$componentAlias]);
                             }
                         } else {
-                            $prev[$parent][$component] = $element;
+                            $prev[$parent][$componentAlias] = $element;
                         }
-                        $coll =& $prev[$parent][$component];
+                        $coll =& $prev[$parent][$componentAlias];
                     }
 
                     if ($index !== false) {
@@ -902,7 +899,7 @@ class Doctrine_Hydrate implements Serializable
                 $lastAlias = $alias;
                 $parse = false;
 
-            }    
+            }
         }
 
         foreach ($currData as $alias => $data) {
