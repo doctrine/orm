@@ -32,6 +32,7 @@
  */
 class Doctrine_Query_ComponentAlias_TestCase extends Doctrine_UnitTestCase
 {
+
     public function testQueryWithSingleAlias()
     {
         $this->connection->clear();
@@ -49,6 +50,7 @@ class Doctrine_Query_ComponentAlias_TestCase extends Doctrine_UnitTestCase
         "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id, p.id AS p__id, p.phonenumber AS p__phonenumber, p.entity_id AS p__entity_id FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)");
         $this->assertEqual($count, count($this->dbh));
     }
+
     public function testQueryWithNestedAliases()
     {
         $this->connection->clear();
@@ -66,6 +68,22 @@ class Doctrine_Query_ComponentAlias_TestCase extends Doctrine_UnitTestCase
         "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id, e2.id AS e2__id, e2.name AS e2__name, e2.loginname AS e2__loginname, e2.password AS e2__password, e2.type AS e2__type, e2.created AS e2__created, e2.updated AS e2__updated, e2.email_id AS e2__email_id, p.id AS p__id, p.phonenumber AS p__phonenumber, p.entity_id AS p__entity_id FROM entity e LEFT JOIN groupuser g ON e.id = g.user_id LEFT JOIN entity e2 ON e2.id = g.group_id LEFT JOIN phonenumber p ON e2.id = p.entity_id WHERE (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))");
         $this->assertEqual(($count + 1), count($this->dbh));
     }
+    public function testQueryWithNestedAliasesAndArrayFetching()
+    {
+        $this->connection->clear();
+        $q = new Doctrine_Query();
+
+        $q->from('User u, u.Group g, g.Phonenumber');
+
+        $users = $q->execute(array(), Doctrine::FETCH_ARRAY);
+
+        $count = count($this->dbh);
+
+        $this->assertEqual(count($users), 8);
+        $this->assertEqual(count($users[7]['Group']), 0);
+        $this->assertEqual(count($users[1]['Group']), 1);
+    }
+
     public function testQueryWithMultipleNestedAliases()
     {
         $this->connection->clear();
@@ -84,15 +102,14 @@ class Doctrine_Query_ComponentAlias_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(count($users), 2);
         $this->assertEqual(count($users[0]['Group']), 1);
         $this->assertEqual(count($users[0]['Group'][0]['Phonenumber']), 1);
-        $this->assertEqual(count($users[1]['Group']), 0);        
+        $this->assertEqual(count($users[1]['Group']), 0);
         
         $this->assertEqual($count, count($this->dbh));
     }
 
-    public function testQueryWithMultipleNestedAliases2()
+    public function testQueryWithMultipleNestedAliasesAndArrayFetching()
     {
         $q = new Doctrine_Query();
-         print "<pre>";
         $q->from('User u, u.Phonenumber, u.Group g, g.Phonenumber')->where('u.id IN (5,6)');
 
         $users = $q->execute(array(), Doctrine::FETCH_ARRAY);
@@ -102,5 +119,6 @@ class Doctrine_Query_ComponentAlias_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(count($users[0]['Group'][0]['Phonenumber']), 1);
         $this->assertEqual(count($users[1]['Group']), 0);
     }
+
 }
 ?>
