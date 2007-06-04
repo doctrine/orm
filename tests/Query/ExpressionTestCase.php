@@ -46,6 +46,8 @@ class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase {
         
         try {
             $q->parseQuery('SELECT CONCAT(u.name, u.unknown) FROM User u');
+            
+            $q->execute();
             $this->fail();
         } catch(Doctrine_Query_Exception $e) {
             $this->pass();
