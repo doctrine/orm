@@ -42,7 +42,12 @@ class Doctrine_Validator_Unique
     public function validate(Doctrine_Record $record, $key, $value, $args)
     {
         $table = $record->getTable();
-        $sql   = 'SELECT ' . $table->getIdentifier() . ' FROM ' . $table->getTableName() . ' WHERE ' . $key . ' = ?';
+        $pks = $table->getIdentifier();
+        if ( is_array($pks) ) {
+            $pks = join(',',$pks);
+        }
+
+        $sql   = 'SELECT ' . $pks . ' FROM ' . $table->getTableName() . ' WHERE ' . $key . ' = ?';
         
         $values = array();
         $values[] = $value;
