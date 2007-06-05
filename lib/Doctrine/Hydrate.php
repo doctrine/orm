@@ -796,6 +796,10 @@ class Doctrine_Hydrate implements Serializable
         $array = $driver->getElementCollection($componentName);
         $identifiable = array();
 
+        if ($stmt === false) {
+            return $array;                    	
+        }
+
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $parse = true;
 
