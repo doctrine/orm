@@ -30,8 +30,10 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
-    public function testInitializeData() {
+class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase 
+{
+    public function testInitializeData() 
+    {
 
         $query = new Doctrine_Query($this->connection);
 
@@ -77,7 +79,8 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual(count($user->Album[0]->Song), 0);
         $this->assertEqual(count($user->Album[1]->Song), 2);
     }
-    public function testMultipleOneToManyFetching() {
+    public function testMultipleOneToManyFetching() 
+    {
         $this->connection->clear();
 
         $query = new Doctrine_Query();
@@ -111,7 +114,8 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[1]->Phonenumber[2]->phonenumber, '789 789');
     }
 
-    public function testInitializeMoreData() {
+    public function testInitializeMoreData() 
+    {
         $user = $this->connection->getTable('User')->find(4);
         $user->Book[0]->name = 'The Prince';
         $user->Book[0]->Author[0]->name = 'Niccolo Machiavelli';
@@ -134,7 +138,8 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
 
         $this->connection->clear();
     }
-    public function testMultipleOneToManyFetching2() {
+    public function testMultipleOneToManyFetching2() 
+    {
         $query = new Doctrine_Query();
 
         $users = $query->query("FROM User.Album.Song, User.Book.Author WHERE User.id IN (4,5)");
@@ -172,7 +177,8 @@ class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($users[1]->Book[1]->Author[1]->name, 'Voltaire');
     }
 
-    public function testMultipleOneToManyFetchingWithOrderBy() {
+    public function testMultipleOneToManyFetchingWithOrderBy() 
+    {
         $query = new Doctrine_Query();
 
         $users = $query->query("FROM User.Album.Song WHERE User.id IN (4,5) ORDER BY User.Album.Song.title DESC");
