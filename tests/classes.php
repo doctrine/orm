@@ -655,8 +655,8 @@ class QueryTest_Category extends Doctrine_Record
      */
     public function setUp()
     {
-        $this->ownsMany('QueryTest_Category as subCategories','subCategories.parentCategoryId');
-        $this->hasOne('QueryTest_Category as rootCategory','QueryTest_Category.rootCategoryId');
+        $this->ownsMany('QueryTest_Category as subCategories', 'subCategories.parentCategoryId');
+        $this->hasOne('QueryTest_Category as rootCategory', 'QueryTest_Category.rootCategoryId');
         $this->ownsMany('QueryTest_Board as boards', 'QueryTest_Board.categoryId');
     }
 }

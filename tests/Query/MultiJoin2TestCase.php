@@ -102,12 +102,9 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase
                     ->where('c.parentCategoryId = 0')
                     ->orderBy('c.position ASC, subCats.position ASC, b.position ASC')
                     ->execute(array(), Doctrine::FETCH_ARRAY);
-            //echo "<pre>";
-            //var_dump($categories);
-            //echo "</pre>";
             $this->pass();
         } catch (Doctrine_Exception $e) {
-            $this->fail();                                	
+            $this->fail();
         }
     }
 }

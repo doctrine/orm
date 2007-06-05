@@ -56,9 +56,9 @@ class Doctrine_ColumnAlias_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
 
         $q->select('c.alias1, c.alias2')->from('ColumnAliasTest c');
-        
+
         $coll = $q->execute();
-        
+
         $this->assertEqual($coll[0]->alias1, 'someone');
         $this->assertEqual($coll[0]->alias2, 187);
     }
@@ -71,10 +71,10 @@ class Doctrine_ColumnAlias_TestCase extends Doctrine_UnitTestCase
           ->where('c.alias1 = ?');
 
         $coll = $q->execute(array('someone'));
-        
+
         $this->assertEqual($coll[0]->alias1, 'someone');
         $this->assertEqual($coll[0]->alias2, 187);
-    }
+    } 
     public function testAliasesAreSupportedForDqlAggregateFunctions()
     {
         $q = new Doctrine_Query();
@@ -83,7 +83,7 @@ class Doctrine_ColumnAlias_TestCase extends Doctrine_UnitTestCase
           ->from('ColumnAliasTest c');
 
         $coll = $q->execute();
-        
+
         $this->assertEqual($coll[0]->max, 'someone');
     }
     public function testAliasesAreSupportedForDqlHavingPart()

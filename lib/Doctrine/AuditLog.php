@@ -29,10 +29,48 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_AuditLog 
+class Doctrine_AuditLog
 {
-    public function audit(Doctrine_Table $table) 
+    public function audit()
     {
-        
+
+    }
+    public function deleteTriggerSql(Doctrine_Table $table)
+    {
+    	$conn = $table->getConnection();
+    	$columnNames = $table->getColumnNames();
+    	$oldColumns  = array_map(array($this, 'formatOld'), $columnNames);
+        $sql  = 'CREATE TRIGGER '
+              . $conn->quoteIdentifier($table->getTableName()) . '_ddt' . ' DELETE ON '
+              . $conn->quoteIdentifier($table->getTableName())
+              . ' BEGIN'
+              . ' INSERT INTO ' . $table->getTableName() . '_dvt ('
+              . implode(', ', array_map(array($conn, 'quoteIdentifier'), $columnNames))
+              . ') VALUES ('
+              . implode(', ', array_map(array($conn, 'quoteIdentifier'), $oldColumns))
+              . ');'
+              . ' END;';
+        return $sql;
+    }
+    public function updateTriggerSql(Doctrine_Table $table)
+    {
+    	$conn = $table->getConnection();
+    	$columnNames = $table->getColumnNames();
+    	$oldColumns  = array_map(array($this, 'formatOld'), $columnNames);
+        $sql  = 'CREATE TRIGGER '
+              . $conn->quoteIdentifier($table->getTableName()) . '_dut' . ' UPDATE ON '
+              . $conn->quoteIdentifier($table->getTableName())
+              . ' BEGIN'
+              . ' INSERT INTO ' . $table->getTableName() . '_dvt ('
+              . implode(', ', array_map(array($conn, 'quoteIdentifier'), $columnNames))
+              . ') VALUES ('
+              . implode(', ', array_map(array($conn, 'quoteIdentifier'), $oldColumns))
+              . ');'
+              . ' END;';
+        return $sql;
+    }
+    public function formatOld($column)
+    {
+        return 'old.' . $column;
     }
 }

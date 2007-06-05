@@ -99,7 +99,7 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
 
     public function testQueryWithOrdering2() {
         $q = new Doctrine_Query($this->connection);
-        print '<pre>';
+
         $categories = $q->select('c.*, b.*')
                 ->from('CategoryWithPosition c')
                 ->leftJoin('c.Boards b')
@@ -160,12 +160,12 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
                 case 'First':
                     // The first category should have 3 boards, right?
                     // It has only 1! The other two slipped to the 2nd category!
-                    print $category->Boards->count();
+
                     $this->assertEqual(3, $category->Boards->count());
                 break;
                 case 'Second':
                     // The second category should have 1 board, but it got 3 now
-                    print $category->Boards->count();
+
                     $this->assertEqual(1, $category->Boards->count());
                 break;
                 case 'Third':
