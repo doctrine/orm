@@ -218,6 +218,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 $this->_connections[$name] = new Doctrine_Connection_Pgsql($this, $adapter);
                 break;
             case 'oci':
+            case 'oci8':
             case 'oracle':
                 $this->_connections[$name] = new Doctrine_Connection_Oracle($this, $adapter);
                 break;
