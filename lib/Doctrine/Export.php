@@ -804,41 +804,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         $conn->setAttribute(Doctrine::ATTR_CREATE_TABLES, $old);
     }
-    public function export($record)
+    public function exportTable()
     {
-        if ( ! $record instanceof Doctrine_Record)
-            $record = new $record();
 
-        $table = $record->getTable();
-
-        $reporter = new Doctrine_Reporter();
-
-        if ( ! Doctrine::isValidClassname($table->getComponentName())) {
-            $reporter->add(E_WARNING, 'Badly named class.');
-        }
-
-        try {
-            $columns = array();
-            foreach ($table->getColumns() as $name => $column) {
-                $definition = $column[2];
-                $definition['type'] = $column[0];
-                $definition['length'] = $column[1];
-
-                if ($definition['type'] == 'enum' && isset($definition['default'])) {
-                    $definition['default'] = $table->enumIndex($name, $definition['default']);
-                }
-                if ($definition['type'] == 'boolean' && isset($definition['default'])) {
-                    $definition['default'] = (int) $definition['default'];
-                }
-                $columns[$name] = $definition;
-            }
-
-            $this->createTable($table->getTableName(), $columns);
-
-        } catch(Doctrine_Connection_Exception $e) {
-            $reporter->add(E_ERROR, $e->getMessage());
-        }
-
-        return $reporter;
     }
 }
