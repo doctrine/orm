@@ -366,7 +366,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         $options['primary'] = $primary;  
         
-        return array($this->getOption('tableName'), $columns, array_merge($this->getOptions(), $options));
+        return array('tableName' => $this->getOption('tableName'), 
+                     'columns'   => $columns, 
+                     'options'   => array_merge($this->getOptions(), $options));
     }
     /**
      * exportConstraints

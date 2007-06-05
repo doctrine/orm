@@ -822,7 +822,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         try {
             $data = $table->getExportableFormat();
 
-            $this->conn->export->createTable($data[0], $data[1], $data[2]);
+            $this->conn->export->createTable($data['tableName'], $data['columns'], $data['options']);
         } catch(Doctrine_Connection_Exception $e) {
             // we only want to silence table already exists errors
             if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
