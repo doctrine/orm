@@ -158,13 +158,12 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
             
             switch ($category->name) {
                 case 'First':
-                    // The first category should have 3 boards, right?
-                    // It has only 1! The other two slipped to the 2nd category!
+                    // The first category should have 3 boards
 
                     $this->assertEqual(3, $category->Boards->count());
                 break;
                 case 'Second':
-                    // The second category should have 1 board, but it got 3 now
+                    // The second category should have 1 board
 
                     $this->assertEqual(1, $category->Boards->count());
                 break;

@@ -222,7 +222,7 @@ $test->addTestCase(new Doctrine_ColumnAggregationInheritance_TestCase());
 
 $test->addTestCase(new Doctrine_ColumnAlias_TestCase());
 
-
+$test->addTestCase(new Doctrine_Query_OneToOneFetching_TestCase());
 
 $test->addTestCase(new Doctrine_Cache_Apc_TestCase());
 $test->addTestCase(new Doctrine_Cache_Memcache_TestCase());

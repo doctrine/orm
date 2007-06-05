@@ -695,9 +695,9 @@ class QueryTest_Entry extends Doctrine_Record
      */
     public function setTableDefinition()
     {        
-        $this->hasColumn('authorId as authorId', 'integer', 4,
+        $this->hasColumn('authorId', 'integer', 4,
                 array('notnull'));
-        $this->hasColumn('date as date', 'integer', 4,
+        $this->hasColumn('date', 'integer', 4,
                 array('notnull'));
     }
     
@@ -716,7 +716,32 @@ class QueryTest_User extends Doctrine_Record
     public function setTableDefinition()
     {        
         $this->hasColumn('username as username', 'string', 50,
-                array('notnull', 'unique'));
+                array('notnull'));
+        $this->hasColumn('visibleRankId', 'integer', 4);
+    }
+    
+    /**
+     * Runtime definition of the relationships to other entities.
+     */
+    public function setUp()
+    {
+        $this->hasOne('QueryTest_Rank as visibleRank', 'QueryTest_User.visibleRankId');
+    }
+}
+
+class QueryTest_Rank extends Doctrine_Record 
+{
+    /**
+     * Initializes the table definition.
+     */
+    public function setTableDefinition()
+    {        
+        $this->hasColumn('title as title', 'string', 100,
+                array('notnull'));
+        $this->hasColumn('color as color', 'string', 20,
+                array('notnull', 'regexp' => '/^[a-zA-Z\-]{3,}|#[0-9a-fA-F]{6}$/D'));
+        $this->hasColumn('icon as icon', 'string', 50,
+                array('notnull', 'default' => ' ', 'regexp' => '/^[a-zA-Z0-9_\-]+\.(jpg|gif|png)$/D'));        
     }
 }
     
