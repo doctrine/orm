@@ -804,8 +804,76 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         $conn->setAttribute(Doctrine::ATTR_CREATE_TABLES, $old);
     }
-    public function exportTable()
+    /**
+     * exportTable
+     * exports given table into database based on column and option definitions
+     *
+     * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
+     *                                          occurred during the create table operation
+     * @return boolean                          whether or not the export operation was successful
+     *                                          false if table already existed in the database
+     */
+    public function exportTable(Doctrine_Table $table)
     {
+        if ( ! Doctrine::isValidClassname($table->getOption('declaringClass')->getName())) {
+            throw new Doctrine_Export_Exception('Class name not valid.');
+        }
 
+        try {
+            $columns = array();
+            $primary = array();
+
+            foreach ($table->getColumns() as $name => $column) {
+                $definition = $column[2];
+                $definition['type'] = $column[0];
+                $definition['length'] = $column[1];
+
+                switch ($definition['type']) {
+                case 'enum':
+                    if (isset($definition['default'])) {
+                        $definition['default'] = $table->enumIndex($name, $definition['default']);
+                    }
+                    break;
+                case 'boolean':
+                    if (isset($definition['default'])) {
+                        $definition['default'] = $table->getConnection()->convertBooleans($definition['default']);
+                    }
+                    break;
+                }
+                $columns[$name] = $definition;
+
+                if(isset($definition['primary']) && $definition['primary']) {
+                    $primary[] = $name;
+                }
+            }
+
+            if ($table->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_CONSTRAINTS) {
+
+                foreach ($table->getRelations() as $name => $relation) {
+                    $fk = $relation->toArray();
+                    $fk['foreignTable'] = $relation->getTable()->getTableName();
+
+                    if ($relation->getTable() === $this && in_array($relation->getLocal(), $primary)) {
+                        continue;                                                                                 	
+                    }
+
+                    if ($relation->hasConstraint()) {
+
+                        $options['foreignKeys'][] = $fk;
+                    } elseif ($relation instanceof Doctrine_Relation_LocalKey) {
+                        $options['foreignKeys'][] = $fk;
+                    }
+                }
+            }
+
+            $options['primary'] = $primary;
+
+            $this->conn->export->createTable($table->getOption('tableName'), $columns, array_merge($table->getOptions(), $options));
+        } catch(Doctrine_Connection_Exception $e) {
+            // we only want to silence table already exists errors
+            if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
+                throw $e;
+            }
+        }
     }
 }

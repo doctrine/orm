@@ -308,66 +308,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function export() 
     {
-        if ( ! Doctrine::isValidClassname($this->options['declaringClass']->getName())) {
-            throw new Doctrine_Table_Exception('Class name not valid.');
-        }
-
-        try {
-            $columns = array();
-            $primary = array();
-
-            foreach ($this->columns as $name => $column) {
-                $definition = $column[2];
-                $definition['type'] = $column[0];
-                $definition['length'] = $column[1];
-
-                switch ($definition['type']) {
-                case 'enum':
-                    if (isset($definition['default'])) {
-                        $definition['default'] = $this->enumIndex($name, $definition['default']);
-                    }
-                    break;
-                case 'boolean':
-                    if (isset($definition['default'])) {
-                        $definition['default'] = $this->conn->convertBooleans($definition['default']);
-                    }
-                    break;
-                }
-                $columns[$name] = $definition;
-
-                if(isset($definition['primary']) && $definition['primary']) {
-                    $primary[] = $name;
-                }
-            }
-
-            if ($this->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_CONSTRAINTS) {
-
-                foreach ($this->getRelations() as $name => $relation) {
-                    $fk = $relation->toArray();
-                    $fk['foreignTable'] = $relation->getTable()->getTableName();
-
-                    if ($relation->getTable() === $this && in_array($relation->getLocal(), $primary)) {
-                        continue;                                                                                 	
-                    }
-
-                    if ($relation->hasConstraint()) {
-
-                        $options['foreignKeys'][] = $fk;
-                    } elseif ($relation instanceof Doctrine_Relation_LocalKey) {
-                        $options['foreignKeys'][] = $fk;
-                    }
-                }
-            }
-
-            $options['primary'] = $primary;
-
-            $this->conn->export->createTable($this->options['tableName'], $columns, array_merge($this->options, $options));
-        } catch(Doctrine_Connection_Exception $e) {
-            // we only want to silence table already exists errors
-            if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
-                throw $e;
-            }
-        }
+        $this->conn->export->exportTable($this);
     }
     /**
      * exportConstraints
@@ -422,6 +363,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function __isset($option) 
     {
         return isset($this->options[$option]);
+    }
+    /**
+     * getOptions
+     * returns all options of this table and the associated values
+     *
+     * @return array    all options and their values
+     */
+    public function getOptions()
+    {
+        return $this->options;	
     }
     /**
      * addForeignKey
