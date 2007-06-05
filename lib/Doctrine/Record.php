@@ -1339,9 +1339,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * @param mixed $options
      * @return void
      */
-    final public function hasColumn($name, $type, $length = 2147483647, $options = "")
+    public function hasColumn($name, $type, $length = 2147483647, $options = "")
     {
         $this->_table->setColumn($name, $type, $length, $options);
+    }
+    public function hasColumns(array $definitions)
+    {
+        foreach ($definitions as $name => $options) 
+        {
+            $this->hasColumn($name, $options['type'], $options['length'], $options);
+        }
     }
     /**
      * countRelated

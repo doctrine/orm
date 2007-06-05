@@ -31,20 +31,90 @@
  */
 class Doctrine_AuditLog
 {
+    protected $_options = array(
+                            'className'     => '%CLASS%Version',
+                            'deleteTrigger' => '%TABLE%_ddt',
+                            'updateTrigger' => '%TABLE%_dut',
+                            'versionTable'  => '%TABLE%_dvt',
+                            'identifier'    => '__version',
+                            );
+                            
+    protected $_table;
+
+    public function __construct(Doctrine_Table $table)
+    {
+    	$this->_table = $table;
+    }
+
     public function audit()
     {
+        $conn = $this->_table->getConnection();
 
+        // begin new transaction
+        $conn->beginTransaction();
+        try {
+
+            // create the version table and the triggers
+            $this->createVersionTable();
+            $conn->execute($this->deleteTriggerSql());
+            $conn->execute($this->updateTriggerSql());
+
+            // commit structure changes
+            $conn->commit();
+        } catch(Doctrine_Connection_Exception $e) {
+            $conn->rollback();
+        }
     }
-    public function deleteTriggerSql(Doctrine_Table $table)
+
+    public function createVersionTable()
     {
-    	$conn = $table->getConnection();
-    	$columnNames = $table->getColumnNames();
+        $data = $this->_table->getExportableFormat(false);
+        $conn = $this->_table->getConnection();
+        $data['tableName'] = str_replace('%TABLE%', $data['tableName'], $this->_options['versionTable']);
+
+        foreach ($data['columns'] as $name => $def) {
+            unset($data['columns'][$name]['autoinc']);
+            unset($data['columns'][$name]['autoincrement']);
+            unset($data['columns'][$name]['sequence']);
+            unset($data['columns'][$name]['seq']);
+        }
+
+
+        $data['columns'] = array_merge(array($this->_options['identifier'] =>
+                                array('type' => 'integer',
+                                      'primary' => true,
+                                      'autoinc' => true)), $data['columns']);
+        
+
+
+        $definition = 'class ' . str_replace('%CLASS%', $this->_table->getComponentName(), $this->_options['className'])
+                    . ' extends Doctrine_Record { '
+                    . 'public function setTableDefinition() { '
+                    . '$this->hasColumns(' . var_export($data['columns'], true) . ');'
+                    . '$this->option(\'tableName\', \'' . $data['tableName'] . '\'); } }';
+        
+        print $definition;
+
+        eval( $definition );
+        $data['options']['primary'] = array($this->_options['identifier']);
+
+        $conn->export->createTable($data['tableName'], $data['columns'], $data['options']);
+    }
+    /**
+     * deleteTriggerSql
+     *
+     * returns the sql needed for the delete trigger creation
+     */
+    public function deleteTriggerSql()
+    {
+    	$conn = $this->_table->getConnection();
+    	$columnNames = $this->_table->getColumnNames();
     	$oldColumns  = array_map(array($this, 'formatOld'), $columnNames);
         $sql  = 'CREATE TRIGGER '
-              . $conn->quoteIdentifier($table->getTableName()) . '_ddt' . ' DELETE ON '
-              . $conn->quoteIdentifier($table->getTableName())
+              . $conn->quoteIdentifier($this->_table->getTableName()) . '_ddt' . ' DELETE ON '
+              . $conn->quoteIdentifier($this->_table->getTableName())
               . ' BEGIN'
-              . ' INSERT INTO ' . $table->getTableName() . '_dvt ('
+              . ' INSERT INTO ' . $this->_table->getTableName() . '_dvt ('
               . implode(', ', array_map(array($conn, 'quoteIdentifier'), $columnNames))
               . ') VALUES ('
               . implode(', ', array_map(array($conn, 'quoteIdentifier'), $oldColumns))
@@ -52,16 +122,21 @@ class Doctrine_AuditLog
               . ' END;';
         return $sql;
     }
-    public function updateTriggerSql(Doctrine_Table $table)
+    /**
+     * updateTriggerSql
+     *
+     * returns the sql needed for the update trigger creation
+     */
+    public function updateTriggerSql()
     {
-    	$conn = $table->getConnection();
-    	$columnNames = $table->getColumnNames();
+    	$conn = $this->_table->getConnection();
+    	$columnNames = $this->_table->getColumnNames();
     	$oldColumns  = array_map(array($this, 'formatOld'), $columnNames);
         $sql  = 'CREATE TRIGGER '
-              . $conn->quoteIdentifier($table->getTableName()) . '_dut' . ' UPDATE ON '
-              . $conn->quoteIdentifier($table->getTableName())
+              . $conn->quoteIdentifier($this->_table->getTableName()) . '_dut' . ' UPDATE ON '
+              . $conn->quoteIdentifier($this->_table->getTableName())
               . ' BEGIN'
-              . ' INSERT INTO ' . $table->getTableName() . '_dvt ('
+              . ' INSERT INTO ' . $this->_table->getTableName() . '_dvt ('
               . implode(', ', array_map(array($conn, 'quoteIdentifier'), $columnNames))
               . ') VALUES ('
               . implode(', ', array_map(array($conn, 'quoteIdentifier'), $oldColumns))
