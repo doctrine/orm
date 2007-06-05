@@ -815,9 +815,12 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportTable(Doctrine_Table $table)
     {
+    	/**
+    	TODO: maybe there should be portability option for the following check
         if ( ! Doctrine::isValidClassname($table->getOption('declaringClass')->getName())) {
             throw new Doctrine_Export_Exception('Class name not valid.');
         }
+        */
 
         try {
             $data = $table->getExportableFormat();
