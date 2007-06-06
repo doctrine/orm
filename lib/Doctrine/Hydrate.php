@@ -682,6 +682,10 @@ class Doctrine_Hydrate implements Serializable
         } else {
             $stmt = $this->_execute($params, $return);
 
+            if (is_integer($stmt)) {
+                return $stmt;
+            }
+
             $array = $this->parseData2($stmt, $return);
         }
         return $array;
