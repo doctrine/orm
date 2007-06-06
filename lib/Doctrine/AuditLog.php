@@ -83,16 +83,22 @@ class Doctrine_AuditLog
         $data['columns'] = array_merge(array($this->_options['identifier'] =>
                                 array('type' => 'integer',
                                       'primary' => true,
+                                      'length'  => 8,
                                       'autoinc' => true)), $data['columns']);
         
 
-
-        $definition = 'class ' . str_replace('%CLASS%', $this->_table->getComponentName(), $this->_options['className'])
+        $className  =  str_replace('%CLASS%', $this->_table->getComponentName(), $this->_options['className']);
+        $definition = 'class ' . $className
                     . ' extends Doctrine_Record { '
                     . 'public function setTableDefinition() { '
                     . '$this->hasColumns(' . var_export($data['columns'], true) . ');'
                     . '$this->option(\'tableName\', \'' . $data['tableName'] . '\'); } }';
-        
+
+        $this->_table->getRelationParser()->bind($className, array(
+                                  'local'   => $this->_table->getIdentifier(),
+                                  'foreign' => $this->_table->getIdentifier(),
+                                  'type'    => Doctrine_Relation::MANY));
+
         print $definition;
 
         eval( $definition );
