@@ -40,10 +40,13 @@ class Doctrine_AuditLog
                             );
                             
     protected $_table;
+    
+    protected $_auditTable;
 
     public function __construct(Doctrine_Table $table)
     {
     	$this->_table = $table;
+
     }
     /**
      * __get
@@ -127,7 +130,25 @@ class Doctrine_AuditLog
             $conn->rollback();
         }
     }
+    public function getVersion(Doctrine_Record $record, $version)
+    {
+        $className = str_replace('%CLASS%', $this->_table->getComponentName(), $this->_options['className']);
+        
+        $q = new Doctrine_Query();
+        
+        $values = array();
+        foreach ((array) $this->_table->getIdentifier() as $id) {
+            $conditions[] = $className . '.' . $id . ' = ?';
+            $values[] = $record->get($id);
+        }
+        $where = implode(' AND ', $conditions) . ' AND ' . $className . '.' . $this->_options['versionColumn'] . ' = ?';
+        
+        $values[] = $version;
 
+        return $q->from($className)
+                 ->where($where)
+                 ->execute($values, Doctrine::FETCH_ARRAY);
+    }
     public function createVersionTable()
     {
         $data = $this->_table->getExportableFormat(false);
@@ -140,7 +161,7 @@ class Doctrine_AuditLog
             unset($data['columns'][$name]['sequence']);
             unset($data['columns'][$name]['seq']);
         }
-
+        $data['columns'][$this->_options['versionColumn']]['primary'] = true;
 
         $className  =  str_replace('%CLASS%', $this->_table->getComponentName(), $this->_options['className']);
         $definition = 'class ' . $className
@@ -157,10 +178,12 @@ class Doctrine_AuditLog
 
         $this->_table->addListener(new Doctrine_AuditLog_Listener($this));
 
-        eval( $definition );
+        eval($definition);
+
+        $data['options']['primary'][] = $this->_options['versionColumn'];
 
 
-        $conn->export->createTable($data['tableName'], $data['columns'], $data['options']);
+    	$this->_auditTable = $this->_table->getConnection()->getTable($className);
     }
     /**
      * deleteTriggerSql
@@ -173,7 +196,7 @@ class Doctrine_AuditLog
     	$columnNames = $this->_table->getColumnNames();
     	$oldColumns  = array_map(array($this, 'formatOld'), $columnNames);
         $sql  = 'CREATE TRIGGER '
-              . $conn->quoteIdentifier($this->_table->getTableName()) . '_ddt' . ' DELETE ON '
+              . $conn->quoteIdentifier($this->_table->getTableName()) . '_ddt' . ' BEFORE DELETE ON '
               . $conn->quoteIdentifier($this->_table->getTableName())
               . ' BEGIN'
               . ' INSERT INTO ' . $this->_table->getTableName() . '_dvt ('
