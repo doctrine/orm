@@ -36,7 +36,7 @@ class Doctrine_AuditLog
                             'deleteTrigger' => '%TABLE%_ddt',
                             'updateTrigger' => '%TABLE%_dut',
                             'versionTable'  => '%TABLE%_dvt',
-                            'identifier'    => '__version',
+                            'versionColumn'    => 'version',
                             );
                             
     protected $_table;
@@ -54,7 +54,7 @@ class Doctrine_AuditLog
     public function __get($option)
     {
         if (isset($this->options[$option])) {
-            return $this->options[$option];
+            return $this->_options[$option];
         }
         return null;
     }
@@ -65,7 +65,7 @@ class Doctrine_AuditLog
      */
     public function __isset($option) 
     {
-        return isset($this->options[$option]);
+        return isset($this->_options[$option]);
     }
     /**
      * getOptions
@@ -75,7 +75,7 @@ class Doctrine_AuditLog
      */
     public function getOptions()
     {
-        return $this->options;
+        return $this->_options;
     }
     /**
      * setOption
@@ -92,7 +92,7 @@ class Doctrine_AuditLog
         if ( ! isset($this->_options[$name])) {
             throw new Doctrine_Exception('Unknown option ' . $name);
         }
-        $this->options[$name] = $value;
+        $this->_options[$name] = $value;
     }
     /**
      * getOption
@@ -103,8 +103,8 @@ class Doctrine_AuditLog
      */
     public function getOption($name)
     {
-        if (isset($this->options[$name])) {
-            return $this->options[$name];
+        if (isset($this->_options[$name])) {
+            return $this->_options[$name];
         }
         return null;
     }
@@ -142,13 +142,6 @@ class Doctrine_AuditLog
         }
 
 
-        $data['columns'] = array_merge(array($this->_options['identifier'] =>
-                                array('type' => 'integer',
-                                      'primary' => true,
-                                      'length'  => 8,
-                                      'autoinc' => true)), $data['columns']);
-        
-
         $className  =  str_replace('%CLASS%', $this->_table->getComponentName(), $this->_options['className']);
         $definition = 'class ' . $className
                     . ' extends Doctrine_Record { '
@@ -161,10 +154,11 @@ class Doctrine_AuditLog
                                   'foreign' => $this->_table->getIdentifier(),
                                   'type'    => Doctrine_Relation::MANY));
 
-        print $definition;
+
+        $this->_table->addListener(new Doctrine_AuditLog_Listener($this));
 
         eval( $definition );
-        $data['options']['primary'] = array($this->_options['identifier']);
+
 
         $conn->export->createTable($data['tableName'], $data['columns'], $data['options']);
     }

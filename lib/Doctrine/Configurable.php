@@ -175,7 +175,9 @@ abstract class Doctrine_Configurable
      */
     public function addListener($listener, $name = null)
     {
-        if ( ! ($this->attributes[Doctrine::ATTR_LISTENER] instanceof Doctrine_EventListener_Chain)) {
+        if ( ! isset($this->attributes[Doctrine::ATTR_LISTENER]) || 
+             ! ($this->attributes[Doctrine::ATTR_LISTENER] instanceof Doctrine_EventListener_Chain)) {
+            
             $this->attributes[Doctrine::ATTR_LISTENER] = new Doctrine_EventListener_Chain();
         }
         $this->attributes[Doctrine::ATTR_LISTENER]->add($listener, $name);
