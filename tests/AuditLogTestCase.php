@@ -38,22 +38,29 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
     { }
     public function testVersionTableSqlReturnsProperQuery()
     {
-        $table = $this->conn->getTable('Entity');
+        $table = $this->conn->getTable('Versionable');
 
-        $auditLog = new Doctrine_AuditLog($table);
-        
+        $auditLog = $table->getAuditLog();
+
         $auditLog->audit();
-        
-        $entity = new Entity();
+
+        $entity = new Versionable();
         $entity->name = 'zYne';
-        $entity->password = 'secret';
         $entity->save();
-        
+        $this->assertEqual($entity->version, 1);  
+
         $entity->name = 'zYne 2';
         $entity->save();
-        
-        $entity->EntityVersion;
 
+        $this->assertEqual($entity->version, 2);
+
+
+        $entity->delete();
+        $this->assertEqual($entity->version, 3);
+
+        $entity->revert(2);
+
+        $this->assertEqual($entity->name, 'zYne 2');
     }
     public function testUpdateTriggerSqlReturnsProperQuery()
     {
@@ -73,7 +80,7 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
         
         $sql = $auditLog->deleteTriggerSql($table);
 
-        $this->assertEqual($sql, 'CREATE TRIGGER entity_ddt DELETE ON entity BEGIN INSERT INTO entity_dvt (id, name, loginname, password, type, created, updated, email_id) VALUES (old.id, old.name, old.loginname, old.password, old.type, old.created, old.updated, old.email_id); END;');
+        $this->assertEqual($sql, 'CREATE TRIGGER entity_ddt BEFORE DELETE ON entity BEGIN INSERT INTO entity_dvt (id, name, loginname, password, type, created, updated, email_id) VALUES (old.id, old.name, old.loginname, old.password, old.type, old.created, old.updated, old.email_id); END;');
     }
 }
 class Versionable extends Doctrine_Record 
