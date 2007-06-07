@@ -171,12 +171,15 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     public function fetchBranch($pk, $options = array())
     {
         $record = $this->table->find($pk);
+        if ( ! ($record instanceof Doctrine_Record)) {
+            // TODO: if record doesn't exist, throw exception or similar?
+            return false;
+        }
+        
         if ($record->exists()) {
             $options = array_merge(array('include_record'=>true), $options);
             return $record->getNode()->traverse('Pre', $options);
         }
-
-        // TODO: if record doesn't exist, throw exception or similar?
     }
 
     /**
