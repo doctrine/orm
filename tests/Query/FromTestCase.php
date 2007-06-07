@@ -32,6 +32,16 @@
  */
 class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase 
 {
+    public function prepareData()
+    { }
+    public function prepareTables()
+    { }
+    public function testCount()
+    {
+        $count = Doctrine_Query::create()->from('User')->count();
+    
+        $this->assertEqual($count, 0);
+    }
     public function testLeftJoin()
     {
         $q = new Doctrine_Query();
@@ -90,10 +100,6 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase
         $q->select('u.name')->from('User u INNER JOIN u.Group, u.Phonenumber');
 
         $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name FROM entity e INNER JOIN groupuser g ON e.id = g.user_id INNER JOIN entity e2 ON e2.id = g.group_id INNER JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))");
-
-        $users = $q->execute();
-
-        $this->assertEqual($users->count(), 1);
     }
     public function testMixingOfJoins() 
     {
