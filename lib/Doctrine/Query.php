@@ -1129,7 +1129,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 		$table = $map['table'];
 
         // build the query base
-		$q  = 'SELECT COUNT(DISTINCT ' . $this->getTableAlias($table->getTableName())
+		$q  = 'SELECT COUNT(DISTINCT ' . $this->getTableAlias($componentAlias)
             . '.' . $table->getIdentifier()
             . ') FROM ' . $this->buildFromPart();
 
