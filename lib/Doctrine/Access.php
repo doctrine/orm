@@ -32,7 +32,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Access implements ArrayAccess
+abstract class Doctrine_Access extends Doctrine_Object implements ArrayAccess
 {
     /**
      * setArray

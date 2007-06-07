@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrate_Record
+class Doctrine_Hydrate_Record extends Doctrine_Object
 {
     protected $_collections = array();
     
@@ -89,7 +89,10 @@ class Doctrine_Hydrate_Record
         }
         return true;
     }
-
+    public function getNullPointer() 
+    {
+        return self::$_null;
+    }
     public function getElement(array $data, $component)
     {
     	if ( ! isset($this->_tables[$component])) {

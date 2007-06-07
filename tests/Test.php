@@ -68,7 +68,7 @@ class UnitTestCase
         if ($value == $value2) {
             $this->_passed++;
         } else {
-            $this->fail();
+            $this->_fail();
         }
     }
     public function assertNotEqual($value, $value2)
@@ -76,7 +76,7 @@ class UnitTestCase
         if ($value != $value2) {
             $this->_passed++;
         } else {
-            $this->fail();
+            $this->_fail();
         }
     }
     public function assertTrue($expr)
@@ -84,7 +84,7 @@ class UnitTestCase
         if ($expr) {
             $this->_passed++;
         } else {
-            $this->fail();
+            $this->_fail();
         }
     }
     public function assertFalse($expr)
@@ -92,7 +92,7 @@ class UnitTestCase
         if ( ! $expr) {
             $this->_passed++;
         } else {
-            $this->fail();
+            $this->_fail();
         }
     }
     public function pass() 
@@ -100,6 +100,10 @@ class UnitTestCase
         $this->_passed++;
     }
     public function fail()
+    {
+        $this->_fail();	
+    }
+    public function _fail()
     {
     	$trace = debug_backtrace();
     	array_shift($trace);
@@ -111,13 +115,14 @@ class UnitTestCase
                 $class = new ReflectionClass($stack['class']);
 
                 if ( ! isset($line)) {
-                    $line = $stack['line'];                    	
+                    $line = $stack['line'];
                 }
 
                 $this->_messages[] = $class->getName() . ' : method ' . $stack['function'] . ' failed on line ' . $line;
                 break;
             }
             $line = $stack['line'];
+
     	}
 
         $this->_failed++;

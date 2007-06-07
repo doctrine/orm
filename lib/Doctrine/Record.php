@@ -115,11 +115,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     private static $_index = 1;
     /**
-     * @var Doctrine_Null $null             a Doctrine_Null object used for extremely fast
-     *                                      null value testing
-     */
-    private static $_null;
-    /**
      * @var integer $oid                    object identifier, each Record object has a unique object identifier
      */
     private $_oid;
@@ -211,23 +206,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $repository->add($this);
         }
         $this->construct();
-    }
-    /**
-     * initNullObject
-     *
-     * @param Doctrine_Null $null
-     * @return void
-     */
-    public static function initNullObject(Doctrine_Null $null)
-    {
-        self::$_null = $null;
-    }
-    /**
-     * @return Doctrine_Null
-     */
-    public static function getNullObject()
-    {
-        return self::$_null;
     }
     /**
      * _index
@@ -832,14 +810,16 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                     return $this;
                 }
             } else {
-                // one-to-one relation found
-                if ( ! ($value instanceof Doctrine_Record)) {
-                    throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record when setting one-to-one references.");
-                }
-                if ($rel instanceof Doctrine_Relation_LocalKey) {
-                    $this->set($rel->getLocal(), $value, false);
-                } else {
-                    $value->set($rel->getForeign(), $this, false);
+                if ($value !== self::$_null) {
+                    // one-to-one relation found
+                    if ( ! ($value instanceof Doctrine_Record)) {
+                        throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record or Doctrine_Null when setting one-to-one references.");
+                    }
+                    if ($rel instanceof Doctrine_Relation_LocalKey) {
+                        $this->set($rel->getLocal(), $value, false);
+                    } else {
+                        $value->set($rel->getForeign(), $this, false);
+                    }                            
                 }
             }
 
@@ -868,7 +848,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if (isset($this->_id[$lower])) {
             return true;
         }
-        if (isset($this->_references[$name])) {
+        if (isset($this->_references[$name]) && 
+            $this->_references[$name] !== self::$_null) {
+
             return true;
         }
         return false;

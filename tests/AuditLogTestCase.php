@@ -36,11 +36,30 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
     { }
     public function prepareTables()
     { }
+    public function testVersionTableSqlReturnsProperQuery()
+    {
+        $table = $this->conn->getTable('Entity');
+
+        $auditLog = new Doctrine_AuditLog($table);
+        
+        $auditLog->audit();
+        
+        $entity = new Entity();
+        $entity->name = 'zYne';
+        $entity->password = 'secret';
+        $entity->save();
+        
+        $entity->name = 'zYne 2';
+        $entity->save();
+        
+        $entity->EntityVersion;
+
+    }
     public function testUpdateTriggerSqlReturnsProperQuery()
     {
         $table = $this->conn->getTable('User');
         
-        $auditLog = new Doctrine_AuditLog();
+        $auditLog = new Doctrine_AuditLog($table);
         
         $sql = $auditLog->updateTriggerSql($table);
 
@@ -50,10 +69,22 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
     {
         $table = $this->conn->getTable('User');
         
-        $auditLog = new Doctrine_AuditLog();
+        $auditLog = new Doctrine_AuditLog($table);
         
         $sql = $auditLog->deleteTriggerSql($table);
 
         $this->assertEqual($sql, 'CREATE TRIGGER entity_ddt DELETE ON entity BEGIN INSERT INTO entity_dvt (id, name, loginname, password, type, created, updated, email_id) VALUES (old.id, old.name, old.loginname, old.password, old.type, old.created, old.updated, old.email_id); END;');
+    }
+}
+class Versionable extends Doctrine_Record 
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string');
+        $this->hasColumn('version', 'integer');
+    }
+    public function setUp()
+    {
+
     }
 }

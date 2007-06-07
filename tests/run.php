@@ -58,7 +58,7 @@ require_once dirname(__FILE__) . '/../vendor/simpletest/reporter.php';
 require_once dirname(__FILE__) . '/Test.php';
 require_once dirname(__FILE__) . '/UnitTestCase.php';
 
-error_reporting(E_ALL);
+error_reporting(E_ALL | E_STRICT);
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
@@ -141,9 +141,9 @@ $test->addTestCase(new Doctrine_Expression_Mssql_TestCase());
 $test->addTestCase(new Doctrine_Expression_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Expression_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Expression_Sqlite_TestCase());
-
+                               */
 // Core
-    */
+        /**        */
 $test->addTestCase(new Doctrine_Access_TestCase());
 //$test->addTestCase(new Doctrine_Configurable_TestCase());
 
@@ -233,6 +233,7 @@ $test->addTestCase(new Doctrine_Query_Check_TestCase());
 $test->addTestCase(new Doctrine_Query_Limit_TestCase());
 
 
+
 $test->addTestCase(new Doctrine_Query_IdentifierQuoting_TestCase());
 $test->addTestCase(new Doctrine_Query_Update_TestCase());
 $test->addTestCase(new Doctrine_Query_Delete_TestCase());
@@ -270,6 +271,8 @@ $test->addTestCase(new Doctrine_Collection_Snapshot_TestCase());
 
 $test->addTestCase(new Doctrine_Hydrate_FetchMode_TestCase());
 
+
+//$test->addTestCase(new Doctrine_AuditLog_TestCase());
 
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());

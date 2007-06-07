@@ -56,6 +56,10 @@ class Doctrine_Hydrate_Array
         }
         return true;
     }
+    public function getNullPointer() 
+    {
+        return null;	
+    }
     public function search(array $element, array $data)
     {
         foreach ($data as $key => $val) {

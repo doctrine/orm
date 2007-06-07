@@ -137,6 +137,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *      -- treeImpl                     the tree implementation of this table (if any)
      *
      *      -- treeOptions                  the tree options
+     *
+     *      -- versioning
      */
     protected $options          = array('name'           => null,
         'tableName'      => null,
@@ -150,6 +152,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         'treeOptions'    => null,
         'indexes'        => array(),
         'parents'        => array(),
+        'versioning'     => null,
     );
     /**
      * @var Doctrine_Tree $tree                 tree object associated with this table
@@ -316,7 +319,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      * @return array
      */
-    public function getExportableFormat()
+    public function getExportableFormat($parseForeignKeys = true)
     {
         $columns = array();
         $primary = array();
@@ -345,25 +348,26 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             }
         }
 
-        if ($this->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_CONSTRAINTS) {
-
-            foreach ($this->getRelations() as $name => $relation) {
-                $fk = $relation->toArray();
-                $fk['foreignTable'] = $relation->getTable()->getTableName();
-
-                if ($relation->getTable() === $this && in_array($relation->getLocal(), $primary)) {
-                    continue;                                                                                 	
-                }
-
-                if ($relation->hasConstraint()) {
-
-                    $options['foreignKeys'][] = $fk;
-                } elseif ($relation instanceof Doctrine_Relation_LocalKey) {
-                    $options['foreignKeys'][] = $fk;
+        if ($parseForeignKeys) {
+            if ($this->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_CONSTRAINTS) {
+    
+                foreach ($this->getRelations() as $name => $relation) {
+                    $fk = $relation->toArray();
+                    $fk['foreignTable'] = $relation->getTable()->getTableName();
+    
+                    if ($relation->getTable() === $this && in_array($relation->getLocal(), $primary)) {
+                        continue;                                                                                 	
+                    }
+    
+                    if ($relation->hasConstraint()) {
+    
+                        $options['foreignKeys'][] = $fk;
+                    } elseif ($relation instanceof Doctrine_Relation_LocalKey) {
+                        $options['foreignKeys'][] = $fk;
+                    }
                 }
             }
         }
-
         $options['primary'] = $primary;  
         
         return array('tableName' => $this->getOption('tableName'), 
