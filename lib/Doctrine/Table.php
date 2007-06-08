@@ -163,6 +163,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     protected $_parser;
     /**
+     * @var Doctrine_AuditLog $_auditLog
+     */
+    protected $_auditLog;
+    /**
      * the constructor
      * @throws Doctrine_Connection_Exception    if there are no opened connections
      * @throws Doctrine_Table_Exception         if there is already an instance of this table
@@ -1242,6 +1246,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */    
     public function isTree() {
         return ( ! is_null($this->options['treeImpl'])) ? true : false;
+    }
+    public function getAuditLog()
+    {
+        if ( ! isset($this->_auditLog)) {
+            $this->_auditLog = new Doctrine_AuditLog($this);
+        }
+        
+        return $this->_auditLog;
     }
     /**
      * returns a string representation of this object
