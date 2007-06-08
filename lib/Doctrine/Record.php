@@ -1541,6 +1541,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         
         return $this->_node;
     }
+    public function revert($version)
+    {
+        $data = $this->_table->getAuditLog()->getVersion($this, $version);
+        
+        $this->_data = $data[0];
+    }
     /**
      * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
      *
