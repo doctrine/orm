@@ -45,7 +45,7 @@ abstract class Doctrine_Access extends Doctrine_Object implements ArrayAccess
     {
         foreach ($array as $k=>$v) {
             $this->set($k,$v);
-        };
+        }
 
         return $this;
     }
