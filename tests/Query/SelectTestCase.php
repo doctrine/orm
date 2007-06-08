@@ -43,7 +43,22 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
         $users = $q->execute();
         $this->assertEqual($users[0]->value, 'zYne zYne@example.com');
     }
+    public function testSelectDistinctIsSupported()
+    {
+        $q = new Doctrine_Query();
+        
+        $q->distinct()->select('u.name')->from('User u');
 
+        $this->assertEqual($q->getSql(), "SELECT DISTINCT e.id AS e__id, e.name AS e__name FROM entity e WHERE (e.type = 0)");
+    }
+    public function testSelectDistinctIsSupported2()
+    {
+        $q = new Doctrine_Query();
+        
+        $q->select('DISTINCT u.name')->from('User u');
+
+        $this->assertEqual($q->getSql(), "SELECT DISTINCT e.id AS e__id, e.name AS e__name FROM entity e WHERE (e.type = 0)");
+    }
     public function testAggregateFunctionWithDistinctKeyword() 
     {
         $q = new Doctrine_Query();
