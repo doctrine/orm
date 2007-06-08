@@ -34,8 +34,7 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareData()
     { }
-    public function prepareTables()
-    { }
+
     public function testCount()
     {
         $count = Doctrine_Query::create()->from('User')->count();

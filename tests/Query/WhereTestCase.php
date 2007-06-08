@@ -211,6 +211,22 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id FROM entity e WHERE e.name = 'foo.bar' AND (e.type = 0)");
     }
+    public function testDeepComponentReferencingIsSupported()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('u.id')->from('User u')->where("u.Group.name ='some group'");
+
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id FROM entity e LEFT JOIN groupuser g ON e.id = g.user_id LEFT JOIN entity e2 ON e2.id = g.group_id WHERE e2.name = 'some group' AND (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))");
+    }
+    public function testDeepComponentReferencingIsSupported2()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('u.id')->from('User u')->addWhere("u.Group.name ='some group'");
+
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id FROM entity e LEFT JOIN groupuser g ON e.id = g.user_id LEFT JOIN entity e2 ON e2.id = g.group_id WHERE e2.name = 'some group' AND (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))");
+    }
     public function testEnumValuesWorkInPlaceholders()
     {
     	$e = new EnumTest;
