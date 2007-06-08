@@ -108,6 +108,14 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase
         $q->select('u.name, g.name, p.phonenumber')->from('User u INNER JOIN u.Group g LEFT JOIN u.Phonenumber p');
 
         $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e2.id AS e2__id, e2.name AS e2__name, p.id AS p__id, p.phonenumber AS p__phonenumber FROM entity e INNER JOIN groupuser g ON e.id = g.user_id INNER JOIN entity e2 ON e2.id = g.group_id LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))");
-    }     
+    } 
+    public function testMixingOfJoins2()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('u.name, g.name, p.phonenumber')->from('User u INNER JOIN u.Group.Phonenumber p');
+
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, p.id AS p__id, p.phonenumber AS p__phonenumber FROM entity e INNER JOIN groupuser g ON e.id = g.user_id INNER JOIN entity e2 ON e2.id = g.group_id LEFT JOIN phonenumber p ON e2.id = p.entity_id WHERE (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))");
+    }
 }
 ?>
