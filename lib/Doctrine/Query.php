@@ -339,6 +339,15 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     {
         $refs = Doctrine_Tokenizer::bracketExplode($dql, ',');
 
+        $pos   = strpos(trim($refs[0]), ' ');
+        $first = substr($refs[0], 0, $pos);
+        
+        if ($first === 'DISTINCT') {
+            $this->parts['distinct'] = true;
+            
+            $refs[0] = substr($refs[0], ++$pos);
+        }
+
         foreach ($refs as $reference) {
             $reference = trim($reference);
             if (strpos($reference, '(') !== false) {
@@ -349,6 +358,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     $this->parseAggregateFunction($reference);
                 }
             } else {
+
 
                 $e = explode('.', $reference);
                 if (count($e) > 2) {

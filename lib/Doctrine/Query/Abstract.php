@@ -118,8 +118,8 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      * @return Doctrine_Query
      */
     public function distinct($flag = true)
-    {
-        $this->_parts['distinct'] = (bool) $flag;
+    {   
+        $this->parts['distinct'] = (bool) $flag;
 
         return $this;
     }
@@ -133,7 +133,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function forUpdate($flag = true)
     {
-        $this->_parts[self::FOR_UPDATE] = (bool) $flag;
+        $this->parts[self::FOR_UPDATE] = (bool) $flag;
 
         return $this;
     }
