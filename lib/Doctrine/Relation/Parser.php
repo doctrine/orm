@@ -191,22 +191,39 @@ class Doctrine_Relation_Parser
         $def['table']    = $conn->getTable($def['class']);
         $def['refTable'] = $conn->getTable($def['refClass']);
 
-        if ( ! isset($def['foreign'])) {
-            // foreign key not set
-            // try to guess the foreign key
+        $id = $def['refTable']->getIdentifier();
 
-            $columns = $this->getIdentifiers($def['table']);
+        if (count($id) > 1) {
+            if ( ! isset($def['foreign'])) {
+                // foreign key not set
+                // try to guess the foreign key
+    
+                $def['foreign'] = ($def['local'] === $id[0]) ? $id[1] : $id[0];
+            }
+            if ( ! isset($def['local'])) {
+                // foreign key not set
+                // try to guess the foreign key
 
-            $def['foreign'] = $columns;
+                $def['local'] = ($def['foreign'] === $id[0]) ? $id[1] : $id[0];
+            }
+        } else {
+
+            if ( ! isset($def['foreign'])) {
+                // foreign key not set
+                // try to guess the foreign key
+    
+                $columns = $this->getIdentifiers($def['table']);
+    
+                $def['foreign'] = $columns;
+            }
+            if ( ! isset($def['local'])) {
+                // local key not set
+                // try to guess the local key
+                $columns = $this->getIdentifiers($this->_table);
+    
+                $def['local'] = $columns;
+            }
         }
-        if ( ! isset($def['local'])) {
-            // local key not set
-            // try to guess the local key
-            $columns = $this->getIdentifiers($this->_table);
-
-            $def['local'] = $columns;
-        } 
-
         return $def;
     }
     /** 
