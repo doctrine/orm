@@ -80,7 +80,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
             $result = $this->createSequence($table, $start);
         }
 
-        $sequence_name = $this->conn->getSequenceName($table);
+        $sequence_name = $this->conn->formatter->getSequenceName($table);
         $trigger_name  = $this->conn->quoteIdentifier($table . '_AUTOINCREMENT_PK', true);
 
         $table = $this->conn->quoteIdentifier($table, true);

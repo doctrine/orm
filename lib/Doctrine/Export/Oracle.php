@@ -113,7 +113,7 @@ class Doctrine_Export_Oracle extends Doctrine_Export
             $result = $this->createSequence($table, $start);
         }
 
-        $sequence_name = $this->conn->getSequenceName($table);
+        $sequence_name = $this->conn->formatter->getSequenceName($table);
         $trigger_name  = $this->conn->quoteIdentifier($table . '_AI_PK', true);
         $table = $this->conn->quoteIdentifier($table, true);
         $name  = $this->conn->quoteIdentifier($name, true);
@@ -400,7 +400,7 @@ END;
      */
     public function createSequence($seqName, $start = 1)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
         $query = 'CREATE SEQUENCE ' . $sequenceName . ' START WITH ' . $start . ' INCREMENT BY 1 NOCACHE';
         $query.= ($start < 1 ? ' MINVALUE ' . $start : '');
         return $this->conn->exec($query);
@@ -414,7 +414,7 @@ END;
      */
     public function dropSequence($seqName)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
         return $this->conn->exec('DROP SEQUENCE ' . $sequenceName);
     }
 }
