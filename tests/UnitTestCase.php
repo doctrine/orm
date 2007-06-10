@@ -97,7 +97,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             if($this->driverName == 'main') {
                 $this->dbh = Doctrine_Db::getConnection('sqlite::memory:');
             } else {
-                $this->dbh = $this->adapter = new AdapterMock($this->driverName);
+                $this->dbh = $this->adapter = new Doctrine_Adapter_Mock($this->driverName);
             }
 
             $this->conn = $this->connection = $this->manager->openConnection($this->dbh, $this->driverName);

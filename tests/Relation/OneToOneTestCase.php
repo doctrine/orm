@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Connection_TestCase
+ * Doctrine_Relation_OneToOne_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>

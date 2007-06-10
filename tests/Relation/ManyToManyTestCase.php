@@ -122,25 +122,7 @@ class Doctrine_Relation_ManyToMany_TestCase extends Doctrine_UnitTestCase {
         }
         $this->assertEqual($rel->getForeign(), 'oid');
     }
-    /**
-    public function testManyToManyRelationFetchingWithAliasesAndCustomPKs() {
-        $q = new Doctrine_Query();
 
-        try {
-            $q->from('M2MTest2 m LEFT JOIN m.RTC5');
-            $this->pass();
-        } catch(Doctrine_Exception $e) {
-            $this->fail();
-        }
-
-        try {
-            $q->execute();
-            $this->pass();
-        } catch(Doctrine_Exception $e) {
-            $this->fail();
-        }
-    }
-    */
     public function testManyToManyRelationFetchingWithAliasesAndCustomPKs2() {
         $q = new Doctrine_Query();
 

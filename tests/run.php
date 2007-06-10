@@ -65,7 +65,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 // DATABASE ABSTRACTION tests
-/**
+/**                       */
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -116,7 +116,6 @@ $test->addTestCase(new Doctrine_Export_Mssql_TestCase());
 $test->addTestCase(new Doctrine_Export_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Export_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Export_Sqlite_TestCase());
-
 $test->addTestCase(new Doctrine_Export_Mysql_TestCase());
 
 $test->addTestCase(new Doctrine_CascadingDelete_TestCase());
@@ -141,9 +140,9 @@ $test->addTestCase(new Doctrine_Expression_Mssql_TestCase());
 $test->addTestCase(new Doctrine_Expression_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Expression_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Expression_Sqlite_TestCase());
-                               */
+
 // Core
-        /**        */
+
 $test->addTestCase(new Doctrine_Access_TestCase());
 //$test->addTestCase(new Doctrine_Configurable_TestCase());
 
@@ -163,8 +162,12 @@ $test->addTestCase(new Doctrine_Relation_TestCase());
 
 //$test->addTestCase(new Doctrine_Relation_Access_TestCase());
 //$test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
+
+//$test->addTestCase(new Doctrine_Relation_Nest_TestCase());
+
 $test->addTestCase(new Doctrine_Relation_OneToOne_TestCase());
-//$test->addTestCase(new Doctrine_Relation_Parser_TestCase());
+
+$test->addTestCase(new Doctrine_Relation_Parser_TestCase());
 
 // Datatypes
 $test->addTestCase(new Doctrine_Enum_TestCase());
@@ -243,7 +246,6 @@ $test->addTestCase(new Doctrine_Query_Join_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Having_TestCase());
 
-$test->addTestCase(new Doctrine_Query_Where_TestCase());
 
 $test->addTestCase(new Doctrine_RawSql_TestCase());
 
@@ -253,9 +255,9 @@ $test->addTestCase(new Doctrine_Query_Subquery_TestCase());
 
 $test->addTestCase(new Doctrine_Query_AggregateValue_TestCase());
 
-$test->addTestCase(new Doctrine_Query_Select_TestCase());
 
-$test->addTestCase(new Doctrine_Query_From_TestCase());
+
+
 $test->addTestCase(new Doctrine_NewCore_TestCase());
 
 // Record
@@ -271,8 +273,13 @@ $test->addTestCase(new Doctrine_Collection_Snapshot_TestCase());
 
 $test->addTestCase(new Doctrine_Hydrate_FetchMode_TestCase());
 
+$test->addTestCase(new Doctrine_Query_Where_TestCase());
 
-//$test->addTestCase(new Doctrine_AuditLog_TestCase());
+$test->addTestCase(new Doctrine_Query_From_TestCase());
+
+$test->addTestCase(new Doctrine_AuditLog_TestCase());
+
+$test->addTestCase(new Doctrine_Query_Select_TestCase());
 
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
