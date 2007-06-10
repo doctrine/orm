@@ -43,9 +43,11 @@ class Doctrine_Sequence_Db2 extends Doctrine_Sequence
      */
     public function lastSequenceId($sequenceName)
     {
-        $this->_connect();
-        $sql = 'SELECT PREVVAL FOR '.$this->quoteIdentifier($sequenceName).' AS VAL FROM SYSIBM.SYSDUMMY1';
-        $stmt = $this->query($sql);
+        $sql = 'SELECT PREVVAL FOR '
+             . $this->quoteIdentifier($this->conn->formatter->getSequenceName($sequenceName))
+             . ' AS VAL FROM SYSIBM.SYSDUMMY1';
+
+        $stmt   = $this->query($sql);
         $result = $stmt->fetchAll(Zend_Db::FETCH_ASSOC);
         if ($result) {
             return $result[0]['VAL'];
@@ -66,7 +68,9 @@ class Doctrine_Sequence_Db2 extends Doctrine_Sequence
     public function nextSequenceId($sequenceName)
     {
         $this->_connect();
-        $sql = 'SELECT NEXTVAL FOR '.$this->quoteIdentifier($sequenceName).' AS VAL FROM SYSIBM.SYSDUMMY1';
+        $sql = 'SELECT NEXTVAL FOR '
+             . $this->quoteIdentifier($this->conn->formatter->getSequenceName($sequenceName))
+             . ' AS VAL FROM SYSIBM.SYSDUMMY1';
         $stmt = $this->query($sql);
         $result = $stmt->fetchAll(Zend_Db::FETCH_ASSOC);
         if ($result) {

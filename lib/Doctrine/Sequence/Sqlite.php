@@ -42,7 +42,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
      */
     public function nextId($seqName, $onDemand = true)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
         $seqcolName   = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
 
         $query        = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (NULL)';
@@ -101,7 +101,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
      */
     public function currId($seqName)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
         $seqcolName   = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
 
         $query        = 'SELECT MAX(' . $seqcolName . ') FROM ' . $sequenceName;

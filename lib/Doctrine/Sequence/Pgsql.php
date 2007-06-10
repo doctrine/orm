@@ -42,7 +42,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
      */
     public function nextId($seqName, $onDemand = true)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
 
         $query = "SELECT NEXTVAL('" . $sequenceName . "')";
         try {
@@ -70,7 +70,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
     public function lastInsertId($table = null, $field = null)
     {
         $seqName = $table . (empty($field) ? '' : '_' . $field);
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
 
         return (int) $this->conn->fetchOne("SELECT CURRVAL('" . $sequenceName . "')");
     }
@@ -83,7 +83,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
      */
     public function currId($seqName)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
         return (int) $this->conn->fetchOne('SELECT last_value FROM ' . $sequenceName);
     }
 }

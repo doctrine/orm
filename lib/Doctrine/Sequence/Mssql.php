@@ -42,7 +42,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
      */
     public function nextId($seqName, $ondemand = true)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->formatter->getSequenceName($seqName), true);
         $seqcolName   = $this->conn->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
 
 
