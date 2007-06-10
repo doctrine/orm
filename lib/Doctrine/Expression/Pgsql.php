@@ -92,12 +92,11 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression
      * @param string|array(string) strings that will be concatinated.
      * @return string
      */
-    public function concat($arg1, $arg2)
+    public function concat()
     {
         $args = func_get_args();
-        $cols = $this->getIdentifiers($cols);
 
-        return join(' || ' , $cols);
+        return join(' || ' , $args);
     }
     /**
      * Returns the SQL string to return the current system date and time.

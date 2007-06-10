@@ -41,12 +41,11 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression
      * @param string $arg1, $arg2 ... $argN     strings that will be concatinated.
      * @return string
      */
-    public function concat($arg1, $arg2)
+    public function concat()
     {
         $args = func_get_args();
 
-        $cols = $this->getIdentifiers( $args );
-        return join( ' || ' , $cols );
+        return join(' || ' , $args);
     }
     /**
      * return string to call a function to get a substring inside an SQL statement

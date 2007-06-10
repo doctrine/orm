@@ -115,7 +115,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
      *
      * @return array
      */
-    public function listTriggers()
+    public function listTriggers($database = null)
     {
         $query = "SELECT name FROM sysobjects WHERE xtype = 'TR'";
 
