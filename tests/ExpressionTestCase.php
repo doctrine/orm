@@ -95,7 +95,7 @@ class Doctrine_Expression_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->expr->locate('id', 3), 'LOCATE(id, 3)');
     }
     public function testConcatReturnsValidSql() {
-        $this->assertEqual($this->expr->concat(array('id', 'type')), 'CONCAT(id, type)');
+        $this->assertEqual($this->expr->concat('id', 'type'), 'CONCAT(id, type)');
     }
     public function testSubstringReturnsValidSql() {
         $this->assertEqual($this->expr->substring('id', 3), 'SUBSTRING(id FROM 3)');
