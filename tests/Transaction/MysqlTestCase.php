@@ -1,30 +1,64 @@
 <?php
-class Doctrine_Transaction_Mysql_TestCase extends Doctrine_Driver_UnitTestCase {
-    public function __construct() {
-        parent::__construct('mysql');
-    }
-    public function testCreateSavePointExecutesSql() {
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.com>.
+ */
+
+/**
+ * Doctrine_Transaction_Mysql_TestCase
+ *
+ * @package     Doctrine
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
+ */
+class Doctrine_Transaction_Mysql_TestCase extends Doctrine_UnitTestCase
+{
+    public function testCreateSavePointExecutesSql() 
+    {
         $this->transaction->beginTransaction('mypoint');
 
         $this->assertEqual($this->adapter->pop(), 'SAVEPOINT mypoint');
     }
-    public function testReleaseSavePointExecutesSql() {
+    public function testReleaseSavePointExecutesSql() 
+    {
         $this->transaction->commit('mypoint');
 
         $this->assertEqual($this->adapter->pop(), 'RELEASE SAVEPOINT mypoint');
     }
-    public function testRollbackSavePointExecutesSql() {
+    public function testRollbackSavePointExecutesSql() 
+    {
         $this->transaction->beginTransaction('mypoint');
         $this->transaction->rollback('mypoint');
 
         $this->assertEqual($this->adapter->pop(), 'ROLLBACK TO SAVEPOINT mypoint');
     }
-    public function testGetIsolationExecutesSql() {
+    public function testGetIsolationExecutesSql() 
+    {
         $this->transaction->getIsolation();
 
         $this->assertEqual($this->adapter->pop(), 'SELECT @@tx_isolation');
     }
-    public function testSetIsolationThrowsExceptionOnUnknownIsolationMode() {
+    public function testSetIsolationThrowsExceptionOnUnknownIsolationMode() 
+    {
         try {
             $this->transaction->setIsolation('unknown');
             $this->fail();
@@ -32,7 +66,8 @@ class Doctrine_Transaction_Mysql_TestCase extends Doctrine_Driver_UnitTestCase {
             $this->pass();
         }
     }
-    public function testSetIsolationExecutesSql() {
+    public function testSetIsolationExecutesSql() 
+    {
         $this->transaction->setIsolation('READ UNCOMMITTED');
 
         $this->assertEqual($this->adapter->pop(), 'SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED');
