@@ -157,4 +157,6 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
     {
                                    	
     }
+    public function sqliteCreateFunction()
+    { }
 }

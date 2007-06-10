@@ -203,7 +203,7 @@ END;
      *
      * @return void
      */
-    public function createTable($name, $fields, $options = array())
+    public function createTable($name, array $fields, array $options = array())
     {
         $this->conn->beginTransaction();
 

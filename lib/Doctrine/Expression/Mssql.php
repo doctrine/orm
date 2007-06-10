@@ -72,7 +72,7 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression
      * @param string $values...
      * @return string to concatenate two strings
      */
-    public function concat($arg1, $arg2)
+    public function concat()
     {
         $args = func_get_args();
         return '(' . implode(' + ', $args) . ')';

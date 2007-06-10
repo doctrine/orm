@@ -37,7 +37,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
      *
      * @return array        data array
      */
-    public function listTables()
+    public function listTables($database = null)
     {
         $query = 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS WHERE RDB$SYSTEM_FLAG=0 AND RDB$VIEW_BLR IS NULL';
 
@@ -71,7 +71,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
      *
      * @return array            data array containing all database views
      */
-    public function listViews()
+    public function listViews($database = null)
     {
         return $this->conn->fetchColumn('SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS');
     }
@@ -108,7 +108,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
      *                            previous database to query against.
      * @return array              data array containing all triggers for given table
      */
-    public function listTableTriggers($table = null)
+    public function listTableTriggers($table)
     {
         $query = 'SELECT RDB$TRIGGER_NAME FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG IS NULL OR RDB$SYSTEM_FLAG = 0';
 
