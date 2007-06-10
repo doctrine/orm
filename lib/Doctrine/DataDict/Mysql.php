@@ -373,8 +373,11 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
 
         $length = ((int) $length == 0) ? null : (int) $length;
 
-
-        return array('type' => $type, 'length' => $length, 'unsigned' => $unsigned, 'fixed' => $fixed, 'values' => $values);
+        if ($values === null) {
+            return array('type' => $type, 'length' => $length, 'unsigned' => $unsigned, 'fixed' => $fixed);
+        } else {
+            return array('type' => $type, 'length' => $length, 'unsigned' => $unsigned, 'fixed' => $fixed, 'values' => $values);
+        }
     }
     /**
      * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
