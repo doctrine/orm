@@ -88,7 +88,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
         $tableNames = $this->conn->fetchColumn($query);
 
-        return array_map(array($this->conn, 'fixSequenceName'), $tableNames);
+        return array_map(array($this->conn->formatter, 'fixSequenceName'), $tableNames);
     }
     /**
      * lists table constraints
@@ -105,7 +105,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
         $constraints = $this->conn->fetchColumn($query);
 
-        return array_map(array($this->conn, 'fixIndexName'), $constraints);
+        return array_map(array($this->conn->formatter, 'fixIndexName'), $constraints);
     }
     /**
      * lists table constraints
@@ -154,7 +154,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
         $indexes = $this->conn->fetchColumn($query);
 
-        return array_map(array($this->conn, 'fixIndexName'), $indexes);
+        return array_map(array($this->conn->formatter, 'fixIndexName'), $indexes);
     }
     /**
      * lists tables

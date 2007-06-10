@@ -44,7 +44,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
         $query = "SELECT name FROM sysobjects WHERE xtype = 'U'";
         $tableNames = $this->conn->fetchColumn($query);
 
-        return array_map(array($this->conn, 'fixSequenceName'), $tableNames);
+        return array_map(array($this->conn->formatter, 'fixSequenceName'), $tableNames);
     }
     /**
      * lists table constraints
@@ -168,7 +168,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
 
         foreach ($indexes as $index) {
             if (!in_array($index, $pkAll) && $index != null) {
-                $result[] = $this->_fixIndexName($index);
+                $result[] = $this->conn->formatter->fixIndexName($index);
             }
         }
 
