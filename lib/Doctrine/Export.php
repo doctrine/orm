@@ -66,7 +66,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function dropIndex($table, $name)
     {
-        $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
+        $name = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name), true);
         return $this->conn->exec('DROP INDEX ' . $name);
     }
     /**
@@ -80,7 +80,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function dropConstraint($table, $name, $primary = false)
     {
         $table = $this->conn->quoteIdentifier($table, true);
-        $name  = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
+        $name  = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name), true);
         return $this->conn->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
     }
     /**
@@ -226,7 +226,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function createConstraint($table, $name, $definition)
     {
         $table = $this->conn->quoteIdentifier($table, true);
-        $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
+        $name = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name), true);
         $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $name;
         if (!empty($definition['primary'])) {
             $query .= ' PRIMARY KEY';

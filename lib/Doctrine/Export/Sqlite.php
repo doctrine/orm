@@ -68,7 +68,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
     public function createIndexSql($table, $name, array $definition)
     {
         $table = $this->conn->quoteIdentifier($table, true);
-        $name  = $this->conn->getIndexName($name);
+        $name  = $this->conn->formatter->getIndexName($name);
         $query = 'CREATE INDEX ' . $name . ' ON ' . $table;
         $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
 

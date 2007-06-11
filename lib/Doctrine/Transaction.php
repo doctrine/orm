@@ -207,10 +207,13 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * Listeners: onPreTransactionBegin, onTransactionBegin
      *
      * @param string $savepoint                 name of a savepoint to set
+     * @throws Doctrine_Transaction_Exception   if the transaction fails at database level     
      * @return integer                          current transaction nesting level
      */
     public function beginTransaction($savepoint = null)
     {
+        $this->conn->connect();
+
         if ( ! is_null($savepoint)) {
             $this->beginTransaction();
 
@@ -221,7 +224,11 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             if ($this->transactionLevel == 0) {
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionBegin($this->conn);
 
-                $this->conn->getDbh()->beginTransaction();
+                try {
+                    $this->conn->getDbh()->beginTransaction();
+                } catch(Exception $e) {
+                    throw new Doctrine_Transaction_Exception($e->getMessage());
+                }
 
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionBegin($this->conn);
             }
@@ -240,14 +247,17 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * Listeners: onPreTransactionCommit, onTransactionCommit
      *
      * @param string $savepoint                 name of a savepoint to release
-     * @throws Doctrine_Transaction_Exception   if the transaction fails at PDO level
+     * @throws Doctrine_Transaction_Exception   if the transaction fails at database level
      * @throws Doctrine_Validator_Exception     if the transaction fails due to record validations
      * @return boolean                          false if commit couldn't be performed, true otherwise
      */
     public function commit($savepoint = null)
     {
-        if ($this->transactionLevel == 0)
+    	$this->conn->connect();
+
+        if ($this->transactionLevel == 0) {
             return false;
+        }
 
         if ( ! is_null($savepoint)) {
             $this->transactionLevel = $this->removeSavePoints($savepoint);
@@ -263,7 +273,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                 } catch(Exception $e) {
                     $this->rollback();
 
-                    throw new Doctrine_Transaction_Exception($e->__toString());
+                    throw new Doctrine_Transaction_Exception($e->getMessage());
                 }
                 if ( ! empty($this->invalid)) {
                     $this->rollback();
@@ -299,16 +309,20 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * auto-committing is disabled, otherwise it will fail. Therefore, a new
      * transaction is implicitly started after canceling the pending changes.
      *
-     * this method listens to onPreTransactionRollback and onTransactionRollback
+     * this method can be listened with onPreTransactionRollback and onTransactionRollback
      * eventlistener methods
      *
-     * @param string $savepoint                 name of a savepoint to rollback to
+     * @param string $savepoint                 name of a savepoint to rollback to   
+     * @throws Doctrine_Transaction_Exception   if the rollback operation fails at database level
      * @return boolean                          false if rollback couldn't be performed, true otherwise
      */
     public function rollback($savepoint = null)
     {
-        if ($this->transactionLevel == 0)
+        $this->conn->connect();
+
+        if ($this->transactionLevel == 0) {
             return false;
+        }
 
         $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onPreTransactionRollback($this->conn);
 
@@ -321,8 +335,11 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             $this->deteles = array();
 
             $this->transactionLevel = 0;
-
-            $this->conn->getDbh()->rollback();
+            try {
+                $this->conn->getDbh()->rollback();
+            } catch (Exception $e) {
+                throw new Doctrine_Transaction_Exception($e->getMessage());
+            }
         }
         $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->onTransactionRollback($this->conn);
 

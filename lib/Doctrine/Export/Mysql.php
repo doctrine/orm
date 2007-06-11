@@ -579,7 +579,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     public function dropIndex($table, $name)
     {
         $table  = $this->conn->quoteIdentifier($table, true);
-        $name   = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
+        $name   = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name), true);
         return $this->conn->exec('DROP INDEX ' . $name . ' ON ' . $table);
     }
     /**

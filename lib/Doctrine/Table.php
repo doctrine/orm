@@ -462,7 +462,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function addIndex($index, array $definition)
     {
-        $index = $this->conn->getIndexName($index);
+        $index = $this->conn->formatter->getIndexName($index);
         $this->options['indexes'][$index] = $definition;
     }
     /**

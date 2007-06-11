@@ -113,7 +113,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                              'import'      => false,
                              'sequence'    => false,
                              'unitOfWork'  => false,
-                             'formatter'   => false
+                             'formatter'   => false,
+                             'util'        => false,
                              );
     /**
      * @var array $properties               an array of connection properties
@@ -232,6 +233,59 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function getDbh()
     {
         return $this->dbh;
+    }
+    /**
+     * connect
+     * connects into database
+     *
+     * @return boolean
+     */
+    public function connect()
+    {
+    	/**
+        if ($this->isConnected) {
+            return false;
+        }
+
+        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::CONNECT);
+
+        $this->listener->onPreConnect($event);
+
+        $e     = explode(':', $this->options['dsn']);
+        $found = false;
+        
+        if (extension_loaded('pdo')) {
+            if (in_array($e[0], PDO::getAvailableDrivers())) {
+                $this->dbh = new PDO($this->options['dsn'], $this->options['username'], $this->options['password']);
+                $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $found = true;
+            }
+        }
+
+        if ( ! $found) {
+            $class = 'Doctrine_Adapter_' . ucwords($e[0]);
+
+            if (class_exists($class)) {
+                $this->dbh = new $class($this->options['dsn'], $this->options['username'], $this->options['password']);
+            } else {
+                throw new Doctrine_Connection_Exception("Couldn't locate driver named " . $e[0]);      	
+            }
+        }
+
+        
+        foreach($this->pendingAttributes as $attr => $value) {
+            // some drivers don't support setting this so we just skip it
+            if($attr == Doctrine::ATTR_DRIVER_NAME) {
+                continue;
+            }
+            $this->dbh->setAttribute($attr, $value);
+        }
+
+        $this->isConnected = true;
+
+        $this->listener->onConnect($event);
+        return true;
+        */
     }
     /**
      * converts given driver name
@@ -762,17 +816,17 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * addTable
      * adds a Doctrine_Table object into connection registry
      *
-     * @param $objTable             a Doctrine_Table object to be added into registry
+     * @param $table                a Doctrine_Table object to be added into registry
      * @return boolean
      */
-    public function addTable(Doctrine_Table $objTable)
+    public function addTable(Doctrine_Table $table)
     {
-        $name = $objTable->getComponentName();
+        $name = $table->getComponentName();
 
         if (isset($this->tables[$name])) {
             return false;
         }
-        $this->tables[$name] = $objTable;
+        $this->tables[$name] = $table;
         return true;
     }
     /**
@@ -850,40 +904,55 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
     /**
      * beginTransaction
-     * starts a new transaction
+     * Start a transaction or set a savepoint.
      *
-     * this method can be listened by onPreBeginTransaction and onBeginTransaction
-     * listener methods
+     * if trying to set a savepoint and there is no active transaction
+     * a new transaction is being started
      *
-     * @return void
+     * Listeners: onPreTransactionBegin, onTransactionBegin
+     *
+     * @param string $savepoint                 name of a savepoint to set
+     * @throws Doctrine_Transaction_Exception   if the transaction fails at database level
+     * @return integer                          current transaction nesting level
      */
-    public function beginTransaction()
+    public function beginTransaction($savepoint = null)
     {
-        $this->transaction->beginTransaction();
+        $this->transaction->beginTransaction($savepoint);
     }
     /**
-     * commits the current transaction
-     * if lockmode is optimistic this method starts a transaction
-     * and commits it instantly
+     * commit
+     * Commit the database changes done during a transaction that is in
+     * progress or release a savepoint. This function may only be called when
+     * auto-committing is disabled, otherwise it will fail.
      *
-     * @return void
+     * Listeners: onPreTransactionCommit, onTransactionCommit
+     *
+     * @param string $savepoint                 name of a savepoint to release
+     * @throws Doctrine_Transaction_Exception   if the transaction fails at PDO level
+     * @throws Doctrine_Validator_Exception     if the transaction fails due to record validations
+     * @return boolean                          false if commit couldn't be performed, true otherwise
      */
-    public function commit()
+    public function commit($savepoint = null)
     {
-        $this->transaction->commit();
+        $this->transaction->commit($savepoint);
     }
     /**
      * rollback
-     * rolls back all transactions
+     * Cancel any database changes done during a transaction or since a specific
+     * savepoint that is in progress. This function may only be called when
+     * auto-committing is disabled, otherwise it will fail. Therefore, a new
+     * transaction is implicitly started after canceling the pending changes.
      *
-     * this method also listens to onPreTransactionRollback and onTransactionRollback
-     * eventlisteners
+     * this method can be listened with onPreTransactionRollback and onTransactionRollback
+     * eventlistener methods
      *
-     * @return void
+     * @param string $savepoint                 name of a savepoint to rollback to   
+     * @throws Doctrine_Transaction_Exception   if the rollback operation fails at database level
+     * @return boolean                          false if rollback couldn't be performed, true otherwise
      */
-    public function rollback()
+    public function rollback($savepoint = null)
     {
-        $this->transaction->rollback();
+        $this->transaction->rollback($savepoint);
     }
     /**
      * returns a string representation of this object
@@ -892,15 +961,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function __toString()
     {
         return Doctrine_Lib::getConnectionAsString($this);
-    }
-    /**
-     * Enter description here...
-     *
-     * @param unknown_type $name
-     */
-    public function getIndexName($name)
-    {
-        return $this->formatter->getIndexName($name);
     }
 }
 
