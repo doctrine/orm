@@ -83,6 +83,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                             'limit'     => array(),
                             'offset'    => array(),
                             );
+    /**
+     * @var array $_pendingJoinConditions    an array containing pending joins
+     */
+    protected $_pendingJoinConditions = array();
 
     /**
      * create
@@ -108,6 +112,17 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             throw new Doctrine_Query_Exception('Unknown option ' . $name);
         }
         $this->_options[$name] = $value;
+    }
+    /**
+     * addPendingJoinCondition
+     *
+     * @param string $componentAlias    component alias
+     * @param string $joinCondition     dql join condition
+     * @return Doctrine_Query           this object
+     */
+    public function addPendingJoinCondition($componentAlias, $joinCondition)
+    {
+        $this->_pendingJoins[$componentAlias] = $joinCondition;
     }
     /** 
      * addEnumParam
@@ -600,19 +615,16 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
             }
 
-            $e = explode(' ON ', $part);
-            
-            // we can always be sure that the first join condition exists
-            $e2 = explode(' AND ', $e[1]);
-
-            $part = $e[0] . ' ON ' . array_shift($e2);
-
-            if ( ! empty($e2)) {
+            if (isset($this->_pendingJoinConditions[$k])) {
                 $parser = new Doctrine_Query_JoinCondition($this);
-                $part  .= ' AND ' . $parser->parse(implode(' AND ', $e2));
+                $part  .= ' AND ' . $parser->parse($this->_pendingJoinConditions[$k]);
+
+                unset($this->_pendingJoinConditions[$k]);
             }
 
             $q .= ' ' . $part;
+            
+            $this->parts['from'][$k] = $part;
         }
         return $q;
     }
@@ -937,7 +949,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $joinCondition = '';
 
         if (count($e) > 1) {
-            $joinCondition = ' AND ' . $e[1];
+            $joinCondition = $e[1];
             $path = $e[0];
         }
 
@@ -1018,34 +1030,43 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     $assocAlias = $this->getTableAlias($assocPath, $asf->getTableName());
 
                     $queryPart = $join . $assocTableName . ' ' . $assocAlias . ' ON ' . $localAlias  . '.'
-                                                                  . $table->getIdentifier() . ' = '
-                                                                  . $assocAlias . '.' . $relation->getLocal();
+                                                               . $table->getIdentifier() . ' = '
+                                                               . $assocAlias . '.' . $relation->getLocal();
 
-                    if ($relation instanceof Doctrine_Relation_Association_Self) {
-                        $queryPart .= ' OR ' . $localAlias  . '.' . $table->getIdentifier() . ' = '
-                                                                  . $assocAlias . '.' . $relation->getForeign();
+                    if ($relation->isEqual()) {
+                        $queryPart .= ' OR ' . $localAlias  . '.'
+                                    . $table->getIdentifier() . ' = '
+                                    . $assocAlias . '.' . $relation->getForeign();
+
                     }
 
                     $this->parts['from'][] = $queryPart;
 
-                    $queryPart = $join . $foreignSql . ' ON ' . $foreignAlias . '.'
-                                               . $relation->getTable()->getIdentifier() . ' = '
-                                               . $assocAlias . '.' . $relation->getForeign()
-                                               . $joinCondition;
+                    $queryPart = $join . $foreignSql . ' ON ';
+                    if ($relation->isEqual()) {
+                        $queryPart .= '(';
+                    } 
+                    $queryPart .= $foreignAlias . '.'
+                                . $relation->getTable()->getIdentifier() . ' = '
+                                . $assocAlias . '.' . $relation->getForeign();
 
-                    if ($relation instanceof Doctrine_Relation_Association_Self) {
-                        $queryPart .= ' OR ' . $foreignAlias  . '.' . $table->getIdentifier() . ' = '
-                                             . $assocAlias . '.' . $relation->getLocal();
+                    if ($relation->isEqual()) {
+                        $queryPart .= ' OR '  . $foreignAlias   . '.' . $table->getIdentifier()
+                                    . ' = '   . $assocAlias     . '.' . $relation->getLocal()
+                                    . ') AND ' . $foreignAlias   . '.' . $table->getIdentifier()
+                                    . ' != '  . $localAlias     . '.' . $table->getIdentifier();
                     }
 
                 } else {
 
                     $queryPart = $join . $foreignSql
                                        . ' ON ' . $localAlias .  '.'
-                                       . $relation->getLocal() . ' = ' . $foreignAlias . '.' . $relation->getForeign()
-                                       . $joinCondition;
+                                       . $relation->getLocal() . ' = ' . $foreignAlias . '.' . $relation->getForeign();
                 }
-                $this->parts['from'][] = $queryPart;
+                $this->parts['from'][$componentAlias] = $queryPart;
+                if ( ! empty($joinCondition)) {
+                    $this->_pendingJoinConditions[$componentAlias] = $joinCondition;
+                }
             }
             if ($loadFields) {
                              	

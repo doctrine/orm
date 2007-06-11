@@ -110,8 +110,8 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
 
         $q->select('e.name')->from('Entity e INNER JOIN e.Entity e2');
-        
-        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e INNER JOIN entity_reference e3 ON e.id = e3.entity1 OR e.id = e3.entity2 INNER JOIN entity e2 ON e2.id = e3.entity2 OR e2.id = e3.entity1');
+
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e INNER JOIN entity_reference e3 ON e.id = e3.entity1 OR e.id = e3.entity2 INNER JOIN entity e2 ON (e2.id = e3.entity2 OR e2.id = e3.entity1) AND e2.id != e.id');
     }
     public function testMultipleJoins()
     {

@@ -6,7 +6,8 @@ class Entity extends Doctrine_Record {
         $this->ownsOne('Account', 'Account.entity_id');
         $this->hasMany('Entity', array('local' => 'entity1', 
                                        'refClass' => 'EntityReference',
-                                       'foreign' => 'entity2'));
+                                       'foreign' => 'entity2',
+                                       'equal'    => true));
     }
     public function setTableDefinition() {
         $this->hasColumn('id', 'integer',20, 'autoincrement|primary');
@@ -605,8 +606,17 @@ class NestTest extends Doctrine_Record
     }
     public function setUp()
     {
-        $this->hasMany('NestTest as Parents', array('local' => 'child_id', 'foreign' => 'parent_id'));
-        $this->hasMany('NestTest as Children', 'NestReference.child_id');
+        $this->hasMany('NestTest as Parents', array('local' => 'child_id', 
+                                                    'refClass' => 'NestReference',
+                                                    'foreign' => 'parent_id'));
+        $this->hasMany('NestTest as Children', array('local' => 'parent_id',
+                                                     'refClass' => 'NestReference',
+                                                     'foreign' => 'child_id'));
+                                                     
+        $this->hasMany('NestTest as Relatives', array('local' => 'child_id',
+                                                      'refClass' => 'NestReference',
+                                                      'foreign' => 'parent_id',
+                                                      'equal'   => true));
     }
 }
 class NestReference extends Doctrine_Record 

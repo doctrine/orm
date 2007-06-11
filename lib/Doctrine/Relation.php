@@ -68,6 +68,7 @@ abstract class Doctrine_Relation
                                   'onUpdate'    => false,
                                   'deferred'    => false,
                                   'constraint'  => false,
+                                  'equal'       => false,
                                   );
     /**
      * constructor
@@ -129,6 +130,11 @@ abstract class Doctrine_Relation
         }
 
         $this->definition = $def;
+    }
+    
+    public function isEqual()
+    {
+        return $this->definition['equal'];	
     }
     /**
      * toArray

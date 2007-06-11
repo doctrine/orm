@@ -137,7 +137,7 @@ class Doctrine_Relation_Parser
                                                         'foreign' => $def['local']));
                 }
                 if (in_array($def['class'], $localClasses)) {
-                    $rel = new Doctrine_Relation_Association_Self($def);
+                    $rel = new Doctrine_Relation_Nest($def);
                 } else {
                     $rel = new Doctrine_Relation_Association($def);
                 }

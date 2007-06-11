@@ -38,7 +38,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "GzipTest";
         parent::prepareTables();
     }
-    /**
+
     public function testIssetForPrimaryKey() {
         $this->assertTrue(isset($this->users[0]->id));
         $this->assertTrue(isset($this->users[0]['id']));
@@ -51,9 +51,6 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertFalse($user->contains('id'));
     }
 
-    public function testUnknownColumn() {
-                                        	
-    }
     public function testNotNullConstraint() {
         $null = new NotNullTest();
 
@@ -103,119 +100,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_object($test->someObject));
         $this->assertEqual($test->someInt, 11);
     }
-         */
-    public function testJoinTableSelfReferencingInsertingData() {
-        $e = new Entity();
-        $e->name = "Entity test";
-
-        $this->assertTrue($e->Entity[0] instanceof Entity);
-        $this->assertTrue($e->Entity[1] instanceof Entity);
-
-        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_TCLEAN);
-        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_TCLEAN);
-        
-        $e->Entity[0]->name = 'Friend 1';
-        $e->Entity[1]->name = 'Friend 2';
-        
-        $e->Entity[0]->Entity[0]->name = 'Friend 1 1';
-        $e->Entity[0]->Entity[1]->name = 'Friend 1 2';
-
-        $e->Entity[1]->Entity[0]->name = 'Friend 2 1';
-        $e->Entity[1]->Entity[1]->name = 'Friend 2 2';
-
-        $this->assertEqual($e->Entity[0]->name, 'Friend 1');
-        $this->assertEqual($e->Entity[1]->name, 'Friend 2');
-
-        $this->assertEqual($e->Entity[0]->Entity[0]->name, 'Friend 1 1');
-        $this->assertEqual($e->Entity[0]->Entity[1]->name, 'Friend 1 2');
-
-        $this->assertEqual($e->Entity[1]->Entity[0]->name, 'Friend 2 1');
-        $this->assertEqual($e->Entity[1]->Entity[1]->name, 'Friend 2 2');
 
 
-        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_TDIRTY);
-        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_TDIRTY);
-
-        $count = count($this->dbh);
-
-        $e->save();
-
-        $this->assertEqual(($count + 13), $this->dbh->count());
-        $this->assertEqual($e->state(), Doctrine_Record::STATE_CLEAN);
-
-        $this->assertTrue($e->Entity[0] instanceof Entity);
-        $this->assertTrue($e->Entity[1] instanceof Entity);
-
-        $this->assertEqual($e->Entity[0]->name, 'Friend 1');
-        $this->assertEqual($e->Entity[1]->name, 'Friend 2');
-
-        $this->assertEqual($e->Entity[0]->Entity[0]->name, 'Friend 1 1');
-        $this->assertEqual($e->Entity[0]->Entity[1]->name, 'Friend 1 2');
-
-        $this->assertEqual($e->Entity[1]->Entity[0]->name, 'Friend 2 1');
-        $this->assertEqual($e->Entity[1]->Entity[1]->name, 'Friend 2 2');
-
-        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_CLEAN);
-
-        $this->assertTrue(is_numeric($e->id));
-
-        $result = $this->dbh->query('SELECT * FROM entity_reference')->fetchAll(PDO::FETCH_ASSOC);
-
-        $this->assertEqual(count($result), 6);
-
-        //$stmt = $this->dbh->prepare($q);
-
-        //$stmt->execute(array(18));
-        //$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        //print_r($result);
-
-        $this->connection->clear();
-
-        $e = $e->getTable()->find($e->id);
-
-        $count = count($this->dbh);
-
-        $this->assertTrue($e instanceof Entity);
-
-        $this->assertTrue($e->Entity[0] instanceof Entity);
-        $this->assertTrue($e->Entity[1] instanceof Entity);
-
-
-
-        $this->assertEqual(count($this->dbh), ($count + 1));
-
-        $this->assertEqual($e->Entity[0]->name, "Friend 1");
-        $this->assertEqual($e->Entity[1]->name, "Friend 2");
-
-        $this->assertEqual($e->Entity[0]->Entity[0]->name, "Entity test");
-        $this->assertEqual($e->Entity[0]->Entity[1]->name, "Friend 1 1");
-
-        $this->assertEqual(count($this->dbh), ($count + 2));
-
-        $this->assertEqual($e->Entity[1]->Entity[0]->name, "Entity test");
-        $this->assertEqual($e->Entity[1]->Entity[1]->name, "Friend 2 1");
-
-        $this->assertEqual(count($this->dbh), ($count + 3));
-
-        $this->assertEqual($e->Entity[0]->state(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($e->Entity[1]->state(), Doctrine_Record::STATE_CLEAN);
-        
-        $coll = $this->connection->query("FROM Entity WHERE Entity.name = 'Friend 1'");
-        $this->assertEqual($coll->count(), 1);
-        $this->assertEqual($coll[0]->state(), Doctrine_Record::STATE_CLEAN);
-        
-        $this->assertEqual($coll[0]->name, "Friend 1");
-        
-        $query = new Doctrine_Query($this->connection);
-
-        $query->from('Entity.Entity e')->where("e.name = 'Friend 1 1'");
-
-        $coll = $query->execute();
-
-        $this->assertEqual($coll->count(), 2);
-    }
     public function testToArray() {
         $user = new User();
         
