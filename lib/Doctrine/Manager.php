@@ -73,13 +73,10 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     private function __construct()
     {
         $this->_root = dirname(__FILE__);
-        $this->_null = new Doctrine_Null;
+        $this->_null = new Doctrine_Null; 
 
-        Doctrine_Record::initNullObject($this->_null);
-        Doctrine_Collection::initNullObject($this->_null);
         Doctrine_Record_Iterator::initNullObject($this->_null);
         Doctrine_Validator::initNullObject($this->_null);
-        Doctrine_Record_Filter::initNullObject($this->_null);
         Doctrine_Object::initNullObject($this->_null);
     }
     /**

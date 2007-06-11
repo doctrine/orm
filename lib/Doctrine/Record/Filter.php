@@ -31,17 +31,12 @@
  * @since       1.0
  * @version     $Revision: 1298 $
  */
-class Doctrine_Record_Filter
+class Doctrine_Record_Filter extends Doctrine_Object
 {
     /**
      * @var Doctrine_Record $_record        the record object this filter belongs to
      */
     protected $_record;
-    /**
-     * @var Doctrine_Null $null             a Doctrine_Null object used for extremely fast
-     *                                      null value testing
-     */
-    private static $null;
     /**
      * constructor
      *
@@ -59,16 +54,6 @@ class Doctrine_Record_Filter
     public function getRecord()
     {
         return $this->_record;
-    }
-    /**
-     * initNullObject
-     *
-     * @param Doctrine_Null $null
-     * @return void
-     */
-    public static function initNullObject(Doctrine_Null $null)
-    {
-        self::$null = $null;
     }
     /**
      * setDefaultValues
@@ -89,10 +74,10 @@ class Doctrine_Record_Filter
             $default = $table->getDefaultValueOf($column);
 
             if ($default === null) {
-                $default = self::$null;
+                $default = self::$_null;
             }
 
-            if ($value === self::$null || $overwrite) {
+            if ($value === self::$_null || $overwrite) {
                 $this->_record->rawSet($column, $default);
                 $modified[]    = $column;
                 $this->_record->state(Doctrine_Record::STATE_TDIRTY);
@@ -133,12 +118,12 @@ class Doctrine_Record_Filter
             $type = $this->_record->getTable()->getTypeOf($name);
 
             if ( ! isset($tmp[$name])) {
-                $data[$name] = self::$null;
+                $data[$name] = self::$_null;
             } else {
                 switch ($type) {
                     case 'array':
                     case 'object':
-                        if ($tmp[$name] !== self::$null) {
+                        if ($tmp[$name] !== self::$_null) {
                             if (is_string($tmp[$name])) {
                                 $value = unserialize($tmp[$name]);
 
@@ -152,7 +137,7 @@ class Doctrine_Record_Filter
                         }
                         break;
                     case 'gzip':
-                        if ($tmp[$name] !== self::$null) {
+                        if ($tmp[$name] !== self::$_null) {
                             $value = gzuncompress($tmp[$name]);
 
                             if ($value === false) {
@@ -186,14 +171,14 @@ class Doctrine_Record_Filter
     	$this->_id   = array();
         if (count($id) > 1) {
             foreach ($id as $name) {
-                if ($this->_data[$name] === self::$null) {
+                if ($this->_data[$name] === self::$_null) {
                     $this->_id[$name] = null;
                 } else {
                     $this->_id[$name] = $this->_data[$name];
                 }
             }
     	} else {
-            if (isset($this->_data[$id]) && $this->_data[$id] !== self::$null) {
+            if (isset($this->_data[$id]) && $this->_data[$id] !== self::$_null) {
                 $this->_id[$id] = $this->_data[$id];
             }
         }
@@ -216,7 +201,7 @@ class Doctrine_Record_Filter
         foreach ($array as $k => $v) {
             $type = $this->_table->getTypeOf($v);
 
-            if ($this->_data[$v] === self::$null) {
+            if ($this->_data[$v] === self::$_null) {
                 $a[$v] = null;
                 continue;
             }
