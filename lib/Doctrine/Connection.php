@@ -903,6 +903,22 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->transaction->getTransactionLevel();
     }
     /**
+     * lastInsertId
+     *
+     * Returns the ID of the last inserted row, or the last value from a sequence object,
+     * depending on the underlying driver.
+     *
+     * Note: This method may not return a meaningful or consistent result across different drivers, 
+     * because the underlying database may not even support the notion of auto-increment fields or sequences.
+     *
+     * @param string $table     name of the table into which a new row was inserted
+     * @param string $field     name of the field into which a new row was inserted
+     */
+    public function lastInsertId($table = null, $field = null)
+    {
+        return $this->sequence->lastInsertId($table, $field);
+    }
+    /**
      * beginTransaction
      * Start a transaction or set a savepoint.
      *

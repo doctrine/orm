@@ -158,6 +158,8 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
             case 'gzip':
             case 'blob':
             case 'clob':
+                $this->conn->connect();
+
                 return $this->conn->getDbh()->quote($input);
         }
     }
