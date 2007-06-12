@@ -84,5 +84,26 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
         $this->assertNotEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, (SELECT COUNT(e.id) AS e__0 FROM entity e WHERE e.id = e.id AND (e.type = 0)) AS e__0 FROM entity e WHERE e.name = 'zYne' AND (e.type = 0) LIMIT 1");
 
     }
+		
+		public function testGetLimitSubqueryOrderBy()
+		{
+			$query = new Doctrine_Query();
+			$query->select('u.*, COUNT(DISTINCT a.id) num_albums');
+			$query->from('User u, u.Album a');
+			$query->orderby('num_albums');
+			
+			try{
+				// this causes getLimitSubquery() to be used, and it fails
+				$query->limit(5);
+				
+				$users = $query->execute();
+				
+				$count = $users->count();
+			} catch(Doctrine_Exception $e) {
+				$this->fail();
+			}
+			
+			$this->assertEqual($count, 1);
+		}
 }
 ?>
