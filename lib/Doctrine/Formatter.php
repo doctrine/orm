@@ -71,7 +71,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
     {
     	if (is_array($item)) {
             foreach ($item as $k => $value) {
-                if (is_bool($item)) {
+                if (is_bool($value)) {
                     $item[$k] = (int) $value;
                 }
             }
