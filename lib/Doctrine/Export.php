@@ -66,7 +66,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function dropIndex($table, $name)
     {
-        $name = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name), true);
+        $name = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
         return $this->conn->exec('DROP INDEX ' . $name);
     }
     /**
@@ -79,8 +79,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function dropConstraint($table, $name, $primary = false)
     {
-        $table = $this->conn->quoteIdentifier($table, true);
-        $name  = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name), true);
+        $table = $this->conn->quoteIdentifier($table);
+        $name  = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
         return $this->conn->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
     }
     /**
@@ -140,8 +140,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         
         if (empty($fields)) {
-            throw new Doctrine_Export_Exception('no fields specified for table '.$name);
+            throw new Doctrine_Export_Exception('no fields specified for table ' . $name);
         }
+
         $queryFields = $this->getFieldDeclarationList($fields);
 
         if (isset($options['foreignKeys']) && ! empty($options['foreignKeys'])) {
@@ -153,7 +154,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
         }
-        
+
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach($options['indexes'] as $index => $definition) {
                 $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
@@ -225,19 +226,22 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function createConstraint($table, $name, $definition)
     {
-        $table = $this->conn->quoteIdentifier($table, true);
-        $name = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name), true);
+        $table = $this->conn->quoteIdentifier($table);
+        $name  = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
         $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $name;
-        if (!empty($definition['primary'])) {
+
+        if (isset($definition['primary']) && $definition['unique']) {
             $query .= ' PRIMARY KEY';
-        } elseif (!empty($definition['unique'])) {
+        } elseif (isset($definition['unique']) && $definition['unique']) {
             $query .= ' UNIQUE';
         }
+
         $fields = array();
         foreach (array_keys($definition['fields']) as $field) {
             $fields[] = $this->conn->quoteIdentifier($field, true);
         }
         $query .= ' ('. implode(', ', $fields) . ')';
+
         return $this->conn->exec($query);
     }
     /**
@@ -311,15 +315,19 @@ class Doctrine_Export extends Doctrine_Connection_Module
         return $query;
     }
     /**
-     * createForeignKey
+     * createForeignKeySql
      *
-     * @param string    $table         name of the table on which the index is to be created
-     * @param string    $name          name of the foreign key to be created
+     * @param string    $table         name of the table on which the foreign key is to be created
      * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     * @return string
      */
-    public function createForeignKey($table, $name, array $definition)
+    public function createForeignKeySql($table, array $definition)
     {
+        $table = $this->conn->quoteIdentifier($table);
 
+        $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $this->getForeignKeyDeclaration($definition);
+
+        return $query;
     }
     /**
      * alter an existing table
@@ -719,7 +727,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
     	$sql = '';
         if (isset($definition['name'])) {
-            $sql .= 'CONSTRAINT ' . $definition['name'] . ' ';
+            $sql .= 'CONSTRAINT ' . $this->conn->quoteIdentifier($definition['name']) . ' ';
         }
         $sql .= 'FOREIGN KEY (';
 
@@ -780,29 +788,121 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function getCollationFieldDeclaration($collation)
     {
         return '';
-    }
+    } 
     /**
      * export
      * method for exporting Doctrine_Record classes to a schema
      *
+     * if the directory parameter is given this method first iterates 
+     * recursively trhough the given directory in order to find any model classes
+     *
+     * Then it iterates through all declared classes and creates tables for the ones
+     * that extend Doctrine_Record and are not abstract classes
+     *
+     * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
+     *                                          occurred during the create table operation
+     * @param string $directory     optional directory parameter
      * @return void
      */
-    public static function exportAll()
+    public function export($directory = null)
     {
-        $parent = new ReflectionClass('Doctrine_Record');
-        $conn   = Doctrine_Manager::getInstance()->getCurrentConnection();
-        $old    = $conn->getAttribute(Doctrine::ATTR_CREATE_TABLES);
+    	if ($directory !== null) {
+            $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory), 
+                                                    RecursiveIteratorIterator::LEAVES_ONLY);
+                                                    
+            foreach ($it as $file) {
+                $e = explode('.', $file->getFileName());
+                if (end($e) === 'php' && count($e) === 2) {
+                    require_once $e->getPathName();
+                }
+            }
+        }
 
-        $conn->setAttribute(Doctrine::ATTR_CREATE_TABLES, true);
+        $parent = new ReflectionClass('Doctrine_Record');
 
         foreach (get_declared_classes() as $name) {
             $class = new ReflectionClass($name);
+            $conn  = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
 
             if ($class->isSubclassOf($parent) && ! $class->isAbstract()) {
-                $obj = new $class();
+                $record = new $name();
+                $table  = $record->getTable();
+
+                $conn->export->exportTable($table);
             }
         }
-        $conn->setAttribute(Doctrine::ATTR_CREATE_TABLES, $old);
+    }
+    /**
+     * export
+     * returns the sql for exporting Doctrine_Record classes to a schema
+     *
+     * if the directory parameter is given this method first iterates 
+     * recursively trhough the given directory in order to find any model classes
+     *
+     * Then it iterates through all declared classes and creates tables for the ones
+     * that extend Doctrine_Record and are not abstract classes
+     *
+     * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
+     *                                          occurred during the create table operation
+     * @param string $directory     optional directory parameter
+     * @return void
+     */
+    public function exportSql($directory = null)
+    {
+    	$declared = get_declared_classes();
+
+    	if ($directory !== null) {
+            $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory), 
+                                                    RecursiveIteratorIterator::LEAVES_ONLY);
+                                                    
+            foreach ($it as $file) {
+                $e = explode('.', $file->getFileName());
+                if (end($e) === 'php' && count($e) === 2) {
+                    require_once $file->getPathName();
+                }
+            }
+        }
+
+        $parent = new ReflectionClass('Doctrine_Record');
+
+        $sql = array();
+        $fks = array();
+
+        // we iterate trhough the diff of previously declared classes 
+        // and currently declared classes
+        foreach (array_diff(get_declared_classes(), $declared) as $name) {
+            $class = new ReflectionClass($name);
+            $conn  = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
+
+            // check if class is an instance of Doctrine_Record and not abstract
+            if ($class->isSubclassOf($parent) && ! $class->isAbstract()) {
+                $record = new $name();
+                $table  = $record->getTable();
+                $data = $table->getExportableFormat();
+
+                $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
+                
+                if (is_array($query)) {
+                    $sql = array_merge($sql, $query);
+                } else {
+                    $sql[] = $query;
+                }
+                
+                if (isset($data['options']['foreignKeys']) && is_array($data['options']['foreignKeys'])) {
+                    $fks[$table->getTableName()] = $data['options']['foreignKeys'];
+                }
+            }
+        }
+
+        foreach ($fks as $tableName => $fk) {
+            foreach ($fk as $k => $definition) {
+                if (is_array($definition)) {
+
+                    $sql[] = $this->createForeignKeySql($definition['table'], $definition);
+                }
+            }
+        }
+        return $sql;
     }
     /**
      * exportTable
