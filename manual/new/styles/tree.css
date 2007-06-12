@@ -1,0 +1,33 @@
+ul.tree, ul.tree ul {
+    list-style-type: none;
+    padding-left: 2em;
+    text-align: left;
+    margin-left: 0;
+}
+
+.tree a {
+   text-decoration: none;
+}
+
+.tree .expander {
+    color: black;
+    display: block;
+    float: left;
+    height: auto;
+    margin-left: -1.25em;
+    padding-left: 0;
+    text-align: center;
+    width: 1em;
+}
+
+.tree .expander:link,
+.tree .expander:visited,
+.tree .expander:active,
+.tree .expander:hover {
+	color: black;
+    text-decoration: none;
+}
+
+.tree ul.closed {
+    display: none;
+}

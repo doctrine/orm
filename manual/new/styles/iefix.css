@@ -1,0 +1,6 @@
+#sidebar {
+  /* IE5.5+/Win - this is more specific than the IE 5.0 version */
+  left: auto; bottom: auto;
+  right: expression( ( 20 + ( ignoreMe2 = document.documentElement.scrollRight ? document.documentElement.scrollRight : document.body.scrollRight ) ) + 'px' );
+  top: expression( ( 10 + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop ) ) + 'px' );
+}

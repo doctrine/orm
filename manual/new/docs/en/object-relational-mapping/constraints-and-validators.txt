@@ -1,0 +1,117 @@
++++ Introduction
+
+//From [http://www.postgresql.org/docs/8.2/static/ddl-constraints.html PostgreSQL Documentation]://
+
+> Data types are a way to limit the kind of data that can be stored in a table. For many applications, however, the constraint they provide is too coarse. For example, a column containing a product price should probably only accept positive values. But there is no standard data type that accepts only positive numbers. Another issue is that you might want to constrain column data with respect to other columns or rows. For example, in a table containing product information, there should be only one row for each product number.
+
+Doctrine allows you to define *portable* constraints on columns and tables. Constraints give you as much control over the data in your tables as you wish. If a user attempts to store data in a column that would violate a constraint, an error is raised. This applies even if the value came from the default value definition.
+
+Doctrine constraints act as database level constraints as well as application level validators. This means double security: the database doesn't allow wrong kind of values and neither does the application.
+
+
++++ Notnull
+
+A not-null constraint simply specifies that a column must not assume the null value. A not-null constraint is always written as a column constraint.
+
+The following definition uses a notnull constraint for column {{name}}. This means that the specified column doesn't accept null values.
+
+<code type='php'>
+class User extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string', 200, array('notnull' => true,
+                                                      'primary' => true));
+    }
+}
+</code>
+
+When this class gets exported to database the following SQL statement would get executed (in MySQL):
+
+<code type="sql">
+CREATE TABLE user (name VARCHAR(200) NOT NULL, PRIMARY KEY(name))
+</code>
+
+The notnull constraint also acts as an application level validator. This means that if Doctrine validators are turned on, Doctrine will automatically check that specified columns do not contain null values when saved.
+
+If those columns happen to contain null values {{Doctrine_Validator_Exception}} is raised.
+
+
++++ Unique
+
+Unique constraints ensure that the data contained in a column or a group of columns is unique with respect to all the rows in the table.
+
+In general, a unique constraint is violated when there are two or more rows in the table where the values of all of the columns included in the constraint are equal. However, two null values are not considered equal in this comparison. That means even in the presence of a unique constraint it is possible to store duplicate rows that contain a null value in at least one of the constrained columns. This behavior conforms to the SQL standard, but some databases do not follow this rule. So be careful when developing applications that are intended to be portable.
+
+The following definition uses a unique constraint for column {{name}}.
+
+<code type='php'>
+class User extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string', 200, array('unique' => true));
+    }
+}
+</code>
+
+>> Note: You should only use unique constraints for other than primary key columns. Primary key columns are always unique.
+
+The following definition adds a unique constraint for columns {{name}} and {{age}}.
+
+<code type='php'>
+class User extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string', 200);
+        $this->hasColumn('age', 'integer', 2);
+        
+        $this->unique(array('name', 'age'));
+    }
+}
+</code>
+
+
++++ Check
+
+Doctrine check constraints act as database level constraints as well as application level validators. When a record with check validators is exported additional CHECK constraints are being added to CREATE TABLE statement.
+
+Doctrine provides the following simple check operators:
+
+||~ Operator ||~ Description                                ||
+||  {{gt}}   ||  greater than constraint ( > )              ||
+||  {{lt}}   ||  less than constraint ( < )                 ||
+||  {{gte}}  ||  greater than or equal to constraint ( >= ) ||
+||  {{lte}}  ||  less than or equal to constraint ( <= )    ||
+
+Consider the following example:
+
+<code type='php'>
+class Product extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('id', 'integer', 4, 'primary');
+        $this->hasColumn('price', 'decimal', 18, array('gt' => 0);
+    }
+}
+</code>
+
+When exported the given class definition would execute the following statement (in pgsql):
+
+<code type="sql">
+CREATE TABLE product (
+    id INTEGER,
+    price NUMERIC CHECK (price > 0)
+    PRIMARY KEY(id))
+</code>
+
+So Doctrine optionally ensures even at the database level that the price of any product cannot be below zero.
+
+> NOTE: some databases don't support CHECK constraints. When this is the case Doctrine simple skips the creation of check constraints.
+
+If the Doctrine validators are turned on the given definition would also ensure that when a record is being saved its price is always greater than zero.
+
+If some of the prices of the saved products within a transaction is below zero, Doctrine throws Doctrine_Validator_Exception and automatically rolls back the transaction.
+

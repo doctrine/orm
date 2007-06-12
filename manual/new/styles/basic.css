@@ -1,0 +1,217 @@
+body, html
+{
+	margin: 0;
+	padding: 0;
+	font-family: "Arial", sans-serif;
+	font-size: 11pt;
+    background: white;
+    color: black;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+	font-family: "Lucida Bright", "Times New Roman", serif;
+}
+
+h1 
+{
+	text-align: center;
+	font-size: 24pt;
+}
+
+h2, #table-of-contents h1 {
+	font-size: 18pt;
+	text-align: left;
+}
+
+h3 {
+	font-size: 14pt;
+}
+
+p, ul, ol
+{
+	line-height: 1.5em;
+	text-align: justify; 
+}
+
+ul
+{
+	list-style-type: square;
+}
+
+ul ul, ol ol {
+	font-size: 100%;
+}
+
+table
+{
+	border: 1px solid #aaaaaa;
+	border-collapse: collapse;
+	margin: 0.5em 0;
+	font-size: 11pt;
+	background-color: #f9f9f9;
+	line-height: 1.5em;
+}
+
+td, th
+{
+	padding: 0.2em;
+	border: 1px solid #aaaaaa;
+}
+
+th
+{
+	background-color: #f2f2f2;
+}
+
+blockquote
+{
+	background-image: url("../images/quotation-mark.png");
+	background-position: top left;
+	background-repeat: no-repeat;
+	padding-left: 2.5em;
+	margin-left: 1em;
+}
+
+
+/*** Code blocks and highlighting**********************************************/
+
+pre, tt
+{
+	font-family: "Bitstream Vera Sans Mono", monospace;
+}
+
+tt
+{
+	font-size: 11pt;
+}
+
+pre 
+{
+	font-size: 10pt;
+	font-weight: bold;
+	padding: 1em;
+	margin: 1em;
+	line-height: 1.2em;
+	background-color: #f6f6f6;
+	border: 1px solid #cccccc;
+	overflow: auto;
+}
+
+pre .default
+{
+	color: #000000;
+}
+
+pre .keyword
+{
+	color: #3465a4;
+}
+
+pre .string
+{
+	color: #ef2929;
+}
+
+pre .comment
+{
+	color: #888a85;
+}
+
+a:link
+{
+	color: #3465a4;
+	text-decoration: none;
+}
+
+a:visited
+{
+	color: #75507b;
+	text-decoration: none;
+}
+
+a:link:hover, a:link:active
+{
+	text-decoration: underline;
+	color: #729fcf;
+}
+
+a:visited:hover, a:visited:active
+{
+	text-decoration: underline;
+	color: #ad7fa8;
+}
+
+#table-of-contents {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 20em;
+	overflow: auto;
+	border: 1px solid #cccccc;
+	background-color: #f6f6f6;
+	padding: 0 1em;
+	margin: 1em;
+	max-height: 95%;
+}
+
+#wrap {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	margin: 0;
+}
+
+#sidebar {
+	position: fixed;
+	top: 0;
+	right: 0;
+	height: 100%;
+}
+
+#content {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 23em;
+	margin: 0;
+	padding: 1em;
+}
+
+ul.tree, ul.tree ul {
+    list-style-type: none;
+    padding-left: 2em;
+    text-align: left;
+    margin-left: 0;
+}
+
+
+/** Tree specific styles ******************************************************/
+
+.tree a {
+   text-decoration: none;
+}
+
+.tree .expander {
+    color: black;
+    display: block;
+    float: left;
+    height: auto;
+    margin-left: -1.25em;
+    padding-left: 0;
+    text-align: center;
+    width: 1em;
+}
+
+.tree .expander:link,
+.tree .expander:visited,
+.tree .expander:active,
+.tree .expander:hover {
+	color: black;
+    text-decoration: none;
+}
+
+.tree ul.closed {
+    display: none;
+}

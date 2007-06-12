@@ -1,0 +1,63 @@
+body {
+	font-family: "Arial", sans-serif;
+	font-size: 11pt;
+}
+
+.chapter, #table-of-contents {
+	page-break-after: always;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Lucida Bright", serif;
+}
+
+h1 {
+	text-align: center;
+}
+
+p, ul, ol {
+	text-align: justify;
+	line-height: 1.2em;
+}
+
+ol {
+	list-style-type: square;
+}
+
+pre, tt {
+	font-family: "Bitstream Vera Sans Mono", monospace;
+	font-size: 10pt;
+}
+
+table {
+	border: thin solid black;
+	border-collapse: collapse;
+}
+
+td, th {
+	border: thin solid black;
+	padding: 0.5em;
+}
+
+.expander {
+	display: none;
+}
+
+a {
+	text-decoration: none;
+	font: inherit;
+	color: inherit;
+}
+
+#table-of-contents {
+	display: none;
+}
+
+.one-page#table-of-contents {
+	display: block;
+}
+
+#table-of-contents ul {
+	list-style-type: none;
+}
+

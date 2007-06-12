@@ -46,11 +46,11 @@ class Text_Wiki_Render_Xhtml_Bold extends Text_Wiki_Render {
     {
         if ($options['type'] == 'start') {
             $css = $this->formatConf(' class="%s"', 'css');
-            return "<b$css>";
+            return "<strong$css>";
         }
 
         if ($options['type'] == 'end') {
-            return '</b>';
+            return '</strong>';
         }
     }
 }

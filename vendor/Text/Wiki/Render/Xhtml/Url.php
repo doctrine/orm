@@ -93,6 +93,7 @@ class Text_Wiki_Render_Xhtml_Url extends Text_Wiki_Render {
             $css = $this->formatConf(' class="%s"', "css_$type");
             $output = "<a$css href=\"$href\"";
 
+            /*
             if ($target) {
                 // use a "popup" window.  this is XHTML compliant, suggested by
                 // Aaron Kalin.  uses the $target as the new window name.
@@ -100,6 +101,7 @@ class Text_Wiki_Render_Xhtml_Url extends Text_Wiki_Render {
                 $output .= " onclick=\"window.open(this.href, '$target');";
                 $output .= " return false;\"";
             }
+            */
 
             // finish up output
             $output .= ">$text</a>";

@@ -59,38 +59,39 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
         $css_filename = $this->formatConf(' class="%s"', 'css_filename');
 
         if ($type == 'php') {
+
             if (substr($options['text'], 0, 5) != '<?php') {
                 // PHP code example:
                 // add the PHP tags
-                $text = "<?php 
-                " .  $options['text'] . "\n?>"; // <?php
+                $text = "<?php \n" 
+                      . $options['text'] . "\n\n"
+                      . "?>";
             }
 
             // convert tabs to four spaces
-            $text = str_replace("\t", "&nbsp;&nbsp;%nbsp;&nbsp;", $text);
+            $text = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $text);
 
             // colorize the code block (also converts HTML entities and adds
             // <code>...</code> tags)
-            $h = new PHP_Highlight;
+            $h = new PHP_Highlight(true);
             $h->loadString($text);
             $text = $h->toHtml(true);
-
+            
             // replace <br /> tags with simple newlines.
             // replace non-breaking space with simple spaces.
             // translate HTML <font> and color to XHTML <span> and style.
             // courtesy of research by A. Kalin :-).
-            /**
+            
             $map = array(
-                '<br />'  => "\n",
-                '&nbsp;'  => ' ',
-                "\n"      => "<br \>",
-                '<font'   => '<span',
-                '</font>' => '</span>',
-                'color="' => 'style="color:'
+                '&nbsp;'  => ' '
+                //'<br />'  => "\n",
+                //"\n"      => "<br \>",
+                //'<font'   => '<span',
+                //'</font>' => '</span>',
+                //'color="' => 'style="color:'
             );
-
+            
             $text = strtr($text, $map);
-            */
 
             // get rid of the last newline inside the code block
             // (becuase higlight_string puts one there)
@@ -104,10 +105,10 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
             }
 
             // done
-            $text = "<table border=1 class='dashed' cellpadding=0 cellspacing=0>
+            /*$text = "<table border=1 class='dashed' cellpadding=0 cellspacing=0>
                      <tr><td><b>$text
                      </b></td></tr>
-                     </table>";
+                     </table>";*/
 
         } elseif ($type == 'html' || $type == 'xhtml') {
 
@@ -116,9 +117,9 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
             // convert tabs to four spaces,
             // convert entities.
             $text = str_replace("\t", "    ", $text);
-            $text = "<html>\n$text\n</html>";
+            //$text = "<html>\n$text\n</html>";
             $text = $this->textEncode($text);
-            $text = "<pre$css><code$css_html>$text</code></pre>";
+            $text = "<pre$css>$text</pre>";
 
         } elseif ($type == 'sql') {
             // HTML code example:
@@ -127,14 +128,14 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
             // convert entities.
             $text = str_replace("\t", "    ", $text);
             $text = $this->textEncode($text);
-            $text = "<div class='sql'>$text</div>";
+            $text = "<pre class=\"sql\">$text</pre>";
         } else {
             // generic code example:
             // convert tabs to four spaces,
             // convert entities.
             $text = str_replace("\t", "    ", $text);
             $text = $this->textEncode($text);
-            $text = "<pre$css><code$css_code>$text</code></pre>";
+            $text = "<pre$css>$text</pre>";
         }
 
         if ($css_filename && isset($attr['filename'])) {

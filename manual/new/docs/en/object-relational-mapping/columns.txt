@@ -1,0 +1,5 @@
++++ Column naming
++++ Column aliases
++++ Default values
++++ Data types
++++ About type conversion
