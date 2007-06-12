@@ -73,11 +73,21 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     protected $driverName;
     /**
+     * @var boolean $isConnected                whether or not a connection has been established
+     */
+    protected $isConnected      = false;
+    /**
      * @var array $supported                    an array containing all features this driver supports,
      *                                          keys representing feature names and values as
      *                                          one of the following (true, false, 'emulated')
      */
     protected $supported        = array();
+    /**
+     * @var array $pendingAttributes            An array of pending attributes. When setting attributes
+     *                                          no connection is needed. When connected all the pending
+     *                                          attributes are passed to the underlying adapter (usually PDO) instance.
+     */
+    protected $pendingAttributes  = array();
     /**
      * @var array $modules                      an array containing all modules
      *              transaction                 Doctrine_Transaction driver, handles savepoint and transaction isolation abstraction
@@ -133,6 +143,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @var array $serverInfo
      */
     protected $serverInfo = array();
+    
+    protected $options    = array();
     /**
      * @var array $availableDrivers         an array containing all availible drivers
      */
@@ -152,15 +164,37 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param Doctrine_Manager $manager                 the manager object
      * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
      */
-    public function __construct(Doctrine_Manager $manager, $adapter)
+    public function __construct(Doctrine_Manager $manager, $adapter, $user = null, $pass = null)
     {
         if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
-            throw new Doctrine_Connection_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
-        }
-        $this->dbh   = $adapter;
+            if ( ! is_string($adapter)) {
+                throw new Doctrine_Connection_Exception('Data source name should be a string, ' . get_class($adapter) . ' given.');
+            }
 
-        //$this->modules['transaction']  = new Doctrine_Connection_Transaction($this);
-        $this->modules['unitOfWork']   = new Doctrine_Connection_UnitOfWork($this);
+            $dsn = $adapter;
+
+            // check if dsn is PEAR-like or not
+            if ( ! isset($user) || strpos($dsn, '://')) {
+                $a = self::parseDSN($dsn);
+
+                extract($a);
+            } else {
+                $e = explode(':', $dsn);
+
+                if($e[0] == 'uri') {
+                    $e[0] = 'odbc';
+                }
+    
+                $this->pendingAttributes[Doctrine::ATTR_DRIVER_NAME] = $e[0];
+            }
+            $this->options['dsn']      = $dsn;
+            $this->options['username'] = $user;
+            $this->options['password'] = $pass;
+        } else {
+            $this->dbh = $adapter;
+            
+            $this->isConnected = true;
+        }
 
         $this->setParent($manager);
 
@@ -168,6 +202,144 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
+    }
+    /**
+     * getAttribute
+     * retrieves a database connection attribute
+     *
+     * @param integer $attribute
+     * @return mixed
+     */
+    public function getAttribute($attribute)
+    {
+
+    	if ($attribute >= 100) {
+            if ( ! isset($this->attributes[$attribute])) {
+                return $this->parent->getAttribute($attribute);
+            }
+            return $this->attributes[$attribute];
+    	}
+
+        if ($this->isConnected) {
+            try {
+                return $this->dbh->getAttribute($attribute);
+            } catch(Exception $e) {
+                throw new Doctrine_Connection_Exception('Attribute ' . $attribute . ' not found.');
+            }
+        } else {
+            if ( ! isset($this->pendingAttributes[$attribute])) {
+                $this->connect();
+                $this->getAttribute($attribute);
+            }
+
+            return $this->pendingAttributes[$attribute];
+        }
+    }
+    /**
+     * returns an array of available PDO drivers
+     */
+    public static function getAvailableDrivers()
+    {
+        return PDO::getAvailableDrivers();
+    }
+    /**
+     * setAttribute
+     * sets an attribute
+     *
+     * @param integer $attribute
+     * @param mixed $value
+     * @return boolean
+     */
+    public function setAttribute($attribute, $value)
+    {
+    	if ($attribute >= 100) {
+            parent::setAttribute($attribute, $value);
+    	} else {
+            if ($this->isConnected) {
+                $this->dbh->setAttribute($attribute, $value);
+            } else {
+                $this->pendingAttributes[$attribute] = $value;
+            }
+        }
+        return $this;
+    }
+    /**
+     * parseDSN
+     *
+     * @param string $dsn
+     * @return array Parsed contents of DSN
+     */
+    public function parseDSN($dsn)
+    {
+        // silence any warnings
+        $parts = @parse_url($dsn);
+
+        $names = array('scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
+
+        foreach ($names as $name) {
+            if ( ! isset($parts[$name])) {
+                $parts[$name] = null;
+            }
+        }
+
+        if (count($parts) == 0 || ! isset($parts['scheme'])) {
+            throw new Doctrine_Connection_Exception('Empty data source name');
+        }
+        $drivers = self::getAvailableDrivers();
+
+        $parts['scheme'] = self::driverName($parts['scheme']);
+        /**
+        if ( ! in_array($parts['scheme'], $drivers)) {
+            throw new Doctrine_Db_Exception('Driver '.$parts['scheme'].' not availible or extension not loaded');
+        }
+        */
+        switch ($parts['scheme']) {
+            case 'sqlite':
+                if (isset($parts['host']) && $parts['host'] == ':memory') {
+                    $parts['database'] = ':memory:';
+                    $parts['dsn']      = 'sqlite::memory:';
+                }
+
+                break;
+            case 'mysql':
+            case 'informix':
+            case 'oci8':
+            case 'mssql':
+            case 'firebird':
+            case 'dblib':
+            case 'pgsql':
+            case 'odbc':
+            case 'mock':
+            case 'oracle':
+                if ( ! isset($parts['path']) || $parts['path'] == '/') {
+                    throw new Doctrine_Connection_Exception('No database availible in data source name');
+                }
+                if (isset($parts['path'])) {
+                    $parts['database'] = substr($parts['path'], 1);
+                }
+                if ( ! isset($parts['host'])) {
+                    throw new Doctrine_Connection_Exception('No hostname set in data source name');
+                }
+                
+                if (isset(self::$driverMap[$parts['scheme']])) {
+                    $parts['scheme'] = self::$driverMap[$parts['scheme']];
+                }
+
+                $parts['dsn'] = $parts['scheme'] . ':host='
+                              . $parts['host'] . ';dbname='
+                              . $parts['database'];
+                
+                if (isset($parts['port'])) {
+                    // append port to dsn if supplied
+                    $parts['dsn'] .= ';port=' . $parts['port'];
+                }
+                break;
+            default:
+                throw new Doctrine_Connection_Exception('Unknown driver '.$parts['scheme']);
+        }
+        $this->pendingAttributes[PDO::ATTR_DRIVER_NAME] = $parts['scheme'];
+
+        return $parts;
     }
     /**
      * getName
@@ -242,14 +414,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function connect()
     {
-    	/**
+
         if ($this->isConnected) {
             return false;
         }
 
-        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::CONNECT);
-
-        $this->listener->onPreConnect($event);
+        $this->getListener()->onPreConnect($this);
 
         $e     = explode(':', $this->options['dsn']);
         $found = false;
@@ -272,7 +442,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             }
         }
 
-        
+        // attach the pending attributes to adapter
         foreach($this->pendingAttributes as $attr => $value) {
             // some drivers don't support setting this so we just skip it
             if($attr == Doctrine::ATTR_DRIVER_NAME) {
@@ -283,9 +453,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->isConnected = true;
 
-        $this->listener->onConnect($event);
+        $this->getListener()->onConnect($this);
         return true;
-        */
     }
     /**
      * converts given driver name
@@ -619,7 +788,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param integer $offset
      * @return PDOStatement
      */
-    public function select($query,$limit = 0,$offset = 0)
+    public function select($query, $limit = 0, $offset = 0)
     {
         if ($limit > 0 || $offset > 0) {
             $query = $this->modifyLimitQuery($query, $limit, $offset);
@@ -647,6 +816,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function execute($query, array $params = array()) 
     {
+    	$this->connect();
+
         try {
             if ( ! empty($params)) {
                 $stmt = $this->dbh->prepare($query);
@@ -668,6 +839,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return PDOStatement|Doctrine_Adapter_Statement
      */
     public function exec($query, array $params = array()) {
+    	$this->connect();
+
         try {
             if ( ! empty($params)) {
                 $stmt = $this->dbh->prepare($query);
@@ -901,6 +1074,30 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function getTransactionLevel()
     {
         return $this->transaction->getTransactionLevel();
+    }
+    /**
+     * errorCode
+     * Fetch the SQLSTATE associated with the last operation on the database handle
+     *
+     * @return integer
+     */
+    public function errorCode()
+    {
+    	$this->connect();
+
+        return $this->dbh->errorCode();
+    }
+    /**
+     * errorInfo
+     * Fetch extended error information associated with the last operation on the database handle
+     *
+     * @return array
+     */
+    public function errorInfo()
+    {
+    	$this->connect();
+
+        return $this->dbh->errorInfo();
     }
     /**
      * lastInsertId
