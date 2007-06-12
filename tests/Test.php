@@ -71,6 +71,16 @@ class UnitTestCase
             $this->_fail();
         }
     }
+
+    public function assertIdentical($value, $value2)
+    {
+        if ($value === $value2) {
+            $this->_passed++;
+        } else {
+            $this->_fail();
+        }
+    }
+
     public function assertNotEqual($value, $value2)
     {
         if ($value != $value2) {

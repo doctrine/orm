@@ -41,27 +41,27 @@ class Doctrine_Boolean_TestCase extends Doctrine_UnitTestCase {
         $test = new BooleanTest();
         $test->is_working = false;
 
-        $this->assertEqual($test->is_working, false);
+        $this->assertIdentical($test->is_working, false);
         $this->assertEqual($test->state(), Doctrine_Record::STATE_TDIRTY);
         $test->save();
 
         $test->refresh();
-        $this->assertEqual($test->is_working, false);
+        $this->assertIdentical($test->is_working, false);
     }
 
     public function testSetTrue() {
         $test = new BooleanTest();
         $test->is_working = true;
-        $this->assertEqual($test->is_working, true);
+        $this->assertIdentical($test->is_working, true);
         $test->save();
         
         $test->refresh();
-        $this->assertEqual($test->is_working, true);
+        $this->assertIdentical($test->is_working, true);
         
         $this->connection->clear();
         
         $test = $test->getTable()->find($test->id);
-        $this->assertEqual($test->is_working, true);
+        $this->assertIdentical($test->is_working, true);
     }
     public function testNormalQuerying() {
         $query = new Doctrine_Query($this->connection);
@@ -97,22 +97,22 @@ class Doctrine_Boolean_TestCase extends Doctrine_UnitTestCase {
         $test = new BooleanTest();
         $this->is_working = null;
 
-        $this->assertEqual($this->is_working, null);
+        $this->assertIdentical($this->is_working, null);
         $this->assertEqual($test->state(), Doctrine_Record::STATE_TDIRTY);
         $test->save();
 
         $test->refresh();
-        $this->assertEqual($test->is_working, null);
+        $this->assertIdentical($test->is_working, null);
         
         $test = new BooleanTest();
         $this->is_working_notnull = null;
 
-        $this->assertEqual($this->is_working_notnull, false);
+        $this->assertIdentical($this->is_working_notnull, false);
         $this->assertEqual($test->state(), Doctrine_Record::STATE_TDIRTY);
         $test->save();
 
         $test->refresh();
-        $this->assertEqual($test->is_working_notnull, false);
+        $this->assertIdentical($test->is_working_notnull, false);
     }
 
 }
