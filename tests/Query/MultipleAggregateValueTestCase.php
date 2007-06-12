@@ -48,7 +48,7 @@ class Doctrine_Query_MultipleAggregateValue_TestCase extends Doctrine_UnitTestCa
 	
 	public function testMultipleAggregateValues()
 	{
-		$query = new Doctrine_Query();
+	    $query = new Doctrine_Query();
 		$query->select('u.*, COUNT(DISTINCT b.id) num_books, COUNT(DISTINCT a.id) num_albums');
 		$query->from('User u');
 		$query->leftJoin('u.Album a, u.Book b');
@@ -61,7 +61,7 @@ class Doctrine_Query_MultipleAggregateValue_TestCase extends Doctrine_UnitTestCa
 			$name = $user->name;
 			$num_albums = $user->Album[0]->num_albums;
 			$num_books = $user->Book[0]->num_books;	
-		} catch(Doctrine_Exception $e) {
+		} catch (Doctrine_Exception $e) {
 			$this->fail();
 		}
 		
