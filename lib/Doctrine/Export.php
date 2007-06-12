@@ -144,12 +144,13 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
 
         $queryFields = $this->getFieldDeclarationList($fields);
-
+        /**
         if (isset($options['foreignKeys']) && ! empty($options['foreignKeys'])) {
             foreach($options['foreignKeys'] as $definition) {
                 $queryFields .= ', ' . $this->getForeignKeyDeclaration($definition);
             }
         }
+        */
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
@@ -230,7 +231,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $name  = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
         $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $name;
 
-        if (isset($definition['primary']) && $definition['unique']) {
+        if (isset($definition['primary']) && $definition['primary']) {
             $query .= ' PRIMARY KEY';
         } elseif (isset($definition['unique']) && $definition['unique']) {
             $query .= ' UNIQUE';
@@ -700,7 +701,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                         $sql .= $keyword . $upper;
                     break;
                     default:
-                        throw new Doctrine_Export_Exception('Unknown foreign key referential action option given.');
+                        throw new Doctrine_Export_Exception('Unknown foreign key referential action \'' . $upper . '\' given.');
                 }
             }
         }
