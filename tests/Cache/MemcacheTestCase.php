@@ -41,7 +41,11 @@ class Doctrine_Cache_Memcache_TestCase extends Doctrine_UnitTestCase
 class Doctrine_Cache_Memcache_Mock extends Doctrine_Cache_Memcache 
 {
 }
-class Memcache 
-{ 
 
+if (!class_exists('Memcache'))
+{
+  class Memcache
+  { 
+
+  }
 }
