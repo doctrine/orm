@@ -284,6 +284,8 @@ $test->addTestCase(new Doctrine_Query_Select_TestCase());
 
 $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 
+$test->addTestCase(new Doctrine_Query_MultipleAggregateValue_TestCase());
+
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
