@@ -77,5 +77,12 @@ class Doctrine_Export_Pgsql_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10), type INT, PRIMARY KEY(name, type))');
     }
+    public function testExportSql()
+    {
+        $sql = $this->export->exportSql(dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files');
+        
+        print "<pre>";
+        print_r($sql);
+    }
 }
 ?>
