@@ -48,7 +48,7 @@ class Doctrine_Ticket343_TestCase extends Doctrine_UnitTestCase
 
         $subprogram->set('name', 'SoemthingNew');
 
-        $newsblast->set('pin', $member);
+        $newsblast->set('member', $member);
         $newsblast->set('subprogram', $subprogram);
         $newsblast->set('title', 'Some title here');
 
@@ -57,22 +57,18 @@ class Doctrine_Ticket343_TestCase extends Doctrine_UnitTestCase
         $test->assertEqual($newsblast['subprogram'], 'SomethingNew');
         $test->assertEqual($newsblast['member']['pin'], 'demo1100');
         $test->assertEqual($newsblast['member']['name'], 'hello world!');
-        $test->assertEqual(0,1);
-
     }
 }
 
 
 class Member extends Doctrine_Record
 {
-    const DATABASE_NAME = 'doctrine';
-
     public function setTableDefinition()
     {
         $this->setTableName('members');
 
-        $this->hasColumn('pin', 'string', 8, array('primary'=>true, ));
-        $this->hasColumn('name', 'string', 254, array('notblank'=>true, ));
+        $this->hasColumn('pin', 'string', 8, array('primary' => true));
+        $this->hasColumn('name', 'string', 254, array('notblank' => true));
     }
 
     public function setUp()
@@ -84,25 +80,22 @@ class Member extends Doctrine_Record
 
 class NewsBlast extends Doctrine_Record
 {
-    const DATABASE_NAME = 'doctrine';
-
     public function setTableDefinition()
     {
         $this->setTableName('p2m_newsblast');
+        $this->hasColumn('pin', 'string', 8, array('primary' => true));
         $this->hasColumn('subprogram_id', 'integer', 10, array());
         $this->hasColumn('title', 'string', 254, array());
     }
 
     public function setUp()
     {
-        $this->hasOne('SubProgram as subprogram', 'NewsBlast.subprogram_id', 'id');
-        $this->hasOne('Member as member', 'NewsBlast.pin', 'pin');
+        $this->hasOne('SubProgram as subprogram', 'NewsBlast.subprogram_id');
+        $this->hasOne('Member as member', 'NewsBlast.pin');
     }
 }
 class SubProgram extends Doctrine_Record
 {
-    const DATABASE_NAME = 'doctrine';
-
     public function setTableDefinition()
     {
         $this->setTableName('p2m_subprogram');
