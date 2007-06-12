@@ -33,15 +33,14 @@
  */
 abstract class Doctrine_Configurable
 {
-
     /**
      * @var array $attributes               an array of containing all attributes
      */
-    private $attributes = array();
+    protected $attributes = array();
     /**
      * @var $parent                         the parents of this component
      */
-    private $parent;
+    protected $parent;
     /**
      * setAttribute
      * sets a given attribute
@@ -175,7 +174,7 @@ abstract class Doctrine_Configurable
      */
     public function addListener($listener, $name = null)
     {
-        if ( ! isset($this->attributes[Doctrine::ATTR_LISTENER]) || 
+        if ( ! isset($this->attributes[Doctrine::ATTR_LISTENER]) ||
              ! ($this->attributes[Doctrine::ATTR_LISTENER] instanceof Doctrine_EventListener_Chain)) {
             
             $this->attributes[Doctrine::ATTR_LISTENER] = new Doctrine_EventListener_Chain();
