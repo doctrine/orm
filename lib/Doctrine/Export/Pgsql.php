@@ -58,6 +58,40 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         $this->conn->exec($query);
     }
     /**
+     * getAdvancedForeignKeyOptions
+     * Return the FOREIGN KEY query section dealing with non-standard options
+     * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
+     *
+     * @param array $definition         foreign key definition
+     * @return string
+     * @access protected
+     */
+    public function getAdvancedForeignKeyOptions(array $definition)
+    {
+        $query = '';
+        if (isset($definition['match'])) {
+            $query .= ' MATCH '.$definition['match'];
+        }
+        if (isset($definition['onUpdate'])) {
+            $query .= ' ON UPDATE '.$definition['on_update'];
+        }
+        if (isset($definition['onDelete'])) {
+            $query .= ' ON DELETE '.$definition['on_delete'];
+        }
+        if (isset($definition['deferrable'])) {
+            $query .= ' DEFERRABLE';
+        } else {
+            $query .= ' NOT DEFERRABLE';
+        }
+        if (isset($definition['feferred'])) {
+            $query .= ' INITIALLY DEFERRED';
+        } else {
+            $query .= ' INITIALLY IMMEDIATE';
+        }
+        return $query;
+    }
+
+    /**
      * alter an existing table
      *
      * @param string $name         name of the table that is intended to be changed.
@@ -216,5 +250,28 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
             $this->conn->exec('ALTER TABLE ' . $name . ' RENAME TO ' . $changeName);
         }
     }
+    /**
+     * create sequence
+     *
+     * @param string $sequenceName name of the sequence to be created
+     * @param string $start start value of the sequence; default is 1
+     */
+    public function createSequence($sequenceName, $start = 1)
+    {
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($sequenceName), true);
+        return $this->conn->exec('CREATE SEQUENCE ' . $sequenceName . ' INCREMENT 1' .
+                    ($start < 1 ? ' MINVALUE ' . $start : '') . ' START ' . $start);
+    }
+    /**
+     * drop existing sequence
+     *
+     * @param string $sequenceName name of the sequence to be dropped
+     */
+    public function dropSequence($sequenceName)
+    {
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($sequenceName), true);
+        return $this->conn->exec('DROP SEQUENCE ' . $sequenceName);
+    }
+
 }
 
