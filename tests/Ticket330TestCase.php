@@ -99,7 +99,5 @@ class Doctrine_Ticket330_TestCase extends Doctrine_UnitTestCase
     	
     	$this->assertEqual($this->dbh->count(), $prevCount);
     	
-    	echo $this->dbh->count()."\n\n";
-		    	    	
     }
 }
