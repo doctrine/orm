@@ -569,28 +569,26 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * @param array $row
      * @return Doctrine_Record
      */
-    public function mapAggregateValues($record, array $row, $alias)
+    public function mapAggregateValues(&$record, array $row, $alias)
     {
-        $found = false;
-        // aggregate values have numeric keys
-        if (isset($row[0])) {
-            // map each aggregate value   
-            foreach ($row as $index => $value) {
-                $agg = false;
+        $found = false;     
 
+        // map each aggregate value
+        foreach ($row as $index => $value) {
+            $agg = false;
 
-                if (isset($this->_aliasMap[$alias]['agg'][$index])) {
-                    $agg = $this->_aliasMap[$alias]['agg'][$index];
-                }
-
-                if (is_array($record)) {
-                    $record[$agg] = $value;
-                } else {
-                    $record->mapValue($agg, $value);
-                }
-                $found = true;
+            if (isset($this->_aliasMap[$alias]['agg'][$index])) {
+                $agg = $this->_aliasMap[$alias]['agg'][$index];
             }
+
+            if (is_array($record)) {
+                $record[$agg] = $value;
+            } else {
+                $record->mapValue($agg, $value);
+            }
+            $found = true;
         }
+
         return $found;
     }
     public function getCachedForm(array $resultSet)
@@ -614,12 +612,13 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     {
         $params = $this->_conn->convertBooleans(array_merge($this->_params, $params));
         $params = $this->convertEnums($params);
-
+        
         if ( ! $this->_view) {
             $query = $this->getQuery($params);
         } else {
             $query = $this->_view->getSelectSql();
         }
+
 
         if ($this->isLimitSubqueryUsed() &&
             $this->_conn->getDBH()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
@@ -805,6 +804,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         }
 
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
             $parse = true;
 
             foreach ($data as $key => $value) {
