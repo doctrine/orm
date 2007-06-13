@@ -377,14 +377,46 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      * create sequence
      *
      * @param string    $sequenceName name of the sequence to be created
-     * @param string    $seqcol_name  the name of the sequence column
      * @param string    $start        start value of the sequence; default is 1
+     * @param array     $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                              'type'    => 'innodb',
+     *                          );
      * @return boolean
      */
-    public function createSequence($sequenceName, $start = 1)
+    public function createSequence($sequenceName, $start = 1, array $options = array())
     {
         $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($sequenceName), true);
         $seqcolName     = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+
+        $optionsStrings = array();
+
+        if (isset($options['comment']) && ! empty($options['comment'])) {
+            $optionsStrings['comment'] = 'COMMENT = ' . $this->conn->quote($options['comment'], 'string');
+        }
+
+        if (isset($options['charset']) && ! empty($options['charset'])) {
+            $optionsStrings['charset'] = 'DEFAULT CHARACTER SET ' . $options['charset'];
+
+            if (isset($options['collate'])) {
+                $optionsStrings['collate'] .= ' COLLATE ' . $options['collate'];
+            }
+        }
+
+        $type = false;
+
+        if (isset($options['type'])) {
+            $type = $options['type'];
+        } else {
+            $type = $this->conn->default_table_type;
+        }
+        if ($type) {
+            $optionsStrings[] = 'ENGINE = ' . $type;
+        }
+
 
         try {
             $query  = 'CREATE TABLE ' . $sequenceName
@@ -392,7 +424,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                     . $seqcolName . '))'
                     . strlen($this->conn->default_table_type) ? ' TYPE = '
                     . $this->conn->default_table_type : '';
-    
+
             $res    = $this->conn->exec($query);
         } catch(Doctrine_Connection_Exception $e) {
             throw new Doctrine_Export_Exception('could not create sequence table');
@@ -577,7 +609,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      * @param array $definition
      * @return string
      */
-    public function getAdvancedForeignKeyOptions($definition)
+    public function getAdvancedForeignKeyOptions(array $definition)
     {
         $query = '';
         if (!empty($definition['match'])) {
