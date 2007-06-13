@@ -570,6 +570,28 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         return implode(', ', $declFields);
     }
     /**
+     * getAdvancedForeignKeyOptions
+     * Return the FOREIGN KEY query section dealing with non-standard options
+     * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
+     *
+     * @param array $definition
+     * @return string
+     */
+    public function getAdvancedForeignKeyOptions($definition)
+    {
+        $query = '';
+        if (!empty($definition['match'])) {
+            $query .= ' MATCH ' . $definition['match'];
+        }
+        if (!empty($definition['on_update'])) {
+            $query .= ' ON UPDATE ' . $this->getForeignKeyRefentialAction($definition['onUpdate']);
+        }
+        if (!empty($definition['on_delete'])) {
+            $query .= ' ON DELETE ' . $this->getForeignKeyRefentialAction($definition['onDelete']);
+        }
+        return $query;
+    }
+    /**
      * drop existing index
      *
      * @param string    $table          name of table that should be used in method
