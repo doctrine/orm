@@ -698,7 +698,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * @param array $definition     foreign key definition
      * @return string
      */
-    public function getAdvancedForeignKeyOptions($definition)
+    public function getAdvancedForeignKeyOptions(array $definition)
     {
         $query = '';
         if ( ! empty($definition['onUpdate'])) {
