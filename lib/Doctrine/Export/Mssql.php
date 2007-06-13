@@ -208,16 +208,22 @@ class Doctrine_Export_Mssql extends Doctrine_Export
     /**
      * create sequence
      *
-     * @param string    $seqName      name of the sequence to be created
-     * @param string    $start        start value of the sequence; default is 1
-     * @return void
+     * @param string $seqName name of the sequence to be created
+     * @param string $start start value of the sequence; default is 1
+     * @param array     $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                          );
+     * @return string
      */
-    public function createSequence($seqName, $start = 1)
+    public function createSequence($seqName, $start = 1, array $options = array())
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         $seqcolName = $this->conn->quoteIdentifier($this->conn->options['seqcol_name'], true);
-        $query = 'CREATE TABLE ' . $sequenceName . ' (' . $seqcolName .                  
-                 ' INT PRIMARY KEY CLUSTERED IDENTITY(' . $start . ',1) NOT NULL)';
+        $query = 'CREATE TABLE ' . $sequenceName . ' (' . $seqcolName .
+                 ' INT PRIMARY KEY CLUSTERED IDENTITY(' . $start . ', 1) NOT NULL)';
 
         $res = $this->conn->exec($query);
 
@@ -240,9 +246,9 @@ class Doctrine_Export_Mssql extends Doctrine_Export
      * @param string $seqName      name of the sequence to be dropped
      * @return void
      */
-    public function dropSequence($seqName)
+    public function dropSequenceSql($seqName)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
-        return $this->conn->exec('DROP TABLE ' . $sequenceName);
+        return 'DROP TABLE ' . $sequenceName;
     }
 }

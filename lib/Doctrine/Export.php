@@ -66,8 +66,20 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function dropIndex($table, $name)
     {
+        return $this->conn->exec($this->dropIndexSql($table, $name));
+    }
+    
+    /**
+     * dropIndexSql
+     *
+     * @param string    $table        name of table that should be used in method
+     * @param string    $name         name of the index to be dropped
+     * @return string                 SQL that is used for dropping an index
+     */
+    public function dropIndexSql($table, $name) 
+    {
         $name = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
-        return $this->conn->exec('DROP INDEX ' . $name);
+        return 'DROP INDEX ' . $name;
     }
     /**
      * drop existing constraint
@@ -84,13 +96,27 @@ class Doctrine_Export extends Doctrine_Connection_Module
         return $this->conn->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
     }
     /**
+     * dropSequenceSql
      * drop existing sequence
      * (this method is implemented by the drivers)
      *
-     * @param string    $seq_name     name of the sequence to be dropped
+     * @throws Doctrine_Connection_Exception     if something fails at database level
+     * @param string $sequenceName      name of the sequence to be dropped
      * @return void
      */
-    public function dropSequence($name)
+    public function dropSequence($sequenceName)
+    {
+        $this->conn->exec($this->dropSequenceSql($sequenceName));
+    }
+    /**
+     * dropSequenceSql
+     * drop existing sequence
+     *
+     * @throws Doctrine_Connection_Exception     if something fails at database level
+     * @param string $sequenceName name of the sequence to be dropped
+     * @return void
+     */
+    public function dropSequenceSql($sequenceName)
     {
         throw new Doctrine_Export_Exception('Drop sequence not supported by this driver.');
     }
@@ -184,18 +210,26 @@ class Doctrine_Export extends Doctrine_Connection_Module
     /**
      * create sequence
      *
+     * @throws Doctrine_Connection_Exception     if something fails at database level
      * @param string    $seqName        name of the sequence to be created
      * @param string    $start          start value of the sequence; default is 1
+     * @param array     $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                          );     
      * @return void
      */
-    public function createSequence($seqName, $start = 1)
+    public function createSequence($seqName, $start = 1, array $options = array())
     {
-        return $this->conn->execute($this->createSequenceSql($seqName, $start = 1));  
+        return $this->conn->execute($this->createSequenceSql($seqName, $start = 1, $options));
     }
     /**
      * return RDBMS specific create sequence statement
      * (this method is implemented by the drivers)
      *
+     * @throws Doctrine_Connection_Exception     if something fails at database level
      * @param string    $seqName        name of the sequence to be created
      * @param string    $start          start value of the sequence; default is 1
      * @param array     $options  An associative array of table options:

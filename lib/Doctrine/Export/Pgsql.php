@@ -251,12 +251,20 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         }
     }
     /**
-     * create sequence
+     * return RDBMS specific create sequence statement
      *
-     * @param string $sequenceName name of the sequence to be created
-     * @param string $start start value of the sequence; default is 1
+     * @throws Doctrine_Connection_Exception     if something fails at database level
+     * @param string    $seqName        name of the sequence to be created
+     * @param string    $start          start value of the sequence; default is 1
+     * @param array     $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                          );
+     * @return string
      */
-    public function createSequence($sequenceName, $start = 1)
+    public function createSequenceSql($sequenceName, $start = 1, array $options = array())
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($sequenceName), true);
         return $this->conn->exec('CREATE SEQUENCE ' . $sequenceName . ' INCREMENT 1' .
@@ -267,10 +275,10 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
      *
      * @param string $sequenceName name of the sequence to be dropped
      */
-    public function dropSequence($sequenceName)
+    public function dropSequenceSql($sequenceName)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($sequenceName), true);
-        return $this->conn->exec('DROP SEQUENCE ' . $sequenceName);
+        return 'DROP SEQUENCE ' . $sequenceName;
     }
 
 }

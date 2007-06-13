@@ -498,14 +498,19 @@ class Doctrine_Export_Firebird extends Doctrine_Export
      *
      * @param string $seqName name of the sequence to be created
      * @param string $start start value of the sequence; default is 1
-     * @return void
+     * @param array     $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                          );
+     * @return string
      */
-    public function createSequence($seqName, $start = 1)
+    public function createSequence($seqName, $start = 1, array $options = array())
     {
         $sequenceName = $this->conn->formatter->getSequenceName($seqName);
 
         $this->conn->exec('CREATE GENERATOR ' . $sequenceName);
-
         $this->conn->exec('SET GENERATOR ' . $sequenceName . ' TO ' . ($start-1));
 
         $this->dropSequence($seqName);
@@ -516,12 +521,12 @@ class Doctrine_Export_Firebird extends Doctrine_Export
      * @param string $seqName name of the sequence to be dropped
      * @return void
      */
-    public function dropSequence($seqName)
+    public function dropSequenceSql($seqName)
     {
         $sequenceName = $this->conn->formatter->getSequenceName($seqName);
         $sequenceName = $this->conn->quote($sequenceName);
         $query = "DELETE FROM RDB\$GENERATORS WHERE UPPER(RDB\$GENERATOR_NAME)=" . $sequenceName;
         
-        return $this->conn->exec($query);
+        return $query;
     }
 }

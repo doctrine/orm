@@ -432,28 +432,33 @@ END;
     /**
      * create sequence
      *
-     * @param object $this->conn database object that is extended by this class
      * @param string $seqName name of the sequence to be created
      * @param string $start start value of the sequence; default is 1
-     * @return void
+     * @param array     $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                          );
+     * @return string
      */
-    public function createSequence($seqName, $start = 1)
+    public function createSequenceSql($seqName, $start = 1, array $options = array())
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
-        $query = 'CREATE SEQUENCE ' . $sequenceName . ' START WITH ' . $start . ' INCREMENT BY 1 NOCACHE';
-        $query.= ($start < 1 ? ' MINVALUE ' . $start : '');
-        return $this->conn->exec($query);
+        $query  = 'CREATE SEQUENCE ' . $sequenceName . ' START WITH ' . $start . ' INCREMENT BY 1 NOCACHE';
+        $query .= ($start < 1 ? ' MINVALUE ' . $start : '');
+        return $query;
     }
     /**
      * drop existing sequence
      *
      * @param object $this->conn database object that is extended by this class
      * @param string $seqName name of the sequence to be dropped
-     * @return void
+     * @return string
      */
-    public function dropSequence($seqName)
+    public function dropSequenceSql($seqName)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
-        return $this->conn->exec('DROP SEQUENCE ' . $sequenceName);
+        return 'DROP SEQUENCE ' . $sequenceName;
     }
 }
