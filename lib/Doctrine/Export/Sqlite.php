@@ -43,7 +43,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      */
     public function dropDatabase($name)
     {
-        $databaseFile = $this->conn->formatter->getDatabaseFile($name);
+        $databaseFile = $this->conn->getDatabaseFile($name);
         if (!@file_exists($databaseFile)) {
             throw new Doctrine_Export_Exception('database does not exist');
         }
