@@ -1,0 +1,64 @@
++++ Creating related records
+
+When accessing related records and if those records do not exists Doctrine automatically creates new records.
+
+<code type="php">
+// NOTE: related record have always the first letter in uppercase
+$email = $user->Email;
+
+$email->address = 'jackdaniels@drinkmore.info';
+
+$user->save();
+
+// alternative:
+
+$user->Email->address = 'jackdaniels@drinkmore.info';
+
+$user->save();
+</code>
+
+
++++ Retrieving related records
+
+You can retrieve related records by the very same {{Doctrine_Record}} methods you've already propably used for accessing record properties. When accessing related record you just simply use the class names. 
+
+<code type="php">
+print $user->Email['address'];
+
+print $user->Phonenumber[0]->phonenumber;
+
+print $user->Group[0]->name;
+</code>
+
+
++++ Updating related records
+
+You can update the related records by calling save for each related object / collection individually or by calling save on the object that owns the other objects. You can also call {{Doctrine_Connection::flush}} which saves all pending objects.
+
+<code type="php">
+$user->Email['address'] = 'koskenkorva@drinkmore.info';
+
+$user->Phonenumber[0]->phonenumber = '123123';
+
+$user->save();
+
+// saves the email and phonenumber
+</code>
+
+
++++ Deleting related records
+
+You can delete related records individually be calling {{delete()}} on each record. If you want to delete a whole record graph just call delete on the owner record.
+
+<code type="php">
+$user->Email->delete();
+
+$user->Phonenumber[3]->delete();
+
+// deleting user and all related objects:
+
+$user->delete();
+</code>
+
+
++++ Working with associations

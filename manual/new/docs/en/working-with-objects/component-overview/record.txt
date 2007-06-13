@@ -1,0 +1,204 @@
+++++ Introduction
+
+{{Doctrine_Record}} is a wrapper for database row but along with that it speficies what relations it has
+on other components and what columns it has. It may access the related components, hence its refered as an ActiveRecord.
+
+The classes that inherit {{Doctrine_Record}} are called components. There should be atleast one component for each database table.  
+
+
+++++ Creating new records
+
+There are couple of ways for creating new records. Propably the easiest is using native php new -operator. The other ways are calling {{Doctrine_Table::create()}} or {{Doctrine_Connection::create()}}. The last two exists only for backward compatibility. The recommended way of creating new objects is the new operator.
+
+<code type="php">
+$user = $conn->create("User");
+
+// alternative way:
+
+$table = $conn->getTable("User");
+
+$user = $table->create();
+
+// the simpliest way:
+
+$user = new User();
+
+
+// records support array access
+$user["name"] = "John Locke";
+
+// save user into database
+$user->save();
+</code>
+
+
+++++ Retrieving existing records
+
+Doctrine provides many ways for record retrieval. The fastest ways for retrieving existing records are the finder methods provided by {{Doctrine_Table}}. If you need to use more complex queries take a look at DQL API and {{Doctrine_Connection::query}} method.
+
+<code type="php">
+$table = $conn->getTable("User");
+
+// find by primary key
+
+$user = $table->find(2);
+if($user !== false)
+    print $user->name;
+
+// get all users
+foreach($table->findAll() as $user) {
+    print $user->name;
+}
+
+// finding by dql
+foreach($table->findByDql("name LIKE '%John%'") as $user) {
+    print $user->created;
+}
+
+// finding objects with DQL
+
+$users = $conn->query("FROM User WHERE User.name LIKE '%John%'");
+</code>
+
+
+++++ Accessing properties
+
+You can retrieve existing objects (database rows) with {{Doctrine_Table}} or {{Doctrine_Connection}}. {{Doctrine_Table}} provides simple methods like {{findBySql}}, {{findAll}} and find for finding objects whereas {{Doctrine_Connection}} provides complete OQL API for retrieving objects (see chapter 9). 
+
+<code type="php">
+$user = $table->find(3);
+
+// access property through overloading
+
+$name = $user->name;
+
+// access property with get()
+
+$name = $user->get("name");
+
+// access property with ArrayAccess interface
+
+$name = $user['name'];
+
+// iterating through properties
+
+foreach($user as $key => $value) {
+
+}
+</code>
+
+
+++++ Updating records
+
+Updating objects is very easy, you just call the {{Doctrine_Record::save()}} method. The other way (perhaps even easier) is to call {{Doctrine_Connection::flush()}} which saves all objects. It should be noted though that flushing is a much heavier operation than just calling save method.
+
+<code type="php">
+$table = $conn->getTable("User");
+
+
+$user = $table->find(2);
+
+if($user !== false) {
+    $user->name = "Jack Daniels";
+    
+    $user->save();
+}
+</code>
+
+
+++++ Deleting records
+
+Deleting records in Doctrine is handled by {{Doctrine_Record::delete()}}, {{Doctrine_Collection::delete()}} and {{Doctrine_Connection::delete()}} methods.
+
+<code type="php">
+$table = $conn->getTable("User");
+
+$user = $table->find(2);
+
+// deletes user and all related composite objects
+if($user !== false)
+    $user->delete();
+
+
+$users = $table->findAll();
+
+
+// delete all users and their related composite objects
+$users->delete();
+</code>
+
+
+++++ Getting record state
+
+{{Every Doctrine_Record}} has a state. First of all record can be transient or persistent. Every record that is retrieved from database is persistent and every newly created record is transient. If a {{Doctrine_Record}} is retrieved from database but the only loaded property is its primary key, then this record has a state called proxy.
+
+Every transient and persistent {{Doctrine_Record}} is either clean or dirty. {{Doctrine_Record}} is clean when none of its properties are changed and dirty when atleast one of its properties has changed. 
+
+<code type="php">
+$state = $record->state();
+
+switch($state):
+    case Doctrine_Record::STATE_PROXY:
+        // record is in proxy state, 
+        // meaning its persistent but not all of its properties are
+        // loaded from the database
+    break;
+    case Doctrine_Record::STATE_TCLEAN:
+        // record is transient clean,
+        // meaning its transient and 
+        // none of its properties are changed
+    break;
+    case Doctrine_Record::STATE_TDIRTY:
+        // record is transient dirty,
+        // meaning its transient and 
+        // some of its properties are changed
+    break;
+    case Doctrine_Record::STATE_DIRTY:
+        // record is dirty, 
+        // meaning its persistent and 
+        // some of its properties are changed
+    break;
+    case Doctrine_Record::STATE_CLEAN:
+        // record is clean,
+        // meaning its persistent and 
+        // none of its properties are changed
+    break;
+endswitch;
+</code>
+
+
+++++ Getting object copy
+
+Sometimes you may want to get a copy of your object (a new object with all properties copied). Doctrine provides a simple method for this: {{Doctrine_Record::copy()}}.
+
+<code type="php">
+$copy = $user->copy();
+</code>
+
+
+++++ Serializing
+
+Sometimes you may want to serialize your record objects (possibly for caching purposes). Records can be serialized, but remember: Doctrine cleans all relations, before doing this. So remember to persist your objects into database before serializing them.
+
+<code type="php">
+$string = serialize($user);
+
+$user = unserialize($string);
+</code>
+
+
+++++ Checking Existence
+
+<code type="php">
+$record = new User();
+
+$record->exists(); // false
+
+$record->name = 'someone';
+$record->save();
+
+$record->exists(); // true
+</code>
+
+
+++++ Callbacks

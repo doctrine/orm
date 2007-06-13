@@ -1,0 +1,184 @@
+++++ Introduction
+
+{{Doctrine_Collection}} is a collection of records (see {{Doctrine_Record}}). As with records the collections can be deleted and saved using {{Doctrine_Collection::delete()}} and {{Doctrine_Collection::save()}} accordingly.
+
+When fetching data from database with either DQL API (see {{Doctrine_Query}}) or rawSql API (see {{Doctrine_RawSql}}) the methods return an instance of {{Doctrine_Collection}} by default.
+
+The following example shows how to initialize a new collection:
+
+<code type="php">
+$conn = Doctrine_Manager::getInstance()
+    ->openConnection(new PDO("dsn", "username", "pw"));
+
+// initalizing a new collection
+$users = new Doctrine_Collection($conn->getTable('User'));
+
+// alternative (propably easier)
+$users = new Doctrine_Collection('User');
+
+// adding some data
+$coll[0]->name = 'Arnold';
+
+$coll[1]->name = 'Somebody';
+
+// finally save it!
+$coll->save();
+</code>
+
+
+++++ Accessing elements
+
+You can access the elements of {{Doctrine_Collection}} with {{set()}} and {{get()}} methods or with {{ArrayAccess}} interface.
+
+<code type="php">
+$table = $conn->getTable("User");
+
+$users = $table->findAll();
+
+// accessing elements with ArrayAccess interface
+
+$users[0]->name = "Jack Daniels";
+
+$users[1]->name = "John Locke";
+
+// accessing elements with get()
+
+print $users->get(1)->name;
+</code>
+
+
+++++ Adding new elements
+
+When accessing single elements of the collection and those elements (records) don't exist Doctrine auto-adds them. 
+
+In the following example we fetch all users from database (there are 5) and then add couple of users in the collection.
+
+As with PHP arrays the indexes start from zero.
+
+<code type="php">
+$users = $table->findAll();
+
+print count($users); // 5
+
+$users[5]->name = "new user 1";
+$users[6]->name = "new user 2";
+</code>
+
+
+++++ Getting collection count
+
+The {{Doctrine_Collection}} method {{count()}} returns the number of elements currently in the collection.
+
+<code type="php">
+$users = $table->findAll();
+
+$users->count();
+
+// or
+
+count($users); // Doctrine_Collection implements Countable interface
+</code>
+
+
+++++ Saving the collection
+
+As with records the collection can be saved by calling the save method.
+
+<code type="php">
+$users = $table->findAll();
+
+$users[0]->name = "Jack Daniels";
+
+$users[1]->name = "John Locke";
+
+$users->save();
+</code>
+
+
+++++ Deleting collection
+
+Doctrine Collections can be deleted in very same way is Doctrine Records you just call {{delete()}} method. As for all collections Doctrine knows how to perform single-shot-delete meaning it only performs one database query for the each collection. 
+
+For example if we have collection of users which own [0-*] phonenumbers. When deleting the collection
+of users doctrine only performs two queries for this whole transaction. The queries would look something like:
+
+<code type="sql">
+DELETE FROM user WHERE id IN (1,2,3, ... ,N)
+DELETE FROM phonenumber WHERE id IN (1,2,3, ... ,M)
+</code>
+
+It should also be noted that Doctrine is smart enough to perform single-shot-delete per table when transactions are used. So if you are deleting a lot of records and want to optimize the operation just wrap the delete calls in {{Doctrine_Connection}} transaction.
+
+<code type="php">
+// delete all users with name 'John'
+
+$users = $table->findByDql("name LIKE '%John%'");
+
+$users->delete();
+</code>
+
+
+++++ Key mapping
+
+Sometimes you may not want to use normal indexing for collection elements. For example in some cases mapping primary keys as collection keys might be useful. The following example demonstrates how this can be achieved.
+
+<code type="php">
+// mapping id column
+
+$user = new User();
+
+$user->setAttribute(Doctrine::ATTR_COLL_KEY, 'id');
+
+// now user collections will use the values of
+// id column as element indexes
+
+$users = $user->getTable()->findAll();
+
+foreach($users as $id => $user) {
+    print $id . $user->name;
+}
+
+// mapping name column
+
+$user = new User();
+
+$user->setAttribute(Doctrine::ATTR_COLL_KEY, 'name');
+
+// now user collections will use the values of
+// name column as element indexes
+
+$users = $user->getTable()->findAll();
+
+foreach($users as $name => $user) {
+    print $name . $user->type;
+}
+</code>
+
+
+++++ Loading related records
+
+Doctrine provides means for efficiently retrieving all related records for all record elements. That means when you have for example a collection of users you can load all phonenumbers for all users by simple calling the {{loadRelated()}} method.
+
+<code type="php">
+$users = $conn->query("FROM User");
+
+// now lets load phonenumbers for all users
+
+$users->loadRelated("Phonenumber");
+
+foreach($users as $user) {
+    print $user->Phonenumber->phonenumber;
+    // no additional db queries needed here
+}
+
+// the loadRelated works an any relation, even associations:
+
+$users->loadRelated("Group");
+
+foreach($users as $user) {
+    print $user->Group->name;
+}
+</code>
+
+
+++++ Collection expanding

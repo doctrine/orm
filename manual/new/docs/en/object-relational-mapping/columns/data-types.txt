@@ -53,10 +53,7 @@ The above example will create a character varying field of length 12 characters 
 
 ++++ Boolean
 
-The boolean data type represents only two values that can be either 1 or 0.
-Do not assume that these data types are stored as integers because some DBMS drivers may implement this
-type with single character text fields for a matter of efficiency.
-Ternary logic is possible by using null as the third possible value that may be assigned to fields of this type.  
+The boolean data type represents only two values that can be either 1 or 0. Do not assume that these data types are stored as integers because some DBMS drivers may implement this type with single character text fields for a matter of efficiency. Ternary logic is possible by using null as the third possible value that may be assigned to fields of this type.  
 
 <code type="php">
 class Test extends Doctrine_Record {
@@ -71,8 +68,7 @@ class Test extends Doctrine_Record {
 
 The integer type is the same as integer type in PHP. It may store integer values as large as each DBMS may handle. 
 
-Fields of this type may be created optionally as unsigned integers but not all DBMS support it. 
-Therefore, such option may be ignored. Truly portable applications should not rely on the availability of this option.
+Fields of this type may be created optionally as unsigned integers but not all DBMS support it. Therefore, such option may be ignored. Truly portable applications should not rely on the availability of this option.
 
 The integer type maps to different database type depending on the column length.
 
@@ -177,9 +173,7 @@ class Test extends Doctrine_Record {
 
 ++++ Timestamp
 
-The timestamp data type is a mere combination of the date and the time of the day data types. 
-The representation of values of the time stamp type is accomplished by joining the date and time 
-string values in a single string joined by a space. Therefore, the format template is YYYY-MM-DD HH:MI:SS. The represented values obey the same rules and ranges described for the date and time data types 
+The timestamp data type is a mere combination of the date and the time of the day data types. The representation of values of the time stamp type is accomplished by joining the date and time string values in a single string joined by a space. Therefore, the format template is YYYY-MM-DD HH:MI:SS. The represented values obey the same rules and ranges described for the date and time data types 
 
 <code type="php">
 class Test extends Doctrine_Record {

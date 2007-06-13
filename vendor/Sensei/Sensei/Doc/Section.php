@@ -372,9 +372,9 @@ class Sensei_Doc_Section implements Countable
         // The last section did not have any text in this file.
 	    // Let's assume that the text is defined in another file.
 	    if (!$current->isRoot() && $current->_text === '') {
-	                    
-	        $otherFilename = $current->getPath() . '.php';
-	                    
+
+	        $otherFilename = $current->getPath(false, DIRECTORY_SEPARATOR) . '.txt';
+	        	                    
 	        if (($filename !== $otherFilename)
 	         && (file_exists($path . DIRECTORY_SEPARATOR . $otherFilename))) {
 	            $current->parse($path, $otherFilename);

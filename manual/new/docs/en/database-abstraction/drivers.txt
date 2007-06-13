@@ -1,0 +1,4 @@
++++ Oracle
+++++ Making unsuported functions work
++++ Mysql
+++++ Tips and tricks

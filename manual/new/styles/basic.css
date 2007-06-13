@@ -1,41 +1,49 @@
-body, html
-{
+body, html {
 	margin: 0;
 	padding: 0;
 	font-family: "Arial", sans-serif;
-	font-size: 11pt;
+	font-size: 12pt;
     background: white;
     color: black;
 }
 
-h1, h2, h3, h4, h5, h6
-{
+h1, h2, h3, h4, h5, h6 {
 	font-family: "Lucida Bright", "Times New Roman", serif;
 }
 
-h1 
-{
+h1 {
 	text-align: center;
-	font-size: 24pt;
+	font-size: 2em;
+	margin-bottom: 1em;
+	margin-top: 0;
 }
 
 h2, #table-of-contents h1 {
-	font-size: 18pt;
+	font-size: 1.5em;
 	text-align: left;
+	margin: 0.67em 0;
 }
 
 h3 {
-	font-size: 14pt;
+	font-size: 1.17em;
+	margin: 1em 0;
 }
 
-p, ul, ol
-{
+h4 {
+    font-size: 1em;
+    margin: 1.33em 0;
+}
+
+.chapter {
+    margin-bottom: 5em;
+}
+
+p, ul, ol, dl {
 	line-height: 1.5em;
 	text-align: justify; 
 }
 
-ul
-{
+ul {
 	list-style-type: square;
 }
 
@@ -43,8 +51,11 @@ ul ul, ol ol {
 	font-size: 100%;
 }
 
-table
-{
+dd {
+	margin-bottom: 0.5em;
+}
+
+table {
 	border: 1px solid #aaaaaa;
 	border-collapse: collapse;
 	margin: 0.5em 0;
@@ -53,19 +64,16 @@ table
 	line-height: 1.5em;
 }
 
-td, th
-{
+td, th {
 	padding: 0.2em;
 	border: 1px solid #aaaaaa;
 }
 
-th
-{
+th {
 	background-color: #f2f2f2;
 }
 
-blockquote
-{
+blockquote {
 	background-image: url("../images/quotation-mark.png");
 	background-position: top left;
 	background-repeat: no-repeat;
@@ -76,18 +84,15 @@ blockquote
 
 /*** Code blocks and highlighting**********************************************/
 
-pre, tt
-{
+pre, tt {
 	font-family: "Bitstream Vera Sans Mono", monospace;
 }
 
-tt
-{
+tt {
 	font-size: 11pt;
 }
 
-pre 
-{
+pre {
 	font-size: 10pt;
 	font-weight: bold;
 	padding: 1em;
@@ -95,52 +100,42 @@ pre
 	line-height: 1.2em;
 	background-color: #f6f6f6;
 	border: 1px solid #cccccc;
-	overflow: auto;
 }
 
-pre .default
-{
+pre .default {
 	color: #000000;
 }
 
-pre .keyword
-{
+pre .keyword {
 	color: #3465a4;
 }
 
-pre .string
-{
+pre .string {
 	color: #ef2929;
 }
 
-pre .comment
-{
+pre .comment {
 	color: #888a85;
 }
 
-a:link
-{
+a:link {
 	color: #3465a4;
 	text-decoration: none;
 }
 
-a:visited
-{
+a:visited {
 	color: #75507b;
 	text-decoration: none;
 }
 
-a:link:hover, a:link:active
-{
+a:link:hover,
+a:link:active,
+a:visited:hover,
+a:visited:active {
 	text-decoration: underline;
-	color: #729fcf;
+	color: #555753;
 }
 
-a:visited:hover, a:visited:active
-{
-	text-decoration: underline;
-	color: #ad7fa8;
-}
 
 #table-of-contents {
 	position: absolute;
@@ -164,10 +159,18 @@ a:visited:hover, a:visited:active
 }
 
 #sidebar {
+    /* Netscape 4, IE 4.x-5.0/Win and other lesser browsers will use this */
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    z-index: 10;
+}
+
+#wrap > div#sidebar {
+    /* used by Opera 5+, Netscape6+/Mozilla, Konqueror, Safari, OmniWeb 4.5+,
+       iCab, ICEbrowser */
 	position: fixed;
-	top: 0;
-	right: 0;
-	height: 100%;
 }
 
 #content {
@@ -190,7 +193,9 @@ ul.tree, ul.tree ul {
 /** Tree specific styles ******************************************************/
 
 .tree a {
-   text-decoration: none;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
 }
 
 .tree .expander {
@@ -198,8 +203,9 @@ ul.tree, ul.tree ul {
     display: block;
     float: left;
     height: auto;
+    margin: 0;
     margin-left: -1.25em;
-    padding-left: 0;
+    padding: 0;
     text-align: center;
     width: 1em;
 }

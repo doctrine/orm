@@ -1,8 +1,9 @@
 The installation of doctrine is very easy. Just get the latest revision of Doctrine from http://doctrine.pengus.net/svn/trunk. 
 
-You need a SVN(Subversion) client for downloading Doctrine.
+You need a SVN (Subversion) client for downloading Doctrine.
 
 In order to check out Doctrine in the current directory using the **svn** command line tool use the following code: 
+
 <code type="bash">
 svn co http://doctrine.pengus.net/svn/trunk . 
 </code>

@@ -24,10 +24,7 @@ The DSN consists in the following parts:
 The DSN can either be provided as an associative array or as a string. The string format of the supplied DSN is in its fullest form:
 `` phptype(dbsyntax)://username:password@protocol+hostspec/database?option=value  ``
 
-
-
 Most variations are allowed:
-
 
 phptype://username:password@protocol+hostspec:110//usr/db_file.db
 phptype://username:password@hostspec/database
@@ -43,6 +40,7 @@ phptype
 
 
 The currently supported database backends are: 
+
 ||//fbsql//||  -> FrontBase ||
 ||//ibase//||  -> InterBase / Firebird (requires PHP 5)  ||
 ||//mssql//||  -> Microsoft SQL Server (NOT for Sybase. Compile PHP --with-mssql) ||
@@ -53,13 +51,10 @@ The currently supported database backends are:
 ||//querysim//|| -> QuerySim   ||
 ||//sqlite//|| -> SQLite 2 ||
  
-
-
 A second DSN format is supported phptype(syntax)://user:pass@protocol(proto_opts)/database
  
-
-
 If your database, option values, username or password contain characters used to delineate DSN parts, you can escape them via URI hex encodings:  
+
 ``: = %3a``
 ``/ = %2f``
 ``@ = %40``
@@ -69,9 +64,6 @@ If your database, option values, username or password contain characters used to
 ``? = %3f``
 ``= = %3d``
 ``& = %26``
- 
-
-
 
 Warning 
 Please note, that some features may be not supported by all database backends. 
