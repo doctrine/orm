@@ -34,6 +34,26 @@ Doctrine::autoload('Doctrine_Export');
 class Doctrine_Export_Sqlite extends Doctrine_Export
 {
     /**
+     * drop an existing database
+     *
+     * @param string $name                  name of the database that should be dropped
+     * @throws Doctrine_Export_Exception    if the database file does not exist
+     * @throws Doctrine_Export_Exception    if something failed during the removal of the database file
+     * @return void
+     */
+    public function dropDatabase($name)
+    {
+        $databaseFile = $this->conn->formatter->getDatabaseFile($name);
+        if (!@file_exists($databaseFile)) {
+            throw new Doctrine_Export_Exception('database does not exist');
+        }
+        $result = @unlink($database_file);
+        if ( ! $result) {
+            throw new Doctrine_Export_Exception('could not remove the database file');
+        }
+    }
+
+    /**
      * Get the stucture of a field into an array
      *
      * @param string    $table         name of the table on which the index is to be created
