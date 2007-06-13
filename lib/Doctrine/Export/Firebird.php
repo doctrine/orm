@@ -483,6 +483,17 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         return $result;
     }
     /**
+     * A method to return the required SQL string that fits between CREATE ... TABLE
+     * to create the table as a temporary table.
+     *
+     * @return string The string required to be placed between "CREATE" and "TABLE"
+     *                to generate a temporary table, if possible.
+     */
+    public function getTemporaryTableQuery()
+    {
+        return 'GLOBAL TEMPORARY';
+    }
+    /**
      * create sequence
      *
      * @param string $seqName name of the sequence to be created
