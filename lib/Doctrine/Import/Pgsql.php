@@ -155,10 +155,9 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
         $columns     = array();
         foreach ($result as $key => $val) {
             if ($val['type'] === 'varchar') {
-                // need to add length to the type so we are compatible with
-                // Zend_Db_Adapter_Pdo_Pgsql!
+                // get length from varchar definition
                 $length = preg_replace('~.*\(([0-9]*)\).*~', '$1', $val['complete_type']);
-                $val['type'] .= '(' . $length . ')';
+                $val['length'] .= $length;
             }
             
             $decl = $this->conn->dataDict->getPortableDeclaration($val);
