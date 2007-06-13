@@ -70,13 +70,13 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
     {
         $query = '';
         if (isset($definition['match'])) {
-            $query .= ' MATCH '.$definition['match'];
+            $query .= ' MATCH ' . $definition['match'];
         }
         if (isset($definition['onUpdate'])) {
-            $query .= ' ON UPDATE '.$definition['on_update'];
+            $query .= ' ON UPDATE ' . $definition['on_update'];
         }
         if (isset($definition['onDelete'])) {
-            $query .= ' ON DELETE '.$definition['on_delete'];
+            $query .= ' ON DELETE ' . $definition['on_delete'];
         }
         if (isset($definition['deferrable'])) {
             $query .= ' DEFERRABLE';

@@ -214,13 +214,52 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         }
     }
     /**
+     * getAdvancedForeignKeyOptions
+     * Return the FOREIGN KEY query section dealing with non-standard options
+     * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
+     *
+     * @param array $definition         foreign key definition
+     * @return string
+     * @access protected
+     */
+    public function getAdvancedForeignKeyOptions(array $definition)
+    {
+        $query = '';
+        if (isset($definition['match'])) {
+            $query .= ' MATCH ' . $definition['match'];
+        }
+        if (isset($definition['onUpdate'])) {
+            $query .= ' ON UPDATE ' . $definition['on_update'];
+        }
+        if (isset($definition['onDelete'])) {
+            $query .= ' ON DELETE ' . $definition['on_delete'];
+        }
+        if (isset($definition['deferrable'])) {
+            $query .= ' DEFERRABLE';
+        } else {
+            $query .= ' NOT DEFERRABLE';
+        }
+        if (isset($definition['feferred'])) {
+            $query .= ' INITIALLY DEFERRED';
+        } else {
+            $query .= ' INITIALLY IMMEDIATE';
+        }
+        return $query;
+    }
+    /**
      * create sequence
      *
      * @param string    $seqName        name of the sequence to be created
      * @param string    $start          start value of the sequence; default is 1
+     * @param array     $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                          );
      * @return boolean
      */
-    public function createSequence($seqName, $start = 1)
+    public function createSequence($seqName, $start = 1, array $options = array())
     {
         $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         $seqcolName     = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
@@ -248,12 +287,12 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
     /**
      * drop existing sequence
      *
-     * @param string    $seq_name     name of the sequence to be dropped
+     * @param string $sequenceName      name of the sequence to be dropped
      * @return boolean
      */
-    public function dropSequence($seq_name)
+    public function dropSequence($sequenceName)
     {
-        $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($seq_name), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($sequenceName), true);
         return $this->conn->exec('DROP TABLE ' . $sequenceName);
     }
 }
