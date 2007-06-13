@@ -77,6 +77,16 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
         $this->initFunctions();
     }
     /**
+     * getDatabaseFile
+     *
+     * @param string $name      the name of the database
+     * @return string
+     */
+    public function getDatabaseFile($name)
+    {
+        return $name . '.db';
+    }
+    /**
      * initializes database functions missing in sqlite
      *
      * @see Doctrine_Expression
