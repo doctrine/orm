@@ -198,9 +198,15 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *
      * @param string    $seqName        name of the sequence to be created
      * @param string    $start          start value of the sequence; default is 1
+     * @param array     $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                          );
      * @return string
      */
-    public function createSequenceSql($seqName, $start = 1)
+    public function createSequenceSql($seqName, $start = 1, array $options = array())
     {
         throw new Doctrine_Export_Exception('Create sequence not supported by this driver.');
     }
@@ -680,41 +686,53 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function getForeignKeyDeclaration(array $definition)
     {
         $sql  = $this->getForeignKeyBaseDeclaration($definition);
-        
-        if (isset($definition['deferred'])) {
-            $sql .= ' ' . $this->getForeignKeyDeferredDeclaration();
-        }
+        $sql .= $this->getForeignKeyAdvancedOptions($definition);
 
-        $a = array('onUpdate', 'onDelete');
-        foreach($a as $v) {
-            $keyword = ($v == 'onUpdate') ? ' ON UPDATE ' : ' ON DELETE ';
-
-            if (isset($definition[$v])) {
-                $upper = strtoupper($definition[$v]);
-
-                switch ($upper) {
-                    case 'CASCADE':
-                    case 'SET NULL':
-                    case 'NO ACTION':
-                    case 'RESTRICT':
-                    case 'SET DEFAULT':
-                        $sql .= $keyword . $upper;
-                    break;
-                    default:
-                        throw new Doctrine_Export_Exception('Unknown foreign key referential action \'' . $upper . '\' given.');
-                }
-            }
-        }
         return $sql;
     }
-    /** 
-     * getForeignKeyDeferredDeclaration
+    /**
+     * getAdvancedForeignKeyOptions
+     * Return the FOREIGN KEY query section dealing with non-standard options
+     * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
      *
+     * @param array $definition     foreign key definition
      * @return string
      */
-    public function getForeignKeyDeferredDeclaration($deferred)
+    public function getAdvancedForeignKeyOptions($definition)
     {
-        return '';
+        $query = '';
+        if ( ! empty($definition['onUpdate'])) {
+            $query .= ' ON UPDATE ' . $this->getForeignKeyRefentialAction($definition['onUpdate']);
+        }
+        if ( ! empty($definition['onDelete'])) {
+            $query .= ' ON DELETE ' . $this->getForeignKeyRefentialAction($definition['onDelete']);
+        }
+        return $query;
+    }
+    /**
+     * getForeignKeyReferentialAction
+     *
+     * returns given referential action in uppercase if valid, otherwise throws
+     * an exception
+     *
+     * @throws Doctrine_Exception_Exception     if unknown referential action given
+     * @param string $action    foreign key referential action
+     * @param string            foreign key referential action in uppercase
+     */
+    public function getForeignKeyReferentialAction($action)
+    {
+    	$upper = strtoupper($action);
+        switch ($upper) {
+            case 'CASCADE':
+            case 'SET NULL':
+            case 'NO ACTION':
+            case 'RESTRICT':
+            case 'SET DEFAULT':
+                return $upper;
+            break;
+            default:
+                throw new Doctrine_Export_Exception('Unknown foreign key referential action \'' . $upper . '\' given.');
+        }
     }
     /**
      * getForeignKeyBaseDeclaration
