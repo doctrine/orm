@@ -138,47 +138,26 @@ a:visited:active {
 
 
 #table-of-contents {
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 20em;
-	overflow: auto;
 	border: 1px solid #cccccc;
 	background-color: #f6f6f6;
 	padding: 0 1em;
-	margin: 1em;
-	max-height: 95%;
+	margin: 0;
 }
 
 #wrap {
-	position: absolute;
-	left: 0;
-	top: 0;
 	width: 100%;
 	margin: 0;
 }
 
 #sidebar {
-    /* Netscape 4, IE 4.x-5.0/Win and other lesser browsers will use this */
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    z-index: 10;
-}
-
-#wrap > div#sidebar {
-    /* used by Opera 5+, Netscape6+/Mozilla, Konqueror, Safari, OmniWeb 4.5+,
-       iCab, ICEbrowser */
-	position: fixed;
+    float: right;
+    width: 20em;
+    margin: 0;
+    padding: 1em;
 }
 
 #content {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 23em;
-	margin: 0;
+	margin-right: 20em;
 	padding: 1em;
 }
 

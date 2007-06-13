@@ -1,8 +1,3 @@
-div#sidebar {
-    /* IE5.5+/Win - this is more specific than the IE 5.0 version */
-    top: expression(eval(document.documentElement.scrollTop));
-}
-
 .tree .expander {
     margin-left: -0.60em;
 }
