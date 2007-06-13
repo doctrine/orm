@@ -62,6 +62,18 @@ class Doctrine_Export_Mssql extends Doctrine_Export
         $name = $this->conn->quoteIdentifier($name, true);
         return $this->conn->standaloneQuery('DROP DATABASE ' . $name, null, true);
     }
+
+    /**
+     * Override the parent method.
+     *
+     * @return string The string required to be placed between "CREATE" and "TABLE"
+     *                to generate a temporary table, if possible.
+     */
+    public function getTemporaryTableQuery()
+    {
+        return '';
+    }
+
     /**
      * alter an existing table
      *
