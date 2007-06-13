@@ -1069,6 +1069,17 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 $this->_state !== Doctrine_Record::STATE_TDIRTY);
     }
     /**
+     * isModified
+     * returns true if this record was modified, otherwise false
+     *
+     * @return boolean
+     */
+    public function isModified()
+    {
+        return ($this->_state === Doctrine_Record::STATE_DIRTY ||
+                $this->_state === Doctrine_Record::STATE_TDIRTY);
+    }
+    /**
      * method for checking existence of properties and Doctrine_Record references
      * @param mixed $name               name of the property or reference
      * @return boolean
