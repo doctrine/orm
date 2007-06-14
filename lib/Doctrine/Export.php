@@ -42,6 +42,17 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function dropDatabase($database)
     {
+        $this->conn->execute($this->dropDatabaseSql($database));
+    }
+    /**
+     * drop an existing database
+     * (this method is implemented by the drivers)
+     *
+     * @param string $name name of the database that should be dropped
+     * @return void
+     */
+    public function dropDatabaseSql($database)
+    {
         throw new Doctrine_Export_Exception('Drop database not supported by this driver.');
     }
     /**
@@ -129,6 +140,17 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function createDatabase($database)
     {
+        $this->conn->execute($this->createDatabaseSql($database));
+    }
+    /**
+     * create a new database
+     * (this method is implemented by the drivers)
+     *
+     * @param string $name name of the database that should be created
+     * @return string
+     */
+    public function createDatabaseSql($database)
+    {
         throw new Doctrine_Export_Exception('Create database not supported by this driver.');
     }
     /**
@@ -170,13 +192,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
 
         $queryFields = $this->getFieldDeclarationList($fields);
-        /**
-        if (isset($options['foreignKeys']) && ! empty($options['foreignKeys'])) {
-            foreach($options['foreignKeys'] as $definition) {
-                $queryFields .= ', ' . $this->getForeignKeyDeclaration($definition);
-            }
-        }
-        */
+
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';

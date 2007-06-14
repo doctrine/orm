@@ -201,11 +201,13 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
 
         try {
+            /**
             if ( ! empty($fk)) {
                 $this->conn->beginTransaction();
             }
+            */
             $ret   = $this->conn->exec($query);
-
+            /**
             if ( ! empty($fk)) {
                 foreach ($fk as $definition) {
 
@@ -226,6 +228,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
 
                 $this->conn->commit();
             }
+            */
         } catch(Doctrine_Exception $e) {
 
             $this->conn->rollback();

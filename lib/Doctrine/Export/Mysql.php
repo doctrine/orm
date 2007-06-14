@@ -37,25 +37,21 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      * create a new database
      *
      * @param string $name name of the database that should be created
-     * @throws PDOException
-     * @return void
+     * @return string
      */
-    public function createDatabase($name)
+    public function createDatabaseSql($name)
     {
-        $query  = 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name, true);
-        $result = $this->conn->exec($query);
+        return 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name, true);
     }
     /**
      * drop an existing database
      *
      * @param string $name name of the database that should be dropped
-     * @throws PDOException
-     * @access public
+     * @return string
      */
-    public function dropDatabase($name)
+    public function dropDatabaseSql($name)
     {
-        $query  = 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
-        $this->conn->exec($query);
+        return 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
     }
     /**
      * create a new table
@@ -147,17 +143,9 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             }
         }
 
-        if (isset($options['foreignKeys']) && ! empty($options['foreignKeys'])) {
-            foreach($options['foreignKeys'] as $definition) {
-                $queryFields .= ', ' . $this->getForeignKeyDeclaration($definition);
-            }
-        }
-
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
         }
-
-
 
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
@@ -612,10 +600,10 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             $query .= ' MATCH ' . $definition['match'];
         }
         if (!empty($definition['onUpdate'])) {
-            $query .= ' ON UPDATE ' . $this->getForeignKeyRefentialAction($definition['onUpdate']);
+            $query .= ' ON UPDATE ' . $this->getForeignKeyReferentialAction($definition['onUpdate']);
         }
         if (!empty($definition['onDelete'])) {
-            $query .= ' ON DELETE ' . $this->getForeignKeyRefentialAction($definition['onDelete']);
+            $query .= ' ON DELETE ' . $this->getForeignKeyReferentialAction($definition['onDelete']);
         }
         return $query;
     }
