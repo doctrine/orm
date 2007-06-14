@@ -67,6 +67,7 @@ abstract class Doctrine_Relation
                                   'onDelete'    => false,
                                   'onUpdate'    => false,
                                   'deferred'    => false,
+                                  'deferrable'  => false,
                                   'constraint'  => false,
                                   'equal'       => false,
                                   );
@@ -94,7 +95,7 @@ abstract class Doctrine_Relation
      *
      *          type                    the relation type, either Doctrine_Relation::ONE or Doctrine_Relation::MANY
      *
-     *          constraint              boolean value, true if the relation needs referential integrity constraint
+     *          constraint              boolean value, true if the relation has an explicit referential integrity constraint
      *
      * The onDelete and onUpdate keys accept the following values:
      *
@@ -131,10 +132,30 @@ abstract class Doctrine_Relation
 
         $this->definition = $def;
     }
-    
+    /**
+     * hasConstraint
+     * whether or not this relation has an explicit constraint
+     *
+     * @return boolean
+     */
+    public function hasConstraint()
+    {
+        return ($this->definition['constraint'] ||
+                ($this->definition['onUpdate']) ||
+                ($this->definition['onDelete']));
+    }
+    public function isDeferred()
+    {
+        return $this->definition['deferred'];
+    }
+
+    public function isDeferrable()
+    {
+        return $this->definition['deferrable'];
+    }
     public function isEqual()
     {
-        return $this->definition['equal'];	
+        return $this->definition['equal'];
     }
     /**
      * toArray
@@ -144,15 +165,6 @@ abstract class Doctrine_Relation
     public function toArray() 
     {
         return $this->definition;
-    }
-    /**
-     * hasConstraint
-     *
-     * @return boolean
-     */
-    public function hasConstraint()
-    {
-        return $this->definition['constraint'];
     }
     /**
      * getAlias
