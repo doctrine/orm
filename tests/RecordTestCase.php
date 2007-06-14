@@ -30,16 +30,20 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
+class Doctrine_Record_TestCase extends Doctrine_UnitTestCase 
+{
 
-    public function prepareTables() {
-        $this->tables[] = "enumTest";
-        $this->tables[] = "fieldNameTest";
-        $this->tables[] = "GzipTest";
+    public function prepareTables() 
+    {
+        $this->tables[] = 'enumTest';
+        $this->tables[] = 'fieldNameTest';
+        $this->tables[] = 'GzipTest';
+        $this->tables[] = 'Book';
         parent::prepareTables();
     }
 
-    public function testIssetForPrimaryKey() {
+    public function testIssetForPrimaryKey() 
+    {
         $this->assertTrue(isset($this->users[0]->id));
         $this->assertTrue(isset($this->users[0]['id']));
         $this->assertTrue($this->users[0]->contains('id'));
@@ -51,7 +55,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertFalse($user->contains('id'));
     }
 
-    public function testNotNullConstraint() {
+    public function testNotNullConstraint() 
+    {
         $null = new NotNullTest();
 
         $null->name = null;
@@ -67,7 +72,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
     }
 
-    public function testGzipType() {
+    public function testGzipType() 
+    {
         $gzip = new GzipTest();
         $gzip->gzip = "compressed";
 
@@ -90,7 +96,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($gzip->gzip, "compressed 2");
     }
 
-    public function testDefaultValues() {
+    public function testDefaultValues() 
+    {
 
         $test = new FieldNameTest;
         
@@ -102,7 +109,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
     }
 
 
-    public function testToArray() {
+    public function testToArray() 
+    {
         $user = new User();
         
         $a = $user->toArray();
@@ -146,7 +154,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($a['id']));
     }
 
-    public function testReferences2() {
+    public function testReferences2() 
+    {
         $user = new User();
         $user->Phonenumber[0]->phonenumber = '123 123';
         $ref = $user->Phonenumber[0]->entity_id;
@@ -154,7 +163,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($ref->getOid(), $user->getOid());
     }
 
-    public function testUpdatingWithNullValue() {
+    public function testUpdatingWithNullValue() 
+    {
         $user = $this->connection->getTable('User')->find(5);
         $user->name = null;
         $this->assertEqual($user->name, null);
@@ -170,7 +180,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
     }
 
-    public function testSerialize() {
+    public function testSerialize() 
+    {
         $user = $this->connection->getTable("User")->find(4);
         $str = serialize($user);
         $user2 = unserialize($str);
@@ -179,7 +190,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user2->obtainIdentifier(), $user->obtainIdentifier());
     }
 
-    public function testCallback() {
+    public function testCallback() 
+    {
         $user = new User();
         $user->name = " zYne ";
         $user->call('trim', 'name');
@@ -255,7 +267,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($coll->count(), 1);
     }
 
-    public function testManyToManyTreeStructure() {
+    public function testManyToManyTreeStructure() 
+    {
 
         $task = $this->connection->create("Task");
 
@@ -297,7 +310,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
     }
 
-    public function testOne2OneForeign() {
+    public function testOne2OneForeign() 
+    {
 
         $user = new User();
         $user->name = "Richard Linklater";
@@ -351,7 +365,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
     }
 
-    public function testGet() {
+    public function testGet()
+    {
         $user = new User();
         $user->name = "Jack Daniels";
         $this->assertEqual($user->name, "Jack Daniels");
@@ -367,7 +382,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
     }
 
-    public function testNewOperator() {
+    public function testNewOperator() 
+    {
         $table = $this->connection->getTable("User");
 
         $this->assertEqual($this->connection->getTable("User")->getData(), array());
@@ -382,7 +398,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($user->name,"John Locke");
     }
 
-    public function testTreeStructure() {
+    public function testTreeStructure() 
+    {
         $e = new Element();
 
         $fk = $e->getTable()->getRelation("Child");
@@ -433,7 +450,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
     }
 
-    public function testUniqueKeyComponent() {
+    public function testUniqueKeyComponent() 
+    {
         $e = new Error();
         $e->message  = 'user error';
         $e->file_md5 = md5(0);
@@ -509,7 +527,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($e->Description[1]->description, '2nd changed description');
     }
 
-    public function testInsert() {
+    public function testInsert() 
+    {
         $user = new User();
         $user->name = "John Locke";
         $user->save();
@@ -523,7 +542,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->state(), Doctrine_Record::STATE_TCLEAN);
     }
 
-    public function testUpdate() {
+    public function testUpdate() 
+    {
         $user = $this->connection->getTable("User")->find(4);
         $user->set("name","Jack Daniels",true);
 
@@ -535,7 +555,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->name, "Jack Daniels");
     }
 
-    public function testCopy() {
+    public function testCopy() 
+    {
         $user = $this->connection->getTable("User")->find(4);
         $new = $user->copy();
 
@@ -551,7 +572,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($new->id) && $new->id > 0);
     }
 
-    public function testCopyAndModify() {
+    public function testCopyAndModify() 
+    {
         $user = $this->connection->getTable("User")->find(4);
         $new = $user->copy();
 
@@ -694,7 +716,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
 
     }
 
-    public function testDeleteReference() {
+    public function testDeleteReference() 
+    {
         $user = $this->objTable->find(5);
         $int  = $user->Phonenumber->delete();
 
@@ -702,7 +725,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase {
     }
 
 
-    public function testSaveAssociations() {
+    public function testSaveAssociations() 
+    {
         $user = $this->objTable->find(5);
 
         $gf   = $this->connection->getTable("Group");

@@ -34,22 +34,24 @@ class Doctrine_CustomPrimaryKey_TestCase extends Doctrine_UnitTestCase {
     public function prepareData() { }
     
     public function prepareTables() { 
-        $this->tables = array("CustomPK");
+        $this->tables = array('CustomPK');
+        
+        parent::prepareTables();
     }
     public function testOperations() {
         $c = new CustomPK();
         $this->assertTrue($c instanceof Doctrine_Record);
 
-        $c->name = "custom pk test";
+        $c->name = 'custom pk test';
         $this->assertEqual($c->obtainIdentifier(), array());
         
         $c->save();
-        $this->assertEqual($c->obtainIdentifier(), array("uid" => 1));
+        $this->assertEqual($c->obtainIdentifier(), array('uid' => 1));
         $this->connection->clear();
         
         $c = $this->connection->getTable('CustomPK')->find(1);
     
-        $this->assertEqual($c->obtainIdentifier(), array("uid" => 1));
+        $this->assertEqual($c->obtainIdentifier(), array('uid' => 1));
     }
 }
 ?>

@@ -35,7 +35,11 @@ class Doctrine_ColumnAlias_TestCase extends Doctrine_UnitTestCase
     public function prepareData() 
     { }
     public function prepareTables()
-    { }
+    { 
+        $this->tables = array('ColumnAliasTest');
+        
+        parent::prepareTables();
+    }
 
     public function testAliasesAreSupportedForRecordPropertyAccessors()
     {
@@ -74,7 +78,7 @@ class Doctrine_ColumnAlias_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($coll[0]->alias1, 'someone');
         $this->assertEqual($coll[0]->alias2, 187);
-    } 
+    }
     public function testAliasesAreSupportedForDqlAggregateFunctions()
     {
         $q = new Doctrine_Query();
