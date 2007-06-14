@@ -51,10 +51,13 @@ class Doctrine_Ticket330_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareData() 
     { }
-    
     public function prepareTables()
-    { }
-    
+    {
+    	$this->tables[] = 'stNode';
+    	$this->tables[] = 'stNodeDetail';
+    	parent::prepareTables();
+    }
+
     public function testUnnecessaryQueries()
     {
         
