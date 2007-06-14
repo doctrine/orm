@@ -720,7 +720,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function getForeignKeyDeclaration(array $definition)
     {
         $sql  = $this->getForeignKeyBaseDeclaration($definition);
-        $sql .= $this->getForeignKeyAdvancedOptions($definition);
+//        $sql .= $this->getForeignKeyAdvancedOptions($definition);
 
         return $sql;
     }
