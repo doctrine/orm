@@ -102,6 +102,8 @@ class Doctrine_Relation_Parser
         }
 
         $this->_pending[$alias] = array_merge($options, array('class' => $name, 'alias' => $alias));
+        
+        return $this->_pending[$alias];
     }
     /**
      * getRelation
@@ -124,8 +126,8 @@ class Doctrine_Relation_Parser
                 $localClasses = array_merge($this->_table->getOption('parents'), array($this->_table->getComponentName()));
 
                 if ( ! isset($this->_pending[$def['refClass']]) && 
-                     ! isset($this->_relations[$def['refClass']])) {
-                    
+                     ! isset($this->_relations[$def['refClass']])) {    
+
                     $def['refTable']->getRelationParser()->bind($this->_table->getComponentName(),
                                                                 array('type'    => Doctrine_Relation::ONE,
                                                                       'local'   => $def['local'],
@@ -133,8 +135,10 @@ class Doctrine_Relation_Parser
                                                                       'localKey' => true,
                                                                       ));
 
-                    $this->bind($def['refClass'], array('type' => Doctrine_Relation::MANY, 
-                                                        'foreign' => $def['local']));
+                    $this->bind($def['refClass'], array('type' => Doctrine_Relation::MANY,
+                                                        'foreign' => $def['local'],
+                                                        'local'   => $this->_table->getIdentifier()));
+
                 }
                 if (in_array($def['class'], $localClasses)) {
                     $rel = new Doctrine_Relation_Nest($def);
