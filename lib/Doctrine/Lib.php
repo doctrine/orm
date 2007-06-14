@@ -88,7 +88,7 @@ class Doctrine_Lib
         $collectionName = Doctrine_Lib::plurelize($collection->getTable()->name);
 
         if ( ! isset($incomming_xml)) {
-						$new_xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><" . $recordname . "></" . $recordname . ">";
+						$new_xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><" . $collectionName . "></" . $collectionName . ">";
             $xml = new SimpleXMLElement($new_xml_string);
         } else {
             $xml = $incomming_xml->addChild($collectionName);
@@ -122,7 +122,7 @@ class Doctrine_Lib
     {
         $recordname = $record->getTable()->name;
         if (!isset($incomming_xml)) {
-						$new_xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><" . $collection_name . "></" . $collection_name . ">";
+						$new_xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><" . $recordname . "></" . $recordname . ">";
             $xml = new SimpleXMLElement($new_xml_string);
         }else{
             $xml = $incomming_xml->addChild($recordname);
