@@ -34,7 +34,7 @@ class User extends Doctrine_Record
     public function setUp()
     {
         $this->hasMany('Phonenumber', array('local' => 'id',
-                                            'foreign' => 'user_id');
+                                            'foreign' => 'user_id'));
     }
 }
 // file Phonenumber.php
@@ -49,7 +49,7 @@ class Phonenumber extends Doctrine_Record
     {
         $this->hasOne('User', array('local' => 'user_id',
                                     'foreign' => 'id',
-                                    'onDelete' => 'CASCADE');
+                                    'onDelete' => 'CASCADE'));
     }
 }
 </code>

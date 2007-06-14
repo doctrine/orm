@@ -12,8 +12,8 @@ Syntax:
 Examples:
 
 <code>
-FROM User.Phonenumber
-  ORDER BY User.name, Phonenumber.phonenumber
+FROM User u LEFT JOIN u.Phonenumber p
+  ORDER BY u.name, p.phonenumber
 
 FROM User u, u.Email e
   ORDER BY e.address, u.id
@@ -22,7 +22,7 @@ FROM User u, u.Email e
 In order to sort in reverse order you can add the DESC (descending) keyword to the name of the column in the ORDER BY clause that you are sorting by. The default is ascending order; this can be specified explicitly using the ASC keyword. 
 
 <code>
-FROM User u, u.Email e
+FROM User u LEFT JOIN u.Email e
   ORDER BY e.address DESC, u.id ASC;
 </code>
 
