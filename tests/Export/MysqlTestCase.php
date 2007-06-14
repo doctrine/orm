@@ -300,14 +300,13 @@ class ForeignKeyTest extends Doctrine_Record
         $this->hasColumn('parent_id', 'integer');
 
         $this->hasOne('ForeignKeyTest as Parent',
-                      'ForeignKeyTest.parent_id'
-                       );
-
-        $this->hasMany('ForeignKeyTest as Children',
-                       'ForeignKeyTest.parent_id',
+                      'ForeignKeyTest.parent_id',
                        array('onDelete' => 'CASCADE',
                              'onUpdate' => 'RESTRICT')
                        );
+
+        $this->hasMany('ForeignKeyTest as Children',
+                       'ForeignKeyTest.parent_id');
 
         $this->option('type', 'INNODB');
 

@@ -68,6 +68,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 /**   */
 
 // Temp tests
+
 $test->addTestCase(new Doctrine_Ticket330_TestCase());
 
 // Connection drivers (not yet fully tested)
@@ -122,7 +123,7 @@ $test->addTestCase(new Doctrine_Export_Oracle_TestCase());
 $test->addTestCase(new Doctrine_Export_Sqlite_TestCase());
 $test->addTestCase(new Doctrine_Export_Mysql_TestCase());
 
-$test->addTestCase(new Doctrine_CascadingDelete_TestCase());
+//$test->addTestCase(new Doctrine_CascadingDelete_TestCase());
 
 // Import module (not yet fully tested)
 //$test->addTestCase(new Doctrine_Import_TestCase());
@@ -175,6 +176,7 @@ $test->addTestCase(new Doctrine_Relation_Parser_TestCase());
 
 // Datatypes
 $test->addTestCase(new Doctrine_Enum_TestCase());
+
 $test->addTestCase(new Doctrine_Boolean_TestCase());
 
 
@@ -290,6 +292,7 @@ $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 
 $test->addTestCase(new Doctrine_Query_MultipleAggregateValue_TestCase());
 
+$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
 //$test->addTestCase(new Doctrine_Cache_FileTestCase());
