@@ -35,7 +35,11 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase
     public function prepareData() 
     { }
     public function prepareTables() 
-    { }
+    { 
+        $this->tables = array('Record_City', 'Record_Country', 'SelfRefTest');
+        
+        parent::prepareTables();
+    }
     public function testOneToOneAggregateRelationWithAliasesIsSupported() 
     {
         $city = new Record_City();

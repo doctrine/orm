@@ -69,9 +69,8 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($rel instanceof Doctrine_Relation_LocalKey);
     }
     public function testManyToManyRelation() {
-        $this->manager->setAttribute(Doctrine::ATTR_CREATE_TABLES, false);
         $user = new User();
-
+         
         // test that join table relations can be initialized even before the association have been initialized
         try {
             $user->Groupuser;
@@ -96,7 +95,6 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
         $user = new User();
         
         $this->assertTrue($user->getTable()->getRelation('Phonenumber') instanceof Doctrine_Relation_ForeignKey);
-        $this->manager->setAttribute(Doctrine::ATTR_CREATE_TABLES, true);
     }
 }
 class RelationTest extends Doctrine_Record 
