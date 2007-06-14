@@ -885,11 +885,23 @@ class Doctrine_Export extends Doctrine_Connection_Module
                     require_once $e->getPathName();
                 }
             }
-        }
+        } 
+        return $this->exportClasses(get_declared_classes());
+    }
+    /**
+     * export
+     * method for exporting Doctrine_Record classes to a schema
+     *
+     * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
+     *                                          occurred during the create table operation
+     * @param array $classes
+     * @return void
+     */
+    public function exportClasses(array $classes)
+    {
+    	$parent = new ReflectionClass('Doctrine_Record');
 
-        $parent = new ReflectionClass('Doctrine_Record');
-
-        foreach (get_declared_classes() as $name) {
+        foreach ($classes as $name) {
             $class = new ReflectionClass($name);
             $conn  = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
 
