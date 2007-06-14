@@ -249,10 +249,10 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
             $query .= ' MATCH ' . $definition['match'];
         }
         if (isset($definition['onUpdate'])) {
-            $query .= ' ON UPDATE ' . $definition['on_update'];
+            $query .= ' ON UPDATE ' . $definition['onUpdate'];
         }
         if (isset($definition['onDelete'])) {
-            $query .= ' ON DELETE ' . $definition['on_delete'];
+            $query .= ' ON DELETE ' . $definition['onDelete'];
         }
         if (isset($definition['deferrable'])) {
             $query .= ' DEFERRABLE';
@@ -308,11 +308,11 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      * drop existing sequence
      *
      * @param string $sequenceName      name of the sequence to be dropped
-     * @return boolean
+     * @return string
      */
-    public function dropSequence($sequenceName)
+    public function dropSequenceSql($sequenceName)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($sequenceName), true);
-        return $this->conn->exec('DROP TABLE ' . $sequenceName);
+        return 'DROP TABLE ' . $sequenceName;
     }
 }

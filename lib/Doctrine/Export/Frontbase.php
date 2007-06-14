@@ -37,39 +37,35 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
      * create a new database
      *
      * @param string $name name of the database that should be created
-     * @return boolean
+     * @return string
      */
-    public function createDatabase($name)
+    public function createDatabaseSql($name)
     {
         $name  = $this->conn->quoteIdentifier($name, true);
-        $query = 'CREATE DATABASE ' . $name;
-
-        return $this->conn->exec($query);
+        return 'CREATE DATABASE ' . $name;
     }
     /**
      * drop an existing database
      *
      * @param string $name name of the database that should be dropped
-     * @return boolean
+     * @return string
      */
-    public function dropDatabase($name)
+    public function dropDatabaseSql($name)
     {
         $name  = $this->conn->quoteIdentifier($name, true);
-        $query = 'DELETE DATABASE ' . $name;
-
-        return $this->conn->exec($query);
+        return 'DELETE DATABASE ' . $name;    
     }
     /**
      * drop an existing table
      *
      * @param object $this->conns        database object that is extended by this class
      * @param string $name       name of the table that should be dropped
-     * @return integer
+     * @return string
      */
-    public function dropTable($name)
+    public function dropTableSql($name)
     {
         $name = $this->conn->quoteIdentifier($name, true);
-        return $this->conn->exec('DROP TABLE ' . $name . ' CASCADE');
+        return 'DROP TABLE ' . $name . ' CASCADE';
     }
     /**
      * alter an existing table
@@ -289,13 +285,13 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
      * drop existing sequence
      *
      * @param string $seqName       name of the sequence to be dropped
-     * @return boolean
+     * @return string
      */
-    public function dropSequence($seqName)
+    public function dropSequenceSql($seqName)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
 
-        return $this->conn->exec('DROP TABLE ' . $sequenceName . ' CASCADE');
+        return 'DROP TABLE ' . $sequenceName . ' CASCADE';
     }
     /**
      * drop existing index
@@ -304,11 +300,11 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
      * @param string    $name         name of the index to be dropped
      * @return boolean
      */
-    public function dropIndex($table, $name)
+    public function dropIndexSql($table, $name)
     {
         $table = $this->conn->quoteIdentifier($table, true);
         $name = $this->conn->quoteIdentifier($this->conn->getIndexName($name), true);
 
-        return $this->conn->exec('ALTER TABLE ' . $table . ' DROP INDEX ' . $name);
+        return 'ALTER TABLE ' . $table . ' DROP INDEX ' . $name;
     }
 }

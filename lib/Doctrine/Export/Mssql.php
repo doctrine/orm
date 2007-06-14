@@ -72,8 +72,7 @@ class Doctrine_Export_Mssql extends Doctrine_Export
     public function getTemporaryTableQuery()
     {
         return '';
-    }
-
+    }  
     /**
      * alter an existing table
      *

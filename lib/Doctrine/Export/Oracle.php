@@ -196,7 +196,7 @@ END;
     {
         $query = '';
         if (isset($definition['onDelete'])) {
-            $query .= ' ON DELETE ' . $definition['on_delete'];
+            $query .= ' ON DELETE ' . $definition['onDelete'];
         }
         if (isset($definition['deferrable'])) {
             $query .= ' DEFERRABLE';
@@ -419,15 +419,6 @@ END;
             $changeName = $this->conn->quoteIdentifier($changes['name'], true);
             $result = $this->conn->exec('ALTER TABLE ' . $name . ' RENAME TO ' . $changeName);
         }
-    }
-    /** 
-     * getForeignKeyDeferredDeclaration
-     *
-     * @return string
-     */
-    public function getForeignKeyDeferredDeclaration($deferred)
-    {
-        return ($deferred) ? 'INITIALLY DEFERRED DEFERRABLE' : '';
     }
     /**
      * create sequence

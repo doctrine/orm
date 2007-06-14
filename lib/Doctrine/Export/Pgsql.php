@@ -73,10 +73,10 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
             $query .= ' MATCH ' . $definition['match'];
         }
         if (isset($definition['onUpdate'])) {
-            $query .= ' ON UPDATE ' . $definition['on_update'];
+            $query .= ' ON UPDATE ' . $definition['onUpdate'];
         }
         if (isset($definition['onDelete'])) {
-            $query .= ' ON DELETE ' . $definition['on_delete'];
+            $query .= ' ON DELETE ' . $definition['onDelete'];
         }
         if (isset($definition['deferrable'])) {
             $query .= ' DEFERRABLE';

@@ -403,7 +403,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
      *                                    )
      * @return void
      */
-    public function createIndex($table, $name, array $definition)
+    public function createIndexSql($table, $name, array $definition)
     {
         $query = 'CREATE';
 
@@ -429,9 +429,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         }
         $query .= ' ('.implode(', ', $fields) . ')';
 
-        $result = $this->conn->exec($query);
-        // todo: $this->_silentCommit();
-        return $result;
+        return $query;
     }
     /**
      * create a constraint on a table

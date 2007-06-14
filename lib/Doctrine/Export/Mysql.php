@@ -95,11 +95,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     {
     	$sql = $this->createTableSql($name, $fields, $options);
 
-        $this->conn->exec('SET FOREIGN_KEY_CHECKS = 0');	
-        
         $this->conn->execute($sql);
-    
-        $this->conn->exec('SET FOREIGN_KEY_CHECKS = 1');
     }
     /**
      * create a new table
@@ -615,10 +611,10 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         if (!empty($definition['match'])) {
             $query .= ' MATCH ' . $definition['match'];
         }
-        if (!empty($definition['on_update'])) {
+        if (!empty($definition['onUpdate'])) {
             $query .= ' ON UPDATE ' . $this->getForeignKeyRefentialAction($definition['onUpdate']);
         }
-        if (!empty($definition['on_delete'])) {
+        if (!empty($definition['onDelete'])) {
             $query .= ' ON DELETE ' . $this->getForeignKeyRefentialAction($definition['onDelete']);
         }
         return $query;
@@ -630,11 +626,11 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      * @param string    $name           name of the index to be dropped
      * @return void
      */
-    public function dropIndex($table, $name)
+    public function dropIndexSql($table, $name)
     {
         $table  = $this->conn->quoteIdentifier($table, true);
         $name   = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name), true);
-        return $this->conn->exec('DROP INDEX ' . $name . ' ON ' . $table);
+        return 'DROP INDEX ' . $name . ' ON ' . $table;
     }
     /**
      * dropTable
@@ -643,10 +639,10 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      * @throws PDOException
      * @return void
      */
-    public function dropTable($table)
+    public function dropTableSql($table)
     {
         $table  = $this->conn->quoteIdentifier($table, true);
-        $this->conn->exec('DROP TABLE ' . $table);
+        return 'DROP TABLE ' . $table;
     }
 }
 
