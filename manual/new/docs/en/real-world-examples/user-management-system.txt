@@ -28,10 +28,7 @@ class Entity extends Doctrine_Record
 
     }
 }
-
-</code>
-
-yep       class Group extends Entity
+class Group extends Entity
 {
     public function setUp() 
     {
@@ -102,4 +99,4 @@ $user->save();
 $user->Group[0]->name = 'beer lovers';
 $user->Group[0]->Email->address = 'beerlovers@drinkmore.info';
 $user->Group[0]->save();
-
+</code>
