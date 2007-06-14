@@ -93,6 +93,11 @@ class Doctrine_EventListener implements Doctrine_EventListener_Interface
     public function onOpen(Doctrine_Connection $connection)
     { }
 
+    public function onConnect(Doctrine_Connection $connection)
+    { }
+    public function onPreConnect(Doctrine_Connection $connection)
+    { }
+
     public function onTransactionCommit(Doctrine_Connection $connection)
     { }
     public function onPreTransactionCommit(Doctrine_Connection $connection)

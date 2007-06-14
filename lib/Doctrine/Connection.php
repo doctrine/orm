@@ -37,7 +37,7 @@ Doctrine::autoload('Doctrine_Configurable');
  *    (for example when query() is being called) 
  *
  * 3. Convenience methods
- *    Doctrine_Connection provides many convenience methods.
+ *    Doctrine_Connection provides many convenience methods such as fetchAll(), fetchOne() etc.
  *
  * 4. Modular structure
  *    Higher level functionality such as schema importing, exporting, sequence handling etc.
@@ -903,51 +903,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->tables[$name] = $table;
 
-        if ($allowExport) {
-            
-            // the following is an algorithm for loading all 
-            // the related tables for all loaded tables
-
-            $next = count($this->tables);
-            $prev = count($this->exported);
-            $stack = $this->exported;
-            while ($prev < $next) {
-                $prev = count($this->tables);
-
-                foreach($this->tables as $name => $tableObject) {
-                    if (isset($stack[$name])) {
-                        continue;
-                    } else {
-                       $stack[$name] = true;
-                    }
-
-                    $tableObject->getRelations();
-                }
-                $next = count($this->tables);
-            }
-
-
-            // when all the tables are loaded we build the array in which the order of the tables is
-            // relationally correct so that then those can be created in the given order)
-
-            $names = array_keys($this->tables);
-
-            $names = $this->unitOfWork->buildFlushTree($names);
-
-            foreach($names as $name) {
-                $tableObject = $this->tables[$name];
-
-                if (isset($this->exported[$name])) {
-                    continue;
-                }
-
-                if ($tableObject->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_TABLES) {
-
-                    $tableObject->export();
-                }
-                $this->exported[$name] = true;
-            }
-        }
 
         return $table;
     }
