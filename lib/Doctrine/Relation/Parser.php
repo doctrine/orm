@@ -173,6 +173,8 @@ class Doctrine_Relation_Parser
             }
         }
         if ($recursive) {
+            $this->getRelations();
+            
             return $this->getRelation($alias, false);
         } else {
             throw new Doctrine_Table_Exception('Unknown relation alias ' . $alias);
