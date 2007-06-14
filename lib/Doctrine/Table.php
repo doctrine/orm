@@ -351,28 +351,146 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 $primary[] = $name;
             }
         }
+        $options['foreignKeys'] = array();
 
         if ($parseForeignKeys) {
             if ($this->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_CONSTRAINTS) {
     
+                $constraints = array();
+
+                $emptyIntegrity = array('onUpdate' => null,
+                                        'onDelete' => null);
+
                 foreach ($this->getRelations() as $name => $relation) {
                     $fk = $relation->toArray();
                     $fk['foreignTable'] = $relation->getTable()->getTableName();
-    
+
                     if ($relation->getTable() === $this && in_array($relation->getLocal(), $primary)) {
-                        continue;                                                                                 	
+                        if ($relation->hasConstraint()) {
+                            throw new Doctrine_Table_Exception("Badly constructed integrity constraints.");
+                        }
+                        
+                        continue;
                     }
-    
-                    if ($relation->hasConstraint()) {
-    
-                        $options['foreignKeys'][] = $fk;
+
+                    $integrity = array('onUpdate' => $fk['onUpdate'],
+                                       'onDelete' => $fk['onDelete']);
+
+                    if ($relation instanceof Doctrine_Relation_ForeignKey) {    
+                        if ($relation->getLocal() !== $relation->getTable()->getIdentifier() && 
+                            $relation->getLocal() !== $this->getIdentifier() ||
+                            $relation->hasConstraint()) {
+
+                            $def = array('local'        => $relation->getLocal(),
+                                         'table'        => $relation->getTable()->getTableName(),
+                                         'foreign'      => $this->getIdentifier(),
+                                         'foreignTable' => $this->getTableName());
+
+                            if (($key = array_search($def, $options['foreignKeys'])) === false) {
+                                $options['foreignKeys'][] = $def;
+                                
+                                $constraints[] = $integrity;
+                            } else {
+                                if ($integrity !== $emptyIntegrity) {
+                                    $constraints[$key] = $integrity;
+                                }
+                            }
+                        }
                     } elseif ($relation instanceof Doctrine_Relation_LocalKey) {
-                        $options['foreignKeys'][] = $fk;
+
+                        if ($relation->getLocal() !== $this->getIdentifier() &&
+                            $relation->getForeign() !== $relation->getTable()->getIdentifier()) {
+
+                            $def = array('local'        => $relation->getLocal(),
+                                         'table'        => $relation->getTable()->getTableName(),
+                                         'foreign'      => $this->getIdentifier(),
+                                         'foreignTable' => $this->getTableName());
+    
+                            if (($key = array_search($def, $options['foreignKeys'])) === false) {
+                                $options['foreignKeys'][] = $def;
+                                
+                                $constraints[] = $integrity;
+                            } else {
+                                if ($integrity !== $emptyIntegrity) {
+                                    $constraints[$key] = $integrity;
+                                }
+                            }
+                        }
+                    } elseif ($relation instanceof Doctrine_Relation_Nest) {
+                        /**
+                        $def = array('local'        => $relation->getLocal(),
+                                     'table'        => $relation->getAssociationTable()->getTableName(),
+                                     'foreign'      => $this->getIdentifier(),
+                                     'foreignTable' => $this->getTableName());
+
+
+                        if (($key = array_search($def, $options['foreignKeys'])) === false) {
+                            $options['foreignKeys'][] = $def;
+                            
+                            $constraints[] = $integrity;
+                        } else {
+                            if ($integrity !== $emptyIntegrity) {
+                                $constraints[$key] = $integrity;
+                            }
+                        }
+
+                        $def = array('local'        => $relation->getForeign(),
+                                     'table'        => $relation->getAssociationTable()->getTableName(),
+                                     'foreign'      => $this->getIdentifier(),
+                                     'foreignTable' => $relation->getTable()->getTableName());
+
+                        if (($key = array_search($def, $options['foreignKeys'])) === false) {
+                            $options['foreignKeys'][] = $def;
+
+                            if ( ! isset($integrity['onDelete'])) {
+                                $integrity['onDelete'] = 'CASCADE';
+                            }
+
+                            $constraints[] = $integrity;
+                        } else {
+                            if ($integrity !== $emptyIntegrity) {
+                                if ( ! isset($integrity['onDelete'])) {
+                                    $integrity['onDelete'] = 'CASCADE';
+                                }                                                                	
+
+                                $constraints[$key] = $integrity;
+                            }
+                        }
+                        */
+                    } elseif ($relation instanceof Doctrine_Relation_Association) {
+                        /**
+                        $def = array('local'        => $relation->getLocal(),
+                                     'table'        => $relation->getAssociationTable()->getTableName(),
+                                     'foreign'      => $this->getIdentifier(),
+                                     'foreignTable' => $this->getTableName());
+                        if (($key = array_search($def, $options['foreignKeys'])) === false) {
+                            $options['foreignKeys'][] = $def;
+                            
+                            if ( ! isset($integrity['onDelete'])) {
+                                $integrity['onDelete'] = 'CASCADE';
+                            }
+
+                            $constraints[] = $integrity;
+                        } else {
+                            if ($integrity !== $emptyIntegrity) {
+                                if ( ! isset($integrity['onDelete'])) {
+                                    $integrity['onDelete'] = 'CASCADE';
+                                }                                
+                                $constraints[$key] = $integrity;
+                            }
+                        }
+                        */
                     }
+
                 }
+
+                foreach ($constraints as $k => $def) {
+                    $options['foreignKeys'][$k] = array_merge($options['foreignKeys'][$k], $def);
+                }
+
             }
         }
-        $options['primary'] = $primary;  
+        $options['primary'] = $primary;
         
         return array('tableName' => $this->getOption('tableName'), 
                      'columns'   => $columns, 
@@ -1057,51 +1175,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return array_search($value, $values);
     }
-    /**
-     * invokeSet
-     *
-     * @param mixed $value
-     */
-    public function invokeSet(Doctrine_Record $record, $name, $value)
-    {
-        if ( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) & Doctrine::ACCESSOR_SET)) {
-            return $value;
-        }
-        $prefix = $this->getAttribute(Doctrine::ATTR_ACCESSOR_PREFIX_SET);
-        if (!$prefix)
-            $prefix = 'set';
-
-        $method = $prefix . $name;
-
-        if (method_exists($record, $method)) {
-            return $record->$method($value);
-        }
-
-        return $value;
-    }
-    /**
-     * invokeGet
-     *
-     * @param mixed $value
-     */
-    public function invokeGet(Doctrine_Record $record, $name, $value)
-    {
-        if ( ! ($this->getAttribute(Doctrine::ATTR_ACCESSORS) & Doctrine::ACCESSOR_GET)) {
-            return $value;
-        }
-        $prefix = $this->getAttribute(Doctrine::ATTR_ACCESSOR_PREFIX_GET);
-        if (!$prefix)
-            $prefix = 'get';
-
-        $method = $prefix . $name;
-
-        if (method_exists($record, $method)) {
-            return $record->$method($value);
-        }
-
-        return $value;
-    }
-
     /**
      * getDefinitionOf
      *
