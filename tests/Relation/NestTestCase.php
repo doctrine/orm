@@ -34,6 +34,12 @@ class Doctrine_Relation_Nest_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareData() 
     { }
+    public function prepareTables()
+    {
+        $this->tables = array('NestTest', 'NestReference', 'Entity', 'EntityReference');
+        
+        parent::prepareTables();
+    }
     public function testInitJoinTableSelfReferencingInsertingData() {
         $e = new Entity();
         $e->name = "Entity test";
