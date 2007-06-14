@@ -1,6 +1,7 @@
 + Getting started
 + Connection management
 + Object relational mapping
++ Mapping relations
 + Working with objects
 + Configuration
 + Advanced components

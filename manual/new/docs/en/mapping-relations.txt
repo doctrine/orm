@@ -1,0 +1,442 @@
+++ Introduction
+
+In Doctrine all record relations are being set with {{hasMany}}, {{hasOne}}, {{ownsMany}} and {{ownsOne}} methods. Doctrine supports almost any kind of database relation from simple one-to-one foreign key relations to join table self-referencing relations.
+
+
+++ Relation aliases
+
+Doctrine supports relation aliases through {{as}} keyword.
+
+<code type="php">
+class Forum_Board extends Doctrine_Record { 
+    public function setTableDefinition() {
+        $this->hasColumn('name', 'string', 100);
+        $this->hasColumn('description', 'string', 5000);
+    }
+    public function setUp() {
+        // notice the 'as' keyword here
+        $this->ownsMany('Forum_Thread as Threads',  'Forum_Thread.board_id');
+    }
+}
+
+class Forum_Thread extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('board_id', 'integer', 10);
+        $this->hasColumn('updated', 'integer', 10);
+        $this->hasColumn('closed', 'integer', 1);
+    }
+    public function setUp() {
+        // notice the 'as' keyword here
+        $this->hasOne('Forum_Board as Board', 'Forum_Thread.board_id');
+    }
+}
+$board = new Board();
+$board->Threads[0]->updated = time();
+</code>
+
+
+++ Foreign key associations
++++ One-To-One
+
+Binding One-To-One foreign key associations is done with {{Doctrine_Record::ownsOne()}} and {{Doctrine_Record::hasOne()}} methods. In the following example user owns one email and has one address. So the relationship between user and email is one-to-one composite. The relationship between user and address is one-to-one aggregate.
+
+The {{Email}} component here is mapped to {{User}} component's column {{email_id}} hence their relation is called LOCALKEY relation. On the other hand the {{Address}} component is mapped to {{User}} by it's {{user_id}} column hence the relation between {{User}} and {{Address}} is called FOREIGNKEY relation.
+
+<code type="php">
+class User extends Doctrine_Record {
+    public function setUp() {
+        $this->hasOne('Address','Address.user_id');
+        $this->ownsOne('Email','User.email_id');
+        $this->ownsMany('Phonenumber','Phonenumber.user_id');
+    }
+    public function setTableDefinition() {
+        $this->hasColumn('name','string',50);
+        $this->hasColumn('loginname','string',20);
+        $this->hasColumn('password','string',16);
+
+        // foreign key column for email ID
+        $this->hasColumn('email_id','integer');
+    }
+}
+class Email extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('address','string',150);
+    }
+}
+class Address extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('street','string',50);
+        $this->hasColumn('user_id','integer');
+    }
+}
+</code>
+
+
++++ One-to-Many, Many-to-One
+
+<code type="php">
+class User extends Doctrine_Record {
+    public function setUp() {
+        $this->ownsMany('Phonenumber','Phonenumber.user_id');
+    }
+    public function setTableDefinition() {
+        $this->hasColumn('name','string',50);
+        $this->hasColumn('loginname','string',20);
+        $this->hasColumn('password','string',16);
+    }
+}
+class Phonenumber extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('phonenumber','string',50);
+        $this->hasColumn('user_id','integer');
+    }
+}
+</code>
+
+
++++ Tree structure
+
+<code type="php">
+class Task extends Doctrine_Record {
+     public function setUp() {  
+        $this->hasOne('Task as Parent','Task.parent_id');
+        $this->hasMany('Task as Subtask','Subtask.parent_id');
+    }
+    public function setTableDefinition() {
+        $this->hasColumn('name','string',100);
+        $this->hasColumn('parent_id','integer');
+    }
+}
+</code>
+
+++ Join table associations
+
++++ Many-to-Many
+
+If you are coming from relational database background it may be familiar to you how many-to-many associations are handled: an additional association table is needed.
+
+In many-to-many relations the relation between the two components is always an aggregate relation and the association table is owned by both ends. For example in the case of users and groups when user is being deleted the groups it belongs to are not being deleted and the associations between this user and the groups it belongs to are being deleted.
+
+Sometimes you may not want that association table rows are being deleted when user / group is being deleted. You can override this behoviour by setting the relations to association component (in this case {{Groupuser}}) explicitly. 
+
+In the following example we have Groups and Users of which relation is defined as many-to-many. In this case we also need to define an additional class called {{Groupuser}}.
+
+<code type="php">
+class User extends Doctrine_Record { 
+    public function setUp() {
+        $this->hasMany('Group','Groupuser.group_id');
+    }
+    public function setTableDefinition() {
+        $this->hasColumn('name','string',30);
+    }
+}
+
+class Group extends Doctrine_Record {
+    public function setUp() {
+        $this->hasMany('User','Groupuser.user_id');
+    }
+    public function setTableDefinition() {
+        $this->hasColumn('name','string',30);
+    }
+}
+
+class Groupuser extends Doctrine_Record { 
+    public function setTableDefinition() {
+        $this->hasColumn('user_id','integer');
+        $this->hasColumn('group_id','integer');
+    }
+}
+
+
+$user = new User();
+
+// add two groups
+$user->Group[0]->name = 'First Group';
+
+$user->Group[1]->name = 'Second Group';
+
+// save changes into database
+$user->save();
+
+// deleting the associations between user and groups it belongs to
+
+$user->Groupuser->delete();
+
+$groups = new Doctrine_Collection($conn->getTable('Group'));
+
+$groups[0]->name = 'Third Group';
+
+$groups[1]->name = 'Fourth Group';
+
+$user->Group[2] = $groups[0];
+// $user will now have 3 groups
+
+$user->Group = $groups;
+// $user will now have two groups 'Third Group' and 'Fourth Group'
+
+</code>
+
+
++++ Self-referencing
+
+Self-referencing with join tables is done as follows:
+
+<code type="php">
+class User extends Doctrine_Record {
+    public function setUp() {
+        $this->hasMany('User as Friend','UserReference.user_id-user_id2');
+    }
+    public function setTableDefinition() {
+        $this->hasColumn('name','string',30);
+    }
+}
+class UserReference extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('user_id','integer');
+        $this->hasColumn('user_id2','integer');
+    }
+}
+</code>
+
+++ Inheritance
++++ One table, many classes
+
+When it comes to handling inheritance Doctrine is very smart. In the following example we have one database table called {{entity}}. Users and groups are both entities and they share the same database table. The only thing we have to make is 3 records ({{Entity}}, {{Group}} and {{User}}).
+
+Doctrine is smart enough to know that the inheritance type here is one-table-many-classes.
+
+<code type="php">
+class Entity extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('name','string',30);
+        $this->hasColumn('username','string',20);
+        $this->hasColumn('password','string',16);
+        $this->hasColumn('created','integer',11);                                     	
+    }
+}
+
+class User extends Entity { }
+
+class Group extends Entity { }
+</code>
+
+
++++ One table, one class
+
+In the following example we have three database tables called {{entity}}, {{user}} and {{group}}. Users and groups are both entities. The only thing we have to do is write 3 classes ({{Entity}}, {{Group}} and {{User}}) and make iterative {{setTableDefinition}} method calls.
+
+<code type="php">
+class Entity extends Doctrine_Record { 
+    public function setTableDefinition() {
+        $this->hasColumn('name','string',30);
+        $this->hasColumn('username','string',20);
+        $this->hasColumn('password','string',16);
+        $this->hasColumn('created','integer',11);
+    }
+}
+
+class User extends Entity { 
+    public function setTableDefinition() {
+        // the following method call is needed in
+        // one-table-one-class inheritance
+        parent::setTableDefinition();
+    }
+}
+
+class Group extends Entity {
+    public function setTableDefinition() {
+        // the following method call is needed in
+        // one-table-one-class inheritance
+        parent::setTableDefinition();
+    }
+}
+</code>
+
+
++++ Column aggregation
+
+In the following example we have one database table called {{entity}}. Users and groups are both entities and they share the same database table.
+
+The entity table has a column called {{type}} which tells whether an entity is a group or a user. Then we decide that users are type 1 and groups type 2.
+
+The only thing we have to do is to create 3 records (the same as before) and add call the {{Doctrine_Table::setInheritanceMap()}} method inside the {{setUp()}} method.
+
+<code type='php'>
+class Entity extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('name','string',30);
+        $this->hasColumn('username','string',20);
+        $this->hasColumn('password','string',16);
+        $this->hasColumn('created','integer',11);
+
+        // this column is used for column
+        // aggregation inheritance
+        $this->hasColumn('type', 'integer', 11);
+    }
+}
+
+class User extends Entity {
+    public function setUp() {
+        $this->setInheritanceMap(array('type'=>1));
+    }
+}
+
+class Group extends Entity {
+    public function setUp() {
+        $this->setInheritanceMap(array('type'=>2));
+    }
+}
+</code>
+
+If we want to be able to fetch a record from the {{Entity}} table and automatically get a {{User}} record if the {{Entity}} we fetched is a user we have to do set the subclasses option in the parent class. The adjusted example:
+
+<code type='php'>
+class Entity extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn('name','string',30);
+        $this->hasColumn('username','string',20);
+        $this->hasColumn('password','string',16);
+        $this->hasColumn('created','integer',11);
+
+        // this column is used for column
+        // aggregation inheritance
+        $this->hasColumn('type', 'integer', 11);
+        $this->option('subclasses', array('User', 'Group'));
+    }
+}
+
+class User extends Entity {
+    public function setUp() {
+        $this->setInheritanceMap(array('type'=>1));
+    }
+}
+
+class Group extends Entity {
+    public function setUp() {
+        $this->setInheritanceMap(array('type'=>2));
+    }
+}
+</code>
+
+We can then do the following given the previous table mapping.
+
+<code type='php'>
+$user = new User();
+$user->name='Bjarte S. Karlsen';
+$user->username='meus';
+$user->password='rat';
+$user->save();
+
+$group = new Group();
+$group->name='Users';
+$group->username='users';
+$group->password='password';
+$group->save();
+
+$q = new Doctrine_Query();
+$user = $q->from('Entity')->where('id=?')->execute(array($user->id))->getFirst();
+
+$q = new Doctrine_Query();
+$group = $q->from('Entity')->where('id=?')->execute(array($group->id))->getFirst();
+</code>
+
+The user object is here an instance of {{User}} while the group object is an instance of {{Group}}.
+
+++ Foreign key constraints
++++ Introduction
+
+A foreign key constraint specifies that the values in a column (or a group of columns) must match the values appearing in some row of another table. In other words foreign key constraints maintain the referential integrity between two related tables.
+
+Say you have the product table with the following definition:
+
+<code type='php'>
+class Product extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('id', 'integer', null, 'primary');
+        $this->hasColumn('name', 'string');
+        $this->hasColumn('price', 'decimal', 18);
+    }
+}
+</code>
+
+Let's also assume you have a table storing orders of those products. We want to ensure that the order table only contains orders of products that actually exist. So we define a foreign key constraint in the orders table that references the products table:
+
+<code type='php'>
+class Order extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('order_id', 'integer', null, 'primary');
+        $this->hasColumn('product_id', 'integer');
+        $this->hasColumn('quantity', 'integer');
+    }
+    public function setUp()
+    {
+        $this->hasOne('Product', 'Order.product_id');
+
+        // foreign key columns should *always* have indexes
+
+        $this->index('product_id', array('fields' => 'product_id'));
+    }
+}
+</code>
+
+When exported the class {{Order}} would execute the following SQL:
+
+<code type="sql">
+CREATE TABLE orders (
+    order_id integer PRIMARY KEY,
+    product_id integer REFERENCES products (id),
+    quantity integer,
+    INDEX product_id_idx (product_id)
+)
+</code>
+
+Now it is impossible to create orders with product_no entries that do not appear in the products table.
+
+We say that in this situation the orders table is the referencing table and the products table is the referenced table. Similarly, there are referencing and referenced columns.
+
+
++++ Constraint actions
+
+//CASCADE//:
+Delete or update the row from the parent table and automatically delete or update the matching rows in the child table. Both ON DELETE CASCADE and ON UPDATE CASCADE are supported. Between two tables, you should not define several ON UPDATE CASCADE clauses that act on the same column in the parent table or in the child table.
+
+//SET NULL// :
+Delete or update the row from the parent table and set the foreign key column or columns in the child table to NULL. This is valid only if the foreign key columns do not have the NOT NULL qualifier specified. Both ON DELETE SET NULL and ON UPDATE SET NULL clauses are supported.
+
+//NO ACTION// :
+In standard SQL, NO ACTION means no action in the sense that an attempt to delete or update a primary key value is not allowed to proceed if there is a related foreign key value in the referenced table.
+
+//RESTRICT// :
+Rejects the delete or update operation for the parent table. NO ACTION and RESTRICT are the same as omitting the ON DELETE or ON UPDATE clause.
+
+//SET DEFAULT// :
+
+In the following example we define two classes, User and Phonenumber with their relation being one-to-many. We also add a foreign key constraint with onDelete cascade action.
+
+<code type='php'>
+class User extends Doctrine_Record
+{
+    public function setUp()
+    {
+        $this->hasMany('Phonenumber', 'Phonenumber.user_id', array('onDelete' => 'cascade'));
+    }
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string', 50);
+        $this->hasColumn('loginname', 'string', 20);
+        $this->hasColumn('password', 'string', 16);
+    }
+}
+class Phonenumber extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('phonenumber', 'string', 50);
+        $this->hasColumn('user_id', 'integer');
+    }
+}
+</code>
