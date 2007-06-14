@@ -102,7 +102,16 @@ class Doctrine_Relation_Parser
         }
 
         $this->_pending[$alias] = array_merge($options, array('class' => $name, 'alias' => $alias));
+
+        $m = Doctrine_Manager::getInstance();
         
+        if (isset($options['onDelete'])) {
+            $m->addDeleteAction($name, $this->_table->getComponentName(), $options['onDelete']);
+        }
+        if (isset($options['onUpdate'])) {
+            $m->addUpdateAction($name, $this->_table->getComponentName(), $options['onUpdate']);
+        }
+
         return $this->_pending[$alias];
     }
     /**
@@ -126,7 +135,7 @@ class Doctrine_Relation_Parser
                 $localClasses = array_merge($this->_table->getOption('parents'), array($this->_table->getComponentName()));
 
                 if ( ! isset($this->_pending[$def['refClass']]) && 
-                     ! isset($this->_relations[$def['refClass']])) {    
+                     ! isset($this->_relations[$def['refClass']])) {
 
                     $def['refTable']->getRelationParser()->bind($this->_table->getComponentName(),
                                                                 array('type'    => Doctrine_Relation::ONE,

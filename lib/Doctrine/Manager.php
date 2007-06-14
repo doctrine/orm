@@ -65,6 +65,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                                          'oci'        => 'oci8',
                                          'sqlite2'    => 'sqlite',
                                          'sqlite3'    => 'sqlite');
+                                         
+
+    protected $_integrityActionsMap = array();
     /**
      * constructor
      *
@@ -78,6 +81,30 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         Doctrine_Record_Iterator::initNullObject($this->_null);
         Doctrine_Validator::initNullObject($this->_null);
         Doctrine_Object::initNullObject($this->_null);
+    }
+    public function addDeleteAction($componentName, $foreignComponent, $action)
+    {
+        $this->_integrityActions[$componentName]['onDelete'][$foreignComponent] = $action;
+    }
+    public function addUpdateAction($componentName, $foreignComponent, $action)
+    {
+        $this->_integrityActions[$componentName]['onUpdate'][$foreignComponent] = $action;
+    }
+    public function getDeleteActions($componentName)
+    {
+        if ( ! isset($this->_integrityActions[$componentName]['onDelete'])) {
+            return null;
+        }
+        
+        return $this->_integrityActions[$componentName]['onDelete'];
+    }
+    public function getUpdateActions($componentName)
+    {
+        if ( ! isset($this->_integrityActions[$componentName]['onUpdate'])) {
+            return null;
+        }
+        
+        return $this->_integrityActions[$componentName]['onUpdate'];
     }
     /**
      * @return Doctrine_Null
