@@ -82,7 +82,7 @@ $q->select('{u.*}, {p.*}')
   // here we tell that user table is bound to class called 'User'
   // we also add an alias for User class called 'u'
   // this alias will be used when referencing to User class
-  ->addComponent('u', 'User u');
+  ->addComponent('u', 'User u')
   // here we add another component that is bound to table phonenumber
   // notice how we reference that the Phonenumber class is "User's phonenumber"
   ->addComponent('p', 'u.Phonenumber p');
