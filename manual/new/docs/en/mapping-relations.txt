@@ -8,26 +8,34 @@ In Doctrine all record relations are being set with {{hasMany}}, {{hasOne}}, {{o
 Doctrine supports relation aliases through {{as}} keyword.
 
 <code type="php">
-class Forum_Board extends Doctrine_Record { 
-    public function setTableDefinition() {
+class Forum_Board extends Doctrine_Record 
+{ 
+    public function setTableDefinition()
+    {
         $this->hasColumn('name', 'string', 100);
         $this->hasColumn('description', 'string', 5000);
     }
-    public function setUp() {
+    public function setUp() 
+    {
         // notice the 'as' keyword here
-        $this->ownsMany('Forum_Thread as Threads',  'Forum_Thread.board_id');
+        $this->ownsMany('Forum_Thread as Threads', array('local' => 'id',
+                                                         'foreign' => 'board_id');
     }
 }
 
-class Forum_Thread extends Doctrine_Record {
-    public function setTableDefinition() {
+class Forum_Thread extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
         $this->hasColumn('board_id', 'integer', 10);
         $this->hasColumn('updated', 'integer', 10);
         $this->hasColumn('closed', 'integer', 1);
     }
-    public function setUp() {
+    public function setUp() 
+    {
         // notice the 'as' keyword here
-        $this->hasOne('Forum_Board as Board', 'Forum_Thread.board_id');
+        $this->hasOne('Forum_Board as Board', array('local' => 'board_id',
+                                                    'foreign' => 'id');
     }
 }
 $board = new Board();
@@ -43,30 +51,37 @@ Binding One-To-One foreign key associations is done with {{Doctrine_Record::owns
 The {{Email}} component here is mapped to {{User}} component's column {{email_id}} hence their relation is called LOCALKEY relation. On the other hand the {{Address}} component is mapped to {{User}} by it's {{user_id}} column hence the relation between {{User}} and {{Address}} is called FOREIGNKEY relation.
 
 <code type="php">
-class User extends Doctrine_Record {
-    public function setUp() {
-        $this->hasOne('Address','Address.user_id');
-        $this->ownsOne('Email','User.email_id');
-        $this->ownsMany('Phonenumber','Phonenumber.user_id');
+class User extends Doctrine_Record 
+{
+    public function setUp() 
+    {
+        $this->hasOne('Address', array('local' => 'id', 'foreign' => 'user_id'));
+        $this->ownsOne('Email', array('local' => 'email_id', 'foreign' => 'id'));
+        $this->ownsMany('Phonenumber', array('local' => 'id', 'foreign' => 'user_id'));
     }
-    public function setTableDefinition() {
-        $this->hasColumn('name','string',50);
-        $this->hasColumn('loginname','string',20);
-        $this->hasColumn('password','string',16);
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string',50);
+        $this->hasColumn('loginname', 'string',20);
+        $this->hasColumn('password', 'string',16);
 
-        // foreign key column for email ID
-        $this->hasColumn('email_id','integer');
+        // foreign key column for email id
+        $this->hasColumn('email_id', 'integer');
     }
 }
-class Email extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('address','string',150);
+class Email extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('address', 'string', 150);
     }
 }
-class Address extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('street','string',50);
-        $this->hasColumn('user_id','integer');
+class Address extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('street', 'string', 50);
+        $this->hasColumn('user_id', 'integer');
     }
 }
 </code>
@@ -75,20 +90,25 @@ class Address extends Doctrine_Record {
 +++ One-to-Many, Many-to-One
 
 <code type="php">
-class User extends Doctrine_Record {
-    public function setUp() {
-        $this->ownsMany('Phonenumber','Phonenumber.user_id');
+class User extends Doctrine_Record 
+{
+    public function setUp()
+    {
+        $this->ownsMany('Phonenumber', array('local' => 'id', 'foreign' => 'user_id'));
     }
-    public function setTableDefinition() {
-        $this->hasColumn('name','string',50);
-        $this->hasColumn('loginname','string',20);
-        $this->hasColumn('password','string',16);
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 50);
+        $this->hasColumn('loginname', 'string', 20);
+        $this->hasColumn('password', 'string', 16);
     }
 }
-class Phonenumber extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('phonenumber','string',50);
-        $this->hasColumn('user_id','integer');
+class Phonenumber extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('phonenumber', 'string', 50);
+        $this->hasColumn('user_id', 'integer');
     }
 }
 </code>
@@ -97,14 +117,17 @@ class Phonenumber extends Doctrine_Record {
 +++ Tree structure
 
 <code type="php">
-class Task extends Doctrine_Record {
-     public function setUp() {  
-        $this->hasOne('Task as Parent','Task.parent_id');
-        $this->hasMany('Task as Subtask','Subtask.parent_id');
+class Task extends Doctrine_Record 
+{
+     public function setUp() 
+     {
+        $this->hasOne('Task as Parent', array('local' => 'parent_id', 'foreign' => 'id'));
+        $this->hasMany('Task as Subtask', array('local' => 'id', 'foreign' => 'parent_id'));
     }
-    public function setTableDefinition() {
-        $this->hasColumn('name','string',100);
-        $this->hasColumn('parent_id','integer');
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 100);
+        $this->hasColumn('parent_id', 'integer');
     }
 }
 </code>
@@ -122,28 +145,40 @@ Sometimes you may not want that association table rows are being deleted when us
 In the following example we have Groups and Users of which relation is defined as many-to-many. In this case we also need to define an additional class called {{Groupuser}}.
 
 <code type="php">
-class User extends Doctrine_Record { 
-    public function setUp() {
-        $this->hasMany('Group','Groupuser.group_id');
+class User extends Doctrine_Record 
+{
+    public function setUp() 
+    {
+        $this->hasMany('Group', array('local' => 'user_id', 
+                                      'foreign' => 'group_id',
+            // the following line is needed in many-to-many relations!
+                                      'refClass' => 'GroupUser'));
+
     }
-    public function setTableDefinition() {
-        $this->hasColumn('name','string',30);
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 30);
     }
 }
 
 class Group extends Doctrine_Record {
     public function setUp() {
-        $this->hasMany('User','Groupuser.user_id');
+        $this->hasMany('Group', array('local' => 'group_id',
+                                      'foreign' => 'user_id',
+            // the following line is needed in many-to-many relations!
+                                      'refClass' => 'GroupUser'));
     }
     public function setTableDefinition() {
-        $this->hasColumn('name','string',30);
+        $this->hasColumn('name', 'string', 30);
     }
 }
 
-class Groupuser extends Doctrine_Record { 
-    public function setTableDefinition() {
-        $this->hasColumn('user_id','integer');
-        $this->hasColumn('group_id','integer');
+class Groupuser extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('user_id', 'integer', null, array('primary' => true));
+        $this->hasColumn('group_id', 'integer', null, array('primary' => true));
     }
 }
 
@@ -177,23 +212,60 @@ $user->Group = $groups;
 </code>
 
 
-+++ Self-referencing
-
-Self-referencing with join tables is done as follows:
-
++++ Self-referencing (Nest relations)
+++++ Non-equal nest relations
 <code type="php">
-class User extends Doctrine_Record {
-    public function setUp() {
-        $this->hasMany('User as Friend','UserReference.user_id-user_id2');
+class User extends Doctrine_Record 
+{
+    public function setUp() 
+    {
+        $this->hasMany('User as Parents', array('local'    => 'parent_id',
+                                                'foreign'  => 'child_id',
+                                                'refClass' => 'UserReference'
+                                                );
+
+        $this->hasMany('User as Children', array('local'    => 'child_id',
+                                                 'foreign'  => 'parent_id',
+                                                 'refClass' => 'UserReference'
+                                                 );
+
     }
-    public function setTableDefinition() {
-        $this->hasColumn('name','string',30);
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 30);
     }
 }
-class UserReference extends Doctrine_Record {
+class UserReference extends Doctrine_Record 
+{
     public function setTableDefinition() {
-        $this->hasColumn('user_id','integer');
-        $this->hasColumn('user_id2','integer');
+        $this->hasColumn('parent_id', 'integer', null, array('primary' => true));
+        $this->hasColumn('child_id', 'integer', null, array('primary' => true));
+    }
+}
+</code>
+++++ Equal nest relations
+
+<code type="php">
+class User extends Doctrine_Record 
+{
+    public function setUp() 
+    {
+        $this->hasMany('User as Friend', array('local'    => 'user1',
+                                               'foreign'  => 'user2',
+                                               'refClass' => 'UserReference'
+                                               'equal'    => true,
+                                                );
+    }
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 30);
+    }
+}
+class UserReference extends Doctrine_Record 
+{
+    public function setTableDefinition() {
+        $this->hasColumn('user1', 'integer', null, array('primary' => true));
+        $this->hasColumn('user2', 'integer', null, array('primary' => true));
     }
 }
 </code>
@@ -206,18 +278,22 @@ When it comes to handling inheritance Doctrine is very smart. In the following e
 Doctrine is smart enough to know that the inheritance type here is one-table-many-classes.
 
 <code type="php">
-class Entity extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name','string',30);
-        $this->hasColumn('username','string',20);
-        $this->hasColumn('password','string',16);
-        $this->hasColumn('created','integer',11);                                     	
+class Entity extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 30);
+        $this->hasColumn('username', 'string', 20);
+        $this->hasColumn('password', 'string', 16);
+        $this->hasColumn('created', 'integer', 11);
     }
 }
 
-class User extends Entity { }
+class User extends Entity 
+{ }
 
-class Group extends Entity { }
+class Group extends Entity 
+{ }
 </code>
 
 
@@ -226,25 +302,31 @@ class Group extends Entity { }
 In the following example we have three database tables called {{entity}}, {{user}} and {{group}}. Users and groups are both entities. The only thing we have to do is write 3 classes ({{Entity}}, {{Group}} and {{User}}) and make iterative {{setTableDefinition}} method calls.
 
 <code type="php">
-class Entity extends Doctrine_Record { 
-    public function setTableDefinition() {
-        $this->hasColumn('name','string',30);
-        $this->hasColumn('username','string',20);
-        $this->hasColumn('password','string',16);
-        $this->hasColumn('created','integer',11);
+class Entity extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 30);
+        $this->hasColumn('username', 'string', 20);
+        $this->hasColumn('password', 'string', 16);
+        $this->hasColumn('created', 'integer', 11);
     }
 }
 
-class User extends Entity { 
-    public function setTableDefinition() {
+class User extends Entity 
+{
+    public function setTableDefinition() 
+    {
         // the following method call is needed in
         // one-table-one-class inheritance
         parent::setTableDefinition();
     }
 }
 
-class Group extends Entity {
-    public function setTableDefinition() {
+class Group extends Entity 
+{
+    public function setTableDefinition() 
+    {
         // the following method call is needed in
         // one-table-one-class inheritance
         parent::setTableDefinition();
@@ -262,12 +344,14 @@ The entity table has a column called {{type}} which tells whether an entity is a
 The only thing we have to do is to create 3 records (the same as before) and add call the {{Doctrine_Table::setInheritanceMap()}} method inside the {{setUp()}} method.
 
 <code type='php'>
-class Entity extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name','string',30);
-        $this->hasColumn('username','string',20);
-        $this->hasColumn('password','string',16);
-        $this->hasColumn('created','integer',11);
+class Entity extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 30);
+        $this->hasColumn('username', 'string', 20);
+        $this->hasColumn('password', 'string', 16);
+        $this->hasColumn('created', 'integer', 11);
 
         // this column is used for column
         // aggregation inheritance
@@ -275,14 +359,18 @@ class Entity extends Doctrine_Record {
     }
 }
 
-class User extends Entity {
-    public function setUp() {
+class User extends Entity 
+{
+    public function setUp() 
+    {
         $this->setInheritanceMap(array('type'=>1));
     }
 }
 
-class Group extends Entity {
-    public function setUp() {
+class Group extends Entity 
+{
+    public function setUp() 
+    {
         $this->setInheritanceMap(array('type'=>2));
     }
 }
@@ -291,12 +379,14 @@ class Group extends Entity {
 If we want to be able to fetch a record from the {{Entity}} table and automatically get a {{User}} record if the {{Entity}} we fetched is a user we have to do set the subclasses option in the parent class. The adjusted example:
 
 <code type='php'>
-class Entity extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name','string',30);
-        $this->hasColumn('username','string',20);
-        $this->hasColumn('password','string',16);
-        $this->hasColumn('created','integer',11);
+class Entity extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 30);
+        $this->hasColumn('username', 'string', 20);
+        $this->hasColumn('password', 'string', 16);
+        $this->hasColumn('created', 'integer', 11);
 
         // this column is used for column
         // aggregation inheritance
@@ -305,14 +395,18 @@ class Entity extends Doctrine_Record {
     }
 }
 
-class User extends Entity {
-    public function setUp() {
+class User extends Entity 
+{
+    public function setUp() 
+    {
         $this->setInheritanceMap(array('type'=>1));
     }
 }
 
-class Group extends Entity {
-    public function setUp() {
+class Group extends Entity 
+{
+    public function setUp() 
+    {
         $this->setInheritanceMap(array('type'=>2));
     }
 }
@@ -322,15 +416,15 @@ We can then do the following given the previous table mapping.
 
 <code type='php'>
 $user = new User();
-$user->name='Bjarte S. Karlsen';
-$user->username='meus';
-$user->password='rat';
+$user->name = 'Bjarte S. Karlsen';
+$user->username = 'meus';
+$user->password = 'rat';
 $user->save();
 
 $group = new Group();
-$group->name='Users';
-$group->username='users';
-$group->password='password';
+$group->name = 'Users';
+$group->username = 'users';
+$group->password = 'password';
 $group->save();
 
 $q = new Doctrine_Query();
@@ -374,7 +468,7 @@ class Order extends Doctrine_Record
     }
     public function setUp()
     {
-        $this->hasOne('Product', 'Order.product_id');
+        $this->hasOne('Product', array('local' => 'product_id', 'foreign' => 'id'));
 
         // foreign key columns should *always* have indexes
 
@@ -399,7 +493,7 @@ Now it is impossible to create orders with product_no entries that do not appear
 We say that in this situation the orders table is the referencing table and the products table is the referenced table. Similarly, there are referencing and referenced columns.
 
 
-+++ Constraint actions
++++ Integrity actions
 
 //CASCADE//:
 Delete or update the row from the parent table and automatically delete or update the matching rows in the child table. Both ON DELETE CASCADE and ON UPDATE CASCADE are supported. Between two tables, you should not define several ON UPDATE CASCADE clauses that act on the same column in the parent table or in the child table.
@@ -415,20 +509,23 @@ Rejects the delete or update operation for the parent table. NO ACTION and RESTR
 
 //SET DEFAULT// :
 
-In the following example we define two classes, User and Phonenumber with their relation being one-to-many. We also add a foreign key constraint with onDelete cascade action.
+In the following example we define two classes, User and Phonenumber with their relation being one-to-many. We also add a foreign key constraint with onDelete cascade action. This means that everytime a users is being deleted its associated phonenumbers will also be deleted.
 
 <code type='php'>
 class User extends Doctrine_Record
 {
-    public function setUp()
-    {
-        $this->hasMany('Phonenumber', 'Phonenumber.user_id', array('onDelete' => 'cascade'));
-    }
     public function setTableDefinition()
     {
         $this->hasColumn('name', 'string', 50);
         $this->hasColumn('loginname', 'string', 20);
         $this->hasColumn('password', 'string', 16);
+    }
+    public function setUp()
+    {
+        $this->index('id', array('fields' => 'id'));
+
+        $this->hasMany('Phonenumber', array('local' => 'id', 
+                                            'foreign' => 'user_id'));
     }
 }
 class Phonenumber extends Doctrine_Record
@@ -437,6 +534,14 @@ class Phonenumber extends Doctrine_Record
     {
         $this->hasColumn('phonenumber', 'string', 50);
         $this->hasColumn('user_id', 'integer');
+    }
+    public function setUp()
+    {
+        $this->index('product_id', array('fields' => 'user_id'));
+
+        $this->hasMany('User', array('local' => 'user_id',
+                                     'foreign' => 'id',
+                                     'onDelete' => 'CASCADE'));
     }
 }
 </code>
