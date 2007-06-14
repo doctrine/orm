@@ -430,7 +430,17 @@ final class Doctrine
      */
     public static function export($directory)
     {
-        Doctrine_Export::export();
+        return Doctrine_Manager::connection()->export->export($directory);
+    }
+    /**
+     * exportSql
+     * method for exporting Doctrine_Record classes to a schema
+     *
+     * @param string $directory
+     */
+    public static function exportSql($directory)
+    {
+        return Doctrine_Manager::connection()->export->exportSql($directory);
     }
     /**
      * compile
