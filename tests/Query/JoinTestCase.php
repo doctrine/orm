@@ -34,6 +34,10 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareTables()
     {
+        $this->tables = array('Record_Country', 'Record_City', 'Record_District', 'Entity', 
+                              'User', 'Group', 'Email', 'Phonenumber', 'Groupuser', 'Account');
+        
+        parent::prepareTables();
     }
     public function prepareData()
     {

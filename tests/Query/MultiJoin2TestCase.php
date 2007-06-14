@@ -35,7 +35,11 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase
     public function prepareData()
     { }
     public function prepareTables()
-    { }
+    { 
+        $this->tables = array('QueryTest_Category', 'QueryTest_Board', 'QueryTest_User', 'QueryTest_Entry');
+        
+        parent::prepareTables();
+    }
     public function testInitializeData() 
     {
         $query = new Doctrine_Query($this->connection);
@@ -57,7 +61,7 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase
         $author = new QueryTest_User();
         $author->username = "romanb";
         $author->save();
-        
+
         $lastEntry = new QueryTest_Entry();
         $lastEntry->authorId = $author->id;
         $lastEntry->date = 1234;

@@ -32,6 +32,12 @@
  */
 class Doctrine_Query_MultiJoin_TestCase extends Doctrine_UnitTestCase 
 {
+    public function prepareTables()
+    {
+        $this->tables[] = 'Book';
+        $this->tables[] = 'Author';
+        parent::prepareTables();
+    }
     public function testInitializeData() 
     {
 
