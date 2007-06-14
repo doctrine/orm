@@ -35,7 +35,11 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
     public function prepareData() 
     { }
     public function prepareTables()
-    { }
+    { 
+        $this->tables = array('Versionable');
+        
+        parent::prepareTables();
+    }
     public function testVersionTableSqlReturnsProperQuery()
     {
         $table = $this->conn->getTable('Versionable');
@@ -47,7 +51,7 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
         $entity = new Versionable();
         $entity->name = 'zYne';
         $entity->save();
-        $this->assertEqual($entity->version, 1);  
+        $this->assertEqual($entity->version, 1);
 
         $entity->name = 'zYne 2';
         $entity->save();

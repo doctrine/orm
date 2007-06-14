@@ -38,6 +38,12 @@
  */
 class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
 {
+    public function prepareTables()
+    {
+    	$this->tables[] = 'Book';
+    	
+    	parent::prepareTables();
+    }
     public function testDiffForSimpleCollection()
     {
         $coll = Doctrine_Query::create()->from('User u')->orderby('u.id')->execute();
