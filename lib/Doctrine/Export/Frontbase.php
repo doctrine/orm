@@ -251,10 +251,15 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
      *
      * @param string    $seqName     name of the sequence to be created
      * @param string    $start         start value of the sequence; default is 1
-     * @return mixed MDB2_OK on success, a MDB2 error on failure
-     * @access public
+     * @param array     $options  An associative array of table options:
+     *                          array(
+     *                              'comment' => 'Foo',
+     *                              'charset' => 'utf8',
+     *                              'collate' => 'utf8_unicode_ci',
+     *                          );
+     * @return void
      */
-    public function createSequence($seqName, $start = 1)
+    public function createSequence($sequenceName, $start = 1, array $options = array())
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
         $seqcolName   = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
