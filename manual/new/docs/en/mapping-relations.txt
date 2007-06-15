@@ -161,12 +161,13 @@ class User extends Doctrine_Record
     }
 }
 
-class Group extends Doctrine_Record {
+class Group extends Doctrine_Record
+{
     public function setUp() {
-        $this->hasMany('Group', array('local' => 'group_id',
-                                      'foreign' => 'user_id',
+        $this->hasMany('User', array('local' => 'group_id',
+                                     'foreign' => 'user_id',
             // the following line is needed in many-to-many relations!
-                                      'refClass' => 'GroupUser'));
+                                     'refClass' => 'GroupUser'));
     }
     public function setTableDefinition() {
         $this->hasColumn('name', 'string', 30);
