@@ -54,7 +54,7 @@ class Doctrine_Compiler
             }
         }
 
-        $classes = get_declared_classes();
+        $classes = array_merge(get_declared_classes(), get_declared_interfaces());
 
         $ret     = array();
 
