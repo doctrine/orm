@@ -366,8 +366,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function __get($name)
     {
-        if (isset($this->properties[$name]))
+        if (isset($this->properties[$name])) {
             return $this->properties[$name];
+        }    
 
         if ( ! isset($this->modules[$name])) {
             throw new Doctrine_Connection_Exception('Unknown module / property ' . $name);
