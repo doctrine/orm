@@ -40,13 +40,13 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
      *
      * @return integer          next id in the given sequence
      */
-    public function nextId($seqName, $ondemand = true)
+    public function nextId($seqName, $onDemand = true)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->formatter->getSequenceName($seqName), true);
-        $seqcolName   = $this->conn->quoteIdentifier($this->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
+        $seqcolName   = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
 
 
-        if ($this->_checkSequence($sequenceName)) {
+        if ($this->checkSequence($sequenceName)) {
             $query = 'SET IDENTITY_INSERT ' . $sequenceName . ' ON '
                    . 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (0)';
         } else {
@@ -57,7 +57,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
             $this->conn->exec($query);
 
         } catch(Doctrine_Connection_Exception $e) {
-            if ($ondemand && !$this->_checkSequence($sequenceName)) {
+            if ($onDemand && $e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
                 // Since we are creating the sequence on demand
                 // we know the first id = 1 so initialize the
                 // sequence at 2
@@ -69,6 +69,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
                 // First ID of a newly created sequence is 1
                 return 1;
             }
+            throw $e;
         }
         
         $value = $this->lastInsertId($sequenceName);
@@ -85,6 +86,26 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
         }
         return $value;
     }
+    /**
+     * Checks if there's a sequence that exists.
+     *
+     * @param  string $seqName     The sequence name to verify.
+     * @return bool   $tableExists The value if the table exists or not
+     * @access private
+     */
+    public function checkSequence($seqName)
+    {
+        $query = 'SELECT COUNT(1) FROM ' . $seqName;
+        try {
+            $this->conn->execute($query);
+        } catch (Doctrine_Connection_Exception $e) {
+            if ($e->getPortableCode() == Doctrine::ERR_NOSUCHTABLE) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Returns the autoincrement ID if supported or $id or fetches the current
      * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
