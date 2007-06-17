@@ -65,6 +65,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
                 // First ID of a newly created sequence is 1
                 return 1;
             }
+            throw $e;
         }
 
         $value = $this->conn->getDbh()->lastInsertId();

@@ -48,7 +48,7 @@ class Doctrine_Sequence_Db2 extends Doctrine_Sequence
              . ' AS VAL FROM SYSIBM.SYSDUMMY1';
 
         $stmt   = $this->query($sql);
-        $result = $stmt->fetchAll(Zend_Db::FETCH_ASSOC);
+        $result = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
         if ($result) {
             return $result[0]['VAL'];
         } else {
@@ -72,7 +72,7 @@ class Doctrine_Sequence_Db2 extends Doctrine_Sequence
              . $this->quoteIdentifier($this->conn->formatter->getSequenceName($sequenceName))
              . ' AS VAL FROM SYSIBM.SYSDUMMY1';
         $stmt = $this->query($sql);
-        $result = $stmt->fetchAll(Zend_Db::FETCH_ASSOC);
+        $result = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
         if ($result) {
             return $result[0]['VAL'];
         } else {
@@ -113,7 +113,7 @@ class Doctrine_Sequence_Db2 extends Doctrine_Sequence
 
         $sql = 'SELECT IDENTITY_VAL_LOCAL() AS VAL FROM SYSIBM.SYSDUMMY1';
         $stmt = $this->query($sql);
-        $result = $stmt->fetchAll(Zend_Db::FETCH_ASSOC);
+        $result = $stmt->fetchAll(Doctrine::FETCH_ASSOC);
         if ($result) {
             return $result[0]['VAL'];
         } else {
