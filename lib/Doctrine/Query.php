@@ -791,10 +791,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $subquery .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where'])  : '';
         $subquery .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby'])   : '';
         $subquery .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']) : '';
-        /**
-         * the order by part isn't needed in the limit-subquery ?
-         */
-        //$subquery .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])   : '';
+
+        $subquery .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])   : '';
 
         // add driver specific limit clause
         $subquery = $this->_conn->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
