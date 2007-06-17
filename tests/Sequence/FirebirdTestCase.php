@@ -30,5 +30,26 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Sequence_Firebird_TestCase extends Doctrine_UnitTestCase {
+class Doctrine_Sequence_Firebird_TestCase extends Doctrine_UnitTestCase 
+{
+    public function testCurrIdExecutesSql() 
+    {
+        $this->sequence->currId('user');
+
+        $this->assertEqual($this->adapter->pop(), 'SELECT GEN_ID(user_seq, 0) as the_value FROM RDB$DATABASE');
+    }
+    public function testNextIdExecutesSql() 
+    {
+        $id = $this->sequence->nextId('user');
+
+        $this->assertEqual($this->adapter->pop(), 'SELECT GEN_ID(user_seq, 1) as the_value FROM RDB$DATABASE');
+    }
+    public function testLastInsertIdCallsPdoLevelEquivalent() 
+    {
+        $id = $this->sequence->lastInsertId('user');
+        
+        $this->assertEqual($id, 1);
+
+        $this->assertEqual($this->adapter->pop(), 'LAST_INSERT_ID()');
+    }
 }

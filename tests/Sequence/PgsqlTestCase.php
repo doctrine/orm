@@ -30,7 +30,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Sequence_Pgsql_TestCase extends Doctrine_UnitTestCase {
+class Doctrine_Sequence_Pgsql_TestCase extends Doctrine_UnitTestCase 
+{
      public function testCurrIdExecutesSql() 
      {
         $this->sequence->currId('user');
