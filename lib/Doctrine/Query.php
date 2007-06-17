@@ -677,8 +677,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $q .= ' SET ' . implode(', ', $this->parts['set']);
         }
 
-        $string = $this->applyInheritance();
 
+        $string = $this->applyInheritance();
+        
+        // apply inheritance to WHERE part
         if ( ! empty($string)) {
             $this->parts['where'][] = '(' . $string . ')';
         }
@@ -694,7 +696,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 switch (strtolower($this->_conn->getName())) {
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
-                        $list     = $this->_conn->execute($subquery, $params)->fetchAll(PDO::FETCH_COLUMN);
+                        $list     = $this->_conn->execute($subquery, $params)->fetchAll(Doctrine::FETCH_COLUMN);
                         $subquery = implode(', ', $list);
                         break;
                     case 'pgsql':
