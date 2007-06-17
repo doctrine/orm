@@ -61,15 +61,6 @@ class Doctrine_EventListener implements Doctrine_EventListener_Interface
     public function onPreSave(Doctrine_Record $record)
     { }
 
-    public function onGetProperty(Doctrine_Record $record, $property, $value)
-    {
-        return $value;
-    }
-    public function onSetProperty(Doctrine_Record $record, $property, $value)
-    {
-        return $value;
-    }
-
     public function onInsert(Doctrine_Record $record)
     { }
     public function onPreInsert(Doctrine_Record $record)

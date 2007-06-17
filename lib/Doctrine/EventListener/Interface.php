@@ -43,9 +43,6 @@ interface Doctrine_EventListener_Interface {
     public function onSave(Doctrine_Record $record);
     public function onPreSave(Doctrine_Record $record);
 
-    public function onGetProperty(Doctrine_Record $record, $property, $value);
-    public function onSetProperty(Doctrine_Record $record, $property, $value);
-
     public function onInsert(Doctrine_Record $record);
     public function onPreInsert(Doctrine_Record $record);
 
