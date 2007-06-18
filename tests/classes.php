@@ -346,34 +346,42 @@ class ORM_TestItem extends Doctrine_Record {
         $this->hasOne('ORM_TestEntry', 'ORM_TestEntry.itemID'); 
    } 
 }
-class ORM_AccessControl extends Doctrine_Record {
-    public function setTableDefinition() {
+class ORM_AccessControl extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
         $this->hasColumn('name', 'string', 255);
     }
-    public function setUp() {
+    public function setUp() 
+    {
         $this->hasMany('ORM_AccessGroup as accessGroups', 'ORM_AccessControlsGroups.accessGroupID');
     }
 }
 
-class ORM_AccessGroup extends Doctrine_Record {
-    public function setTableDefinition() {
+class ORM_AccessGroup extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
         $this->hasColumn('name', 'string', 255);
     }
-    public function setUp() {
+    public function setUp() 
+    {
         $this->hasMany('ORM_AccessControl as accessControls', 'ORM_AccessControlsGroups.accessControlID');
     }
 }
 
-class ORM_AccessControlsGroups extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('accessControlID', 'integer', 11); 
-        $this->hasColumn('accessGroupID', 'integer', 11); 
-       
-        $this->setPrimaryKey(array('accessControlID', 'accessGroupID'));
+class ORM_AccessControlsGroups extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('accessControlID', 'integer', 11, array('primary' => true)); 
+        $this->hasColumn('accessGroupID', 'integer', 11, array('primary' => true));
     }
 }
-class EnumTest extends Doctrine_Record {
-    public function setTableDefinition() {
+class EnumTest extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
         $this->hasColumn('status', 'enum', 11, array('values' => array('open', 'verified', 'closed')));
     }
 }
