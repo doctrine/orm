@@ -30,18 +30,25 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase {
-    public function testUnknownExpressionInSelectClauseThrowsException() {
+class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase 
+{
+
+    public function testUnknownExpressionInSelectClauseThrowsException() 
+    {
         $q = new Doctrine_Query();
         
         try {
             $q->parseQuery('SELECT SOMEUNKNOWNFUNC(u.name, " ", u.loginname) FROM User u');
+            
+            $q->getQuery();
             $this->fail();
         } catch(Doctrine_Query_Exception $e) {
             $this->pass();
         }
     }
-    public function testUnknownColumnWithinFunctionInSelectClauseThrowsException() {
+
+    public function testUnknownColumnWithinFunctionInSelectClauseThrowsException() 
+    {
         $q = new Doctrine_Query();
         
         try {
@@ -53,21 +60,27 @@ class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase {
             $this->pass();
         }
     }
-    public function testConcatIsSupportedInSelectClause() {
+
+    public function testConcatIsSupportedInSelectClause() 
+    {
         $q = new Doctrine_Query();
         
         $q->parseQuery('SELECT CONCAT(u.name, u.loginname) FROM User u');
         
         $this->assertEqual($q->getQuery(), 'SELECT CONCAT(e.name, e.loginname) AS e__0 FROM entity e WHERE (e.type = 0)');
     }
-    public function testConcatInSelectClauseSupportsLiteralStrings() {
+
+    public function testConcatInSelectClauseSupportsLiteralStrings() 
+    {
         $q = new Doctrine_Query();
         
         $q->parseQuery("SELECT CONCAT(u.name, 'The Man') FROM User u");
         
         $this->assertEqual($q->getQuery(), "SELECT CONCAT(e.name, 'The Man') AS e__0 FROM entity e WHERE (e.type = 0)");
     }
-    public function testConcatInSelectClauseSupportsMoreThanTwoArgs() {
+
+    public function testConcatInSelectClauseSupportsMoreThanTwoArgs() 
+    {
         $q = new Doctrine_Query();
         
         $q->parseQuery("SELECT CONCAT(u.name, 'The Man', u.loginname) FROM User u");
