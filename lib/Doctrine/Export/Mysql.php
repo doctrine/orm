@@ -87,46 +87,6 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      *
      * @return void
      */
-    public function createTable($name, array $fields, array $options = array()) 
-    {
-    	$sql = $this->createTableSql($name, $fields, $options);
-
-        $this->conn->execute($sql);
-    }
-    /**
-     * create a new table
-     *
-     * @param string $name   Name of the database that should be created
-     * @param array $fields  Associative array that contains the definition of each field of the new table
-     *                       The indexes of the array entries are the names of the fields of the table an
-     *                       the array entry values are associative arrays like those that are meant to be
-     *                       passed with the field definitions to get[Type]Declaration() functions.
-     *                          array(
-     *                              'id' => array(
-     *                                  'type' => 'integer',
-     *                                  'unsigned' => 1
-     *                                  'notnull' => 1
-     *                                  'default' => 0
-     *                              ),
-     *                              'name' => array(
-     *                                  'type' => 'text',
-     *                                  'length' => 12
-     *                              ),
-     *                              'password' => array(
-     *                                  'type' => 'text',
-     *                                  'length' => 12
-     *                              )
-     *                          );
-     * @param array $options  An associative array of table options:
-     *                          array(
-     *                              'comment' => 'Foo',
-     *                              'charset' => 'utf8',
-     *                              'collate' => 'utf8_unicode_ci',
-     *                              'type'    => 'innodb',
-     *                          );
-     *
-     * @return void
-     */
     public function createTableSql($name, array $fields, array $options = array()) 
     {
         if ( ! $name)
@@ -158,7 +118,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         if (isset($options['charset'])) {
             $optionStrings['charset'] = 'DEFAULT CHARACTER SET ' . $options['charset'];
             if (isset($options['collate'])) {
-                $optionStrings['charset'].= ' COLLATE ' . $options['collate'];
+                $optionStrings['charset'] .= ' COLLATE ' . $options['collate'];
             }
         }
 
@@ -177,7 +137,20 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         if (!empty($optionStrings)) {
             $query.= ' '.implode(' ', $optionStrings);
         }
-        return $query;
+        $sql[] = $query;
+
+        if (isset($options['foreignKeys'])) {
+
+            foreach ((array) $options['foreignKeys'] as $k => $definition) {
+                if (is_array($definition)) {
+                    if ( ! isset($definition['table'])) {
+                        $definition['table'] = $name;                                   	
+                    }
+                    $sql[] = $this->createForeignKeySql($definition['table'], $definition);
+                }
+            }
+        }   
+        return $sql;
     }
     /**
      * alter an existing table
