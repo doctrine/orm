@@ -97,12 +97,33 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
         $queryFields = $this->getFieldDeclarationList($fields);
 
+        // build indexes for all foreign key fields (needed in MySQL!!)
+        if (isset($options['foreignKeys'])) {
+            foreach ($options['foreignKeys'] as $fk) {
+                $local = $fk['local'];
+                
+                $found = false;
+                if (isset($options['indexes'])) {
+                    foreach ($options['indexes'] as $definition) {
+                        if (isset($definition['fields'][$local]) && count($definition['fields']) === 1) {
+                            $found = true;
+                        }
+                    }
+                }
+                
+                if ( ! $found) {
+                    $options['indexes'] = array($local => array('fields' => array($local => array())));
+                }
+            }
+        }
+        // add all indexes
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach($options['indexes'] as $index => $definition) {
                 $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
             }
         }
 
+        // attach all primary keys
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
         }
@@ -124,7 +145,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export
 
         $type = false;
 
-        if (!empty($options['type'])) {
+        // get the type of the table
+        if ( ! empty($options['type'])) {
             $type = $options['type'];
         } else {
             $type = $this->conn->getAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE);
@@ -144,7 +166,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             foreach ((array) $options['foreignKeys'] as $k => $definition) {
                 if (is_array($definition)) {
                     if ( ! isset($definition['table'])) {
-                        $definition['table'] = $name;                                   	
+                        $definition['table'] = $name;
                     }
                     $sql[] = $this->createForeignKeySql($definition['table'], $definition);
                 }
@@ -515,7 +537,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             $definition['fields'] = array($definition['fields']);
         }
 
-        $query = $type . 'INDEX ' . $name;
+        $query = $type . 'INDEX ' . $this->conn->formatter->getIndexName($name);
 
         $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
         
