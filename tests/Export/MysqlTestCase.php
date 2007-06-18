@@ -159,7 +159,7 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (content BLOB) ENGINE = MYISAM');
     }
 
-    public function testCreateTableSupportsBooleanType() 
+    public function testCreateTableSupportsBooleanType()
     {
         $name = 'mytable';
         
@@ -170,7 +170,46 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id TINYINT(1)) ENGINE = MYISAM');
     }
-    public function testCreateDatabaseExecutesSql() 
+    public function testCreateTableSupportsForeignKeys()
+    {
+        $name = 'mytable';
+        
+        $fields = array('id' => array('type' => 'boolean', 'primary' => true),
+                        'foreignKey' => array('type' => 'integer')
+                        );
+        $options = array('type' => 'INNODB',
+                         'foreignKeys' => array(array('local' => 'foreignKey',
+                                                      'foreign' => 'id',
+                                                      'foreignTable' => 'sometable'))
+                         );
+
+
+        $sql = $this->export->createTableSql($name, $fields, $options);
+
+        $this->assertEqual($sql[0], 'CREATE TABLE mytable (id TINYINT(1), foreignKey INT, INDEX foreignKey_idx (foreignKey)) ENGINE = INNODB');
+        $this->assertEqual($sql[1], 'ALTER TABLE mytable ADD CONSTRAINT FOREIGN KEY (foreignKey) REFERENCES sometable(id)');
+    }
+    public function testCreateTableDoesNotAutoAddIndexesWhenIndexForFkFieldAlreadyExists()
+    {
+        $name = 'mytable';
+        
+        $fields = array('id' => array('type' => 'boolean', 'primary' => true),
+                        'foreignKey' => array('type' => 'integer')
+                        );
+        $options = array('type' => 'INNODB',
+                         'foreignKeys' => array(array('local' => 'foreignKey',
+                                                      'foreign' => 'id',
+                                                      'foreignTable' => 'sometable')),
+                         'indexes' => array('myindex' => array('fields' => array('foreignKey' => array()))),
+                         );
+
+
+        $sql = $this->export->createTableSql($name, $fields, $options);
+
+        $this->assertEqual($sql[0], 'CREATE TABLE mytable (id TINYINT(1), foreignKey INT, INDEX myindex_idx (foreignKey)) ENGINE = INNODB');
+        $this->assertEqual($sql[1], 'ALTER TABLE mytable ADD CONSTRAINT FOREIGN KEY (foreignKey) REFERENCES sometable(id)');
+    }
+    public function testCreateDatabaseExecutesSql()
     {
         $this->export->createDatabase('db');
 
@@ -188,12 +227,6 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         $this->export->dropIndex('sometable', 'relevancy');
 
         $this->assertEqual($this->adapter->pop(), 'DROP INDEX relevancy_idx ON sometable');
-    }
-    public function testRecordDefinitionsSupportTableOptions() 
-    {
-        $r = new MysqlTestRecord;
-        
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_test_record (name TEXT, code BIGINT, PRIMARY KEY(name, code)) ENGINE = INNODB');
     }
     public function testUnknownIndexSortingAttributeThrowsException()
     {
@@ -231,7 +264,7 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
 
         $this->export->createTable('sometable', $fields, $options);
         
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, name VARCHAR(4), INDEX myindex (id ASC, name DESC), PRIMARY KEY(id)) ENGINE = INNODB');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, name VARCHAR(4), INDEX myindex_idx (id ASC, name DESC), PRIMARY KEY(id)) ENGINE = INNODB');
     }
     public function testCreateTableSupportsFulltextIndexes()
     {
@@ -251,127 +284,6 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
 
         $this->export->createTable('sometable', $fields, $options);
         
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, content VARCHAR(4), FULLTEXT INDEX myindex (content DESC), PRIMARY KEY(id)) ENGINE = MYISAM');
-    }
-
-    public function testExportSupportsIndexes()
-    {
-        $r = new MysqlIndexTestRecord;
-
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_index_test_record (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, FULLTEXT INDEX content_idx (content), UNIQUE INDEX namecode_idx (name, code), PRIMARY KEY(id)) ENGINE = MYISAM');
-    }
-
-    public function testExportSupportsForeignKeys()
-    {
-        $r = new ForeignKeyTest;
-
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE foreign_key_test (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, parent_id BIGINT, FOREIGN KEY parent_id REFERENCES foreign_key_test(id), FOREIGN KEY id REFERENCES foreign_key_test(parent_id) ON UPDATE RESTRICT ON DELETE CASCADE, PRIMARY KEY(id)) ENGINE = INNODB');
-    }
-
-    public function testExportSupportsForeignKeysWithoutAttributes()
-    {
-        $r = new ForeignKeyTest2;
-
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE foreign_key_test2 (id BIGINT AUTO_INCREMENT, name TEXT, foreignkey BIGINT, FOREIGN KEY foreignkey REFERENCES foreign_key_test(id), PRIMARY KEY(id)) ENGINE = INNODB');
-
-    }
-    public function testExportSupportsForeignKeysForManyToManyRelations()
-    {
-        $r = new MysqlUser;
-
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_user (id BIGINT AUTO_INCREMENT, name TEXT, PRIMARY KEY(id)) ENGINE = INNODB');
-
-        $r->MysqlGroup[0];
-
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_group (id BIGINT AUTO_INCREMENT, name TEXT, PRIMARY KEY(id)) ENGINE = INNODB');
-
-
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mysql_group_member (group_id BIGINT, user_id BIGINT, PRIMARY KEY(group_id, user_id)) ENGINE = INNODB');
-    }
-
-}
-class ForeignKeyTest extends Doctrine_Record
-{
-    public function setTableDefinition()
-    {
-        $this->hasColumn('name', 'string', null);
-        $this->hasColumn('code', 'integer', 4);
-        $this->hasColumn('content', 'string', 4000);
-        $this->hasColumn('parent_id', 'integer');
-
-        $this->hasOne('ForeignKeyTest as Parent',
-                      'ForeignKeyTest.parent_id',
-                       array('onDelete' => 'CASCADE',
-                             'onUpdate' => 'RESTRICT')
-                       );
-
-        $this->hasMany('ForeignKeyTest as Children',
-                       'ForeignKeyTest.parent_id');
-
-        $this->option('type', 'INNODB');
-
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, content VARCHAR(4), FULLTEXT INDEX myindex_idx (content DESC), PRIMARY KEY(id)) ENGINE = MYISAM');
     }
 }
-class MysqlGroupMember extends Doctrine_Record
-{
-    public function setTableDefinition() 
-    {
-        $this->hasColumn('group_id', 'integer', null, 'primary');
-        $this->hasColumn('user_id', 'integer', null, 'primary');
-    }
-}
-class MysqlUser extends Doctrine_Record
-{
-    public function setTableDefinition()
-    {
-        $this->hasColumn('name', 'string', null);
-
-        $this->hasMany('MysqlGroup', 'MysqlGroupMember.group_id');
-    }
-}
-class MysqlGroup extends Doctrine_Record
-{
-    public function setTableDefinition()
-    {
-        $this->hasColumn('name', 'string', null);
-
-        $this->hasMany('MysqlUser', 'MysqlGroupMember.user_id');
-    }
-}
-class ForeignKeyTest2 extends Doctrine_Record
-{
-    public function setTableDefinition() 
-    {
-        $this->hasColumn('name', 'string', null);
-        $this->hasColumn('foreignkey', 'integer');
-       
-        $this->hasOne('ForeignKeyTest', 'ForeignKeyTest2.foreignkey');
-    }
-}
-class MysqlIndexTestRecord extends Doctrine_Record
-{
-    public function setTableDefinition() 
-    {
-        $this->hasColumn('name', 'string', null);
-        $this->hasColumn('code', 'integer', 4);
-        $this->hasColumn('content', 'string', 4000);
-
-        $this->index('content',  array('fields' => 'content', 'type' => 'fulltext'));
-        $this->index('namecode', array('fields' => array('name', 'code'),
-                                       'type'   => 'unique'));
-
-        $this->option('type', 'MYISAM');
-
-    }
-}
-class MysqlTestRecord extends Doctrine_Record 
-{
-    public function setTableDefinition() 
-    {
-        $this->hasColumn('name', 'string', null, 'primary');
-        $this->hasColumn('code', 'integer', null, 'primary');
-
-        $this->option('type', 'INNODB');
-    }
-}
-?>

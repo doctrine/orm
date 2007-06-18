@@ -101,7 +101,7 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase
         
         $fields  = array('id' => array('type' => 'integer', 'autoincrement' => true));
 
-        
+
         $this->export->createTable($name, $fields);
 
         $this->assertEqual($this->adapter->pop(), 'COMMIT');
@@ -134,7 +134,7 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase
 
         $sql = $this->export->createTableSql('sometable', $fields, $options);
 
-        $this->assertEqual($sql, 'CREATE TABLE sometable (id INT UNIQUE, name VARCHAR2(4), PRIMARY KEY(id))');
+        $this->assertEqual($sql[0], 'CREATE TABLE sometable (id INT UNIQUE, name VARCHAR2(4), PRIMARY KEY(id))');
     }
     public function testCreateTableSupportsIndexes()
     {
@@ -148,7 +148,7 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase
 
         $sql = $this->export->createTableSql('sometable', $fields, $options);
 
-        $this->assertEqual($sql, 'CREATE TABLE sometable (id INT UNIQUE, name VARCHAR2(4), PRIMARY KEY(id), INDEX myindex (id, name))');
+        $this->assertEqual($sql[0], 'CREATE TABLE sometable (id INT UNIQUE, name VARCHAR2(4), PRIMARY KEY(id), INDEX myindex (id, name))');
     }
 }
 ?>
