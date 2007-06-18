@@ -67,6 +67,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
             case 'object':
             case 'char':
             case 'text':
+            case 'gzip':
                 $length = !empty($field['length'])
                     ? $field['length'] : 16777215; // TODO: $this->conn->options['default_text_field_length'];
 

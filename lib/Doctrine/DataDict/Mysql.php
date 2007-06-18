@@ -147,7 +147,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
             case 'array':
             case 'object':
             case 'string':
-
+            case 'gzip':
                 if ( ! isset($field['length'])) {
                     if (array_key_exists('default', $field)) {
                         $field['length'] = $this->conn->varchar_max_length;
