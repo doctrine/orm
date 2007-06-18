@@ -40,10 +40,11 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
      * @throws PDOException
      * @return void
      */
-    public function createDatabase($name)
+    public function createDatabaseSql($name)
     {
         $query  = 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name);
-        $this->conn->exec($query);
+        
+        return $query;
     }
     /**
      * drop an existing database
@@ -52,10 +53,11 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
      * @throws PDOException
      * @access public
      */
-    public function dropDatabase($name)
+    public function dropDatabaseSql($name)
     {
         $query  = 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
-        $this->conn->exec($query);
+        
+        return $query;
     }
     /**
      * getAdvancedForeignKeyOptions
