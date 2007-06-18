@@ -71,7 +71,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     protected $_dqlParts   = array(
                             'select'    => array(),
-                            'distinct'  => false,
                             'forUpdate' => false,
                             'from'      => array(),
                             'set'       => array(),
@@ -98,6 +97,17 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public static function create($conn = null)
     {
         return new Doctrine_Query($conn);
+    }
+    public function reset() 
+    {
+        $this->_enumParams = array();
+        $this->_pendingJoinConditions = array();
+        $this->pendingSubqueries = array();
+        $this->pendingFields = array();
+        $this->_neededTables = array();
+        $this->subqueryAliases = array();
+        $this->needsSubquery = false;
+        $this->isLimitSubqueryUsed = false;
     }
     /**
      * setOption
@@ -133,10 +143,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function addEnumParam($key, $table = null, $column = null)
     {
-    	$array = (isset($table) || isset($column)) ? array($table, $column) : array();
+        $array = (isset($table) || isset($column)) ? array($table, $column) : array();
 
-    	if ($key === '?') {
-    	    $this->_enumParams[] = $array;
+        if ($key === '?') {
+            $this->_enumParams[] = $array;
         } else {
             $this->_enumParams[$key] = $array;
         }
@@ -254,33 +264,19 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function parseQueryPart($queryPartName, $queryPart, $append = false) 
     {              
 
-    	// sanity check
-    	if ($queryPart === '' || $queryPart === null) {
+        // sanity check
+        if ($queryPart === '' || $queryPart === null) {
             throw new Doctrine_Query_Exception('Empty ' . $queryPartName . ' part given.');
-    	}
+        }
 
         // add query part to the dql part array
-    	if ($append) {
-    	    $this->_dqlParts[$queryPartName][] = $queryPart;
-    	} else {
+        if ($append) {
+            $this->_dqlParts[$queryPartName][] = $queryPart;
+        } else {
             $this->_dqlParts[$queryPartName] = array($queryPart);
-    	}
-    	
-        // check for cache
-        if ( ! $this->_options['resultSetCache']) {
-    	    $parser = $this->getParser($queryPartName);
-                         
-            $sql = $parser->parse($queryPart);
+        }
 
-            if (isset($sql)) {
-                if ($append) {
-                    $this->addQueryPart($queryPartName, $sql);
-                } else {
-                    $this->setQueryPart($queryPartName, $sql);
-                }                
-            }
-    	}
-    	   
+           
         return $this;
     }
     /**
@@ -293,8 +289,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function getDql()
     {
-    	$q = '';
-    	$q .= ( ! empty($this->_dqlParts['select']))?  'SELECT '    . implode(', ', $this->_dqlParts['select']) : '';
+        $q = '';
+        $q .= ( ! empty($this->_dqlParts['select']))?  'SELECT '    . implode(', ', $this->_dqlParts['select']) : '';
         $q .= ( ! empty($this->_dqlParts['from']))?    ' FROM '     . implode(' ', $this->_dqlParts['from']) : '';
         $q .= ( ! empty($this->_dqlParts['where']))?   ' WHERE '    . implode(' AND ', $this->_dqlParts['where']) : '';
         $q .= ( ! empty($this->_dqlParts['groupby']))? ' GROUP BY ' . implode(', ', $this->_dqlParts['groupby']) : '';
@@ -478,7 +474,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function processPendingSubqueries() 
     {
-    	foreach ($this->pendingSubqueries as $value) {
+        foreach ($this->pendingSubqueries as $value) {
             list($dql, $alias) = $value;
 
             $sql = $this->createSubquery()->parseQuery($dql, false)->getQuery();
@@ -504,7 +500,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function processPendingAggregates()
     {
-    	// iterate trhough all aggregates
+        // iterate trhough all aggregates
         foreach ($this->pendingAggregates as $aggregate) {
             list ($expression, $components, $alias) = $aggregate;
 
@@ -592,7 +588,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function buildFromPart()
     {
-    	$q = '';
+        $q = '';
         foreach ($this->parts['from'] as $k => $part) {
             if ($k === 0) {
                 $q .= $part;
@@ -623,7 +619,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
 
             $q .= ' ' . $part;
-            
+
             $this->parts['from'][$k] = $part;
         }
         return $q;
@@ -638,17 +634,37 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function getQuery($params = array())
     {
-    	// check if parser cache is on
-    	if ($this->_cache) {
-    	    foreach ($this->_dqlParts as $queryPartName => $queryParts) {
-                if (is_array($queryParts) && ! empty($queryParts)) {
+        // check if parser cache is on
 
-                    foreach ($queryParts as $queryPart) {
-                        $this->getParser($queryPartName)->parse($queryPart);
+        $this->_aliasMap = array();
+        $this->pendingAggregates = array();
+        $this->aggregateMap = array();
+        
+        $this->reset();
+
+        foreach ($this->_dqlParts as $queryPartName => $queryParts) {
+            $this->parts[$queryPartName] = array();
+            if (is_array($queryParts) && ! empty($queryParts)) {
+
+                foreach ($queryParts as $queryPart) {
+                    $parser = $this->getParser($queryPartName);
+                                      
+
+                    $sql = $parser->parse($queryPart);
+
+                    if (isset($sql)) {
+                        if ($queryPartName == 'limit' || 
+                            $queryPartName == 'offset') {
+
+                            $this->setQueryPart($queryPartName, $sql);
+                        } else {
+                            $this->addQueryPart($queryPartName, $sql);
+                        }
                     }
                 }
-    	    }
+            }
         }
+
         if (empty($this->parts['from'])) {
             return false;
         }
@@ -687,7 +703,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
 
         $modifyLimit = true;
-        if ( ! empty($this->parts["limit"]) || ! empty($this->parts["offset"])) {
+        if ( ! empty($this->parts['limit']) || ! empty($this->parts['offset'])) {
 
             if ($needsSubQuery) {
                 $subquery = $this->getLimitSubquery();
@@ -922,8 +938,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 break;
                 case 'update':
                     $this->type = self::UPDATE;
-                    $k = 'FROM';
-
+                    $k = 'from';
                 case 'from':
                     $this->parseQueryPart($k, $part);
                 break;
@@ -1072,7 +1087,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 }
             }
             if ($loadFields) {
-                             	
+                                 
                 $restoreState = false;
                 // load fields if necessary
                 if ($loadFields && empty($this->pendingFields) 
@@ -1110,7 +1125,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function loadRoot($name, $componentAlias)
     {
-    	// get the connection for the component
+        // get the connection for the component
         $this->_conn = Doctrine_Manager::getInstance()
                       ->getConnectionForComponent($name);
 
@@ -1132,11 +1147,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         
         return $table;
     }
-	/**
- 	 * count
- 	 * fetches the count of the query
- 	 *
- 	 * This method executes the main query without all the
+    /**
+      * count
+      * fetches the count of the query
+      *
+      * This method executes the main query without all the
      * selected fields, ORDER BY part, LIMIT part and OFFSET part.
      *
      * Example:
@@ -1151,19 +1166,22 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      *          WHERE p.phonenumber = '123 123'
      *
      * @param array $params        an array of prepared statement parameters
-	 * @return integer             the count of this query
+     * @return integer             the count of this query
      */
-	public function count($params = array())
+    public function count($params = array())
     {
-    	// initialize temporary variables
-		$where  = $this->parts['where'];
-		$having = $this->parts['having'];
-		$map    = reset($this->_aliasMap);
-		$componentAlias = key($this->_aliasMap);
-		$table = $map['table'];
+        $this->getQuery();
+
+        // initialize temporary variables
+        $where  = $this->parts['where'];
+        $having = $this->parts['having'];
+        $map    = reset($this->_aliasMap);
+        $componentAlias = key($this->_aliasMap);
+        $table = $map['table'];
+
 
         // build the query base
-		$q  = 'SELECT COUNT(DISTINCT ' . $this->getTableAlias($componentAlias)
+        $q  = 'SELECT COUNT(DISTINCT ' . $this->getTableAlias($componentAlias)
             . '.' . $table->getIdentifier()
             . ') FROM ' . $this->buildFromPart();
 
@@ -1175,7 +1193,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         // append conditions
         $q .= ( ! empty($where)) ?  ' WHERE '  . implode(' AND ', $where) : '';
-		$q .= ( ! empty($having)) ? ' HAVING ' . implode(' AND ', $having): '';
+        $q .= ( ! empty($having)) ? ' HAVING ' . implode(' AND ', $having): '';
 
         if ( ! is_array($params)) {
             $params = array($params);
@@ -1183,8 +1201,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         // append parameters
         $params = array_merge($this->_params, $params);
 
-		return (int) $this->getConnection()->fetchOne($q, $params);
-	}
+        return (int) $this->getConnection()->fetchOne($q, $params);
+    }
 
     /**
      * query
