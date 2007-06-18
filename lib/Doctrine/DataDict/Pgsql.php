@@ -368,7 +368,8 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
             case 'string':
             case 'array':
             case 'object':
-            case 'varchar':
+            case 'varchar':   
+            case 'gzip':
                 $length = (isset($field['length']) && $field['length']) ? $field['length'] : null;
                         // TODO:  $this->conn->options['default_text_field_length'];
 

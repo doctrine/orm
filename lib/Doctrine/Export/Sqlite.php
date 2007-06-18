@@ -155,7 +155,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      *
      * @return void
      */
-    public function createTable($name, array $fields, array $options = array()) 
+    public function createTableSql($name, array $fields, array $options = array())
     {
         if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');
@@ -168,7 +168,8 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         
         $autoinc = false;
         foreach($fields as $field) {
-            if(isset($field['autoincrement']) && $field['autoincrement']) {
+            if(isset($field['autoincrement']) && $field['autoincrement'] || 
+              (isset($field['autoinc']) && $field['autoinc'])) {
                 $autoinc = true;
                 break;
             }
@@ -176,19 +177,6 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
 
         if ( ! $autoinc && isset($options['primary']) && ! empty($options['primary'])) {
             $queryFields.= ', PRIMARY KEY('.implode(', ', array_values($options['primary'])).')';
-        }
-        
-        // sqlite doesn't support foreign key declaration but it parses those anyway
-        
-        $fk = array();
-        if (isset($options['foreignKeys']) && ! empty($options['foreignKeys'])) {
-            foreach ($options['foreignKeys'] as $definition) {
-                //$queryFields .= ', ' . $this->getForeignKeyDeclaration($definition);
-
-                if (isset($definition['onDelete'])) {
-                    $fk[] = $definition;
-                }
-            }
         }
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
@@ -199,15 +187,19 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
 
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
-
+        
+        return $query;
+        
+        
+        /**
         try {
-            /**
+
             if ( ! empty($fk)) {
                 $this->conn->beginTransaction();
             }
-            */
+
             $ret   = $this->conn->exec($query);
-            /**
+
             if ( ! empty($fk)) {
                 foreach ($fk as $definition) {
 
@@ -228,13 +220,15 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
 
                 $this->conn->commit();
             }
-            */
+
+
         } catch(Doctrine_Exception $e) {
 
             $this->conn->rollback();
 
             throw $e;
         }
+        */
     }
     /**
      * getAdvancedForeignKeyOptions
@@ -316,6 +310,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
     public function dropSequenceSql($sequenceName)
     {
         $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($sequenceName), true);
+
         return 'DROP TABLE ' . $sequenceName;
     }
 }

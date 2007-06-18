@@ -875,21 +875,21 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function export($directory = null)
     {
-    	if ($directory !== null) {
-            $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory), 
-                                                    RecursiveIteratorIterator::LEAVES_ONLY);
-                                                    
-            foreach ($it as $file) {
-                $e = explode('.', $file->getFileName());
-                if (end($e) === 'php' && count($e) === 2) {
-                    require_once $e->getPathName();
-                }
+        $sql = $this->exportSql($directory);
+
+        foreach ($sql as $query) {
+            try { 
+                $this->conn->exec($query);
+            } catch (Doctrine_Connection_Exception $e) {
+                // we only want to silence table already exists errors
+                if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
+                    throw $e;
+                }                                           
             }
-        } 
-        return $this->exportClasses(get_declared_classes());
+        }
     }
     /**
-     * export
+     * exportClasses
      * method for exporting Doctrine_Record classes to a schema
      *
      * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
@@ -899,51 +899,31 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportClasses(array $classes)
     {
-    	$parent = new ReflectionClass('Doctrine_Record');
+        $sql = $this->exportClassesSql($classes);
 
-        foreach ($classes as $name) {
-            $class = new ReflectionClass($name);
-            $conn  = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
-
-            if ($class->isSubclassOf($parent) && ! $class->isAbstract()) {
-                $record = new $name();
-                $table  = $record->getTable();
-
-                $conn->export->exportTable($table);
+        foreach ($sql as $query) {
+            try { 
+                $this->conn->exec($query);
+            } catch (Doctrine_Connection_Exception $e) {
+                // we only want to silence table already exists errors
+                if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
+                    print $query."<br>";
+                    throw $e;
+                }                                           
             }
         }
     }
     /**
-     * export
-     * returns the sql for exporting Doctrine_Record classes to a schema
-     *
-     * if the directory parameter is given this method first iterates 
-     * recursively trhough the given directory in order to find any model classes
-     *
-     * Then it iterates through all declared classes and creates tables for the ones
-     * that extend Doctrine_Record and are not abstract classes
+     * exportClassesSql
+     * method for exporting Doctrine_Record classes to a schema
      *
      * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
      *                                          occurred during the create table operation
-     * @param string $directory     optional directory parameter
+     * @param array $classes
      * @return void
      */
-    public function exportSql($directory = null)
+    public function exportClassesSql(array $classes)
     {
-    	$declared = get_declared_classes();
-
-    	if ($directory !== null) {
-            $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory), 
-                                                    RecursiveIteratorIterator::LEAVES_ONLY);
-                                                    
-            foreach ($it as $file) {
-                $e = explode('.', $file->getFileName());
-                if (end($e) === 'php' && count($e) === 2) {
-                    require_once $file->getPathName();
-                }
-            }
-        }
-
         $parent = new ReflectionClass('Doctrine_Record');
 
         $sql = array();
@@ -951,7 +931,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         // we iterate trhough the diff of previously declared classes 
         // and currently declared classes
-        foreach (array_diff(get_declared_classes(), $declared) as $name) {
+        foreach ($classes as $name) {
             $class = new ReflectionClass($name);
             $conn  = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
 
@@ -978,12 +958,47 @@ class Doctrine_Export extends Doctrine_Connection_Module
         foreach ($fks as $tableName => $fk) {
             foreach ($fk as $k => $definition) {
                 if (is_array($definition)) {
-
                     $sql[] = $this->createForeignKeySql($definition['table'], $definition);
                 }
             }
         }
         return $sql;
+    }
+    /**
+     * exportSql
+     * returns the sql for exporting Doctrine_Record classes to a schema
+     *
+     * if the directory parameter is given this method first iterates 
+     * recursively trhough the given directory in order to find any model classes
+     *
+     * Then it iterates through all declared classes and creates tables for the ones
+     * that extend Doctrine_Record and are not abstract classes
+     *
+     * @throws Doctrine_Connection_Exception    if some error other than Doctrine::ERR_ALREADY_EXISTS
+     *                                          occurred during the create table operation
+     * @param string $directory     optional directory parameter
+     * @return void
+     */
+    public function exportSql($directory = null)
+    {
+    	$declared = get_declared_classes();
+
+       	if ($directory !== null) {
+       	    foreach ((array) $directory as $dir) {
+                $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
+                                                        RecursiveIteratorIterator::LEAVES_ONLY);
+                                                        
+                foreach ($it as $file) {
+                    $e = explode('.', $file->getFileName());
+                    if (end($e) === 'php' && count($e) === 2) {
+                        require_once $file->getPathName();
+                    }
+                }
+            }
+            $declared = array_diff(get_declared_classes(), $declared);
+        }
+
+        return $this->exportClassesSql($declared);
     }
     /**
      * exportTable
