@@ -4,12 +4,13 @@
 + Mapping relations
 + Working with objects
 + Configuration
-+ Advanced components
 + DQL (Doctrine Query Language)
 + Native SQL
 + Transactions
 + Caching
++ Plugins
 + Database abstraction
 + Technology
++ Exceptions and warnings
 + Real world examples
 + Coding standards
