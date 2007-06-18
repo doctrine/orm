@@ -147,7 +147,28 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         }
         $this->_conn = $connection;
     }
-
+    /**
+     * getRoot
+     * returns the root component for this object
+     *
+     * @return Doctrine_Table       root components table
+     */
+    public function getRoot()
+    {
+        $map = reset($this->_aliasMap);
+        
+        if ( ! isset($map['table'])) {
+            throw new Doctrine_Hydrate_Exception('Root component not initialized.');
+        }
+        
+        return $map['table'];
+    }
+    /**
+     * getSql
+     * return the sql associated with this object
+     *
+     * @return string   sql query string
+     */
     public function getSql()
     {
         return $this->getQuery();
