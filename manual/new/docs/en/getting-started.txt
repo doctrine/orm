@@ -84,7 +84,9 @@ require_once('path-to-doctrine/lib/Doctrine.php');
 
 spl_register_autoload(array('Doctrine', 'autoload'));
 
-Doctrine::export('models');
+$queries = Doctrine::exportSql('models');
+
+print_r($queries);
 </code>
 
 +++ Export options
