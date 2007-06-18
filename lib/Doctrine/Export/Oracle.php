@@ -93,31 +93,30 @@ class Doctrine_Export_Oracle extends Doctrine_Export
      */
     public function _makeAutoincrement($name, $table, $start = 1)
     {
+    	$sql   = array();
         $table = strtoupper($table);
-        $index_name  = $table . '_AI_PK';
+        $indexName  = $table . '_AI_PK';
         $definition = array(
             'primary' => true,
             'fields' => array($name => true),
         );
-        $result = $this->createConstraint($table, $index_name, $definition);
+
+        $sql[] = $this->createConstraintSql($table, $indexName, $definition);
 
         if (is_null($start)) {
-            $this->conn->beginTransaction();
             $query = 'SELECT MAX(' . $this->conn->quoteIdentifier($name, true) . ') FROM ' . $this->conn->quoteIdentifier($table, true);
             $start = $this->conn->fetchOne($query);
 
             ++$start;
-            $result = $this->createSequence($table, $start);
-            $this->conn->commit();
-        } else {
-            $result = $this->createSequence($table, $start);
         }
 
-        $sequence_name = $this->conn->formatter->getSequenceName($table);
-        $trigger_name  = $this->conn->quoteIdentifier($table . '_AI_PK', true);
+        $sql[] = $this->createSequenceSql($table, $start);
+
+        $sequenceName = $this->conn->formatter->getSequenceName($table);
+        $triggerName  = $this->conn->quoteIdentifier($table . '_AI_PK', true);
         $table = $this->conn->quoteIdentifier($table, true);
         $name  = $this->conn->quoteIdentifier($name, true);
-        $trigger_sql = 'CREATE TRIGGER '.$trigger_name.'
+        $sql[] = 'CREATE TRIGGER ' . $triggerName . '
    BEFORE INSERT
    ON '.$table.'
    FOR EACH ROW
@@ -125,21 +124,21 @@ DECLARE
    last_Sequence NUMBER;
    last_InsertID NUMBER;
 BEGIN
-   SELECT '.$sequence_name.'.NEXTVAL INTO :NEW.'.$name.' FROM DUAL;
+   SELECT '.$sequenceName.'.NEXTVAL INTO :NEW.'.$name.' FROM DUAL;
    IF (:NEW.'.$name.' IS NULL OR :NEW.'.$name.' = 0) THEN
-      SELECT '.$sequence_name.'.NEXTVAL INTO :NEW.'.$name.' FROM DUAL;
+      SELECT '.$sequenceName.'.NEXTVAL INTO :NEW.'.$name.' FROM DUAL;
    ELSE
       SELECT NVL(Last_Number, 0) INTO last_Sequence
         FROM User_Sequences
-       WHERE UPPER(Sequence_Name) = UPPER(\''.$sequence_name.'\');
+       WHERE UPPER(Sequence_Name) = UPPER(\''.$sequenceName.'\');
       SELECT :NEW.id INTO last_InsertID FROM DUAL;
       WHILE (last_InsertID > last_Sequence) LOOP
-         SELECT '.$sequence_name.'.NEXTVAL INTO last_Sequence FROM DUAL;
+         SELECT ' . $sequenceName . '.NEXTVAL INTO last_Sequence FROM DUAL;
       END LOOP;
    END IF;
 END;
 ';
-        return $this->conn->exec($trigger_sql);
+        return $sql;
     }
     /**
      * drop an existing autoincrement sequence + trigger
@@ -246,17 +245,56 @@ END;
     {
         $this->conn->beginTransaction();
 
-        $result = parent::createTable($name, $fields, $options);
-
-        foreach ($fields as $field_name => $field) {
-            if (isset($field['autoincrement']) && $field['autoincrement']) {
-                $result = $this->_makeAutoincrement($field_name, $name);
-            }
+        foreach ($this->createTableSql($name, $fields, $options) as $sql) {
+            $this->conn->exec($sql);
         }
 
         $this->conn->commit();
+    }
 
-        return $result;
+    /**
+     * create a new table
+     *
+     * @param string $name     Name of the database that should be created
+     * @param array $fields Associative array that contains the definition of each field of the new table
+     *                        The indexes of the array entries are the names of the fields of the table an
+     *                        the array entry values are associative arrays like those that are meant to be
+     *                         passed with the field definitions to get[Type]Declaration() functions.
+     *
+     *                        Example
+     *                        array(
+     *
+     *                            'id' => array(
+     *                                'type' => 'integer',
+     *                                'unsigned' => 1
+     *                                'notnull' => 1
+     *                                'default' => 0
+     *                            ),
+     *                            'name' => array(
+     *                                'type' => 'text',
+     *                                'length' => 12
+     *                            ),
+     *                            'password' => array(
+     *                                'type' => 'text',
+     *                                'length' => 12
+     *                            )
+     *                        );
+     * @param array $options  An associative array of table options:
+     *
+     * @return void
+     */
+    public function createTableSql($name, array $fields, array $options = array())
+    {
+        $sql = parent::createTableSql($name, $fields, $options);
+
+        foreach ($fields as $fieldName => $field) {
+            if (isset($field['autoincrement']) && $field['autoincrement'] ||
+               (isset($field['autoinc']) && $fields['autoinc'])) {           
+                $sql = array_merge($sql, $this->_makeAutoincrement($fieldName, $name));
+            }
+        }
+
+        return $sql;
     }
     /**
      * drop an existing table

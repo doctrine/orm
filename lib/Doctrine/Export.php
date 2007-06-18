@@ -207,7 +207,20 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $name  = $this->conn->quoteIdentifier($name, true);
         $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
 
-        return $query;
+        $sql[] = $query;
+
+        if (isset($options['foreignKeys'])) {
+
+            foreach ((array) $options['foreignKeys'] as $k => $definition) {
+                if (is_array($definition)) {
+                    if ( ! isset($definition['table'])) {
+                        $definition['table'] = $name;
+                    }
+                    $sql[] = $this->createForeignKeySql($definition['table'], $definition);
+                }
+            }
+        }   
+        return $sql;
     }
     /**
      * create a new table
@@ -221,7 +234,11 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function createTable($name, array $fields, array $options = array())
     {
-        return $this->conn->execute($this->createTableSql($name, $fields, $options));
+    	$sql = (array) $this->createTableSql($name, $fields, $options);
+
+        foreach ($sql as $query) {
+            $this->conn->execute($query);
+        }
     }
     /**
      * create sequence
@@ -283,6 +300,31 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function createConstraint($table, $name, $definition)
     {
+        return $this->conn->exec($this->createConstraintSql($table, $name, $definition));
+    }
+    /**
+     * create a constraint on a table
+     *
+     * @param string    $table         name of the table on which the constraint is to be created
+     * @param string    $name          name of the constraint to be created
+     * @param array     $definition    associative array that defines properties of the constraint to be created.
+     *                                 Currently, only one property named FIELDS is supported. This property
+     *                                 is also an associative with the names of the constraint fields as array
+     *                                 constraints. Each entry of this array is set to another type of associative
+     *                                 array that specifies properties of the constraint that are specific to
+     *                                 each field.
+     *
+     *                                 Example
+     *                                    array(
+     *                                        'fields' => array(
+     *                                            'user_name' => array(),
+     *                                            'last_login' => array()
+     *                                        )
+     *                                    )
+     * @return void
+     */
+    public function createConstraintSql($table, $name, $definition)
+    {
         $table = $this->conn->quoteIdentifier($table);
         $name  = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
         $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $name;
@@ -299,7 +341,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         $query .= ' ('. implode(', ', $fields) . ')';
 
-        return $this->conn->exec($query);
+        return $query;
     }
     /**
      * Get the stucture of a field into an array
@@ -877,16 +919,20 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $sql = $this->exportSql($directory);
 
+        $this->conn->beginTransaction();
+
         foreach ($sql as $query) {
             try { 
                 $this->conn->exec($query);
             } catch (Doctrine_Connection_Exception $e) {
                 // we only want to silence table already exists errors
                 if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
+                    $this->conn->rollback();
                     throw $e;
                 }                                           
             }
         }
+        $this->conn->commit();
     }
     /**
      * exportClasses
@@ -901,17 +947,20 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $sql = $this->exportClassesSql($classes);
 
+        $this->conn->beginTransaction();
+
         foreach ($sql as $query) {
-            try { 
+            try {
                 $this->conn->exec($query);
             } catch (Doctrine_Connection_Exception $e) {
                 // we only want to silence table already exists errors
                 if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
-                    print $query."<br>";
+                    $this->conn->rollback();
                     throw $e;
-                }                                           
+                }
             }
         }
+        $this->conn->commit();
     }
     /**
      * exportClassesSql
