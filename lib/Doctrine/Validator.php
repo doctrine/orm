@@ -139,6 +139,7 @@ class Doctrine_Validator
                     || $name == 'default'
                     || $name == 'values'
                     || $name == 'sequence'
+                    || $name == 'zerofill'
                 ) {
                     continue;
                 }
