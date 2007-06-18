@@ -34,8 +34,8 @@
 class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase 
 {
     public function prepareData() { }
-    public function prepareTables() { 
-        $this->tables = array('Entity', 'EnumTest');
+    public function prepareTables() {
+        $this->tables = array('Entity', 'EnumTest', 'GroupUser');
         parent::prepareTables();
     }
 
@@ -237,6 +237,8 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
         
         $q->select('e.*')->from('EnumTest e')->where('e.status = ?');
 
+        $q->getQuery();
+
         $this->assertEqual(count($q->getEnumParams()), 1);
 
         $q->execute(array('verified'));
@@ -246,6 +248,9 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
 
         $q->select('e.*')->from('EnumTest e')->where('e.id = ? AND e.status = ?');
+        
+        $q->getQuery();
+
         $p = $q->getEnumParams();
         $this->assertEqual(array_keys($p), array(0, 1));
         $this->assertTrue(empty($p[0]));
@@ -256,6 +261,9 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
 
         $q->select('e.*')->from('EnumTest e')->where('e.id = :id AND e.status = :status');
+        
+        $q->getQuery();
+        
         $p = $q->getEnumParams();
         $this->assertEqual(array_keys($p), array(':id', ':status'));
         $this->assertTrue(empty($p[':id']));

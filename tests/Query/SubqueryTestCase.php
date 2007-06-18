@@ -91,7 +91,8 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
 		$query->select('u.*, COUNT(DISTINCT a.id) num_albums');
 		$query->from('User u, u.Album a');
 		$query->orderby('num_albums');
-		
+
+
 		try{
 			// this causes getLimitSubquery() to be used, and it fails
 			$query->limit(5);

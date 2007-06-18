@@ -33,6 +33,7 @@
  */
 class Doctrine_Query_Update_TestCase extends Doctrine_UnitTestCase 
 {
+
     public function testUpdateAllWithColumnAggregationInheritance() 
     {
         $q = new Doctrine_Query();
@@ -47,6 +48,7 @@ class Doctrine_Query_Update_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($q->getQuery(), "UPDATE entity SET name = 'someone' WHERE (type = 0)");
     }
+
     public function testUpdateWorksWithMultipleColumns() 
     {
         $q = new Doctrine_Query();
@@ -61,6 +63,7 @@ class Doctrine_Query_Update_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($q->getQuery(), "UPDATE entity SET name = 'someone', email_id = 5 WHERE (type = 0)");
     }
+    
     public function testUpdateSupportsConditions() 
     {
         $q = new Doctrine_Query();
