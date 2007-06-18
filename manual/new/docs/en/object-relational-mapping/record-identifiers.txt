@@ -3,31 +3,58 @@
 Doctrine supports many kind of identifiers. For most cases it is recommended not to specify any primary keys (Doctrine will then use field name {{id}} as an autoincremented primary key). When using table creation Doctrine is smart enough to emulate the autoincrementation with sequences and triggers on databases that doesn't support it natively.
 
 
++++ Natural
+
+Natural identifier is a property or combination of properties that is unique and non-null. The use of natural identifiers is encouraged.
+
+<code type="php">
+class User extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 200, array('primary' => true));
+    }
+}
+</code>
+
 +++ Autoincremented
 Autoincrement primary key is the most basic identifier and its usage is strongly encouraged. Sometimes you may want to use some other name than {{id}} for your autoinc primary key. It can be specified as follows:
 
 <code type="php">
 class User extends Doctrine_Record {
     public function setTableDefinition() {
-        $this->hasColumn('uid','integer',20,'primary|autoincrement');
+        $this->hasColumn('uid', 'integer', 20, array('primary' => true, 'autoincrement' => true));
 
     }
 }
 </code>
 
+You should consider using autoincremented or sequential primary keys only when the record cannot be identified naturally (in other words it doesn't have a natural identifier).
 
-+++ Natural
+The following example shows why natural identifiers are more efficient.
 
-Natural identifier is a property or combination of properties that is unique and non-null. The use of natural identifiers is discouraged. You should consider using autoincremented or sequential primary keys as they make your system more scalable.
+Consider three classes Permission, Role and RolePermission. Roles having many permissions and vice versa (so their relation is many-to-many). Now lets also assume that each role and permission are naturally identified by their names.
 
-<code type="php">
-class User extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('name','string',200,'primary');
-    }
-}
+Now adding autoincremented primary keys to these classes would be simply stupid. It would require more data and it would make the queries more inefficient. For example fetching all permissions for role 'Admin' would be done as follows (when using autoinc pks):
+
+<code>
+SELECT p.* 
+    FROM Permission p
+        LEFT JOIN RolePermission rp ON rp.permission_id = p.id
+        LEFT JOIN Role r ON rp.role_id = r.id
+    WHERE r.name = 'Admin'
 </code>
 
+Now remember sql JOINS are always expensive and here we are using two of those. When using natural identifiers the query would look like:
+
+<code>
+SELECT p.*
+    FROM Permission p
+        LEFT JOIN RolePermission rp ON rp.permission_name = p.name
+    WHERE rp.role_name = 'Admin'
+</code>
+
+Thats -1 JOIN ! 
 
 +++ Composite
 
@@ -36,10 +63,12 @@ Composite primary key can be used efficiently in association tables (tables that
 Due to this fact your doctrine-based system will scale better if it has autoincremented primary key even for association tables.
 
 <code type="php">
-class Groupuser extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('user_id', 'integer', 20, 'primary');
-        $this->hasColumn('group_id', 'integer', 20, 'primary');
+class Groupuser extends Doctrine_Record
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('user_id', 'integer', 20, array('primary' => true));
+        $this->hasColumn('group_id', 'integer', 20, array('primary' => true));
     }
 }
 </code>
@@ -54,10 +83,11 @@ Doctrine knows how to do sequence generation in the background so you don't have
 Consider the following record definition:
 
 <code type="php">
-class Book extends Doctrine_Record {
+class Book extends Doctrine_Record 
+{
     public function setTableDefinition()
     {
-        $this->hasColumn('id', 'integer', null, array('primary', 'sequence'));
+        $this->hasColumn('id', 'integer', null, array('primary' => true, 'sequence' => true));
         $this->hasColumn('name', 'string');
     }
 }
