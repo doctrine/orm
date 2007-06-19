@@ -1,8 +1,8 @@
 body, html {
 	margin: 0;
 	padding: 0;
-	font-family: "Arial", sans-serif;
-	font-size: 12pt;
+	font-family: "Trebuchet MS", sans-serif;
+	font-size: normal;
     background: white;
     color: black;
 }
@@ -40,15 +40,12 @@ h4 {
 
 p, ul, ol, dl {
 	line-height: 1.5em;
-	text-align: justify; 
+	text-align: justify;
+	font-size: normal;
 }
 
 ul {
 	list-style-type: square;
-}
-
-ul ul, ol ol {
-	font-size: 100%;
 }
 
 dd {
@@ -59,7 +56,6 @@ table {
 	border: 1px solid #aaaaaa;
 	border-collapse: collapse;
 	margin: 0.5em 0;
-	font-size: 11pt;
 	background-color: #f9f9f9;
 	line-height: 1.5em;
 }
@@ -73,33 +69,22 @@ th {
 	background-color: #f2f2f2;
 }
 
-blockquote {
-	background-image: url("../images/quotation-mark.png");
-	background-position: top left;
-	background-repeat: no-repeat;
-	padding-left: 2.5em;
-	margin-left: 1em;
-}
-
 
 /*** Code blocks and highlighting**********************************************/
 
 pre, tt {
 	font-family: "Bitstream Vera Sans Mono", monospace;
-}
-
-tt {
-	font-size: 11pt;
+	font-size: small;
 }
 
 pre {
-	font-size: 10pt;
 	font-weight: bold;
 	padding: 1em;
-	margin: 1em;
+	margin: 1em 0;
 	line-height: 1.2em;
 	background-color: #f6f6f6;
 	border: 1px solid #cccccc;
+	overflow: auto;
 }
 
 pre .default {
@@ -145,20 +130,27 @@ a:visited:active {
 }
 
 #wrap {
-	width: 100%;
 	margin: 0;
+	padding: 0;
 }
 
 #sidebar {
     float: right;
-    width: 20em;
+    width: 25%;
     margin: 0;
     padding: 1em;
 }
 
 #content {
-	margin-right: 20em;
+	margin-right: 25%;
 	padding: 1em;
+	padding-right: 2em;
+}
+
+/** Tree specific styles ******************************************************/
+
+ul.tree {
+	font-size: 0.9em;
 }
 
 ul.tree, ul.tree ul {
@@ -167,9 +159,6 @@ ul.tree, ul.tree ul {
     text-align: left;
     margin-left: 0;
 }
-
-
-/** Tree specific styles ******************************************************/
 
 .tree a {
     text-decoration: none;
@@ -181,7 +170,6 @@ ul.tree, ul.tree ul {
     color: black;
     display: block;
     float: left;
-    height: auto;
     margin: 0;
     margin-left: -1.25em;
     padding: 0;

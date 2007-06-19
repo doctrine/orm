@@ -5,5 +5,4 @@
 ++ Constraints and validators
 ++ Record identifiers
 ++ Indexes
-++ Relations
 ++ Hierarchical data

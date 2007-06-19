@@ -20,7 +20,7 @@ foreach ($supportedLangs as $language) {
 }
 
 $baseUrl = '';
-$title = 'Doctrine Documentation';
+$title = 'Doctrine Manual';
 $section = null;
 
 if (isset($_GET['chapter'])) {

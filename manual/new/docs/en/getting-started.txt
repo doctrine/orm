@@ -67,13 +67,16 @@ Doctrine::export('models');
 
 This would execute the following queries on mysql.
 
+<code>
 CREATE TABLE user (id BIGINT AUTO_INCREMENT, name VARCHAR(20), PRIMARY KEY(id), INDEX(id));
 CREATE TABLE phonenumber (id INT AUTO_INCREMENT, phonenumber VARCHAR(20), user_id BIGINT, PRIMARY KEY(id), INDEX(user_id));
 ALTER TABLE phonenumber ADD CONSTRAINT FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE;
+</code>
 
 Pay attention to the following things:
-1. The autoincrement primary key columns are auto-added since we didn't specify any primary key columns
-2. Doctrine auto-adds indexes to the referenced relation columns (this is needed in mysql)
+
+# The autoincrement primary key columns are auto-added since we didn't specify any primary key columns
+# Doctrine auto-adds indexes to the referenced relation columns (this is needed in mysql)
 
 +++ Getting export queries
 

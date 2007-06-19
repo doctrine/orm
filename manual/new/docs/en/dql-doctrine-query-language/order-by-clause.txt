@@ -30,6 +30,7 @@ FROM User u LEFT JOIN u.Email e
 +++ Sorting by an aggregate value
 
 In the following example we fetch all users and sort those users by the number of phonenumbers they have.
+
 <code type='php'>
 $q = new Doctrine_Query();
 
@@ -42,6 +43,7 @@ $users = $q->select('u.*, COUNT(p.id) count')
 +++ Using random order
 
 In the following example we use random in the ORDER BY clause in order to fetch random post.
+
 <code type='php'>
 $q = new Doctrine_Query();
 

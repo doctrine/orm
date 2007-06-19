@@ -36,9 +36,9 @@ try {
 } catch (Exception $e) {
 ?>
 
-<h1>Doctrine Documentation</h1>
+<h1>Doctrine Manual</h1>
 
-<p>You can view this documentation as
+<p>You can view this manual online as
 <ul>
 <li><a href="<?php echo $tool->getOption('clean-url') ? "${baseUrl}one-page" : '?one-page=1'; ?>">everything on a single page</a>, or</li>
 <li><a href="<?php echo $tool->makeUrl($tool->findByIndex('1.')->getPath()); ?>">one chapter per page</a>.</li>

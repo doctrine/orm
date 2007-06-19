@@ -34,14 +34,17 @@ $user[0]; // User object
 </code>
 
 Pay attention to following things:
-1. Fields must be in curly brackets
-2. For every selected table there must be one addComponent call
+
+# Fields must be in curly brackets
+# For every selected table there must be one addComponent call
+
 
 ++ Fetching from multiple components
 
 When fetching from multiple components the addComponent calls become a bit more complicated as not only do we have to tell which tables are bound to which components, we also have to tell the parser which components belongs to which.
 
 Consider the following model:
+
 <code type='php'>
 // file User.php
 class User extends Doctrine_Record
@@ -74,6 +77,7 @@ class Phonenumber extends Doctrine_Record
 </code>
 
 In the following example we fetch all users and their phonenumbers:
+
 <code type='php'>
 $q = new Doctrine_RawSql();
 

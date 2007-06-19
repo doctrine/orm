@@ -63,7 +63,7 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
             if (substr($options['text'], 0, 5) != '<?php') {
                 // PHP code example:
                 // add the PHP tags
-                $text = "<?php \n" 
+                $text = "<?php \n\n" 
                       . $options['text'] . "\n\n"
                       . "?>";
             }

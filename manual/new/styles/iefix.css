@@ -1,3 +1,7 @@
 .tree .expander {
     margin-left: -0.60em;
 }
+
+pre {
+	word-wrap: break-word;
+}
