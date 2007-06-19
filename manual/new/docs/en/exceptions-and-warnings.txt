@@ -1,0 +1,31 @@
+++ Manager exceptions
+
+Doctrine_Manager_Exception is thrown if something failed at the connection management
+
+<code type='php'>
+try {
+    $manager->getConnection('unknown');
+} catch (Doctrine_Manager_Exception) {
+    // catch errors
+}
+</code>
+
+++ Relation exceptions
+
+thrown if something failed during the relation parsing
+
+++ Connection exceptions
+
+thrown if something failed at the database level
+
+<code type='php'>
+try {
+    $conn->execute('SELECT * FROM unknowntable');
+} catch (Doctrine_Connection_Exception) {
+    // catch errors
+}
+</code>
+
+++ Query exceptions
+
+thrown if DQL parsing fails somehow
