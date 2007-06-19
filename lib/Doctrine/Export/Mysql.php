@@ -112,7 +112,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 }
                 
                 if ( ! $found) {
-                    $options['indexes'] = array_merge($options['indexes'], array($local => array('fields' => array($local => array()))));
+                    $options['indexes'][$local] = array('fields' => array($local => array()));
                 }
             }
         }
