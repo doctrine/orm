@@ -65,7 +65,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      */
     public function getConnection()
     {
-        return $this->_adapter;
+        return $this->_conn;
     }
     public function getStatement()
     {
@@ -215,14 +215,14 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         $event = new Doctrine_Event($this, Doctrine_Event::EXECUTE, $this->_stmt->queryString, $params);
         // print $this->_stmt->queryString . print_r($params, true) . "<br>"; 
-        $skip = $this->_adapter->getListener()->onPreExecute($event);
+        $skip = $this->_conn->getListener()->onPreExecute($event);
 
         if ( ! $skip) {
             $this->_stmt->execute($params);
-            $this->_adapter->incrementQueryCount();
+            $this->_conn->incrementQueryCount();
         }
 
-        $this->_adapter->getListener()->onExecute($event);
+        $this->_conn->getListener()->onExecute($event);
 
         return $this;
     }
@@ -260,13 +260,13 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::FETCHALL, $this->_stmt->queryString, 
                                        array($fetchStyle, $cursorOrientation, $cursorOffset));
 
-        $data = $this->_adapter->getListener()->onPreFetch($event);
+        $data = $this->_conn->getListener()->onPreFetch($event);
 
         if ($data === null) {
             $data = $this->_stmt->fetch($fetchStyle, $cursorOrientation, $cursorOffset);
         }
         
-        $this->_adapter->getListener()->onFetch($event);
+        $this->_conn->getListener()->onFetch($event);
     
         return $data;
     }
@@ -286,7 +286,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::FETCHALL, $this->_stmt->queryString, array($fetchStyle, $columnIndex));
 
-        $data = $this->_adapter->getListener()->onPreFetchAll($event);
+        $data = $this->_conn->getListener()->onPreFetchAll($event);
 
         if ($data === null) {
             if ($columnIndex !== null) {
@@ -296,7 +296,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
             }
         }
 
-        $this->_adapter->getListener()->onFetchAll($event);
+        $this->_conn->getListener()->onFetchAll($event);
 
         return $data;
     }

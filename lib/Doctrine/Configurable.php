@@ -209,7 +209,7 @@ abstract class Doctrine_Configurable
         if ( ! ($listener instanceof Doctrine_EventListener_Interface)
             && ! ($listener instanceof Doctrine_Overloadable)
         ) {
-            throw new Doctrine_Exception("Couldn't set eventlistener. EventListeners should implement either Doctrine_EventListener_Interface or Doctrine_Overloadable");
+            throw new Doctrine_EventListener_Exception("Couldn't set eventlistener. EventListeners should implement either Doctrine_EventListener_Interface or Doctrine_Overloadable");
         }
         $this->attributes[Doctrine::ATTR_LISTENER] = $listener;
 

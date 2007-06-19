@@ -117,13 +117,13 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $coll = $query->execute();
         $this->assertEqual($coll->count(), 11);
 
-        $count = $this->dbh->count();
+        $count = $this->conn->count();
         
         $coll[4]->Phonenumber[0]->phonenumber;
-        $this->assertEqual($count, $this->dbh->count());
+        $this->assertEqual($count, $this->conn->count());
 
         $coll[5]->Phonenumber[0]->phonenumber;
-        $this->assertEqual($count, $this->dbh->count());
+        $this->assertEqual($count, $this->conn->count());
     }
     public function testAliasesAreSupportedInAddComponent()
     {
@@ -138,13 +138,13 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $coll = $query->execute();
         $this->assertEqual($coll->count(), 11);
 
-        $count = $this->dbh->count();
+        $count = $this->conn->count();
         
         $coll[4]->Phonenumber[0]->phonenumber;
-        $this->assertEqual($count, $this->dbh->count());
+        $this->assertEqual($count, $this->conn->count());
 
         $coll[5]->Phonenumber[0]->phonenumber;
-        $this->assertEqual($count, $this->dbh->count());
+        $this->assertEqual($count, $this->conn->count());
     }
     public function testPrimaryKeySelectForcing()
     {
@@ -161,7 +161,7 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(is_numeric($coll[3]->id));
         $this->assertTrue(is_numeric($coll[7]->id));
     }
-    public function testConvenienceMethods() 
+    public function testConvenienceMethods()
     {
         $query = new Doctrine_RawSql($this->connection);
         $query->select('{entity.name}')->from('entity');

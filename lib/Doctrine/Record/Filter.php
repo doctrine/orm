@@ -151,7 +151,7 @@ class Doctrine_Record_Filter extends Doctrine_Object
                         $data[$name] = $this->_record->getTable()->enumValue($name, $tmp[$name]);
                         break;
                     case 'boolean':
-                        $data[$name] = (boolean)$tmp[$name];
+                        $data[$name] = (boolean) $tmp[$name];
                         break;
                     default:
                         $data[$name] = $tmp[$name];

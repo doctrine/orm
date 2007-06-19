@@ -157,6 +157,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                                         'Sqlite',
                                         'Firebird'
                                         );
+    protected $_count;
 
     /**
      * the constructor
@@ -166,40 +167,26 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function __construct(Doctrine_Manager $manager, $adapter, $user = null, $pass = null)
     {
-        if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
-            if ( ! is_string($adapter)) {
-                throw new Doctrine_Connection_Exception('Data source name should be a string, ' . get_class($adapter) . ' given.');
+    	if (is_object($adapter)) {
+            if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
+                throw new Doctrine_Connection_Exception('First argument should be an instance of PDO or implement Doctrine_Adapter_Interface');
             }
-
-            $dsn = $adapter;
-
-            // check if dsn is PEAR-like or not
-            if ( ! isset($user) || strpos($dsn, '://')) {
-                $a = self::parseDSN($dsn);
-
-                extract($a);
-            } else {
-                $e = explode(':', $dsn);
-
-                if($e[0] == 'uri') {
-                    $e[0] = 'odbc';
-                }
-    
-                $this->pendingAttributes[Doctrine::ATTR_DRIVER_NAME] = $e[0];
-            }
-            $this->options['dsn']      = $dsn;
-            $this->options['username'] = $user;
-            $this->options['password'] = $pass;
-        } else {
             $this->dbh = $adapter;
-            
+
             $this->isConnected = true;
+
+        } elseif(is_array($adapter)) {
+            $this->pendingAttributes[Doctrine::ATTR_DRIVER_NAME] = $adapter['scheme'];
+
+            $this->options['dsn']      = $adapter['dsn'];
+            $this->options['username'] = $adapter['user'];
+            $this->options['password'] = $adapter['pass'];
         }
 
         $this->setParent($manager);
 
-        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
-        $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->setAttribute(Doctrine::ATTR_CASE, Doctrine::CASE_NATURAL);
+        $this->setAttribute(Doctrine::ATTR_ERRMODE, Doctrine::ERRMODE_EXCEPTION);
 
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
     }
@@ -264,84 +251,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this;
     }
     /**
-     * parseDSN
-     *
-     * @param string $dsn
-     * @return array Parsed contents of DSN
-     */
-    public function parseDSN($dsn)
-    {
-        // silence any warnings
-        $parts = @parse_url($dsn);
-
-        $names = array('scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
-
-        foreach ($names as $name) {
-            if ( ! isset($parts[$name])) {
-                $parts[$name] = null;
-            }
-        }
-
-        if (count($parts) == 0 || ! isset($parts['scheme'])) {
-            throw new Doctrine_Connection_Exception('Empty data source name');
-        }
-        $drivers = self::getAvailableDrivers();
-
-        $parts['scheme'] = self::driverName($parts['scheme']);
-        /**
-        if ( ! in_array($parts['scheme'], $drivers)) {
-            throw new Doctrine_Db_Exception('Driver '.$parts['scheme'].' not availible or extension not loaded');
-        }
-        */
-        switch ($parts['scheme']) {
-            case 'sqlite':
-                if (isset($parts['host']) && $parts['host'] == ':memory') {
-                    $parts['database'] = ':memory:';
-                    $parts['dsn']      = 'sqlite::memory:';
-                }
-
-                break;
-            case 'mysql':
-            case 'informix':
-            case 'oci8':
-            case 'mssql':
-            case 'firebird':
-            case 'dblib':
-            case 'pgsql':
-            case 'odbc':
-            case 'mock':
-            case 'oracle':
-                if ( ! isset($parts['path']) || $parts['path'] == '/') {
-                    throw new Doctrine_Connection_Exception('No database availible in data source name');
-                }
-                if (isset($parts['path'])) {
-                    $parts['database'] = substr($parts['path'], 1);
-                }
-                if ( ! isset($parts['host'])) {
-                    throw new Doctrine_Connection_Exception('No hostname set in data source name');
-                }
-                
-                if (isset(self::$driverMap[$parts['scheme']])) {
-                    $parts['scheme'] = self::$driverMap[$parts['scheme']];
-                }
-
-                $parts['dsn'] = $parts['scheme'] . ':host='
-                              . $parts['host'] . ';dbname='
-                              . $parts['database'];
-                
-                if (isset($parts['port'])) {
-                    // append port to dsn if supplied
-                    $parts['dsn'] .= ';port=' . $parts['port'];
-                }
-                break;
-            default:
-                throw new Doctrine_Connection_Exception('Unknown driver '.$parts['scheme']);
-        }
-        $this->pendingAttributes[PDO::ATTR_DRIVER_NAME] = $parts['scheme'];
-
-        return $parts;
-    }
-    /**
      * getName
      * returns the name of this driver
      *
@@ -368,7 +277,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         if (isset($this->properties[$name])) {
             return $this->properties[$name];
-        }    
+        }
 
         if ( ! isset($this->modules[$name])) {
             throw new Doctrine_Connection_Exception('Unknown module / property ' . $name);
@@ -420,7 +329,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             return false;
         }
 
-        $this->getListener()->onPreConnect($this);
+        $event = new Doctrine_Event($this, Doctrine_Event::CONNECT);
+
+        $this->getListener()->onPreConnect($event);
 
         $e     = explode(':', $this->options['dsn']);
         $found = false;
@@ -454,8 +365,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->isConnected = true;
 
-        $this->getListener()->onConnect($this);
+        $this->getListener()->onConnect($event);
         return true;
+    }
+    
+    public function incrementQueryCount() 
+    {
+        $this->_count++;
     }
     /**
      * converts given driver name
@@ -752,6 +668,25 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $parser->query($query, $params);
     }
     /**
+     * prepare
+     *
+     * @param string $statement
+     */
+    public function prepare($statement)
+    {
+        $this->connect();
+
+        $event = new Doctrine_Event($this, Doctrine_Db_Event::PREPARE, $statement);
+
+        $this->getAttribute(Doctrine::ATTR_LISTENER)->onPrePrepare($event);
+
+        $stmt = $this->dbh->prepare($statement);
+
+        $this->getAttribute(Doctrine::ATTR_LISTENER)->onPrepare($event);
+
+        return new Doctrine_Connection_Statement($this, $stmt);
+    }
+    /**
      * query
      * queries the database using Doctrine Query Language and returns
      * the first record found
@@ -825,7 +760,17 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $stmt->execute($params);
                 return $stmt;
             } else {
-                return $this->dbh->query($query);
+                $event = new Doctrine_Event($this, Doctrine_EVENT::QUERY, $query, $params);
+
+                $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreQuery($event);
+
+                $stmt = $this->dbh->query($query);
+                
+                $this->getAttribute(Doctrine::ATTR_LISTENER)->onQuery($event);
+                
+                $this->_count++;
+
+                return $stmt;
             }
         } catch(Doctrine_Adapter_Exception $e) {
         } catch(PDOException $e) { }
@@ -844,11 +789,22 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         try {
             if ( ! empty($params)) {
-                $stmt = $this->dbh->prepare($query);
+                $stmt = $this->prepare($query);
                 $stmt->execute($params);
+
                 return $stmt->rowCount();
             } else {
-                return $this->dbh->exec($query);
+                $event = new Doctrine_Event($this, Doctrine_EVENT::EXEC, $query, $params);
+
+                $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreExec($event);
+
+                $count = $this->dbh->exec($query);
+
+                $this->getAttribute(Doctrine::ATTR_LISTENER)->onExec($event);
+                
+                $this->_count++;
+
+                return $count;
             }
         } catch(Doctrine_Adapter_Exception $e) {
         } catch(PDOException $e) { }
@@ -939,7 +895,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function count()
     {
-        return count($this->tables);
+        return $this->_count;
     }
     /**
      * addTable

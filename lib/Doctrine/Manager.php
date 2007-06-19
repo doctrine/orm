@@ -40,15 +40,15 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     /**
      * @var array $bound            an array containing all components that have a bound connection
      */
-    protected $_bound          = array();
+    protected $_bound         = array();
     /**
      * @var integer $index          the incremented index
      */
-    protected $_index      = 0;
+    protected $_index         = 0;
     /**
      * @var integer $currIndex      the current connection index
      */
-    protected $_currIndex  = 0;
+    protected $_currIndex     = 0;
     /**
      * @var string $root            root directory
      */
@@ -58,16 +58,10 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     protected $_null;
     /**
-     * @var array $driverMap
+     * @var array $_integrityActions    an array containing all registered integrity actions
+     *                                  used when emulating these actions
      */
-    protected $_driverMap        = array('oracle'     => 'oci8',
-                                         'postgres'   => 'pgsql',
-                                         'oci'        => 'oci8',
-                                         'sqlite2'    => 'sqlite',
-                                         'sqlite3'    => 'sqlite');
-                                         
-
-    protected $_integrityActionsMap = array();
+    protected $_integrityActions = array();
     /**
      * constructor
      *
@@ -211,12 +205,39 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     public function openConnection($adapter, $name = null, $setCurrent = true)
     {
-        if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
-            throw new Doctrine_Manager_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
-        }
+    	if (is_object($adapter)) {
+            if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
+                throw new Doctrine_Manager_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
+            }
+    
+            if ($adapter instanceof Doctrine_Db) {
+                $adapter->setName($name);
+            }
 
-        if ($adapter instanceof Doctrine_Db) {
-            $adapter->setName($name);
+            $driverName = $adapter->getAttribute(Doctrine::ATTR_DRIVER_NAME);
+        } elseif (is_array($adapter)) {
+            if ( ! isset($adapter[0])) {
+                throw new Doctrine_Manager_Exception('Empty data source name given.');
+            }
+            $e = explode(':', $adapter[0]);
+
+            if($e[0] == 'uri') {
+                $e[0] = 'odbc';
+            }
+
+            $parts['dsn']    = $adapter[0];
+            $parts['scheme'] = $e[0];
+            $parts['user']   = (isset($adapter[1])) ? $adapter[1] : null;
+            $parts['pass']   = (isset($adapter[2])) ? $adapter[2] : null;
+            
+            $driverName = $e[0];
+            $adapter = $parts;
+        } else {
+            $parts = $this->parseDsn($adapter);
+            
+            $driverName = $parts['scheme'];
+            
+            $adapter = $parts;
         }
 
         // initialize the default attributes
@@ -232,42 +253,103 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $this->_index++;
         }
 
-        switch ($adapter->getAttribute(Doctrine::ATTR_DRIVER_NAME)) {
-            case 'mysql':
-                $this->_connections[$name] = new Doctrine_Connection_Mysql($this, $adapter);
-                break;
-            case 'sqlite':
-                $this->_connections[$name] = new Doctrine_Connection_Sqlite($this, $adapter);
-                break;
-            case 'pgsql':
-                $this->_connections[$name] = new Doctrine_Connection_Pgsql($this, $adapter);
-                break;
-            case 'oci':
-            case 'oci8':
-            case 'oracle':
-                $this->_connections[$name] = new Doctrine_Connection_Oracle($this, $adapter);
-                break;
-            case 'mssql':
-            case 'dblib':
-                $this->_connections[$name] = new Doctrine_Connection_Mssql($this, $adapter);
-                break;
-            case 'firebird':
-                $this->_connections[$name] = new Doctrine_Connection_Firebird($this, $adapter);
-                break;
-            case 'informix':
-                $this->_connections[$name] = new Doctrine_Connection_Informix($this, $adapter);
-                break;
-            case 'mock':
-                $this->_connections[$name] = new Doctrine_Connection_Mock($this, $adapter);
-                break;
-            default:
-                throw new Doctrine_Manager_Exception('Unknown connection driver '. $adapter->getAttribute(Doctrine::ATTR_DRIVER_NAME));
-        };
+        $drivers = array('mysql'    => 'Doctrine_Connection_Mysql',
+                         'sqlite'   => 'Doctrine_Connection_Sqlite',
+                         'pgsql'    => 'Doctrine_Connection_Pgsql',
+                         'oci'      => 'Doctrine_Connection_Oracle',
+                         'oci8'     => 'Doctrine_Connection_Oracle',
+                         'oracle'   => 'Doctrine_Connection_Oracle',
+                         'mssql'    => 'Doctrine_Connection_Mssql',
+                         'dblib'    => 'Doctrine_Connection_Mssql',
+                         'firebird' => 'Doctrine_Connection_Firebird',
+                         'informix' => 'Doctrine_Connection_Informix',
+                         'mock'     => 'Doctrine_Connection_Mock');
+        if ( ! isset($drivers[$driverName])) {
+            throw new Doctrine_Manager_Exception('Unknown driver ' . $driverName);
+        }
+        $className = $drivers[$driverName];
+        $conn = new $className($this, $adapter);
+
+        $this->_connections[$name] = $conn;
 
         if ($setCurrent) {
             $this->_currIndex = $name;
         }
         return $this->_connections[$name];
+    }
+    /**
+     * parseDsn
+     *
+     * @param string $dsn
+     * @return array Parsed contents of DSN
+     */
+    public function parseDsn($dsn)
+    {
+        // silence any warnings
+        $parts = @parse_url($dsn);
+
+        $names = array('dsn', 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
+
+        foreach ($names as $name) {
+            if ( ! isset($parts[$name])) {
+                $parts[$name] = null;
+            }
+        }
+
+        if (count($parts) == 0 || ! isset($parts['scheme'])) {
+            throw new Doctrine_Manager_Exception('Empty data source name');
+        }
+
+        switch ($parts['scheme']) {
+            case 'sqlite':
+            case 'sqlite2':
+            case 'sqlite3':
+                if (isset($parts['host']) && $parts['host'] == ':memory') {
+                    $parts['database'] = ':memory:';
+                    $parts['dsn']      = 'sqlite::memory:';
+                }
+
+                break;
+            case 'mysql':
+            case 'informix':
+            case 'oci8':
+            case 'oci':
+            case 'mssql':
+            case 'firebird':
+            case 'dblib':
+            case 'pgsql':
+            case 'odbc':
+            case 'mock':
+            case 'oracle':
+                if ( ! isset($parts['path']) || $parts['path'] == '/') {
+                    throw new Doctrine_Db_Exception('No database availible in data source name');
+                }
+                if (isset($parts['path'])) {
+                    $parts['database'] = substr($parts['path'], 1);
+                }
+                if ( ! isset($parts['host'])) {
+                    throw new Doctrine_Manager_Exception('No hostname set in data source name');
+                }
+                
+                if (isset(self::$driverMap[$parts['scheme']])) {
+                    $parts['scheme'] = self::$driverMap[$parts['scheme']];
+                }
+
+                $parts['dsn'] = $parts['scheme'] . ':host='
+                              . $parts['host'] . ';dbname='
+                              . $parts['database'];
+                
+                if (isset($parts['port'])) {
+                    // append port to dsn if supplied
+                    $parts['dsn'] .= ';port=' . $parts['port'];
+                }
+                break;
+            default:
+                throw new Doctrine_Db_Exception('Unknown driver '.$parts['scheme']);
+        }
+
+
+        return $parts;
     }
     /**
      * getConnection

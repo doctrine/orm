@@ -191,5 +191,4 @@ class Doctrine_Db_Event
         }
         return ($this->endedMicrotime - $this->startedMicrotime);
     }
-
 }

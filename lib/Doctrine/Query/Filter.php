@@ -52,9 +52,10 @@ class Doctrine_Query_Filter implements Doctrine_Query_Filter_Interface
      * to hook into the query building procedure, doing any custom / specialized
      * post query procedures (for example logging) that are neccessary.
      *
+     * @param Doctrine_Query $query
      * @return void
      */
-    public function postQuery(Doctrine_Query $query)
+    public function postQuery(Doctrine_Query $query, $sql)
     {
     
     }

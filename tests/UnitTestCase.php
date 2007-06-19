@@ -130,7 +130,7 @@ class Doctrine_UnitTestCase extends UnitTestCase
 
         } catch(Doctrine_Manager_Exception $e) {
             if($this->driverName == 'main') {
-                $this->dbh = Doctrine_Db::getConnection('sqlite::memory:');
+                $this->dbh = array('sqlite::memory:');
             } else {
                 $this->dbh = $this->adapter = new Doctrine_Adapter_Mock($this->driverName);
             }
@@ -169,8 +169,8 @@ class Doctrine_UnitTestCase extends UnitTestCase
         foreach($this->tables as $name) {
             $query = 'DROP TABLE ' . Doctrine::tableize($name);
             try {
-                $this->dbh->query($query);
-            } catch(PDOException $e) {
+                $this->conn->exec($query);
+            } catch(Doctrine_Connection_Exception $e) {
 
             }
         }

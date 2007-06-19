@@ -270,7 +270,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         return $this->_errorStack->count() == 0 ? true : false;
     }
     /**
-     * Emtpy template method to provide concrete Record classes with the possibility
+     * Empty template method to provide concrete Record classes with the possibility
      * to hook into the validation procedure, doing any custom / specialized
      * validations that are neccessary.
      */

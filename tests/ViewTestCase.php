@@ -30,8 +30,11 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_View_TestCase extends Doctrine_UnitTestCase {
-    public function testCreateView() {
+class Doctrine_View_TestCase extends Doctrine_UnitTestCase 
+{
+
+    public function testCreateView()
+    {
         $query = new Doctrine_Query($this->connection);
         $query->from('User');
 
@@ -53,12 +56,12 @@ class Doctrine_View_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($success);
 
         $users = $view->execute();
-        $count = $this->dbh->count();
+        $count = $this->conn->count();
         $this->assertTrue($users instanceof Doctrine_Collection);
         $this->assertEqual($users->count(), 8);
         $this->assertEqual($users[0]->name, 'zYne');
         $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($count, $this->dbh->count());
+        $this->assertEqual($count, $this->conn->count());
 
         $success = true;
         try {
@@ -68,7 +71,9 @@ class Doctrine_View_TestCase extends Doctrine_UnitTestCase {
         }
         $this->assertTrue($success);
     }
-    public function testConstructor() {
+
+    public function testConstructor() 
+    {
                                       	
     }
 }

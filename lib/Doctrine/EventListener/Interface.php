@@ -18,21 +18,27 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_EventListener_Interface');
 /**
- * Doctrine_EventListener_Interface
+ * Doctrine_EventListener     all event listeners extend this base class
+ *                            the empty methods allow child classes to only implement the methods they need to implement
  *
- * interface for event listening, forces all classes that extend
- * Doctrine_EventListener to have the same method arguments as their parent
  *
- * @author      Konsta Vesterinen
- * @package     Doctrine ORM
- * @url         www.phpdoctrine.com
- * @license     LGPL
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @package     Doctrine
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision$
  */
-interface Doctrine_EventListener_Interface {
-
+interface Doctrine_EventListener_Interface
+{
     public function onLoad(Doctrine_Record $record);
     public function onPreLoad(Doctrine_Record $record);
+
+    public function onSleep(Doctrine_Record $record);
+    public function onWakeUp(Doctrine_Record $record);
 
     public function onUpdate(Doctrine_Record $record);
     public function onPreUpdate(Doctrine_Record $record);
@@ -52,24 +58,43 @@ interface Doctrine_EventListener_Interface {
     public function onEvict(Doctrine_Record $record);
     public function onPreEvict(Doctrine_Record $record);
 
-    public function onSleep(Doctrine_Record $record);
-
-    public function onWakeUp(Doctrine_Record $record);
-
-    public function onClose(Doctrine_Connection $connection);
-    public function onPreClose(Doctrine_Connection $connection);
-
-    public function onOpen(Doctrine_Connection $connection);
-
-    public function onTransactionCommit(Doctrine_Connection $connection);
-    public function onPreTransactionCommit(Doctrine_Connection $connection);
-
-    public function onTransactionRollback(Doctrine_Connection $connection);
-    public function onPreTransactionRollback(Doctrine_Connection $connection);
-
-    public function onTransactionBegin(Doctrine_Connection $connection);
-    public function onPreTransactionBegin(Doctrine_Connection $connection);
+    public function onClose(Doctrine_Event $event);
+    public function onPreClose(Doctrine_Event $event);
 
     public function onCollectionDelete(Doctrine_Collection $collection);
     public function onPreCollectionDelete(Doctrine_Collection $collection);
+
+    public function onOpen(Doctrine_Connection $connection);
+    
+
+
+    public function onConnect(Doctrine_Event $event);
+    public function onPreConnect(Doctrine_Event $event);
+
+    public function onTransactionCommit(Doctrine_Event $event);
+    public function onPreTransactionCommit(Doctrine_Event $event);
+
+    public function onTransactionRollback(Doctrine_Event $event);
+    public function onPreTransactionRollback(Doctrine_Event $event);
+
+    public function onTransactionBegin(Doctrine_Event $event);
+    public function onPreTransactionBegin(Doctrine_Event $event);
+
+    public function onPreQuery(Doctrine_Event $event);
+    public function onQuery(Doctrine_Event $event);
+
+    public function onPrePrepare(Doctrine_Event $event);
+    public function onPrepare(Doctrine_Event $event);
+
+    public function onPreExec(Doctrine_Event $event);
+    public function onExec(Doctrine_Event $event);
+    
+    public function onPreFetch(Doctrine_Event $event);
+    public function onFetch(Doctrine_Event $event);
+
+    public function onPreFetchAll(Doctrine_Event $event);
+    public function onFetchAll(Doctrine_Event $event);
+
+    public function onPreExecute(Doctrine_Event $event);
+    public function onExecute(Doctrine_Event $event);
 }

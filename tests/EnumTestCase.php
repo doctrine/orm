@@ -30,14 +30,18 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase {
-    public function prepareData() { }
-    public function prepareTables() {
+class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase 
+{
+    public function prepareData() 
+    { }
+    public function prepareTables() 
+    {
         $this->tables = array("EnumTest");
         parent::prepareTables();
     }
 
-    public function testParameterConversion() {
+    public function testParameterConversion() 
+    {
         $test = new EnumTest();
         $test->status = 'open';
         $this->assertEqual($test->status, 'open');
@@ -60,7 +64,8 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase {
         }
     }
 
-    public function testInAndNotIn() {
+    public function testInAndNotIn() 
+    {
         try {
             $query = new Doctrine_Query($this->connection);
             $ret = $query->query("FROM EnumTest WHERE EnumTest.status IN ('open')");
@@ -78,7 +83,8 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase {
         }
     }
 
-    public function testExpressionComposition() {
+    public function testExpressionComposition() 
+    {
         try {
             $query = new Doctrine_Query($this->connection);
             $ret = $query->query("FROM EnumTest e WHERE e.id > 0 AND (e.status != 'closed' OR e.status = 'verified')");
@@ -87,7 +93,8 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase {
             $this->fail();
         }
     }
-    public function testNotEqual() {
+    public function testNotEqual() 
+    {
         try {
             $query = new Doctrine_Query($this->connection);
             $ret = $query->query("FROM EnumTest WHERE EnumTest.status != 'closed'");
@@ -97,7 +104,8 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase {
         }
     }
 
-    public function testEnumType() {
+    public function testEnumType() 
+    {
 
         $enum = new EnumTest();
         $enum->status = "open";
@@ -118,8 +126,9 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($enum->status, "closed");
     }
 
-    public function testEnumTypeWithCaseConversion() {
-        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+    public function testEnumTypeWithCaseConversion() 
+    {
+        $this->conn->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
         $enum = new EnumTest();
 
@@ -142,13 +151,14 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase {
         $enum->refresh();
         $this->assertEqual($enum->status, "closed");
         
-        $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
+        $this->conn->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
     }
 
-    public function testFailingRefresh() {
+    public function testFailingRefresh() 
+    {
         $enum = $this->connection->getTable('EnumTest')->find(1);
 
-        $this->dbh->query('DELETE FROM enum_test WHERE id = 1');
+        $this->conn->exec('DELETE FROM enum_test WHERE id = 1');
 
         $f = false;
         try {

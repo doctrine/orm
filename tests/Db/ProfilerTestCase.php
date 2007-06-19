@@ -99,8 +99,9 @@ class Doctrine_Connection_Profiler_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
 
         $this->assertEqual($this->conn->count(), 4);
+
     }
-    public function testExecuteStatementMultipleTimes() 
+    public function testExecuteStatementMultipleTimes()
     {
         try {
             $stmt = $this->conn->prepare('INSERT INTO test (id) VALUES (?)');

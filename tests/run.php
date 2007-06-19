@@ -72,6 +72,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 $test->addTestCase(new Doctrine_Ticket330_TestCase());
     */
+    /**                       */
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -195,7 +196,7 @@ $test->addTestCase(new Doctrine_Hook_TestCase());
 
 // Db component
 $test->addTestCase(new Doctrine_Db_TestCase());
-$test->addTestCase(new Doctrine_Db_Profiler_TestCase());
+$test->addTestCase(new Doctrine_Connection_Profiler_TestCase());
 
 
 // Eventlisteners
@@ -294,7 +295,7 @@ $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 $test->addTestCase(new Doctrine_Query_MultipleAggregateValue_TestCase());
 
 $test->addTestCase(new Doctrine_Query_TestCase());
-                                                               /**
+               /**
 //$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
 */
 //$test->addTestCase(new Doctrine_AuditLog_TestCase());

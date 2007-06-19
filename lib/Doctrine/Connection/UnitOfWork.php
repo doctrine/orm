@@ -186,6 +186,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         return true;
     }
+
     /**
      * saveRelated
      * saves all related records to $record
