@@ -130,7 +130,7 @@ class Doctrine_Hook
 
             if (count($e) == 2) {
                 list($alias, $column) = $e;
-
+                /**
                 $tableAlias = $this->query->getTableAlias($alias);
                 $map   = $this->query->getAliasDeclaration($alias);
                 $table = $map['table'];
@@ -140,6 +140,8 @@ class Doctrine_Hook
                 }
 
                 if ($def = $table->getDefinitionOf($column)) {
+                */
+                $def[0] = gettype($value);
                     if (isset($this->typeParsers[$def[0]])) {
                         $name   = $this->typeParsers[$def[0]];
                         $parser = new $name;
@@ -148,7 +150,7 @@ class Doctrine_Hook
                     $parser->parse($alias, $column, $value);
 
                     $this->query->addWhere($parser->getCondition(), $parser->getParams());
-                }
+                //}
             }
         }
 
@@ -180,14 +182,15 @@ class Doctrine_Hook
 
             if (count($e) == 2) {
                 list($alias, $column) = $e;
-
+                /**
                 $tableAlias = $this->query->getTableAlias($alias);
                 $map   = $this->query->getAliasDeclaration($alias);
                 $table = $map['table'];
 
                 if ($def = $table->getDefinitionOf($column)) {
+                */
                     $this->query->addOrderBy($alias . '.' . $column . ' ' . $order);
-                }
+                //}
             }
         }
         return true;
