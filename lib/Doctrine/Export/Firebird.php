@@ -502,16 +502,26 @@ class Doctrine_Export_Firebird extends Doctrine_Export
      *                              'charset' => 'utf8',
      *                              'collate' => 'utf8_unicode_ci',
      *                          );
-     * @return string
+     * @return boolean
      */
     public function createSequence($seqName, $start = 1, array $options = array())
     {
         $sequenceName = $this->conn->formatter->getSequenceName($seqName);
 
         $this->conn->exec('CREATE GENERATOR ' . $sequenceName);
-        $this->conn->exec('SET GENERATOR ' . $sequenceName . ' TO ' . ($start-1));
 
-        $this->dropSequence($seqName);
+        try {
+            $this->conn->exec('SET GENERATOR ' . $sequenceName . ' TO ' . ($start-1));
+            
+            return true;
+        } catch (Doctrine_Connection_Exception $e) {
+            try {
+                $this->dropSequence($seqName);
+            } catch(Doctrine_Connection_Exception $e) {
+                throw new Doctrine_Export_Exception('Could not drop inconsistent sequence table');
+            }
+        }
+        throw new Doctrine_Export_Exception('could not create sequence table');
     }
     /**
      * drop existing sequence
