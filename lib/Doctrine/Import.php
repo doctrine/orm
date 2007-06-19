@@ -181,14 +181,20 @@ class Doctrine_Import extends Doctrine_Connection_Module
      *
      * @param string $directory
      * @param array $databases
+     * @return array                the names of the imported classes
      */
     public function import($directory, array $databases = array())
     {
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
 
+        $classes = array();
         foreach ($this->listTables() as $table) {
             $builder->buildRecord($table, $this->listTableColumns($table));
+        
+            $classes[] = Doctrine::classify($table);
         }
+        
+        return $classes;
     }
 }
