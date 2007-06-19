@@ -56,16 +56,26 @@ class Doctrine_Export extends Doctrine_Connection_Module
         throw new Doctrine_Export_Exception('Drop database not supported by this driver.');
     }
     /**
+     * dropTableSql
+     * drop an existing table
+     *
+     * @param string $table           name of table that should be dropped from the database
+     * @return string
+     */
+    public function dropTableSql($table)
+    {
+        return 'DROP TABLE ' . $this->conn->quoteIdentifier($table);
+    }
+    /**
      * dropTable
      * drop an existing table
      *
      * @param string $table           name of table that should be dropped from the database
-     * @throws PDOException
      * @return void
      */
     public function dropTable($table)
     {
-        $this->conn->execute('DROP TABLE ' . $table);
+        $this->conn->execute($this->dropTableSql($table));
     }
 
     /**
@@ -1004,7 +1014,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             }
         }
         /**  Not needed anymore ? createTable() now handles foreign keys
-        
+
         foreach ($fks as $tableName => $fk) {
             foreach ($fk as $k => $definition) {
                 if (is_array($definition)) {
