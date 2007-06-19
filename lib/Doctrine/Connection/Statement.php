@@ -1,4 +1,4 @@
-?php
+<?php
 /*
  *  $Id: Statement.php 1532 2007-05-31 17:45:07Z zYne $
  *
@@ -32,15 +32,25 @@ Doctrine::autoload('Doctrine_Adapter_Statement_Interface');
  */
 class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interface
 {
-    protected $_adapter;
+    /**
+     * @var Doctrine_Connection $conn       Doctrine_Connection object, every connection
+     *                                      statement holds an instance of Doctrine_Connection
+     */
+    protected $_conn;
 
     protected $_stmt;
 
     protected $_executed = false;
-
-    public function __construct($adapter, $stmt)
+    /**
+     * constructor
+     *
+     * @param Doctrine_Connection $conn     Doctrine_Connection object, every connection
+     *                                      statement holds an instance of Doctrine_Connection
+     * @param mixed $stmt
+     */
+    public function __construct(Doctrine_Connection $conn, $stmt)
     {
-        $this->_adapter = $adapter;
+        $this->_conn = $conn;
         $this->_stmt    = $stmt;
         
         if ($stmt === false) {
@@ -48,9 +58,12 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
         }
     }
     /**
+     * getConnection
+     * returns the connection object this statement uses
      *
+     * @return Doctrine_Connection
      */
-    public function getDbh()
+    public function getConnection()
     {
         return $this->_adapter;
     }
@@ -200,7 +213,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      */
     public function execute($params = null)
     {
-        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::EXECUTE, $this->_stmt->queryString, $params);
+        $event = new Doctrine_Event($this, Doctrine_Event::EXECUTE, $this->_stmt->queryString, $params);
         // print $this->_stmt->queryString . print_r($params, true) . "<br>"; 
         $skip = $this->_adapter->getListener()->onPreExecute($event);
 

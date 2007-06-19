@@ -75,9 +75,9 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
      */
     public function __call($m, $a)
     {
-        // first argument should be an instance of Doctrine_Db_Event
-        if ( ! ($a[0] instanceof Doctrine_Db_Event)) {
-            throw new Doctrine_Connection_Profiler_Exception("Couldn't listen event. Event should be an instance of Doctrine_Db_Event.");
+        // first argument should be an instance of Doctrine_Event
+        if ( ! ($a[0] instanceof Doctrine_Event)) {
+            throw new Doctrine_Connection_Profiler_Exception("Couldn't listen event. Event should be an instance of Doctrine_Event.");
         }
 
         // event methods should start with 'on'
@@ -86,18 +86,13 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
         }
 
         if (substr($m, 2, 3) === 'Pre' && substr($m, 2, 7) !== 'Prepare') {
-            if ( ! in_array(strtolower(substr($m, 5)), $this->listeners)) {
-                throw new Doctrine_Connection_Profiler_Exception("Couldn't invoke listener :" . $m);
-            }
             // pre-event listener found
             $a[0]->start();
+
             if( ! in_array($a[0], $this->events, true)) {
                 $this->events[] = $a[0];
             }
         } else {
-            if ( ! in_array(strtolower(substr($m, 2)), $this->listeners)) {
-                throw new Doctrine_Connection_Profiler_Exception("Couldn't invoke listener :" . $m);
-            }
             // after-event listener found
             $a[0]->end();
         }
@@ -105,11 +100,13 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
          * If filtering by query type is enabled, only keep the query if
          * it was one of the allowed types.
          */
+         /**
         if ( ! is_null($this->filterTypes)) {
             if ( ! ($a[0]->getQueryType() & $this->_filterTypes)) {
 
             }
         }
+        */
 
     }
     /**
