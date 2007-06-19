@@ -1003,7 +1003,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 }
             }
         }
-
+        /**  Not needed anymore ? createTable() now handles foreign keys
+        
         foreach ($fks as $tableName => $fk) {
             foreach ($fk as $k => $definition) {
                 if (is_array($definition)) {
@@ -1011,6 +1012,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 }
             }
         }
+        */
         return $sql;
     }
     /**
