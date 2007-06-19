@@ -12,5 +12,5 @@ class %s extends Doctrine_Record
     public function setUp()
     {
 
-    }%s
+    }
 }
