@@ -1051,7 +1051,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                                                         
                 foreach ($it as $file) {
                     $e = explode('.', $file->getFileName());
-                    if (end($e) === 'php' && count($e) === 2) {
+                    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
                         require_once $file->getPathName();
                     }
                 }
