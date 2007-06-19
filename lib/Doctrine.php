@@ -155,9 +155,7 @@ final class Doctrine
     const ATTR_DBNAME_FORMAT        = 117;
     const ATTR_TBLCLASS_FORMAT      = 119;
     const ATTR_EXPORT               = 140;
-    const ATTR_DECIMAL_PLACES       = 141;
-
-
+    const ATTR_DECIMAL_PLACES       = 141;  
 
     const ATTR_PORTABILITY          = 106;
     const ATTR_VLD                  = 107;
@@ -428,7 +426,7 @@ final class Doctrine
      *
      * @param string $directory
      */
-    public static function export($directory)
+    public static function export($directory = null)
     {
         return Doctrine_Manager::connection()->export->export($directory);
     }
@@ -438,7 +436,7 @@ final class Doctrine
      *
      * @param string $directory
      */
-    public static function exportSql($directory)
+    public static function exportSql($directory = null)
     {
         return Doctrine_Manager::connection()->export->exportSql($directory);
     }

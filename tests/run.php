@@ -294,7 +294,7 @@ $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 $test->addTestCase(new Doctrine_Query_MultipleAggregateValue_TestCase());
 
 $test->addTestCase(new Doctrine_Query_TestCase());
-                                                   /**
+                                                               /**
 //$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
 */
 //$test->addTestCase(new Doctrine_AuditLog_TestCase());

@@ -32,7 +32,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase {
         $this->dbh->exec("INSERT INTO entity (id, name) VALUES (2, 'John')");
         
         
-        $this->assertEqual($this->dbh->getAttribute(PDO::ATTR_DRIVER_NAME), 'sqlite');
+        $this->assertEqual($this->dbh->getAttribute(Doctrine::ATTR_DRIVER_NAME), 'sqlite');
     }
 
     public function testAddValidEventListener() {

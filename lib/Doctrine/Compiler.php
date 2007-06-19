@@ -53,7 +53,7 @@ class Doctrine_Compiler
                 require_once $file->getPathName();
             }
         }
-
+                
         $classes = array_merge(get_declared_classes(), get_declared_interfaces());
 
         $ret     = array();

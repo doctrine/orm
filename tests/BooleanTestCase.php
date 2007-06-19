@@ -70,7 +70,7 @@ class Doctrine_Boolean_TestCase extends Doctrine_UnitTestCase {
 
         $query = new Doctrine_Query($this->connection);
         $ret = $query->query('FROM BooleanTest WHERE BooleanTest.is_working = 1');
-        Doctrine_Lib::formatSql($query->getQuery());
+
         $this->assertEqual(count($ret), 1);
     }
     public function testPreparedQueries() {
@@ -89,7 +89,7 @@ class Doctrine_Boolean_TestCase extends Doctrine_UnitTestCase {
 
         $query = new Doctrine_Query($this->connection);
         $ret = $query->query('FROM BooleanTest WHERE BooleanTest.is_working = true');
-        Doctrine_Lib::formatSql($query->getQuery());
+
         $this->assertEqual(count($ret), 1);
     }
 
@@ -107,7 +107,7 @@ class Doctrine_Boolean_TestCase extends Doctrine_UnitTestCase {
         $test = new BooleanTest();
         $this->is_working_notnull = null;
 
-        $this->assertIdentical($this->is_working_notnull, false);
+        $this->assertIdentical($this->is_working_notnull, null);
         $this->assertEqual($test->state(), Doctrine_Record::STATE_TDIRTY);
         $test->save();
 

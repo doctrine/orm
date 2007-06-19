@@ -208,7 +208,15 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
      */
     public function listTableTriggers($table)
     {
-
+        $query = 'SELECT trg.tgname AS trigger_name
+                    FROM pg_trigger trg,
+                         pg_class tbl
+                   WHERE trg.tgrelid = tbl.oid';
+        if ($table !== null) {
+            $table = $this->conn->quote(strtoupper($table), 'string');
+            $query .= " AND tbl.relname = $table";
+        }
+        return $this->conn->fetchColumn($query);
     }
     /**
      * list the views in the database that reference a given table
