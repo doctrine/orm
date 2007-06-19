@@ -30,8 +30,11 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
-    public function testWordLikeParserSupportsHyphens() {
+class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase 
+{
+
+    public function testWordLikeParserSupportsHyphens() 
+    {
         $parser = new Doctrine_Hook_WordLike();
         
         $parser->parse('u', 'name', "'some guy' OR zYne");
@@ -40,7 +43,8 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($parser->getParams(), array('some guy%', 'zYne%'));
     }
 
-    public function testHookOrderbyAcceptsArray() {
+    public function testHookOrderbyAcceptsArray() 
+    {
         $hook = new Doctrine_Hook('SELECT u.name FROM User u LEFT JOIN u.Phonenumber p');
 
         $a['orderby'] = array('u.name ASC');
@@ -48,7 +52,9 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $hook->hookOrderBy($a['orderby']);
         $this->assertEqual($hook->getQuery()->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0) ORDER BY e.name ASC');
     }
-    public function testHookOrderbyAcceptsDescendingOrder() {
+
+    public function testHookOrderbyAcceptsDescendingOrder() 
+    {
         $hook = new Doctrine_Hook('SELECT u.name FROM User u LEFT JOIN u.Phonenumber p');
 
         $a['orderby'] = array('u.name DESC');
@@ -56,7 +62,9 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $hook->hookOrderBy($a['orderby']);
         $this->assertEqual($hook->getQuery()->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0) ORDER BY e.name DESC');
     }
-    public function testHookOrderbyDoesntAcceptUnknownColumn() {
+
+    public function testHookOrderbyDoesntAcceptUnknownColumn() 
+    {
         $hook = new Doctrine_Hook('SELECT u.name FROM User u LEFT JOIN u.Phonenumber p');
 
         $a['orderby'] = array('u.unknown DESC');
@@ -64,7 +72,9 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $hook->hookOrderBy($a['orderby']);
         $this->assertEqual($hook->getQuery()->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)');
     }
-    public function testHookOrderbyAcceptsMultipleParameters() {
+
+    public function testHookOrderbyAcceptsMultipleParameters() 
+    {
         $hook = new Doctrine_Hook('SELECT u.name FROM User u LEFT JOIN u.Phonenumber p');
 
         $a['orderby'] = array('u.name ASC', 'u.id DESC');
@@ -74,7 +84,9 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
     
         $users =  $hook->getQuery()->execute();
     }
-    public function testHookWhereAcceptsArrays() {
+
+    public function testHookWhereAcceptsArrays() 
+    {
         $hook = new Doctrine_Hook('SELECT u.name FROM User u LEFT JOIN u.Phonenumber p');
 
         $a['where'] = array('u.name' => 'Jack Daniels',
@@ -84,7 +96,9 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($hook->getQuery()->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.name LIKE ? OR e.name LIKE ?) AND e.loginname LIKE ? AND (e.type = 0)');
         $this->assertEqual($hook->getQuery()->getParams(), array('Jack%', 'Daniels%', 'TheMan%'));
     }
-    public function testHookWhereSupportsIntegerTypes() {
+
+    public function testHookWhereSupportsIntegerTypes() 
+    {
         $hook = new Doctrine_Hook('SELECT u.name FROM User u LEFT JOIN u.Phonenumber p');
 
         $a['where'] = array('u.id' => 10000);
@@ -94,7 +108,8 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($hook->getQuery()->getParams(), array(10000));
     }
 
-    public function testHookWhereDoesntAcceptUnknownColumn() {
+    public function testHookWhereDoesntAcceptUnknownColumn() 
+    {
         $hook = new Doctrine_Hook('SELECT u.name FROM User u LEFT JOIN u.Phonenumber p');
 
         $a['where'] = array('u.unknown' => 'Jack Daniels');
@@ -104,7 +119,8 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
 
     }
 
-    public function testEqualParserUsesEqualOperator() {
+    public function testEqualParserUsesEqualOperator() 
+    {
         $parser = new Doctrine_Hook_Equal();
 
         $parser->parse('u', 'name', 'zYne');
@@ -112,7 +128,9 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($parser->getCondition(), 'u.name = ?');
         $this->assertEqual($parser->getParams(), array('zYne'));
     }
-    public function testWordLikeParserUsesLikeOperator() {
+
+    public function testWordLikeParserUsesLikeOperator() 
+    {
         $parser = new Doctrine_Hook_WordLike();
         
         $parser->parse('u', 'name', 'zYne');
@@ -120,7 +138,9 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($parser->getCondition(), 'u.name LIKE ?');
         $this->assertEqual($parser->getParams(), array('zYne%'));
     }
-    public function testIntegerParserSupportsIntervals() {
+
+    public function testIntegerParserSupportsIntervals() 
+    {
         $parser = new Doctrine_Hook_Integer();
 
         $parser->parse('m', 'year', '1998-2000');
@@ -129,7 +149,8 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($parser->getParams(), array('1998', '2000'));
     }
 
-    public function testIntegerParserSupportsEqualOperator() {
+    public function testIntegerParserSupportsEqualOperator() 
+    {
         $parser = new Doctrine_Hook_Integer();
 
         $parser->parse('m', 'year', '1998');
@@ -138,7 +159,8 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($parser->getParams(), array('1998'));
     }
 
-    public function testIntegerParserSupportsNestingConditions() {
+    public function testIntegerParserSupportsNestingConditions() 
+    {
         $parser = new Doctrine_Hook_Integer();
 
         $parser->parse('m', 'year', '1998-2000 OR 2001');
