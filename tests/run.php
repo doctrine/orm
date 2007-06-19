@@ -71,7 +71,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 /**
 
 $test->addTestCase(new Doctrine_Ticket330_TestCase());
- */
+    */
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -292,11 +292,12 @@ $test->addTestCase(new Doctrine_Query_Select_TestCase());
 $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 
 $test->addTestCase(new Doctrine_Query_MultipleAggregateValue_TestCase());
- /**
+
+$test->addTestCase(new Doctrine_Query_TestCase());
+                                                   /**
 //$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
 */
 //$test->addTestCase(new Doctrine_AuditLog_TestCase());
-
 
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());
@@ -306,7 +307,7 @@ $test->addTestCase(new Doctrine_Query_MultipleAggregateValue_TestCase());
 //$test->addTestCase(new Doctrine_BatchIterator_TestCase());
 //$test->addTestCase(new Doctrine_Hydrate_TestCase());
 //$test->addTestCase(new Doctrine_Cache_TestCase());
-//$test->addTestCase(new Doctrine_Query_TestCase());
+
 
 class MyReporter extends HtmlReporter {
     public function paintHeader() {}

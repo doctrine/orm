@@ -30,7 +30,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_UnitTestCase extends UnitTestCase {
+class Doctrine_UnitTestCase extends UnitTestCase 
+{
     protected $manager;
     protected $connection;
     protected $objTable;
@@ -55,11 +56,11 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
     protected $init = false;
 
-    public function init() {
+    public function init() 
+    {
         $name = get_class($this);
 
         $this->manager   = Doctrine_Manager::getInstance();
-        $this->manager->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_IMMEDIATE);
         $this->manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);
 
         $this->tables = array_merge($this->tables, 
@@ -86,31 +87,34 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $class = get_class($this);
         $e     = explode('_', $class);
 
-        $this->driverName = 'main';
 
-        switch($e[1]) {
-            case 'Export':
-            case 'Import':
-            case 'Expression':
-            case 'Transaction':
-            case 'DataDict':
-            case 'Sequence':
-                $this->driverName = 'Sqlite';
-            break;
-        }
-
-        if(count($e) > 3) {
-            $driver = $e[2];
-            switch($e[2]) {
-                case 'Firebird':
-                case 'Informix':
-                case 'Mysql':
-                case 'Mssql':
-                case 'Oracle':
-                case 'Pgsql':
-                case 'Sqlite':
-                    $this->driverName = $e[2];
+        if ( ! $this->driverName) {
+            $this->driverName = 'main';
+    
+            switch($e[1]) {
+                case 'Export':
+                case 'Import':
+                case 'Expression':
+                case 'Transaction':
+                case 'DataDict':
+                case 'Sequence':
+                    $this->driverName = 'Sqlite';
                 break;
+            }
+    
+            if(count($e) > 3) {
+                $driver = $e[2];
+                switch($e[2]) {
+                    case 'Firebird':
+                    case 'Informix':
+                    case 'Mysql':
+                    case 'Mssql':
+                    case 'Oracle':
+                    case 'Pgsql':
+                    case 'Sqlite':
+                        $this->driverName = $e[2];
+                    break;
+                }
             }
         }
 
@@ -141,7 +145,7 @@ class Doctrine_UnitTestCase extends UnitTestCase {
             } else {
             }
 
-            $this->listener = new Doctrine_EventListener_Debugger();
+            $this->listener = new Doctrine_EventListener();
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
         if ($this->driverName !== 'main') {
@@ -183,7 +187,8 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
         $this->objTable = $this->connection->getTable('User');
     }
-    public function prepareData() {
+    public function prepareData() 
+    {
         $groups = new Doctrine_Collection($this->connection->getTable('Group'));
 
         $groups[0]->name = 'Drama Actors';
@@ -240,10 +245,12 @@ class Doctrine_UnitTestCase extends UnitTestCase {
         $this->users = $users;
         $this->connection->flush();
     }
-    public function getConnection() {
+    public function getConnection() 
+    {
         return $this->connection;
     }
-    public function assertDeclarationType($type, $type2) {
+    public function assertDeclarationType($type, $type2) 
+    {
         $dec = $this->getDeclaration($type);
         
         if ( ! is_array($type2)) {
@@ -252,16 +259,19 @@ class Doctrine_UnitTestCase extends UnitTestCase {
 
         $this->assertEqual($dec['type'], $type2);
     }
-    public function getDeclaration($type) {
+    public function getDeclaration($type) 
+    {
         return $this->dataDict->getPortableDeclaration(array('type' => $type, 'name' => 'colname', 'length' => 1, 'fixed' => true));
     }
-    public function clearCache() {
+    public function clearCache() 
+    {
         foreach($this->tables as $name) {
             $table = $this->connection->getTable($name);
             $table->getCache()->deleteAll();
         }
     }
-    public function setUp() {
+    public function setUp()
+    {
         if ( ! $this->init) {
             $this->init();
         }
