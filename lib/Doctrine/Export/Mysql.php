@@ -112,10 +112,11 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 }
                 
                 if ( ! $found) {
-                    $options['indexes'] = array($local => array('fields' => array($local => array())));
+                    $options['indexes'] = array_merge($options['indexes'], array($local => array('fields' => array($local => array()))));
                 }
             }
         }
+
         // add all indexes
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach($options['indexes'] as $index => $definition) {
@@ -146,7 +147,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         $type = false;
 
         // get the type of the table
-        if ( ! empty($options['type'])) {
+        if (isset($options['type'])) {
             $type = $options['type'];
         } else {
             $type = $this->conn->getAttribute(Doctrine::ATTR_DEFAULT_TABLE_TYPE);

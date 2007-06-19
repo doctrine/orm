@@ -32,6 +32,15 @@ Doctrine::autoload('Doctrine_Query_Abstract');
  */
 class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 {
+    const STATE_CLEAN  = 1;
+
+    const STATE_DIRTY  = 2;
+
+    const STATE_DIRECT = 3;
+
+    const STATE_LOCKED = 4;
+
+
     protected $subqueryAliases   = array();
     /**
      * @param boolean $needsSubquery
@@ -86,6 +95,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @var array $_pendingJoinConditions    an array containing pending joins
      */
     protected $_pendingJoinConditions = array();
+    
+    protected $_state = Doctrine_Query::STATE_CLEAN;
 
     /**
      * create
@@ -262,7 +273,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @return Doctrine_Query           this object
      */
     public function parseQueryPart($queryPartName, $queryPart, $append = false) 
-    {              
+    {
+        if ($this->_state === self::STATE_LOCKED) {
+            throw new Doctrine_Query_Exception('This query object is locked. No query parts can be manipulated.');
+        }
+
 
         // sanity check
         if ($queryPart === '' || $queryPart === null) {
@@ -276,6 +291,19 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $this->_dqlParts[$queryPartName] = array($queryPart);
         }
 
+        if ($this->_state === self::STATE_DIRECT) {
+            $parser = $this->getParser($queryPartName);
+
+            $sql = $parser->parse($queryPart);
+
+            if (isset($sql)) {
+                if ($append) {
+                    $this->addQueryPart($queryPartName, $sql);
+                } else {
+                    $this->setQueryPart($queryPartName, $sql);
+                }
+            }                                   	
+        }
            
         return $this;
     }
@@ -625,6 +653,19 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         return $q;
     }
     /**
+     * preQuery
+     *
+     * Empty template method to provide Query subclasses with the possibility
+     * to hook into the query building procedure, doing any custom / specialized
+     * query building procedures that are neccessary.
+     *
+     * @return void
+     */
+    public function preQuery()
+    {
+
+    }
+    /**
      * builds the sql query from the given parameters and applies things such as
      * column aggregation inheritance and limit subqueries if needed
      *
@@ -634,14 +675,16 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function getQuery($params = array())
     {
-        // check if parser cache is on
+    	$parts = $this->_dqlParts;
 
+        // reset the state
         $this->_aliasMap = array();
         $this->pendingAggregates = array();
         $this->aggregateMap = array();
         
-        $this->reset();
+        $this->reset();   
 
+        // parse the DQL parts
         foreach ($this->_dqlParts as $queryPartName => $queryParts) {
             $this->parts[$queryPartName] = array();
             if (is_array($queryParts) && ! empty($queryParts)) {
@@ -664,6 +707,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 }
             }
         }
+        $this->_state = self::STATE_DIRECT;
+
+        // invoke the preQuery hook
+        $this->preQuery();        
+        $this->_state = self::STATE_CLEAN;
+        
+        $this->_dqlParts = $parts;
 
         if (empty($this->parts['from'])) {
             return false;
