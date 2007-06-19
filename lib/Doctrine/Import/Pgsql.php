@@ -157,7 +157,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
             if ($val['type'] === 'varchar') {
                 // get length from varchar definition
                 $length = preg_replace('~.*\(([0-9]*)\).*~', '$1', $val['complete_type']);
-                $val['length'] .= $length;
+                $val['length'] = $length;
             }
             
             $decl = $this->conn->dataDict->getPortableDeclaration($val);
