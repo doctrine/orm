@@ -198,7 +198,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
      */
     public function listTables($database = null)
     {
-        return $this->conn->fetchAssoc($this->sql['listTables']);
+        return $this->conn->fetchColumn($this->sql['listTables']);
     }
     /**
      * lists table triggers
