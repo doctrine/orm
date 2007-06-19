@@ -86,6 +86,17 @@ class Doctrine_Export_Record_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($sql[0], 'CREATE TABLE mysql_group (id BIGINT AUTO_INCREMENT, name TEXT, PRIMARY KEY(id)) ENGINE = INNODB');
     }
+    public function testExportModelFromDirectory()
+    {
+        Doctrine::export(dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files2');
+        
+        $this->assertEqual($this->adapter->pop(), 'COMMIT');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE cms__category (id BIGINT AUTO_INCREMENT, created DATETIME, parent BIGINT, position MEDIUMINT, active BIGINT, INDEX index_parent_idx (parent), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB');
+        $this->assertEqual($this->adapter->pop(), 'ALTER TABLE cms__category ADD CONSTRAINT FOREIGN KEY (category_id) REFERENCES cms__category_languages(id) ON DELETE CASCADE');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE cms__category_languages (id BIGINT AUTO_INCREMENT, name TEXT, category_id BIGINT, language_id BIGINT, INDEX index_category_idx (category_id), INDEX index_language_idx (language_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB');
+        $this->assertEqual($this->adapter->pop(), 'BEGIN TRANSACTION');
+
+    }
 }
 class ForeignKeyTest extends Doctrine_Record
 {
@@ -172,3 +183,4 @@ class MysqlTestRecord extends Doctrine_Record
         $this->option('type', 'INNODB');
     }
 }
+
