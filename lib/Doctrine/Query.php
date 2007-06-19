@@ -666,6 +666,19 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
     }
     /**
+     * postQuery
+     *
+     * Empty template method to provide Query subclasses with the possibility
+     * to hook into the query building procedure, doing any custom / specialized
+     * post query procedures (for example logging) that are neccessary.
+     *
+     * @return void
+     */
+    public function postQuery()
+    {
+
+    }
+    /**
      * builds the sql query from the given parameters and applies things such as
      * column aggregation inheritance and limit subqueries if needed
      *
