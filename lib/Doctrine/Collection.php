@@ -131,7 +131,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         unset($vars['expanded']);
         unset($vars['generator']);
 
-        $vars['table'] = $vars['table']->getComponentName();
+        $vars['_table'] = $vars['_table']->getComponentName();
 
         return serialize($vars);
     }
