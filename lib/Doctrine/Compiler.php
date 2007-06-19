@@ -49,11 +49,11 @@ class Doctrine_Compiler
             $e = explode('.', $file->getFileName());
             
             // we don't want to require versioning files
-            if (end($e) === 'php' && count($e) === 2) {
+            if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
                 require_once $file->getPathName();
             }
         }
-                
+
         $classes = array_merge(get_declared_classes(), get_declared_interfaces());
 
         $ret     = array();
