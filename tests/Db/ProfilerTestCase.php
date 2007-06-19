@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Db_Profiler_TestCase
+ * Doctrine_Connection_Profiler_TestCase
  *
  * @package     Doctrine
  * @subpackage  Doctrine_Db
@@ -31,37 +31,34 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Connection_Profiler_TestCase extends Doctrine_UnitTestCase 
 {
-    protected $dbh;
-    
-    protected $profiler;
-    public function prepareTables() 
+    public function prepareTables()
     {}
     public function prepareData() 
     {}
     
     public function testQuery() 
     {
-        $this->dbh = Doctrine_Db::getConnection('sqlite::memory:');
+        $this->conn = Doctrine_Manager::getInstance()->openConnection(array('sqlite::memory:'));
 
-        $this->profiler = new Doctrine_Db_Profiler();
+        $this->profiler = new Doctrine_Connection_Profiler();
 
-        $this->dbh->setListener($this->profiler);
+        $this->conn->setListener($this->profiler);
 
-        $this->dbh->query('CREATE TABLE test (id INT)');
+        $this->conn->exec('CREATE TABLE test (id INT)');
         
         $this->assertEqual($this->profiler->lastEvent()->getQuery(), 'CREATE TABLE test (id INT)');
         $this->assertTrue($this->profiler->lastEvent()->hasEnded());
-        $this->assertEqual($this->profiler->lastEvent()->getCode(), Doctrine_Db_Event::QUERY);
+        $this->assertEqual($this->profiler->lastEvent()->getCode(), Doctrine_Db_Event::EXEC);
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
         
-        $this->assertEqual($this->dbh->count(), 1);
+        $this->assertEqual($this->conn->count(), 1);
     }
     public function testPrepareAndExecute() 
     {
 
-        $stmt  = $this->dbh->prepare('INSERT INTO test (id) VALUES (?)');
+        $stmt  = $this->conn->prepare('INSERT INTO test (id) VALUES (?)');
         $event = $this->profiler->lastEvent();
 
         $this->assertEqual($event->getQuery(), 'INSERT INTO test (id) VALUES (?)');
@@ -76,18 +73,18 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->profiler->lastEvent()->getCode(), Doctrine_Db_Event::EXECUTE);
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
 
-        $this->assertEqual($this->dbh->count(), 2);
+        $this->assertEqual($this->conn->count(), 2);
     }
     public function testMultiplePrepareAndExecute() 
     {
 
-        $stmt = $this->dbh->prepare('INSERT INTO test (id) VALUES (?)');
+        $stmt = $this->conn->prepare('INSERT INTO test (id) VALUES (?)');
         $this->assertEqual($this->profiler->lastEvent()->getQuery(), 'INSERT INTO test (id) VALUES (?)');
         $this->assertTrue($this->profiler->lastEvent()->hasEnded());
         $this->assertEqual($this->profiler->lastEvent()->getCode(), Doctrine_Db_Event::PREPARE);
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
 
-        $stmt2 = $this->dbh->prepare('INSERT INTO test (id) VALUES (?)');
+        $stmt2 = $this->conn->prepare('INSERT INTO test (id) VALUES (?)');
         $this->assertEqual($this->profiler->lastEvent()->getQuery(), 'INSERT INTO test (id) VALUES (?)');
         $this->assertTrue($this->profiler->lastEvent()->hasEnded());
         $this->assertEqual($this->profiler->lastEvent()->getCode(), Doctrine_Db_Event::PREPARE);
@@ -101,12 +98,12 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->profiler->lastEvent()->getCode(), Doctrine_Db_Event::EXECUTE);
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
 
-        $this->assertEqual($this->dbh->count(), 4);
+        $this->assertEqual($this->conn->count(), 4);
     }
     public function testExecuteStatementMultipleTimes() 
     {
         try {
-            $stmt = $this->dbh->prepare('INSERT INTO test (id) VALUES (?)');
+            $stmt = $this->conn->prepare('INSERT INTO test (id) VALUES (?)');
             $stmt->execute(array(1));
             $stmt->execute(array(1));
             $this->pass();
@@ -127,7 +124,7 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase
     public function testTransactionRollback() 
     {
         try {
-            $this->dbh->beginTransaction();
+            $this->conn->beginTransaction();
             $this->pass();
         } catch(Doctrine_Db_Exception $e) {
             $this->fail($e->__toString());
@@ -138,7 +135,7 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
         
         try {
-            $this->dbh->rollback();
+            $this->conn->rollback();
             $this->pass();
         } catch(Doctrine_Db_Exception $e) {
             $this->fail($e->__toString());
@@ -152,7 +149,7 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase
     public function testTransactionCommit() 
     {
         try {
-            $this->dbh->beginTransaction();
+            $this->conn->beginTransaction();
             $this->pass();
         } catch(Doctrine_Db_Exception $e) {
             $this->fail($e->__toString());
@@ -163,11 +160,11 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
         
         try {
-            $this->dbh->commit();
+            $this->conn->commit();
             $this->pass();
         } catch(Doctrine_Db_Exception $e) {
             $this->fail($e->__toString());
-            $this->dbh->rollback();
+            $this->conn->rollback();
         }
 
         $this->assertEqual($this->profiler->lastEvent()->getQuery(), null);
