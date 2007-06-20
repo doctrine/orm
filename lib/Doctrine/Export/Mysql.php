@@ -166,10 +166,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
 
             foreach ((array) $options['foreignKeys'] as $k => $definition) {
                 if (is_array($definition)) {
-                    if ( ! isset($definition['table'])) {
-                        $definition['table'] = $name;
-                    }
-                    $sql[] = $this->createForeignKeySql($definition['table'], $definition);
+                    $sql[] = $this->createForeignKeySql($name, $definition);
                 }
             }
         }   

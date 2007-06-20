@@ -382,9 +382,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                             $relation->hasConstraint()) {
 
                             $def = array('local'        => $relation->getLocal(),
-                                         'table'        => $relation->getTable()->getTableName(),
                                          'foreign'      => $this->getIdentifier(),
-                                         'foreignTable' => $this->getTableName());
+                                         'foreignTable' => $relation->getTable()->getTableName());
 
                             if (($key = array_search($def, $options['foreignKeys'])) === false) {
                                 $options['foreignKeys'][] = $def;
@@ -402,9 +401,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                             $relation->getForeign() !== $relation->getTable()->getIdentifier()) {
 
                             $def = array('local'        => $relation->getLocal(),
-                                         'table'        => $relation->getTable()->getTableName(),
                                          'foreign'      => $this->getIdentifier(),
-                                         'foreignTable' => $this->getTableName());
+                                         'foreignTable' => $relation->getTable()->getTableName());
     
                             if (($key = array_search($def, $options['foreignKeys'])) === false) {
                                 $options['foreignKeys'][] = $def;

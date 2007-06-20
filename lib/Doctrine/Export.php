@@ -223,10 +223,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
             foreach ((array) $options['foreignKeys'] as $k => $definition) {
                 if (is_array($definition)) {
-                    if ( ! isset($definition['table'])) {
-                        $definition['table'] = $name;
-                    }
-                    $sql[] = $this->createForeignKeySql($definition['table'], $definition);
+                    $sql[] = $this->createForeignKeySql($name, $definition);
                 }
             }
         }   
@@ -868,6 +865,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         if ( ! is_array($definition['foreign'])) {
             $definition['foreign'] = array($definition['foreign']);
         }
+
         $sql .= implode(', ', array_map(array($this->conn, 'quoteIdentifier'), $definition['local']))
               . ') REFERENCES '
               . $definition['foreignTable'] . '('
@@ -1007,7 +1005,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 } else {
                     $sql[] = $query;
                 }
-                
+
                 if (isset($data['options']['foreignKeys']) && is_array($data['options']['foreignKeys'])) {
                     $fks[$table->getTableName()] = $data['options']['foreignKeys'];
                 }
