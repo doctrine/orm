@@ -1,0 +1,212 @@
+++ Introduction
+
+*** THIS CHAPTER AND THE CODE IT REFERS TO IS UNDER CONSTRUCTION ***
+
+
+Doctrine provides flexible event listener architecture that not only allows listening for different events but also for altering the execution of the listened methods.
+
+There are several different listeners and hooks for various Doctrine components. Listeners are separate classes where as hooks are empty template methods which are defined in the base class.
+
+An example of using Doctrine_Record hooks:
+<code type='php'>
+class Blog extends Doctrine_Record 
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('title', 'string', 200);
+        $this->hasColumn('content', 'string');
+        $this->hasColumn('created', 'date');
+    }
+    public function preInsert()
+    {
+        $this->created = date('Y-m-d', time());
+    }
+}
+
+// initialize connection etc, then:
+
+$blog = new Blog();
+$blog->title = 'New title';
+$blog->content = 'Some content';
+$blog->save();
+
+$blog->created; // 2007-06-20 (format: YYYY-MM-DD)
+</code>
+++ Connection listeners    
+
+Connection listeners are used for listening the methods of Doctrine_Connection and its modules (such as Doctrine_Transaction). All listener methods take one argument Doctrine_Event which holds information about the listened event.
+
++++ Creating a new listener
+There are three different ways of defining a listener. First you can create a listener by making a class that inherits Doctrine_EventListener:
+
+<code type='php'>
+class MyListener extends Doctrine_EventListener
+{
+    public function preExec(Doctrine_Event $event)
+    {
+
+    }
+}
+</code>
+
+Note that by declaring a class that extends Doctrine_EventListener you don't have to define all the methods within the Doctrine_EventListener_Interface. This is due to a fact that Doctrine_EventListener already has empty skeletons for all these methods.
+
+Sometimes it may not be possible to define a listener that extends Doctrine_EventListener (you might have a listener that inherits some other base class). In this case you can make it implement Doctrine_EventListener_Interface.
+
+<code type='php'>
+class MyListener implements Doctrine_EventListener_Interface 
+{
+    // notice: all listener methods must be defined here 
+    // (otherwise PHP throws fatal error)
+    
+    public function preExec(Doctrine_Event $event)
+    { }
+    public function postExec(Doctrine_Event $event)
+    { }
+    
+    // ...
+}
+</code>
+
+The third way of creating a listener is a very elegant one. You can make a class that implements Doctrine_Overloadable. This interface has only one method: __call(), which can be used for catching *all* the events.
+
+<code type='php'>
+class MyDebugger implements Doctrine_Overloadable
+{
+    public function __call($methodName, $args) 
+    {
+        print $methodName . ' called !';
+    }
+}
+</code>
+
++++ Attaching listeners
+
+You can attach the listeners to a connection with setListener().
+
+<code type='php'>
+$conn->setListener(new MyDebugger());
+</code>
+
+If you need to use multiple listeners you can use addListener().
+
+<code type='php'>
+$conn->addListener(new MyDebugger());
+$conn->addListener(new MyLogger());
+</code>
+
++++ preConnect, postConnect
+
++++ Transaction listeners
+||~ Methods     ||~ Listens ||
+|| preTransactionBegin() || Doctrine_Transaction::beginTransaction() ||
+|| postTransactionBegin() || Doctrine_Transaction::beginTransaction() ||
+|| preTransactionRollback() || Doctrine_Transaction::rollback() ||
+|| postTransactionRollback() || Doctrine_Transaction::rollback() ||
+|| preTransactionCommit() || Doctrine_Transaction::commit() ||
+|| postTransactionCommit() || Doctrine_Transaction::commit() ||
+
++++ Query execution listeners
+
+||~ Methods     ||~ Listens ||
+|| prePrepare() || Doctrine_Connection::prepare() ||
+|| postPrepare() || Doctrine_Connection::prepare() ||
+|| preExec() || Doctrine_Connection::exec() ||
+|| postExec() || Doctrine_Connection::exec() ||
+|| preStmtExecute() || Doctrine_Connection_Statement::execute() ||
+|| postStmtExecute() || Doctrine_Connection_Statement::execute() ||
+|| preExecute() || Doctrine_Connection::execute() * ||
+|| postExecute() || Doctrine_Connection::execute() * ||
+
+* preExecute() and postExecute() only get invoked when Doctrine_Connection::execute() is called without prepared statement parameters. Otherwise Doctrine_Connection::execute() invokes prePrepare, postPrepare, preStmtExecute and postStmtExecute.
+
+
+++ Query listeners
++++ preHydrate, postHydrate
++++ preBuildQuery, postBuildQuery
+
+++ Record hooks
+||~ Methods     ||~ Listens ||
+|| preLoad() || Doctrine_Record::beginTransaction() ||
+|| postLoad() || Doctrine_Record::beginTransaction() ||
+|| preSave() || Doctrine_Record::save() ||
+|| postSave() || Doctrine_Record::save() ||
+|| preUpdate() || Doctrine_Record::save() when the record state is DIRTY ||
+|| postUpdate() || Doctrine_Record::save() when the record state is DIRTY ||
+|| preInsert() || Doctrine_Record::save() when the record state is TDIRTY ||
+|| postInsert() || Doctrine_Record::save() when the record state is TDIRTY ||
+|| preDelete() || Doctrine_Record::delete() ||
+|| postDelete() || Doctrine_Record::delete() ||
+|| preValidate() || Doctrine_Validator::validate() ||
+|| postValidate() || Doctrine_Validator::validate() ||
+
+Example 1. Using insert and update listeners
+<code type='php'>
+class Blog extends Doctrine_Record 
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('title', 'string', 200);
+        $this->hasColumn('content', 'string');
+        $this->hasColumn('created', 'date');
+        $this->hasColumn('updated', 'date');
+    }
+    public function preInsert()
+    {
+        $this->created = date('Y-m-d', time());
+    }
+    public function preUpdate()
+    {
+        $this->updated = date('Y-m-d', time());
+    }
+}
+</code>
+
+++ Listening events
+++ Chaining listeners
+
+All different event listeners in Doctrine allow chaining. This means that more than one listener can be attached for listening the same methods. The following example attaches two listeners for given connection:
+
+<code type='php'>
+// here Debugger and Logger both inherit Doctrine_EventListener
+
+$conn->addListener(new Debugger());
+$conn->addListener(new Logger());
+</code>
+
+++ Altering execution
+Doctrine_Event provides many methods for altering the execution of the listened method as well as for altering the behaviour of the listener chain.
+
++++ skipOperation()
+
+For some reason you may want to skip the execution of the listened method. It can be done as follows (note that preExec could be any listener method):
+
+<code type='php'>
+class MyListener extends Doctrine_EventListener
+{
+    public function preExec(Doctrine_Event $event)
+    {
+        // some business logic, then:
+
+        $event->skipOperation();
+    }
+}
+</code>
+
+
++++ skipNextListener()
+
+When using a chain of listeners you might want to skip the execution of the next listener. It can be achieved as follows:
+
+<code type='php'>
+class MyListener extends Doctrine_EventListener
+{
+    public function preExec(Doctrine_Event $event)
+    {
+        // some business logic, then:
+
+        $event->skipNextListener();
+    }
+}
+</code>
+

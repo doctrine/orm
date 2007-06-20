@@ -8,6 +8,7 @@
 + Native SQL
 + Transactions
 + Caching
++ Event listeners
 + Plugins
 + Database abstraction
 + Technology
