@@ -221,5 +221,17 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($query->getQuery(),
         "SELECT entity.name AS entity__name, entity.id AS entity__id FROM (SELECT entity.name FROM entity WHERE entity.name = 'something') WHERE entity.id = 2 ORDER BY entity.name");
     }
+
+    public function testJoin()
+    {
+        $query = new Doctrine_RawSql();
+
+        $query->parseQuery('SELECT {entity.name}, {phonenumber.*} FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id LIMIT 1');
+        $query->addComponent('entity', 'Entity');
+        $query->addComponent('phonenumber', 'Entity.Phonenumber');
+
+        $coll = $query->execute();
+        $this->assertEqual($coll->count(), 1);
+    }
 }
 ?>
