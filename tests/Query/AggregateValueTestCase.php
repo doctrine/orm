@@ -108,6 +108,23 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users[1]->count, 2);
     }
 
+    public function testAggregateOrder()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('u.name, COUNT(u.id) count')->from('User u')->groupby('u.name')->orderby('count');
+
+        $users = $q->execute();
+
+        $this->assertEqual($users->count(), 2);
+        
+        $this->assertEqual($users[0]->state(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($users[1]->state(), Doctrine_Record::STATE_PROXY);
+        
+        $this->assertEqual($users[0]->count, 2);
+        $this->assertEqual($users[1]->count, 2);
+    }
+
     public function testAggregateValueMappingSupportsLeftJoins() 
     {
         $q = new Doctrine_Query();
