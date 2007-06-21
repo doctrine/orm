@@ -60,7 +60,7 @@ Now lets say these classes are in directory 'models/'. We can make Doctrine to i
 
 require_once('path-to-doctrine/lib/Doctrine.php');
 
-spl_register_autoload(array('Doctrine', 'autoload'));
+spl_autoload_register(array('Doctrine', 'autoload'));
 
 Doctrine::export('models');
 </code>
@@ -85,7 +85,7 @@ There might be situations where you don't want to execute the export queries imm
 <code type='php'>
 require_once('path-to-doctrine/lib/Doctrine.php');
 
-spl_register_autoload(array('Doctrine', 'autoload'));
+spl_autoload_register(array('Doctrine', 'autoload'));
 
 $queries = Doctrine::exportSql('models');
 
