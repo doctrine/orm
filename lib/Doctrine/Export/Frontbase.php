@@ -257,7 +257,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
      */
     public function createSequence($sequenceName, $start = 1, array $options = array())
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($sequenceName), true);
         $seqcolName   = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
 
         $query = 'CREATE TABLE ' . $sequenceName . ' (' . $seqcolName . ' INTEGER DEFAULT UNIQUE, PRIMARY KEY(' . $seqcolName . '))';
