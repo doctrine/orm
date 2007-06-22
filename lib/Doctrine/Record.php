@@ -1364,7 +1364,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         //$array = $query->execute(array($this->getIncremented()));
 
         return 0;
-        return $array[0]['COUNT(1)'];
+        //return $array[0]['COUNT(1)'];
 
 
     }
