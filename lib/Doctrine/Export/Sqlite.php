@@ -47,7 +47,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         if (!@file_exists($databaseFile)) {
             throw new Doctrine_Export_Exception('database does not exist');
         }
-        $result = @unlink($database_file);
+        $result = @unlink($databaseFile);
         if ( ! $result) {
             throw new Doctrine_Export_Exception('could not remove the database file');
         }
