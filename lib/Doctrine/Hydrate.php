@@ -226,7 +226,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             return $name . $newIndex;
         }
 
-        return $alias;
+        return $tableAlias;
     }
     /**
      * hasTableAlias
@@ -395,7 +395,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 $this->parts[$name] = array();
             }
         } else {
-            throw new Doctrine_Hydrate_Exception('Unknown query part ' . $part);
+            throw new Doctrine_Hydrate_Exception('Unknown query part ' . $name);
         }
         return $this;
     }
