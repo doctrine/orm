@@ -51,7 +51,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     public function __construct(Doctrine_Connection $conn, $stmt)
     {
         $this->_conn = $conn;
-        $this->_stmt    = $stmt;
+        $this->_stmt = $stmt;
         
         if ($stmt === false) {
             throw new Doctrine_Db_Exception('Unknown statement object given.');
@@ -73,7 +73,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     }
     public function getQuery()
     {
-        return $this->_stmt->getQuery();
+        return $this->_stmt->queryString;
     }
     /**
      * bindColumn
@@ -213,7 +213,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      */
     public function execute($params = null)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::EXECUTE, $this->_stmt->getQuery(), $params);
+        $event = new Doctrine_Event($this, Doctrine_Event::EXECUTE, $this->_stmt->queryString, $params);
         // print $this->_stmt->queryString . print_r($params, true) . "<br>"; 
         $skip = $this->_conn->getListener()->onPreExecute($event);
 
