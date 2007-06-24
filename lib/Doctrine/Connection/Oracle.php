@@ -93,6 +93,8 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection
         $e2     = explode(" from ",$e[1]);
         $fields = $e2[0];
         */
+        $limit = (int) $limit;
+        $offset = (int) $offset;
         if (preg_match('/^\s*SELECT/i', $query)) {
             if ( ! preg_match('/\sFROM\s/i', $query)) {
                 $query .= " FROM dual";
