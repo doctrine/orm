@@ -1,15 +1,18 @@
 <?php
-class Entity extends Doctrine_Record {
-    public function setUp() {
-        $this->ownsOne('Email', 'Entity.email_id');
-        $this->ownsMany('Phonenumber', 'Phonenumber.entity_id');
-        $this->ownsOne('Account', 'Account.entity_id');
+class Entity extends Doctrine_Record 
+{
+    public function setUp() 
+    {
+        $this->ownsOne('Email', array('local' => 'email_id'));
+        $this->ownsMany('Phonenumber', array('foreign' => 'entity_id'));
+        $this->ownsOne('Account', array('foreign' => 'entity_id'));
         $this->hasMany('Entity', array('local' => 'entity1', 
                                        'refClass' => 'EntityReference',
                                        'foreign' => 'entity2',
                                        'equal'    => true));
     }
-    public function setTableDefinition() {
+    public function setTableDefinition() 
+    {
         $this->hasColumn('id', 'integer',20, 'autoincrement|primary');
         $this->hasColumn('name', 'string',50);
         $this->hasColumn('loginname', 'string',20, array('unique'));
@@ -21,8 +24,10 @@ class Entity extends Doctrine_Record {
         $this->option('subclasses',array('User','Group'));
     }
 }
-class FieldNameTest extends Doctrine_Record {
-    public function setTableDefinition() {
+class FieldNameTest extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
         $this->hasColumn('someColumn', 'string', 200, array('default' => 'some string'));
         $this->hasColumn('someEnum', 'enum', 4, array('default' => 'php', 'values' => array('php', 'java', 'python')));
         $this->hasColumn('someArray', 'array', 100, array('default' => array()));
@@ -30,33 +35,43 @@ class FieldNameTest extends Doctrine_Record {
         $this->hasColumn('someInt', 'integer', 20, array('default' => 11));
     }
 }
-class EntityReference extends Doctrine_Record {
-    public function setTableDefinition() {
+class EntityReference extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
         $this->hasColumn('entity1', 'integer', null, 'primary');
         $this->hasColumn('entity2', 'integer', null, 'primary');
         //$this->setPrimaryKey(array('entity1', 'entity2'));
     }
 }
-class Account extends Doctrine_Record {
-    public function setTableDefinition() {
+class Account extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
         $this->hasColumn('entity_id', 'integer');
         $this->hasColumn('amount', 'integer');
     }
 }
 
-class EntityAddress extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('user_id', 'integer');
-        $this->hasColumn('address_id', 'integer');
+class EntityAddress extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('user_id', 'integer', null, array('primary' => true));
+        $this->hasColumn('address_id', 'integer', null, array('primary' => true));
     }
 }
 
-class Address extends Doctrine_Record {
-    public function setUp() {
-        $this->hasMany('User', 'Entityaddress.entity_id');
+class Address extends Doctrine_Record 
+{
+    public function setUp()
+    {
+        $this->hasMany('User', array('local' => 'user_id', 
+                                     'foreign' => 'address_id',
+                                     'refClass' => 'EntityAddress'));
     }
     public function setTableDefinition() {
-        $this->hasColumn('address', 'string',200);
+        $this->hasColumn('address', 'string', 200);
     }
 }
 
@@ -88,28 +103,35 @@ class Description extends Doctrine_Record {
     }
 }
 class UserTable extends Doctrine_Table { }
-class User extends Entity {
-    public function setUp() {
+class User extends Entity 
+{
+    public function setUp() 
+    {
         parent::setUp();
-        $this->hasMany('Address', 'Entityaddress.address_id');
+        $this->hasMany('Address', array('local' => 'user_id', 
+                                        'foreign' => 'address_id',
+                                        'refClass' => 'EntityAddress'));
         $this->ownsMany('Album', 'Album.user_id');
         $this->ownsMany('Book', 'Book.user_id');
         $this->hasMany('Group', 'Groupuser.group_id');
         $this->option('inheritanceMap', array('type' => 0));
     }
     /** Custom validation */
-    public function validate() {
+    public function validate() 
+    {
         // Allow only one name!
         if ($this->name !== 'The Saint') {
             $this->errorStack()->add('name', 'notTheSaint');
         }
     }
-    public function validateOnInsert() {
+    public function validateOnInsert() 
+    {
         if ($this->password !== 'Top Secret') {
             $this->errorStack()->add('password', 'pwNotTopSecret');
         }
     }
-    public function validateOnUpdate() {
+    public function validateOnUpdate() 
+    {
         if ($this->loginname !== 'Nobody') {
             $this->errorStack()->add('loginname', 'notNobody');
         }
@@ -117,7 +139,8 @@ class User extends Entity {
 }
 class SelfRefTest extends Doctrine_Record
 {
-    public function setTableDefinition() {
+    public function setTableDefinition() 
+    {
         $this->hasColumn('name', 'string', 50);
         $this->hasColumn('created_by', 'integer');
     }
@@ -126,20 +149,25 @@ class SelfRefTest extends Doctrine_Record
         $this->hasOne('SelfRefTest as createdBy', array('local' => 'created_by'));
     }
 }
-class Groupuser extends Doctrine_Record {
-    public function setTableDefinition() {
+class Groupuser extends Doctrine_Record
+{
+    public function setTableDefinition() 
+    {
         $this->hasColumn('added', 'integer');
         $this->hasColumn('group_id', 'integer');
         $this->hasColumn('user_id', 'integer');
     }
 }
-class Phonenumber extends Doctrine_Record { 
-    public function setTableDefinition() {
+class Phonenumber extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
         $this->hasColumn('phonenumber', 'string',20);
         $this->hasColumn('entity_id', 'integer');
     }
-    public function setUp() {
-        $this->hasOne('Entity', 'Phonenumber.entity_id');
+    public function setUp() 
+    {
+        $this->hasOne('Entity', array('local' => 'entity_id'));
     }
 }
 
@@ -153,9 +181,11 @@ class Element extends Doctrine_Record {
         $this->hasOne('Element as Parent', 'Element.parent_id');
     }
 }
-class Email extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn('address', 'string',150, 'email|unique');
+class Email extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('address', 'string', 150, 'email|unique');
     }
 }
 class Book extends Doctrine_Record {
