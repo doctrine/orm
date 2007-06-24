@@ -138,6 +138,24 @@ class Doctrine_Event
         return $this->_code;
     }
     /**
+     * setSkipOperation
+     *
+     * @return void
+     */
+    public function setSkipOperation($bool) 
+    {
+        $this->_skipOperation = (bool) $bool;
+    }
+    /**
+     * getSkipOperation
+     *
+     * @return void
+     */
+    public function getSkipOperation()
+    {
+        return $this->_skipOperation;
+    }
+    /**
      * start
      * starts the internal timer of this event
      *

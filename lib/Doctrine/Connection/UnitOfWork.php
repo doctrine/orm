@@ -145,20 +145,22 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->preSave($event);
 
-        switch ($record->state()) {
-            case Doctrine_Record::STATE_TDIRTY:
-                $this->insert($record);
-                break;
-            case Doctrine_Record::STATE_DIRTY:
-            case Doctrine_Record::STATE_PROXY:
-                $this->update($record);
-                break;
-            case Doctrine_Record::STATE_CLEAN:
-            case Doctrine_Record::STATE_TCLEAN:
-                // do nothing
-                break;
+        if ( ! $event->getSkipOperation()) {
+            switch ($record->state()) {
+                case Doctrine_Record::STATE_TDIRTY:
+                    $this->insert($record);
+                    break;
+                case Doctrine_Record::STATE_DIRTY:
+                case Doctrine_Record::STATE_PROXY:
+                    $this->update($record);
+                    break;
+                case Doctrine_Record::STATE_CLEAN:
+                case Doctrine_Record::STATE_TCLEAN:
+                    // do nothing
+                    break;
+            }
         }
-        
+
         $record->postSave($event);
 
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
@@ -186,13 +188,14 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $this->deleteComposites($record);
 
-        $this->conn->transaction->addDelete($record);
+        if ( ! $event->getSkipOperation()) {
+            $this->conn->transaction->addDelete($record);
 
-        $record->postDelete($event);
-
+            $record->state(Doctrine_Record::STATE_TCLEAN);
+        }
         $record->getTable()->getListener()->onDelete($record);
 
-        $record->state(Doctrine_Record::STATE_TCLEAN);
+        $record->postDelete($event);
 
         $this->conn->commit();
 
@@ -337,43 +340,44 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         
         $record->preUpdate($event);
 
-        $array = $record->getPrepared();
-
-        if (empty($array)) {
-            return false;
-        }
-        $set   = array();
-        foreach ($array as $name => $value) {
-            $set[] = $name . ' = ?';
-
-            if ($value instanceof Doctrine_Record) {
-                if ( ! $value->exists()) {
-                    $record->save($this->conn);
-                }
-                $array[$name] = $value->getIncremented();
-                $record->set($name, $value->getIncremented());
+        if ( ! $event->getSkipOperation()) {
+            $array = $record->getPrepared();
+    
+            if (empty($array)) {
+                return false;
             }
+            $set   = array();
+            foreach ($array as $name => $value) {
+                $set[] = $name . ' = ?';
+    
+                if ($value instanceof Doctrine_Record) {
+                    if ( ! $value->exists()) {
+                        $record->save($this->conn);
+                    }
+                    $array[$name] = $value->getIncremented();
+                    $record->set($name, $value->getIncremented());
+                }
+            }
+    
+            $params = array_values($array);
+            $id     = $record->obtainIdentifier();
+    
+            if ( ! is_array($id)) {
+                $id = array($id);
+            }
+            $id     = array_values($id);
+            $params = array_merge($params, $id);
+    
+            $sql  = 'UPDATE ' . $this->conn->quoteIdentifier($record->getTable()->getTableName())
+                  . ' SET ' . implode(', ', $set)
+                  . ' WHERE ' . implode(' = ? AND ', $record->getTable()->getPrimaryKeys())
+                  . ' = ?';
+    
+            $stmt = $this->conn->getDbh()->prepare($sql);
+            $stmt->execute($params);
+    
+            $record->assignIdentifier(true);
         }
-
-        $params = array_values($array);
-        $id     = $record->obtainIdentifier();
-
-        if ( ! is_array($id)) {
-            $id = array($id);
-        }
-        $id     = array_values($id);
-        $params = array_merge($params, $id);
-
-        $sql  = 'UPDATE ' . $this->conn->quoteIdentifier($record->getTable()->getTableName())
-              . ' SET ' . implode(', ', $set)
-              . ' WHERE ' . implode(' = ? AND ', $record->getTable()->getPrimaryKeys())
-              . ' = ?';
-
-        $stmt = $this->conn->getDbh()->prepare($sql);
-        $stmt->execute($params);
-
-        $record->assignIdentifier(true);
-
         $record->postUpdate($event);
 
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onUpdate($record);
@@ -394,45 +398,46 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $event = new Doctrine_Event($this, Doctrine_Event::INSERT);
 
         $record->preInsert($event);
-
-        $array = $record->getPrepared();
-
-        if (empty($array)) {
-            return false;
-        }
-        $table     = $record->getTable();
-        $keys      = $table->getPrimaryKeys();
-
-        $seq       = $record->getTable()->sequenceName;
-
-        if ( ! empty($seq)) {
-            $id             = $this->conn->sequence->nextId($seq);
-            $name           = $record->getTable()->getIdentifier();
-            $array[$name]   = $id;
-
-            $record->assignIdentifier($id);
-        }
-
-        $this->conn->insert($table->getTableName(), $array);
-
-        if (empty($seq) && count($keys) == 1 && $keys[0] == $table->getIdentifier() &&
-            $table->getIdentifierType() != Doctrine_Identifier::NORMAL) {
-
-            if (strtolower($this->conn->getName()) == 'pgsql') {
-                $seq = $table->getTableName() . '_' . $keys[0];
+        
+        if ( ! $event->getSkipOperation()) {
+            $array = $record->getPrepared();
+    
+            if (empty($array)) {
+                return false;
             }
-
-            $id = $this->conn->sequence->lastInsertId($seq);
-
-            if ( ! $id) {
-                $id = $table->getMaxIdentifier();
+            $table     = $record->getTable();
+            $keys      = $table->getPrimaryKeys();
+    
+            $seq       = $record->getTable()->sequenceName;
+    
+            if ( ! empty($seq)) {
+                $id             = $this->conn->sequence->nextId($seq);
+                $name           = $record->getTable()->getIdentifier();
+                $array[$name]   = $id;
+    
+                $record->assignIdentifier($id);
             }
-
-            $record->assignIdentifier($id);
-        } else {
-            $record->assignIdentifier(true);
+    
+            $this->conn->insert($table->getTableName(), $array);
+    
+            if (empty($seq) && count($keys) == 1 && $keys[0] == $table->getIdentifier() &&
+                $table->getIdentifierType() != Doctrine_Identifier::NORMAL) {
+    
+                if (strtolower($this->conn->getName()) == 'pgsql') {
+                    $seq = $table->getTableName() . '_' . $keys[0];
+                }
+    
+                $id = $this->conn->sequence->lastInsertId($seq);
+    
+                if ( ! $id) {
+                    $id = $table->getMaxIdentifier();
+                }
+    
+                $record->assignIdentifier($id);
+            } else {
+                $record->assignIdentifier(true);
+            }
         }
-
         $record->postInsert($event);
 
         // listen the onInsert event
