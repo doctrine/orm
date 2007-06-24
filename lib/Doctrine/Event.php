@@ -50,30 +50,34 @@ class Doctrine_Event
     const UPDATE    = 13;
     const INSERT    = 14;
     /**
-     * @var mixed $invoker        the handler which invoked this event
+     * @var mixed $_invoker             the handler which invoked this event
      */
-    protected $invoker;
+    protected $_invoker;
     /**
-     * @var string $query               the sql query associated with this event (if any)
+     * @var string $_query              the sql query associated with this event (if any)
      */
-    protected $query;
+    protected $_query;
     /**
-     * @var string $params               the parameters associated with the query (if any)
+     * @var string $_params             the parameters associated with the query (if any)
      */
-    protected $params;
+    protected $_params;
     /**
      * @see Doctrine_Event constants
-     * @var integer $code               the event code
+     * @var integer $_code              the event code
      */
-    protected $code;
+    protected $_code;
     /**
-     * @var integer $startedMicrotime   the time point in which this event was started
+     * @var integer $_startedMicrotime  the time point in which this event was started
      */
-    protected $startedMicrotime;
+    protected $_startedMicrotime;
     /**
-     * @var integer $endedMicrotime     the time point in which this event was ended
+     * @var integer $_endedMicrotime    the time point in which this event was ended
      */
-    protected $endedMicrotime;
+    protected $_endedMicrotime;
+    /**
+     * @var boolean $skipOperation
+     */
+    protected $_skipOperation = false;
     /**
      * constructor
      *
@@ -83,10 +87,10 @@ class Doctrine_Event
      */
     public function __construct($invoker, $code, $query = null, $params = array())
     {
-        $this->invoker = $invoker;
-        $this->code    = $code;
-        $this->query   = $query;
-        $this->params  = $params;
+        $this->_invoker = $invoker;
+        $this->_code    = $code;
+        $this->_query   = $query;
+        $this->_params  = $params;
     }
     /**
      * getQuery
@@ -95,7 +99,7 @@ class Doctrine_Event
      */
     public function getQuery()
     {
-        return $this->query;
+        return $this->_query;
     }
     /**
      * getName
@@ -105,7 +109,7 @@ class Doctrine_Event
      */
     public function getName() 
     {
-        switch ($this->code) {
+        switch ($this->_code) {
             case self::QUERY:
                 return 'query';
             case self::EXEC:
@@ -131,7 +135,7 @@ class Doctrine_Event
      */
     public function getCode()
     {
-        return $this->code;
+        return $this->_code;
     }
     /**
      * start
@@ -141,7 +145,7 @@ class Doctrine_Event
      */
     public function start()
     {
-        $this->startedMicrotime = microtime(true);
+        $this->_startedMicrotime = microtime(true);
     }
     /**
      * hasEnded
@@ -151,7 +155,7 @@ class Doctrine_Event
      */
     public function hasEnded()
     {
-        return ($this->endedMicrotime != null);
+        return ($this->_endedMicrotime != null);
     }
     /**
      * end
@@ -161,7 +165,7 @@ class Doctrine_Event
      */
     public function end()
     {
-        $this->endedMicrotime = microtime(true);
+        $this->_endedMicrotime = microtime(true);
     }
     /**
      * getInvoker
@@ -171,7 +175,7 @@ class Doctrine_Event
      */
     public function getInvoker()
     {
-        return $this->invoker;
+        return $this->_invoker;
     }
     /**
      * getParams
@@ -181,7 +185,7 @@ class Doctrine_Event
      */
     public function getParams()
     {
-        return $this->params;
+        return $this->_params;
     }
     /**
      * Get the elapsed time (in microseconds) that the event ran.  If the event has
@@ -191,9 +195,9 @@ class Doctrine_Event
      */
     public function getElapsedSecs()
     {
-        if (is_null($this->endedMicrotime)) {
+        if (is_null($this->_endedMicrotime)) {
             return false;
         }
-        return ($this->endedMicrotime - $this->startedMicrotime);
+        return ($this->_endedMicrotime - $this->_startedMicrotime);
     }
 }
