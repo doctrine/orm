@@ -419,8 +419,19 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         } else {
             $this->parts[$name] = $part;
         }
-        
+
         return $this;
+    }
+    /**
+     * hasAliasDeclaration
+     * whether or not this object has a declaration for given component alias
+     *
+     * @param string $componentAlias    the component alias the retrieve the declaration from
+     * @return boolean
+     */
+    public function hasAliasDeclaration($componentAlias)
+    {
+        return isset($this->_aliasMap[$componentAlias]);
     }
     /**
      * getAliasDeclaration
