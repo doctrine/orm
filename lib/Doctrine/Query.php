@@ -699,7 +699,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         // parse the DQL parts
         foreach ($this->_dqlParts as $queryPartName => $queryParts) {
-            $this->parts[$queryPartName] = array();
+            
+            $this->removeQueryPart($queryPartName);
+
             if (is_array($queryParts) && ! empty($queryParts)) {
 
                 foreach ($queryParts as $queryPart) {
@@ -709,7 +711,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     $sql = $parser->parse($queryPart);
 
                     if (isset($sql)) {
-                        if ($queryPartName == 'limit' || 
+                        if ($queryPartName == 'limit' ||
                             $queryPartName == 'offset') {
 
                             $this->setQueryPart($queryPartName, $sql);
@@ -800,7 +802,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']): '';
         $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby'])  : '';
 
-        if ($modifyLimit) {
+        if ($modifyLimit) {    
+
             $q = $this->_conn->modifyLimitQuery($q, $this->parts['limit'], $this->parts['offset']);
         }
 
