@@ -44,8 +44,13 @@ class Doctrine_Event
     const CONNECT   = 8;
     const FETCH     = 9;
     const FETCHALL  = 10;
+    
+    const DELETE    = 11;
+    const SAVE      = 12;
+    const UPDATE    = 13;
+    const INSERT    = 14;
     /**
-     * @var Doctrine_Db $invoker        the handler which invoked this event
+     * @var mixed $invoker        the handler which invoked this event
      */
     protected $invoker;
     /**
@@ -57,7 +62,7 @@ class Doctrine_Event
      */
     protected $params;
     /**
-     * @see Doctrine_Db_Event constants
+     * @see Doctrine_Event constants
      * @var integer $code               the event code
      */
     protected $code;
@@ -81,7 +86,7 @@ class Doctrine_Event
         $this->invoker = $invoker;
         $this->code    = $code;
         $this->query   = $query;
-        $this->params = $params;
+        $this->params  = $params;
     }
     /**
      * getQuery

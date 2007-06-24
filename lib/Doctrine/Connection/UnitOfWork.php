@@ -140,8 +140,10 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     public function save(Doctrine_Record $record)
     {
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
+        
+        $event = new Doctrine_Event($this, Doctrine_Event::SAVE);
 
-        $record->preSave();
+        $record->preSave($event);
 
         switch ($record->state()) {
             case Doctrine_Record::STATE_TDIRTY:
@@ -157,7 +159,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 break;
         }
         
-        $record->postSave();
+        $record->postSave($event);
 
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
     }
@@ -178,13 +180,15 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->getTable()->getListener()->onPreDelete($record);
         
-        $record->preDelete();
+        $event = new Doctrine_Event($this, Doctrine_Event::DELETE);
+
+        $record->preDelete($event);
 
         $this->deleteComposites($record);
 
         $this->conn->transaction->addDelete($record);
 
-        $record->postDelete();
+        $record->postDelete($event);
 
         $record->getTable()->getListener()->onDelete($record);
 
@@ -329,7 +333,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     {
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreUpdate($record);
         
-        $record->preUpdate();
+        $event = new Doctrine_Event($this, Doctrine_Event::UPDATE);
+        
+        $record->preUpdate($event);
 
         $array = $record->getPrepared();
 
@@ -368,7 +374,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->assignIdentifier(true);
 
-        $record->postUpdate();
+        $record->postUpdate($event);
 
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onUpdate($record);
 
@@ -385,7 +391,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
          // listen the onPreInsert event
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
         
-        $record->preInsert();
+        $event = new Doctrine_Event($this, Doctrine_Event::INSERT);
+
+        $record->preInsert($event);
 
         $array = $record->getPrepared();
 
@@ -425,7 +433,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             $record->assignIdentifier(true);
         }
 
-        $record->postInsert();
+        $record->postInsert($event);
 
         // listen the onInsert event
         $table->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);

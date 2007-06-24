@@ -294,53 +294,53 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the saving procedure.
      */
-    public function preSave()
+    public function preSave($event)
     { }
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the saving procedure.
      */
-    public function postSave()
+    public function postSave($event)
     { }
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the deletion procedure.
      */
-    public function preDelete()
+    public function preDelete($event)
     { }
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the deletion procedure.
      */
-    public function postDelete()
+    public function postDelete($event)
     { }
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the saving procedure only when the record is going to be
      * updated.
      */
-    public function preUpdate()
+    public function preUpdate($event)
     { }
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the saving procedure only when the record is going to be
      * updated.
      */
-    public function postUpdate()
+    public function postUpdate($event)
     { }
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the saving procedure only when the record is going to be
      * inserted into the data store the first time.
      */
-    public function preInsert()
+    public function preInsert($event)
     { }
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the saving procedure only when the record is going to be
      * inserted into the data store the first time.
      */
-    public function postInsert()
+    public function postInsert($event)
     { }
     /**
      * getErrorStack
