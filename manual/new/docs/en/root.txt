@@ -11,6 +11,7 @@
 + Event listeners
 + Plugins
 + Database abstraction
++ Improving Performance
 + Technology
 + Exceptions and warnings
 + Real world examples
