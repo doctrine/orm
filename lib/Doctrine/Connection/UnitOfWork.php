@@ -141,6 +141,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     {
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
 
+        $record->preSave();
+
         switch ($record->state()) {
             case Doctrine_Record::STATE_TDIRTY:
                 $this->insert($record);
@@ -154,6 +156,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 // do nothing
                 break;
         }
+        
+        $record->postSave();
 
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
     }
@@ -173,10 +177,14 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $this->conn->beginTransaction();
 
         $record->getTable()->getListener()->onPreDelete($record);
+        
+        $record->preDelete();
 
         $this->deleteComposites($record);
 
         $this->conn->transaction->addDelete($record);
+
+        $record->postDelete();
 
         $record->getTable()->getListener()->onDelete($record);
 
@@ -320,6 +328,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     public function update(Doctrine_Record $record)
     {
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreUpdate($record);
+        
+        $record->preUpdate();
 
         $array = $record->getPrepared();
 
@@ -358,6 +368,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->assignIdentifier(true);
 
+        $record->postUpdate();
+
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onUpdate($record);
 
         return true;
@@ -372,6 +384,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     {
          // listen the onPreInsert event
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
+        
+        $record->preInsert();
 
         $array = $record->getPrepared();
 
@@ -410,6 +424,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         } else {
             $record->assignIdentifier(true);
         }
+
+        $record->postInsert();
 
         // listen the onInsert event
         $table->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);

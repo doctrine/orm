@@ -275,21 +275,73 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      * validations that are neccessary.
      */
     protected function validate()
-    {}
+    { }
     /**
-     * Empty tempalte method to provide concrete Record classes with the possibility
+     * Empty template method to provide concrete Record classes with the possibility
      * to hook into the validation procedure only when the record is going to be
      * updated.
      */
     protected function validateOnUpdate()
-    {}
+    { }
     /**
-     * Empty tempalte method to provide concrete Record classes with the possibility
+     * Empty template method to provide concrete Record classes with the possibility
      * to hook into the validation procedure only when the record is going to be
      * inserted into the data store the first time.
      */
     protected function validateOnInsert()
-    {}
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the saving procedure.
+     */
+    public function preSave()
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the saving procedure.
+     */
+    public function postSave()
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the deletion procedure.
+     */
+    public function preDelete()
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the deletion procedure.
+     */
+    public function postDelete()
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the saving procedure only when the record is going to be
+     * updated.
+     */
+    public function preUpdate()
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the saving procedure only when the record is going to be
+     * updated.
+     */
+    public function postUpdate()
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the saving procedure only when the record is going to be
+     * inserted into the data store the first time.
+     */
+    public function preInsert()
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the saving procedure only when the record is going to be
+     * inserted into the data store the first time.
+     */
+    public function postInsert()
+    { }
     /**
      * getErrorStack
      *
