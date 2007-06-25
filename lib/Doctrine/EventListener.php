@@ -78,6 +78,22 @@ class Doctrine_EventListener implements Doctrine_EventListener_Interface
     public function postTransactionBegin(Doctrine_Event $event)
     { }
 
+
+    public function preSavepointCommit(Doctrine_Event $event)
+    { }
+    public function postSavepointCommit(Doctrine_Event $event)
+    { }
+
+    public function preSavepointRollback(Doctrine_Event $event)
+    { }
+    public function postSavepointRollback(Doctrine_Event $event)
+    { }
+
+    public function preSavepointCreate(Doctrine_Event $event)
+    { }
+    public function postSavepointCreate(Doctrine_Event $event)
+    { }
+
     public function postConnect(Doctrine_Event $event)
     { }
     public function preConnect(Doctrine_Event $event)
