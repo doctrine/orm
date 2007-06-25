@@ -144,7 +144,7 @@ class Doctrine_Event
      * @param string $option    the name of the option
      * @return mixed
      */
-    public function getOption($option)
+    public function __get($option)
     {
         if ( ! isset($this->_options[$option])) {
             return null;
@@ -155,13 +155,15 @@ class Doctrine_Event
     /**
      * skipOperation
      * skips the next operation
-     * an alias for setOption('skipOperation', true)
+     * an alias for __set('skipOperation', true)
      *
      * @return Doctrine_Event   this object
      */
     public function skipOperation()
     {
-        return $this->setOption('skipOperation', true);
+        $this->_options['skipOperation'] = true;
+    
+        return $this;
     }
     /**
      * setOption
@@ -171,7 +173,7 @@ class Doctrine_Event
      * @param mixed $value      the value of the given option
      * @return Doctrine_Event   this object
      */
-    public function setOption($option, $value)
+    public function __set($option, $value)
     {
         $this->_options[$option] = $value;
 

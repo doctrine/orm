@@ -139,163 +139,6 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
         }
     }
     /**
-     * onUpdate
-     * an event invoked after Doctrine_Record is updated
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onUpdate(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onUpdate($record);
-        }
-    }
-    /**
-     * onPreUpdate
-     * an event invoked before Doctrine_Record is updated
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onPreUpdate(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onPreUpdate($record);
-        }
-    }
-    /**
-     * onCreate
-     * an event invoked when a new Doctrine_Record is created
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onCreate(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onCreate($record);
-        }
-    }
-    /**
-     * onPreCreate
-     * an event invoked when a new Doctrine_Record
-     * but not yet initialized
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onPreCreate(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onPreCreate($record);
-        }
-    }
-    /**
-     * onSave
-     * an event invoked after a Doctrine_Record is saved (inserted / updated)
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onSave(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onSave($record);
-        }
-    }
-    /**
-     * onSave
-     * an event invoked after a Doctrine_Record is saved (inserted / updated)
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onPreSave(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onPreSave($record);
-        }
-    }
-    /**
-     * onInsert
-     * an event invoked after Doctrine_Record is inserted into database
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onInsert(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onInsert($record);
-        }
-    }
-    /**
-     * onPreInsert
-     * an event invoked before Doctrine_Record is inserted into database
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onPreInsert(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onPreInsert($record);
-        }
-    }
-    /**
-     * onDelete
-     * an event invoked after Doctrine_Record is deleted from database
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onDelete(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onDelete($record);
-        }
-    }
-    /**
-     * onPreDelete
-     * an event invoked before Doctrine_Record is deleted from database
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onPreDelete(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onPreDelete($record);
-        }
-    }
-    /**
-     * onEvict
-     * an event invoked after Doctrine_Record is evicted from record repository
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onEvict(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onEvict($record);
-        }
-    }
-    /**
-     * onPreEvict
-     * an event invoked before Doctrine_Record is evicted from record repository
-     *
-     * @param Doctrine_Record $record
-     * @return void
-     */
-    public function onPreEvict(Doctrine_Record $record)
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->onPreEvict($record);
-        }
-    }
-    /**
      * onClose
      * an event invoked after Doctrine_Connection is closed
      *
@@ -341,10 +184,10 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Event $event
      * @return void
      */
-    public function onTransactionCommit(Doctrine_Event $event)
+    public function postTransactionCommit(Doctrine_Event $event)
     {
         foreach ($this->listeners as $listener) {
-            $listener->onTransactionCommit($event);
+            $listener->postTransactionCommit($event);
         }
     }
     /**
@@ -354,10 +197,10 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Event $event
      * @return void
      */
-    public function onPreTransactionCommit(Doctrine_Event $event)
+    public function preTransactionCommit(Doctrine_Event $event)
     {
         foreach ($this->listeners as $listener) {
-            $listener->onPreTransactionCommit($event);
+            $listener->preTransactionCommit($event);
         }
     }
     /**
@@ -367,10 +210,10 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Event $event
      * @return void
      */
-    public function onTransactionRollback(Doctrine_Event $event)
+    public function postTransactionRollback(Doctrine_Event $event)
     {
         foreach ($this->listeners as $listener) {
-            $listener->onTransactionRollback($event);
+            $listener->postTransactionRollback($event);
         }
     }
     /**
@@ -380,10 +223,10 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Event $event
      * @return void
      */
-    public function onPreTransactionRollback(Doctrine_Event $event)
+    public function preTransactionRollback(Doctrine_Event $event)
     {
         foreach ($this->listeners as $listener) {
-            $listener->onPreTransactionRollback($event);
+            $listener->preTransactionRollback($event);
         }
     }
     /**
@@ -393,10 +236,10 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Event $event
      * @return void
      */
-    public function onTransactionBegin(Doctrine_Event $event)
+    public function postTransactionBegin(Doctrine_Event $event)
     {
         foreach ($this->listeners as $listener) {
-            $listener->onTransactionBegin($event);
+            $listener->postTransactionBegin($event);
         }
     }
     /**
@@ -406,10 +249,10 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @param Doctrine_Event $event
      * @return void
      */
-    public function onPreTransactionBegin(Doctrine_Event $event)
+    public function preTransactionBegin(Doctrine_Event $event)
     {
         foreach ($this->listeners as $listener) {
-            $listener->onPreTransactionBegin($event);
+            $listener->preTransactionBegin($event);
         }
     }
     /**
@@ -438,95 +281,95 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->onPreCollectionDelete($collection);
         }
     }
-    public function onConnect(Doctrine_Event $event)
+    public function postConnect(Doctrine_Event $event)
     {
         foreach ($this->listeners as $listener) {
-            $listener->onConnect($event);
+            $listener->postConnect($event);
         }
     }
-    public function onPreConnect(Doctrine_Event $event)
-    { 
+    public function preConnect(Doctrine_Event $event)
+    {
         foreach ($this->listeners as $listener) {
-            $listener->onPreConnect($event);
+            $listener->preConnect($event);
         }
     }
-    public function onPreQuery(Doctrine_Event $event)
+    public function preQuery(Doctrine_Event $event)
     { 
         foreach ($this->listeners as $listener) {
-            $listener->onPreQuery($event);
+            $listener->preQuery($event);
         }
     }
-    public function onQuery(Doctrine_Event $event)
-    { 
+    public function postQuery(Doctrine_Event $event)
+    {
         foreach ($this->listeners as $listener) {
-            $listener->onQuery($event);
-        }
-    }
-
-    public function onPrePrepare(Doctrine_Event $event)
-    { 
-        foreach ($this->listeners as $listener) {
-            $listener->onPrePrepare($event);
-        }
-    }
-    public function onPrepare(Doctrine_Event $event)
-    { 
-        foreach ($this->listeners as $listener) {
-            $listener->onPrepare($event);
+            $listener->postQuery($event);
         }
     }
 
-    public function onPreExec(Doctrine_Event $event)
+    public function prePrepare(Doctrine_Event $event)
     { 
         foreach ($this->listeners as $listener) {
-            $listener->onPreExec($event);
+            $listener->prePrepare($event);
         }
     }
-    public function onExec(Doctrine_Event $event)
-    { 
+    public function postPrepare(Doctrine_Event $event)
+    {
         foreach ($this->listeners as $listener) {
-            $listener->onExec($event);
+            $listener->postPrepare($event);
+        }
+    }
+
+    public function preExec(Doctrine_Event $event)
+    {
+        foreach ($this->listeners as $listener) {
+            $listener->preExec($event);
+        }
+    }
+    public function postExec(Doctrine_Event $event)
+    {
+        foreach ($this->listeners as $listener) {
+            $listener->postExec($event);
         }
     }
     
-    public function onPreFetch(Doctrine_Event $event)
+    public function preFetch(Doctrine_Event $event)
     { 
         foreach ($this->listeners as $listener) {
-            $listener->onPreFetch($event);
+            $listener->preFetch($event);
         }
     }
-    public function onFetch(Doctrine_Event $event)
-    { 
+    public function postFetch(Doctrine_Event $event)
+    {
         foreach ($this->listeners as $listener) {
-            $listener->onFetch($event);
-        }
-    }
-
-    public function onPreFetchAll(Doctrine_Event $event)
-    { 
-        foreach ($this->listeners as $listener) {
-            $listener->onPreFetchAll($event);
+            $listener->postFetch($event);
         }
     }
 
-    public function onFetchAll(Doctrine_Event $event)
+    public function preFetchAll(Doctrine_Event $event)
     { 
         foreach ($this->listeners as $listener) {
-            $listener->onFetchAll($event);
+            $listener->preFetchAll($event);
         }
     }
 
-    public function onPreExecute(Doctrine_Event $event)
-    { 
+    public function postFetchAll(Doctrine_Event $event)
+    {
         foreach ($this->listeners as $listener) {
-            $listener->onPreExecute($event);
+            $listener->postFetchAll($event);
         }
     }
 
-    public function onExecute(Doctrine_Event $event)
-    { 
+    public function preExecute(Doctrine_Event $event)
+    {
         foreach ($this->listeners as $listener) {
-            $listener->onExecute($event);
+            $listener->preExecute($event);
+        }
+    }
+
+    public function postExecute(Doctrine_Event $event)
+    {
+        foreach ($this->listeners as $listener) {
+            $listener->postExecute($event);
         }
     }
 }

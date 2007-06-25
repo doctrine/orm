@@ -34,67 +34,33 @@ Doctrine::autoload('Doctrine_EventListener_Interface');
  */
 interface Doctrine_EventListener_Interface
 {
-    public function onLoad(Doctrine_Record $record);
-    public function onPreLoad(Doctrine_Record $record);
+    public function preTransactionCommit(Doctrine_Event $event);
+    public function postTransactionCommit(Doctrine_Event $event);
 
-    public function onSleep(Doctrine_Record $record);
-    public function onWakeUp(Doctrine_Record $record);
+    public function preTransactionRollback(Doctrine_Event $event);
+    public function postTransactionRollback(Doctrine_Event $event);
 
-    public function onUpdate(Doctrine_Record $record);
-    public function onPreUpdate(Doctrine_Record $record);
+    public function preTransactionBegin(Doctrine_Event $event);
+    public function postTransactionBegin(Doctrine_Event $event);
 
-    public function onCreate(Doctrine_Record $record);
-    public function onPreCreate(Doctrine_Record $record);
+    public function postConnect(Doctrine_Event $event);
+    public function preConnect(Doctrine_Event $event);
 
-    public function onSave(Doctrine_Record $record);
-    public function onPreSave(Doctrine_Record $record);
+    public function preQuery(Doctrine_Event $event);
+    public function postQuery(Doctrine_Event $event);
 
-    public function onInsert(Doctrine_Record $record);
-    public function onPreInsert(Doctrine_Record $record);
+    public function prePrepare(Doctrine_Event $event);
+    public function postPrepare(Doctrine_Event $event);
 
-    public function onDelete(Doctrine_Record $record);
-    public function onPreDelete(Doctrine_Record $record);
+    public function preExec(Doctrine_Event $event);
+    public function postExec(Doctrine_Event $event);
 
-    public function onEvict(Doctrine_Record $record);
-    public function onPreEvict(Doctrine_Record $record);
+    public function preFetch(Doctrine_Event $event);
+    public function postFetch(Doctrine_Event $event);
 
-    public function onClose(Doctrine_Event $event);
-    public function onPreClose(Doctrine_Event $event);
+    public function preFetchAll(Doctrine_Event $event);
+    public function postFetchAll(Doctrine_Event $event);
 
-    public function onCollectionDelete(Doctrine_Collection $collection);
-    public function onPreCollectionDelete(Doctrine_Collection $collection);
-
-    public function onOpen(Doctrine_Connection $connection);
-    
-
-
-    public function onConnect(Doctrine_Event $event);
-    public function onPreConnect(Doctrine_Event $event);
-
-    public function onTransactionCommit(Doctrine_Event $event);
-    public function onPreTransactionCommit(Doctrine_Event $event);
-
-    public function onTransactionRollback(Doctrine_Event $event);
-    public function onPreTransactionRollback(Doctrine_Event $event);
-
-    public function onTransactionBegin(Doctrine_Event $event);
-    public function onPreTransactionBegin(Doctrine_Event $event);
-
-    public function onPreQuery(Doctrine_Event $event);
-    public function onQuery(Doctrine_Event $event);
-
-    public function onPrePrepare(Doctrine_Event $event);
-    public function onPrepare(Doctrine_Event $event);
-
-    public function onPreExec(Doctrine_Event $event);
-    public function onExec(Doctrine_Event $event);
-    
-    public function onPreFetch(Doctrine_Event $event);
-    public function onFetch(Doctrine_Event $event);
-
-    public function onPreFetchAll(Doctrine_Event $event);
-    public function onFetchAll(Doctrine_Event $event);
-
-    public function onPreExecute(Doctrine_Event $event);
-    public function onExecute(Doctrine_Event $event);
+    public function preExecute(Doctrine_Event $event);
+    public function postExecute(Doctrine_Event $event);
 }

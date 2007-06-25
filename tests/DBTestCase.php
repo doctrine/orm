@@ -110,33 +110,33 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
         $listener = $this->dbh->getListener();
         $stmt = $this->dbh->prepare('INSERT INTO entity (id) VALUES(?)');
 
-        $this->assertEqual($listener->pop(), 'onPrepare');
-        $this->assertEqual($listener->pop(), 'onPrePrepare');
+        $this->assertEqual($listener->pop(), 'postPrepare');
+        $this->assertEqual($listener->pop(), 'prePrepare');
         
         $stmt->execute(array(1));
 
-        $this->assertEqual($listener->pop(), 'onExecute');
-        $this->assertEqual($listener->pop(), 'onPreExecute');
+        $this->assertEqual($listener->pop(), 'postExecute');
+        $this->assertEqual($listener->pop(), 'preExecute');
         
         $this->dbh->exec('DELETE FROM entity');
 
-        $this->assertEqual($listener->pop(), 'onExec');
-        $this->assertEqual($listener->pop(), 'onPreExec');
+        $this->assertEqual($listener->pop(), 'postExec');
+        $this->assertEqual($listener->pop(), 'preExec');
         
         $this->dbh->beginTransaction();
 
-        $this->assertEqual($listener->pop(), 'onTransactionBegin');
-        $this->assertEqual($listener->pop(), 'onPreTransactionBegin');
+        $this->assertEqual($listener->pop(), 'postTransactionBegin');
+        $this->assertEqual($listener->pop(), 'preTransactionBegin');
 
         $this->dbh->exec('INSERT INTO entity (id) VALUES (1)');
 
-        $this->assertEqual($listener->pop(), 'onExec');
-        $this->assertEqual($listener->pop(), 'onPreExec');
+        $this->assertEqual($listener->pop(), 'postExec');
+        $this->assertEqual($listener->pop(), 'preExec');
 
         $this->dbh->commit();
         
-        $this->assertEqual($listener->pop(), 'onTransactionCommit');
-        $this->assertEqual($listener->pop(), 'onPreTransactionCommit');
+        $this->assertEqual($listener->pop(), 'postTransactionCommit');
+        $this->assertEqual($listener->pop(), 'preTransactionCommit');
 
         
 
@@ -152,63 +152,66 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
 
         $listener = $this->dbh->getListener()->get(0);
         $listener2 = $this->dbh->getListener()->get(1);
-        $this->assertEqual($listener->pop(), 'onExec');
-        $this->assertEqual($listener->pop(), 'onPreExec');
+        $this->assertEqual($listener->pop(), 'postExec');
+        $this->assertEqual($listener->pop(), 'preExec');
 
-        $this->assertEqual($listener2->pop(), 'onExec');
-        $this->assertEqual($listener2->pop(), 'onPreExec');
+        $this->assertEqual($listener2->pop(), 'postExec');
+        $this->assertEqual($listener2->pop(), 'preExec');
     }
+
     public function testListeningPrepareEventsWithListenerChain() 
     {
 
         $stmt = $this->dbh->prepare('INSERT INTO entity (id) VALUES(?)');
         $listener = $this->dbh->getListener()->get(0);
         $listener2 = $this->dbh->getListener()->get(1);
-        $this->assertEqual($listener->pop(), 'onPrepare');
-        $this->assertEqual($listener->pop(), 'onPrePrepare');
+        $this->assertEqual($listener->pop(), 'postPrepare');
+        $this->assertEqual($listener->pop(), 'prePrepare');
 
-        $this->assertEqual($listener2->pop(), 'onPrepare');
-        $this->assertEqual($listener2->pop(), 'onPrePrepare');
+        $this->assertEqual($listener2->pop(), 'postPrepare');
+        $this->assertEqual($listener2->pop(), 'prePrepare');
 
         $stmt->execute(array(1));
 
-        $this->assertEqual($listener->pop(), 'onExecute');
-        $this->assertEqual($listener->pop(), 'onPreExecute');
+        $this->assertEqual($listener->pop(), 'postExecute');
+        $this->assertEqual($listener->pop(), 'preExecute');
 
-        $this->assertEqual($listener2->pop(), 'onExecute');
-        $this->assertEqual($listener2->pop(), 'onPreExecute');
+        $this->assertEqual($listener2->pop(), 'postExecute');
+        $this->assertEqual($listener2->pop(), 'preExecute');
     }
-    public function testListeningExecEventsWithListenerChain() 
+
+    public function testListeningExecEventsWithListenerChain()
     {
         $this->dbh->exec('DELETE FROM entity');
         $listener = $this->dbh->getListener()->get(0);
         $listener2 = $this->dbh->getListener()->get(1);
-        $this->assertEqual($listener->pop(), 'onExec');
-        $this->assertEqual($listener->pop(), 'onPreExec');
+        $this->assertEqual($listener->pop(), 'postExec');
+        $this->assertEqual($listener->pop(), 'preExec');
 
-        $this->assertEqual($listener2->pop(), 'onExec');
-        $this->assertEqual($listener2->pop(), 'onPreExec');
+        $this->assertEqual($listener2->pop(), 'postExec');
+        $this->assertEqual($listener2->pop(), 'preExec');
     }
+    
     public function testListeningTransactionEventsWithListenerChain() 
     {
         $this->dbh->beginTransaction();
         $listener = $this->dbh->getListener()->get(0);
         $listener2 = $this->dbh->getListener()->get(1);
-        $this->assertEqual($listener->pop(), 'onTransactionBegin');
-        $this->assertEqual($listener->pop(), 'onPreTransactionBegin');
+        $this->assertEqual($listener->pop(), 'postTransactionBegin');
+        $this->assertEqual($listener->pop(), 'preTransactionBegin');
 
-        $this->assertEqual($listener2->pop(), 'onTransactionBegin');
-        $this->assertEqual($listener2->pop(), 'onPreTransactionBegin');
+        $this->assertEqual($listener2->pop(), 'postTransactionBegin');
+        $this->assertEqual($listener2->pop(), 'preTransactionBegin');
 
         $this->dbh->exec('INSERT INTO entity (id) VALUES (1)');
 
         $this->dbh->commit();
 
-        $this->assertEqual($listener->pop(), 'onTransactionCommit');
-        $this->assertEqual($listener->pop(), 'onPreTransactionCommit');
+        $this->assertEqual($listener->pop(), 'postTransactionCommit');
+        $this->assertEqual($listener->pop(), 'preTransactionCommit');
         
-        $this->assertEqual($listener->pop(), 'onExec');
-        $this->assertEqual($listener->pop(), 'onPreExec');
+        $this->assertEqual($listener->pop(), 'postExec');
+        $this->assertEqual($listener->pop(), 'preExec');
         
         $this->dbh->exec('DROP TABLE entity');
     }

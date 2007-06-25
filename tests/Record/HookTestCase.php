@@ -36,7 +36,7 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
     { }
     public function prepareTables() 
     { 
-        $this->tables = array('RecordHookTest');
+        $this->tables = array('RecordHookTest', 'SoftDeleteTest');
         
         parent::prepareTables();
     }
@@ -78,7 +78,41 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($r->pop(), 'postDelete');
         $this->assertEqual($r->pop(), 'preDelete');
     }
+    
+    public function testSoftDelete()
+    {
+        $r = new SoftDeleteTest();
+        $r->name = 'something';
+        $r->save();
+
+        $this->assertEqual($r->name, 'something');
+        $this->assertEqual($r->deleted, null);
+        $this->assertEqual($r->getState(), Doctrine_Record::STATE_CLEAN);
+
+        $r->delete();
+
+        $this->assertEqual($r->getState(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($r->deleted, true);
+    }
 }
+class SoftDeleteTest extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string', null, array('primary' => true));
+        $this->hasColumn('deleted', 'boolean', 1);
+    }
+    public function preDelete($event)
+    {
+        $event->skipOperation();
+    }
+    public function postDelete($event)
+    {
+        $this->deleted = true;
+        $this->save();
+    }
+}
+
 class RecordHookTest extends Doctrine_Record
 {
     protected $_messages = array();
@@ -87,35 +121,35 @@ class RecordHookTest extends Doctrine_Record
     {
         $this->hasColumn('name', 'string', null, array('primary' => true));
     }
-    public function preSave()
+    public function preSave($event)
     {
         $this->_messages[] = __FUNCTION__;
     }
-    public function postSave()
+    public function postSave($event)
     {
         $this->_messages[] = __FUNCTION__;
     }
-    public function preInsert()
+    public function preInsert($event)
     {
         $this->_messages[] = __FUNCTION__;
     }
-    public function postInsert()
+    public function postInsert($event)
     {
         $this->_messages[] = __FUNCTION__;
     }
-    public function preUpdate()
+    public function preUpdate($event)
     {
         $this->_messages[] = __FUNCTION__;
     }
-    public function postUpdate()
+    public function postUpdate($event)
     {
         $this->_messages[] = __FUNCTION__;
     }
-    public function preDelete()
+    public function preDelete($event)
     {
         $this->_messages[] = __FUNCTION__;
     }
-    public function postDelete()
+    public function postDelete($event)
     {
         $this->_messages[] = __FUNCTION__;
     }

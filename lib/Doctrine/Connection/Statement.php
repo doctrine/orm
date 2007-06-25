@@ -37,10 +37,10 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      *                                      statement holds an instance of Doctrine_Connection
      */
     protected $_conn;
-
+    /**
+     * @var mixed $_stmt                    PDOStatement object, boolean false or Doctrine_Adapter_Statement object
+     */
     protected $_stmt;
-
-    protected $_executed = false;
     /**
      * constructor
      *
@@ -54,7 +54,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
         $this->_stmt = $stmt;
         
         if ($stmt === false) {
-            throw new Doctrine_Db_Exception('Unknown statement object given.');
+            throw new Doctrine_Exception('Unknown statement object given.');
         }
     }
     /**
@@ -215,14 +215,14 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         $event = new Doctrine_Event($this, Doctrine_Event::EXECUTE, $this->_stmt->queryString, $params);
         // print $this->_stmt->queryString . print_r($params, true) . "<br>"; 
-        $skip = $this->_conn->getListener()->onPreExecute($event);
+        $this->_conn->getListener()->preExecute($event);
 
-        if ( ! $skip) {
+        if ( ! $event->skipOperation) {
             $this->_stmt->execute($params);
             $this->_conn->incrementQueryCount();
         }
 
-        $this->_conn->getListener()->onExecute($event);
+        $this->_conn->getListener()->postExecute($event);
 
         return $this;
     }
@@ -253,20 +253,23 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      *
      * @return mixed
      */
-    public function fetch($fetchStyle = Doctrine::FETCH_BOTH,
+    public function fetch($fetchMode = Doctrine::FETCH_BOTH,
                           $cursorOrientation = Doctrine::FETCH_ORI_NEXT,
                           $cursorOffset = null)
     {
-        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::FETCHALL, $this->_stmt->getQuery(), 
-                                       array($fetchStyle, $cursorOrientation, $cursorOffset));
+        $event = new Doctrine_Db_Event($this, Doctrine_Event::FETCHALL, $this->_stmt->getQuery());
 
-        $data = $this->_conn->getListener()->onPreFetch($event);
+        $event->fetchMode = $fetchMode;
+        $event->cursorOrientation = $cursorOrientation;
+        $event->cursorOffset = $cursorOffset;
 
-        if ($data === null) {
-            $data = $this->_stmt->fetch($fetchStyle, $cursorOrientation, $cursorOffset);
+        $data = $this->_conn->getListener()->preFetch($event);
+
+        if ( ! $event->skipOperation) {
+            $data = $this->_stmt->fetch($fetchMode, $cursorOrientation, $cursorOffset);
         }
         
-        $this->_conn->getListener()->onFetch($event);
+        $this->_conn->getListener()->postFetch($event);
     
         return $data;
     }
@@ -274,29 +277,35 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      * fetchAll
      * Returns an array containing all of the result set rows
      *
-     *
+     * @param integer $fetchMode            Controls how the next row will be returned to the caller.
+     *                                      This value must be one of the Doctrine::FETCH_* constants,
+     *                                      defaulting to Doctrine::FETCH_BOTH
      *
      * @param integer $columnIndex          Returns the indicated 0-indexed column when the value of $fetchStyle is
      *                                      Doctrine::FETCH_COLUMN. Defaults to 0.
      *
      * @return array
      */
-    public function fetchAll($fetchStyle = Doctrine::FETCH_BOTH,
+    public function fetchAll($fetchMode = Doctrine::FETCH_BOTH,
                              $columnIndex = null)
     {
-        $event = new Doctrine_Db_Event($this, Doctrine_Db_Event::FETCHALL, $this->_stmt->getQuery(), array($fetchStyle, $columnIndex));
+        $event = new Doctrine_Db_Event($this, Doctrine_Event::FETCHALL, $this->_stmt->getQuery());
+        $event->fetchMode = $fetchMode;
+        $event->columnIndex = $columnIndex;
 
-        $data = $this->_conn->getListener()->onPreFetchAll($event);
+        $this->_conn->getListener()->preFetchAll($event);
 
-        if ($data === null) {
+        if ( ! $event->skipOperation) {
             if ($columnIndex !== null) {
-                $data = $this->_stmt->fetchAll($fetchStyle, $columnIndex);
+                $data = $this->_stmt->fetchAll($fetchMode, $columnIndex);
             } else {
-                $data = $this->_stmt->fetchAll($fetchStyle);
+                $data = $this->_stmt->fetchAll($fetchMode);
             }
+
+            $event->data = $data;
         }
 
-        $this->_conn->getListener()->onFetchAll($event);
+        $this->_conn->getListener()->postFetchAll($event);
 
         return $data;
     }

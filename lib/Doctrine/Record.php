@@ -157,14 +157,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
             $keys = $this->_table->getPrimaryKeys();
 
-            if ( ! $exists) {
-                // listen the onPreCreate event
-                $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onPreCreate($this);
-            } else {
-
-                // listen the onPreLoad event
-                $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onPreLoad($this);
-            }
             // get the data array
             $this->_data = $this->_table->getData();
 
@@ -185,19 +177,12 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
 
                 // set the default values for this record
                 $this->assignDefaultValues();
-
-                // listen the onCreate event
-                $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onCreate($this);
-
             } else {
                 $this->_state      = Doctrine_Record::STATE_CLEAN;
 
                 if ($count < $this->_table->getColumnCount()) {
                     $this->_state  = Doctrine_Record::STATE_PROXY;
                 }
-
-                // listen the onLoad event
-                $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
             }
 
             $this->_errorStack = new Doctrine_Validator_ErrorStack();

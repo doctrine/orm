@@ -80,12 +80,8 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
             throw new Doctrine_Connection_Profiler_Exception("Couldn't listen event. Event should be an instance of Doctrine_Event.");
         }
 
-        // event methods should start with 'on'
-        if (substr($m, 0, 2) !== 'on') {
-            throw new Doctrine_Connection_Profiler_Exception("Couldn't invoke listener :" . $m);
-        }
 
-        if (substr($m, 2, 3) === 'Pre' && substr($m, 2, 7) !== 'Prepare') {
+        if (substr($m, 0, 3) === 'pre') {
             // pre-event listener found
             $a[0]->start();
 

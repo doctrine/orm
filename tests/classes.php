@@ -21,7 +21,7 @@ class Entity extends Doctrine_Record
         $this->hasColumn('created', 'integer',11);
         $this->hasColumn('updated', 'integer',11);
         $this->hasColumn('email_id', 'integer');
-        $this->option('subclasses',array('User','Group'));
+        $this->option('subclasses', array('User','Group'));
     }
 }
 class FieldNameTest extends Doctrine_Record 

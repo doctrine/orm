@@ -139,13 +139,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function save(Doctrine_Record $record)
     {
-        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreSave($record);
-        
         $event = new Doctrine_Event($this, Doctrine_Event::SAVE);
 
         $record->preSave($event);
 
-        if ( ! $event->getOption('skipOperation')) {
+        if ( ! $event->skipOperation) {
             switch ($record->state()) {
                 case Doctrine_Record::STATE_TDIRTY:
                     $this->insert($record);
@@ -162,8 +160,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }
 
         $record->postSave($event);
-
-        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
     }
     /**
      * deletes this data access object and all the related composites
@@ -180,21 +176,17 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }
         $this->conn->beginTransaction();
 
-        $record->getTable()->getListener()->onPreDelete($record);
-        
         $event = new Doctrine_Event($this, Doctrine_Event::DELETE);
 
         $record->preDelete($event);
 
         $this->deleteComposites($record);
 
-        if ( ! $event->getOption('skipOperation')) {
+        if ( ! $event->skipOperation) {
             $this->conn->transaction->addDelete($record);
 
             $record->state(Doctrine_Record::STATE_TCLEAN);
         }
-        $record->getTable()->getListener()->onDelete($record);
-
         $record->postDelete($event);
 
         $this->conn->commit();
@@ -334,13 +326,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function update(Doctrine_Record $record)
     {
-        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreUpdate($record);
-        
         $event = new Doctrine_Event($this, Doctrine_Event::UPDATE);
         
         $record->preUpdate($event);
 
-        if ( ! $event->getOption('skipOperation')) {
+        if ( ! $event->skipOperation) {
             $array = $record->getPrepared();
     
             if (empty($array)) {
@@ -380,8 +370,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }
         $record->postUpdate($event);
 
-        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onUpdate($record);
-
         return true;
     }
     /**
@@ -393,13 +381,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     public function insert(Doctrine_Record $record)
     {
          // listen the onPreInsert event
-        $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onPreInsert($record);
-        
         $event = new Doctrine_Event($this, Doctrine_Event::INSERT);
 
         $record->preInsert($event);
         
-        if ( ! $event->getOption('skipOperation')) {
+        if ( ! $event->skipOperation) {
             $array = $record->getPrepared();
     
             if (empty($array)) {
@@ -439,9 +425,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
         }
         $record->postInsert($event);
-
-        // listen the onInsert event
-        $table->getAttribute(Doctrine::ATTR_LISTENER)->onInsert($record);
 
         return true;
     }

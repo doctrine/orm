@@ -65,10 +65,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     protected $tables           = array();
     /**
-     * @var array $exported
-     */
-    protected $exported         = array();
-    /**
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName;
@@ -331,7 +327,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $event = new Doctrine_Event($this, Doctrine_Event::CONNECT);
 
-        $this->getListener()->onPreConnect($event);
+        $this->getListener()->preConnect($event);
 
         $e     = explode(':', $this->options['dsn']);
         $found = false;
@@ -365,7 +361,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->isConnected = true;
 
-        $this->getListener()->onConnect($event);
+        $this->getListener()->postConnect($event);
         return true;
     }
     
@@ -676,13 +672,17 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         $this->connect();
 
-        $event = new Doctrine_Event($this, Doctrine_Db_Event::PREPARE, $statement);
+        $event = new Doctrine_Event($this, Doctrine_Event::PREPARE, $statement);
 
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->onPrePrepare($event);
+        $this->getAttribute(Doctrine::ATTR_LISTENER)->prePrepare($event);
 
-        $stmt = $this->dbh->prepare($statement);
+        $stmt = false;
 
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->onPrepare($event);
+        if ( ! $event->skipOperation) {
+            $stmt = $this->dbh->prepare($statement);
+        }
+
+        $this->getAttribute(Doctrine::ATTR_LISTENER)->postPrepare($event);
 
         return new Doctrine_Connection_Statement($this, $stmt);
     }
@@ -750,7 +750,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return PDOStatement|Doctrine_Adapter_Statement
      */
-    public function execute($query, array $params = array()) 
+    public function execute($query, array $params = array())
     {
     	$this->connect();
 
@@ -760,15 +760,16 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $stmt->execute($params);
                 return $stmt;
             } else {
-                $event = new Doctrine_Event($this, Doctrine_EVENT::QUERY, $query, $params);
+                $event = new Doctrine_Event($this, Doctrine_Event::QUERY, $query, $params);
 
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreQuery($event);
+                $this->getAttribute(Doctrine::ATTR_LISTENER)->preQuery($event);
 
-                $stmt = $this->dbh->query($query);
-                
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->onQuery($event);
-                
-                $this->_count++;
+                if ( ! $event->skipOperation) {
+                    $stmt = $this->dbh->query($query);
+
+                    $this->_count++;
+                }
+                $this->getAttribute(Doctrine::ATTR_LISTENER)->postQuery($event);
 
                 return $stmt;
             }
@@ -796,13 +797,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             } else {
                 $event = new Doctrine_Event($this, Doctrine_EVENT::EXEC, $query, $params);
 
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreExec($event);
+                $this->getAttribute(Doctrine::ATTR_LISTENER)->preExec($event);
 
-                $count = $this->dbh->exec($query);
+                if ( ! $event->skipOperation) {
+                    $count = $this->dbh->exec($query);
 
-                $this->getAttribute(Doctrine::ATTR_LISTENER)->onExec($event);
-                
-                $this->_count++;
+                    $this->_count++;
+                }
+                $this->getAttribute(Doctrine::ATTR_LISTENER)->postExec($event);
 
                 return $count;
             }
