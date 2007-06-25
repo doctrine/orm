@@ -49,7 +49,9 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase
 
         try {
             $query = new Doctrine_Query($this->connection);
-            $ret = $query->query('FROM EnumTest WHERE EnumTest.status = ?', array('open'));
+            $ret = $query->parseQuery('FROM EnumTest WHERE EnumTest.status = ?')
+                         ->execute(array('open'));
+
             $this->assertEqual(count($ret), 1);
         } catch (Exception $e) {
             $this->fail();
@@ -108,22 +110,22 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase
     {
 
         $enum = new EnumTest();
-        $enum->status = "open";
-        $this->assertEqual($enum->status, "open");
+        $enum->status = 'open';
+        $this->assertEqual($enum->status, 'open');
         $enum->save();
-        $this->assertEqual($enum->status, "open");
+        $this->assertEqual($enum->status, 'open');
         $enum->refresh();
-        $this->assertEqual($enum->status, "open");
+        $this->assertEqual($enum->status, 'open');
 
-        $enum->status = "closed";
+        $enum->status = 'closed';
 
-        $this->assertEqual($enum->status, "closed");
+        $this->assertEqual($enum->status, 'closed');
 
         $enum->save();
-        $this->assertEqual($enum->status, "closed");
+        $this->assertEqual($enum->status, 'closed');
         $this->assertTrue(is_numeric($enum->id));
         $enum->refresh();
-        $this->assertEqual($enum->status, "closed");
+        $this->assertEqual($enum->status, 'closed');
     }
 
     public function testEnumTypeWithCaseConversion() 
@@ -132,25 +134,25 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase
 
         $enum = new EnumTest();
 
-        $enum->status = "open";
-        $this->assertEqual($enum->status, "open");
+        $enum->status = 'open';
+        $this->assertEqual($enum->status, 'open');
 
         $enum->save();
-        $this->assertEqual($enum->status, "open");
+        $this->assertEqual($enum->status, 'open');
 
         $enum->refresh();
-        $this->assertEqual($enum->status, "open");      
+        $this->assertEqual($enum->status, 'open');      
         
-        $enum->status = "closed";
+        $enum->status = 'closed';
 
-        $this->assertEqual($enum->status, "closed");
+        $this->assertEqual($enum->status, 'closed');
 
         $enum->save();
-        $this->assertEqual($enum->status, "closed");
+        $this->assertEqual($enum->status, 'closed');
 
         $enum->refresh();
-        $this->assertEqual($enum->status, "closed");
-        
+        $this->assertEqual($enum->status, 'closed');
+
         $this->conn->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
     }
 

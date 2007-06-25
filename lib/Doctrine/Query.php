@@ -111,7 +111,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     }
     public function reset() 
     {
-        $this->_enumParams = array();
         $this->_pendingJoinConditions = array();
         $this->pendingSubqueries = array();
         $this->pendingFields = array();
@@ -304,7 +303,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 }
             }                                   	
         }
-           
+        
+        $this->_state = Doctrine_Query::STATE_DIRTY;
+
         return $this;
     }
     /**
@@ -688,6 +689,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function getQuery($params = array())
     {
+    	if ($this->_state !== self::STATE_DIRTY) {
+    	   return $this->_sql;
+    	}
+
     	$parts = $this->_dqlParts;
 
         // reset the state
@@ -722,6 +727,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 }
             }
         }
+        $params = $this->convertEnums($params);
+
         $this->_state = self::STATE_DIRECT;
 
         // invoke the preQuery hook
@@ -814,6 +821,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         if ($needsSubQuery) {
             array_shift($this->parts['where']);
         }
+        $this->_sql = $q;
 
         return $q;
     }

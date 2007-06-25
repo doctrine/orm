@@ -103,6 +103,10 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                             'resultSetCache' => false,
                             );
     /**
+     * @var string $_sql            cached SQL query
+     */
+    protected $_sql;
+    /**
      * @var array $parts            SQL query string parts
      */
     protected $parts = array(
@@ -643,14 +647,14 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     public function _execute($params, $return = Doctrine::FETCH_RECORD)
     {
         $params = $this->_conn->convertBooleans(array_merge($this->_params, $params));
-        $params = $this->convertEnums($params);
-        
+
         if ( ! $this->_view) {
             $query = $this->getQuery($params);
         } else {
             $query = $this->_view->getSelectSql();
         }
 
+        $params = $this->convertEnums($params);
 
         if ($this->isLimitSubqueryUsed() &&
             $this->_conn->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
@@ -662,7 +666,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             return $this->_conn->exec($query, $params);
         }
 
-        $stmt  = $this->_conn->execute($query, $params);
+        $stmt = $this->_conn->execute($query, $params);
         return $stmt;
     }
     /**
