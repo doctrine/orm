@@ -46,14 +46,13 @@ class Doctrine_Import_Xml
      * @param string $schema       The file containing the XML schema
      * @param string $directory    The directory where the Doctrine_Record classes will
      *                             be written
-     * @static
      */
     public function importObj($schema, $directory)
     {
-        $Builder = new Doctrine_Import_Builder();
-        $Builder->setTargetPath($directory);
+        $builder = new Doctrine_Import_Builder();
+        $builder->setTargetPath($directory);
 
-        $Arr = self::importArr($schema);
+        $arr = self::importArr($schema);
        
         foreach ($arr as $name => $columns) {
             $Builder->buildRecord($name, $columns);
@@ -68,9 +67,8 @@ class Doctrine_Import_Xml
      *
      * @param  string $schema   Path to the file containing the XML schema
      * @return array
-     * @static
      */
-    public static function importArr($schema)
+    public function importArr($schema)
     {
         if (!is_readable($schema)) {
             throw new Doctrine_Import_Exception('Could not read schema file '. $schema);
