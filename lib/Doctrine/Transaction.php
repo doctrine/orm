@@ -198,6 +198,18 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         return $this->transactionLevel;
     }
     /**
+     * getTransactionLevel
+     * set the current transaction nesting level
+     *
+     * @return Doctrine_Transaction     this object
+     */
+    public function setTransactionLevel($level)
+    {
+        $this->transactionLevel = $level;
+
+        return $this;
+    }
+    /**
      * beginTransaction
      * Start a transaction or set a savepoint.
      *
@@ -215,10 +227,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         $this->conn->connect();
         
         $listener = $this->conn->getAttribute(Doctrine::ATTR_LISTENER);
-        
-        if ( ! is_null($savepoint)) {
-            $this->beginTransaction();
 
+        if ( ! is_null($savepoint)) {
             $this->savePoints[] = $savepoint;
 
             $event = new Doctrine_Event($this, Doctrine_Event::SAVEPOINT_CREATE);
@@ -275,7 +285,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         $listener = $this->conn->getAttribute(Doctrine::ATTR_LISTENER);
 
         if ( ! is_null($savepoint)) {
-            $this->transactionLevel = $this->removeSavePoints($savepoint);
+            $this->transactionLevel -= $this->removeSavePoints($savepoint);
 
             $event = new Doctrine_Event($this, Doctrine_Event::SAVEPOINT_COMMIT);
 
@@ -323,9 +333,9 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
                 $listener->postTransactionCommit($event);
             }
+            
+            $this->transactionLevel--;
         }
-
-        $this->transactionLevel--;
 
         return true;
     }
@@ -354,7 +364,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         $listener = $this->conn->getAttribute(Doctrine::ATTR_LISTENER);
 
         if ( ! is_null($savepoint)) {
-            $this->transactionLevel = $this->removeSavePoints($savepoint);
+            $this->transactionLevel -= $this->removeSavePoints($savepoint);
 
             $event = new Doctrine_Event($this, Doctrine_Event::SAVEPOINT_ROLLBACK);
 
@@ -425,18 +435,28 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * and all its children savepoints
      *
      * @param sring $savepoint      name of the savepoint to remove
-     * @return integer              the current transaction level
+     * @return integer              removed savepoints
      */
     private function removeSavePoints($savepoint)
     {
-        $i = array_search($savepoint, $this->savePoints);
+    	$this->savePoints = array_values($this->savePoints);
 
-        $c = count($this->savePoints);
+        $found = false;
+        $i = 0;
 
-        for ($x = $i; $x < count($this->savePoints); $x++) {
-            unset($this->savePoints[$x]);
+        foreach ($this->savePoints as $key => $sp) {
+            if ( ! $found) {
+                if ($sp === $savepoint) {
+                    $found = true;
+                }
+            }
+            if ($found) {
+                $i++;
+                unset($this->savePoints[$key]);
+            }
         }
-        return ($c - $i);
+
+        return $i;
     }
     /**
      * setIsolation
