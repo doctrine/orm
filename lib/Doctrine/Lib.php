@@ -190,7 +190,7 @@ class Doctrine_Lib
         $r[] = 'State               : ' . Doctrine_Lib::getConnectionStateAsString($connection->transaction->getState());
         $r[] = 'Open Transactions   : ' . $connection->transaction->getTransactionLevel();
         $r[] = 'Table in memory     : ' . $connection->count();
-        $r[] = 'Driver name         : ' . $connection->getDbh()->getAttribute(Doctrine::ATTR_DRIVER_NAME);
+        $r[] = 'Driver name         : ' . $connection->getAttribute(Doctrine::ATTR_DRIVER_NAME);
 
         $r[] = "</pre>";
         return implode("\n",$r)."<br>";

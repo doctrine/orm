@@ -840,7 +840,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         // initialize the base of the subquery
         $subquery   = 'SELECT DISTINCT ' . $primaryKey;
 
-        if ($this->_conn->getDBH()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'pgsql') {
+        if ($this->_conn->getAttribute(Doctrine::ATTR_DRIVER_NAME) == 'pgsql') {
             // pgsql needs the order by fields to be preserved in select clause
 
             foreach ($this->parts['orderby'] as $part) {

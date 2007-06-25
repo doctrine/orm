@@ -211,10 +211,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
                 throw new Doctrine_Manager_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
             }
-    
-            if ($adapter instanceof Doctrine_Db) {
-                $adapter->setName($name);
-            }
 
             $driverName = $adapter->getAttribute(Doctrine::ATTR_DRIVER_NAME);
         } elseif (is_array($adapter)) {

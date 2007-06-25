@@ -66,11 +66,11 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
     /**
      * method overloader
      * this method is used for invoking different listeners, for the full
-     * list of availible listeners, see Doctrine_Db_EventListener
+     * list of availible listeners, see Doctrine_EventListener
      *
      * @param string $m     the name of the method
      * @param array $a      method arguments
-     * @see Doctrine_Db_EventListener
+     * @see Doctrine_EventListener
      * @return boolean
      */
     public function __call($m, $a)
@@ -150,17 +150,17 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
     /**
      * pop the last event from the event stack
      *
-     * @return Doctrine_Db_Event
+     * @return Doctrine_Event
      */
     public function pop() 
     {
         return array_pop($this->events);
     }
     /**
-     * Get the Doctrine_Db_Event object for the last query that was run, regardless if it has
+     * Get the Doctrine_Event object for the last query that was run, regardless if it has
      * ended or not. If the event has not ended, it's end time will be Null.
      *
-     * @return Doctrine_Db_Event
+     * @return Doctrine_Event
      */
     public function lastEvent()
     {

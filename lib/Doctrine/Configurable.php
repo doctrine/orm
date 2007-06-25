@@ -169,8 +169,10 @@ abstract class Doctrine_Configurable
     /**
      * addListener
      *
-     * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_Db
+     * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_Connection_Informix|Doctrine_Connection_Mssql|Doctrine_Connection_Oracle|
+     *         Doctrine_Connection_Db2|Doctrine_Connection_Firebird|Doctrine_Connection_Common|
+     *         Doctrine_Manager|Doctrine_Connection|Doctrine_Table
      */
     public function addListener($listener, $name = null)
     {
@@ -186,7 +188,7 @@ abstract class Doctrine_Configurable
     /**
      * getListener
      *
-     * @return Doctrine_Db_EventListener_Interface|Doctrine_Overloadable
+     * @return Doctrine_EventListener_Interface|Doctrine_Overloadable
      */
     public function getListener()
     {
@@ -201,8 +203,10 @@ abstract class Doctrine_Configurable
     /**
      * setListener
      *
-     * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_Db
+     * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_Connection_Informix|Doctrine_Connection_Mssql|Doctrine_Connection_Oracle|
+     *         Doctrine_Connection_Db2|Doctrine_Connection_Firebird|Doctrine_Connection_Common|
+     *         Doctrine_Manager|Doctrine_Connection|Doctrine_Table
      */
     public function setListener($listener)
     {

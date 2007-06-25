@@ -150,7 +150,7 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
     { }
     public function getAttribute($attribute) 
     {
-        if($attribute == PDO::ATTR_DRIVER_NAME)
+        if($attribute == Doctrine::ATTR_DRIVER_NAME)
             return strtolower($this->name);
     }
     public function setAttribute($attribute, $value) 

@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Db_EventListener');
+Doctrine::autoload('Doctrine_EventListener');
 /**
  * Doctrine_Cache
  *
@@ -31,7 +31,7 @@ Doctrine::autoload('Doctrine_Db_EventListener');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, IteratorAggregate
+class Doctrine_Cache extends Doctrine_EventListener implements Countable, IteratorAggregate
 {
     /**
      * @var array $_options                         an array of general caching options
@@ -281,14 +281,14 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     }
     /**
      * onPreQuery
-     * listens the onPreQuery event of Doctrine_Db
+     * listens on the Doctrine_Event onPreQuery event
      *
      * adds the issued query to internal query stack
      * and checks if cached element exists
      *
      * @return boolean
      */
-    public function onPreQuery(Doctrine_Db_Event $event)
+    public function onPreQuery(Doctrine_Event $event)
     {
         $query = $event->getQuery();
 
@@ -325,14 +325,14 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     }
     /**
      * onPreFetch
-     * listens the onPreFetch event of Doctrine_Db_Statement
+     * listens the onPreFetch event of Doctrine_Connection_Statement
      *
      * advances the internal pointer of cached data and returns 
      * the current element
      *
      * @return array
      */
-    public function onPreFetch(Doctrine_Db_Event $event)
+    public function onPreFetch(Doctrine_Event $event)
     {
         $ret = current($this->_data);
     	next($this->_data);
@@ -340,26 +340,26 @@ class Doctrine_Cache extends Doctrine_Db_EventListener implements Countable, Ite
     }
     /**
      * onPreFetch
-     * listens the onPreFetchAll event of Doctrine_Db_Statement
+     * listens the onPreFetchAll event of Doctrine_Connection_Statement
      *
      * returns the current cache data array
      *
      * @return array
      */
-    public function onPreFetchAll(Doctrine_Db_Event $event)
+    public function onPreFetchAll(Doctrine_Event $event)
     {
         return $this->_data;
     }
     /**
      * onPreExecute
-     * listens the onPreExecute event of Doctrine_Db_Statement
+     * listens the onPreExecute event of Doctrine_Connection_Statement
      *
      * adds the issued query to internal query stack
      * and checks if cached element exists
      *
      * @return boolean
      */
-    public function onPreExecute(Doctrine_Db_Event $event)
+    public function onPreExecute(Doctrine_Event $event)
     {
         $query = $event->getQuery();
 

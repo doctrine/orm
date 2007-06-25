@@ -33,6 +33,6 @@ class Doctrine_Db
 {
     public function __construct()
     {
-        throw new Exception('Doctrine_Db has been deprecated. The functionality has been merged into Doctrine_Connection.');
+        throw new Doctrine_Exception('Doctrine_Db has been deprecated. The functionality has been merged into Doctrine_Connection.');
     }
 }

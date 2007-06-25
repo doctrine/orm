@@ -653,7 +653,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
 
 
         if ($this->isLimitSubqueryUsed() &&
-            $this->_conn->getDBH()->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
+            $this->_conn->getAttribute(Doctrine::ATTR_DRIVER_NAME) !== 'mysql') {
 
             $params = array_merge($params, $params);
         }

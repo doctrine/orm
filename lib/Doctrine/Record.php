@@ -1548,8 +1548,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * addListener
      *
-     * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_Db
+     * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_Record
      */
     public function addListener($listener, $name = null)
     {
@@ -1559,7 +1559,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * getListener
      *
-     * @return Doctrine_Db_EventListener_Interface|Doctrine_Overloadable
+     * @return Doctrine_EventListener_Interface|Doctrine_Overloadable
      */
     public function getListener()
     {
@@ -1568,8 +1568,8 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     /**
      * setListener
      *
-     * @param Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_Db
+     * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_Record
      */
     public function setListener($listener)
     {
