@@ -98,25 +98,35 @@ $conn->addListener(new MyLogger());
 +++ preConnect, postConnect
 
 +++ Transaction listeners
-||~ Methods     ||~ Listens ||
-|| preTransactionBegin() || Doctrine_Transaction::beginTransaction() ||
-|| postTransactionBegin() || Doctrine_Transaction::beginTransaction() ||
-|| preTransactionRollback() || Doctrine_Transaction::rollback() ||
-|| postTransactionRollback() || Doctrine_Transaction::rollback() ||
-|| preTransactionCommit() || Doctrine_Transaction::commit() ||
-|| postTransactionCommit() || Doctrine_Transaction::commit() ||
+||~ Methods     ||~ Listens ||~ Params ||
+|| preTransactionBegin() || Doctrine_Transaction::beginTransaction() || ||
+|| postTransactionBegin() || Doctrine_Transaction::beginTransaction() || ||
+|| preTransactionRollback() || Doctrine_Transaction::rollback() || ||
+|| postTransactionRollback() || Doctrine_Transaction::rollback() || ||
+|| preTransactionCommit() || Doctrine_Transaction::commit() || ||
+|| postTransactionCommit() || Doctrine_Transaction::commit() || ||
+|| preCreateSavepoint() || Doctrine_Transaction::createSavepoint() || savepoint ||
+|| postCreateSavepoint() || Doctrine_Transaction::createSavepoint() || savepoint ||
+|| preRollbackSavepoint() || Doctrine_Transaction::rollbackSavepoint() || savepoint ||
+|| postRollbackSavepoint() || Doctrine_Transaction::rollbackSavepoint() || savepoint ||
+|| preReleaseSavepoint() || Doctrine_Transaction::releaseSavepoint() || savepoint ||
+|| postReleaseSavepoint() || Doctrine_Transaction::releaseSavepoint() || savepoint ||
 
 +++ Query execution listeners
 
-||~ Methods     ||~ Listens ||
-|| prePrepare() || Doctrine_Connection::prepare() ||
-|| postPrepare() || Doctrine_Connection::prepare() ||
-|| preExec() || Doctrine_Connection::exec() ||
-|| postExec() || Doctrine_Connection::exec() ||
-|| preStmtExecute() || Doctrine_Connection_Statement::execute() ||
-|| postStmtExecute() || Doctrine_Connection_Statement::execute() ||
-|| preExecute() || Doctrine_Connection::execute() * ||
-|| postExecute() || Doctrine_Connection::execute() * ||
+||~ Methods     ||~ Listens ||~ Params ||
+|| prePrepare() || Doctrine_Connection::prepare() || query ||
+|| postPrepare() || Doctrine_Connection::prepare() || query ||
+|| preExec() || Doctrine_Connection::exec() || query ||
+|| postExec() || Doctrine_Connection::exec() || query, rows ||
+|| preStmtExecute() || Doctrine_Connection_Statement::execute() || query ||
+|| postStmtExecute() || Doctrine_Connection_Statement::execute() || query ||
+|| preExecute() || Doctrine_Connection::execute() * || query ||
+|| postExecute() || Doctrine_Connection::execute() * || query ||
+|| preFetch() || Doctrine_Connection::fetch() || query, data ||
+|| postFetch() || Doctrine_Connection::fetch() || query, data ||
+|| preFetchAll() || Doctrine_Connection::fetchAll() || query, data ||
+|| postFetchAll() || Doctrine_Connection::fetchAll() || query, data ||
 
 * preExecute() and postExecute() only get invoked when Doctrine_Connection::execute() is called without prepared statement parameters. Otherwise Doctrine_Connection::execute() invokes prePrepare, postPrepare, preStmtExecute and postStmtExecute.
 
