@@ -36,27 +36,27 @@
  * @version     $Revision$
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>
  */
-abstract class Doctrine_Import_XML
+class Doctrine_Import_Xml
 {
     /**
      * importObj
      *
      * A method to import a XML Schema and translate it into a Doctrine_Record object
      *
-     * @param string $Schema       The file containing the XML schema
-     * @param string $Directory    The directory where the Doctrine_Record classes will
+     * @param string $schema       The file containing the XML schema
+     * @param string $directory    The directory where the Doctrine_Record classes will
      *                             be written
      * @static
      */
-    public static function importObj($Schema, $Directory)
+    public function importObj($schema, $directory)
     {
         $Builder = new Doctrine_Import_Builder();
-        $Builder->setTargetPath($Directory);
+        $Builder->setTargetPath($directory);
 
-        $Arr = self::importArr($Schema);
+        $Arr = self::importArr($schema);
        
-        foreach ($Arr as $Name => $Columns) {
-            $Builder->buildRecord($Name, $Columns);
+        foreach ($arr as $name => $columns) {
+            $Builder->buildRecord($name, $columns);
         }
     }
 
@@ -66,7 +66,7 @@ abstract class Doctrine_Import_XML
      * A method to import a XML Schema and translate it into a property array. 
      * The function returns that property array.
      *
-     * @param  string $Schema   Path to the file containing the XML schema
+     * @param  string $schema   Path to the file containing the XML schema
      * @return array
      * @static
      */
