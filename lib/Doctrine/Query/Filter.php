@@ -55,7 +55,7 @@ class Doctrine_Query_Filter implements Doctrine_Query_Filter_Interface
      * @param Doctrine_Query $query
      * @return void
      */
-    public function postQuery(Doctrine_Query $query, $sql)
+    public function postQuery(Doctrine_Query $query)
     {
     
     }
