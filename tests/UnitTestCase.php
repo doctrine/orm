@@ -130,7 +130,7 @@ class Doctrine_UnitTestCase extends UnitTestCase
 
         } catch(Doctrine_Manager_Exception $e) {
             if($this->driverName == 'main') {
-                $this->dbh = array('sqlite::memory:');
+                $this->dbh = new PDO('sqlite::memory:');
             } else {
                 $this->dbh = $this->adapter = new Doctrine_Adapter_Mock($this->driverName);
             }
@@ -243,7 +243,7 @@ class Doctrine_UnitTestCase extends UnitTestCase
         $users[7]->Phonenumber[0]->phonenumber = '111 567 333';
 
         $this->users = $users;
-        $this->connection->flush();
+        $this->users->save(); 
     }
     public function getConnection() 
     {
@@ -278,8 +278,8 @@ class Doctrine_UnitTestCase extends UnitTestCase
         if (isset($this->objTable)) {
             $this->objTable->clear();
         }
-        
-        $this->init    = true;
+
+        $this->init = true;
     }
 }
 ?>

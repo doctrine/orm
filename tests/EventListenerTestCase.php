@@ -30,45 +30,16 @@
  * @since       1.0
  * @version     $Revision$
  */
-class EventListenerTest extends Doctrine_Record {
-    public function setTableDefinition() {
-        $this->hasColumn("name", "string", 100);
-        $this->hasColumn("password", "string", 8);
-    }
-    public function setUp() {
-        //$this->attribute(Doctrine::ATTR_LISTENER, new Doctrine_EventListener_AccessorInvoker());
-    }
-    public function getName($name) {
-        return strtoupper($name);
-    }
-    public function setPassword($password) {
-        return md5($password);
-    }
-}
-class Doctrine_EventListener_TestLogger implements Doctrine_Overloadable, Countable {
-    private $messages = array();
-
-    public function __call($m, $a) {
-
-        $this->messages[] = $m;
-    }
-    public function pop() {
-        return array_pop($this->messages);
-    }
-    public function clear() {
-        $this->messages = array();
-    }
-    public function getAll() {
-        return $this->messages;
-    }
-    public function count() {
-        return count($this->messages);
-    }
-}
-
 class Doctrine_EventListener_TestCase extends Doctrine_UnitTestCase {
     private $logger;
 
+
+    public function prepareData() 
+    { }
+    public function prepareTables() {
+        $this->tables = array('EventListenerTest');
+        parent::prepareTables();
+    }
 
     public function testSetListener() {
         $this->logger = new Doctrine_EventListener_TestLogger();
@@ -82,6 +53,7 @@ class Doctrine_EventListener_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($e->getTable()->getListener(), $this->logger);
     }
+    /**
     public function testOnLoad() {
         $this->logger->clear();
         $this->assertEqual($this->connection->getTable('EventListenerTest')->getListener(), $this->logger);
@@ -200,14 +172,41 @@ class Doctrine_EventListener_TestCase extends Doctrine_UnitTestCase {
     
         $this->connection->setListener(new Doctrine_EventListener());
     }
-
-
-
-    public function prepareData() { }
-    public function prepareTables() {
-        $this->tables = array('EventListenerTest');
-        parent::prepareTables();
-    }
-
+    */
 }
-?>
+class EventListenerTest extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->hasColumn("name", "string", 100);
+        $this->hasColumn("password", "string", 8);
+    }
+    public function setUp() {
+        //$this->attribute(Doctrine::ATTR_LISTENER, new Doctrine_EventListener_AccessorInvoker());
+    }
+    public function getName($name) {
+        return strtoupper($name);
+    }
+    public function setPassword($password) {
+        return md5($password);
+    }
+}
+class Doctrine_EventListener_TestLogger implements Doctrine_Overloadable, Countable {
+    private $messages = array();
+
+    public function __call($m, $a) {
+
+        $this->messages[] = $m;
+    }
+    public function pop() {
+        return array_pop($this->messages);
+    }
+    public function clear() {
+        $this->messages = array();
+    }
+    public function getAll() {
+        return $this->messages;
+    }
+    public function count() {
+        return count($this->messages);
+    }
+}
+

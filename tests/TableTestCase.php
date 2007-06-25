@@ -30,13 +30,13 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Table_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
 {
     
     public function prepareTables()
     {
         $this->tables[] = 'FieldNameTest';
-        parent::prepareTables();
+        parent::prepareTables();  
     }
 
     public function testFieldConversion() 
