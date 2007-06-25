@@ -174,7 +174,7 @@ class Doctrine_Relation_Parser
         }
         if ($recursive) {
             $this->getRelations();
-            
+
             return $this->getRelation($alias, false);
         } else {
             throw new Doctrine_Table_Exception('Unknown relation alias ' . $alias);
@@ -327,6 +327,10 @@ class Doctrine_Relation_Parser
                     // identifier of the foreign class
                     $def['foreign'] = $def['table']->getIdentifier();
                     $def['localKey'] = true;
+                }
+            } else {
+                if ($def['local'] !== $this->_table->getIdentifier()) {
+                    $def['localKey'] = true;                                                     	
                 }
             }
         } else {
