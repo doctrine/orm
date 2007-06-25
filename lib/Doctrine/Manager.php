@@ -63,7 +63,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     protected $_integrityActions = array();
     
-    protected static $_driverMap = array('oci' => 'oracle');
+    protected static $driverMap = array('oci' => 'oracle');
     /**
      * constructor
      *
