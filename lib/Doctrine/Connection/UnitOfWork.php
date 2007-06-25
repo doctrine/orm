@@ -221,11 +221,15 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 } else {
                     // ONE-TO-ONE relationship
                     $obj = $record->get($rel->getAlias());
-                    $obj->save($this->conn);
-                }
 
+                    // Protection against infinite function recursion before attempting to save
+                    if ($obj->isModified()) {
+                        $obj->save($this->conn);
+                    }
+                }
             }
         }
+
         return $saveLater;
     }
     /**
