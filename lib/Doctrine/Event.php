@@ -32,23 +32,33 @@
 class Doctrine_Event
 {
     /**
-     * EVENT CODE CONSTANTS
+     * CONNECTION EVENT CODES
      */
-    const QUERY     = 1;
-    const EXEC      = 2;
-    const EXECUTE   = 3;
-    const PREPARE   = 4;
-    const BEGIN     = 5;
-    const COMMIT    = 6;
-    const ROLLBACK  = 7;
-    const CONNECT   = 8;
-    const FETCH     = 9;
-    const FETCHALL  = 10;
-    
-    const DELETE    = 11;
-    const SAVE      = 12;
-    const UPDATE    = 13;
-    const INSERT    = 14;
+    const CONN_QUERY         = 1;
+    const CONN_EXEC          = 2;
+    const CONN_PREPARE       = 3;
+    const CONN_CONNECT       = 4;
+
+    const STMT_EXECUTE       = 10;
+    const STMT_FETCH         = 11;
+    const STMT_FETCHALL      = 12;
+
+    const TX_BEGIN           = 31;
+    const TX_COMMIT          = 32;
+    const TX_ROLLBACK        = 33;
+    const SAVEPOINT_CREATE   = 34;
+    const SAVEPOINT_ROLLBACK = 35;
+    const SAVEPOINT_COMMIT   = 36;
+
+    /**
+     * RECORD EVENT CODES
+     */
+    const RECORD_DELETE      = 21;
+    const RECORD_SAVE        = 22;
+    const RECORD_UPDATE      = 23;
+    const RECORD_INSERT      = 24;
+    const RECORD_SERIALIZE   = 25;
+    const RECORD_UNSERIALIZE = 26;
     /**
      * @var mixed $_invoker             the handler which invoked this event
      */

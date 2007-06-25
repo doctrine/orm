@@ -325,7 +325,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             return false;
         }
 
-        $event = new Doctrine_Event($this, Doctrine_Event::CONNECT);
+        $event = new Doctrine_Event($this, Doctrine_Event::CONN_CONNECT);
 
         $this->getListener()->preConnect($event);
 
@@ -571,7 +571,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function fetchAll($statement, array $params = array()) 
     {
-        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetchAll(Doctrine::FETCH_ASSOC);
     }
     /**
      * fetchOne
@@ -594,7 +594,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function fetchRow($statement, array $params = array()) 
     {
-        return $this->execute($statement, $params)->fetch(PDO::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetch(Doctrine::FETCH_ASSOC);
     }
     /**
      * fetchArray
@@ -605,7 +605,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function fetchArray($statement, array $params = array()) 
     {
-        return $this->execute($statement, $params)->fetch(PDO::FETCH_NUM);
+        return $this->execute($statement, $params)->fetch(Doctrine::FETCH_NUM);
     }
     /**
      * fetchColumn
@@ -617,7 +617,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function fetchColumn($statement, array $params = array(), $colnum = 0) 
     {
-        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_COLUMN, $colnum);
+        return $this->execute($statement, $params)->fetchAll(Doctrine::FETCH_COLUMN, $colnum);
     }
     /**
      * fetchAssoc
@@ -628,7 +628,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function fetchAssoc($statement, array $params = array()) 
     {
-        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetchAll(Doctrine::FETCH_ASSOC);
     }
     /**
      * fetchBoth
@@ -639,7 +639,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function fetchBoth($statement, array $params = array()) 
     {
-        return $this->execute($statement, $params)->fetchAll(PDO::FETCH_BOTH);
+        return $this->execute($statement, $params)->fetchAll(Doctrine::FETCH_BOTH);
     }
     /**
      * query
@@ -672,7 +672,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         $this->connect();
 
-        $event = new Doctrine_Event($this, Doctrine_Event::PREPARE, $statement);
+        $event = new Doctrine_Event($this, Doctrine_Event::CONN_PREPARE, $statement);
 
         $this->getAttribute(Doctrine::ATTR_LISTENER)->prePrepare($event);
 
@@ -760,7 +760,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $stmt->execute($params);
                 return $stmt;
             } else {
-                $event = new Doctrine_Event($this, Doctrine_Event::QUERY, $query, $params);
+                $event = new Doctrine_Event($this, Doctrine_Event::CONN_QUERY, $query, $params);
 
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->preQuery($event);
 
@@ -795,7 +795,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
                 return $stmt->rowCount();
             } else {
-                $event = new Doctrine_Event($this, Doctrine_EVENT::EXEC, $query, $params);
+                $event = new Doctrine_Event($this, Doctrine_Event::CONN_EXEC, $query, $params);
 
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->preExec($event);
 

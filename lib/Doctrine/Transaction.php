@@ -222,7 +222,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             $this->createSavePoint($savepoint);
         } else {
             if ($this->transactionLevel == 0) {
-                $event = new Doctrine_Event($this, Doctrine_Event::BEGIN);
+                $event = new Doctrine_Event($this, Doctrine_Event::TX_BEGIN);
 
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->preTransactionBegin($event);
 
@@ -267,7 +267,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
             $this->releaseSavePoint($savepoint);
         } else {
             if ($this->transactionLevel == 1) {
-                $event = new Doctrine_Event($this, Doctrine_Event::COMMIT);
+                $event = new Doctrine_Event($this, Doctrine_Event::TX_COMMIT);
                 
                 $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->preTransactionCommit($event);
 
@@ -333,9 +333,15 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         if ( ! is_null($savepoint)) {
             $this->transactionLevel = $this->removeSavePoints($savepoint);
 
+            $event = new Doctrine_Event($this, Doctrine_Event::ROLLBACK_SAVEPOINT);
+
+            $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->preSavepointRollback($event);
+
             $this->rollbackSavePoint($savepoint);
+            
+            $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->postSavepointRollback($event);
         } else {
-            $event = new Doctrine_Event($this, Doctrine_Event::ROLLBACK);
+            $event = new Doctrine_Event($this, Doctrine_Event::TX_ROLLBACK);
     
             $this->conn->getAttribute(Doctrine::ATTR_LISTENER)->preTransactionRollback($event);
             

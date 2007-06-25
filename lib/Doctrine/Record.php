@@ -277,6 +277,30 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     { }
     /**
      * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the serializing procedure.
+     */
+    public function preSerialize($event)
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the serializing procedure.
+     */
+    public function postSerialize($event)
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the serializing procedure.
+     */
+    public function preUnserialize($event)
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
+     * to hook into the serializing procedure.
+     */
+    public function postUnserialize($event)
+    { }
+    /**
+     * Empty template method to provide concrete Record classes with the possibility
      * to hook into the saving procedure.
      */
     public function preSave($event)
@@ -447,7 +471,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function serialize()
     {
-        $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onSleep($this);
+    	$event = new Doctrine_Event($this, Doctrine_Event::SERIALIZE_RECORD);
+
+        $this->preSerialize($event);
 
         $vars = get_object_vars($this);
 
@@ -482,7 +508,11 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             }
         }
 
-        return serialize($vars);
+        $str = serialize($vars);
+        
+        $this->postSerialize($event);
+
+        return $str;
     }
     /**
      * unseralize

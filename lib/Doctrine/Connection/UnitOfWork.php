@@ -139,7 +139,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function save(Doctrine_Record $record)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::SAVE);
+        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_SAVE);
 
         $record->preSave($event);
 
@@ -176,7 +176,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }
         $this->conn->beginTransaction();
 
-        $event = new Doctrine_Event($this, Doctrine_Event::DELETE);
+        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_DELETE);
 
         $record->preDelete($event);
 
@@ -326,7 +326,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function update(Doctrine_Record $record)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::UPDATE);
+        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_UPDATE);
         
         $record->preUpdate($event);
 
@@ -381,7 +381,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     public function insert(Doctrine_Record $record)
     {
          // listen the onPreInsert event
-        $event = new Doctrine_Event($this, Doctrine_Event::INSERT);
+        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_INSERT);
 
         $record->preInsert($event);
         
