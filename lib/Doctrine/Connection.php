@@ -310,6 +310,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function getDbh()
     {
+    	$this->connect();
+    	
         return $this->dbh;
     }
     /**
