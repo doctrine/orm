@@ -471,7 +471,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function serialize()
     {
-    	$event = new Doctrine_Event($this, Doctrine_Event::SERIALIZE_RECORD);
+    	$event = new Doctrine_Event($this, Doctrine_Event::RECORD_SERIALIZE);
 
         $this->preSerialize($event);
 
