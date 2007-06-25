@@ -19,8 +19,8 @@ if (count($argv) < 2) {
 
 $targetDir = $argv[1];
 
-print "target: $targetDir\n";
-print "base dire: $doctrineBaseDir\n";
+echo "Target directory: $targetDir\n";
+echo "Base directory: $doctrineBaseDir\n\n";
 
 set_include_path(get_include_path() . PATH_SEPARATOR . $doctrineBaseDir);
 
