@@ -1006,22 +1006,10 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 } else {
                     $sql[] = $query;
                 }
-
-                if (isset($data['options']['foreignKeys']) && is_array($data['options']['foreignKeys'])) {
-                    $fks[$table->getTableName()] = $data['options']['foreignKeys'];
-                }
             }
         }
-        /**  Not needed anymore ? createTable() now handles foreign keys
+        rsort($sql);
 
-        foreach ($fks as $tableName => $fk) {
-            foreach ($fk as $k => $definition) {
-                if (is_array($definition)) {
-                    $sql[] = $this->createForeignKeySql($definition['table'], $definition);
-                }
-            }
-        }
-        */
         return $sql;
     }
     /**
