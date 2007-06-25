@@ -75,9 +75,9 @@ class Doctrine_Event
      */
     protected $_endedMicrotime;
     /**
-     * @var boolean $skipOperation
+     * @var array $_options             an array of options
      */
-    protected $_skipOperation = false;
+    protected $_options = array();
     /**
      * constructor
      *
@@ -138,28 +138,50 @@ class Doctrine_Event
         return $this->_code;
     }
     /**
-     * setSkipOperation
+     * getOption
+     * returns the value of an option
      *
-     * @return void
+     * @param string $option    the name of the option
+     * @return mixed
      */
-    public function setSkipOperation($bool) 
+    public function getOption($option)
     {
-        $this->_skipOperation = (bool) $bool;
+        if ( ! isset($this->_options[$option])) {
+            return null;
+        }
+        
+        return $this->_options[$option];
     }
     /**
-     * getSkipOperation
+     * skipOperation
+     * skips the next operation
+     * an alias for setOption('skipOperation', true)
      *
-     * @return void
+     * @return Doctrine_Event   this object
      */
-    public function getSkipOperation()
+    public function skipOperation()
     {
-        return $this->_skipOperation;
+        return $this->setOption('skipOperation', true);
+    }
+    /**
+     * setOption
+     * sets the value of an option
+     *
+     * @param string $option    the name of the option
+     * @param mixed $value      the value of the given option
+     * @return Doctrine_Event   this object
+     */
+    public function setOption($option, $value)
+    {
+        $this->_options[$option] = $value;
+
+        return $this;
     }
     /**
      * start
      * starts the internal timer of this event
      *
-     * @return void
+     * @return Doctrine_Event   this object
      */
     public function start()
     {
@@ -179,11 +201,13 @@ class Doctrine_Event
      * end
      * ends the internal timer of this event
      *
-     * @return void
+     * @return Doctrine_Event   this object
      */
     public function end()
     {
         $this->_endedMicrotime = microtime(true);
+        
+        return $this;
     }
     /**
      * getInvoker

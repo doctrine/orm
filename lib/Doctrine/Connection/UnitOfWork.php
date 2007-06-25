@@ -145,7 +145,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->preSave($event);
 
-        if ( ! $event->getSkipOperation()) {
+        if ( ! $event->getOption('skipOperation')) {
             switch ($record->state()) {
                 case Doctrine_Record::STATE_TDIRTY:
                     $this->insert($record);
@@ -188,7 +188,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $this->deleteComposites($record);
 
-        if ( ! $event->getSkipOperation()) {
+        if ( ! $event->getOption('skipOperation')) {
             $this->conn->transaction->addDelete($record);
 
             $record->state(Doctrine_Record::STATE_TCLEAN);
@@ -340,7 +340,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         
         $record->preUpdate($event);
 
-        if ( ! $event->getSkipOperation()) {
+        if ( ! $event->getOption('skipOperation')) {
             $array = $record->getPrepared();
     
             if (empty($array)) {
@@ -399,7 +399,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->preInsert($event);
         
-        if ( ! $event->getSkipOperation()) {
+        if ( ! $event->getOption('skipOperation')) {
             $array = $record->getPrepared();
     
             if (empty($array)) {
