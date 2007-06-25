@@ -80,12 +80,8 @@ class Doctrine_Import_Xml
       
         // Go through all tables...
         foreach ($xmlObj->table as $table) {
-            print 'table: '. $table->name . "\n";
-            
             // Go through all columns... 
             foreach ($table->declaration->field as $field) {
-                print '    field: '. $field->name . "\n";
-
                 $colDesc = array(
                     'name'      => (string) $field->name,
                     'type'      => (string) $field->type,
