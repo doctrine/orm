@@ -72,7 +72,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 $test->addTestCase(new Doctrine_Ticket330_TestCase());
     */
-    /**                */
+
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -160,7 +160,6 @@ $test->addTestCase(new Doctrine_Table_TestCase());
 
 
 $test->addTestCase(new Doctrine_UnitOfWork_TestCase());
-$test->addTestCase(new Doctrine_Connection_Transaction_TestCase());
 
 //$test->addTestCase(new Doctrine_Collection_TestCase());
 // Relation handling
@@ -256,7 +255,6 @@ $test->addTestCase(new Doctrine_Query_Join_TestCase());
 $test->addTestCase(new Doctrine_Record_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Having_TestCase());
-
 
 $test->addTestCase(new Doctrine_RawSql_TestCase());
 
