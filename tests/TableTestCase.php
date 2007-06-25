@@ -30,13 +30,17 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Table_TestCase extends Doctrine_UnitTestCase {
-    public function prepareTables() {
-        $this->tables[] = "FieldNameTest";
+class Doctrine_Table_TestCase extends Doctrine_UnitTestCase 
+{
+    
+    public function prepareTables()
+    {
+        $this->tables[] = 'FieldNameTest';
         parent::prepareTables();
     }
 
-    public function testFieldConversion() {
+    public function testFieldConversion() 
+    {
         $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
         $t = new FieldNameTest();
@@ -73,7 +77,7 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase {
         $this->connection->clear();
         
         $t = $this->connection->getTable('FieldNameTest')->find(1);
-        
+
         $this->assertEqual($t->someColumn, 'abc');
         $this->assertEqual($t->someEnum, 'php');
         $this->assertEqual($t->someInt, 1);
@@ -83,14 +87,8 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase {
         $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
     }
 
-    public function testBind() {
-        $table = $this->connection->getTable("User");
-    }
-
-    public function testGetIdentifier() {
-        $table = $this->connection->getTable("User");
-    }
-    public function testGetForeignKey() {
+    public function testGetForeignKey() 
+    {
         $fk = $this->objTable->getRelation("Group");
         $this->assertTrue($fk instanceof Doctrine_Relation_Association);
         $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
@@ -115,29 +113,42 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase {
 
 
     }
-    public function testGetComponentName() {
+    public function testGetComponentName() 
+    {
         $this->assertTrue($this->objTable->getComponentName() == "User");
     } 
-    public function testGetTableName() {
+
+    public function testGetTableName() 
+    {
         $this->assertTrue($this->objTable->tableName == "entity");
     } 
-    public function testGetConnection() {
+
+    public function testGetConnection() 
+    {
         $this->assertTrue($this->objTable->getConnection() instanceof Doctrine_Connection);
     }
-    public function testGetData() {
+
+    public function testGetData() 
+    {
         $this->assertTrue($this->objTable->getData() == array());
     }
-    public function testSetSequenceName() {
+
+    public function testSetSequenceName()
+    {
         $this->objTable->sequenceName = "test-seq";
         $this->assertEqual($this->objTable->sequenceName, "test-seq");
         $this->objTable->sequenceName = null;
     }
-    public function testCreate() {
+
+    public function testCreate() 
+    {
         $record = $this->objTable->create();
         $this->assertTrue($record instanceof Doctrine_Record);
         $this->assertTrue($record->state() == Doctrine_Record::STATE_TCLEAN);
     }
-    public function testFind() {
+
+    public function testFind() 
+    {
         $record = $this->objTable->find(4);
         $this->assertTrue($record instanceof Doctrine_Record);
         
@@ -169,17 +180,23 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase {
             $this->assertTrue(false);
         }
     }
-    public function testFindAll() {
+
+    public function testFindAll() 
+    {
         $users = $this->objTable->findAll();
         $this->assertEqual($users->count(), 8);
         $this->assertTrue($users instanceof Doctrine_Collection);
     }
-    public function testFindByDql() {
+
+    public function testFindByDql() 
+    {
         $users = $this->objTable->findByDql("name LIKE '%Arnold%'");
         $this->assertEqual($users->count(), 1);
         $this->assertTrue($users instanceof Doctrine_Collection);
     }
-    public function testGetProxy() {
+
+    public function testGetProxy() 
+    {
         $user = $this->objTable->getProxy(4);
         $this->assertTrue($user instanceof Doctrine_Record);
 
@@ -189,12 +206,16 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase {
             $this->assertTrue($e instanceOf Doctrine_Find_Exception);
         }
     }
-    public function testGetColumns() {
+
+    public function testGetColumns() 
+    {
         $columns = $this->objTable->getColumns();
         $this->assertTrue(is_array($columns));
 
     }
-    public function testApplyInheritance() {
+
+    public function testApplyInheritance() 
+    {
         $this->assertEqual($this->objTable->applyInheritance("id = 3"), "id = 3 AND type = ?");
     }
 
