@@ -213,8 +213,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      */
     public function execute($params = null)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::STMT_EXECUTE, $this->_stmt->queryString, $params);
-        // print $this->_stmt->queryString . print_r($params, true) . "<br>"; 
+        $event = new Doctrine_Event($this, Doctrine_Event::STMT_EXECUTE, $this->getQuery(), $params);
         $this->_conn->getListener()->preExecute($event);
 
         if ( ! $event->skipOperation) {
@@ -257,7 +256,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
                           $cursorOrientation = Doctrine::FETCH_ORI_NEXT,
                           $cursorOffset = null)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::STMT_FETCH, $this->_stmt->getQuery());
+        $event = new Doctrine_Event($this, Doctrine_Event::STMT_FETCH, $this->getQuery());
 
         $event->fetchMode = $fetchMode;
         $event->cursorOrientation = $cursorOrientation;
@@ -289,7 +288,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     public function fetchAll($fetchMode = Doctrine::FETCH_BOTH,
                              $columnIndex = null)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::STMT_FETCHALL, $this->_stmt->getQuery());
+        $event = new Doctrine_Event($this, Doctrine_Event::STMT_FETCHALL, $this->getQuery());
         $event->fetchMode = $fetchMode;
         $event->columnIndex = $columnIndex;
 
