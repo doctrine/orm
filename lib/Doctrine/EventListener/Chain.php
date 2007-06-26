@@ -61,7 +61,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
         }
     }
     /**
-     * returns a Doctrine_EvenListener on success
+     * returns a Doctrine_EventListener on success
      * and null on failure
      *
      * @param mixed $key
