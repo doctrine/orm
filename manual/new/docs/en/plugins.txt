@@ -1,11 +1,43 @@
-++ Eventlisteners
-++ Validators
 ++ View
 ++ Cache
 ++ Locking Manager
-++ Db_Profiler
+++ Connection Profiler
 ++ Hook
-++ Query
-++ RawSql
-++ Db
-++ Exceptions
+++ Soft-delete
+
+Soft-delete is a very simple plugin for achieving the following behaviour: when a record is deleted its not removed from database. Usually the record contains some special field like 'deleted' which tells the state of the record (deleted or alive).
+
+The following code snippet shows what you need in order to achieve this kind of behaviour. Notice how we define two event hooks: preDelete and postDelete. Also notice how the preDelete hook skips the actual delete-operation with skipOperation() call. For more info about the event hooks see the Event listener section.
+
+<code type='php'>
+class SoftDeleteTest extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string', null, array('primary' => true));
+        $this->hasColumn('deleted', 'boolean', 1);
+    }
+    public function preDelete($event)
+    {
+        $event->skipOperation();
+    }
+    public function postDelete($event)
+    {
+        $this->deleted = true;
+        $this->save();
+    }
+}
+</code>
+
+Now lets put the plugin in action:
+
+<code type='php'>
+
+// save a new record
+$record = new SoftDeleteTest();
+$record->name = 'new record';
+$record->save();
+
+$record->delete();
+var_dump($record->deleted); // true
+</code>
