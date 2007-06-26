@@ -948,30 +948,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         if ($conn === null) {
             $conn = $this->_table->getConnection();
         }
-        $conn->beginTransaction();
-        $saveLater = $conn->unitOfWork->saveRelated($this);
-
-        if ($this->isValid()) {
-            $conn->unitOfWork->save($this);
-        } else {
-            $conn->transaction->addInvalid($this);
-        }
-
-        foreach ($saveLater as $fk) {
-            $alias = $fk->getAlias();
-
-            if (isset($this->_references[$alias])) {
-                $obj = $this->_references[$alias];
-                $obj->save($conn);
-            }
-        }
-
-        // save the MANY-TO-MANY associations
-
-        $conn->unitOfWork->saveAssociations($this);
-        //$this->saveAssociations();
-
-        $conn->commit();
+        $conn->unitOfWork->saveGraph($this);
     }
     /**
      * Tries to save the object and all its related components.

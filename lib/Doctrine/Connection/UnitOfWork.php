@@ -137,6 +137,39 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * @param Doctrine_Record $record
      * @return void
      */
+    public function saveGraph(Doctrine_Record $record)
+    {
+    	$conn = $this->getConnection();
+
+        $conn->beginTransaction();
+        $saveLater = $this->saveRelated($record);
+
+        if ($record->isValid()) {
+            $this->save($record);
+        } else {
+            $conn->transaction->addInvalid($record);
+        }
+
+        foreach ($saveLater as $fk) {
+            $alias = $fk->getAlias();
+
+            if ($record->hasReference($alias)) {
+                $obj = $record->$alias;
+                $obj->save($conn);
+            }
+        }
+
+        // save the MANY-TO-MANY associations
+        $this->saveAssociations($record);
+
+        $conn->commit();
+    }
+    /**
+     * saves the given record
+     *
+     * @param Doctrine_Record $record
+     * @return void
+     */
     public function save(Doctrine_Record $record)
     {
         $event = new Doctrine_Event($this, Doctrine_Event::RECORD_SAVE);
