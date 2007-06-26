@@ -241,13 +241,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
                     $this->primaryKeys[] = 'id';
                     $this->identifier = 'id';
-                    $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
+                    $this->identifierType = Doctrine::IDENTIFIER_AUTOINC;
                     $this->columnCount++;
                     break;
                 default:
                     if (count($this->primaryKeys) > 1) {
                         $this->identifier = $this->primaryKeys;
-                        $this->identifierType = Doctrine_Identifier::COMPOSITE;
+                        $this->identifierType = Doctrine::IDENTIFIER_COMPOSITE;
 
                     } else {
                         foreach ($this->primaryKeys as $pk) {
@@ -264,12 +264,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                 switch (strtolower($e2[0])) {
                                 case 'autoincrement':
                                 case 'autoinc':
-                                    $this->identifierType = Doctrine_Identifier::AUTO_INCREMENT;
+                                    $this->identifierType = Doctrine::IDENTIFIER_AUTOINC;
                                     $found = true;
                                     break;
                                 case 'seq':
                                 case 'sequence':
-                                    $this->identifierType = Doctrine_Identifier::SEQUENCE;
+                                    $this->identifierType = Doctrine::IDENTIFIER_SEQUENCE;
                                     $found = true;
 
                                     if ($value) {
@@ -285,7 +285,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                 }
                             }
                             if ( ! isset($this->identifierType)) {
-                                $this->identifierType = Doctrine_Identifier::NORMAL;
+                                $this->identifierType = Doctrine::IDENTIFIER_NATURAL;
                             }
                             $this->identifier = $pk;
                         }
