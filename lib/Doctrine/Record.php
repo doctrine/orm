@@ -1122,7 +1122,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
             $i      = $this->_table->getIdentifier();
             $a[$i]  = $this->getIncremented();
         }
-        return $a;
+        return array_merge($a, $this->_values);
     }
     /**
      * exists
