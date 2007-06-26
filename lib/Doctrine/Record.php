@@ -1095,7 +1095,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         foreach ($this as $column => $value) {
             $a[$column] = $value;
         }
-        if ($this->_table->getIdentifierType() == Doctrine_Identifier::AUTO_INCREMENT) {
+        if ($this->_table->getIdentifierType() ==  Doctrine::IDENTIFIER_AUTOINC) {
             $i      = $this->_table->getIdentifier();
             $a[$i]  = $this->getIncremented();
         }
