@@ -976,11 +976,15 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function close()
     {
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->onPreClose($this);
+    	$event = new Doctrine_Event($this, Doctrine_Event::CONN_CLOSE);
+
+        $this->getAttribute(Doctrine::ATTR_LISTENER)->preClose($event);
 
         $this->clear();
+        
+        $this->dbh = null;
 
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->onClose($this);
+        $this->getAttribute(Doctrine::ATTR_LISTENER)->postClose($event);
     }
     /**
      * get the current transaction nesting level

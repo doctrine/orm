@@ -50,9 +50,9 @@ class Doctrine_EventListener implements Doctrine_EventListener_Interface
     public function onPreEvict(Doctrine_Record $record)
     { }
 
-    public function onClose(Doctrine_Event $event)
+    public function preClose(Doctrine_Event $event)
     { }
-    public function onPreClose(Doctrine_Event $event)
+    public function postClose(Doctrine_Event $event)
     { }
 
     public function onCollectionDelete(Doctrine_Collection $collection)
