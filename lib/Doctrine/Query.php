@@ -1249,15 +1249,23 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         // initialize temporary variables
         $where  = $this->parts['where'];
         $having = $this->parts['having'];
+        $groupby = $this->parts['groupby'];
         $map    = reset($this->_aliasMap);
         $componentAlias = key($this->_aliasMap);
         $table = $map['table'];
 
-
         // build the query base
         $q  = 'SELECT COUNT(DISTINCT ' . $this->getTableAlias($componentAlias)
             . '.' . $table->getIdentifier()
-            . ') FROM ' . $this->buildFromPart();
+            . ')';
+        
+        foreach ($this->parts['select'] as $field) {
+            if (strpos($field, '(') !== false) {
+                $q .= ', ' . $field;
+            }
+        }
+
+        $q .= ' FROM ' . $this->buildFromPart();
 
         // append column aggregation inheritance (if needed)
         $string = $this->applyInheritance();
@@ -1267,6 +1275,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         // append conditions
         $q .= ( ! empty($where)) ?  ' WHERE '  . implode(' AND ', $where) : '';
+        $q .= ( ! empty($groupby)) ?  ' GROUP BY '  . implode(', ', $groupby) : '';
         $q .= ( ! empty($having)) ? ' HAVING ' . implode(' AND ', $having): '';
 
         if ( ! is_array($params)) {
