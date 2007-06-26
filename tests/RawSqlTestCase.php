@@ -33,6 +33,7 @@
  */
 class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase 
 {
+
     public function testQueryParser()
     {
         $sql = 'SELECT {p.*} FROM photos p';
@@ -140,10 +141,10 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
 
         $count = $this->conn->count();
         
-        $coll[4]->Phonenumber[0]->phonenumber;
+        $coll[4]['Phonenumber'][0]['phonenumber'];
         $this->assertEqual($count, $this->conn->count());
 
-        $coll[5]->Phonenumber[0]->phonenumber;
+        $coll[5]['Phonenumber'][0]['phonenumber'];
         $this->assertEqual($count, $this->conn->count());
     }
     public function testPrimaryKeySelectForcing()
@@ -222,16 +223,30 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         "SELECT entity.name AS entity__name, entity.id AS entity__id FROM (SELECT entity.name FROM entity WHERE entity.name = 'something') WHERE entity.id = 2 ORDER BY entity.name");
     }
 
-    public function testJoin()
+    public function testSelectingWithoutIdentifiersOnRootComponent()
     {
         $query = new Doctrine_RawSql();
 
-        $query->parseQuery('SELECT {entity.name}, {phonenumber.*} FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id LIMIT 1');
+        $query->parseQuery('SELECT {entity.name}, {phonenumber.*} FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id LIMIT 3');
         $query->addComponent('entity', 'Entity');
         $query->addComponent('phonenumber', 'Entity.Phonenumber');
+        $this->assertEqual($query->getSql(), 'SELECT entity.name AS entity__name, entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id LIMIT 3');
+        $coll = $query->execute(array(), Doctrine::FETCH_ARRAY);
 
-        $coll = $query->execute();
-        $this->assertEqual($coll->count(), 1);
+        $this->assertEqual(count($coll), 3);
+    }
+    
+    public function testSwitchingTheFieldOrder()
+    {
+        $query = new Doctrine_RawSql();
+
+        $query->parseQuery('SELECT {phonenumber.*}, {entity.name} FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id LIMIT 3');
+        $query->addComponent('entity', 'Entity');
+        $query->addComponent('phonenumber', 'Entity.Phonenumber');
+        $this->assertEqual($query->getSql(), 'SELECT entity.name AS entity__name, entity.id AS entity__id, phonenumber.id AS phonenumber__id, phonenumber.phonenumber AS phonenumber__phonenumber, phonenumber.entity_id AS phonenumber__entity_id FROM entity LEFT JOIN phonenumber ON phonenumber.entity_id = entity.id LIMIT 3');
+        $coll = $query->execute(array(), Doctrine::FETCH_ARRAY);
+
+        $this->assertEqual(count($coll), 3);
     }
 }
 ?>

@@ -129,6 +129,8 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
      */
     public function getQuery()
     {
+    	$select = array();
+
         foreach ($this->fields as $field) {
             $e = explode('.', $field);
             if ( ! isset($e[1])) {
@@ -143,16 +145,17 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
                 }
             }
 
+            $componentAlias = $this->getComponentAlias($e[0]);
+            
             if ($e[1] == '*') {
-                $componentAlias = $this->getComponentAlias($e[0]);
-
                 foreach ($this->_aliasMap[$componentAlias]['table']->getColumnNames() as $name) {
                     $field = $e[0] . '.' . $name;
-                    $this->parts['select'][$field] = $field . ' AS ' . $e[0] . '__' . $name;
+
+                    $select[$componentAlias][$field] = $field . ' AS ' . $e[0] . '__' . $name;
                 }
             } else {
                 $field = $e[0] . '.' . $e[1];
-                $this->parts['select'][$field] = $field . ' AS ' . $e[0] . '__' . $e[1];
+                $select[$componentAlias][$field] = $field . ' AS ' . $e[0] . '__' . $e[1];
             }
         }
 
@@ -165,12 +168,23 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
                 $field = $tableAlias . '.' . $key;
 
                 if ( ! isset($this->parts['select'][$field])) {
-                    $this->parts['select'][$field] = $field . ' AS ' . $tableAlias . '__' . $key;
+                    $select[$componentAlias][$field] = $field . ' AS ' . $tableAlias . '__' . $key;
                 }
             }
         }
+        
+        // first add the fields of the root component
+        reset($this->_aliasMap);
+        $componentAlias = key($this->_aliasMap);
 
-        $q = 'SELECT ' . implode(', ', $this->parts['select']);
+        $q = 'SELECT ' . implode(', ', $select[$componentAlias]);
+        unset($select[$componentAlias]);
+
+        foreach ($select as $component => $fields) {
+            if ( ! empty($fields)) {
+                $q .= ', ' . implode(', ', $fields);
+            }
+        }
 
         $string = $this->applyInheritance();
         if ( ! empty($string)) {
