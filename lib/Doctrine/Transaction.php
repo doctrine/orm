@@ -68,6 +68,12 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      */
     protected $_collections     = array();
     /**
+     * @var array $_saved                   an array of already saved records, this array is used for avoiding infinite loops in circular
+     *                                      saving operations
+     */
+    protected $_saved         = array();
+
+    /**
      * addCollection
      * adds a collection in the internal array of collections
      *
@@ -76,12 +82,46 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * to keep the collections up to date with the database
      *
      * @param Doctrine_Collection $coll     a collection to be added
-     * @return void
+     * @return Doctrine_Transaction         this object
      */
     public function addCollection(Doctrine_Collection $coll)
     {
         $this->_collections[] = $coll;
+
+        return $this;
     }
+
+    /**
+     * addSaved
+     * adds a record into internal array of saved records
+     *
+     * at the end of each commit this array is emptied
+     *
+     * @param Doctrine_Record           record to be added
+     * @retrun Doctrine_Transaction     this object
+     */
+    public function addSaved(Doctrine_Record $record)
+    {
+        $this->_saved[] = $record;
+
+        return $this;
+    }
+    
+    /**
+     * isSaved
+     * returns whether or not given record is already saved
+     *
+     * this method is used for avoiding infinite loops within
+     * cascading saves
+     *
+     * @param Doctrine_Record       record to be checked
+     * @return boolean              whether or not given record is already saved
+     */
+    public function isSaved(Doctrine_Record $record)
+    {
+        return in_array($this->_saved, $record);
+    }
+
     /**
      * getState
      * returns the state of this connection
@@ -102,6 +142,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                 return Doctrine_Transaction::STATE_BUSY;
         }
     }
+
     /**
      * addDelete
      * adds record into pending delete list
@@ -114,6 +155,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         $name = $record->getTable()->getComponentName();
         $this->delete[$name][] = $record;
     }
+
     /**
      * addInvalid
      * adds record into invalid records list
@@ -140,6 +182,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     {
         return $this->delete;
     }
+
     /**
      * bulkDelete
      * deletes all records from the pending delete list
@@ -339,6 +382,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
         return true;
     }
+
     /**
      * rollback
      * Cancel any database changes done during a transaction or since a specific
@@ -396,6 +440,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
         return true;
     }
+
     /**
      * releaseSavePoint
      * creates a new savepoint
@@ -407,6 +452,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     {
         throw new Doctrine_Transaction_Exception('Savepoints not supported by this driver.');
     }
+
     /**
      * releaseSavePoint
      * releases given savepoint
@@ -418,6 +464,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     {
         throw new Doctrine_Transaction_Exception('Savepoints not supported by this driver.');
     }
+
     /**
      * rollbackSavePoint
      * releases given savepoint
@@ -429,6 +476,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     {
         throw new Doctrine_Transaction_Exception('Savepoints not supported by this driver.');
     }
+
     /**
      * removeSavePoints
      * removes a savepoint from the internal savePoints array of this transaction object
@@ -458,6 +506,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
         return $i;
     }
+    
     /**
      * setIsolation
      *
