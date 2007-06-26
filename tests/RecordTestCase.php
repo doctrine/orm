@@ -203,7 +203,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
     public function testCompositePK() {
         $record = new EntityReference();
         $this->assertEqual($record->getTable()->getIdentifier(), array("entity1","entity2"));
-        $this->assertEqual($record->getTable()->getIdentifierType(), Doctrine_Identifier::COMPOSITE);
+        $this->assertEqual($record->getTable()->getIdentifierType(), Doctrine::IDENTIFIER_COMPOSITE);
         $this->assertEqual($record->obtainIdentifier(), array("entity1" => null, "entity2" => null));
         $this->assertEqual($record->state(), Doctrine_Record::STATE_TCLEAN);
 
