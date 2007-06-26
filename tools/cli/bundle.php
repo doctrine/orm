@@ -29,7 +29,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
- 
+
 if (count($argv) < 2) {
     echo "Usage: bundle.php [Target file] <Library directory>\n\n".
          "Note: If the library directory is ommited, the path will be deducted if possible\n";
@@ -39,8 +39,15 @@ if (count($argv) < 2) {
 } else {
     $pathInfos = pathinfo($_SERVER['PHP_SELF']);
     
-    $doctrineBaseDir = str_replace('tools/cli/'. $pathInfos['basename'], 
-                        'lib', getcwd() .'/'. $_SERVER['SCRIPT_NAME'], $Cnt);
+    $Cnt = 0;
+    
+    if ($_SERVER['PHP_SELF'][0] == '/') {
+        $doctrineBaseDir = str_replace('tools/cli/' . $pathInfos['basename'],
+                            'lib', $_SERVER['SCRIPT_NAME'], &$Cnt);
+    } else {
+        $doctrineBaseDir = str_replace('tools/cli/'. $pathInfos['basename'], 
+                            'lib', getcwd() .'/'. $_SERVER['SCRIPT_NAME'], &$Cnt);
+    }
     
     if ($Cnt != 1) {
         echo "Can't find library directory, please specify it as an argument\n";
