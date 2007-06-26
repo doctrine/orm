@@ -72,7 +72,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 $test->addTestCase(new Doctrine_Ticket330_TestCase());
     */
-
+/**    */
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -169,6 +169,9 @@ $test->addTestCase(new Doctrine_Relation_TestCase());
 
 //$test->addTestCase(new Doctrine_Relation_Access_TestCase());
 //$test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
+
+
+$test->addTestCase(new Doctrine_Relation_OneToMany_TestCase());
 
 $test->addTestCase(new Doctrine_Relation_Nest_TestCase());
 
@@ -298,6 +301,7 @@ $test->addTestCase(new Doctrine_Query_MultipleAggregateValue_TestCase());
 
 $test->addTestCase(new Doctrine_Query_TestCase());
 
+$test->addTestCase(new Doctrine_Ticket364_TestCase());
 //$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
 
 //$test->addTestCase(new Doctrine_AuditLog_TestCase());

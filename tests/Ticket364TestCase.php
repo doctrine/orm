@@ -41,7 +41,23 @@ class Doctrine_Ticket364_TestCase extends Doctrine_UnitTestCase {
         
         parent::prepareTables();
     }
-	
+
+	public function testMultiplePrimaryKeys()
+	{
+        $r = new Doctrine_Collection('NestReference');
+        $r[0]->parent_id = 1;
+        $r[0]->child_id = 2;
+        $r[1]->parent_id = 2;
+        $r[1]->child_id = 3;
+        $r->save();
+
+        $r->delete();
+        $this->conn->clear();
+        $q = new Doctrine_Query();
+        $coll = $q->from('NestReference')->execute();
+        $this->assertEqual(count($coll), 0);
+    }
+
     public function testCircularNonEqualSelfReferencingRelationSaving() {
         $n1 = new NestTest();
         $n1->set('name', 'node1');
@@ -54,6 +70,18 @@ class Doctrine_Ticket364_TestCase extends Doctrine_UnitTestCase {
         $n1->save();
         $n2->get('Children')->add($n1);
         $n2->save();
+
+        $q = new Doctrine_Query();
+        $coll = $q->from('NestReference')->execute();
+
+        $this->assertEqual(count($coll), 2);
+
+        $coll->delete();
+        $this->conn->clear();
+
+        $q = new Doctrine_Query();
+        $coll = $q->from('NestReference')->execute();
+        $this->assertEqual(count($coll), 0);
     }
 
     public function testCircularEqualSelfReferencingRelationSaving() {
@@ -68,6 +96,11 @@ class Doctrine_Ticket364_TestCase extends Doctrine_UnitTestCase {
         $n1->save();
         $n2->get('Relatives')->add($n1);
         $n2->save();
+
+        $q = new Doctrine_Query();
+        $coll = $q->from('NestReference')->execute(array(), Doctrine::FETCH_ARRAY);
+
+        $this->assertEqual(count($coll), 2);
     }
 
 }

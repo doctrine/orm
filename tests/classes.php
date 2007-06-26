@@ -4,7 +4,7 @@ class Entity extends Doctrine_Record
     public function setUp() 
     {
         $this->ownsOne('Email', array('local' => 'email_id'));
-        $this->ownsMany('Phonenumber', array('foreign' => 'entity_id'));
+        $this->hasMany('Phonenumber', array('local' => 'id', 'foreign' => 'entity_id'));
         $this->ownsOne('Account', array('foreign' => 'entity_id'));
         $this->hasMany('Entity', array('local' => 'entity1', 
                                        'refClass' => 'EntityReference',
@@ -167,7 +167,9 @@ class Phonenumber extends Doctrine_Record
     }
     public function setUp() 
     {
-        $this->hasOne('Entity', array('local' => 'entity_id'));
+        $this->hasOne('Entity', array('local' => 'entity_id', 
+                                      'foreign' => 'id', 
+                                      'onDelete' => 'CASCADE'));
     }
 }
 
@@ -627,8 +629,10 @@ class PackageVersion extends Doctrine_Record {
         $this->hasMany('PackageVersionNotes as Note', 'PackageVersionNotes.package_version_id');
     }
 }
-class PackageVersionNotes extends Doctrine_Record {
-    public function setTableDefinition() {
+class PackageVersionNotes extends Doctrine_Record 
+{
+    public function setTableDefinition()
+    {
         $this->hasColumn('package_version_id', 'integer');
         $this->hasColumn('description', 'string', 255);
     }
@@ -639,7 +643,8 @@ class PackageVersionNotes extends Doctrine_Record {
 }
 class NestTest extends Doctrine_Record
 {
-    public function setTableDefinition() {
+    public function setTableDefinition() 
+    {
         $this->hasColumn('name', 'string');
     }
     public function setUp()
@@ -659,7 +664,8 @@ class NestTest extends Doctrine_Record
 }
 class NestReference extends Doctrine_Record 
 {
-    public function setTableDefinition() {
+    public function setTableDefinition() 
+    {
         $this->hasColumn('parent_id', 'integer', 4, 'primary');
         $this->hasColumn('child_id', 'integer', 4, 'primary');
     }

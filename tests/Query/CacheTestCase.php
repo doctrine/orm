@@ -32,6 +32,7 @@
  */
 class Doctrine_Query_Cache_TestCase extends Doctrine_UnitTestCase 
 {
+
     public function testResultSetCacheAddsResultSetsIntoCache()
     {
         $q = new Doctrine_Query();
@@ -51,6 +52,7 @@ class Doctrine_Query_Cache_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($coll instanceof Doctrine_Collection);
         $this->assertEqual($coll->count(), 8);
     }
+
     public function testResultSetCacheSupportsQueriesWithJoins()
     {
         $q = new Doctrine_Query();
@@ -70,6 +72,7 @@ class Doctrine_Query_Cache_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($coll instanceof Doctrine_Collection);
         $this->assertEqual($coll->count(), 8);
     }
+    
     public function testResultSetCacheSupportsPreparedStatements()
     {
         $q = new Doctrine_Query();

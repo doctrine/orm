@@ -119,7 +119,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      */
     public function isSaved(Doctrine_Record $record)
     {
-        return in_array($this->_saved, $record);
+        return in_array($record, $this->_saved, true);
     }
 
     /**
@@ -191,31 +191,38 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      */
     public function bulkDelete()
     {
+
         foreach ($this->delete as $name => $deletes) {
             $record = false;
             $ids    = array();
 
     	    if (is_array($deletes[count($deletes)-1]->getTable()->getIdentifier())) {
-                foreach ($deletes as $k => $record) {
-                    $cond = array();
-                    $ids = $record->obtainIdentifier();
-                    $query = 'DELETE FROM ' 
-                           . $this->conn->quoteIdentifier($record->getTable()->getTableName()) 
+                if (count($deletes) > 0) {
+                    $query = 'DELETE FROM '
+                           . $this->conn->quoteIdentifier($deletes[0]->getTable()->getTableName())
                            . ' WHERE ';
-
-                    foreach (array_keys($ids) as $id){
-                        $cond[] = $id . ' = ? ';
+    
+                    $params = array();
+                    $cond = array();
+                    foreach ($deletes as $k => $record) {
+                        $ids = $record->obtainIdentifier();
+                        $tmp = array();
+                        foreach (array_keys($ids) as $id){
+                            $tmp[] = $id . ' = ? ';
+                        }
+                        $params = array_merge($params, array_values($ids));
+                        $cond[] = '(' . implode(' AND ', $tmp) . ')';
                     }
+                    $query .= implode(' OR ', $cond);
 
-                    $query = $query . implode(' AND ', $cond);
-                    $this->conn->execute($query, array_values($ids));
+                    $this->conn->execute($query, $params);
                 }
     	    } else {
     		    foreach ($deletes as $k => $record) {
                     $ids[] = $record->getIncremented();
     		    }
     		    if ($record instanceof Doctrine_Record) {
-        			$params = substr(str_repeat('?, ', count($ids)),0,-2);
+        			$params = substr(str_repeat('?, ', count($ids)), 0, -2);
     
         			$query = 'DELETE FROM '
         				   . $this->conn->quoteIdentifier($record->getTable()->getTableName())
@@ -340,6 +347,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
             $listener->postSavepointCommit($event);
         } else {
+
             if ($this->transactionLevel == 1) {
                 $event = new Doctrine_Event($this, Doctrine_Event::TX_COMMIT);
                 
@@ -348,7 +356,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                 if ( ! $event->skipOperation) {
                     try {
                         $this->bulkDelete();
-    
+
                     } catch(Exception $e) {
                         $this->rollback();
     
@@ -368,7 +376,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                         $coll->takeSnapshot();
                     }
                     $this->_collections = array();
-    
+                    $this->_saved = array();
                     $this->conn->getDbh()->commit();
     
                     //$this->conn->unitOfWork->reset();
@@ -434,7 +442,8 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                     throw new Doctrine_Transaction_Exception($e->getMessage());
                 }
             }
-            
+            $this->_saved = array();
+
             $listener->postTransactionRollback($event);
         }
 
@@ -506,7 +515,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
         return $i;
     }
-    
+
     /**
      * setIsolation
      *

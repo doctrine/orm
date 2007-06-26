@@ -139,9 +139,16 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function saveGraph(Doctrine_Record $record)
     {
-    	$conn = $this->getConnection();
+    	$conn = $this->getConnection();  
+        
+        if ($conn->transaction->isSaved($record)) {
+            return false;
+        }
+
+        $conn->transaction->addSaved($record);
 
         $conn->beginTransaction();
+
         $saveLater = $this->saveRelated($record);
 
         if ($record->isValid()) {
@@ -163,6 +170,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $this->saveAssociations($record);
 
         $conn->commit();
+        
+        return true;
     }
     /**
      * saves the given record
