@@ -184,10 +184,54 @@ $conn->addListener(new Debugger());
 $conn->addListener(new Logger());
 </code>
 
-++ Altering execution
-Doctrine_Event provides many methods for altering the execution of the listened method as well as for altering the behaviour of the listener chain.
+++ The Event object
++++ Event codes
+
+Doctrine_Event uses constants as event codes. Above is the list of all availible event constants:
+
+* Doctrine_Event::CONN_QUERY 
+* Doctrine_Event::CONN_EXEC
+* Doctrine_Event::CONN_PREPARE 
+* Doctrine_Event::CONN_CONNECT 
+* Doctrine_Event::STMT_EXECUTE 
+* Doctrine_Event::STMT_FETCH 
+* Doctrine_Event::STMT_FETCHALL
+
+<code type='php'>
+class MyListener extends Doctrine_EventListener
+{
+    public function preExec(Doctrine_Event $event)
+    {
+        $event->getCode(); // Doctrine_Event::CONN_EXEC
+    }
+}
+</code>
+
+* Doctrine_Event::TX_BEGIN 
+* Doctrine_Event::TX_COMMIT
+* Doctrine_Event::TX_ROLLBACK
+* Doctrine_Event::SAVEPOINT_CREATE 
+* Doctrine_Event::SAVEPOINT_ROLLBACK 
+* Doctrine_Event::SAVEPOINT_COMMIT 
+* Doctrine_Event::RECORD_DELETE
+* Doctrine_Event::RECORD_SAVE
+* Doctrine_Event::RECORD_UPDATE
+* Doctrine_Event::RECORD_INSERT
+* Doctrine_Event::RECORD_SERIALIZE
+* Doctrine_Event::RECORD_UNSERIALIZE
+
+<code type='php'>
+class MyRecord extends Doctrine_Record
+{
+    public function preUpdate(Doctrine_Event $event)
+    {
+        $event->getCode(); // Doctrine_Event::RECORD_UPDATE
+    }
+}
+</code>
 
 +++ skipOperation()
+Doctrine_Event provides many methods for altering the execution of the listened method as well as for altering the behaviour of the listener chain.
 
 For some reason you may want to skip the execution of the listened method. It can be done as follows (note that preExec could be any listener method):
 
