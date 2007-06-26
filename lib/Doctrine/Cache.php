@@ -280,15 +280,15 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
         }
     }
     /**
-     * onPreQuery
-     * listens on the Doctrine_Event onPreQuery event
+     * preQuery
+     * listens on the Doctrine_Event preQuery event
      *
      * adds the issued query to internal query stack
      * and checks if cached element exists
      *
      * @return boolean
      */
-    public function onPreQuery(Doctrine_Event $event)
+    public function preQuery(Doctrine_Event $event)
     {
         $query = $event->getQuery();
 
@@ -324,42 +324,42 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
         return false;
     }
     /**
-     * onPreFetch
-     * listens the onPreFetch event of Doctrine_Connection_Statement
+     * preFetch
+     * listens the preFetch event of Doctrine_Connection_Statement
      *
      * advances the internal pointer of cached data and returns 
      * the current element
      *
      * @return array
      */
-    public function onPreFetch(Doctrine_Event $event)
+    public function preFetch(Doctrine_Event $event)
     {
         $ret = current($this->_data);
     	next($this->_data);
         return $ret;
     }
     /**
-     * onPreFetch
-     * listens the onPreFetchAll event of Doctrine_Connection_Statement
+     * preFetch
+     * listens the preFetchAll event of Doctrine_Connection_Statement
      *
      * returns the current cache data array
      *
      * @return array
      */
-    public function onPreFetchAll(Doctrine_Event $event)
+    public function preFetchAll(Doctrine_Event $event)
     {
         return $this->_data;
     }
     /**
-     * onPreExecute
-     * listens the onPreExecute event of Doctrine_Connection_Statement
+     * preExecute
+     * listens the preExecute event of Doctrine_Connection_Statement
      *
      * adds the issued query to internal query stack
      * and checks if cached element exists
      *
      * @return boolean
      */
-    public function onPreExecute(Doctrine_Event $event)
+    public function preExecute(Doctrine_Event $event)
     {
         $query = $event->getQuery();
 
