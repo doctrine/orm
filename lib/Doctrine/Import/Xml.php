@@ -52,7 +52,7 @@ class Doctrine_Import_Xml
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
 
-        $arr = self::importArr($schema);
+        $arr = $this->importArr($schema);
        
         foreach ($arr as $name => $columns) {
             $Builder->buildRecord($name, $columns);
