@@ -320,7 +320,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             case 'mock':
             case 'oracle':
                 if ( ! isset($parts['path']) || $parts['path'] == '/') {
-                    throw new Doctrine_Manager_Exception('No database availible in data source name');
+                    throw new Doctrine_Manager_Exception('No database available in data source name');
                 }
                 if (isset($parts['path'])) {
                     $parts['database'] = substr($parts['path'], 1);
