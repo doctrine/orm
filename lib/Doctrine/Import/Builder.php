@@ -79,7 +79,7 @@ class Doctrine_Import_Builder
         return $this->path;
     }
 
-    public function buildRecord($table, $tableColumns)
+    public function buildRecord($table, $tableColumns, $className='', $fileName='')
     {
         if (empty($this->path)) {
             throw new Doctrine_Import_Builder_Exception('No build target directory set.');
@@ -88,8 +88,15 @@ class Doctrine_Import_Builder
             throw new Doctrine_Import_Builder_Exception('Build target directory ' . $this->path . ' is not writable.');
         }
         $created   = date('l dS \of F Y h:i:s A');
-        $className = Doctrine::classify($table);
-        $fileName  = $this->path . DIRECTORY_SEPARATOR . $className . $this->suffix;
+        
+        if (empty($className)) {
+            $className = Doctrine::classify($table);
+        }
+        
+        if (empty($fileName)) {
+            $fileName  = $this->path . DIRECTORY_SEPARATOR . $className . $this->suffix;
+        }
+        
         $columns   = array();
         $i = 0;
 
