@@ -375,111 +375,22 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
                     $integrity = array('onUpdate' => $fk['onUpdate'],
                                        'onDelete' => $fk['onDelete']);
-
-                    if ($relation instanceof Doctrine_Relation_ForeignKey) {    
-                        if ($relation->getLocal() !== $relation->getTable()->getIdentifier() && 
-                            $relation->getLocal() !== $this->getIdentifier() ||
-                            $relation->hasConstraint()) {
-
-                            $def = array('local'        => $relation->getLocal(),
-                                         'foreign'      => $this->getIdentifier(),
-                                         'foreignTable' => $relation->getTable()->getTableName());
-
-                            if (($key = array_search($def, $options['foreignKeys'])) === false) {
-                                $options['foreignKeys'][] = $def;
-                                
-                                $constraints[] = $integrity;
-                            } else {
-                                if ($integrity !== $emptyIntegrity) {
-                                    $constraints[$key] = $integrity;
-                                }
-                            }
-                        }
-                    } elseif ($relation instanceof Doctrine_Relation_LocalKey) {
-
-                        if ($relation->getLocal() !== $this->getIdentifier() &&
-                            $relation->getForeign() !== $relation->getTable()->getIdentifier()) {
-
-                            $def = array('local'        => $relation->getLocal(),
-                                         'foreign'      => $this->getIdentifier(),
-                                         'foreignTable' => $relation->getTable()->getTableName());
-    
-                            if (($key = array_search($def, $options['foreignKeys'])) === false) {
-                                $options['foreignKeys'][] = $def;
-                                
-                                $constraints[] = $integrity;
-                            } else {
-                                if ($integrity !== $emptyIntegrity) {
-                                    $constraints[$key] = $integrity;
-                                }
-                            }
-                        }
-                    } elseif ($relation instanceof Doctrine_Relation_Nest) {
-                        /**
+                    
+                    if ($relation instanceof Doctrine_Relation_LocalKey) {
                         $def = array('local'        => $relation->getLocal(),
-                                     'table'        => $relation->getAssociationTable()->getTableName(),
-                                     'foreign'      => $this->getIdentifier(),
-                                     'foreignTable' => $this->getTableName());
-
-
-                        if (($key = array_search($def, $options['foreignKeys'])) === false) {
-                            $options['foreignKeys'][] = $def;
-                            
-                            $constraints[] = $integrity;
-                        } else {
-                            if ($integrity !== $emptyIntegrity) {
-                                $constraints[$key] = $integrity;
-                            }
-                        }
-
-                        $def = array('local'        => $relation->getForeign(),
-                                     'table'        => $relation->getAssociationTable()->getTableName(),
                                      'foreign'      => $this->getIdentifier(),
                                      'foreignTable' => $relation->getTable()->getTableName());
 
                         if (($key = array_search($def, $options['foreignKeys'])) === false) {
                             $options['foreignKeys'][] = $def;
 
-                            if ( ! isset($integrity['onDelete'])) {
-                                $integrity['onDelete'] = 'CASCADE';
-                            }
-
                             $constraints[] = $integrity;
                         } else {
                             if ($integrity !== $emptyIntegrity) {
-                                if ( ! isset($integrity['onDelete'])) {
-                                    $integrity['onDelete'] = 'CASCADE';
-                                }                                                                	
-
                                 $constraints[$key] = $integrity;
                             }
                         }
-                        */
-                    } elseif ($relation instanceof Doctrine_Relation_Association) {
-                        /**
-                        $def = array('local'        => $relation->getLocal(),
-                                     'table'        => $relation->getAssociationTable()->getTableName(),
-                                     'foreign'      => $this->getIdentifier(),
-                                     'foreignTable' => $this->getTableName());
-                        if (($key = array_search($def, $options['foreignKeys'])) === false) {
-                            $options['foreignKeys'][] = $def;
-                            
-                            if ( ! isset($integrity['onDelete'])) {
-                                $integrity['onDelete'] = 'CASCADE';
-                            }
-
-                            $constraints[] = $integrity;
-                        } else {
-                            if ($integrity !== $emptyIntegrity) {
-                                if ( ! isset($integrity['onDelete'])) {
-                                    $integrity['onDelete'] = 'CASCADE';
-                                }                                
-                                $constraints[$key] = $integrity;
-                            }
-                        }
-                        */
                     }
-
                 }
 
                 foreach ($constraints as $k => $def) {

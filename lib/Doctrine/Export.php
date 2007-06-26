@@ -1000,7 +1000,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 $data = $table->getExportableFormat();
 
                 $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
-                
+
                 if (is_array($query)) {
                     $sql = array_merge($sql, $query);
                 } else {

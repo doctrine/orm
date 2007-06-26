@@ -330,9 +330,9 @@ class Doctrine_Relation_Parser
                 }
             } else {
                 if ($def['local'] !== $this->_table->getIdentifier()) {
-                    $def['localKey'] = true;                                                     	
+                    $def['localKey'] = true;
                 }
-            }
+            }   
         } else {
             if (isset($def['foreign'])) {
                 // local key not set, but foreign key is set
