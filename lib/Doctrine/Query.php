@@ -855,6 +855,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         foreach ($this->parts['orderby'] as $part) {
             $part = trim($part);
+            $e = Doctrine_Tokenizer::bracketExplode($part, ' ');
+            $part = trim($e[0]);
+
             $aggregate = false;
 
             foreach ($this->parts['select'] as $select) {
