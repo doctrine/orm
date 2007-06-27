@@ -361,8 +361,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         if ( ! isset($this->parts[$name])) {
             throw new Doctrine_Hydrate_Exception('Unknown query part ' . $name);
         }
-        $this->parts[$name][] = $part;
-
+        if (is_array($part)) {
+            $this->parts[$name] = array_merge($this->parts[$name], $part);
+        } else {
+            $this->parts[$name][] = $part;
+        }
         return $this;
     }
     /**
@@ -419,7 +422,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         }
 
         if ($name !== 'limit' && $name !== 'offset') {
-            $this->parts[$name] = array($part);
+            if (is_array($part)) {
+                $this->parts[$name] = $part;
+            } else {
+                $this->parts[$name] = array($part);
+            }
         } else {
             $this->parts[$name] = $part;
         }

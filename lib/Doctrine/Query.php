@@ -848,18 +848,40 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         // initialize the base of the subquery
         $subquery   = 'SELECT DISTINCT ' . $primaryKey;
 
-        if ($this->_conn->getAttribute(Doctrine::ATTR_DRIVER_NAME) == 'pgsql') {
-            // pgsql needs the order by fields to be preserved in select clause
+        $driverName = $this->_conn->getAttribute(Doctrine::ATTR_DRIVER_NAME);
 
-            foreach ($this->parts['orderby'] as $part) {
-                $e = explode(' ', $part);
 
-                // don't add primarykey column (its already in the select clause)
-                if ($e[0] !== $primaryKey) {
-                    $subquery .= ', ' . $e[0];
+
+
+        foreach ($this->parts['orderby'] as $part) {
+            $part = trim($part);
+            $aggregate = false;
+
+            foreach ($this->parts['select'] as $select) {
+                $e = explode(' AS ', trim($select));
+
+                if (count($e) > 1) {
+                    if ($part === $e[1]) {
+                        $part = $select;
+                        $aggregate = true;
+                        break;
+                    }
+                }
+            }
+
+            // don't add primarykey column (its already in the select clause)
+            if ($part !== $primaryKey) {
+                if ($driverName == 'mysql') {
+                    if ($aggregate) {
+                        $subquery .= ', ' . $part;
+                    }
+                } elseif ($driverName == 'pgsql') {
+                    // pgsql needs the order by fields to be preserved in select clause
+                    $subquery .= ', ' . $part;
                 }
             }
         }
+
 
         $subquery .= ' FROM';
 
@@ -889,23 +911,32 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         $parts = Doctrine_Tokenizer::quoteExplode($subquery, ' ', "'", "'");
 
-        foreach($parts as $k => $part) {
-            if(strpos($part, "'") !== false) {
+        foreach ($parts as $k => $part) {
+            if (strpos($part, "'") !== false) {
                 continue;
             }
 
-            if($this->hasTableAlias($part)) {
+            if ($this->hasTableAlias($part)) {
                 $parts[$k] = $this->generateNewTableAlias($part);
             }
 
-            if(strpos($part, '.') !== false) {
-                $e = explode('.', $part);
+            $separator = false;
+
+            if (strpos($part, '.') !== false) {
+                $separator = '.';
+            }
+            if (strpos($part, '__') !== false) {
+                $separator = '__';
+            }
+            
+            if ($separator) {
+                $e = explode($separator, $part);
 
                 $trimmed = ltrim($e[0], '( ');
                 $pos     = strpos($e[0], $trimmed);
 
                 $e[0] = substr($e[0], 0, $pos) . $this->generateNewTableAlias($trimmed);
-                $parts[$k] = implode('.', $e);
+                $parts[$k] = implode($separator, $e);
             }
         }
         $subquery = implode(' ', $parts);

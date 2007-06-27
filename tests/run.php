@@ -50,11 +50,9 @@ spl_autoload_register(array('Doctrine', 'autoload'));
 spl_autoload_register('autoload');
 
 require_once dirname(__FILE__) . '/../models/location.php';
+require_once dirname(__FILE__) . '/../models/Blog.php';
 require_once dirname(__FILE__) . '/classes.php';
-/**
-require_once dirname(__FILE__) . '/../vendor/simpletest/unit_tester.php';
-require_once dirname(__FILE__) . '/../vendor/simpletest/reporter.php';
-*/
+
 require_once dirname(__FILE__) . '/Test.php';
 require_once dirname(__FILE__) . '/UnitTestCase.php';
 
@@ -72,7 +70,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 $test->addTestCase(new Doctrine_Ticket330_TestCase());
     */
-/**      */
+ /**   */
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
@@ -304,9 +302,12 @@ $test->addTestCase(new Doctrine_Query_TestCase());
 
 $test->addTestCase(new Doctrine_Ticket364_TestCase());
 
+$test->addTestCase(new Doctrine_Template_TestCase());
+
 $test->addTestCase(new Doctrine_Query_MysqlSubquery_TestCase());
 
-/** */
+$test->addTestCase(new Doctrine_Query_PgsqlSubquery_TestCase());
+
 //$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
 
 //$test->addTestCase(new Doctrine_AuditLog_TestCase());

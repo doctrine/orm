@@ -18,57 +18,22 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Query_Part');
+
 /**
- * Doctrine_Query_Orderby
+ * Doctrine_Template_TestCase
  *
  * @package     Doctrine
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Query_Orderby extends Doctrine_Query_Part
+class Doctrine_Template_TestCase extends Doctrine_UnitTestCase 
 {
-    /**
-     * DQL ORDER BY PARSER
-     * parses the order by part of the query string
-     *
-     * @param string $str
-     * @return void
-     */
-    public function parse($str, $append = false)
+    public function testTemplateRelationsSupportConcreteInheritance()
     {
-        $ret = array();
-
-        foreach (explode(',', trim($str)) as $r) {
-            $r = trim($r);
-            $e = explode(' ', $r);
-            $a = explode('.', $e[0]);
-
-            if (count($a) > 1) {
-                $field     = array_pop($a);
-                $reference = implode('.', $a);
-                $name      = end($a);
-
-                $map = $this->query->load($reference, false);
-                $tableAlias = $this->query->getTableAlias($reference);
-
-                $r = $tableAlias . '.' . $field;
-
-
-            } else {
-                $field = $this->query->getAggregateAlias($e[0]);
-
-                $r = $field;
-            }
-            if (isset($e[1])) {
-                $r .= ' ' . $e[1];
-            }
-            $ret[] = $r;
-        }
-        return $ret;
+        $blog = new Blog(); 	
     }
 }
