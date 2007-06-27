@@ -1495,17 +1495,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     /**
      * index
-     * defines a foreignKey
-     *
-     * @param array $definition         the definition array
-     * @return void
-     */
-    public function foreignKey(array $definition = array())
-    {
-        return $this->_table->addForeignKey($definition);
-    }
-    /**
-     * index
      * defines or retrieves an index
      * if the second parameter is set this method defines an index
      * if not this method retrieves index named $name
@@ -1601,6 +1590,15 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $data = $this->_table->getAuditLog()->getVersion($this, $version);
         
         $this->_data = $data[0];
+    }
+    /**
+     * loadTemplate
+     *
+     * @param string $template
+     */
+    public function loadTemplate($template)
+    {
+        return $this;
     }
     /**
      * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
