@@ -96,6 +96,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     protected $_pendingJoinConditions = array();
     
+    protected $_expressionMap = array();
+    
     protected $_state = Doctrine_Query::STATE_CLEAN;
 
     /**
@@ -115,6 +117,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $this->pendingSubqueries = array();
         $this->pendingFields = array();
         $this->_neededTables = array();
+        $this->_expressionMap = array();
         $this->subqueryAliases = array();
         $this->needsSubquery = false;
         $this->isLimitSubqueryUsed = false;
@@ -228,6 +231,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function getAggregateAlias($dqlAlias)
     {
         if (isset($this->aggregateMap[$dqlAlias])) {
+            // mark the expression as used
+            $this->_expressionMap[$dqlAlias][1] = true;
+
             return $this->aggregateMap[$dqlAlias];
         }
         if ( ! empty($this->pendingAggregates)) {
@@ -577,6 +583,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $this->parts['select'][] = $expression . ' AS ' . $sqlAlias;
 
             $this->aggregateMap[$alias] = $sqlAlias;
+            $this->_expressionMap[$alias][0] = $expression;
 
             $this->_aliasMap[$componentAlias]['agg'][$index] = $alias;
 
@@ -852,7 +859,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
 
 
-
+        /**
         foreach ($this->parts['orderby'] as $part) {
             $part = trim($part);
             $e = Doctrine_Tokenizer::bracketExplode($part, ' ');
@@ -881,6 +888,14 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 } elseif ($driverName == 'pgsql') {
                     // pgsql needs the order by fields to be preserved in select clause
                     $subquery .= ', ' . $part;
+                }
+            }
+        }
+        */
+        if ($driverName == 'mysql' || $driverName == 'pgsql') {
+            foreach ($this->_expressionMap as $dqlAlias => $expr) {
+                if (isset($expr[1])) {
+                    $subquery .= ', ' . $expr[0] . ' AS ' . $this->aggregateMap[$dqlAlias];
                 }
             }
         }
@@ -928,7 +943,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             if (strpos($part, '.') !== false) {
                 $separator = '.';
             }
-            
+
             if ($driverName == 'mysql' || $driverName == 'pgsql') {
                 if (strpos($part, '__') !== false) {
                     $separator = '__';

@@ -69,7 +69,7 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
                     $func      = $this->query->getTableAlias($reference) . '.' . $field;
                 } else {
                     $field = end($a);
-                    $func      = $this->query->getAggregateAlias($field);
+                    $func  = $this->query->getAggregateAlias($field);
                 }
                 return $func;
             } else {
