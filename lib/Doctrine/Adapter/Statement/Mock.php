@@ -60,4 +60,8 @@ class Doctrine_Adapter_Statement_Mock
     {
         return 0;
     }
+    public function closeCursor()
+    {
+        return true;	
+    }
 }
