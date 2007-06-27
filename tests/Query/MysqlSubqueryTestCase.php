@@ -24,6 +24,9 @@ class Doctrine_Query_MysqlSubquery_TestCase extends Doctrine_UnitTestCase
             $this->fail();
         }
         
+        $queries = $this->dbh->getAll();
+        
         $this->assertEqual($queries[0], 'SELECT DISTINCT e2.id, COUNT(DISTINCT a.id) AS a__0 FROM entity e2 LEFT JOIN album a2 ON e2.id = a2.user_id WHERE (e2.type = 0) GROUP BY e2.id ORDER BY a__0 LIMIT 5');
+
     }
 }
