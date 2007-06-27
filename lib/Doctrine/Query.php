@@ -928,8 +928,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             if (strpos($part, '.') !== false) {
                 $separator = '.';
             }
-            if (strpos($part, '__') !== false) {
-                $separator = '__';
+            
+            if ($driverName == 'mysql' || $driverName == 'pgsql') {
+                if (strpos($part, '__') !== false) {
+                    $separator = '__';
+                }
             }
             
             if ($separator) {

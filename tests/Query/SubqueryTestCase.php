@@ -102,7 +102,6 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
 
             $count = $users->count();
         } catch (Doctrine_Exception $e) {
-
             $this->fail();
         }
 
