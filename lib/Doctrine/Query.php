@@ -858,40 +858,29 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $driverName = $this->_conn->getAttribute(Doctrine::ATTR_DRIVER_NAME);
 
 
-
-        /**
-        foreach ($this->parts['orderby'] as $part) {
-            $part = trim($part);
-            $e = Doctrine_Tokenizer::bracketExplode($part, ' ');
-            $part = trim($e[0]);
-
-            $aggregate = false;
-
-            foreach ($this->parts['select'] as $select) {
-                $e = explode(' AS ', trim($select));
-
-                if (count($e) > 1) {
-                    if ($part === $e[1]) {
-                        $part = $select;
-                        $aggregate = true;
-                        break;
-                    }
+        // pgsql needs the order by fields to be preserved in select clause
+        if ($driverName == 'pgsql') {
+            foreach ($this->parts['orderby'] as $part) {
+                $part = trim($part);
+                $e = Doctrine_Tokenizer::bracketExplode($part, ' ');
+                $part = trim($e[0]);
+    
+                if (strpos($part, '.') === false) {
+                    continue;
                 }
-            }
-
-            // don't add primarykey column (its already in the select clause)
-            if ($part !== $primaryKey) {
-                if ($driverName == 'mysql') {
-                    if ($aggregate) {
-                        $subquery .= ', ' . $part;
-                    }
-                } elseif ($driverName == 'pgsql') {
-                    // pgsql needs the order by fields to be preserved in select clause
+                
+                // don't add functions
+                if (strpos($part, '(') !== false) {
+                    continue;
+                }
+    
+                // don't add primarykey column (its already in the select clause)
+                if ($part !== $primaryKey) {
                     $subquery .= ', ' . $part;
                 }
             }
         }
-        */
+
         if ($driverName == 'mysql' || $driverName == 'pgsql') {
             foreach ($this->_expressionMap as $dqlAlias => $expr) {
                 if (isset($expr[1])) {
@@ -933,13 +922,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             if (strpos($part, "'") !== false) {
                 continue;
             }
-            
+
             if ($this->hasTableAlias($part)) {
                 $parts[$k] = $this->generateNewTableAlias($part);
                 continue;
             }
-            
-            if (strpos($part, '.') == false) {
+
+            if (strpos($part, '.') === false) {
                 continue;
             }
             preg_match_all("/[a-zA-Z0-9_]+\.[a-z0-9_]+/i", $part, $m);
@@ -971,29 +960,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 }
             }
         }
-        /**
-        
-            $separator = false;
 
-            if (strpos($part, '.') !== false) {
-                $separator = '.';
-            }
-
-            if ($driverName == 'mysql' || $driverName == 'pgsql') {
-                if (strpos($part, '__') !== false) {
-                    $separator = '__';
-                }
-            }
-            
-            if ($separator) {
-                $e = explode($separator, $part);
-
-                $trimmed = ltrim($e[0], '( ');
-                $pos     = strpos($e[0], $trimmed);
-
-                $e[0] = substr($e[0], 0, $pos) . $this->generateNewTableAlias($trimmed);
-                $parts[$k] = implode($separator, $e);
-            }*/
         $subquery = implode(' ', $parts);
 
         return $subquery;

@@ -37,7 +37,7 @@ class Doctrine_Query_PgsqlSubquery_TestCase extends Doctrine_UnitTestCase
         $this->dbh = new Doctrine_Adapter_Mock('pgsql');
         $this->conn = Doctrine_Manager::getInstance()->openConnection($this->dbh);
     }
-    /**
+
     public function testGetLimitSubqueryWithOrderByOnAggregateValues()
     {
         $q = new Doctrine_Query();
@@ -49,9 +49,11 @@ class Doctrine_Query_PgsqlSubquery_TestCase extends Doctrine_UnitTestCase
 
         $q->execute();
 
-        $this->dbh->pop();
+        $this->assertEqual($this->dbh->pop(), 'SELECT e.id AS e__id, e.name AS e__name, COUNT(DISTINCT a.id) AS a__0 FROM entity e LEFT JOIN album a ON e.id = a.user_id WHERE e.id IN '
+                                             . '(SELECT doctrine_subquery_alias.id FROM '
+                                             . '(SELECT DISTINCT e2.id, COUNT(DISTINCT a2.id) AS a2__0 FROM entity e2 LEFT JOIN album a2 ON e2.id = a2.user_id WHERE (e2.type = 0) GROUP BY e2.id ORDER BY a2__0 LIMIT 5) '
+                                             . 'AS doctrine_subquery_alias) AND (e.type = 0) GROUP BY e.id ORDER BY a__0');
 
-        $this->assertEqual($this->dbh->pop(), 'SELECT DISTINCT e2.id, COUNT(DISTINCT a2.id) AS a2__0 FROM entity e2 LEFT JOIN album a2 ON e2.id = a2.user_id WHERE (e2.type = 0) GROUP BY e2.id ORDER BY a2__0 LIMIT 5');
     }
 
     public function testGetLimitSubqueryWithOrderByOnAggregateValuesAndColumns()
@@ -65,9 +67,7 @@ class Doctrine_Query_PgsqlSubquery_TestCase extends Doctrine_UnitTestCase
 
         $q->execute();
 
-        $this->dbh->pop();
-
-        $this->assertEqual($this->dbh->pop(), 'SELECT DISTINCT e2.id, COUNT(DISTINCT a2.id) AS a2__0, e2.name FROM entity e2 LEFT JOIN album a2 ON e2.id = a2.user_id WHERE (e2.type = 0) GROUP BY e2.id ORDER BY a2__0, e2.name LIMIT 5');
+        $this->assertEqual($this->dbh->pop(), 'SELECT e.id AS e__id, e.name AS e__name, COUNT(DISTINCT a.id) AS a__0 FROM entity e LEFT JOIN album a ON e.id = a.user_id WHERE e.id IN (SELECT doctrine_subquery_alias.id FROM (SELECT DISTINCT e2.id, e2.name, COUNT(DISTINCT a2.id) AS a2__0 FROM entity e2 LEFT JOIN album a2 ON e2.id = a2.user_id WHERE (e2.type = 0) GROUP BY e2.id ORDER BY a2__0, e2.name LIMIT 5) AS doctrine_subquery_alias) AND (e.type = 0) GROUP BY e.id ORDER BY a__0, e.name');
     }
-    */
+
 }
