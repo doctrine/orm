@@ -31,7 +31,7 @@ Doctrine::autoload('Doctrine_Access');
  * @since       1.0
  * @version     $Revision$
  */
-abstract class Doctrine_Record extends Doctrine_Access implements Countable, IteratorAggregate, Serializable
+abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Countable, IteratorAggregate, Serializable
 {
     /**
      * STATE CONSTANTS
@@ -1309,85 +1309,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
         $rel = $this->_table->getRelation($name);
         $this->_references[$name] = $rel->fetchRelatedFor($this);
     }
-    /**
-     * ownsOne
-     * binds One-to-One composite relation
-     *
-     * @param string $componentName     the name of the related component
-     * @param string $options           relation options
-     * @see Doctrine_Relation::_$definition
-     * @return Doctrine_Record          this object
-     */
-    public function ownsOne()
-    {
-        $this->_table->bind(func_get_args(), Doctrine_Relation::ONE_COMPOSITE);
-        
-        return $this;
-    }
-    /**
-     * ownsMany
-     * binds One-to-Many / Many-to-Many composite relation
-     *
-     * @param string $componentName     the name of the related component
-     * @param string $options           relation options
-     * @see Doctrine_Relation::_$definition
-     * @return Doctrine_Record          this object
-     */
-    public function ownsMany()
-    {
-        $this->_table->bind(func_get_args(), Doctrine_Relation::MANY_COMPOSITE);
-        return $this;
-    }
-    /**
-     * hasOne
-     * binds One-to-One aggregate relation
-     *
-     * @param string $componentName     the name of the related component
-     * @param string $options           relation options
-     * @see Doctrine_Relation::_$definition
-     * @return Doctrine_Record          this object
-     */
-    public function hasOne()
-    {
-        $this->_table->bind(func_get_args(), Doctrine_Relation::ONE_AGGREGATE);
 
-        return $this;
-    }
-    /**
-     * hasMany
-     * binds One-to-Many / Many-to-Many aggregate relation
-     *
-     * @param string $componentName     the name of the related component
-     * @param string $options           relation options
-     * @see Doctrine_Relation::_$definition
-     * @return Doctrine_Record          this object
-     */
-    public function hasMany()
-    {
-        $this->_table->bind(func_get_args(), Doctrine_Relation::MANY_AGGREGATE);
-
-        return $this;
-    }
-    /**
-     * hasColumn
-     * sets a column definition
-     *
-     * @param string $name
-     * @param string $type
-     * @param integer $length
-     * @param mixed $options
-     * @return void
-     */
-    public function hasColumn($name, $type, $length = 2147483647, $options = "")
-    {
-        $this->_table->setColumn($name, $type, $length, $options);
-    }
-    public function hasColumns(array $definitions)
-    {
-        foreach ($definitions as $name => $options) {
-            $this->hasColumn($name, $options['type'], $options['length'], $options);
-        }
-    }
     /**
      * merge
      * merges this record with an array of values
@@ -1406,117 +1328,6 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
                 // silence all exceptions
             }
         }
-    }
-    public function setAttribute($attr, $value)
-    {
-        $this->_table->setAttribute($attr, $value);
-    }
-    public function setTableName($tableName)
-    {
-        $this->_table->setOption('tableName', $tableName);
-    }
-    public function setInheritanceMap($map)
-    {
-        $this->_table->setOption('inheritanceMap', $map);
-    }
-    public function setEnumValues($column, $values)
-    {
-        $this->_table->setEnumValues($column, $values);
-    }
-    /**
-     * attribute
-     * sets or retrieves an option
-     *
-     * @see Doctrine::ATTR_* constants   availible attributes
-     * @param mixed $attr
-     * @param mixed $value
-     * @return mixed
-     */
-    public function attribute($attr, $value)
-    {
-        if ($value == null) {
-            if (is_array($attr)) {
-                foreach ($attr as $k => $v) {
-                    $this->_table->setAttribute($k, $v);
-                }
-            } else {
-                return $this->_table->getAttribute($attr);
-            }
-        } else {
-            $this->_table->setAttribute($attr, $value);
-        }    
-    }
-    /**
-     * option
-     * sets or retrieves an option
-     *
-     * @see Doctrine_Table::$options    availible options
-     * @param mixed $name               the name of the option
-     * @param mixed $value              options value
-     * @return mixed
-     */
-    public function option($name, $value = null)
-    {
-        if ($value == null) {
-            if (is_array($name)) {
-                foreach ($name as $k => $v) {
-                    $this->_table->setOption($k, $v);
-                }
-            } else {
-                return $this->_table->getOption($name);
-            }
-        } else {
-            $this->_table->setOption($name, $value);
-        }
-    }
-    /**
-     * index
-     * defines or retrieves an index
-     * if the second parameter is set this method defines an index
-     * if not this method retrieves index named $name
-     *
-     * @param string $name              the name of the index
-     * @param array $definition         the definition array
-     * @return mixed
-     */
-    public function index($name, array $definition = array())
-    {
-        if ( ! $definition) {
-            return $this->_table->getIndex($name);
-        } else {
-            return $this->_table->addIndex($name, $definition);
-        }
-    }
-    /**
-     * addListener
-     *
-     * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_Record
-     */
-    public function addListener($listener, $name = null)
-    {
-        $this->_table->addListener($listener, $name = null);
-        return $this;
-    }
-    /**
-     * getListener
-     *
-     * @return Doctrine_EventListener_Interface|Doctrine_Overloadable
-     */
-    public function getListener()
-    {
-        return $this->_table->getListener();
-    }
-    /**
-     * setListener
-     *
-     * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_Record
-     */
-    public function setListener($listener)
-    {
-        $this->_table->setListener($listener);
-        return $this;
     }
     /**
      * call
@@ -1574,6 +1385,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
      */
     public function loadTemplate($template)
     {
+    	$tpl = new $template($this->_table);
+        $tpl->setUp();
+        $tpl->setTableDefinition();
         return $this;
     }
     /**

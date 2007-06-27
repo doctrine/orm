@@ -509,6 +509,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     	$options = array();
         $options['type'] = $type;
         
+        if ( ! isset($args[1])) {
+            $args[1] = array();
+        }
+        
         // the following is needed for backwards compatibility
         if (is_string($args[1])) {
             if ( ! isset($args[2])) {
@@ -539,7 +543,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $options = array_merge($args[2], $options);
 
             $this->_parser->bind($args[0], $options);
-        } else {
+        } else { 
             $options = array_merge($args[1], $options);
             $this->_parser->bind($args[0], $options);
         }
