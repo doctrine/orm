@@ -1350,6 +1350,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function hasOne()
     {
         $this->_table->bind(func_get_args(), Doctrine_Relation::ONE_AGGREGATE);
+
         return $this;
     }
     /**
@@ -1364,6 +1365,7 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     public function hasMany()
     {
         $this->_table->bind(func_get_args(), Doctrine_Relation::MANY_AGGREGATE);
+
         return $this;
     }
     /**
@@ -1382,35 +1384,9 @@ abstract class Doctrine_Record extends Doctrine_Access implements Countable, Ite
     }
     public function hasColumns(array $definitions)
     {
-        foreach ($definitions as $name => $options) 
-        {
+        foreach ($definitions as $name => $options) {
             $this->hasColumn($name, $options['type'], $options['length'], $options);
         }
-    }
-    /**
-     * countRelated
-     *
-     * @param string $name      the name of the related component
-     * @return integer
-     */
-    public function countRelated($name)
-    {
-
-        $rel            = $this->_table->getRelation($name);
-        $componentName  = $rel->getTable()->getComponentName();
-        $query          = new Doctrine_Query();
-        /**
-        $query->select('COUNT(p.id)')
-              ->from($componentName)
-              ->where($componentName. '.' . $rel->getAlias()
-                      . '.' . $this->getTable()->getIdentifier(). ' = ?');
-           */
-        //$array = $query->execute(array($this->getIncremented()));
-
-        return 0;
-        //return $array[0]['COUNT(1)'];
-
-
     }
     /**
      * merge
