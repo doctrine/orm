@@ -85,7 +85,7 @@ class Doctrine_Lib
 
     public static function getCollectionAsXml(Doctrine_Collection $collection, SimpleXMLElement $incomming_xml = null){
 
-        $collectionName = Doctrine_Lib::plurelize($collection->getTable()->name);
+        $collectionName = Doctrine_Lib::plurelize($collection->getTable()->tableName);
 
         if ( ! isset($incomming_xml)) {
 						$new_xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><" . $collectionName . "></" . $collectionName . ">";
@@ -120,7 +120,7 @@ class Doctrine_Lib
      */
     public static function getRecordAsXml(Doctrine_Record $record, SimpleXMlElement $incomming_xml = NULL)
     {
-        $recordname = $record->getTable()->name;
+        $recordname = $record->getTable()->tableName;
         if (!isset($incomming_xml)) {
 						$new_xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><" . $recordname . "></" . $recordname . ">";
             $xml = new SimpleXMLElement($new_xml_string);
@@ -132,7 +132,7 @@ class Doctrine_Lib
 				}
         $xml_options = $record->option("xml");
         foreach ($record->getData() as $field => $value) {
-            if (isset($xml_options["ignore_fields"]) && !in_array($field, $xml_options["ignore_fields"])) {
+            if ((isset($xml_options["ignore_fields"]) && !in_array($field, $xml_options["ignore_fields"])) || !isset($xml_options["ignore_fields"])) {
                 if ($value instanceOf Doctrine_Null) {
                     $xml->addChild($field);
                 } else {	
