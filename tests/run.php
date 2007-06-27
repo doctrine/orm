@@ -308,6 +308,8 @@ $test->addTestCase(new Doctrine_Query_MysqlSubquery_TestCase());
 
 $test->addTestCase(new Doctrine_Query_PgsqlSubquery_TestCase());
 
+$test->addTestCase(new Doctrine_Query_MysqlSubqueryHaving_TestCase());
+
 //$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
 
 //$test->addTestCase(new Doctrine_AuditLog_TestCase());
