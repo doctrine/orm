@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
+Doctrine::autoload('Doctrine_Record_Abstract');
 /**
  * Doctrine_Template
  *
@@ -60,7 +60,7 @@ class Doctrine_Template extends Doctrine_Record_Abstract
     {
     	
     }
-    
+
     public function setTableDefinition()
     {
 
