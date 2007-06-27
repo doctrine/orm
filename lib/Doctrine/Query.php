@@ -307,7 +307,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 } else {
                     $this->setQueryPart($queryPartName, $sql);
                 }
-            }                                   	
+            }                                       
         }
         
         $this->_state = Doctrine_Query::STATE_DIRTY;
@@ -696,11 +696,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function getQuery($params = array())
     {
-    	if ($this->_state !== self::STATE_DIRTY) {
-    	   return $this->_sql;
-    	}
+        if ($this->_state !== self::STATE_DIRTY) {
+           return $this->_sql;
+        }
 
-    	$parts = $this->_dqlParts;
+        $parts = $this->_dqlParts;
 
         // reset the state
         $this->_aliasMap = array();
@@ -928,16 +928,51 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $subquery = $this->_conn->modifyLimitQuery($subquery, $this->parts['limit'], $this->parts['offset']);
 
         $parts = Doctrine_Tokenizer::quoteExplode($subquery, ' ', "'", "'");
-
+           //print_r($parts);
         foreach ($parts as $k => $part) {
             if (strpos($part, "'") !== false) {
                 continue;
             }
-
+            
             if ($this->hasTableAlias($part)) {
                 $parts[$k] = $this->generateNewTableAlias($part);
+                continue;
             }
+            
+            if (strpos($part, '.') == false) {
+                continue;
+            }
+            preg_match_all("/[a-zA-Z0-9_]+\.[a-z0-9_]+/i", $part, $m);
 
+            foreach ($m[0] as $match) {
+                $e = explode('.', $match);
+                $e[0] = $this->generateNewTableAlias($e[0]);
+
+                $parts[$k] = str_replace($match, implode('.', $e), $parts[$k]);
+            }
+        }
+        
+        if ($driverName == 'mysql' || $driverName == 'pgsql') {
+            foreach ($parts as $k => $part) {
+                if (strpos($part, "'") !== false) {
+                    continue;
+                }
+                if (strpos($part, '__') == false) {
+                    continue;
+                }
+
+                preg_match_all("/[a-zA-Z0-9_]+\_\_[a-z0-9_]+/i", $part, $m);
+    
+                foreach ($m[0] as $match) {
+                    $e = explode('__', $match);
+                    $e[0] = $this->generateNewTableAlias($e[0]);
+    
+                    $parts[$k] = str_replace($match, implode('__', $e), $parts[$k]);
+                }
+            }
+        }
+        /**
+        
             $separator = false;
 
             if (strpos($part, '.') !== false) {
@@ -958,8 +993,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
                 $e[0] = substr($e[0], 0, $pos) . $this->generateNewTableAlias($trimmed);
                 $parts[$k] = implode($separator, $e);
-            }
-        }
+            }*/
         $subquery = implode(' ', $parts);
 
         return $subquery;
