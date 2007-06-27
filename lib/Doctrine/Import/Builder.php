@@ -109,29 +109,15 @@ END;
 
     }
 
-    public function buildRecord($table, $tableColumns, $className='', $fileName='')
+    /*
+     * Build the table definition of a Doctrine_Record object
+     *
+     * @param  string $table
+     * @param  array  $tableColumns
+     * @access public
+     */
+    public function buildDefinition($table, $tableColumns)
     {
-        if (empty($fileName)) {
-            if (empty($this->path)) {
-                $errMsg = 'No build target directory set.';
-                throw new Doctrine_Import_Builder_Exception($errMsg);
-            }
-            
-
-            if (is_writable($this->path) === false) {
-                $errMsg = 'Build target directory ' . $this->path . ' is not writable.';
-                throw new Doctrine_Import_Builder_Exception($errMsg);
-            }
-
-            $fileName  = $this->path . DIRECTORY_SEPARATOR . $className . $this->suffix;
-        }
-        
-        $created   = date('l dS \of F Y h:i:s A');
-        
-        if (empty($className)) {
-            $className = Doctrine::classify($table);
-        }
-        
         $columns   = array(0 => str_repeat(' ', 8) . '$this->setTableName(\'$table\');');
         $i = 1;
 
@@ -179,8 +165,35 @@ END;
             }
             $i++;
         }
+        
+        return implode("\n", $columns);
+    }
 
-        $content = sprintf(self::$tpl, $created, $className, implode("\n", $columns));
+    public function buildRecord($table, $tableColumns, $className='', $fileName='')
+    {
+        if (empty($fileName)) {
+            if (empty($this->path)) {
+                $errMsg = 'No build target directory set.';
+                throw new Doctrine_Import_Builder_Exception($errMsg);
+            }
+            
+
+            if (is_writable($this->path) === false) {
+                $errMsg = 'Build target directory ' . $this->path . ' is not writable.';
+                throw new Doctrine_Import_Builder_Exception($errMsg);
+            }
+
+            $fileName  = $this->path . DIRECTORY_SEPARATOR . $className . $this->suffix;
+        }
+        
+        $created   = date('l dS \of F Y h:i:s A');
+        
+        if (empty($className)) {
+            $className = Doctrine::classify($table);
+        }
+        
+        $content = sprintf(self::$tpl, $created, $className, 
+                          $this->buildDefinition($table, $tableColumns));
 
         $bytes   = file_put_contents($fileName, $content);
 
@@ -188,6 +201,7 @@ END;
             throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $fileName);
         }
     }
+    
     /**
      *
      * @param Doctrine_Schema_Object $schema
