@@ -47,9 +47,9 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      */
     public function listSequences($database = null)
     {
-        $query = "SHOW TABLES";
+        $query = 'SHOW TABLES';
         if (!is_null($database)) {
-            $query .= " FROM $database";
+            $query .= ' FROM ' . $database;
         }
         $tableNames = $this->conn->fetchColumn($query);
 
