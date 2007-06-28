@@ -108,10 +108,40 @@ class Doctrine_Relation_Parser
             if (substr($name, -8) === 'Template') {
                 $name = substr($name, 0, -8);
             }
+            
+            $parent = new ReflectionClass($this->_table->getComponentName());
 
             if ( ! class_exists($name)) {
                 $template = new $templateName();
-                print_r($template->getTable()->getColumns());
+
+                $conn = $this->_table->getConnection();
+
+                $refl = new ReflectionClass($templateName);
+                $file = file($refl->getFileName());
+
+                $parentMethods = $refl->getParentClass()->getMethods();
+
+                foreach ($parentMethods as $k => $method) {
+                    $parentMethods[$k] = $method->getName();
+                }
+
+                $lines[] = 'class ' . $name . ' extends Doctrine_Record';
+                $lines[] = '{';
+                foreach ($refl->getMethods() as $method) {
+                    if ($method->getDeclaringClass()->getName() === $refl->getName()) {
+                        $start = $method->getStartLine() - 1;
+                        $end   = $method->getEndLine() - 1;
+
+                        $lines = array_merge($lines, array_slice($file, $start, ($end - $start) + 1));
+                    }
+                }
+                $lines[] = '}';
+                $fileName = dirname($parent->getFileName()) . DIRECTORY_SEPARATOR . $name . '.php';
+
+                if (file_exists($fileName)) {
+                    throw new Doctrine_Template_Exception("Couldn't generate class for template.");
+                }
+                eval(implode("\n", $lines));
             }
         }
 
