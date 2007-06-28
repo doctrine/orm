@@ -915,6 +915,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         if (isset($this->_id[$lower])) {
             return true;
         }
+        if (isset($this->_values[$lower])) {
+            return true;                                  	
+        }
         if (isset($this->_references[$name]) && 
             $this->_references[$name] !== self::$_null) {
 
