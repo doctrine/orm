@@ -30,14 +30,17 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Record_ZeroValues_TestCase extends Doctrine_UnitTestCase {
-    public function prepareTables() {
+class Doctrine_Record_ZeroValues_TestCase extends Doctrine_UnitTestCase
+{
+    public function prepareTables()
+    {
         $this->tables[] = 'MyUser2';
 
         parent::prepareTables();
     }
 
-    public function prepareData() {
+    public function prepareData()
+    {
         $user = new MyUser2();
         $user['is_super_admin'] = 0; // set it to 0 and it should be 0 when we pull it back from the database
         $user['username'] = 'jwage';
@@ -46,7 +49,8 @@ class Doctrine_Record_ZeroValues_TestCase extends Doctrine_UnitTestCase {
         $user->save();
     }
 
-    public function testZeroValuesMaintained() {
+    public function testZeroValuesMaintained()
+    {
         $q = new Doctrine_Query();
         $q->from('MyUser2');
         $users = $q->execute();
@@ -55,8 +59,10 @@ class Doctrine_Record_ZeroValues_TestCase extends Doctrine_UnitTestCase {
     }
 }
 
-class MyUser2 extends Doctrine_Record {
-    public function setTableDefinition() {
+class MyUser2 extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
         $this->setTableName('my_user2');
 
         $this->hasColumn('id', 'integer', 4, array (  'primary' => true,  'autoincrement' => true,));
