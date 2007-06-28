@@ -154,7 +154,9 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
 
         $columns     = array();
         foreach ($result as $key => $val) {
-            if ($val['type'] === 'varchar') {
+            $val = array_change_key_case($val, CASE_LOWER);
+
+            if (strtolower($val['type']) === 'varchar') {
                 // get length from varchar definition
                 $length = preg_replace('~.*\(([0-9]*)\).*~', '$1', $val['complete_type']);
                 $val['length'] = $length;
@@ -164,8 +166,9 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
 
             $description = array(
                 'name'      => $val['field'],
-                'type'      => $val['type'],
-                'ptype'     => $decl['type'],
+                'ntype'     => $val['type'],
+                'type'      => $decl['type'][0],
+                'alltypes'  => $decl['type'],
                 'length'    => $decl['length'],
                 'fixed'     => $decl['fixed'],
                 'unsigned'  => $decl['unsigned'],

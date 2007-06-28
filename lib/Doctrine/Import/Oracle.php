@@ -122,13 +122,16 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         $result = $this->conn->fetchAssoc($sql);
 
         foreach($result as $val) {
+            $val = array_change_key_case($val, CASE_LOWER);
             $decl = $this->conn->dataDict->getPortableDeclaration($val);
+
 
             $descr[$val['column_name']] = array(
                'name'       => $val['column_name'],
                'notnull'    => (bool) ($val['nullable'] === 'N'),
-               'type'       => $val['data_type'],
-               'ptype'      => $decl['type'],
+               'ntype'      => $val['data_type'],
+               'type'       => $decl['type'][0],
+               'alltypes'   => $decl['type'],
                'fixed'      => $decl['fixed'],
                'unsigned'   => $decl['unsigned'],
                'default'    => $val['data_default'],

@@ -120,7 +120,7 @@ END;
         $i = 1;
 
         foreach ($tableColumns as $name => $column) {
-            $columns[$i] = '        $this->hasColumn(\'' . $name . '\', \'' . $column['ptype'][0] . '\'';
+            $columns[$i] = '        $this->hasColumn(\'' . $name . '\', \'' . $column['type'] . '\'';
             if ($column['length']) {
                 $columns[$i] .= ', ' . $column['length'];
             } else {
@@ -147,7 +147,7 @@ END;
             if (isset($column['unsigned']) && $column['unsigned']) {
                 $a[] = '\'unsigned\' => true';
             }
-            if ($column['ptype'][0] == 'enum' && isset($column['values']) && $column['values']) {
+            if ($column['type'] == 'enum' && isset($column['values']) && $column['values']) {
                 $a[] = '\'values\' => array(' . implode(',', $column['values']) . ')';
             }
 

@@ -124,8 +124,9 @@ class Doctrine_Import_Mysql extends Doctrine_Import
 
             $description = array(
                 'name'      => $val['field'],
-                'type'      => $val['type'],
-                'ptype'     => $decl['type'],
+                'type'      => $decl['type'][0],
+                'alltypes'  => $decl['type'],
+                'ntype'     => $val['type'],
                 'length'    => $decl['length'],
                 'fixed'     => $decl['fixed'],
                 'unsigned'  => $decl['unsigned'],

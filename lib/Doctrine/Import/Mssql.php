@@ -59,6 +59,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import
         $columns = array();
 
         foreach ($result as $key => $val) {
+            $val = array_change_key_case($val, CASE_LOWER);
+
             if (strstr($val['type_name'], ' ')) {
                 list($type, $identity) = explode(' ', $val['type_name']);
             } else {
@@ -74,8 +76,9 @@ class Doctrine_Import_Mssql extends Doctrine_Import
 
             $description  = array(
                 'name'      => $val['column_name'],
-                'type'      => $type,
-                'ptype'     => $decl['type'],
+                'ntype'     => $type,
+                'type'      => $decl['type'][0],
+                'alltypes'  => $decl['type'],
                 'length'    => $decl['length'],
                 'fixed'     => $decl['fixed'],
                 'unsigned'  => $decl['unsigned'],
