@@ -101,6 +101,20 @@ class Doctrine_Relation_Parser
             throw new Doctrine_Relation_Exception('Relation type not set.');
         }
 
+        if (strpos($name, '[Component]') !== false) {
+            $name = str_replace('[Component]', $this->_table->getComponentName(), $name);
+            $templateName = substr($name, strlen($this->_table->getComponentName()));
+
+            if (substr($name, -8) === 'Template') {
+                $name = substr($name, 0, -8);
+            }
+
+            if ( ! class_exists($name)) {
+                $template = new $templateName();
+                print_r($template->getTable()->getColumns());
+            }
+        }
+
         $this->_pending[$alias] = array_merge($options, array('class' => $name, 'alias' => $alias));
 
         $m = Doctrine_Manager::getInstance();
@@ -332,7 +346,7 @@ class Doctrine_Relation_Parser
                 if ($def['local'] !== $this->_table->getIdentifier()) {
                     $def['localKey'] = true;
                 }
-            }   
+            }
         } else {
             if (isset($def['foreign'])) {
                 // local key not set, but foreign key is set

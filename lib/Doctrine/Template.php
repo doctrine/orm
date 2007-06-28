@@ -37,11 +37,11 @@ class Doctrine_Template extends Doctrine_Record_Abstract
      */
     protected $_table;
     /**
-     * constructor, creates tree with reference to table and any options
+     * setTable
      *
      * @param Doctrine_Table $_table     the table object this Template belongs to
      */
-    public function __construct(Doctrine_Table $table)
+    public function setTable(Doctrine_Table $table)
     {
         $this->_table = $table;
     }

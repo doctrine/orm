@@ -231,13 +231,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 switch (count($this->primaryKeys)) {
                 case 0:
                     $this->columns = array_merge(array('id' =>
-                        array('integer',
-                            20,
-                            array('autoincrement' => true,
-                            'primary'       => true,
-                        )
-                    )
-                ), $this->columns);
+                                                  array('type'          => 'integer',
+                                                        'length'        => 20,
+                                                        'autoincrement' => true,
+                                                        'primary'       => true)), $this->columns);
 
                     $this->primaryKeys[] = 'id';
                     $this->identifier = 'id';
@@ -251,7 +248,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
                     } else {
                         foreach ($this->primaryKeys as $pk) {
-                            $e = $this->columns[$pk][2];
+                            $e = $this->columns[$pk];
 
                             $found = false;
 
@@ -262,26 +259,26 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                 $e2 = explode(':', $option);
 
                                 switch (strtolower($e2[0])) {
-                                case 'autoincrement':
-                                case 'autoinc':
-                                    $this->identifierType = Doctrine::IDENTIFIER_AUTOINC;
-                                    $found = true;
-                                    break;
-                                case 'seq':
-                                case 'sequence':
-                                    $this->identifierType = Doctrine::IDENTIFIER_SEQUENCE;
-                                    $found = true;
-
-                                    if ($value) {
-                                        $this->options['sequenceName'] = $value;
-                                    } else {
-                                        if (($sequence = $this->getAttribute(Doctrine::ATTR_DEFAULT_SEQUENCE)) !== null) {
-                                            $this->options['sequenceName'] = $sequence;
+                                    case 'autoincrement':
+                                    case 'autoinc':
+                                        $this->identifierType = Doctrine::IDENTIFIER_AUTOINC;
+                                        $found = true;
+                                        break;
+                                    case 'seq':
+                                    case 'sequence':
+                                        $this->identifierType = Doctrine::IDENTIFIER_SEQUENCE;
+                                        $found = true;
+    
+                                        if ($value) {
+                                            $this->options['sequenceName'] = $value;
                                         } else {
-                                            $this->options['sequenceName'] = $this->conn->getSequenceName($this->options['tableName']);
+                                            if (($sequence = $this->getAttribute(Doctrine::ATTR_DEFAULT_SEQUENCE)) !== null) {
+                                                $this->options['sequenceName'] = $sequence;
+                                            } else {
+                                                $this->options['sequenceName'] = $this->conn->getSequenceName($this->options['tableName']);
+                                            }
                                         }
-                                    }
-                                    break;
+                                        break;
                                 }
                             }
                             if ( ! isset($this->identifierType)) {
@@ -329,21 +326,19 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $primary = array();
 
         foreach ($this->getColumns() as $name => $column) {
-            $definition = $column[2];
-            $definition['type'] = $column[0];
-            $definition['length'] = $column[1];
+            $definition = $column;
 
             switch ($definition['type']) {
-            case 'enum':
-                if (isset($definition['default'])) {
-                    $definition['default'] = $this->enumIndex($name, $definition['default']);
-                }
-                break;
-            case 'boolean':
-                if (isset($definition['default'])) {
-                    $definition['default'] = $this->getConnection()->convertBooleans($definition['default']);
-                }
-                break;
+                case 'enum':
+                    if (isset($definition['default'])) {
+                        $definition['default'] = $this->enumIndex($name, $definition['default']);
+                    }
+                    break;
+                case 'boolean':
+                    if (isset($definition['default'])) {
+                        $definition['default'] = $this->getConnection()->convertBooleans($definition['default']);
+                    }
+                    break;
             }
             $columns[$name] = $definition;
 
@@ -689,7 +684,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             throw new Doctrine_Table_Exception('Invalid argument given for column length');
         }
 
-        $this->columns[$name] = array($type, $length, $options);
+        $this->columns[$name] = $options;
+        $this->columns[$name]['type'] = $type;
+        $this->columns[$name]['length'] = $length;
 
         if (isset($options['primary'])) {
             $this->primaryKeys[] = $name;
@@ -721,8 +718,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if ( ! isset($this->columns[$column])) {
             throw new Doctrine_Table_Exception("Couldn't get default value. Column ".$column." doesn't exist.");
         }
-        if (isset($this->columns[$column][2]['default'])) {
-            return $this->columns[$column][2]['default'];
+        if (isset($this->columns[$column]['default'])) {
+            return $this->columns[$column]['default'];
         } else {
             return null;
         }
@@ -871,7 +868,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function findBySql($dql, array $params = array()) {
         $q = new Doctrine_Query($this->conn);
-        $users = $q->query("FROM ".$this->options['name']." WHERE ".$dql, $params);
+        $users = $q->query('FROM ' . $this->options['name'] . ' WHERE ' . $dql, $params);
         return $users;
     }
 
@@ -1010,7 +1007,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function count()
     {
-        $a = $this->conn->getDBH()->query("SELECT COUNT(1) FROM ".$this->options['tableName'])->fetch(PDO::FETCH_NUM);
+        $a = $this->conn->execute('SELECT COUNT(1) FROM ' . $this->options['tableName'])->fetch(Doctrine::FETCH_NUM);
         return current($a);
     }
     /**
@@ -1023,39 +1020,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         return $graph;
     }
     /**
-     * execute
-     * @param string $query
-     * @param array $array
-     * @param integer $limit
-     * @param integer $offset
-     */
-    public function execute($query, array $array = array(), $limit = null, $offset = null) {
-        $coll  = new Doctrine_Collection($this);
-        $query = $this->conn->modifyLimitQuery($query,$limit,$offset);
-        if ( ! empty($array)) {
-            $stmt = $this->conn->getDBH()->prepare($query);
-            $stmt->execute($array);
-        } else {
-            $stmt = $this->conn->getDBH()->query($query);
-        }
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt->closeCursor();
-
-        foreach ($data as $row) {
-            $this->data = $row;
-            $record = $this->getRecord();
-            $coll->add($record);
-        }
-        return $coll;
-    }
-    /**
      * @param string $field
      * @return array
      */
-    final public function getEnumValues($field)
+    public function getEnumValues($field)
     {
-        if (isset($this->columns[$field][2]['values'])) {
-            return $this->columns[$field][2]['values'];
+        if (isset($this->columns[$field]['values'])) {
+            return $this->columns[$field]['values'];
         } else {
             return array();
         }
@@ -1072,7 +1043,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if ($index instanceof Doctrine_Null)
             return $index;
 
-        return isset($this->columns[$field][2]['values'][$index]) ? $this->columns[$field][2]['values'][$index] : $index;
+        return isset($this->columns[$field]['values'][$index]) ? $this->columns[$field]['values'][$index] : $index;
     }
     /**
      * enumIndex
@@ -1088,23 +1059,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         return array_search($value, $values);
     }
     /**
-     * getDefinitionOf
-     *
-     * @return string       ValueWrapper class name on success, false on failure
-     */
-    public function getValueWrapperOf($column)
-    {
-        if (isset($this->columns[$column][2]['wrapper'])) {
-            return $this->columns[$column][2]['wrapper'];
-        }
-        return false;
-    }
-    /**
      * getColumnCount
      *
      * @return integer      the number of columns in this table
      */
-    final public function getColumnCount()
+    public function getColumnCount()
     {
         return $this->columnCount;
     }
@@ -1114,7 +1073,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      * @return array
      */
-    final public function getColumns()
+    public function getColumns()
     {
         return $this->columns;
     }
@@ -1147,7 +1106,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function getTypeOf($column)
     {
         if (isset($this->columns[$column])) {
-            return $this->columns[$column][0];
+            return $this->columns[$column]['type'];
         }
         return false;
     }
@@ -1173,14 +1132,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $sql  = "SELECT MAX(".$this->getIdentifier().") FROM ".$this->getTableName();
         $stmt = $this->conn->getDBH()->query($sql);
         $data = $stmt->fetch(PDO::FETCH_NUM);
-        return isset($data[0])?$data[0]:1;
+        return isset($data[0])? $data[0] : 1;
     }
     /**
      * returns simple cached query
      *
      * @return string
      */
-    final public function getQuery()
+    public function getQuery()
     {
         return $this->query;
     }
@@ -1190,7 +1149,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      * @return array
      */
-    final public function getData()
+    public function getData()
     {
         return $this->data;
     }

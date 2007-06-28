@@ -1385,7 +1385,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function loadTemplate($template)
     {
-    	$tpl = new $template($this->_table);
+    	$tpl = new $template();
+    	$tpl->setTable($this->_table);
         $tpl->setUp();
         $tpl->setTableDefinition();
         return $this;

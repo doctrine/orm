@@ -32,8 +32,12 @@
  */
 class Doctrine_Template_TestCase extends Doctrine_UnitTestCase 
 {
+
     public function testTemplateRelationsSupportConcreteInheritance()
     {
-        $blog = new Blog(); 	
+        $blog = new Blog();
+        
+        $this->conn->export->exportClassesSql(array('Blog'));
     }
+
 }

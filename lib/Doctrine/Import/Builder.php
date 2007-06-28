@@ -78,7 +78,6 @@ class Doctrine_Import_Builder
      * This is a template that was previously in Builder/Record.tpl. Due to the fact
      * that it was not bundled when compiling, it had to be moved here.
      *
-     * @access public
      * @return void
      */
     public function loadTemplate() 
@@ -114,7 +113,6 @@ END;
      *
      * @param  string $table
      * @param  array  $tableColumns
-     * @access public
      */
     public function buildDefinition($table, $tableColumns)
     {
@@ -201,20 +199,4 @@ END;
             throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $fileName);
         }
     }
-    
-    /**
-     *
-     * @param Doctrine_Schema_Object $schema
-     * @throws Doctrine_Import_Exception
-     * @return void
-     */
-    public function build(Doctrine_Schema_Object $schema)
-    {
-        foreach ($schema->getDatabases() as $database){
-            foreach ($database->getTables() as $table){
-                $this->buildRecord($table);
-            }
-        }
-    }
-
 }
