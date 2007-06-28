@@ -2,5 +2,13 @@
 ++ Available options
 ++ Drivers
 +++ Memcache
+Memcache driver stores cache records into a memcached server. Memcached is a high-performance, distributed memory object caching system. In order to use this backend, you need a memcached daemon and the memcache PECL extension.
+
 +++ APC
+The Alternative PHP Cache (APC) is a free and open opcode cache for PHP. It was conceived of to provide a free, open, and robust framework for caching and optimizing PHP intermediate code. 
+
+The APC cache driver of Doctrine stores cache records in shared memory.
+
 +++ Sqlite
+
+Sqlite caching backend stores cache records into sqlite database.
