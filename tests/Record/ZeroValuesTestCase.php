@@ -34,14 +34,14 @@ class Doctrine_Record_ZeroValues_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareTables()
     {
-        $this->tables[] = 'MyUser2';
+        $this->tables[] = 'ZeroValueTest';
 
         parent::prepareTables();
     }
 
     public function prepareData()
     {
-        $user = new MyUser2();
+        $user = new ZeroValueTest();
         $user['is_super_admin'] = 0; // set it to 0 and it should be 0 when we pull it back from the database
         $user['username'] = 'jwage';
         $user['salt'] = 'test';
@@ -51,30 +51,48 @@ class Doctrine_Record_ZeroValues_TestCase extends Doctrine_UnitTestCase
 
     public function testZeroValuesMaintained()
     {
+        $users = $this->dbh->query('SELECT * FROM zero_value_test')->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->assertIdentical($users[0]['is_super_admin'], '0');
+    }
+
+    public function testZeroValuesMaintained2()
+    {
         $q = new Doctrine_Query();
-        $q->from('MyUser2');
+        $q->from('ZeroValueTest');
+        $users = $q->execute(array(), Doctrine::FETCH_ARRAY);
+
+        $this->assertIdentical($users[0]['is_super_admin'], '0');
+        // check for aggregate bug
+        $this->assertTrue( ! isset($users[0][0]));
+    }
+
+    public function testZeroValuesMaintained3()
+    {
+        $q = new Doctrine_Query();
+        $q->from('ZeroValueTest');
         $users = $q->execute();
 
-        $this->assertIdentical($users[0]['is_super_admin'], 0);
+        $this->assertIdentical($users[0]['is_super_admin'], false);
     }
+
 }
 
-class MyUser2 extends Doctrine_Record
+class ZeroValueTest extends Doctrine_Record
 {
     public function setTableDefinition()
     {
-        $this->setTableName('my_user2');
-
-        $this->hasColumn('id', 'integer', 4, array (  'primary' => true,  'autoincrement' => true,));
-        $this->hasColumn('username', 'string', 128, array (  'notnull' => true,));
-        $this->hasColumn('algorithm', 'string', 128, array (  'default' => 'sha1',  'notnull' => true,));
-        $this->hasColumn('salt', 'string', 128, array (  'notnull' => true,));
-        $this->hasColumn('password', 'string', 128, array (  'notnull' => true,));
-        $this->hasColumn('created_at', 'timestamp', null, array ());
-        $this->hasColumn('last_login', 'timestamp', null, array ());
-        $this->hasColumn('is_active', 'boolean', null, array (  'default' => true,  'notnull' => true,));
-        $this->hasColumn('is_super_admin', 'boolean', null, array (  'default' => false,  'notnull' => true,));
+        $this->hasColumn('id', 'integer', 4, array('primary' => true,  'autoincrement' => true,));
+        $this->hasColumn('username', 'string', 128, array('notnull' => true,));
+        $this->hasColumn('algorithm', 'string', 128, array('default' => 'sha1', 'notnull' => true,));
+        $this->hasColumn('salt', 'string', 128, array('notnull' => true,));
+        $this->hasColumn('password', 'string', 128, array('notnull' => true,));
+        $this->hasColumn('created_at', 'timestamp', null, array());
+        $this->hasColumn('last_login', 'timestamp', null, array());
+        $this->hasColumn('is_active', 'boolean', null, array('default' => true, 'notnull' => true,));
+        $this->hasColumn('is_super_admin', 'boolean', null, array('default' => false, 'notnull' => true,));
     }
 
-    public function setUp() { }
+    public function setUp() 
+    { }
 }

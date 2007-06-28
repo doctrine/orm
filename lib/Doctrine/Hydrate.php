@@ -623,13 +623,14 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             if (isset($this->_aliasMap[$alias]['agg'][$index])) {
                 $agg = $this->_aliasMap[$alias]['agg'][$index];
             }
-
-            if (is_array($record)) {
-                $record[$agg] = $value;
-            } else {
-                $record->mapValue($agg, $value);
+            if ($agg) {
+                if (is_array($record)) {
+                    $record[$agg] = $value;
+                } else {
+                    $record->mapValue($agg, $value);
+                }
+                $found = true;
             }
-            $found = true;
         }
 
         return $found;
