@@ -307,6 +307,8 @@ $test->addTestCase(new Doctrine_Query_MysqlSubquery_TestCase());
 $test->addTestCase(new Doctrine_Query_PgsqlSubquery_TestCase());
 
 $test->addTestCase(new Doctrine_Query_MysqlSubqueryHaving_TestCase());
+
+$test->addTestCase(new Doctrine_Record_ZeroValues_TestCase());
  /***/
  /**
 $test->addTestCase(new Doctrine_Template_TestCase());
