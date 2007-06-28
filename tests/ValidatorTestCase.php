@@ -40,6 +40,9 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
         $this->tables[] = 'ValidatorTest';
         $this->tables[] = 'ValidatorTest_Person';
         $this->tables[] = 'ValidatorTest_FootballPlayer';
+        $this->tables[] = 'ValidatorTest_ClientModel';
+        $this->tables[] = 'ValidatorTest_ClientToAddressModel';
+        $this->tables[] = 'ValidatorTest_AddressModel';
         parent::prepareTables();
     }
     
@@ -229,16 +232,14 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
             $this->pass();
             $a = $e->getInvalidRecords();
             //var_dump($a[1]->getErrorStack());
+            $this->assertTrue(is_array($a));
+            //var_dump(array_search($user, $a));
+            $emailStack = $user->Email->errorStack();
+            $userStack  = $user->errorStack();            
+            $this->assertTrue(in_array('email', $emailStack['address']));
+            $this->assertTrue(in_array('length', $userStack['name']));
         }
         
-        $this->assertTrue(is_array($a));
-        //var_dump(array_search($user, $a));
-        $emailStack = $user->Email->errorStack();
-        $userStack  = $user->errorStack();
-        //var_dump($userStack);
-
-        $this->assertTrue(in_array('email', $emailStack['address']));
-        $this->assertTrue(in_array('length', $userStack['name']));
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
         $this->manager->setAttribute(Doctrine::ATTR_AUTO_LENGTH_VLD, false);
     }
@@ -381,6 +382,31 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
             $this->pass();
         }
         $r->delete(); // clean up
+        
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
+    }
+    
+    public function testValidationOnManyToManyRelations()
+    {
+        $this->manager->setAttribute(Doctrine::ATTR_VLD, true);
+        try {
+            $client = new ValidatorTest_ClientModel();
+            $client->short_name = 'test';
+            $client->ValidatorTest_AddressModel[0]->state = 'az';
+            $client->save();
+            $this->fail();
+        } catch (Doctrine_Validator_Exception $dve) {
+            $this->assertEqual(1, count($dve->getInvalidRecords()));
+            $stack = $client->ValidatorTest_AddressModel[0]->getErrorStack();
+            $this->assertTrue(in_array('notnull', $stack['address1']));
+            $this->assertTrue(in_array('notblank', $stack['address1']));
+            $this->assertTrue(in_array('notnull', $stack['address2']));
+            $this->assertTrue(in_array('notnull', $stack['city']));
+            $this->assertTrue(in_array('notblank', $stack['city']));
+            $this->assertTrue(in_array('usstate', $stack['state']));
+            $this->assertTrue(in_array('notnull', $stack['zip']));
+            $this->assertTrue(in_array('notblank', $stack['zip']));
+        }
         
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
     }

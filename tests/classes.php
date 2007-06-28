@@ -791,6 +791,16 @@ class QueryTest_User extends Doctrine_Record
     public function setUp()
     {
         $this->hasOne('QueryTest_Rank as visibleRank', 'QueryTest_User.visibleRankId');
+        $this->hasMany('QueryTest_Rank as ranks', 'QueryTest_UserRank.rankId');
+    }
+}
+
+class QueryTest_UserRank extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {        
+        $this->hasColumn('rankId', 'integer', 4, array('primary'));
+        $this->hasColumn('userId', 'integer', 4, array('primary'));
     }
 }
 
@@ -808,6 +818,58 @@ class QueryTest_Rank extends Doctrine_Record
         $this->hasColumn('icon as icon', 'string', 50,
                 array('notnull', 'default' => ' ', 'regexp' => '/^[a-zA-Z0-9_\-]+\.(jpg|gif|png)$/D'));        
     }
+    public function setUp()
+    {
+        $this->hasMany('QueryTest_User as users', 'QueryTest_UserRank.userId');
+    }
 }
-    
+
+class ValidatorTest_ClientModel extends Doctrine_Record {
+	public function setTableDefinition() {
+
+		$this->hasColumn('id', 'integer', 4, array('notnull' => true,
+	                                           'primary' => true,
+	                                           'autoincrement' => true,
+	                                           'unsigned' => true));
+		$this->hasColumn('short_name', 'string', 32, array('notnull' => true, 'notblank', 'unique' => true));
+	}
+
+	public function setUp() {
+		$this->hasMany("ValidatorTest_AddressModel", array('local' => 'client_id', 'foreign' => 'address_id', 'refClass' => 'ValidatorTest_ClientToAddressModel'));
+	}
+}
+
+class ValidatorTest_ClientToAddressModel extends Doctrine_Record {
+
+	public function setTableDefinition() {
+
+		$this->hasColumn("client_id", "integer", 11, array('primary' => true));
+		$this->hasColumn("address_id", "integer", 11, array('primary' => true));
+	}
+
+	public function construct(){
+	}
+
+	public function setUp() {
+	}
+}
+
+class ValidatorTest_AddressModel extends Doctrine_Record {
+	public function setTableDefinition() {
+
+		$this->hasColumn("id", "integer", 11, array('autoincrement' => true,
+													'primary'       => true
+													));
+		$this->hasColumn('address1', 'string', 255, array('notnull' => true, 'notblank'));
+		$this->hasColumn('address2', 'string', 255, array('notnull' => true));
+		$this->hasColumn('city', 'string', 255, array('notnull' => true, 'notblank'));
+		$this->hasColumn('state', 'string', 10, array('notnull' => true, 'notblank', 'usstate'));
+		$this->hasColumn('zip', 'string', 15, array('notnull' => true, 'notblank', 'regexp' => '/^[0-9-]*$/'));
+	}
+
+	public function setUp() {
+		$this->hasMany('ValidatorTest_ClientModel', array('local' => 'address_id', 'foreign' => 'client_id', 'refClass' => 'ValidatorTest_ClientToAddressModel'));
+	}
+}
+
 ?>
