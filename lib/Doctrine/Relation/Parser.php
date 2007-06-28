@@ -111,6 +111,11 @@ class Doctrine_Relation_Parser
             
             $parent = new ReflectionClass($this->_table->getComponentName());
 
+            $fileName = dirname($parent->getFileName()) . DIRECTORY_SEPARATOR . $name . '.php';
+
+            if (file_exists($fileName)) {
+                require_once($fileName);
+            }
             if ( ! class_exists($name)) {
                 $template = new $templateName();
 
@@ -119,29 +124,33 @@ class Doctrine_Relation_Parser
                 $refl = new ReflectionClass($templateName);
                 $file = file($refl->getFileName());
 
-                $parentMethods = $refl->getParentClass()->getMethods();
-
-                foreach ($parentMethods as $k => $method) {
-                    $parentMethods[$k] = $method->getName();
-                }
-
-                $lines[] = 'class ' . $name . ' extends Doctrine_Record';
-                $lines[] = '{';
+                $lines[] = 'class ' . $name . ' extends Doctrine_Record' . "\n";
+                $lines[] = '{'. "\n";
+                
+                // read all template method definitions
                 foreach ($refl->getMethods() as $method) {
                     if ($method->getDeclaringClass()->getName() === $refl->getName()) {
                         $start = $method->getStartLine() - 1;
                         $end   = $method->getEndLine() - 1;
-
+                        // append method definitions
                         $lines = array_merge($lines, array_slice($file, $start, ($end - $start) + 1));
                     }
                 }
-                $lines[] = '}';
-                $fileName = dirname($parent->getFileName()) . DIRECTORY_SEPARATOR . $name . '.php';
+
+                $lines[] = '}' . "\n";
 
                 if (file_exists($fileName)) {
                     throw new Doctrine_Template_Exception("Couldn't generate class for template.");
                 }
-                eval(implode("\n", $lines));
+                $code = str_replace('[Component]', $this->_table->getComponentName(), implode("", $lines));
+
+                // create the actual class file
+                $fp = fopen($fileName, 'w+');
+                fwrite($fp, "<?php \n" . $code);
+                fclose($fp);
+                
+                // include the generated class
+                require_once($fileName);
             }
         }
 
@@ -402,7 +411,7 @@ class Doctrine_Relation_Parser
                     $table  = $conn->getTable($class);
                     $column = strtolower($table->getComponentName())
                             . '_' . $table->getIdentifier();
-                
+
                     foreach ($foreignClasses as $class2) {
                         $table2 = $conn->getTable($class2);
                         if ($table2->hasColumn($column)) {
@@ -422,14 +431,40 @@ class Doctrine_Relation_Parser
                     foreach ($localClasses as $class2) {
                         $table2 = $conn->getTable($class2);
                         if ($table2->hasColumn($column)) {
-                            $def['foreign'] = $table->getIdentifier();
-                            $def['local']   = $column;
+                            $def['foreign']  = $table->getIdentifier();
+                            $def['local']    = $column;
                             $def['localKey'] = true;
                             return $def;
                         }
                     }
                 }
-                throw new Doctrine_Relation_Parser_Exception("Couldn't complete relation definition.");
+
+                // auto-add columns and auto-build relation
+                $columns = array();
+                foreach ((array) $this->_table->getIdentifier() as $id) {
+                    $column = strtolower($table->getComponentName())
+                            . '_' . $id;
+
+                    $col = $this->_table->getDefinitionOf($id);
+                    $type = $col['type'];
+                    $length = $col['length'];
+
+                    unset($col['type']);
+                    unset($col['length']);
+                    unset($col['autoincrement']);
+                    unset($col['sequence']);
+                    unset($col['primary']);
+
+                    $def['table']->setColumn($column, $type, $length, $col);
+                    
+                    $columns[] = $column;
+                }
+                if (count($columns) > 1) {
+                    $def['foreign'] = $columns;
+                } else {
+                    $def['foreign'] = $columns[0];
+                }
+                $def['local'] = $this->_table->getIdentifier();
             }
         }
         return $def;

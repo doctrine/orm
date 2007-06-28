@@ -32,12 +32,18 @@
  */
 class Doctrine_Template_TestCase extends Doctrine_UnitTestCase 
 {
+    public function testTemplatesGenerateFiles()
+    {
+    	@unlink('../models/BlogTag.php');
 
+        $blog = new Blog();
+    
+        $this->assertTrue(file_exists('../models/BlogTag.php'));
+    }
     public function testTemplateRelationsSupportConcreteInheritance()
     {
-        $blog = new Blog();
-        
-        $this->conn->export->exportClassesSql(array('Blog'));
+        $tag = new BlogTag();
+
     }
 
 }
