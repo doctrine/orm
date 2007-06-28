@@ -33,12 +33,11 @@
 class Doctrine_Record_ZeroValues_TestCase extends Doctrine_UnitTestCase {
     public function prepareTables() {
         $this->tables[] = 'MyUser2';
-        
+
         parent::prepareTables();
     }
-    
-    public function prepareData()
-    {
+
+    public function prepareData() {
         $user = new MyUser2();
         $user['is_super_admin'] = 0; // set it to 0 and it should be 0 when we pull it back from the database
         $user['username'] = 'jwage';
@@ -46,35 +45,30 @@ class Doctrine_Record_ZeroValues_TestCase extends Doctrine_UnitTestCase {
         $user['password'] = 'test';
         $user->save();
     }
-    
+
     public function testZeroValuesMaintained() {
-        
         $q = new Doctrine_Query();
         $q->from('MyUser2');
         $users = $q->execute();
-        
+
         $this->assertIdentical($users[0]['is_super_admin'], 0);
     }
 }
 
-class MyUser2 extends Doctrine_Record
-{
-  public function setTableDefinition()
-  {
-    $this->setTableName('my_user2');
+class MyUser2 extends Doctrine_Record {
+    public function setTableDefinition() {
+        $this->setTableName('my_user2');
 
-    $this->hasColumn('id', 'integer', 4, array (  'primary' => true,  'autoincrement' => true,));
-    $this->hasColumn('username', 'string', 128, array (  'notnull' => true,));
-    $this->hasColumn('algorithm', 'string', 128, array (  'default' => 'sha1',  'notnull' => true,));
-    $this->hasColumn('salt', 'string', 128, array (  'notnull' => true,));
-    $this->hasColumn('password', 'string', 128, array (  'notnull' => true,));
-    $this->hasColumn('created_at', 'timestamp', null, array ());
-    $this->hasColumn('last_login', 'timestamp', null, array ());
-    $this->hasColumn('is_active', 'boolean', null, array (  'default' => true,  'notnull' => true,));
-    $this->hasColumn('is_super_admin', 'boolean', null, array (  'default' => false,  'notnull' => true,));
-  }
-  
-  public function setUp()
-  {
-  }  
+        $this->hasColumn('id', 'integer', 4, array (  'primary' => true,  'autoincrement' => true,));
+        $this->hasColumn('username', 'string', 128, array (  'notnull' => true,));
+        $this->hasColumn('algorithm', 'string', 128, array (  'default' => 'sha1',  'notnull' => true,));
+        $this->hasColumn('salt', 'string', 128, array (  'notnull' => true,));
+        $this->hasColumn('password', 'string', 128, array (  'notnull' => true,));
+        $this->hasColumn('created_at', 'timestamp', null, array ());
+        $this->hasColumn('last_login', 'timestamp', null, array ());
+        $this->hasColumn('is_active', 'boolean', null, array (  'default' => true,  'notnull' => true,));
+        $this->hasColumn('is_super_admin', 'boolean', null, array (  'default' => false,  'notnull' => true,));
+    }
+
+    public function setUp() { }
 }
