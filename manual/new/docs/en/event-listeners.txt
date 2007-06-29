@@ -185,6 +185,17 @@ $conn->addListener(new Logger());
 </code>
 
 ++ The Event object
++++ Getting the invoker
+You can get the object that invoked the event by calling getInvoker():
+<code type='php'>
+class MyListener extends Doctrine_EventListener
+{
+    public function preExec(Doctrine_Event $event)
+    {
+        $event->getInvoker(); // Doctrine_Connection
+    }
+}
+</code>
 +++ Event codes
 
 Doctrine_Event uses constants as event codes. Above is the list of all availible event constants:
