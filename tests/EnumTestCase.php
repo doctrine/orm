@@ -36,7 +36,7 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase
     { }
     public function prepareTables() 
     {
-        $this->tables = array("EnumTest");
+        $this->tables = array("EnumTest", "EnumTest2", "EnumTest3");
         parent::prepareTables();
     }
 
@@ -171,5 +171,22 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($f);
     }
 
+    public function testEnumWithLeftJoin()
+    {
+        // sorry, odd I know, best I can do...   pookey!
+        try {
+            $q = new Doctrine_Query($this->connection);
+            $q->select('e.*, f.*, g.status')
+              ->from('EnumTest e')
+              ->innerjoin('e.Enum2 g')
+              ->leftjoin('e.Enum3 f')
+              ->where("e.status = 'verified'")
+              ->limit(1)
+              ->execute();
+            $this->assertNotEqual($q->getQuery(), "SELECT e.id AS e__id, e.status AS e__status, e.text AS e__text, e2.id AS e2__id, e2.status AS e2__status, e3.text AS e3__text FROM enum_test e INNER JOIN enum_test2 e2 ON e.id = e2.enum_test_id LEFT JOIN enum_test3 e3 ON e.text = e3.text WHERE e.id IN (SELECT DISTINCT e4.id FROM enum_test e4 INNER JOIN enum_test2 e5 ON e4.id = e5.enum_test_id LEFT JOIN enum_test3 e6 ON e4.text = e6.text WHERE e4.status = 'verified' LIMIT 1) AND e.status = 'verified'");
+        } catch (Exception $e) {
+            $this->fail();
+        }
+    }
 }
 ?>
