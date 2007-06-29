@@ -191,6 +191,7 @@ final class Doctrine
     const ATTR_NS_GAP_DECREASE_EXP  = 132;
 
     const ATTR_CACHE                = 150;
+    const ATTR_CACHE_LIFESPAN       = 151;
     const ATTR_LOAD_REFERENCES      = 153;
 
     /**

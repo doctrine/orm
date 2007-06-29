@@ -133,8 +133,14 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * @var array
      */
     protected $_cache;
+    /**
+     * @var boolean $_expireCache           a boolean value that indicates whether or not to force cache expiration
+     */
+    protected $_expireCache     = false;
+    
+    protected $_timeToLive;
 
-    protected $_tableAliases   = array();
+    protected $_tableAliases    = array();
     /**
      * @var array $_tableAliasSeeds         A simple array keys representing table aliases and values
      *                                      as table alias seeds. The seeds are used for generating short table
@@ -199,15 +205,27 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     	}
         $this->_cache = $driver;
 
-        return $this->setTimeToLive($timeToLive);
+        return $this->setCacheLifeSpan($timeToLive);
     }
     /**
-     * setTimeToLive
+     * expireCache
+     *
+     * @param boolean $expire       whether or not to force cache expiration
+     * @return Doctrine_Hydrate     this object
+     */
+    public function expireCache($expire = true)
+    {
+        $this->_expireCache = true;
+        
+        return $this;
+    }
+    /**
+     * setCacheLifeSpan
      *
      * @param integer $timeToLive   how long the cache entry is valid
      * @return Doctrine_Hydrate     this object
      */
-    public function setTimeToLive($timeToLive) 
+    public function setCacheLifeSpan($timeToLive)
     {
     	if ($timeToLive !== null) {
     	   $timeToLive = (int) $timeToLive;
@@ -745,7 +763,8 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             // calculate hash for dql query
             $hash = md5($dql . var_export($params, true));
 
-            $cached = $cacheDriver->fetch($hash);
+            $cached = ($this->_expireCache) ? null : $cacheDriver->fetch($hash);
+
 
             if ($cached === null) {
                 // cache miss
