@@ -1,7 +1,11 @@
 ++ Modules
 ++ Export
 +++ Introduction
-The Export module provides methods for managing database structure. The methods can be grouped based on their responsibility: create, edit (alter or update), list or delete (drop) database elements. The following document lists the available methods, providing examples of their use. The following tables will be created, altered and finally dropped, in a database named "events_db":
+The Export module provides methods for managing database structure. The methods can be grouped based on their responsibility: create, edit (alter or update), list or delete (drop) database elements. The following document lists the available methods, providing examples of their use. 
+
+Every schema altering method in the Export module has an equivalent which returns the sql that is used for the altering operation. For example createTable() executes the query / queries returned by createTableSql().
+
+In this chapter the following tables will be created, altered and finally dropped, in a database named "events_db":
 events(id, name, datetime);
 people(id, name);
 event_participants(event_id, person_id);
@@ -36,17 +40,17 @@ $conn->export->createTable('events', $definition);
  
 The keys of the definition array are the names of the fields in the table. The values are arrays containing the required key 'type' as well as other keys, depending on the value of 'type'. The values for the 'type' key are the same as the possible Doctrine datatypes. Depending on the datatype, the other options may vary.
 
-||~ Datatype ||~ length ||~ default ||~ not null ||~ unsigned ||~ autoincrement ||~ primary ||
-|| text      || x || x || x ||   ||   || x ||
-|| boolean   ||   || x || x ||   ||   || x ||
-|| integer   || x || x || x || x || x || x ||
-|| decimal   ||   || x || x ||   ||   || x ||
-|| float     ||   || x || x ||   ||   || x ||
-|| timestamp ||   || x || x ||   ||   || x ||
-|| time      ||   || x || x ||   ||   || x ||
-|| date      ||   || x || x ||   ||   || x ||
-|| clob      || x ||   || x ||   ||   || x ||
-|| blob      || x ||   || x ||   ||   || x ||
+||~ Datatype ||~ length ||~ default ||~ not null ||~ unsigned ||~ autoincrement ||
+|| text      || x || x || x ||   ||   ||
+|| boolean   ||   || x || x ||   ||   ||
+|| integer   || x || x || x || x || x ||
+|| decimal   ||   || x || x ||   ||   ||
+|| float     ||   || x || x ||   ||   ||
+|| timestamp ||   || x || x ||   ||   ||
+|| time      ||   || x || x ||   ||   ||
+|| date      ||   || x || x ||   ||   ||
+|| clob      || x ||   || x ||   ||   ||
+|| blob      || x ||   || x ||   ||   ||
 
 Creating the people table:
 
@@ -72,7 +76,46 @@ $definition = array (
 $conn->export->createTable('people', $definition, $options);
 </code>
 
++++ Creating foreign keys
 
+Creating the event_participants table with a foreign key:
+
+<code type='php'>
+$options = array(
+    'foreignKeys' => array('local'   => 'event_id',
+                           'foreign' => 'id'
+                           'foreignTable' => 'events'
+                           'onDelete' => 'CASCADE'),
+    'primary' => array('event_id', 'person_id'),
+);
+$definition = array (
+    'event_id' => array (
+        'type' => 'integer',
+        'unsigned' => 1,
+        'notnull' => 1,
+        'default' => 0,
+    ),
+    'person_id' => array (
+        'type' => 'integer',
+        'unsigned' => 1,
+        'notnull' => 1,
+        'default' => 0,
+    ),
+);
+
+$conn->export->createTable('event_participants', $definition, $options);
+</code>
+
+Now lets say we want to add foreign key on person_id too. This can be achieved as follows:
+
+<code type='php'>
+$definition = array('local'   => 'person_id',
+                    'foreign' => 'id'
+                    'foreignTable' => 'people'
+                    'onDelete' => 'CASCADE'))
+
+$conn->export->createForeignKey('event_participants', $definition);
+</code>
 
 +++ Altering table
 
