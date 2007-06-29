@@ -66,6 +66,18 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase
         }
     }
 
+    public function testEnumFetchArray() {
+        $q = new Doctrine_Query();
+        $q->select('e.*')
+          ->from('EnumTest e')
+          ->limit(1);
+        $ret = $q->execute(array(), Doctrine::FETCH_ARRAY);
+        if (is_numeric($ret[0]['status']))
+        {
+          $this->fail();
+        }
+    }
+
     public function testInAndNotIn() 
     {
         try {
