@@ -70,6 +70,11 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
     public function fetch($id, $testCacheValidity = true)
     {
         $sql    = 'SELECT data, expires FROM cache WHERE id = ?';
+
+        if ($testCacheValidity) {
+            $sql .= ' AND (expire=0 OR expire > ' . time() . ')';
+        }
+
         $result = $this->getConnection()->fetchAssoc($sql, array($id));
 
         return unserialize($result['data']);
@@ -82,7 +87,7 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
      */
     public function contains($id) 
     {
-        $sql    = 'SELECT expires FROM cache WHERE id = ?';
+        $sql = 'SELECT expires FROM cache WHERE id = ? AND (expire=0 OR expire > ' . time() . ')';
 
         return $this->getConnection()->fetchOne($sql, array($id));
     }
