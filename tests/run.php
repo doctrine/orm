@@ -311,8 +311,13 @@ $test->addTestCase(new Doctrine_Record_ZeroValues_TestCase());
 $test->addTestCase(new Doctrine_Query_Cache_TestCase());
 
 $test->addTestCase(new Doctrine_Cache_Apc_TestCase());
+
 $test->addTestCase(new Doctrine_Cache_Memcache_TestCase());
+
 $test->addTestCase(new Doctrine_Cache_Sqlite_TestCase());
+
+$test->addTestCase(new Doctrine_Record_SaveBlankRecord_TestCase());
+
  /**
 $test->addTestCase(new Doctrine_Template_TestCase());
    */
