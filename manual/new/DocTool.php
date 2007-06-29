@@ -96,9 +96,6 @@ class DocTool
 	            $class = ' class="one-page"';
 	        }
 	        
-	        echo '<div' . $class . ' id="table-of-contents">' . "\n";
-	        echo '<h1>Table of Contents</h1>' . "\n";
-	        
 	        $classes[] = 'tree';
 	        
 	    } else {
@@ -151,9 +148,6 @@ class DocTool
 	
 	    echo '</ul>' . "\n";
 	    
-	    if ($toc instanceof Sensei_Doc_Toc) {
-	        echo '</div>' . "\n";
-	    }
     }
 
     public function makeUrl($path)

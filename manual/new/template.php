@@ -16,7 +16,9 @@
 <![endif]>
 <![endif]-->
 
+<script type="text/javascript" src="<?php echo $baseUrl; ?>scripts/util.js"></script>
 <script type="text/javascript" src="<?php echo $baseUrl; ?>scripts/tree.js"></script>
+<script type="text/javascript" src="<?php echo $baseUrl; ?>scripts/toc.js"></script>
 
 </head>
 
@@ -24,17 +26,44 @@
 
 <div id="wrap">
 
+<?php if($tool->getOption('section') || $tool->getOption('one-page')): ?>
+
 <div id="sidebar">
+
+<div id="table-of-contents">
+
+<div id="toc-toggles"></div>
+
+<h1>Table of Contents</h1>
+
 <?php $tool->renderToc(); ?>
+
+<script type="text/javascript">
+//<![CDATA[
+var tocHideText = "hide"; var tocShowText = "show"; createTocToggle();
+var tocStickyText = "sticky"; var tocUnstickyText = 'unstick'; createTocStickyToggle();
+//]]>
+</script>
+
+<p>
+<?php if($tool->getOption('one-page')): ?>
+<a href="<?php echo ($tool->getOption('clean-url') ? "${baseUrl}chapter/" : '?chapter=') . $tool->findByIndex('1.')->getPath(); ?>">View one chapter per page</a>
+<?php else: ?>
+<a href="<?php echo ($tool->getOption('clean-url') ? "${baseUrl}one-page" : '?one-page=1') . '#' . $tool->getOption('section')->getPath(); ?>">View all in one page</a>
+<?php endif; ?>
+</p>
+
 </div>
 
-<div id="content">
-<?php
+</div>
 
-try { 
-    $tool->render();
-} catch (Exception $e) {
-?>
+<?php endif; ?>
+
+<div id="content">
+
+<?php if($tool->getOption('section') || $tool->getOption('one-page')): ?>
+<?php $tool->render(); ?>
+<?php else: ?>
 
 <h1>Doctrine Manual</h1>
 
@@ -45,12 +74,12 @@ try {
 </ul>
 </p>
 
-<?php
-}
-?>
+<?php endif; ?>
+
 </div>
 
 </div>
+
 
 </body>
 </html>
