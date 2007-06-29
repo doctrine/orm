@@ -42,10 +42,10 @@ class Doctrine_Cache_Memcache_Mock extends Doctrine_Cache_Memcache
 {
 }
 
-if (!class_exists('Memcache'))
+if ( ! class_exists('Memcache'))
 {
-  class Memcache
-  { 
+    class Memcache
+    {
 
-  }
+    }
 }
