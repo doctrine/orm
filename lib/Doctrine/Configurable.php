@@ -110,13 +110,11 @@ abstract class Doctrine_Configurable
                     throw new Doctrine_Exception("Couldn't set collection key attribute. No such column '$value'");
                 }
                 break;
-            case Doctrine::ATTR_DQL_CACHE:
-            case Doctrine::ATTR_DQL_PARSER_CACHE:
-            case Doctrine::ATTR_SQL_CACHE:
+            case Doctrine::ATTR_CACHE:
                 if ($value !== null) {
                     if ( ! ($value instanceof Doctrine_Cache_Interface)) {
                         throw new Doctrine_Exception('Cache driver should implement Doctrine_Cache_Interface');
-                    }                     
+                    }
                 }
                 break;
             case Doctrine::ATTR_VLD:
@@ -157,6 +155,19 @@ abstract class Doctrine_Configurable
 
         $this->attributes[$attribute] = $value;
 
+    }
+    /**
+     * getCacheDriver
+     *
+     * @return Doctrine_Cache_Interface
+     */
+    public function getCacheDriver()
+    {
+        if ( ! isset($this->attributes[Doctrine::ATTR_CACHE])) {
+            throw new Doctrine_Exception('Cache driver not initialized.');
+        }
+        
+        return $this->attributes[Doctrine::ATTR_CACHE];
     }
     /**
      * @param Doctrine_EventListener $listener
@@ -204,9 +215,7 @@ abstract class Doctrine_Configurable
      * setListener
      *
      * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_Connection_Informix|Doctrine_Connection_Mssql|Doctrine_Connection_Oracle|
-     *         Doctrine_Connection_Db2|Doctrine_Connection_Firebird|Doctrine_Connection_Common|
-     *         Doctrine_Manager|Doctrine_Connection|Doctrine_Table
+     * @return Doctrine_Configurable        this object
      */
     public function setListener($listener)
     {

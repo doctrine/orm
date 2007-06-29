@@ -190,9 +190,7 @@ final class Doctrine
     const ATTR_NS_GAP_SIZE          = 131;
     const ATTR_NS_GAP_DECREASE_EXP  = 132;
 
-    const ATTR_DQL_PARSER_CACHE     = 150;
-    const ATTR_DQL_CACHE            = 151;
-    const ATTR_SQL_CACHE            = 152;
+    const ATTR_CACHE                = 150;
     const ATTR_LOAD_REFERENCES      = 153;
 
     /**

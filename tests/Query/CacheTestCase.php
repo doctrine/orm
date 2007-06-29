@@ -38,19 +38,16 @@ class Doctrine_Query_Cache_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
 
         $cache = new Doctrine_Cache_Array();
-        $q->setCache($cache);
-        $q->select('u.name')->from('User u');
+        $q->useCache($cache)->select('u.name')->from('User u');
         $coll = $q->execute();
 
         $this->assertEqual($cache->count(), 1);
-        $this->assertTrue($coll instanceof Doctrine_Collection);
-        $this->assertEqual($coll->count(), 8);
+        $this->assertEqual(count($coll), 8);
 
         $coll = $q->execute();
 
         $this->assertEqual($cache->count(), 1);
-        $this->assertTrue($coll instanceof Doctrine_Collection);
-        $this->assertEqual($coll->count(), 8);
+        $this->assertEqual(count($coll), 8);
     }
 
     public function testResultSetCacheSupportsQueriesWithJoins()
@@ -58,40 +55,59 @@ class Doctrine_Query_Cache_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
 
         $cache = new Doctrine_Cache_Array();
-        $q->setCache($cache);
+        $q->useCache($cache);
         $q->select('u.name')->from('User u')->leftJoin('u.Phonenumber p');
         $coll = $q->execute();
 
         $this->assertEqual($cache->count(), 1);
-        $this->assertTrue($coll instanceof Doctrine_Collection);
-        $this->assertEqual($coll->count(), 8);
+        $this->assertEqual(count($coll), 8);
 
         $coll = $q->execute();
 
         $this->assertEqual($cache->count(), 1);
-        $this->assertTrue($coll instanceof Doctrine_Collection);
-        $this->assertEqual($coll->count(), 8);
+        $this->assertEqual(count($coll), 8);
     }
-    
+
     public function testResultSetCacheSupportsPreparedStatements()
     {
         $q = new Doctrine_Query();
 
         $cache = new Doctrine_Cache_Array();
-        $q->setCache($cache);
+        $q->useCache($cache);
         $q->select('u.name')->from('User u')->leftJoin('u.Phonenumber p')
           ->where('u.id = ?');
 
         $coll = $q->execute(array(5));
 
         $this->assertEqual($cache->count(), 1);
-        $this->assertTrue($coll instanceof Doctrine_Collection);
-        $this->assertEqual($coll->count(), 1);
+        $this->assertEqual(count($coll), 1);
 
         $coll = $q->execute(array(5));
 
         $this->assertEqual($cache->count(), 1);
-        $this->assertTrue($coll instanceof Doctrine_Collection);
-        $this->assertEqual($coll->count(), 1);
+        $this->assertEqual(count($coll), 1);
+    } 
+    public function testUseCacheSupportsBooleanTrueAsParameter()
+    {
+        $q = new Doctrine_Query();
+        
+        $cache = new Doctrine_Cache_Array();
+        $this->conn->setAttribute(Doctrine::ATTR_CACHE, $cache);
+
+        $q->useCache(true);
+        $q->select('u.name')->from('User u')->leftJoin('u.Phonenumber p')
+          ->where('u.id = ?');
+
+        $coll = $q->execute(array(5));
+
+        $this->assertEqual($cache->count(), 1);
+        $this->assertEqual(count($coll), 1);
+
+        $coll = $q->execute(array(5));
+
+        $this->assertEqual($cache->count(), 1);
+        $this->assertEqual(count($coll), 1);
+        
+        $this->conn->setAttribute(Doctrine::ATTR_CACHE, null);
     }
 }

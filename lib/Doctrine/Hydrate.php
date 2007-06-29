@@ -129,7 +129,9 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * @see Doctrine_Query::* constants
      */
     protected $type            = self::SELECT;
-    
+    /**
+     * @var array
+     */
     protected $_cache;
 
     protected $_tableAliases   = array();
@@ -177,13 +179,56 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     {
         return $this->getQuery();
     }
-    public function setCache(Doctrine_Cache_Interface $cache) 
+    /**
+     * useCache
+     *
+     * @param Doctrine_Cache_Interface|bool $driver      cache driver
+     * @param integer $timeToLive                        how long the cache entry is valid
+     * @return Doctrine_Hydrate         this object
+     */
+    public function useCache($driver = true, $timeToLive = null)
     {
-        $this->_cache = $cache;
+    	if ($driver !== null) {
+            if ($driver !== true) {
+                if ( ! ($driver instanceof Doctrine_Cache_Interface)) {
+                    $msg = 'First argument should be instance of Doctrine_Cache_Interface or null.';
+                    
+                    throw new Doctrine_Hydrate_Exception($msg);
+                }
+            }
+    	}
+        $this->_cache = $driver;
+
+        return $this->setTimeToLive($timeToLive);
     }
-    public function getCache()
+    /**
+     * setTimeToLive
+     *
+     * @param integer $timeToLive   how long the cache entry is valid
+     * @return Doctrine_Hydrate     this object
+     */
+    public function setTimeToLive($timeToLive) 
     {
-        return $this->_cache;
+    	if ($timeToLive !== null) {
+    	   $timeToLive = (int) $timeToLive;
+    	}
+        $this->_timeToLive = $timeToLive;
+        
+        return $this;
+    }
+    /**
+     * getCacheDriver
+     * returns the cache driver associated with this object
+     *
+     * @return Doctrine_Cache_Interface|boolean|null    cache driver
+     */
+    public function getCacheDriver()
+    {
+    	if ($this->_cache instanceof Doctrine_Cache_Interface) {
+    	    return $this->_cache;
+    	} else {
+    	    return $this->_conn->getCacheDriver();
+    	}
     }
     /**
      * serialize
@@ -635,6 +680,13 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
 
         return $found;
     }
+    /**
+     * getCachedForm
+     * returns the cached form of this query for given resultSet
+     *
+     * @param array $resultSet
+     * @return string           serialized string representation of this query
+     */
     public function getCachedForm(array $resultSet)
     {
         $map = '';
@@ -687,20 +739,22 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     public function execute($params = array(), $return = Doctrine::FETCH_RECORD)
     {
     	if ($this->_cache) {
+    	    $cacheDriver = $this->getCacheDriver();               	
+    	                   	
             $dql  = $this->getDql();
             // calculate hash for dql query
-            $hash = strlen($dql) . md5($dql . var_export($params, true));
+            $hash = md5($dql . var_export($params, true));
 
-            $cached = $this->_cache->fetch($hash);
+            $cached = $cacheDriver->fetch($hash);
 
             if ($cached === null) {
                 // cache miss
                 $stmt = $this->_execute($params, $return);
-                $array = $this->parseData2($stmt);
+                $array = $this->parseData2($stmt, Doctrine::FETCH_ARRAY);
 
                 $cached = $this->getCachedForm($array);
                 
-                $this->_cache->save($hash, $cached);
+                $cacheDriver->save($hash, $cached, $this->_timeToLive);
             } else {
                 $cached = unserialize($cached);
                 $this->_tableAliases = $cached[2];
