@@ -92,14 +92,14 @@ foreach($user as $key => $value) {
 
 Updating objects is very easy, you just call the {{Doctrine_Record::save()}} method. The other way (perhaps even easier) is to call {{Doctrine_Connection::flush()}} which saves all objects. It should be noted though that flushing is a much heavier operation than just calling save method.
 
-<code type="php">
-$table = $conn->getTable("User");
+<code type='php'>
+$table = $conn->getTable('User');
 
 
 $user = $table->find(2);
 
 if($user !== false) {
-    $user->name = "Jack Daniels";
+    $user->name = 'Jack Daniels';
     
     $user->save();
 }
@@ -127,6 +127,23 @@ $users = $table->findAll();
 $users->delete();
 </code>
 
+++++ Using expression values
+
+There might be situations where you need to use SQL expressions as values of columns. This can be achieved by using Doctrine_Expression which converts portable DQL expressions to your native SQL expressions.
+
+Lets say we have a class called event with columns timepoint(datetime) and name(string). Saving the record with the current timepoint can be achieved as follows:
+<code type="php">
+$event = new Event();
+$event->name = 'Rock festival';
+$event->timepoint = new Doctrine_Expression('NOW()');
+
+$event->save();
+</code>
+
+The last line would execute sql (in sqlite):
+<code>
+INSERT INTO event (name, timepoint) VALUES (?, 'NOW()')
+</code>
 
 ++++ Getting record state
 
