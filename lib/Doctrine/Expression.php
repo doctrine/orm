@@ -33,14 +33,65 @@ Doctrine::autoload('Doctrine_Connection_Module');
 class Doctrine_Expression
 {
     protected $_expression;
-
-    public function __construct($expression)
-    {
-        $this->_expression = $expression;
-    }
     
+    protected $_conn;
+
+    public function __construct($expr, $conn = null)
+    {
+        $this->setExpression($expr);
+        
+        if ($conn !== null) {
+            $this->_conn = $conn;
+        }
+    }
+
+    public function getConnection()
+    {
+        if ( ! isset($this->_conn)) {
+            return Doctrine_Manager::connection();
+        }
+
+        return $this->_conn;
+    }
+
+    public function setExpression($clause)
+    {
+        $this->_expression = $this->parseClause($clause);
+    }
+
+    public function parseExpression($expr)
+    {
+        $pos  = strpos($expr, '(');
+        if ($pos === false) {
+            return $expr;
+        }
+
+        // get the name of the function
+        $name   = substr($expr, 0, $pos);
+        $argStr = substr($expr, ($pos + 1), -1);
+
+        // parse args
+        foreach (Doctrine_Tokenizer::bracketExplode($argStr, ',') as $arg) {
+           $args[] = $this->parseClause($arg);
+        }
+
+        return call_user_func_array(array($this->getConnection()->expression, $name), $args);
+    }
+
+    public function parseClause($clause)
+    {
+    	$e = Doctrine_Tokenizer::bracketExplode($clause, ' ');
+
+        foreach ($e as $k => $expr) {
+            $e[$k] = $this->parseExpression($expr);
+        }
+        
+        return implode(' ', $e);
+    }
+
     public function getSql()
     {
-        return $this->_expression;	
+
+        return $this->_expression;
     }
 }
