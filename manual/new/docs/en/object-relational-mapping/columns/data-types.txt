@@ -33,9 +33,9 @@ Building upon the above, we can say that the modifiers alter the field definitio
 
 <code type="php">
 'sometime' = array(
-    'type'    = 'time',
-    'default' = '12:34:05',
-    'notnull' = true,
+    'type'    => 'time',
+    'default' => '12:34:05',
+    'notnull' => true,
 ),
 </code>
 
@@ -43,8 +43,8 @@ Using the above example, we can also explore the default field operator. Default
 
 <code type="php">
 'sometext' = array(
-    'type'   = 'text',
-    'length' = 12,
+    'type'   => 'text',
+    'length' => 12,
 ),
 </code>
 
@@ -115,7 +115,7 @@ class Test extends Doctrine_Record {
 
 ++++ Array
 
-This is the same as 'array' type in PHP. 
+This is the same as 'array' type in PHP.
 
 <code type="php">
 class Test extends Doctrine_Record {
@@ -234,7 +234,7 @@ class Test extends Doctrine_Record {
                                         'python'
                                         )
                                )
-			 );
+        );
     }
 }
 </code>
