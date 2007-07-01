@@ -76,6 +76,8 @@ $definition = array (
 $conn->export->createTable('people', $definition, $options);
 </code>
 
+
+
 +++ Creating foreign keys
 
 Creating the event_participants table with a foreign key:
@@ -372,18 +374,41 @@ Array
 */
 </code>
 
-
- 
- 
-
-
-++ Util
-+++ Using explain
-
 ++ DataDict
-+++ Getting portable type
-+++ Getting database declaration
-+++ Reserved keywords
++++ Introduction
+Doctrine uses DataDict module internally to convert native RDBMS types to Doctrine types and the reverse. DataDict module uses two methods for the conversions:
+1. getPortableDeclaration(), which is used for converting native RDBMS type declaration to portable Doctrine declaration
+2. getNativeDeclaration(), which is used for converting portable Doctrine declaration to driver specific type declaration
+
+
++++ Getting portable declaration
+<code type="php">
+$dbh  = new PDO('mysql:host=localhost;dbname=test', 'username', 'pw');
+$conn = Doctrine_Manager::getInstance()->openConnection($dbh);
+
+$decl = $conn->dataDict->getPortableDeclaration('VARCHAR(255)');
+
+print_r($decl);
+/*
+array('type' => 'string',
+      'length' => 255,
+      'fixed'  => false,
+      'unsigned' => false
+      );
+*/
+</code>
++++ Getting native declaration
+<code type="php">
+$dbh  = new PDO('mysql:host=localhost;dbname=test', 'username', 'pw');
+$conn = Doctrine_Manager::getInstance()->openConnection($dbh);
+
+$portableDecl = array('type' => 'string',
+                             'length' => 20,
+                             'fixed' => true);
+$nativeDecl = $conn->dataDict->getNativeDeclaration($portableDecl);
+
+print $nativeDecl; // CHAR(20)
+</code>
 
 ++ Drivers
 +++ Mysql
