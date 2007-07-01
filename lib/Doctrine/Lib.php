@@ -86,10 +86,10 @@ class Doctrine_Lib
     public static function getCollectionAsXml(Doctrine_Collection $collection, SimpleXMLElement $incomming_xml = null){
 
         $collectionName = Doctrine_Lib::plurelize($collection->getTable()->tableName);
-				if($collection->count != 0){
+				if ( $collection->count != 0) {
 					$record = $collection[0];
         	$xml_options = $record->option("xml");
-					if(isset($xml_options["collection_name"])){
+					if ( isset($xml_options["collection_name"])) {
 						$collectionName = $xml_options["collection_name"];
 					}
 				}
@@ -128,7 +128,7 @@ class Doctrine_Lib
     public static function getRecordAsXml(Doctrine_Record $record, SimpleXMlElement $incomming_xml = NULL)
     {
         $recordname = $record->getTable()->tableName;
-        if (!isset($incomming_xml)) {
+        if ( !isset($incomming_xml)) {
 						$new_xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><" . $recordname . "></" . $recordname . ">";
             $xml = new SimpleXMLElement($new_xml_string);
         }else{
@@ -138,7 +138,7 @@ class Doctrine_Lib
 					$xml->addChild($pk_field,$pk_value); 
 				}
         $xml_options = $record->option("xml");
-				if(isset($xml_options["record_name"])){
+				if ( isset($xml_options["record_name"])) {
 					$recordname = $xml_options["record_name"];
 				}
         foreach ($record->getData() as $field => $value) {
