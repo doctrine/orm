@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Expression');
+Doctrine::autoload('Doctrine_Expression_Driver');
 /**
  * Doctrine_Expression_Mssql
  *
@@ -30,7 +30,7 @@ Doctrine::autoload('Doctrine_Expression');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression_Mssql extends Doctrine_Expression
+class Doctrine_Expression_Mssql extends Doctrine_Expression_Driver
 {
     /**
      * Return string to call a variable with the current timestamp inside an SQL statement
@@ -59,10 +59,10 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression
      */
     public function substring($value, $position, $length = null)
     {
-        if (!is_null($length)) {
-            return "SUBSTRING($value, $position, $length)";
+        if ( ! is_null($length)) {
+            return 'SUBSTRING(' . $value . ', ' . $position . ', ' . $length . ')';
         }
-        return "SUBSTRING($value, $position, LEN($value) - $position + 1)";
+        return 'SUBSTRING(' . $value . ', ' . $position . ', LEN(' . $value . ') - ' . $position . ' + 1)';
     }
     /**
      * Returns string to concatenate two or more string parameters

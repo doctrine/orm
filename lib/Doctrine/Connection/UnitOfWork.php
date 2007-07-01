@@ -139,7 +139,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function saveGraph(Doctrine_Record $record)
     {
-    	$conn = $this->getConnection();  
+    	$conn = $this->getConnection();
         
         if ($conn->transaction->isSaved($record)) {
             return false;
@@ -383,16 +383,22 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             if (empty($array)) {
                 return false;
             }
-            $set   = array();
+            $set = array();
             foreach ($array as $name => $value) {
-                $set[] = $name . ' = ?';
+                if ($value instanceof Doctrine_Expression) {
+                    $set[] = $value->getSql();
+                    unset($array[$name]);
+                } else {
+
+                    $set[] = $name . ' = ?';
     
-                if ($value instanceof Doctrine_Record) {
-                    if ( ! $value->exists()) {
-                        $record->save($this->conn);
+                    if ($value instanceof Doctrine_Record) {
+                        if ( ! $value->exists()) {
+                            $record->save($this->conn);
+                        }
+                        $array[$name] = $value->getIncremented();
+                        $record->set($name, $value->getIncremented());
                     }
-                    $array[$name] = $value->getIncremented();
-                    $record->set($name, $value->getIncremented());
                 }
             }
     

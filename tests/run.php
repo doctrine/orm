@@ -140,6 +140,7 @@ $test->addTestCase(new Doctrine_Import_Sqlite_TestCase());
 
 // Expression module (not yet fully tested)
 $test->addTestCase(new Doctrine_Expression_TestCase());
+$test->addTestCase(new Doctrine_Expression_Driver_TestCase());
 $test->addTestCase(new Doctrine_Expression_Firebird_TestCase());
 $test->addTestCase(new Doctrine_Expression_Informix_TestCase());
 $test->addTestCase(new Doctrine_Expression_Mysql_TestCase());

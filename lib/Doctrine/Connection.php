@@ -474,10 +474,23 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         // build the statement
         $query = 'INSERT INTO ' . $this->quoteIdentifier($table) 
                . '(' . implode(', ', $cols) . ') '
-               . 'VALUES (' . substr(str_repeat('?, ', count($values)), 0, -2) . ')';
+               . 'VALUES (';
+        
+        $a = array();
+        foreach ($values as $k => $value) {
+            if ($value instanceof Doctrine_Expression) {
+                $value = $value->getSql();
+                unset($values[$k]);
+            } else {
+                $value = '?';      	
+            }
+            $a[] = $value;
 
+        }
+        $query .= implode(', ', $a) . ')';
         // prepare and execute the statement
-        $this->execute($query, array_values($values));
+
+        $this->exec($query, array_values($values));
 
         return true;
     }

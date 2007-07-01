@@ -20,7 +20,8 @@
  */
 Doctrine::autoload('Doctrine_Connection_Module');
 /**
- * Doctrine_Expression
+ * Doctrine_Expression_Mock
+ * Mock driver that is used for testing purposes
  *
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -30,17 +31,5 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression
-{
-    protected $_expression;
-
-    public function __construct($expression)
-    {
-        $this->_expression = $expression;
-    }
-    
-    public function getSql()
-    {
-        return $this->_expression;	
-    }
-}
+class Doctrine_Expression_Mock extends Doctrine_Expression_Driver
+{ }

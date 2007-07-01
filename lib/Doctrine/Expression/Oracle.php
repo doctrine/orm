@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Expression');
+Doctrine::autoload('Doctrine_Expression_Driver');
 /**
  * Doctrine_Expression_Sqlite
  *
@@ -30,7 +30,7 @@ Doctrine::autoload('Doctrine_Expression');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Expression_Oracle extends Doctrine_Expression
+class Doctrine_Expression_Oracle extends Doctrine_Expression_Driver
 {
     /**
      * Returns a series of strings concatinated

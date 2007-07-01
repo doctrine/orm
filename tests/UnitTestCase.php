@@ -94,7 +94,6 @@ class Doctrine_UnitTestCase extends UnitTestCase
             switch($e[1]) {
                 case 'Export':
                 case 'Import':
-                case 'Expression':
                 case 'Transaction':
                 case 'DataDict':
                 case 'Sequence':

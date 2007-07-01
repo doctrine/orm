@@ -631,7 +631,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $this->_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ( ! $this->_data) {
-            throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist anymore');
+            throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist.');
         }
 
         $this->_data     = array_change_key_case($this->_data, CASE_LOWER);
@@ -1049,7 +1049,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 default:
                     if ($this->_data[$v] instanceof Doctrine_Record) {
                         $this->_data[$v] = $this->_data[$v]->getIncremented();
-                    }
+                    }  
 
                     $a[$v] = $this->_data[$v];
             }

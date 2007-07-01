@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Expression');
+Doctrine::autoload('Doctrine_Expression_Driver');
 /**
  * Doctrine_Expression_Firebird
  *
@@ -32,7 +32,7 @@ Doctrine::autoload('Doctrine_Expression');
  * @author      Lorenzo Alberton <l.alberton@quipo.it> (PEAR MDB2 Interbase driver)
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  */
-class Doctrine_Expression_Firebird extends Doctrine_Expression
+class Doctrine_Expression_Firebird extends Doctrine_Expression_Driver
 {
     /**
      * return string for internal table used when calling only a function
