@@ -58,7 +58,15 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * constant for CREATE queries
      */
     const CREATE = 4;
-
+    /**
+     * Constant for the array hydration mode.
+     */
+    const HYDRATE_ARRAY = 3;
+    /**
+     * Constant for the record (object) hydration mode.
+     */
+    const HYDRATE_RECORD = 2;
+    
     /**
      * @var array $params                       query input parameters
      */
@@ -133,6 +141,10 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * @var array
      */
     protected $_cache;
+    /**
+     * The current hydration mode.
+     */
+    protected $_hydrationMode = self::HYDRATE_RECORD;
     /**
      * @var boolean $_expireCache           a boolean value that indicates whether or not to force cache expiration
      */
@@ -247,6 +259,16 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     	} else {
     	    return $this->_conn->getCacheDriver();
     	}
+    }
+    /**
+     * Sets the fetchmode.
+     *
+     * @param integer $fetchmode  One of the Doctrine_Hydrate::HYDRATE_* constants.
+     */
+    public function setHydrationMode($hydrationMode)
+    {
+        $this->_hydrationMode = $hydrationMode;
+        return $this;
     }
     /**
      * serialize
@@ -722,7 +744,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
 
         return serialize(array($resultSet, $map, $this->getTableAliases()));
     }
-    public function _execute($params, $return = Doctrine::FETCH_RECORD)
+    public function _execute($params)
     {
         $params = $this->_conn->convertBooleans(array_merge($this->_params, $params));
 
@@ -754,7 +776,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * @param string $params
      * @return Doctrine_Collection            the root collection
      */
-    public function execute($params = array(), $return = Doctrine::FETCH_RECORD)
+    public function execute($params = array(), $hydrationMode = null)
     {
     	if ($this->_cache) {
     	    $cacheDriver = $this->getCacheDriver();               	
@@ -768,8 +790,8 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
 
             if ($cached === null) {
                 // cache miss
-                $stmt = $this->_execute($params, $return);
-                $array = $this->parseData2($stmt, Doctrine::FETCH_ARRAY);
+                $stmt = $this->_execute($params);
+                $array = $this->parseData2($stmt, self::HYDRATE_ARRAY);
 
                 $cached = $this->getCachedForm($array);
                 
@@ -796,13 +818,13 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 $this->_aliasMap = $map;
             }
         } else {
-            $stmt = $this->_execute($params, $return);
+            $stmt = $this->_execute($params);
 
             if (is_integer($stmt)) {
                 return $stmt;
             }
 
-            $array = $this->parseData2($stmt, $return);
+            $array = $this->parseData2($stmt, $hydrationMode);
         }
         return $array;
     }
@@ -895,7 +917,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * @param mixed $stmt
      * @return array
      */
-    public function parseData2($stmt, $return)
+    public function parseData2($stmt, $hydrationMode)
     {
 
         $cache = array();
@@ -907,7 +929,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         $lastAlias = '';
         $currData  = array();
 
-        if ($return === Doctrine::FETCH_ARRAY) {
+        if ($hydrationMode === null) {
+            $hydrationMode = $this->_hydrationMode;
+        }
+        
+        if ($hydrationMode === self::HYDRATE_ARRAY) {
             $driver = new Doctrine_Hydrate_Array();
         } else {
             $driver = new Doctrine_Hydrate_Record();
