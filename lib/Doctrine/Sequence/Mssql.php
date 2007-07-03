@@ -47,11 +47,12 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
 
 
         if ($this->checkSequence($sequenceName)) {
-            $query = 'SET IDENTITY_INSERT ' . $sequenceName . ' ON '
-                   . 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (0)';
+            $query = 'SET IDENTITY_INSERT ' . $sequenceName . ' OFF '
+                   . 'INSERT INTO ' . $sequenceName . 'DEFAULT VALUES';
         } else {
             $query = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (0)';
         }
+        
         try {
 
             $this->conn->exec($query);
@@ -66,7 +67,16 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
                 } catch(Doctrine_Exception $e) {
                     throw new Doctrine_Sequence_Exception('on demand sequence ' . $seqName . ' could not be created');
                 }
-                // First ID of a newly created sequence is 1
+                
+                /**
+                 * This could actually be a table that starts at 18.. oh well..
+                 * we will keep the fallback to return 1 in case we skip this.. which
+                 * should really not happen.. otherwise the returned values is biased.
+                 */
+                if ($this->checkSequence($seqName)) {
+                    return $this->lastInsertId($seqName);
+                }
+                
                 return 1;
             }
             throw $e;
@@ -76,13 +86,14 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
 
         if (is_numeric($value)) {
             $query = 'DELETE FROM ' . $sequenceName . ' WHERE ' . $seqcolName . ' < ' . $value;
-            $this->conn->exec($query);
-            /**
-            TODO: is the following needed ?
-            if (PEAR::isError($result)) {
-                $this->warnings[] = 'nextID: could not delete previous sequence table values from '.$seq_name;
+            
+            try {
+                $this->conn->exec($query);
+            } catch (Doctrine_Connection_Exception $e) {
+                throw new Doctrine_Sequence_Exception('Could not delete previous sequence from ' . $sequenceName . 
+                                                      ' at ' . __FILE__ . ' in ' . __FUNCTION__ . ' with the message: ' .
+                                                      $e->getMessage());
             }
-            */
         }
         return $value;
     }
