@@ -32,15 +32,89 @@
  */
 class Doctrine_Record_SaveBlankRecord_TestCase extends Doctrine_UnitTestCase
 {
+    public function prepareTables()
+    {
+        $this->tables[] = 'MyUserGroup';
+
+        parent::prepareTables();
+    }
+    
     public function prepareData()
     { }
+
     public function testSaveBlankRecord()
     {
         $user = new User();
         $user->state('TDIRTY');
-        $this->assertEqual($user['id'], null);
         $user->save();
-
-        $this->assertEqual($user['id'], 1);
+        
+        $this->assertTrue(isset($user['id']));
     }
+    
+    public function testSaveBlankRecord2()
+    {
+        $myUserGroup = new MyUserGroup();
+        $myUserGroup->state('TDIRTY');
+        $myUserGroup->save();
+        
+        $this->assertTrue(isset($user['id']));
+    }
+}
+
+class MyUserGroup extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->setTableName('my_user_group');
+    
+        $this->hasColumn('id', 'integer', 4, array (  'primary' => true,  'autoincrement' => true,));
+        $this->hasColumn('group_id', 'integer', 4, array ());
+        $this->hasColumn('user_id', 'integer', 4, array ());
+    }
+  
+    public function setUp()
+    {
+        $this->hasOne('MyGroup as MyGroup', 'MyUserGroup.group_id');
+        $this->hasOne('MyUser as MyUser', 'MyUserGroup.user_id');
+    }
+}
+
+class MyGroup extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->setTableName('my_group');
+
+        $this->hasColumn('id', 'integer', 4, array (  'primary' => true,  'autoincrement' => true,));
+        $this->hasColumn('name', 'string', 255, array (  'notnull' => true,));
+        $this->hasColumn('description', 'string', 4000, array ());
+    }
+
+    public function setUp()
+    {
+        $this->hasMany('MyUser as users', array('refClass' => 'MyUserGroup', 'local' => 'group_id', 'foreign' => 'user_id'));
+    } 
+}
+
+class MyUser2 extends Doctrine_Record
+{  
+    public function setTableDefinition()
+    {
+        $this->setTableName('my_user');
+
+        $this->hasColumn('id', 'integer', 4, array (  'primary' => true,  'autoincrement' => true,));
+        $this->hasColumn('username', 'string', 128, array (  'notnull' => true,));
+        $this->hasColumn('algorithm', 'string', 128, array (  'default' => 'sha1',  'notnull' => true,));
+        $this->hasColumn('salt', 'string', 128, array (  'notnull' => true,));
+        $this->hasColumn('password', 'string', 128, array (  'notnull' => true,));
+        $this->hasColumn('created_at', 'timestamp', null, array ());
+        $this->hasColumn('last_login', 'timestamp', null, array ());
+        $this->hasColumn('is_active', 'boolean', null, array (  'default' => 1,  'notnull' => true,));
+        $this->hasColumn('is_super_admin', 'boolean', null, array (  'default' => 0,  'notnull' => true,));
+    }
+
+    public function setUp()
+    {
+        $this->hasMany('MyGroup as groups', array('refClass' => 'MyUserGroup', 'local' => 'user_id', 'foreign' => 'group_id'));
+    }  
 }
