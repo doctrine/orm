@@ -25,7 +25,7 @@ $query->select("base.name, le.topic, a.name")->from("VForum_Model_ForumNode base
         ->leftJoin("base.lastEntry le")
         ->leftJoin("le.author a")
         ->setHydrationMode(Doctrine_Query::HYDRATE_ARRAY);
-$treeMngr = $conn->getTable('VForum_Model_Category')->getTree();
+$treeMngr = $conn->getTable('VForum_Model_ForumNode')->getTree();
 $treeMngr->setBaseQuery($query);
 $tree = $tree->fetchTree();
 $treeMngr->resetBaseQuery();
