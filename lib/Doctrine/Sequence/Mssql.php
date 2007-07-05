@@ -48,7 +48,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
 
         if ($this->checkSequence($sequenceName)) {
             $query = 'SET IDENTITY_INSERT ' . $sequenceName . ' OFF '
-                   . 'INSERT INTO ' . $sequenceName . 'DEFAULT VALUES';
+                   . 'INSERT INTO ' . $sequenceName . ' DEFAULT VALUES';
         } else {
             $query = 'INSERT INTO ' . $sequenceName . ' (' . $seqcolName . ') VALUES (0)';
         }
