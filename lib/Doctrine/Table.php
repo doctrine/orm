@@ -1154,6 +1154,69 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         return $this->data;
     }
     /**
+     * prepareValue
+     * this method performs special data preparation depending on 
+     * the type of the given column
+     *
+     * 1. It unserializes array and object typed columns
+     * 2. Uncompresses gzip typed columns
+     * 3. Gets the appropriate enum values for enum typed columns
+     * 4. Initializes special null object pointer for null values (for fast column existence checking purposes)
+     *
+     * example:
+     * <code type='php'>
+     * $field = 'name';
+     * $value = null;
+     * $table->prepareValue($field, $value); // Doctrine_Null
+     * </code>
+     *
+     * @throws Doctrine_Table_Exception     if unserialization of array/object typed column fails or
+     * @throws Doctrine_Table_Exception     if uncompression of gzip typed column fails         *
+     * @param string $field     the name of the field
+     * @param string $value     field value
+     * @return mixed            prepared value
+     */
+    public function prepareValue($field, $value)
+    {
+        if ($value === null) {
+            return self::$_null;
+        } else {
+            $type = $this->getTypeOf($field);
+
+            switch ($type) {
+                case 'array':
+                case 'object':
+                    if (is_string($value)) {
+                        $value = unserialize($value);
+
+                        if ($value === false) {
+                            throw new Doctrine_Table_Exception('Unserialization of ' . $field . ' failed.');
+                        }
+                        return $value;
+                    }
+                break;
+                case 'gzip':
+                    $value = gzuncompress($value);
+
+                    if ($value === false) {
+                        throw new Doctrine_Table_Exception('Uncompressing of ' . $field . ' failed.');
+                    }
+                    return $value;
+                break;
+                case 'enum':
+                    return $this->enumValue($field, $value);
+                break;
+                case 'boolean':
+                    return (boolean) $value;
+                break;
+                case 'integer':
+                    return (int) $value;
+                break;
+            }
+        }
+        return $value;
+    }
+    /**
      * getter for associated tree
      *
      * @return mixed  if tree return instance of Doctrine_Tree, otherwise returns false
