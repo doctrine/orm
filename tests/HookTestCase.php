@@ -115,8 +115,8 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase
         $a['where'] = array('u.unknown' => 'Jack Daniels');
 
         $hook->hookWhere($a['where']);
-        $this->assertEqual($hook->getQuery()->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)');
 
+        $this->assertEqual($hook->getQuery()->getSql(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)');
     }
 
     public function testEqualParserUsesEqualOperator() 

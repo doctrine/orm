@@ -100,7 +100,7 @@ class Doctrine_Ticket364_TestCase extends Doctrine_UnitTestCase {
         $q = new Doctrine_Query();
         $coll = $q->from('NestReference')->execute(array(), Doctrine::FETCH_ARRAY);
 
-        $this->assertEqual(count($coll), 2);
+        $this->assertEqual(count($coll), 1);
     }
 
 }

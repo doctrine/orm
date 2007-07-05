@@ -117,10 +117,12 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
 
         $this->assertTrue(is_array($a));
         $this->assertTrue(array_key_exists('name', $a));
+        
+
         $this->assertEqual($a['name'], null);
         $this->assertTrue(array_key_exists('id', $a));
         $this->assertEqual($a['id'], null);
-        
+
         $user->name = 'Someone';
 
         $user->save();

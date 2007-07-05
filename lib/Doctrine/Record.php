@@ -1091,6 +1091,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $a = array();
 
         foreach ($this as $column => $value) {
+            if ($value === self::$_null) {
+                $value = null;
+            }
             $a[$column] = $value;
         }
         if ($this->_table->getIdentifierType() ==  Doctrine::IDENTIFIER_AUTOINC) {

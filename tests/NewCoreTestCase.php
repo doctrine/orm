@@ -43,6 +43,6 @@ class Doctrine_NewCore_TestCase extends Doctrine_UnitTestCase
 
         $q->load('u.Phonenumber p', false);
 
-        $this->assertEqual($q->getQueryPart('from'), array('entity e', 'LEFT JOIN phonenumber p ON e.id = p.entity_id'));
+        $this->assertEqual($q->getQueryPart('from'), array('entity e', 'p' => 'LEFT JOIN phonenumber p ON e.id = p.entity_id'));
     }
 }

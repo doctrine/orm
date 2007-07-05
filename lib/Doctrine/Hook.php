@@ -82,6 +82,8 @@ class Doctrine_Hook
         } else {
             throw new Doctrine_Exception('Constructor argument should be either Doctrine_Query object or valid DQL query');      	
         }
+        
+        $this->query->getQuery();
     }
     /**
      * getQuery
@@ -130,17 +132,16 @@ class Doctrine_Hook
 
             if (count($e) == 2) {
                 list($alias, $column) = $e;
-                /**
-                $tableAlias = $this->query->getTableAlias($alias);
+
                 $map   = $this->query->getAliasDeclaration($alias);
                 $table = $map['table'];
 
                 if ( ! $table) {
-                    throw new Doctrine_Exception('Unknown table alias ' . $tableAlias);
+                    throw new Doctrine_Exception('Unknown alias ' . $alias);
                 }
 
                 if ($def = $table->getDefinitionOf($column)) {
-                */
+
                 $def[0] = gettype($value);
                     if (isset($this->typeParsers[$def[0]])) {
                         $name   = $this->typeParsers[$def[0]];
@@ -150,7 +151,7 @@ class Doctrine_Hook
                     $parser->parse($alias, $column, $value);
 
                     $this->query->addWhere($parser->getCondition(), $parser->getParams());
-                //}
+                }
             }
         }
 
@@ -182,15 +183,13 @@ class Doctrine_Hook
 
             if (count($e) == 2) {
                 list($alias, $column) = $e;
-                /**
-                $tableAlias = $this->query->getTableAlias($alias);
+
                 $map   = $this->query->getAliasDeclaration($alias);
                 $table = $map['table'];
 
-                if ($def = $table->getDefinitionOf($column)) {
-                */
+                if ($def = $table->getDefinitionOf($column)) {   
                     $this->query->addOrderBy($alias . '.' . $column . ' ' . $order);
-                //}
+                }
             }
         }
         return true;
