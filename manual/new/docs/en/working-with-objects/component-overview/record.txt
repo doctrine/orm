@@ -194,7 +194,7 @@ $copy = $user->copy();
 
 ++++ Saving a blank record
 
-By default Doctrine doesn't execute when save() is being called on an unmodified record. There might be situations where you want to force-insert the record even if it has not been modified. This can be achieved by assigning the state of the object to Doctrine_Recort::STATE_TDIRTY.
+By default Doctrine doesn't execute when save() is being called on an unmodified record. There might be situations where you want to force-insert the record even if it has not been modified. This can be achieved by assigning the state of the record to Doctrine_Record::STATE_TDIRTY.
 
 <code type="php">
 $user = new User();
