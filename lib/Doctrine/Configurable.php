@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Configurable
+abstract class Doctrine_Configurable extends Doctrine_Object
 {
     /**
      * @var array $attributes               an array of containing all attributes

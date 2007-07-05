@@ -39,7 +39,7 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase
         $this->tables = array("EnumTest", "EnumTest2", "EnumTest3");
         parent::prepareTables();
     }
-    /**
+
     public function testParameterConversion() 
     {
         $test = new EnumTest();
@@ -97,6 +97,7 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase
             $this->fail();
         }
     }
+
     public function testNotEqual() 
     {
         try {
@@ -107,7 +108,7 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase
             $this->fail();
         }
     }
-            */
+
     public function testEnumType() 
     {
 
@@ -164,13 +165,13 @@ class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase
 
         $this->conn->exec('DELETE FROM enum_test WHERE id = 1');
 
-        $f = false;
         try {
             $enum->refresh();
+
+            $this->fail();
         } catch(Doctrine_Record_Exception $e) {
-            $f = true;
+            $this->pass();
         }
-        $this->assertTrue($f);
     }
 
     public function testEnumFetchArray() {

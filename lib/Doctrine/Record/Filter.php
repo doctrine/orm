@@ -111,52 +111,9 @@ class Doctrine_Record_Filter extends Doctrine_Object
      */
     public function cleanData($data)
     {
-        $tmp  = $data;
-        $data = array();  
-
         foreach ($this->_record->getTable()->getColumnNames() as $name) {
-            $type = $this->_record->getTable()->getTypeOf($name);
-
-            if ( ! isset($tmp[$name])) {
+            if ( ! isset($data[$name])) {
                 $data[$name] = self::$_null;
-            } else {
-                switch ($type) {
-                    case 'array':
-                    case 'object':
-                        if ($tmp[$name] !== self::$_null) {
-                            if (is_string($tmp[$name])) {
-                                $value = unserialize($tmp[$name]);
-
-                                if ($value === false) {
-                                    throw new Doctrine_Record_Exception('Unserialization of ' . $name . ' failed.');
-                                }
-                            } else {
-                                $value = $tmp[$name];
-                            }
-                            $data[$name] = $value;
-                        }
-                        break;
-                    case 'gzip':
-                        if ($tmp[$name] !== self::$_null) {
-                            $value = gzuncompress($tmp[$name]);
-
-                            if ($value === false) {
-                                throw new Doctrine_Record_Exception('Uncompressing of ' . $name . ' failed.');
-                            }
-                            
-                            $data[$name] = $value;
-                        }
-                        break;
-                    case 'enum':
-                        $data[$name] = $this->_record->getTable()->enumValue($name, $tmp[$name]);
-                        break;
-                    case 'boolean':
-                        $data[$name] = (boolean) $tmp[$name];
-                        break;
-                    default:
-                        $data[$name] = $tmp[$name];
-                }
-
             }
         }
         return $data;

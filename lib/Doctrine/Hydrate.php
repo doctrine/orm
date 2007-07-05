@@ -946,7 +946,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             return $array;
         }
 
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {
 
             $parse = true;
 
@@ -965,6 +965,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 $map   = $this->_aliasMap[$cache[$key]['alias']];
                 $table = $map['table'];
                 $alias = $cache[$key]['alias'];
+                $field = $cache[$key]['field'];
 
                 $componentName  = $map['table']->getComponentName();
                 if (isset($map['relation'])) {
@@ -1039,8 +1040,10 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     $currData[$alias] = array();
                     $identifiable[$alias] = null;
                 }
-                $field = $cache[$key]['field'];
-                $currData[$alias][$field] = $value;
+
+
+
+                $currData[$alias][$field] = $table->prepareValue($field, $value);
                 $index = false;
                 if ($value !== null) {
                     $identifiable[$alias] = true;

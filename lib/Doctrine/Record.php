@@ -162,8 +162,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
             // get the column count
             $count = count($this->_data);
-
-            // clean data array
+            
             $this->_data = $this->_filter->cleanData($this->_data);
 
             $this->prepareIdentifiers($exists);
@@ -625,12 +624,13 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         $id = array_values($id);
 
-        $query = 'SELECT * FROM ' . $this->_table->getOption('tableName') . ' WHERE ' . implode(' = ? AND ', $this->_table->getPrimaryKeys()) . ' = ?';
-        $stmt  = $this->_table->getConnection()->execute($query,$id);
+        $records = Doctrine_Query::create()
+                   ->from($this->_table->getComponentName())
+                   ->where(implode(' = ? AND ', $this->_table->getPrimaryKeys()) . ' = ?')
+                   ->execute($id);
 
-        $this->_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ( ! $this->_data) {
+        if (count($records) === 0) {
             throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist.');
         }
 
@@ -645,7 +645,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
 
-        return true;
+        return $this;
     }
     /**
      * factoryRefresh
@@ -1049,7 +1049,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 default:
                     if ($this->_data[$v] instanceof Doctrine_Record) {
                         $this->_data[$v] = $this->_data[$v]->getIncremented();
-                    }  
+                    }
 
                     $a[$v] = $this->_data[$v];
             }

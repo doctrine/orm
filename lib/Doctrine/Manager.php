@@ -54,10 +54,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     protected $_root;
     /**
-     * @var Doctrine_Null $null     Doctrine_Null object, used for extremely fast null value checking
-     */
-    protected $_null;
-    /**
      * @var array $_integrityActions    an array containing all registered integrity actions
      *                                  used when emulating these actions
      */
@@ -72,11 +68,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     private function __construct()
     {
         $this->_root = dirname(__FILE__);
-        $this->_null = new Doctrine_Null; 
 
-        Doctrine_Record_Iterator::initNullObject($this->_null);
-        Doctrine_Validator::initNullObject($this->_null);
-        Doctrine_Object::initNullObject($this->_null);
+        Doctrine_Object::initNullObject(new Doctrine_Null);
     }
     public function addDeleteAction($componentName, $foreignComponent, $action)
     {
@@ -101,13 +94,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         
         return $this->_integrityActions[$componentName]['onUpdate'];
-    }
-    /**
-     * @return Doctrine_Null
-     */
-    final public function getNullObject()
-    {
-        return $this->_null;
     }
     /**
      * setDefaultAttributes

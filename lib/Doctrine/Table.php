@@ -811,20 +811,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 $id = array_values($id);
             }
 
-            $query  = 'SELECT ' . implode(', ', array_keys($this->columns)) . ' FROM ' . $this->getTableName() 
-                    . ' WHERE ' . implode(' = ? AND ', $this->primaryKeys) . ' = ?';
-            $query  = $this->applyInheritance($query);
+            $records = Doctrine_Query::create()
+                       ->from($this->getComponentName())
+                       ->where(implode(' = ? AND ', $this->primaryKeys) . ' = ?')
+                       ->execute($id);
 
-            $params = array_merge($id, array_values($this->options['inheritanceMap']));
-
-            $stmt  = $this->conn->execute($query, $params);
-
-            $this->data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($this->data === false)
+            if (count($records) === 0) {
                 return false;
+            }
 
-            return $this->getRecord();
+            return $records->getFirst();
         }
         return false;
     }
@@ -967,7 +963,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $inheritanceMap = $table->getOption('inheritanceMap');
             $nomatch = false;
             foreach ($inheritanceMap as $key => $value) {
-                if (!isset($this->data[$key]) || $this->data[$key] != $value) {
+                if ( ! isset($this->data[$key]) || $this->data[$key] !== $value) {
                     $nomatch = true;
                     break;
                 }
@@ -1178,7 +1174,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function prepareValue($field, $value)
     {
-        if ($value === null) {
+        if ($value === null || $value === self::$_null) {
             return self::$_null;
         } else {
             $type = $this->getTypeOf($field);
@@ -1211,7 +1207,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 break;
                 case 'integer':
                     return (int) $value;
-                break;
+                break; 
             }
         }
         return $value;
