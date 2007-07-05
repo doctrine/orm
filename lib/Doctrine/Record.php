@@ -412,10 +412,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function hydrate(array $data)
     {
-        foreach ($data as $k => $v) {
-            $this->_data[$k] = $v;
-        }
-        $this->_data = $this->_filter->cleanData($this->_data);
+        $this->_data = $this->_filter->cleanData($data);
         $this->prepareIdentifiers(true);
     }
     /**

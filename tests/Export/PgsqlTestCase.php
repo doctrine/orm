@@ -80,22 +80,19 @@ class Doctrine_Export_Pgsql_TestCase extends Doctrine_UnitTestCase
     public function testExportSql()
     {
         $sql = $this->export->exportSql(dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files');
-
-        $this->assertEqual($sql, array (  0 => 'CREATE TABLE foo (id BIGSERIAL, name VARCHAR(200) NOT NULL, parent_id BIGINT, local_foo BIGINT, PRIMARY KEY(id))',
-                                          1 => 'CREATE TABLE foo_reference (foo1 BIGINT, foo2 BIGINT, PRIMARY KEY(foo1, foo2))', 
-                                          2 => 'CREATE TABLE foo_bar_record (fooid BIGINT, barid BIGINT, PRIMARY KEY(fooid, barid))',
-                                          3 => 'CREATE TABLE bar (id BIGSERIAL, name VARCHAR(200), PRIMARY KEY(id))',
-                                          4 => 'CREATE TABLE foo_locally_owned (id BIGSERIAL, name VARCHAR(200), PRIMARY KEY(id))',
-                                          5 => 'CREATE TABLE foo_foreignly_owned (id BIGSERIAL, name VARCHAR(200), fooid BIGINT, PRIMARY KEY(id))',
-                                          6 => 'CREATE TABLE foo_foreignly_owned_with_pk (id BIGSERIAL, name VARCHAR(200), PRIMARY KEY(id))',
-                                          7 => 'ALTER TABLE foo_reference ADD CONSTRAINT FOREIGN KEY (foo1) REFERENCES foo(id) ON DELETE CASCADE',
-                                          8 => 'ALTER TABLE foo_reference ADD CONSTRAINT FOREIGN KEY (foo2) REFERENCES foo(id) ON DELETE CASCADE',
-                                          9 => 'ALTER TABLE foo ADD CONSTRAINT FOREIGN KEY (parent_id) REFERENCES foo(id) ON DELETE CASCADE',
-                                          10 => 'ALTER TABLE foo_foreignly_owned_with_pk ADD CONSTRAINT FOREIGN KEY (id) REFERENCES foo(id)',
-                                          11 => 'ALTER TABLE foo_bar_record ADD CONSTRAINT FOREIGN KEY (fooId) REFERENCES foo(id)',
-                                          12 => 'ALTER TABLE foo_bar_record ADD CONSTRAINT FOREIGN KEY (barId) REFERENCES bar(id)',
-                                          13 => 'ALTER TABLE foo_bar_record ADD CONSTRAINT FOREIGN KEY (barId) REFERENCES bar(id)',
-                                          14 => 'ALTER TABLE foo_bar_record ADD CONSTRAINT FOREIGN KEY (fooId) REFERENCES foo(id)', ));
+               
+        $this->assertEqual($sql, array ( 0 => 'CREATE TABLE foo_reference (foo1 BIGINT, foo2 BIGINT, PRIMARY KEY(foo1, foo2))', 
+                                         1 => 'CREATE TABLE foo_locally_owned (id BIGSERIAL, name VARCHAR(200), PRIMARY KEY(id))', 
+                                         2 => 'CREATE TABLE foo_foreignly_owned_with_pk (id BIGSERIAL, name VARCHAR(200), PRIMARY KEY(id))', 
+                                         3 => 'CREATE TABLE foo_foreignly_owned (id BIGSERIAL, name VARCHAR(200), fooid BIGINT, PRIMARY KEY(id))', 
+                                         4 => 'CREATE TABLE foo_bar_record (fooid BIGINT, barid BIGINT, PRIMARY KEY(fooid, barid))', 
+                                         5 => 'CREATE TABLE foo (id BIGSERIAL, name VARCHAR(200) NOT NULL, parent_id BIGINT, local_foo BIGINT, PRIMARY KEY(id))', 
+                                         6 => 'CREATE TABLE bar (id BIGSERIAL, name VARCHAR(200), PRIMARY KEY(id))', 
+                                         7 => 'ALTER TABLE foo_reference ADD CONSTRAINT FOREIGN KEY (foo1) REFERENCES foo(foo1, foo2) NOT DEFERRABLE INITIALLY IMMEDIATE', 
+                                         8 => 'ALTER TABLE foo_bar_record ADD CONSTRAINT FOREIGN KEY (fooId) REFERENCES foo(fooid, barid) NOT DEFERRABLE INITIALLY IMMEDIATE', 
+                                         9 => 'ALTER TABLE foo ADD CONSTRAINT FOREIGN KEY (parent_id) REFERENCES foo(id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE', 
+                                         10 => 'ALTER TABLE foo ADD CONSTRAINT FOREIGN KEY (local_foo) REFERENCES foo_locally_owned(id) ON DELETE RESTRICT NOT DEFERRABLE INITIALLY IMMEDIATE', 
+                                         ));
     }
 }
 ?>

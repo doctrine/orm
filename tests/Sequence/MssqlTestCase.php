@@ -40,7 +40,7 @@ class Doctrine_Sequence_Mssql_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($this->adapter->pop(), 'SELECT @@IDENTITY');  
         $this->assertEqual($this->adapter->pop(), 'SELECT @@VERSION');
-        $this->assertEqual($this->adapter->pop(), 'SET IDENTITY_INSERT user_seq ON INSERT INTO user_seq (id) DEFAULT VALUES');
+        $this->assertEqual($this->adapter->pop(), 'SET IDENTITY_INSERT user_seq OFF INSERT INTO user_seq DEFAULT VALUES');
         $this->assertEqual($this->adapter->pop(), 'SELECT COUNT(1) FROM user_seq');
     }
     public function testNextIdExecutesSql()
@@ -50,8 +50,8 @@ class Doctrine_Sequence_Mssql_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->adapter->pop(), 'DELETE FROM user_seq WHERE id < 0');
 
         $this->assertEqual($this->adapter->pop(), 'SELECT @@IDENTITY');  
-        $this->assertEqual($this->adapter->pop(), 'SELECT @@VERSION');    
-        $this->assertEqual($this->adapter->pop(), 'SET IDENTITY_INSERT user_seq ON INSERT INTO user_seq (id) DEFAULT VALUES');
+        $this->assertEqual($this->adapter->pop(), 'SELECT @@VERSION'); 
+        $this->assertEqual($this->adapter->pop(), 'SET IDENTITY_INSERT user_seq OFF INSERT INTO user_seq DEFAULT VALUES');
         $this->assertEqual($this->adapter->pop(), 'SELECT COUNT(1) FROM user_seq');
     }
     public function testLastInsertIdCallsPdoLevelEquivalent() 
