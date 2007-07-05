@@ -417,8 +417,8 @@ class EnumTest extends Doctrine_Record
         $this->hasColumn('text', 'string');
     }
     public function setUp() {
-        $this->ownsMany('EnumTest2 as Enum2', array('local' => 'id', 'foreign' => 'enum_test_id'));
-        $this->ownsMany('EnumTest3 as Enum3', array('local' => 'text', 'foreign' => 'text'));
+        $this->hasMany('EnumTest2 as Enum2', array('local' => 'id', 'foreign' => 'enum_test_id'));
+        $this->hasMany('EnumTest3 as Enum3', array('local' => 'text', 'foreign' => 'text'));
     }
 }
 class EnumTest2 extends Doctrine_Record 
@@ -666,7 +666,7 @@ class NestTest extends Doctrine_Record
     }
     public function setUp()
     {
-        $this->hasMany('NestTest as Parents', array('local' => 'child_id', 
+        $this->hasMany('NestTest as Parents', array('local' => 'child_id',
                                                     'refClass' => 'NestReference',
                                                     'foreign' => 'parent_id'));
         $this->hasMany('NestTest as Children', array('local' => 'parent_id',

@@ -1098,8 +1098,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $path = $e[0];
         }
 
-        $tmp           = explode(' ', $path);
-        $originalAlias = (count($tmp) > 1) ? end($tmp) : null;
+        $tmp            = explode(' ', $path);
+        $componentAlias = $originalAlias = (count($tmp) > 1) ? end($tmp) : null;
 
         $e = preg_split("/[.:]/", $tmp[0], -1);
 
@@ -1109,6 +1109,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         if (isset($this->_aliasMap[$e[0]])) {
             $table = $this->_aliasMap[$e[0]]['table'];
+            $componentAlias = $e[0];
 
             $prevPath = $parent = array_shift($e);
         }
@@ -1229,11 +1230,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 if(isset($this->pendingFields[$componentAlias])) {
                     $this->processPendingFields($componentAlias);
                 }
-                /**
-                if(isset($this->pendingAggregates[$componentAlias]) || isset($this->pendingAggregates[0])) {
-                    $this->processPendingAggregates($componentAlias);
-                }
-                */
 
                 if ($restoreState) {
                     $this->pendingFields = array();
@@ -1242,7 +1238,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
             $parent = $prevPath;
         }
-        return end($this->_aliasMap);
+
+        return $this->_aliasMap[$componentAlias];
     }
     /**
      * loadRoot

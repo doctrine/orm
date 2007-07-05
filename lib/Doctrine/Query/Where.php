@@ -126,7 +126,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 $field = $table->getColumnName($field);
                 // check if value is enumerated value
                 $enumIndex = $table->enumIndex($field, trim($value, "'"));
-
+                     
                 if (substr($value, 0, 1) == '(') {
                     // trim brackets
                     $trimmed   = Doctrine_Tokenizer::bracketTrim($value);
