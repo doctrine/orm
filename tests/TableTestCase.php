@@ -36,7 +36,7 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
     public function prepareTables()
     {
         $this->tables[] = 'FieldNameTest';
-        parent::prepareTables();  
+        parent::prepareTables();
     }
 
     public function testFieldConversion() 
@@ -104,23 +104,23 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($fk->getForeign() == $fk->getTable()->getIdentifier());
 
 
-        $fk = $this->objTable->getRelation("Phonenumber");
+        $fk = $this->objTable->getRelation('Phonenumber');
         $this->assertTrue($fk instanceof Doctrine_Relation_ForeignKey);
         $this->assertTrue($fk->getTable() instanceof Doctrine_Table);
-        $this->assertTrue($fk->getType() == Doctrine_Relation::MANY_COMPOSITE);
+        $this->assertTrue($fk->getType() == Doctrine_Relation::MANY);
         $this->assertTrue($fk->getLocal() == $this->objTable->getIdentifier());
-        $this->assertTrue($fk->getForeign() == "entity_id");
+        $this->assertTrue($fk->getForeign() == 'entity_id');
 
 
     }
     public function testGetComponentName() 
     {
-        $this->assertTrue($this->objTable->getComponentName() == "User");
+        $this->assertTrue($this->objTable->getComponentName() == 'User');
     } 
 
     public function testGetTableName() 
     {
-        $this->assertTrue($this->objTable->tableName == "entity");
+        $this->assertTrue($this->objTable->tableName == 'entity');
     } 
 
     public function testGetConnection() 
@@ -135,8 +135,8 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
 
     public function testSetSequenceName()
     {
-        $this->objTable->sequenceName = "test-seq";
-        $this->assertEqual($this->objTable->sequenceName, "test-seq");
+        $this->objTable->sequenceName = 'test-seq';
+        $this->assertEqual($this->objTable->sequenceName, 'test-seq');
         $this->objTable->sequenceName = null;
     }
 

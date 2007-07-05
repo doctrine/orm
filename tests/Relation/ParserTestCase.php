@@ -190,7 +190,7 @@ class Doctrine_Relation_Parser_TestCase extends Doctrine_UnitTestCase
         $r->bind('Entity', $p);
 
         $rel = $r->getRelation('Entity');
-        $this->assertTrue($rel instanceof Doctrine_Relation_Association_Self);
+        $this->assertTrue($rel instanceof Doctrine_Relation_Nest);
 
         $rel = $r->getRelation('EntityReference');
         $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
