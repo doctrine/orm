@@ -30,16 +30,23 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Access_TestCase extends Doctrine_UnitTestCase {
-    public function prepareData() { }
-    public function prepareTables() {
+class Doctrine_Access_TestCase extends Doctrine_UnitTestCase 
+{
+    public function prepareData() 
+    { }
+
+    public function prepareTables() 
+    {
         $this->tables = array('Entity', 'User'); 
         parent::prepareTables();
     }
-    public function testUnset() {        
+
+    public function testUnset() 
+    {
 
     }
-    public function testIsset() {
+    public function testIsset() 
+    {
         $user = new User();
         
         $this->assertTrue(isset($user->name));  
@@ -59,7 +66,9 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase {
         // test repeated call
         $this->assertTrue(isset($coll[0]));
     }
-    public function testOffsetMethods() {
+
+    public function testOffsetMethods() 
+    {
         $user = new User();
         $this->assertEqual($user['name'],null);
 
@@ -68,7 +77,7 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase {
 
         $user->save();
 
-        $user = $this->connection->getTable('User')->find($user->obtainIdentifier());
+        $user = $this->connection->getTable('User')->find($user->identifier());
         $this->assertEqual($user->name, 'Jack');
 
         $user['name'] = 'Jack';
@@ -76,7 +85,9 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase {
         $user['name'] = 'zYne';
         $this->assertEqual($user['name'], 'zYne');
     }
-    public function testOverload() {
+
+    public function testOverload() 
+    {
         $user = new User();
         $this->assertEqual($user->name,null);
 
@@ -86,7 +97,7 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase {
         
         $user->save();
 
-        $user = $this->connection->getTable('User')->find($user->obtainIdentifier());
+        $user = $this->connection->getTable('User')->find($user->identifier());
         $this->assertEqual($user->name, 'Jack');
 
         $user->name = 'Jack';
@@ -94,6 +105,7 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase {
         $user->name = 'zYne';
         $this->assertEqual($user->name, 'zYne');
     }
+    
     public function testSet() {
         $user = new User();
         $this->assertEqual($user->get('name'),null);
@@ -103,7 +115,7 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase {
 
         $user->save();
 
-        $user = $this->connection->getTable('User')->find($user->obtainIdentifier());
+        $user = $this->connection->getTable('User')->find($user->identifier());
 
         $this->assertEqual($user->get('name'), 'Jack');
 

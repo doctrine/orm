@@ -882,6 +882,25 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $this->identityMap = array();
     }
     /**
+     * addRecord
+     * adds a record to identity map
+     *
+     * @param Doctrine_Record $record       record to be added
+     * @return boolean
+     */
+    public function addRecord(Doctrine_Record $record)
+    {
+        $id = implode(' ', $record->identifier());
+        
+        if (isset($this->identityMap[$id])) {
+            return false;
+        }
+        
+        $this->identityMap[$id] = $record;
+        
+        return true;
+    }
+    /**
      * getRecord
      * first checks if record exists in identityMap, if not
      * returns a new record
@@ -1207,7 +1226,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 break;
                 case 'integer':
                     return (int) $value;
-                break; 
+                break;
             }
         }
         return $value;

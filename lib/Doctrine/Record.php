@@ -612,7 +612,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function refresh()
     {
-        $id = $this->obtainIdentifier();
+        $id = $this->identifier();
         if ( ! is_array($id)) {
             $id = array($id);
         }
@@ -630,8 +630,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         if (count($records) === 0) {
             throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist.');
         }
-
-        $this->_data     = array_change_key_case($this->_data, CASE_LOWER);
 
         $this->_modified = array();
         $this->_data     = $this->_filter->cleanData($this->_data);
@@ -1226,7 +1224,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @return array
      */
-    final public function obtainIdentifier()
+    public function identifier()
     {
         return $this->_id;
     }

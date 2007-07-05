@@ -187,7 +187,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $user2 = unserialize($str);
 
         $this->assertTrue($user2 instanceof User);
-        $this->assertEqual($user2->obtainIdentifier(), $user->obtainIdentifier());
+        $this->assertEqual($user2->identifier(), $user->identifier());
     }
 
     public function testCallback() 
@@ -204,7 +204,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $record = new EntityReference();
         $this->assertEqual($record->getTable()->getIdentifier(), array("entity1","entity2"));
         $this->assertEqual($record->getTable()->getIdentifierType(), Doctrine::IDENTIFIER_COMPOSITE);
-        $this->assertEqual($record->obtainIdentifier(), array("entity1" => null, "entity2" => null));
+        $this->assertEqual($record->identifier(), array("entity1" => null, "entity2" => null));
         $this->assertEqual($record->state(), Doctrine_Record::STATE_TCLEAN);
 
         $record->entity1 = 3;
@@ -212,45 +212,45 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($record->entity2, 4);
         $this->assertEqual($record->entity1, 3);
         $this->assertEqual($record->state(), Doctrine_Record::STATE_TDIRTY);
-        $this->assertEqual($record->obtainIdentifier(), array("entity1" => null, "entity2" => null));
+        $this->assertEqual($record->identifier(), array("entity1" => null, "entity2" => null));
 
         $record->save();
         $this->assertEqual($record->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($record->entity2, 4);
         $this->assertEqual($record->entity1, 3);
-        $this->assertEqual($record->obtainIdentifier(), array("entity1" => 3, "entity2" => 4));
+        $this->assertEqual($record->identifier(), array("entity1" => 3, "entity2" => 4));
 
-        $record = $record->getTable()->find($record->obtainIdentifier());
+        $record = $record->getTable()->find($record->identifier());
         $this->assertEqual($record->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($record->entity2, 4);
         $this->assertEqual($record->entity1, 3);
 
-        $this->assertEqual($record->obtainIdentifier(), array("entity1" => 3, "entity2" => 4));
+        $this->assertEqual($record->identifier(), array("entity1" => 3, "entity2" => 4));
         
         $record->entity2 = 5;
         $record->entity1 = 2;
         $this->assertEqual($record->state(), Doctrine_Record::STATE_DIRTY);
         $this->assertEqual($record->entity2, 5);
         $this->assertEqual($record->entity1, 2);
-        $this->assertEqual($record->obtainIdentifier(), array("entity1" => 3, "entity2" => 4));
+        $this->assertEqual($record->identifier(), array("entity1" => 3, "entity2" => 4));
 
         $record->save();
         $this->assertEqual($record->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($record->entity2, 5);
         $this->assertEqual($record->entity1, 2);
-        $this->assertEqual($record->obtainIdentifier(), array("entity1" => 2, "entity2" => 5));
-        $record = $record->getTable()->find($record->obtainIdentifier());
+        $this->assertEqual($record->identifier(), array("entity1" => 2, "entity2" => 5));
+        $record = $record->getTable()->find($record->identifier());
 
         $this->assertEqual($record->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($record->entity2, 5);
         $this->assertEqual($record->entity1, 2);
-        $this->assertEqual($record->obtainIdentifier(), array("entity1" => 2, "entity2" => 5));
+        $this->assertEqual($record->identifier(), array("entity1" => 2, "entity2" => 5));
         
         $record->refresh();
         $this->assertEqual($record->state(), Doctrine_Record::STATE_CLEAN);
         $this->assertEqual($record->entity2, 5);
         $this->assertEqual($record->entity1, 2);
-        $this->assertEqual($record->obtainIdentifier(), array("entity1" => 2, "entity2" => 5));
+        $this->assertEqual($record->identifier(), array("entity1" => 2, "entity2" => 5));
 
         $record = new EntityReference();
         $record->entity2 = 6;
@@ -301,7 +301,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
 
         $this->connection->flush();
 
-        $task = $task->getTable()->find($task->obtainIdentifier());
+        $task = $task->getTable()->find($task->identifier());
 
         $this->assertEqual($task->name, "Task 1");
         $this->assertEqual($task->ResourceAlias[0]->name, "Resource 1");
@@ -373,7 +373,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user->created, null);
         $this->assertEqual($user->updated, null);
         $user->save();
-        $id = $user->obtainIdentifier();
+        $id = $user->identifier();
         $user = $user->getTable()->find($id);
         $this->assertEqual($user->name, "Jack Daniels");
         $this->assertEqual($user->created, null);
@@ -439,7 +439,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($c->name, "child 1");
 
         $this->assertEqual($e->Child[0]->parent_id, 1);
-        $this->assertEqual($e->Child[0]->Parent->obtainIdentifier(), $e->obtainIdentifier());
+        $this->assertEqual($e->Child[0]->Parent->identifier(), $e->identifier());
 
 
         $this->assertEqual($e->Child[1]->parent_id, 1);
@@ -786,8 +786,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $user->save();
 
         $this->assertEqual($user->Group->count(), 2);
-        $this->assertEqual($user->Group[1]->obtainIdentifier(), $record2->obtainIdentifier());
-        $this->assertFalse($user->Group[1]->obtainIdentifier() == $record->obtainIdentifier());
+        $this->assertEqual($user->Group[1]->identifier(), $record2->identifier());
+        $this->assertFalse($user->Group[1]->identifier() == $record->identifier());
 
 
         $user->Group[0] = $record;

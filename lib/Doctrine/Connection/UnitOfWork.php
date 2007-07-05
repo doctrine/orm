@@ -403,7 +403,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
     
             $params = array_values($array);
-            $id     = $record->obtainIdentifier();
+            $id     = $record->identifier();
     
             if ( ! is_array($id)) {
                 $id = array($id);
@@ -477,6 +477,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 $record->assignIdentifier(true);
             }
         }
+        $record->getTable()->addRecord($record);
+
         $record->postInsert($event);
 
         return true;

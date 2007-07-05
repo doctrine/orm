@@ -205,7 +205,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                     $params = array();
                     $cond = array();
                     foreach ($deletes as $k => $record) {
-                        $ids = $record->obtainIdentifier();
+                        $ids = $record->identifier();
                         $tmp = array();
                         foreach (array_keys($ids) as $id){
                             $tmp[] = $id . ' = ? ';

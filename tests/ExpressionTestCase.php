@@ -62,6 +62,7 @@ class Doctrine_Expression_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($e->getSql(), '1 + 2');
     }
+
     public function testExpressionParserSupportsFunctionComposition()
     {
         $e = new Doctrine_Expression("SUBSTRING(CONCAT('some', 'one'), 0, 3)");
