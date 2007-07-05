@@ -32,13 +32,15 @@
  */
 class Doctrine_Record_SaveBlankRecord_TestCase extends Doctrine_UnitTestCase
 {
+    public function prepareData()
+    { }
     public function testSaveBlankRecord()
     {
-        // This will not save because no fields have been modified?
         $user = new User();
-        //$user->state('TDIRTY'); i thought this would force it but i thought wrong :)
+        $user->state('TDIRTY');
+        $this->assertEqual($user['id'], null);
         $user->save();
-        
-        $this->assertEqual($user['id'], 2);
+
+        $this->assertEqual($user['id'], 1);
     }
 }
