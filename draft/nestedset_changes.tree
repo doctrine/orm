@@ -25,10 +25,10 @@ $query->select("base.name, le.topic, a.name")->from("VForum_Model_ForumNode base
         ->leftJoin("base.lastEntry le")
         ->leftJoin("le.author a")
         ->setHydrationMode(Doctrine_Query::HYDRATE_ARRAY);
-$tree = $conn->getTable('VForum_Model_Category')->getTree();
-$tree->setBaseQuery($query);
+$treeMngr = $conn->getTable('VForum_Model_Category')->getTree();
+$treeMngr->setBaseQuery($query);
 $tree = $tree->fetchTree();
-$tree->resetBaseQuery();
+$treeMngr->resetBaseQuery();
 
 This example shows that even array fetching is possible. And since the level is now stored
 in the database and is a regular field of every record you can access it like every other field
