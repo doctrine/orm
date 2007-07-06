@@ -69,7 +69,7 @@ $sampleArray = array('first'  => 'firstValue',
 +++ Classes
 
 * Classes must be named by following the naming conventions.
-* The brace is always written right after the class name (or interface declaration).
+* The brace is always written next line after the class name (or interface declaration).
 * Every class must have a documentation block that conforms to the PHPDocumentor standard.
 * Any code within a class must be indented four spaces.
 * Only one class is permitted per PHP file.
@@ -81,7 +81,8 @@ This is an example of an acceptable class declaration:
 /**
  * Documentation here
  */
-class Doctrine_SampleClass {
+class Doctrine_SampleClass 
+{
     // entire content of class
     // must be indented four spaces
 }
@@ -92,7 +93,7 @@ class Doctrine_SampleClass {
 
 * Methods must be named by following the naming conventions.
 * Methods must always declare their visibility by using one of the private, protected, or public constructs.
-* Like classes, the brace is always written right after the method name. There is no space between the function name and the opening parenthesis for the arguments.
+* Like classes, the brace is always written next line after the method name. There is no space between the function name and the opening parenthesis for the arguments.
 * Functions in the global scope are strongly discouraged.
 * This is an example of an acceptable function declaration in a class:
 
@@ -100,11 +101,13 @@ class Doctrine_SampleClass {
 /**
  * Documentation Block Here
  */
-class Foo {
+class Foo 
+{
     /**
      * Documentation Block Here
      */
-    public function bar() {
+    public function bar() 
+    {
         // entire content of function
         // must be indented four spaces
     }
@@ -117,11 +120,13 @@ class Foo {
 /** 
  * Documentation Block Here 
  */
-class Foo {    
+class Foo 
+{
     /**
      * Documentation Block Here
      */
-    public function bar(&$baz) {
+    public function bar(&$baz) 
+    {
     }
 }
 </code>
@@ -133,17 +138,19 @@ class Foo {
 /** 
  * Documentation Block Here 
  */
-class Foo {    
+class Foo 
+{
     /**     
      * WRONG     
      */    
-    public function bar() {        
+    public function bar() {
         return($this->bar);
     }    
     /**     
      * RIGHT     
      */    
-    public function bar() {        
+    public function bar() 
+    {
         return $this->bar;
     }
 }
@@ -195,20 +202,12 @@ if ($foo != 2) {
 }
 </code>
 
-* PHP allows for these statements to be written without braces in some circumstances, the following format for if statements is also allowed:
+When ! operand is being used it must use the following formatting:
 
 <code type="php">
-if ($foo != 1)
-    $foo = 1;
-else
-    $foo = 3;
+if ( ! $foo) {
 
-if ($foo != 2)
-    $foo = 2;
-elseif ($foo == 1)
-    $foo = 3;
-else
-    $foo = 11;
+}
 </code>
 
 * Control statements written with the {{switch}} construct must have a single space before the opening parenthesis of the conditional statement, and also a single space after the closing parenthesis.
