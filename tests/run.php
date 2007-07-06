@@ -3,8 +3,9 @@
 ini_set('max_execution_time', 900);
 
 function autoload($class) {
-    if(strpos($class, 'TestCase') === false)
+    if(strpos($class, 'TestCase') === false) {
         return false;
+    }
 
     $e      = explode('_', $class);
     $count  = count($e);
@@ -63,7 +64,6 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 // DATABASE ABSTRACTION tests
-/**   */
 
 // Temp tests
 /**
@@ -323,7 +323,7 @@ $test->addTestCase(new Doctrine_Record_SaveBlankRecord_TestCase());
 
 
 $test->addTestCase(new Doctrine_Template_TestCase());
-    /** */
+
 //$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
 
 //$test->addTestCase(new Doctrine_AuditLog_TestCase());
@@ -375,7 +375,53 @@ class MyReporter extends HtmlReporter {
 
 <?php
 $test->run(new MyReporter());
+$path = Doctrine::getPath() . DIRECTORY_SEPARATOR;
+
 ?>
+<?php
+/**
+<table>
+<tr>
+    <td>class</td>
+    <td>coverage</td>
+</tr>
+
+$coverage = xdebug_get_code_coverage();
+ksort($coverage);
+foreach ($coverage as $file => $lines) {
+
+    $pos = strpos($file, $path);
+
+    $values = array_values($lines);
+    $i = count($values);
+    $covered = 0;
+    while ($i--) {
+        if ($values[$i] > 0) {
+            $covered++;
+        }
+    }
+
+    if ($pos !== false) {
+        $class = str_replace(DIRECTORY_SEPARATOR, '_', substr($file, strlen($path), -4));
+
+        if (strpos($class, '_Interface')) {
+            continue;
+        }
+
+        $refl = new ReflectionClass($class);
+        $total = 0;
+        foreach ($refl->getMethods() as $method) {
+            $total += ($method->getEndLine() - $method->getStartLine());
+        }
+        if ($total === 0) {
+            $total = 1;
+        }
+        print "<tr><td>" . $class . "</td><td>" . round(($covered / $total) * 100, 2) . " % </td></tr>";
+    }
+}
+*/
+?>
+</table>
 </body>
 </html>
 

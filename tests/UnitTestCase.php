@@ -100,6 +100,8 @@ class Doctrine_UnitTestCase extends UnitTestCase
                     $this->driverName = 'Sqlite';
                 break;
             }
+            
+            $module = $e[1];
     
             if(count($e) > 3) {
                 $driver = $e[2];
@@ -148,12 +150,23 @@ class Doctrine_UnitTestCase extends UnitTestCase
             $this->manager->setAttribute(Doctrine::ATTR_LISTENER, $this->listener);
         }
         if ($this->driverName !== 'main') {
-            $this->export       = $this->connection->export;
-            $this->transaction  = $this->connection->transaction;
-            $this->dataDict     = $this->connection->dataDict;
-            $this->expr         = $this->connection->expression;
-            $this->sequence     = $this->connection->sequence;
-            $this->import       = $this->connection->import;
+
+            if (isset($module)) {
+                switch($module) {
+                    case 'Export':
+                    case 'Import':
+                    case 'Transaction':
+                    case 'Sequence':
+                    case 'Expression':
+                        $lower = strtolower($module);
+    
+                        $this->$lower = $this->connection->$lower;
+                    break;
+                    case 'DataDict':
+                        $this->dataDict = $this->connection->dataDict;
+                    break;
+                }
+            }
         }
         $this->unitOfWork = $this->connection->unitOfWork;
         $this->connection->setListener(new Doctrine_EventListener());

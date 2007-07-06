@@ -3,6 +3,13 @@ class GroupTest
 {
     protected $_testCases = array();
 
+    public function __construct()
+    {
+        if (extension_loaded('xdebug')) {
+            //xdebug_start_code_coverage(XDEBUG_CC_DEAD_CODE | XDEBUG_CC_UNUSED);
+        }
+    }
+
     public function addTestCase(UnitTestCase $testCase)
     {
         $this->_testCases[] = $testCase;
