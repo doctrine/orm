@@ -95,10 +95,6 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     {
         $this->_table->setOption('inheritanceMap', $map);
     }
-    public function setEnumValues($column, $values)
-    {
-        $this->_table->setEnumValues($column, $values);
-    }
     /**
      * attribute
      * sets or retrieves an option
