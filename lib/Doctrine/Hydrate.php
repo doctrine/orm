@@ -881,11 +881,13 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             foreach ($maps as $map) {
                 $b = array();
                 foreach ($map as $field => $value) {
+                    $identifier = $this->_conn->quoteIdentifier($tableAlias . $field);
+
                     if ($index > 0) {
-                        $b[] = '(' . $tableAlias  . $field . ' = ' . $value
-                             . ' OR ' . $tableAlias . $field . ' IS NULL)';
+                        $b[] = '(' . $identifier . ' = ' . $value
+                             . ' OR ' . $identifier . ' IS NULL)';
                     } else {
-                        $b[] = $tableAlias . $field . ' = ' . $value;
+                        $b[] = $identifier . ' = ' . $value;
                     }
                 }
 

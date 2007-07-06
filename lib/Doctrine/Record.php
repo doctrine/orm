@@ -578,17 +578,12 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         } elseif (is_string($state)) {
             $upper = strtoupper($state);
-            switch ($upper) {
-                case 'DIRTY':
-                case 'CLEAN':
-                case 'TDIRTY':
-                case 'TCLEAN':
-                case 'PROXY':
-                case 'DELETED':
-                    $this->_state = constant('Doctrine_Record::STATE_' . $upper);
-                    break;
-                default:
-                    $err = true;
+            
+            $const = 'Doctrine_Record::STATE_' . $upper;
+            if (defined($const)) {
+                $this->_state = constant($const);  
+            } else {
+                $err = true;
             }
         }
 

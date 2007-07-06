@@ -388,7 +388,7 @@ final class Doctrine
      */
     public static function getPath()
     {
-        if (! self::$path) {
+        if ( ! self::$path) {
             self::$path = dirname(__FILE__);
         }
         return self::$path;

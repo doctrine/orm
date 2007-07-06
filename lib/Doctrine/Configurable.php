@@ -62,6 +62,16 @@ abstract class Doctrine_Configurable extends Doctrine_Object
      */
     public function setAttribute($attribute,$value)
     {
+        if (is_string($attribute)) {
+            $upper = strtoupper($attribute);
+            
+            $const = 'Doctrine::ATTR_' . $attribute;
+            if (defined($const)) {
+                $this->_state = constant($const);
+            } else {
+                throw new Doctrine_Exception('Unknown attribute ' . $attribute);
+            }
+        }
         switch ($attribute) {
             case Doctrine::ATTR_FETCHMODE:
                 if ($value < 0) {

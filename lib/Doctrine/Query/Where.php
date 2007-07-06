@@ -42,6 +42,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
     public function load($where)
     {
         $where = trim($where);
+        $conn  = $this->query->getConnection();
 
         $e     = Doctrine_Tokenizer::sqlExplode($where);
 
@@ -107,9 +108,9 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                         }
                         $where = array();
                         foreach ($values as $value) {
-                            $where[] = $alias . '.' . $relation->getLocal() 
-                                     . ' IN (SELECT '.$relation->getForeign()
-                                     . ' FROM ' . $relation->getTable()->getTableName()
+                            $where[] = $conn->quoteIdentifier($alias . '.' . $relation->getLocal())
+                                     . ' IN (SELECT ' . $conn->quoteIdentifier($relation->getForeign())
+                                     . ' FROM ' . $conn->quoteIdentifier($relation->getTable()->getTableName())
                                      . ' WHERE ' . $field . $operator . $value . ')';
                         }
                         $where = implode(' AND ', $where);
@@ -126,7 +127,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 $field = $table->getColumnName($field);
                 // check if value is enumerated value
                 $enumIndex = $table->enumIndex($field, trim($value, "'"));
-                     
+
                 if (substr($value, 0, 1) == '(') {
                     // trim brackets
                     $trimmed   = Doctrine_Tokenizer::bracketTrim($value);
@@ -180,7 +181,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                     default:
 
                         if ($this->query->getType() === Doctrine_Query::SELECT) {
-                            $fieldname = $alias ? $alias . '.' . $field : $field;
+                            $fieldname = $alias ? $conn->quoteIdentifier($alias . '.' . $field) : $field;
                         } else {
                             $fieldname = $field;
                         }
