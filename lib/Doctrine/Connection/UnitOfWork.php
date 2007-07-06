@@ -221,8 +221,12 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $event = new Doctrine_Event($this, Doctrine_Event::RECORD_DELETE);
 
         $record->preDelete($event);
+        
+        $record->state(Doctrine_Record::STATE_LOCKED);
 
         $this->deleteComposites($record);
+        
+        $record->state(Doctrine_Record::STATE_TDIRTY);
 
         if ( ! $event->skipOperation) {
             $this->conn->transaction->addDelete($record);
@@ -329,7 +333,12 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 case Doctrine_Relation::ONE_COMPOSITE:
                 case Doctrine_Relation::MANY_COMPOSITE:
                     $obj = $record->get($fk->getAlias());
-                    $obj->delete($this->conn);
+                    if ( $obj instanceof Doctrine_Record && 
+                           $obj->state() != Doctrine_Record::STATE_LOCKED)  {
+                            
+                            $obj->delete($this->conn);
+                           	
+                    }
                     break;
             }
         }

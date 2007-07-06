@@ -280,7 +280,8 @@ $test->addTestCase(new Doctrine_NewCore_TestCase());
 
 $test->addTestCase(new Doctrine_Record_State_TestCase());
 
-
+// This test used to segfault php because of infinite recursion in Connection/UnitOfWork
+$test->addTestCase(new Doctrine_Record_Lock_TestCase());
 
 $test->addTestCase(new Doctrine_Tokenizer_TestCase());
 

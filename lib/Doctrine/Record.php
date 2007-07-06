@@ -65,10 +65,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     const STATE_TCLEAN      = 5;
     /**
-     * DELETED STATE
-     * a Doctrine_Record turns into deleted state when it is deleted
+     * LOCKED STATE
+     * a Doctrine_Record is temporarily locked during deletes
      */
-    const STATE_DELETED     = 6;
+    const STATE_LOCKED     = 6;
     /**
      * @var object Doctrine_Table $_table   the factory that created this data access object
      */
