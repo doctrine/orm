@@ -907,7 +907,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         return $str;
     }
     public function fetchArray($params = array()) {
-        return $this->execute($params, Doctrine::HYDRATE_ARRAY);
+        return $this->execute($params, self::HYDRATE_ARRAY);
     }
     /**
      * parseData
