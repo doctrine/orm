@@ -50,6 +50,13 @@ class Doctrine_Node implements IteratorAggregate
      * @param array     $iteratorOptions
      */
     protected $iteratorOptions;
+    
+    /**
+     * The tree to which the node belongs.
+     *
+     * @var unknown_type
+     */
+    protected $_tree;
 
     /**
      * contructor, creates node with reference to record and any options
@@ -61,6 +68,7 @@ class Doctrine_Node implements IteratorAggregate
     {
         $this->record = $record;
         $this->options = $options;
+        $this->_tree = $this->record->getTable()->getTree();
     }
 
     /**

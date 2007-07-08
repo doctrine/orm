@@ -1012,6 +1012,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     } else {
                         $parent   = $map['parent'];
                         $relation = $map['relation'];
+                        
+                        if (!isset($prev[$parent])) {
+                            break;
+                        }
+                        
                         // check the type of the relation
                         if ( ! $relation->isOneToOne()) {
                             // initialize the collection
@@ -1082,6 +1087,10 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 $parent   = $this->_aliasMap[$alias]['parent'];
                 $relation = $this->_aliasMap[$alias]['relation'];
                 $componentAlias = $relation->getAlias();
+                
+                if (!isset($prev[$parent])) {
+                    break;
+                }
 
                 // check the type of the relation
                 if ( ! $relation->isOneToOne()) {
@@ -1153,6 +1162,10 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     }
                 } else {
                     $prev[$alias] = $coll->getLast();
+                }
+            } else {
+                if (isset($prev[$alias])) {
+                    unset($prev[$alias]);
                 }
             }
         }    	

@@ -190,7 +190,7 @@ class Doctrine_Query_OneToOneFetching_TestCase extends Doctrine_UnitTestCase
     {
         $query = new Doctrine_Query($this->connection);
         try {
-            $categories = $query->select("c.*, b.*, le.*, a.username, vr.title, vr.color, vr.icon")
+            $categories = $query->select("c.*, b.*, le.date, a.username, vr.title, vr.color, vr.icon")
                     ->from("QueryTest_Category c")
                     ->leftJoin("c.boards b")
                     ->leftJoin("b.lastEntry le")
@@ -204,19 +204,13 @@ class Doctrine_Query_OneToOneFetching_TestCase extends Doctrine_UnitTestCase
             
             // get the baord for inspection
             $board = $categories[0]['boards'][0];
-            
-            // lastentry should've 2 fields. one regular field, one relation.
-            $this->assertEqual(2, count($board['lastEntry']));
+
             $this->assertEqual(1234, (int)$board['lastEntry']['date']);
             $this->assertTrue(isset($board['lastEntry']['author']));
             
-            // author should've 2 fields. one regular field, one relation.
-            $this->assertEqual(2, count($board['lastEntry']['author']));
             $this->assertEqual('romanbb', $board['lastEntry']['author']['username']);
             $this->assertTrue(isset($board['lastEntry']['author']['visibleRank']));
             
-            // visibleRank should've 3 regular fields
-            $this->assertEqual(3, count($board['lastEntry']['author']['visibleRank']));
             $this->assertEqual('Freak', $board['lastEntry']['author']['visibleRank']['title']);
             $this->assertEqual('red', $board['lastEntry']['author']['visibleRank']['color']);
             $this->assertEqual('freak.png', $board['lastEntry']['author']['visibleRank']['icon']);
@@ -255,8 +249,8 @@ class Doctrine_Query_OneToOneFetching_TestCase extends Doctrine_UnitTestCase
 
             // get the board for inspection
             $tmpBoard = $categories[0]['boards'][0];
-
-            $this->assertTrue( ! isset($board['lastEntry']));
+            
+            $this->assertTrue( ! isset($tmpBoard['lastEntry']));
 
         } catch (Doctrine_Exception $e) {
             print $e;
