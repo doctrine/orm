@@ -315,6 +315,21 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         return $this;
     }
     /**
+     * getDqlPart
+     * returns the given DQL query part 
+     *
+     * @param string $queryPart     the name of the query part
+     * @return string   the DQL query part
+     */
+    public function getDqlPart($queryPart)
+    {
+    	if ( ! isset($this->_dqlParts[$queryPart])) {
+    	   throw new Doctrine_Query_Exception('Unknown query part ' . $queryPart);                                           	
+    	}
+
+        return $this->_dqlParts[$queryPart];
+    }
+    /**
      * getDql
      * returns the DQL query associated with this object
      *
@@ -509,7 +524,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      *
      * @return void
      */
-    public function processPendingSubqueries() 
+    public function processPendingSubqueries()
     {
         foreach ($this->pendingSubqueries as $value) {
             list($dql, $alias) = $value;
