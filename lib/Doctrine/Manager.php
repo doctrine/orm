@@ -120,7 +120,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_QUOTE_IDENTIFIER => false,
                         Doctrine::ATTR_SEQCOL_NAME      => 'id',
                         Doctrine::ATTR_PORTABILITY      => Doctrine::PORTABILITY_ALL,
-                        Doctrine::ATTR_EXPORT           => Doctrine::EXPORT_NONE,
+                        Doctrine::ATTR_EXPORT           => Doctrine::EXPORT_ALL,
                         Doctrine::ATTR_DECIMAL_PLACES   => 2,
                         );
             foreach ($attributes as $attribute => $value) {
