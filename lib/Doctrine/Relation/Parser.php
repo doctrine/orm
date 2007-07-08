@@ -212,6 +212,7 @@ class Doctrine_Relation_Parser
                 $def = $this->completeDefinition($def);
 
                 if (isset($def['localKey'])) {
+
                     $rel = new Doctrine_Relation_LocalKey($def);
                 } else {
                     $rel = new Doctrine_Relation_ForeignKey($def);
@@ -382,7 +383,8 @@ class Doctrine_Relation_Parser
                     $def['localKey'] = true;
                 }
             } else {
-                if ($def['local'] !== $this->_table->getIdentifier()) {
+                if ($def['local'] !== $this->_table->getIdentifier() && 
+                    $def['type'] == Doctrine_Relation::ONE) {
                     $def['localKey'] = true;
                 }
             }
