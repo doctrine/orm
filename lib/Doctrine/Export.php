@@ -1008,6 +1008,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 }
             }
         }
+        $sql = array_unique($sql);
         rsort($sql);
 
         return $sql;
