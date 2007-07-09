@@ -204,7 +204,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $record->postSave($event);
     }
     /**
-     * deletes this data access object and all the related composites
+     * deletes given record and all the related composites
      * this operation is isolated by a transaction
      *
      * this event can be listened by the onPreDelete and onDelete listeners
