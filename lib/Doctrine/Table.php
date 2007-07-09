@@ -51,10 +51,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     private $identifierType;
     /**
-     * @var string $query                               cached simple query
-     */
-    private $query;
-    /**
      * @var Doctrine_Connection $conn                   Doctrine_Connection object that created this table
      */
     private $conn;
@@ -70,17 +66,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @var array $columns                  an array of column definitions,
      *                                      keys as column names and values as column definitions
      *
-     *                                      the value array has three values:
+     *                                      the definition array has atleast the following values:
      *
-     *                                      the column type, eg. 'integer'
-     *                                      the column length, eg. 11
-     *                                      the column options/constraints/validators. eg array('notnull' => true)
+     *                                      -- type         the column type, eg. 'integer'
+     *                                      -- length       the column length, eg. 11
      *
-     *                                      so the full columns array might look something like the following:
-     *                                      array(
-     *                                             'name' => array('string',  20, array('notnull' => true, 'default' => 'someone')),
-     *                                             'age'  => array('integer', 11, array('notnull' => true))
-     *                                              )
+     *                                      additional keys:
+     *                                      -- notnull      whether or not the column is marked as notnull
+     *                                      -- values       enum values
+     *                                      -- notblank     notblank validator + notnull constraint
+     *                                      ... many more
      */
     protected $columns          = array();
     /**
@@ -1132,27 +1127,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function setData(array $data)
     {
         $this->data = $data;
-    }
-    /**
-     * returns the maximum primary key value
-     *
-     * @return integer
-     */
-    final public function getMaxIdentifier()
-    {
-        $sql  = "SELECT MAX(".$this->getIdentifier().") FROM ".$this->getTableName();
-        $stmt = $this->conn->getDBH()->query($sql);
-        $data = $stmt->fetch(PDO::FETCH_NUM);
-        return isset($data[0])? $data[0] : 1;
-    }
-    /**
-     * returns simple cached query
-     *
-     * @return string
-     */
-    public function getQuery()
-    {
-        return $this->query;
     }
     /**
      * returns internal data, used by Doctrine_Record instances
