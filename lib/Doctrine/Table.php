@@ -59,10 +59,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     private $conn;
     /**
-     * @var string $name
-     */
-    private $name;
-    /**
      * @var array $identityMap                          first level cache
      */
     private $identityMap        = array();
