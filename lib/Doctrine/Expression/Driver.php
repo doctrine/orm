@@ -681,6 +681,6 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     	if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EXPR) {
             throw new Doctrine_Expression_Exception('Unknown expression ' . $m);
         }
-        return $m . '()';
+        return $m . '(' . implode(', ', $a) . ')';
     }
 }

@@ -186,7 +186,6 @@ class Doctrine_UnitTestCase extends UnitTestCase
 
             }
         }
-
         $this->conn->export->exportClasses($this->tables);
         /**
         foreach($this->tables as $name) {
