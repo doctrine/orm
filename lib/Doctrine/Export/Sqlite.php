@@ -179,15 +179,14 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
             $queryFields.= ', PRIMARY KEY('.implode(', ', array_values($options['primary'])).')';
         }
 
+        $name  = $this->conn->quoteIdentifier($name, true);
+        $query[] = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach ($options['indexes'] as $index => $definition) {
-                $queryFields .= ', ' . $this->getIndexDeclaration($index, $definition);
+                $query[] = $this->createIndexSql($name, $index, $definition);
             }
         }
-
-        $name  = $this->conn->quoteIdentifier($name, true);
-        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
-        
         return $query;
         
         

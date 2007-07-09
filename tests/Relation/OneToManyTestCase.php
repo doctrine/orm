@@ -34,7 +34,12 @@ class Doctrine_Relation_OneToMany_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareData()
     { }
-
+    public function prepareTables()
+    {
+        $this->tables = array('Entity', 'Phonenumber', 'Email', 'Policy', 'PolicyAsset');
+        
+        parent::prepareTables();
+    }
     public function testRelationParsing()
     {
         $table = $this->conn->getTable('Entity');
@@ -47,7 +52,7 @@ class Doctrine_Relation_OneToMany_TestCase extends Doctrine_UnitTestCase
 
         $this->assertTrue($rel instanceof Doctrine_Relation_LocalKey);
     }
-    
+
     public function testRelationParsing2()
     {
         $table = $this->conn->getTable('Phonenumber');
@@ -67,6 +72,19 @@ class Doctrine_Relation_OneToMany_TestCase extends Doctrine_UnitTestCase
     }
     public function testRelationSaving() 
     {
+        $p = new Policy();
+        $p->policy_number = '123';
+        
+        $a = new PolicyAsset();
+        $a->value = '123.13';
+
+        $p->PolicyAssets[] = $a;
+        $p->save();
+        
+        $this->assertEqual($a->policy_number, '123');
+    }
+    public function testRelationSaving2()
+    {
         $e = new Entity();
         $e->name = 'test';
         $e->save();
@@ -79,8 +97,8 @@ class Doctrine_Relation_OneToMany_TestCase extends Doctrine_UnitTestCase
 }
 class Policy extends Doctrine_Record 
 {
-    public function setTableDefinition(){
-        $this->setTableName('policies');
+    public function setTableDefinition()
+    {
         $this->hasColumn('policy_number', 'integer', 11, array('unique' => true));
     }
   
@@ -88,22 +106,21 @@ class Policy extends Doctrine_Record
     {
         $this->hasMany('PolicyAsset as PolicyAssets', array('local' => 'policy_number',
                                                             'foreign' => 'policy_number'));
-        $this->index('policy_number_index', array('fields' => 'policy_number'));
+        $this->index('policy_number_index', array('fields' => array('policy_number')));
     }
 }
 class PolicyAsset extends Doctrine_Record 
 {
     public function setTableDefinition()
     {
-        $this->setTableName('policy_assets');
         $this->hasColumn('policy_number', 'integer', 11);
         $this->hasColumn('value', 'float', 10, array ('notblank' => true,));
     }
 
-    public function setUp(){
+    public function setUp()
+    {
         $this->hasOne('Policy', array('foreign' => 'policy_number', 
                                       'local' => 'policy_number'));
-        $this->index('policy_number_index', array('fields' => 'policy_number'));
-        $this->index('vehicle_code_index', array('fields' => 'vehicle_code'));
+        $this->index('policy_number_index', array('fields' => array('policy_number')));
     }
 }
