@@ -324,7 +324,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function getDqlPart($queryPart)
     {
     	if ( ! isset($this->_dqlParts[$queryPart])) {
-    	   throw new Doctrine_Query_Exception('Unknown query part ' . $queryPart);                                           	
+    	   throw new Doctrine_Query_Exception('Unknown query part ' . $queryPart);
     	}
 
         return $this->_dqlParts[$queryPart];
@@ -811,20 +811,19 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     case 'mysql':
                         // mysql doesn't support LIMIT in subqueries
                         $list     = $this->_conn->execute($subquery, $params)->fetchAll(Doctrine::FETCH_COLUMN);
-                        $subquery = $this->inConditionFromArray($list);
+                        $subquery = implode(', ', array_map(array($this->_conn, 'quote'), $list));
                         break;
                     case 'pgsql':
                         // pgsql needs special nested LIMIT subquery
-                        $subquery = ' IN (SELECT doctrine_subquery_alias.' . $table->getIdentifier(). ' FROM (' . $subquery . ') AS doctrine_subquery_alias)';
+                        $subquery = 'SELECT doctrine_subquery_alias.' . $table->getIdentifier(). ' FROM (' . $subquery . ') AS doctrine_subquery_alias';
                         break;
                 }
 
                 $field = $this->getTableAlias($rootAlias) . '.' . $table->getIdentifier();
 
                 // only append the subquery if it actually contains something
-                if ($subquery !== '')
-                {
-                    array_unshift($this->parts['where'], $this->_conn->quoteIdentifier($field) . $subquery);
+                if ($subquery !== '') {
+                    array_unshift($this->parts['where'], $this->_conn->quoteIdentifier($field) . ' IN (' . $subquery . ')');
                 }
 
                 $modifyLimit = false;
@@ -1274,40 +1273,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $this->_aliasMap[$componentAlias];
     }
-    
-    /**
-     * inConditionFromArray
-     * 
-     * explode array into quoted array (quick and dirty)
-     * 
-     * @param array $values
-     * 
-     * @return mixed - SQL list of conditions passed, or false if empty
-     */
-    //TODO: check column type instead of first array value?
-    //TODO: is there cleaner value quoting as part of Doctrine somewhere?
-    public function inConditionFromArray(array $values)
-    {
-        if (empty($values))
-            return false;
-        
-        $list_values = ' IN (';
-        
-        // is first value a string? then assume column is.
-        if (is_string($values[0]))
-        {
-            foreach ($values as &$value)
-            {
-                $value = '\'' . $value . '\'';
-            }
-        }
-        
-        $list_values .= implode(', ', $values);
-        $list_values .= ')';
-        
-        return $list_values;
-    }
-    
+
     /**
      * loadRoot
      *

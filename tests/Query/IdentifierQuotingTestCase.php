@@ -52,7 +52,7 @@ class Doctrine_Query_IdentifierQuoting_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($q->getQuery(), 'SELECT MAX("e.id") AS "e__0", MIN("e.name") AS "e__1" FROM "entity" "e" WHERE ("e.type" = 0)');
 
     }
-    
+
     public function testQuerySupportsIdentifierQuotingInWherePart()
     {
         $q = new Doctrine_Query();
@@ -60,6 +60,15 @@ class Doctrine_Query_IdentifierQuoting_TestCase extends Doctrine_UnitTestCase
         $q->parseQuery('SELECT u.name FROM User u WHERE u.id = 3');
 
         $this->assertEqual($q->getQuery(), 'SELECT "e.id" AS "e__id", "e.name" AS "e__name" FROM "entity" "e" WHERE "e.id" = 3 AND ("e.type" = 0)');
+    }
+
+    public function testQuerySupportsIdentifierQuotingWorksWithinFunctions()
+    {
+        $q = new Doctrine_Query();
+
+        $q->parseQuery("SELECT u.name FROM User u WHERE TRIM(u.name) = 'zYne'");
+
+        $this->assertEqual($q->getQuery(), 'SELECT "e.id" AS "e__id", "e.name" AS "e__name" FROM "entity" "e" WHERE TRIM(u.name) = 3 AND ("e.type" = 0)');
     }
 
     public function testQuerySupportsIdentifierQuotingWithJoins() 

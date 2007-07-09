@@ -42,7 +42,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
 
         parent::prepareTables();
     }
-    /**
+
     public function testLimitWithOneToOneLeftJoin()
     {
         $q = new Doctrine_Query();
@@ -62,7 +62,7 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users->count(), 5);
         $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e2.id AS e2__id, e2.address AS e2__address FROM entity e INNER JOIN email e2 ON e.email_id = e2.id WHERE (e.type = 0) LIMIT 5");
     }
-    */
+
     public function testLimitWithOneToManyLeftJoin() 
     {
         $q = new Doctrine_Query();
