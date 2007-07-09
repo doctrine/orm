@@ -43,7 +43,7 @@ if ($revision > $cacheRev) {
 
 if ($cache->begin()) { 
 
-    $tool = new DocTool('docs/en/root.txt');
+    $tool = new DocTool('docs/en.txt');
     // $tool->setOption('clean-url', true);
     
     $supportedLangs = array('en', 'fi');

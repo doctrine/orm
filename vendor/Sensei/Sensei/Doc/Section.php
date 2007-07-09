@@ -314,6 +314,10 @@ class Sensei_Doc_Section implements Countable
         $file = file($path . DIRECTORY_SEPARATOR . $filename);
         $current = $this;
         
+        if ($this->isRoot()) {
+            $path .= DIRECTORY_SEPARATOR . basename($filename, '.txt');
+        }
+        
         foreach ($file as $lineNum => $line) {
             
             // Checks if the line is a heading
