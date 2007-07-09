@@ -6,13 +6,11 @@ class Cache
     protected $_ext;
     protected $_page;
     protected $_file; 
-    protected $_timeToLive;
 
-    public function __construct($dir, $ext, $timeToLive)
+    public function __construct($dir, $ext)
     {
         $this->_dir = $dir;
         $this->_ext = $ext;
-        $this->_timeToLive = $timeToLive;
         
         $this->_page = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $this->_file = $this->_dir . md5($this->_page) . '.' . $this->_ext;  
@@ -59,10 +57,10 @@ class Cache
      */    
     public function clear()
     {
-        if ($handle = opendir($this->dir)) {
+        if ($handle = opendir($this->_dir)) {
             while ($file = readdir($handle)) {
                 if ($file !== '.' && $file !== '..') {
-                    unlink($this->dir . '/' . $file);
+                    @unlink($this->_dir . '/' . $file);
                 }
             }
             closedir($handle);
@@ -72,13 +70,12 @@ class Cache
     /**
      * This method is used to check whether the cache file is valid to use.
      * 
-     * Currently it compares the modification date of the cache file to the
-     * time-to-live value.
+     * Currently it assumes that the cache file is always valid.
      * 
      * @return True, if cache file is valid; false otherwise.
      */
     protected function isValid()
     {
-        return (time() - filemtime($this->_file)) < $this->_timeToLive;
+        return true;
     }
 }

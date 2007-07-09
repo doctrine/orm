@@ -11,18 +11,35 @@ require_once('Cache.php');
 
 spl_autoload_register(array('Sensei', 'autoload'));
 
-// Executes the svn info command for the current directory and parses the last
-// changed date in order to calculate the time-to-live value for cache.
-$timeToLive = 0;
+// Executes the 'svn info' command for the current directory and parses the last
+// changed revision.
+$revision = 0;
 exec('svn info .', $output);
 foreach ($output as $line) {
-    if (preg_match('/^Last Changed Date: (.*) \(.*\)$/', $line, $matches)) {
-        $timeToLive = time() - strtotime($matches[1]);
+    if (preg_match('/^Last Changed Rev: ([0-9]+)$/', $line, $matches)) {
+        $revision = $matches[1];
         break;
     }
 }
 
-$cache = new Cache('./cache/', 'cache', $timeToLive);
+$cacheDir = './cache/';
+$cacheRevFile = $cacheDir . 'revision.txt';
+$cacheRev = 0;
+
+$cache = new Cache($cacheDir, 'cache');
+
+// Checks the revision cache files were created from
+if (file_exists($cacheRevFile)) {
+    $cacheRev = (int) file_get_contents($cacheRevFile);
+}
+
+// Empties the cache directory and saves the current revision to a file, if SVN
+// revision is greater than cache revision
+if ($revision > $cacheRev) {
+     $cache->clear();
+     @file_put_contents($cacheRevFile, $revision);
+}
+
 
 if ($cache->begin()) { 
 
