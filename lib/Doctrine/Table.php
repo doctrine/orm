@@ -141,19 +141,19 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *      -- versioning
      */
     protected $options          = array('name'           => null,
-        'tableName'      => null,
-        'sequenceName'   => null,
-        'inheritanceMap' => array(),
-        'enumMap'        => array(),
-        'engine'         => null,
-        'charset'        => null,
-        'collation'      => null,
-        'treeImpl'       => null,
-        'treeOptions'    => null,
-        'indexes'        => array(),
-        'parents'        => array(),
-        'versioning'     => null,
-    );
+                                        'tableName'      => null,
+                                        'sequenceName'   => null,
+                                        'inheritanceMap' => array(),
+                                        'enumMap'        => array(),
+                                        'engine'         => null,
+                                        'charset'        => null,
+                                        'collation'      => null,
+                                        'treeImpl'       => null,
+                                        'treeOptions'    => null,
+                                        'indexes'        => array(),
+                                        'parents'        => array(),
+                                        'versioning'     => null,
+                                        );
     /**
      * @var Doctrine_Tree $tree                 tree object associated with this table
      */
