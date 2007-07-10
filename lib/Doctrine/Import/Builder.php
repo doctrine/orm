@@ -116,7 +116,7 @@ END;
      */
     public function buildDefinition($table, $tableColumns)
     {
-        $columns   = array(0 => str_repeat(' ', 8) . '$this->setTableName(\'$table\');');
+        $columns   = array(0 => str_repeat(' ', 8) . '$this->setTableName(\''. $table .'\');');
         $i = 1;
 
         foreach ($tableColumns as $name => $column) {
@@ -169,6 +169,10 @@ END;
 
     public function buildRecord($table, $tableColumns, $className='', $fileName='')
     {
+        if (empty($className)) {
+            $className = Doctrine::classify($table);
+        }
+        
         if (empty($fileName)) {
             if (empty($this->path)) {
                 $errMsg = 'No build target directory set.';
@@ -185,10 +189,6 @@ END;
         }
         
         $created   = date('l dS \of F Y h:i:s A');
-        
-        if (empty($className)) {
-            $className = Doctrine::classify($table);
-        }
         
         $content = sprintf(self::$tpl, $created, $className, 
                           $this->buildDefinition($table, $tableColumns));
