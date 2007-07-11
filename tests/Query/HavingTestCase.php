@@ -54,7 +54,6 @@ class Doctrine_Query_Having_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
 
         $q->parseQuery("SELECT CONCAT(u.name, u.loginname) name FROM User u LEFT JOIN u.Phonenumber p HAVING name = 'xx'");
-
     }
 
 }

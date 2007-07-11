@@ -37,17 +37,26 @@ class Doctrine_Search
     public function __construct(array $options)
     {
         $this->_options = array_merge($this->_options, $options);
+        
+        if ( ! isset($this->_options['analyzer'])) {
+            $this->_options['analyzer'] = new Doctrine_Search_Analyzer_Standard();
+        }
     }
 
     public function getOption($option)
     {
         if (isset($this->_options[$option])) {
-            return $this->_option[$option];
+            return $this->_options[$option];
         }
         
         return null;
     }
     
+    public function analyze($text)
+    {
+        return $this->_options['analyzer']->analyze($text);	
+    }
+
     public function setOption($option, $value)
     {
         $this->_options[$option] = $value;

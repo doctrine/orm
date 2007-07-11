@@ -33,8 +33,8 @@ class Doctrine_AuditLog
 {
     protected $_options = array(
                             'className'     => '%CLASS%Version',
-                            'deleteTrigger' => '%TABLE%_ddt',
-                            'updateTrigger' => '%TABLE%_dut',
+                            'deleteTrigger' => '%TABLE%_ddtr',
+                            'updateTrigger' => '%TABLE%_dutr',
                             'versionTable'  => '%TABLE%_dvt',
                             'versionColumn'    => 'version',
                             );

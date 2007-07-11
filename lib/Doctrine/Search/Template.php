@@ -48,10 +48,10 @@ class Doctrine_Search_Template extends Doctrine_Template
         $this->_search->setOption('className', $name);
 
         foreach ((array) $id as $column) {
-            $foreign[] = strtolower($name . '_' . $column);
+            $foreign[] = strtolower($this->_table->getComponentName() . '_' . $column);
         }
 
-        $foreign = (count($foreign) > 1) ? array_keys($foreign) : key($foreign);
+        $foreign = (count($foreign) > 1) ? $foreign : current($foreign);
 
         $this->hasMany($name, array('local' => $id, 'foreign' => $foreign));
 

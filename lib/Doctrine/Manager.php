@@ -110,6 +110,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_CACHE            => null,
                         Doctrine::ATTR_LOAD_REFERENCES  => true,
                         Doctrine::ATTR_LISTENER         => new Doctrine_EventListener(),
+                        Doctrine::ATTR_RECORD_LISTENER  => new Doctrine_Record_Listener(),
                         Doctrine::ATTR_LOCKMODE         => 1,
                         Doctrine::ATTR_VLD              => false,
                         Doctrine::ATTR_AUTO_LENGTH_VLD  => true,

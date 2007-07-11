@@ -193,6 +193,7 @@ final class Doctrine
     const ATTR_CACHE                = 150;
     const ATTR_CACHE_LIFESPAN       = 151;
     const ATTR_LOAD_REFERENCES      = 153;
+    const ATTR_RECORD_LISTENER      = 154;
 
     /**
      * LIMIT CONSTANTS

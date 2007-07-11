@@ -40,7 +40,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function addListener($listener, $name = null)
     {
-        $this->_table->addListener($listener, $name = null);
+        $this->_table->addRecordListener($listener, $name = null);
 
         return $this;
     }
@@ -51,7 +51,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function getListener()
     {
-        return $this->_table->getListener();
+        return $this->_table->getRecordListener();
     }
     /**
      * setListener
@@ -61,7 +61,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function setListener($listener)
     {
-        $this->_table->setListener($listener);
+        $this->_table->setRecordListener($listener);
 
         return $this;
     }

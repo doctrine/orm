@@ -181,9 +181,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function save(Doctrine_Record $record)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_SAVE);
+        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_SAVE);
 
         $record->preSave($event);
+
+        $record->getTable()->getRecordListener()->preSave($event);
 
         if ( ! $event->skipOperation) {
             switch ($record->state()) {
@@ -201,6 +203,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
         }
 
+        $record->getTable()->getRecordListener()->postSave($event);
+        
         $record->postSave($event);
     }
     /**
@@ -218,10 +222,12 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }
         $this->conn->beginTransaction();
 
-        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_DELETE);
+        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_DELETE);
 
         $record->preDelete($event);
         
+        $record->getTable()->getRecordListener()->preDelete($event);
+
         $record->state(Doctrine_Record::STATE_LOCKED);
 
         $this->deleteComposites($record);
@@ -233,6 +239,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
             $record->state(Doctrine_Record::STATE_TCLEAN);
         }
+        
+        $record->getTable()->getRecordListener()->postDelete($event);
+
         $record->postDelete($event);
 
         $this->conn->commit();
@@ -382,9 +391,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function update(Doctrine_Record $record)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_UPDATE);
+        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_UPDATE);
         
         $record->preUpdate($event);
+
+        $record->getTable()->getRecordListener()->preUpdate($event);
 
         if ( ! $event->skipOperation) {
             $array = $record->getPrepared();
@@ -430,6 +441,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     
             $record->assignIdentifier(true);
         }
+        
+        $record->getTable()->getRecordListener()->postUpdate($event);
+
         $record->postUpdate($event);
 
         return true;
@@ -443,10 +457,12 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     public function insert(Doctrine_Record $record)
     {
          // listen the onPreInsert event
-        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_INSERT);
+        $event = new Doctrine_Event($record, Doctrine_Event::RECORD_INSERT);
 
         $record->preInsert($event);
         
+        $record->getTable()->getRecordListener()->preInsert($event);
+
         if ( ! $event->skipOperation) {
             $array = $record->getPrepared();
     
@@ -487,6 +503,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
         }
         $record->getTable()->addRecord($record);
+
+        $record->getTable()->getRecordListener()->postInsert($event);
 
         $record->postInsert($event);
 

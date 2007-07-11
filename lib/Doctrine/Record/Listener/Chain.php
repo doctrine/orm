@@ -33,7 +33,7 @@ Doctrine::autoload('Doctrine_Access');
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Record_Listener_Chain extends Doctrine_Access implements Doctrine_EventListener_Interface
+class Doctrine_Record_Listener_Chain extends Doctrine_Access implements Doctrine_Record_Listener_Interface
 {
     /**
      * @var array $listeners        an array containing all listeners
@@ -49,10 +49,10 @@ class Doctrine_Record_Listener_Chain extends Doctrine_Access implements Doctrine
      */
     public function add($listener, $name = null)
     {
-        if ( ! ($listener instanceof Doctrine_EventListener_Interface) &&
+        if ( ! ($listener instanceof Doctrine_Record_Listener_Interface) &&
              ! ($listener instanceof Doctrine_Overloadable)) {
             
-            throw new Doctrine_EventListener_Exception("Couldn't add eventlistener. EventListeners should implement either Doctrine_EventListener_Interface or Doctrine_Overloadable");
+            throw new Doctrine_EventListener_Exception("Couldn't add eventlistener. Record listeners should implement either Doctrine_EventListener_Interface or Doctrine_Overloadable");
         }
         if ($name === null) {
             $this->_listeners[] = $listener;

@@ -1238,7 +1238,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     }
 
                 } else {
-
+                                  
                     $queryPart = $join . $foreignSql
                                . ' ON ' 
                                . $this->_conn->quoteIdentifier($localAlias . '.' . $relation->getLocal())

@@ -20,55 +20,25 @@
  */
 
 /**
- * Doctrine_Search_Listener
+ * Doctrine_Import_Builder_TestCase
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @version     $Revision$
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
+ * @version     $Revision$
  */
-class Doctrine_Search_Listener extends Doctrine_Record_Listener 
+class Doctrine_Import_Builder_TestCase extends Doctrine_UnitTestCase 
 {
-    protected $_search;
-
-    public function __construct(Doctrine_Search $search)
+    public function testBuildingOfRecord()
     {
-        $this->_search = $search;
-    }
+        $table = $this->conn->getTable('Phonenumber');
+        
+        $builder = new Doctrine_Import_Builder();
+        
+        $rel = $builder->buildRelationDefinition($table->getRelations());
 
-    public function preUpdate(Doctrine_Event $event)
-    {
-    }
-
-    public function postUpdate(Doctrine_Event $event)
-    {
-
-    }
-    public function postInsert(Doctrine_Event $event)
-    {
-    	$fields = $this->_search->getOption('fields');
-        $class  = $this->_search->getOption('className');
-        $record = $event->getInvoker();
-        $name   = $record->getTable()->getComponentName();
-
-        foreach ($fields as $field) {
-            $data  = $record->get($field);
-
-            $terms = $this->_search->analyze($data);
-
-            foreach ($terms as $pos => $term) {
-                $index = new $class();
-
-                $index->keyword = $term;
-                $index->position = $pos;
-                $index->field = $field;
-                $index->$name = $record;
-                
-                $index->save();
-            }
-        }
     }
 }

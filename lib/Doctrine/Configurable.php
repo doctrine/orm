@@ -97,12 +97,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
                 }
                 break;
             case Doctrine::ATTR_CREATE_TABLES:
-                    $attribute = Doctrine::ATTR_EXPORT;
-                if ($value) {
-                    $value = Doctrine::EXPORT_TABLES;
-                } else {
-                    $value = Doctrine::EXPORT_NONE;
-                }
+                    throw new Doctrine_Exception("ATTR_CREATE_TABLES has been deprecated. See exporting in the first chapter of the manual.");
                 break;
             case Doctrine::ATTR_ACCESSORS:
                     throw new Doctrine_Exception("Get / Set filtering is deprecated (slowed down Doctrine too much)."); 
@@ -141,6 +136,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
             case Doctrine::ATTR_EXPORT:
             case Doctrine::ATTR_DECIMAL_PLACES:
             case Doctrine::ATTR_LOAD_REFERENCES:
+            case Doctrine::ATTR_RECORD_LISTENER:
 
                 break;
             case Doctrine::ATTR_SEQCOL_NAME:
@@ -188,12 +184,59 @@ abstract class Doctrine_Configurable extends Doctrine_Object
         return $this->setListener($listener);
     }
     /**
+     * addRecordListener
+     *
+     * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return mixed        this object
+     */
+    public function addRecordListener($listener, $name = null)
+    {
+        if ( ! isset($this->attributes[Doctrine::ATTR_RECORD_LISTENER]) ||
+             ! ($this->attributes[Doctrine::ATTR_LISTENER] instanceof Doctrine_Record_Listener_Chain)) {
+            
+            $this->attributes[Doctrine::ATTR_RECORD_LISTENER] = new Doctrine_Record_Listener_Chain();
+        }
+        $this->attributes[Doctrine::ATTR_RECORD_LISTENER]->add($listener, $name);
+
+        return $this;
+    }
+    /**
+     * getListener
+     *
+     * @return Doctrine_EventListener_Interface|Doctrine_Overloadable
+     */
+    public function getRecordListener()
+    {
+        if ( ! isset($this->attributes[Doctrine::ATTR_RECORD_LISTENER])) {
+            if (isset($this->parent)) {
+                return $this->parent->getRecordListener();
+            }
+            return null;
+        }
+        return $this->attributes[Doctrine::ATTR_RECORD_LISTENER];
+    }
+    /**
+     * setListener
+     *
+     * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
+     * @return Doctrine_Configurable        this object
+     */
+    public function setRecordListener($listener)
+    {
+        if ( ! ($listener instanceof Doctrine_Record_Listener_Interface)
+            && ! ($listener instanceof Doctrine_Overloadable)
+        ) {
+            throw new Doctrine_Exception("Couldn't set eventlistener. Record listeners should implement either Doctrine_Record_Listener_Interface or Doctrine_Overloadable");
+        }
+        $this->attributes[Doctrine::ATTR_RECORD_LISTENER] = $listener;
+
+        return $this;
+    }
+    /**
      * addListener
      *
      * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
-     * @return Doctrine_Connection_Informix|Doctrine_Connection_Mssql|Doctrine_Connection_Oracle|
-     *         Doctrine_Connection_Db2|Doctrine_Connection_Firebird|Doctrine_Connection_Common|
-     *         Doctrine_Manager|Doctrine_Connection|Doctrine_Table
+     * @return mixed        this object
      */
     public function addListener($listener, $name = null)
     {

@@ -30,7 +30,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Relation
+abstract class Doctrine_Relation implements ArrayAccess
 {
     /**
      * RELATION CONSTANTS
@@ -156,6 +156,32 @@ abstract class Doctrine_Relation
     public function isEqual()
     {
         return $this->definition['equal'];
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->definition[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        if (isset($this->definition[$offset])) {
+            return $this->definition[$offset];
+        }
+        
+        return null;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        if (isset($this->definition[$offset])) {
+            $this->definition[$offset] = $value;
+        }
+    }
+
+    public function offsetUnset($offset)
+    {
+        $this->definition[$offset] = false;
     }
     /**
      * toArray
