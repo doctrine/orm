@@ -147,7 +147,7 @@ class Doctrine_AuditLog
 
         return $q->from($className)
                  ->where($where)
-                 ->execute($values, Doctrine::FETCH_ARRAY);
+                 ->execute($values, Doctrine_HYDRATE::HYDRATE_ARRAY);
     }
     public function createVersionTable()
     {

@@ -192,7 +192,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
     public function addRecordListener($listener, $name = null)
     {
         if ( ! isset($this->attributes[Doctrine::ATTR_RECORD_LISTENER]) ||
-             ! ($this->attributes[Doctrine::ATTR_LISTENER] instanceof Doctrine_Record_Listener_Chain)) {
+             ! ($this->attributes[Doctrine::ATTR_RECORD_LISTENER] instanceof Doctrine_Record_Listener_Chain)) {
             
             $this->attributes[Doctrine::ATTR_RECORD_LISTENER] = new Doctrine_Record_Listener_Chain();
         }
