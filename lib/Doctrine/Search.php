@@ -32,7 +32,29 @@
  */
 class Doctrine_Search
 {
-    public function buildDefinition(Doctrine_Record $record)
+    protected $_options = array('generateFiles' => true);
+    
+    public function __construct(array $options)
+    {
+        $this->_options = array_merge($this->_options, $options);
+    }
+
+    public function getOption($option)
+    {
+        if (isset($this->_options[$option])) {
+            return $this->_option[$option];
+        }
+        
+        return null;
+    }
+    
+    public function setOption($option, $value)
+    {
+        $this->_options[$option] = $value;
+
+        return $this;
+    }
+    public function buildDefinition(Doctrine_Table $table)
     {
 
         $columns = array('keyword'  => array('type'    => 'string',
@@ -44,15 +66,15 @@ class Doctrine_Search
                          'position' => array('type'    => 'integer',
                                              'length'  => 8));
 
-        $id = $record->getTable()->getIdentifier();
-        $name = $record->getTable()->getComponentName();
+        $id = $table->getIdentifier();
+        $name = $table->getComponentName();
 
         $options = array('className' => $name . 'Index');
 
 
         $fk = array();
         foreach ((array) $id as $column) {
-            $def = $record->getTable()->getDefinitionOf($column);
+            $def = $table->getDefinitionOf($column);
 
             unset($def['autoincrement']);
             unset($def['sequence']);
@@ -77,18 +99,12 @@ class Doctrine_Search
 
         $def = $builder->buildDefinition($options, $columns, $relations);
     
+        if ( ! $this->_options['generateFiles']) {
+            eval($def);
+        }
+        /**
         print "<pre>";
-        print_r($def);
+        print_r(htmlentities($def));
+        */
     }
 }
-/**
-fields:
-[keyword] [field] [foreign_id] [position]
-
-
-fields:
-[keyword] [field] [match]
-
-example data:
-'orm' 'content' '1:36|2:23'
-*/

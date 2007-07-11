@@ -34,6 +34,12 @@ class Doctrine_Search_Analyzer_Standard implements Doctrine_Search_Analyzer_Inte
 {
     public function analyze($text)
     {
-    
+        $text = explode(' ', $text);
+        
+        foreach ($text as $i => $term) {
+            $text[$i] = strtolower(trim($term));
+        }
+
+        return $text;
     }
 }

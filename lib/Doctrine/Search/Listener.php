@@ -32,23 +32,37 @@
  */
 class Doctrine_Search_Listener extends Doctrine_Record_Listener 
 {
+    protected $_search;
+
+    public function __construct(Doctrine_Search $search)
+    {
+        $this->_search = $search;
+    }
+
     public function preUpdate(Doctrine_Event $event)
-    { 
-    
+    {
     }
 
     public function postUpdate(Doctrine_Event $event)
-    { 
-    
+    {
+
     }
 
     public function preInsert(Doctrine_Event $event)
-    { 
+    {
 
     }
 
     public function postInsert(Doctrine_Event $event)
-    { 
+    {
+    	$fields = $this->_search->getOption('fields');
         
+        foreach ($fields as $field) {
+            $terms = $this->_search->analyze($field);
+            
+            foreach ($terms as $term) {
+                                      	
+            }
+        }
     }
 }

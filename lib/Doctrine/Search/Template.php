@@ -32,10 +32,20 @@
  */
 class Doctrine_Search_Template extends Doctrine_Template
 {     
+    protected $_search;
+
+    public function __construct(array $options)
+    {
+        $this->_search = new Doctrine_Search($options);
+    }
     public function setUp()
     {
-        $id = $record->getTable()->getIdentifier();
-        $name = $record->getTable()->getComponentName() . 'Index';
+        $this->_search->buildDefinition($this->_table);
+
+        $id = $this->_table->getIdentifier();
+        $name = $this->_table->getComponentName() . 'Index';
+
+        $this->_search->setOption('className', $name);
 
         foreach ((array) $id as $column) {
             $foreign[] = strtolower($name . '_' . $column);
@@ -44,7 +54,7 @@ class Doctrine_Search_Template extends Doctrine_Template
         $foreign = (count($foreign) > 1) ? array_keys($foreign) : key($foreign);
 
         $this->hasMany($name, array('local' => $id, 'foreign' => $foreign));
-        
-        $this->addListener(new Doctrine_Search_Listener());
+
+        $this->addListener(new Doctrine_Search_Listener($this->_search));
     }
 }
