@@ -283,8 +283,7 @@ class Doctrine_Search_Analyzer_Standard implements Doctrine_Search_Analyzer_Inte
                     continue;
                 }
 
-                $pos = strpos($text, $term);
-                $ret[$pos] = $lower;
+                $ret[$i] = $lower;
             }
         }
         return $ret;

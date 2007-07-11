@@ -125,7 +125,7 @@ final class Doctrine
      */
     const ATTR_AUTOCOMMIT           = 0;
     const ATTR_PREFETCH             = 1;
-    const ATTR_TIMEOUT              = 2;
+    const ATTR_TIMEOUT              = 2; 
     const ATTR_ERRMODE              = 3;
     const ATTR_SERVER_VERSION       = 4;
     const ATTR_CLIENT_VERSION       = 5;
@@ -142,6 +142,7 @@ final class Doctrine
     const ATTR_DRIVER_NAME          = 16;
     const ATTR_STRINGIFY_FETCHES    = 17;
     const ATTR_MAX_COLUMN_LEN       = 18;
+
     /**
      * Doctrine constants
      */
@@ -194,6 +195,8 @@ final class Doctrine
     const ATTR_CACHE_LIFESPAN       = 151;
     const ATTR_LOAD_REFERENCES      = 153;
     const ATTR_RECORD_LISTENER      = 154;
+    const ATTR_THROW_EXCEPTIONS     = 155;
+
 
     /**
      * LIMIT CONSTANTS
@@ -354,10 +357,6 @@ final class Doctrine
      * constant for composite identifier
      */
     const IDENTIFIER_COMPOSITE      = 4;
-    
-    const ACCESSOR_BOTH = 0;
-    const ACCESSOR_SET  = 1;
-    const ACCESSOR_GET  = 2;
     /**
      * constructor
      */

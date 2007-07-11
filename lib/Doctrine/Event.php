@@ -39,6 +39,7 @@ class Doctrine_Event
     const CONN_PREPARE       = 3;
     const CONN_CONNECT       = 4;
     const CONN_CLOSE         = 5;
+    const CONN_ERROR         = 6;
 
     const STMT_EXECUTE       = 10;
     const STMT_FETCH         = 11;

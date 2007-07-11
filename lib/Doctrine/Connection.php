@@ -687,19 +687,24 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         $this->connect();
 
-        $event = new Doctrine_Event($this, Doctrine_Event::CONN_PREPARE, $statement);
+        try {
+            $event = new Doctrine_Event($this, Doctrine_Event::CONN_PREPARE, $statement);
+    
+            $this->getAttribute(Doctrine::ATTR_LISTENER)->prePrepare($event);
 
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->prePrepare($event);
+            $stmt = false;
+    
+            if ( ! $event->skipOperation) {
+                $stmt = $this->dbh->prepare($statement);
+            }
+    
+            $this->getAttribute(Doctrine::ATTR_LISTENER)->postPrepare($event);
+            
+            return new Doctrine_Connection_Statement($this, $stmt);
+        } catch(Doctrine_Adapter_Exception $e) {
+        } catch(PDOException $e) { }
 
-        $stmt = false;
-
-        if ( ! $event->skipOperation) {
-            $stmt = $this->dbh->prepare($statement);
-        }
-
-        $this->getAttribute(Doctrine::ATTR_LISTENER)->postPrepare($event);
-
-        return new Doctrine_Connection_Statement($this, $stmt);
+        $this->rethrowException($e, $this);
     }
     /**
      * query
@@ -791,7 +796,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         } catch(Doctrine_Adapter_Exception $e) {
         } catch(PDOException $e) { }
 
-        $this->rethrowException($e);
+        $this->rethrowException($e, $this);
     }
     /**
      * exec
@@ -826,15 +831,19 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         } catch(Doctrine_Adapter_Exception $e) {
         } catch(PDOException $e) { }
 
-        $this->rethrowException($e);
+        $this->rethrowException($e, $this);
     }
     /**
      * rethrowException
      *
      * @throws Doctrine_Connection_Exception
      */
-    private function rethrowException(Exception $e)
+    public function rethrowException(Exception $e, $invoker)
     {
+    	$event = new Doctrine_Event($this, Doctrine_Event::CONN_ERROR);
+
+    	$this->getListener()->preError($event);
+
         $name = 'Doctrine_Connection_' . $this->driverName . '_Exception';
 
         $exc  = new $name($e->getMessage(), (int) $e->getCode());
@@ -843,7 +852,11 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         $exc->processErrorInfo($e->errorInfo);
 
-        throw $exc;
+         if ($this->getAttribute(Doctrine::ATTR_THROW_EXCEPTIONS)) {
+            throw $exc;
+        }
+        
+        $this->getListener()->postError($event);
     }
     /**
      * hasTable

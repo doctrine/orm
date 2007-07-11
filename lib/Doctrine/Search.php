@@ -54,7 +54,7 @@ class Doctrine_Search
     
     public function analyze($text)
     {
-        return $this->_options['analyzer']->analyze($text);	
+        return $this->_options['analyzer']->analyze($text);
     }
 
     public function setOption($option, $value)
@@ -62,6 +62,29 @@ class Doctrine_Search
         $this->_options[$option] = $value;
 
         return $this;
+    }
+    public function updateIndex(Doctrine_Record $record) 
+    {
+    	$fields = $this->getOption('fields');
+        $class  = $this->getOption('className');
+        $name   = $record->getTable()->getComponentName();
+
+        foreach ($fields as $field) {
+            $data  = $record->get($field);
+
+            $terms = $this->analyze($data);
+
+            foreach ($terms as $pos => $term) {
+                $index = new $class();
+
+                $index->keyword = $term;
+                $index->position = $pos;
+                $index->field = $field;
+                $index->$name = $record;
+                
+                $index->save();
+            }
+        }
     }
     public function buildDefinition(Doctrine_Table $table)
     {
@@ -111,9 +134,5 @@ class Doctrine_Search
         if ( ! $this->_options['generateFiles']) {
             eval($def);
         }
-        /**
-        print "<pre>";
-        print_r(htmlentities($def));
-        */
     }
 }

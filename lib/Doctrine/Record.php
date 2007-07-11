@@ -520,6 +520,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function unserialize($serialized)
     {
+    	$event = new Doctrine_Event($this, Doctrine_Event::RECORD_UNSERIALIZE);
+
+    	$this->preUnserialize($event);
+
         $manager    = Doctrine_Manager::getInstance();
         $connection = $manager->getConnectionForComponent(get_class($this));
 
@@ -540,8 +544,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $this->_data = $this->_filter->cleanData($this->_data);
 
         $this->prepareIdentifiers($this->exists());
-
-        $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onWakeUp($this);
+        
+        $this->postUnserialize($event);
     }
     /**
      * getState
@@ -632,8 +636,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $this->prepareIdentifiers();
 
         $this->_state    = Doctrine_Record::STATE_CLEAN;
-
-        $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
 
         return $this;
     }

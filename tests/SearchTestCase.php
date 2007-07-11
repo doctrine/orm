@@ -60,23 +60,39 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
 
         $e->save();
     }
+
     public function testQuerying()
     {
         $q = new Doctrine_Query();
-        
+
         $q->select('t.title')
           ->from('SearchTest t')
           ->innerJoin('t.SearchTestIndex i')
           ->where('i.keyword = ?');
 
         $array = $q->execute(array('orm'), Doctrine_Hydrate::HYDRATE_ARRAY);
-        
+
         $this->assertEqual($array[0]['title'], 'Once there was an ORM framework');
     }
+    
+    public function testUsingWordRange()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('t.title, i.*')
+          ->from('SearchTest t')
+          ->innerJoin('t.SearchTestIndex i')
+          ->where('i.keyword = ? OR i.keyword = ?');
+
+        $array = $q->execute(array('orm', 'framework'), Doctrine_Hydrate::HYDRATE_ARRAY);
+
+        $this->assertEqual($array[0]['title'], 'Once there was an ORM framework');
+    }
+
     public function testQueryingReturnsEmptyArrayForStopKeyword()
     {
         $q = new Doctrine_Query();
-        
+
         $q->select('t.title')
           ->from('SearchTest t')
           ->innerJoin('t.SearchTestIndex i')
@@ -86,10 +102,11 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual(count($array), 0);
     }
+
     public function testQueryingReturnsEmptyArrayForUnknownKeyword()
     {
         $q = new Doctrine_Query();
-        
+
         $q->select('t.title')
           ->from('SearchTest t')
           ->innerJoin('t.SearchTestIndex i')
@@ -100,7 +117,7 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(count($array), 0);
     }
 }
-class SearchTest extends Doctrine_Record 
+class SearchTest extends Doctrine_Record
 {
     public function setTableDefinition()
     {

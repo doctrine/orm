@@ -137,6 +137,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
             case Doctrine::ATTR_DECIMAL_PLACES:
             case Doctrine::ATTR_LOAD_REFERENCES:
             case Doctrine::ATTR_RECORD_LISTENER:
+            case Doctrine::ATTR_THROW_EXCEPTIONS:
 
                 break;
             case Doctrine::ATTR_SEQCOL_NAME:

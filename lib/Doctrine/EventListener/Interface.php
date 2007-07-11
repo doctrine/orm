@@ -55,12 +55,15 @@ interface Doctrine_EventListener_Interface
     public function preExec(Doctrine_Event $event);
     public function postExec(Doctrine_Event $event);
 
+    public function preError(Doctrine_Event $event);
+    public function postError(Doctrine_Event $event);
+
     public function preFetch(Doctrine_Event $event);
     public function postFetch(Doctrine_Event $event);
 
     public function preFetchAll(Doctrine_Event $event);
     public function postFetchAll(Doctrine_Event $event);
 
-    public function preExecute(Doctrine_Event $event);
-    public function postExecute(Doctrine_Event $event);
+    public function preStmtExecute(Doctrine_Event $event);
+    public function postStmtExecute(Doctrine_Event $event);
 }

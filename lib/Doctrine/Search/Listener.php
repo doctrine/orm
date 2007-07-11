@@ -49,26 +49,8 @@ class Doctrine_Search_Listener extends Doctrine_Record_Listener
     }
     public function postInsert(Doctrine_Event $event)
     {
-    	$fields = $this->_search->getOption('fields');
-        $class  = $this->_search->getOption('className');
         $record = $event->getInvoker();
-        $name   = $record->getTable()->getComponentName();
-
-        foreach ($fields as $field) {
-            $data  = $record->get($field);
-
-            $terms = $this->_search->analyze($data);
-
-            foreach ($terms as $pos => $term) {
-                $index = new $class();
-
-                $index->keyword = $term;
-                $index->position = $pos;
-                $index->field = $field;
-                $index->$name = $record;
-                
-                $index->save();
-            }
-        }
+        
+        $this->_search->updateIndex($record);
     }
 }

@@ -213,16 +213,24 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      */
     public function execute($params = null)
     {
-        $event = new Doctrine_Event($this, Doctrine_Event::STMT_EXECUTE, $this->getQuery(), $params);
-        $this->_conn->getListener()->preExecute($event);
-
-        if ( ! $event->skipOperation) {
-            $this->_stmt->execute($params);
-            $this->_conn->incrementQueryCount();
+    	try {
+            $event = new Doctrine_Event($this, Doctrine_Event::STMT_EXECUTE, $this->getQuery(), $params);
+            $this->_conn->getListener()->preStmtExecute($event);
+    
+            if ( ! $event->skipOperation) {
+                $this->_stmt->execute($params);
+                $this->_conn->incrementQueryCount();
+            }
+    
+            $this->_conn->getListener()->postStmtExecute($event);
+            
+            return $this;
+        } catch (PDOException $e) {
+        } catch (Doctrine_Adapter_Exception $e) {
         }
 
-        $this->_conn->getListener()->postExecute($event);
-
+        $this->_conn->rethrowException($e, $this);
+        
         return $this;
     }
     /**
