@@ -32,7 +32,54 @@
  */
 class Doctrine_Search
 {
+    public function buildDefinition(Doctrine_Record $record)
+    {
 
+        $columns = array('keyword'  => array('type'    => 'string',
+                                             'length'  => 200,
+                                             'notnull' => true),
+                         'field'    => array('type'    => 'string',
+                                             'length'  => 50,
+                                             'notnull' => true),
+                         'position' => array('type'    => 'integer',
+                                             'length'  => 8));
+
+        $id = $record->getTable()->getIdentifier();
+        $name = $record->getTable()->getComponentName();
+
+        $options = array('className' => $name . 'Index');
+
+
+        $fk = array();
+        foreach ((array) $id as $column) {
+            $def = $record->getTable()->getDefinitionOf($column);
+
+            unset($def['autoincrement']);
+            unset($def['sequence']);
+            unset($def['primary']);
+
+            $col = strtolower($name . '_' . $column);
+
+            $fk[$col] = $def;
+        }
+        
+        $local = (count($fk) > 1) ? array_keys($fk) : key($fk);
+        
+        $relations = array($name => array('local' => $local,
+                                          'foreign' => $id, 
+                                          'onDelete' => 'CASCADE',
+                                          'onUpdate' => 'CASCADE'));
+
+
+        $columns += $fk;
+
+        $builder = new Doctrine_Import_Builder();
+
+        $def = $builder->buildDefinition($options, $columns, $relations);
+    
+        print "<pre>";
+        print_r($def);
+    }
 }
 /**
 fields:

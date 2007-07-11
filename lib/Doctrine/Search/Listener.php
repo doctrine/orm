@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Search_Record
+ * Doctrine_Search_Listener
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
@@ -30,18 +30,25 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Search_Record extends Doctrine_Template
+class Doctrine_Search_Listener extends Doctrine_Record_Listener 
 {
-    public function setTableDefinition()
-    {
-        $this->hasColumn('keyword', 'string', 250, array('notnull' => true));
-        $this->hasColumn('field', 'string', 50, array('notnull' => true));
-        $this->hasColumn('position', 'integer', 8);
-        // depending on the identifiers of the owner record this record 
-        // has also one to many foreign key columns
+    public function preUpdate(Doctrine_Event $event)
+    { 
+    
     }
-    public function setUp()
-    {
-        $this->hasOne('[Component]', array('onDelete' => 'CASCADE'));
+
+    public function postUpdate(Doctrine_Event $event)
+    { 
+    
+    }
+
+    public function preInsert(Doctrine_Event $event)
+    { 
+
+    }
+
+    public function postInsert(Doctrine_Event $event)
+    { 
+        
     }
 }

@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Search_Record
+ * Doctrine_Search_Template
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
@@ -30,18 +30,21 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Search_Record extends Doctrine_Template
-{
-    public function setTableDefinition()
-    {
-        $this->hasColumn('keyword', 'string', 250, array('notnull' => true));
-        $this->hasColumn('field', 'string', 50, array('notnull' => true));
-        $this->hasColumn('position', 'integer', 8);
-        // depending on the identifiers of the owner record this record 
-        // has also one to many foreign key columns
-    }
+class Doctrine_Search_Template extends Doctrine_Template
+{     
     public function setUp()
     {
-        $this->hasOne('[Component]', array('onDelete' => 'CASCADE'));
+        $id = $record->getTable()->getIdentifier();
+        $name = $record->getTable()->getComponentName() . 'Index';
+
+        foreach ((array) $id as $column) {
+            $foreign[] = strtolower($name . '_' . $column);
+        }
+
+        $foreign = (count($foreign) > 1) ? array_keys($foreign) : key($foreign);
+
+        $this->hasMany($name, array('local' => $id, 'foreign' => $foreign));
+        
+        $this->addListener(new Doctrine_Search_Listener());
     }
 }
