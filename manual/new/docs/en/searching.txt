@@ -1,0 +1,63 @@
+++ Introduction
+
+Searching is a huge topic, hence an entire chapter has been devoted to a plugin called Doctrine_Search. Doctrine_Search is a fulltext indexing and searching tool similar to Apache Lucene.
+
+Consider we have a class called NewsItem with the following definition:
+
+<code type='php'>
+class NewsItem extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('title', 'string', 200);
+        $this->hasColumn('content', 'string');
+    }
+}
+</code>
+
+Now lets say we have an application where users are allowed to search for different news items, an obvious way to implement this would be building a form and based on that form build DQL queries such as:
+<code>
+SELECT n.* FROM NewsItem n WHERE n.title LIKE ? OR n.content LIKE ?
+</code>
+
+However soon as the application grows these kind of queries become very slow. For example when using the previous query with parameters '%framework%' and '%framework%' (this would be equivalent of 'find all news items whose title or content contains word 'framework') the database would have to traverse trhough each row in the table, which would naturally be very very slow.
+
+Doctrine solves this with its search component and inverse indexes. First lets alter our definition a bit:
+
+<code type='php'>
+class NewsItem extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('title', 'string', 200);
+        $this->hasColumn('content', 'string');
+    }
+    public function setUp()
+    {
+        $this->loadTemplate('Doctrine_Search_Template',
+                            array('fields' => array('title', 'content')));
+    }
+}
+</code>
+
+Here we tell Doctrine that NewsItem class uses Doctrine_Search_Template and fields title and content are marked as fulltext indexed fields. This means that everytime a NewsItem is added or updated Doctrine will:
+
+1. Update the inverse search index or
+2. Add new pending entry to the inverse search index (its efficient to update the inverse search index in batches)
+
+++ Index structure
+
+The structure of the inverse index Doctrine uses is the following:
+
+[ (string) keyword] [ (string) field ] [ (integer) position ] [ (mixed) [foreign_keys] ] 
+
+* **keyword** is the keyword in the text that can be searched for
+* **field** is the field where the keyword was found
+* **position** is the position where the keyword was found
+* **[foreign_keys]** either one or multiple fields depending on the owner component (here NewsItem)
+
+In the NewsItem example the [foreign_keys] would simple contain one field newsitem_id with foreign key references to NewsItem(id) and with onDelete => CASCADE constraint.
+
+++ Index building
+
+

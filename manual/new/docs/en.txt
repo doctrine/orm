@@ -10,6 +10,7 @@
 + Caching
 + Event listeners
 + Plugins
++ Searching
 + Database abstraction
 + Improving Performance
 + Technology
