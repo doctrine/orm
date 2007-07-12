@@ -147,4 +147,17 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($this->conn->count(), $count + 1);
     }
+
+    public function testFetchArrayNull()
+    {
+      $u = new User();
+      $u->name = "fetch_array_test";
+      $u->created = null;
+      $u->save();
+
+      $q = new Doctrine_Query();
+      $q->select('u.*')->from('User u')->where('u.id = ?');
+      $users = $q->execute(array($u->id), Doctrine_Hydrate::HYDRATE_ARRAY);
+      $this->assertEqual($users[0]['created'], null);
+    }
 }
