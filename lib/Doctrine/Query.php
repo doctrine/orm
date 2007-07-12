@@ -1330,50 +1330,61 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @param array $params        an array of prepared statement parameters
      * @return integer             the count of this query
      */
-    public function count($params = array())
-    {
-        $this->getQuery();
+     public function count($params = array())
+     {
+         $this->getQuery();
 
-        // initialize temporary variables
-        $where  = $this->parts['where'];
-        $having = $this->parts['having'];
-        $groupby = $this->parts['groupby'];
-        $map    = reset($this->_aliasMap);
-        $componentAlias = key($this->_aliasMap);
-        $table = $map['table'];
+         // initialize temporary variables
+         $where  = $this->parts['where'];
+         $having = $this->parts['having'];
+         $groupby = $this->parts['groupby'];
+         $map    = reset($this->_aliasMap);
+         $componentAlias = key($this->_aliasMap);
+         $table = $map['table'];
 
-        // build the query base
-        $q  = 'SELECT COUNT(DISTINCT ' . $this->getTableAlias($componentAlias)
-            . '.' . $table->getIdentifier()
-            . ')';
-        
-        foreach ($this->parts['select'] as $field) {
-            if (strpos($field, '(') !== false) {
-                $q .= ', ' . $field;
-            }
-        }
+         // build the query base
+         $q  = 'SELECT COUNT(DISTINCT ' . $this->getTableAlias($componentAlias)
+             . '.' . $table->getIdentifier()
+             . ') AS num_results';
 
-        $q .= ' FROM ' . $this->buildFromPart();
+         foreach ($this->parts['select'] as $field) {
+             if (strpos($field, '(') !== false) {
+                 $q .= ', ' . $field;
+             }
+         }
 
-        // append column aggregation inheritance (if needed)
-        $string = $this->applyInheritance();
+         $q .= ' FROM ' . $this->buildFromPart();
 
-        if ( ! empty($string)) {
-            $where[] = $string;
-        }
-        // append conditions
-        $q .= ( ! empty($where)) ?  ' WHERE '  . implode(' AND ', $where) : '';
-        $q .= ( ! empty($groupby)) ?  ' GROUP BY '  . implode(', ', $groupby) : '';
-        $q .= ( ! empty($having)) ? ' HAVING ' . implode(' AND ', $having): '';
+         // append column aggregation inheritance (if needed)
+         $string = $this->applyInheritance();
 
-        if ( ! is_array($params)) {
-            $params = array($params);
-        }
-        // append parameters
-        $params = array_merge($this->_params, $params);
+         if ( ! empty($string)) {
+             $where[] = $string;
+         }
+         // append conditions
+         $q .= ( ! empty($where)) ?  ' WHERE '  . implode(' AND ', $where) : '';
+         $q .= ( ! empty($groupby)) ?  ' GROUP BY '  . implode(', ', $groupby) : '';
+         $q .= ( ! empty($having)) ? ' HAVING ' . implode(' AND ', $having): '';
 
-        return (int) $this->getConnection()->fetchOne($q, $params);
-    }
+         if ( ! is_array($params)) {
+             $params = array($params);
+         }
+         // append parameters
+         $params = array_merge($this->_params, $params);
+
+         $results = $this->getConnection()->fetchAll($q, $params);
+
+         if (count($results) > 1) {
+           $count = 0;
+           foreach ($results as $result) {
+             $count += $result['num_results'];
+           }
+         } else {
+           $count = isset($results[0]) ? $results[0]['num_results']:0;
+         }
+
+         return (int) $count;
+     }
 
     /**
      * query
