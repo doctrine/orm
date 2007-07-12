@@ -109,7 +109,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     public function fetchRoot($rootId = 1)
     {
         $q = $this->getBaseQuery();
-        $q = $q->where('base.lft = ?', 1);
+        $q = $q->addWhere('base.lft = ?', 1);
         
         // if tree has many roots, then specify root id
         $q = $this->returnQueryWithRootId($q, $rootId);
@@ -149,9 +149,9 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         // if tree has many roots, then specify root id
         $rootId = isset($options['root_id']) ? $options['root_id'] : '1';
         if (is_array($rootId)) {
-            $q->orderBy("base." . $this->getAttribute('rootColumnName') . ", base.lft ASC");
+            $q->addOrderBy("base." . $this->getAttribute('rootColumnName') . ", base.lft ASC");
         } else {
-            $q->orderBy("base.lft ASC");
+            $q->addOrderBy("base.lft ASC");
         }
         
         $q = $this->returnQueryWithRootId($q, $rootId);
@@ -183,7 +183,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         
         $q = $this->getBaseQuery();
         $params = array($record->get('lft'), $record->get('rgt'));
-        $q->where("base.lft >= ? AND base.rgt <= ?", $params)->orderBy("base.lft asc");
+        $q->addWhere("base.lft >= ? AND base.rgt <= ?", $params)->addOrderBy("base.lft asc");
         $q = $this->returnQueryWithRootId($q, $record->getNode()->getRootValue());
         return $q->execute();
     }
@@ -197,7 +197,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     public function fetchRoots()
     {
         $q = $this->getBaseQuery();
-        $q = $q->where('base.lft = ?', 1);
+        $q = $q->addWhere('base.lft = ?', 1);
         return $q->execute();      
     }
 

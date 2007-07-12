@@ -80,7 +80,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function getPrevSibling()
     {
         $q = $this->_tree->getBaseQuery();
-        $q = $q->where('base.rgt = ?', $this->getLeftValue() - 1);
+        $q = $q->addWhere('base.rgt = ?', $this->getLeftValue() - 1);
         $q = $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $result = $q->execute();
 
@@ -105,7 +105,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function getNextSibling()
     {
         $q = $this->_tree->getBaseQuery();
-        $q = $q->where('base.lft = ?', $this->getRightValue() + 1);
+        $q = $q->addWhere('base.lft = ?', $this->getRightValue() + 1);
         $q = $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $result = $q->execute();
 
@@ -150,7 +150,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function getFirstChild()
     {
         $q = $this->_tree->getBaseQuery();
-        $q->where('base.lft = ?', $this->getLeftValue() + 1);
+        $q->addWhere('base.lft = ?', $this->getLeftValue() + 1);
         $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $result = $q->execute();
 
@@ -175,7 +175,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function getLastChild()
     {
         $q = $this->_tree->getBaseQuery();
-        $q->where('base.rgt = ?', $this->getRightValue() - 1);
+        $q->addWhere('base.rgt = ?', $this->getRightValue() - 1);
         $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $result = $q->execute();
 
@@ -215,9 +215,9 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         $params = array($this->record->get('lft'), $this->record->get('rgt'));
         
         if ($includeNode) {
-            $q->where("base.lft >= ? AND base.rgt <= ?", $params)->orderBy("base.lft asc");
+            $q->addWhere("base.lft >= ? AND base.rgt <= ?", $params)->addOrderBy("base.lft asc");
         } else {
-            $q->where("base.lft > ? AND base.rgt < ?", $params)->orderBy("base.lft asc");
+            $q->addWhere("base.lft > ? AND base.rgt < ?", $params)->addOrderBy("base.lft asc");
         }
         
         if ($depth !== null) {
@@ -242,8 +242,8 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function getParent()
     {
         $q = $this->_tree->getBaseQuery();
-        $q->where("base.lft < ? AND base.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
-                ->orderBy("base.rgt asc");
+        $q->addWhere("base.lft < ? AND base.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
+                ->addOrderBy("base.rgt asc");
         $q = $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $result = $q->execute();
         
@@ -270,8 +270,8 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function getAncestors($depth = null)
     {
         $q = $this->_tree->getBaseQuery();
-        $q->where("base.lft < ? AND base.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
-                ->orderBy("base.lft asc");
+        $q->addWhere("base.lft < ? AND base.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
+                ->addOrderBy("base.lft asc");
         if ($depth !== null) {
             $q->addWhere("base.level >= ?", $this->record['level'] - $depth);
         }
@@ -765,7 +765,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         
         $componentName = $this->record->getTable()->getComponentName();
 
-        $q = $q->where('base.lft >= ? AND base.rgt <= ?', array($this->getLeftValue(), $this->getRightValue()));
+        $q = $q->addWhere('base.lft >= ? AND base.rgt <= ?', array($this->getLeftValue(), $this->getRightValue()));
 
         $q = $this->record->getTable()->getTree()->returnQueryWithRootId($q, $oldRoot);
         
@@ -950,7 +950,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         if (!isset($this->record['level'])) {
             $componentName = $this->record->getTable()->getComponentName();
             $q = $this->_tree->getBaseQuery();
-            $q = $q->where('base.lft < ? AND base.rgt > ?', array($this->getLeftValue(), $this->getRightValue()));
+            $q = $q->addWhere('base.lft < ? AND base.rgt > ?', array($this->getLeftValue(), $this->getRightValue()));
 
             $q = $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
             
