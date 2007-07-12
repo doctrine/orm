@@ -20,9 +20,12 @@ Now lets say we have an application where users are allowed to search for differ
 SELECT n.* FROM NewsItem n WHERE n.title LIKE ? OR n.content LIKE ?
 </code>
 
-However soon as the application grows these kind of queries become very slow. For example when using the previous query with parameters '%framework%' and '%framework%' (this would be equivalent of 'find all news items whose title or content contains word 'framework') the database would have to traverse trhough each row in the table, which would naturally be very very slow.
+As the application grows these kind of queries become very slow. For example
+when using the previous query with parameters '%framework%' and '%framework%'
+(this would be equivalent of 'find all news items whose title or content
+contains word 'framework') the database would have to traverse through each row in the table, which would naturally be very very slow.
 
-Doctrine solves this with its search component and inverse indexes. First lets alter our definition a bit:
+Doctrine solves this with it's search component and inverse indexes. First lets alter our definition a bit:
 
 <code type='php'>
 class NewsItem extends Doctrine_Record
@@ -56,7 +59,7 @@ The structure of the inverse index Doctrine uses is the following:
 * **position** is the position where the keyword was found
 * **[foreign_keys]** either one or multiple fields depending on the owner component (here NewsItem)
 
-In the NewsItem example the [foreign_keys] would simple contain one field newsitem_id with foreign key references to NewsItem(id) and with onDelete => CASCADE constraint.
+In the NewsItem example the [foreign_keys] would simply contain one field newsitem_id with foreign key references to NewsItem(id) and with onDelete => CASCADE constraint.
 
 ++ Index building
 
