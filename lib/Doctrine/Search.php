@@ -88,6 +88,13 @@ class Doctrine_Search
     }
     public function buildDefinition(Doctrine_Table $table)
     {
+        $name = $table->getComponentName();
+
+        $className = $name . 'Index';
+        
+        if (class_exists($className)) {
+            return false;
+        }
 
         $columns = array('keyword'  => array('type'    => 'string',
                                              'length'  => 200,
@@ -99,9 +106,8 @@ class Doctrine_Search
                                              'length'  => 8));
 
         $id = $table->getIdentifier();
-        $name = $table->getComponentName();
 
-        $options = array('className' => $name . 'Index');
+        $options = array('className' => $className);
 
 
         $fk = array();
@@ -134,5 +140,6 @@ class Doctrine_Search
         if ( ! $this->_options['generateFiles']) {
             eval($def);
         }
+        return true;
     }
 }
