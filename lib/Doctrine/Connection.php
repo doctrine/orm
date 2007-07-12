@@ -539,6 +539,13 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function quoteIdentifier($str, $checkOption = true)
     {
+    	// quick fix for the identifiers that contain a dot
+        if (strpos($str, '.')) {
+            $e = explode('.', $str);
+            
+            return $this->formatter->quoteIdentifier($e[0], $checkOption) . '.' 
+                 . $this->formatter->quoteIdentifier($e[1], $checkOption);
+        }
         return $this->formatter->quoteIdentifier($str, $checkOption);
     }
     /**
