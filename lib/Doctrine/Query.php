@@ -283,7 +283,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             throw new Doctrine_Query_Exception('This query object is locked. No query parts can be manipulated.');
         }
 
-
         // sanity check
         if ($queryPart === '' || $queryPart === null) {
             throw new Doctrine_Query_Exception('Empty ' . $queryPartName . ' part given.');
@@ -529,7 +528,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         foreach ($this->pendingSubqueries as $value) {
             list($dql, $alias) = $value;
 
-            $sql = $this->createSubquery()->parseQuery($dql, false)->getQuery();
+            $subquery = $this->createSubquery();
+
+            $sql = $subquery->parseQuery($dql, false)->getQuery();
 
             reset($this->_aliasMap);
             $componentAlias = key($this->_aliasMap);
@@ -727,10 +728,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $parts = $this->_dqlParts;
 
         // reset the state
-        $this->_aliasMap = array();
-        $this->pendingAggregates = array();
-        $this->aggregateMap = array();
-        
+        if ( ! $this->isSubquery()) {
+            $this->_aliasMap = array();
+            $this->pendingAggregates = array();
+            $this->aggregateMap = array();
+        }
         $this->reset();   
 
         // parse the DQL parts
@@ -1238,7 +1240,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     }
 
                 } else {
-                                  
+
                     $queryPart = $join . $foreignSql
                                . ' ON ' 
                                . $this->_conn->quoteIdentifier($localAlias . '.' . $relation->getLocal())

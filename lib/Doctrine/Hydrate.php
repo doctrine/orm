@@ -22,7 +22,7 @@
 /**
  * Doctrine_Hydrate is a base class for Doctrine_RawSql and Doctrine_Query.
  * Its purpose is to populate object graphs.
- *
+ *                         
  *
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -170,6 +170,30 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
         }
         $this->_conn = $connection;
+    }
+    /**
+     * getRootAlias
+     * returns the alias of the the root component
+     *
+     * @return array
+     */
+    public function getRootAlias()
+    {
+        reset($this->_aliasMap);
+
+        return key($this->_aliasMap);
+    }
+    /**
+     * getRootDeclaration
+     * returns the root declaration
+     *
+     * @return array
+     */
+    public function getRootDeclaration()
+    {
+        $map = reset($this->_aliasMap);
+
+        return $map;
     }
     /**
      * getRoot
@@ -374,7 +398,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         if ( ! isset($this->_tableAliasSeeds[$alias])) {
             $this->_tableAliasSeeds[$alias] = 1;
         }
+
         while (isset($this->_tableAliases[$alias])) {
+            if ( ! isset($this->_tableAliasSeeds[$alias])) {
+                $this->_tableAliasSeeds[$alias] = 1;
+            }
             $alias = $char . ++$this->_tableAliasSeeds[$alias];
         }
 
@@ -558,7 +586,8 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     public function copyAliases(Doctrine_Hydrate $query)
     {
         $this->_tableAliases = $query->_tableAliases;
-
+        $this->_aliasMap     = $query->_aliasMap;
+        $this->_tableAliasSeeds = $query->_tableAliasSeeds;
         return $this;
     }
     /**
