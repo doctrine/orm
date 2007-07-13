@@ -41,6 +41,48 @@ echo 'Longest query: ' . $longestQuery . "\n";
 ++ Cache
 ++ Locking Manager
 ++ Connection Profiler
+++ AuditLog and versioning
+Doctrine_AuditLog provides a full versioning solution. Lets say we have a NewsItem class that we want to be versioned. This means that everytime a NewsItem object is updated its version number is increased.
+
+
++++ Creating a versioned record
+<code type='php'>
+class NewsItem extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('title', 'string', 200);
+        $this->hasColumn('content', 'string');
+    }
+
+    public function setUp()
+    {
+        $this->loadTemplate(new Doctrine_AuditLog_Template());
+    }
+}
+</code>
+
++++ Using versioning
+<code type='php'>
+$newsItem = new NewsItem();
+$newsItem->title = 'No news is good news';
+$newsItem->content = 'All quiet on the western front';
+
+$newsItem->save();
+$newsItem->version; // 1
+
+$newsItem->title = 'A different title'; 
+$newsItem->save();
+$newsItem->version; // 2
+</code>
+
+
+<code type='php'>
+$newsItem->revert(1);
+
+$newsItem->title; // No news is good news
+</code>
+
 ++ Hook
 ++ Soft-delete
 
