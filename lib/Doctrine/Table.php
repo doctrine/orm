@@ -211,8 +211,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
             if (isset($this->columns)) {
                 // get the declaring class of setTableDefinition method
-                $method    = new ReflectionMethod($this->options['name'], 'setTableDefinition');
-                $class     = $method->getDeclaringClass();
+                $method = new ReflectionMethod($this->options['name'], 'setTableDefinition');
+                $class  = $method->getDeclaringClass();
 
                 $this->options['declaringClass'] = $class;
 
@@ -364,7 +364,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     
                     if ($relation instanceof Doctrine_Relation_LocalKey) {
                         $def = array('local'        => $relation->getLocal(),
-                                     'foreign'      => $this->getIdentifier(),
+                                     'foreign'      => $relation->getForeign(),
                                      'foreignTable' => $relation->getTable()->getTableName());
 
                         if (($key = array_search($def, $options['foreignKeys'])) === false) {

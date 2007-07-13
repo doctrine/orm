@@ -74,6 +74,15 @@ class Doctrine_Relation_Parser
     	
     	return $this->_pending[$name];
     }
+    
+    public function hasRelation($name)
+    {
+        if ( ! isset($this->_pending[$name]) && ! isset($this->_relations[$name])) {
+            return false;
+        }
+        
+        return true;
+    }
     /**
      * binds a relation
      *
@@ -190,17 +199,21 @@ class Doctrine_Relation_Parser
                 if ( ! isset($this->_pending[$def['refClass']]) && 
                      ! isset($this->_relations[$def['refClass']])) {
 
-                    $def['refTable']->getRelationParser()->bind($this->_table->getComponentName(),
-                                                                array('type'    => Doctrine_Relation::ONE,
-                                                                      'local'   => $def['local'],
-                                                                      'foreign' => $this->_table->getIdentifier(),
-                                                                      'localKey' => true,
-                                                                      ));
+                    $parser = $def['refTable']->getRelationParser();
+                    if ( ! $parser->hasRelation($this->_table->getComponentName())) {
+                        $parser->bind($this->_table->getComponentName(),
+                                      array('type'    => Doctrine_Relation::ONE,
+                                            'local'   => $def['local'],
+                                            'foreign' => $this->_table->getIdentifier(),
+                                            'localKey' => true,
+                                            ));
+                    }
 
-                    $this->bind($def['refClass'], array('type' => Doctrine_Relation::MANY,
-                                                        'foreign' => $def['local'],
-                                                        'local'   => $this->_table->getIdentifier()));
-
+                    if ( ! $this->hasRelation($def['refClass'])) {
+                        $this->bind($def['refClass'], array('type' => Doctrine_Relation::MANY,
+                                                            'foreign' => $def['local'],
+                                                            'local'   => $this->_table->getIdentifier()));
+                    }
                 }
                 if (in_array($def['class'], $localClasses)) {
                     $rel = new Doctrine_Relation_Nest($def);
