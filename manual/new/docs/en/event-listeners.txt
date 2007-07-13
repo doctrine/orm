@@ -134,11 +134,13 @@ $conn->addListener(new MyLogger());
 ++ Query listeners
 +++ preHydrate, postHydrate
 +++ preBuildQuery, postBuildQuery
+++ Record listeners
 
-++ Record hooks
+Doctrine_Record provides listeners very similar to Doctrine_Connection. You can set the listeners at global, connection and record(=table) level.
+
+Here is a list of all availible listener methods:
+
 ||~ Methods     ||~ Listens ||
-|| preLoad() || Doctrine_Record::beginTransaction() ||
-|| postLoad() || Doctrine_Record::beginTransaction() ||
 || preSave() || Doctrine_Record::save() ||
 || postSave() || Doctrine_Record::save() ||
 || preUpdate() || Doctrine_Record::save() when the record state is DIRTY ||
@@ -150,7 +152,92 @@ $conn->addListener(new MyLogger());
 || preValidate() || Doctrine_Validator::validate() ||
 || postValidate() || Doctrine_Validator::validate() ||
 
-Example 1. Using insert and update listeners
+Just like with connection listeners there are three ways of defining a record listener: by extending Doctrine_Record_Listener, by implement Doctrine_Record_Listener_Interface or by implementing Doctrine_Overloadable. In the following we'll create a global level listener by implementing Doctrine_Overloadable:
+<code type='php'>
+class Logger extends Doctrine_Overloadable
+{
+    public function __call($m, $a) 
+    {
+        print 'catched event ' . $m;
+        
+        // do some logging here...
+    }
+}
+</code>
+
+Attaching the listener to manager is easy:
+
+<code type='php'>
+$manager->addRecordListener(new Logger());
+</code>
+
+Note that by adding a manager level listener it affects on all connections and all tables / records within these connections. In the following we create a connection level listener:
+
+<code type='php'>
+class Debugger extends Doctrine_Record_Listener
+{
+    public function preInsert(Doctrine_Event $event)
+    {
+        print 'inserting a record ...';
+    }
+    public function preUpdate(Doctrine_Event $event)
+    {
+        print 'updating a record...';
+    }
+}
+</code>
+
+Attaching the listener to a connection is as easy as:
+
+<code type='php'>
+$conn->addRecordListener(new Debugger());
+</code>
+
+Many times you want the listeners to be table specific so that they only apply on the actions on that given table. Here is an example:
+
+<code type='php'>
+class Debugger extends Doctrine_Record_Listener
+{
+    public function postDelete(Doctrine_Event $event)
+    {
+        print 'deleted ' . $event->getInvoker()->id;
+    }
+}
+</code>
+
+Attaching this listener to given table can be done as follows:
+
+<code type='php'>
+class MyRecord extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        // some definitions
+    }
+    
+    public function setUp()
+    {
+        $this->addListener(new Debugger());
+    }
+}
+</code>
+
+
+
+++ Record hooks
+||~ Methods     ||~ Listens ||
+|| preSave() || Doctrine_Record::save() ||
+|| postSave() || Doctrine_Record::save() ||
+|| preUpdate() || Doctrine_Record::save() when the record state is DIRTY ||
+|| postUpdate() || Doctrine_Record::save() when the record state is DIRTY ||
+|| preInsert() || Doctrine_Record::save() when the record state is TDIRTY ||
+|| postInsert() || Doctrine_Record::save() when the record state is TDIRTY ||
+|| preDelete() || Doctrine_Record::delete() ||
+|| postDelete() || Doctrine_Record::delete() ||
+|| preValidate() || Doctrine_Validator::validate() ||
+|| postValidate() || Doctrine_Validator::validate() ||
+
+Example 1. Using insert and update hooks
 <code type='php'>
 class Blog extends Doctrine_Record 
 {
@@ -237,6 +324,19 @@ class MyRecord extends Doctrine_Record
     public function preUpdate(Doctrine_Event $event)
     {
         $event->getCode(); // Doctrine_Event::RECORD_UPDATE
+    }
+}
+</code>
++++ getInvoker()
+
+The method getInvoker() returns the object that invoked the given event. For example for event Doctrine_Event::CONN_QUERY the invoker is a Doctrine_Connection object. Example:
+
+<code type='php'>
+class MyRecord extends Doctrine_Record
+{
+    public function preUpdate(Doctrine_Event $event)
+    {
+        $event->getInvoker(); // Object(MyRecord)
     }
 }
 </code>
