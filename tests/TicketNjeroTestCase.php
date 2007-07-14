@@ -12,7 +12,7 @@
  * @version     $Revision$
  */
  
-class CoverageCode extends Doctrine_Record {
+class CoverageCodeN extends Doctrine_Record {
   
   public function setTableDefinition(){
     $this->setTableName('coverage_codes');
@@ -22,11 +22,11 @@ class CoverageCode extends Doctrine_Record {
   }
   
   public function setUp(){
-    $this->index('code', array('fields' => 'code'));
+#    $this->index('code', array('fields' => 'code'));
   }  
 }
 
-class PolicyCode extends Doctrine_Record {
+class PolicyCodeN extends Doctrine_Record {
   
   public function setTableDefinition(){
     $this->setTableName('policy_codes');
@@ -36,11 +36,11 @@ class PolicyCode extends Doctrine_Record {
   }
   
   public function setUp(){
-    $this->index('code', array('fields' => 'code'));
+#    $this->index('code', array('fields' => 'code'));
   }  
 }
 
-class LiabilityCode extends Doctrine_Record {
+class LiabilityCodeN extends Doctrine_Record {
   
   public function setTableDefinition(){
     $this->setTableName('liability_codes');
@@ -50,11 +50,11 @@ class LiabilityCode extends Doctrine_Record {
   }
   
   public function setUp(){
-    $this->index('code', array('fields' => 'code'));
+#    $this->index('code', array('fields' => 'code'));
   }  
 }
 
-class Policy extends Doctrine_Record {
+class PolicyN extends Doctrine_Record {
   
   public function setTableDefinition(){
     $this->setTableName('policies');
@@ -64,12 +64,12 @@ class Policy extends Doctrine_Record {
   }
   
   public function setUp(){
-    $this->hasOne('Rate', array('local' => 'rate_id', 'foreign' => 'id' ));
+    $this->hasOne('RateN', array('local' => 'rate_id', 'foreign' => 'id' ));
   }
 
 }
 
-class Rate extends Doctrine_Record{
+class RateN extends Doctrine_Record{
   
   public function setTableDefinition(){
     $this->setTableName('rates');
@@ -81,12 +81,12 @@ class Rate extends Doctrine_Record{
   }
   
   public function setUp(){
-    $this->index('policy_code_idx', array('fields' => 'policy_code'));
-    $this->index('coverage_code_idx', array('fields' => 'coverage_code'));
-    $this->index('liability_code_idx', array('fields' => 'liability_code'));
-    $this->hasOne('PolicyCode', array('local' => 'policy_code', 'foreign' => 'code' ));
-    $this->hasOne('CoverageCode', array('local' => 'coverage_code', 'foreign' => 'code' ));
-    $this->hasOne('LiabilityCode', array('local' => 'liability_code', 'foreign' => 'code' ));
+#    $this->index('policy_code_idx', array('fields' => 'policy_code'));
+#    $this->index('coverage_code_idx', array('fields' => 'coverage_code'));
+#    $this->index('liability_code_idx', array('fields' => 'liability_code'));
+    $this->hasOne('PolicyCodeN', array('local' => 'policy_code', 'foreign' => 'code' ));
+    $this->hasOne('CoverageCodeN', array('local' => 'coverage_code', 'foreign' => 'code' ));
+    $this->hasOne('LiabilityCodeN', array('local' => 'liability_code', 'foreign' => 'code' ));
   }
   
 }
@@ -96,50 +96,50 @@ class Doctrine_TicketNjero_TestCase extends Doctrine_UnitTestCase
     public function prepareData() { }
     public function prepareTables()
     {
-    	$this->tables[] = 'CoverageCode';
-    	$this->tables[] = 'PolicyCode';
-    	$this->tables[] = 'LiabilityCode';
-    	$this->tables[] = 'Policy';
-    	$this->tables[] = 'Rate';
+    	$this->tables[] = 'CoverageCodeN';
+    	$this->tables[] = 'PolicyCodeN';
+    	$this->tables[] = 'LiabilityCodeN';
+    	$this->tables[] = 'PolicyN';
+    	$this->tables[] = 'RateN';
     	parent::prepareTables();    	
     }
 
     public function testHasOneMultiLevelRelations()
     {
-      $policy_code = new PolicyCode();
+      $policy_code = new PolicyCodeN();
       $policy_code->code = 1;
       $policy_code->description = "Special Policy";
       $policy_code->save();
       
-      $coverage_code = new CoverageCode();
+      $coverage_code = new CoverageCodeN();
       $coverage_code->code = 1;
       $coverage_code->description = "Full Coverage";
       $coverage_code->save();
       
-      $liability_code = new LiabilityCode();
+      $liability_code = new LiabilityCodeN();
       $liability_code->code = 1;
       $liability_code->description = "Limited Territory";
       $liability_code->save();
 
-      $rate = new Rate();
+      $rate = new RateN();
       $rate->policy_code = 1;
       $rate->coverage_code = 1;
       $rate->liability_code = 1;
       $rate->total_rate = 123.45;
       $rate->save();
       
-      $policy = new Policy();
+      $policy = new PolicyN();
       $policy->rate_id = 1;
       $policy->policy_number = "123456789";  
       $policy->save();
         
       $q = new Doctrine_Query();
-      $p = $q->from("Policy p")
+      $p = $q->from("PolicyN p")
              ->where("p.id = 1")
              ->execute()
              ->getFirst();
 
       $this->assertEqual($p->rate_id, 1);
-      $this->assertEqual($p->Rate->id, 2);
+      $this->assertEqual($p->RateN->id, 1);
     }
 }?>
