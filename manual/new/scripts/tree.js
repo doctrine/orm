@@ -1,73 +1,33 @@
-var symbolClosed = '+';
-var symbolOpen = '-';
-
-function Tree_AutoInit()
+function initializeTrees(symbolClosed, symbolOpen)
 {
-    var candidates = document.getElementsByTagName('ul');
+    $$('ul.tree li').each(function(listItem) {
     
-    for (i in candidates) {
-        if (hasClassName(candidates[i], 'tree')) {
-            Tree_Init(candidates[i]);
-        }
-    }
-}
-
-function Tree_Init(element)
-{
-    for (var i in element.childNodes) {
-    
-        var li = element.childNodes[i];
+        var subTree = listItem.getChildren().filterByTag('ul')[0];
         
-        if (li.tagName && li.tagName.toLowerCase() == 'li') {
+        if (subTree) {
         
-            var subTree = Tree_FindChild(li, 'ul');
-            
-            if (subTree) {
-                var expander = document.createElement('a');
-                
-                expander.className = 'expander';
-                expander.href = 'javascript:void(0);';
-                expander.onclick = Tree_Toggle;
-                
-                if (hasClassName(subTree, 'closed')) {
-                    expander.innerHTML = symbolClosed;
-                } else {
-                    expander.innerHTML = symbolOpen;
+            var expander = new Element('a', {
+                'class': 'expander',
+                'href': 'javascript:void(0);',
+                'events': {
+                    'click': function() {
+                        if (subTree.hasClass('closed')) {
+                            subTree.removeClass('closed');
+                            this.setHTML(symbolOpen);
+                        } else {
+                            subTree.addClass('closed');
+                            this.setHTML(symbolClosed);
+                        }
+                    }
                 }
-                
-                li.insertBefore(expander, li.firstChild);
-                
-                Tree_Init(subTree);                
-            }
+            });
+            
+            expander.setHTML(subTree.hasClass('closed') ? symbolClosed : symbolOpen);
+            expander.injectTop(listItem);
         }
-    }
+    });
 }
 
-function Tree_FindChild(element, childTag)
-{   
-    for (i in element.childNodes) {
-        child = element.childNodes[i];
-        if (child.tagName && child.tagName.toLowerCase() == childTag) {
-            return child;
-        }
-    }
-    return null;
-}
- 
-function Tree_Toggle()
-{
-    expander = this;
-    li = expander.parentNode;
-    subTree = Tree_FindChild(li, 'ul');
-    
-    if (hasClassName(subTree, 'closed')) {
-        removeClassName(subTree, 'closed');
-        expander.innerHTML = symbolOpen;
-    } else {
-        addClassName(subTree, 'closed');
-        expander.innerHTML = symbolClosed;
-    }
-    
-} 
-
-appendLoader(Tree_AutoInit);
+window.addEvent('domready', function() {
+    initializeTrees('+', '-');
+});

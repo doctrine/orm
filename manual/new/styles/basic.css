@@ -211,13 +211,11 @@ ul.tree {
 	color: black;
 	background-color: #f6f6f6;
 	padding: 1em;
-	padding-top: 0;
 	margin: 0;
 }
 
 #table-of-contents p,
-#table-of-contents ul.tree,
-#table-of-contents span {
+#table-of-contents ul.tree {
     font-size: 0.9em;
 }
 
@@ -237,10 +235,11 @@ ul.tree {
     margin: 0;
     padding: 0;
     text-align: right;
+    font-size: 0.9em;
 }
 
-#toc-toggles span {
-    padding-left: 0.5em;
+#toc-toggles a {
+    margin-left: 0.5em;
 }
 
 /** Sticky Table of Contents **************************************************/

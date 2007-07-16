@@ -16,7 +16,14 @@
 <![endif]>
 <![endif]-->
 
-<script type="text/javascript" src="<?php echo $baseUrl; ?>scripts/util.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+var tocHideText = "hide"; var tocShowText = "show";
+var tocStickyText = "sticky"; var tocUnstickyText = 'unstick';
+//]]>
+</script>
+
+<script type="text/javascript" src="<?php echo $baseUrl; ?>scripts/mootools.v1.11.js"></script>
 <script type="text/javascript" src="<?php echo $baseUrl; ?>scripts/tree.js"></script>
 <script type="text/javascript" src="<?php echo $baseUrl; ?>scripts/toc.js"></script>
 
@@ -32,18 +39,9 @@
 
 <div id="table-of-contents">
 
-<div id="toc-toggles"></div>
-
 <h1>Table of Contents</h1>
 
 <?php $tool->renderToc(); ?>
-
-<script type="text/javascript">
-//<![CDATA[
-var tocHideText = "hide"; var tocShowText = "show"; createTocToggle();
-var tocStickyText = "sticky"; var tocUnstickyText = 'unstick'; createTocStickyToggle();
-//]]>
-</script>
 
 <p>
 <?php if($tool->getOption('one-page')): ?>
