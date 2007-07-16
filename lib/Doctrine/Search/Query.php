@@ -77,13 +77,34 @@ class Doctrine_Search_Query
 
         $terms = Doctrine_Tokenizer::quoteExplode($text);
 
+        $map = $this->_query->getRootDeclaration();
+        $rootAlias = $this->_query->getRootAlias();
+
+        $component = $map['table']->getComponentName() . 'Index';
+        $subAlias = 'i2';
+
+        $rel = $map['table']->getRelation($component);
+
+        $foreign = (array) $rel->getForeign();
+        foreach ((array) $rel->getLocal() as $k => $field) {
+            $joinCondition = $rootAlias . '.' . $field . ' = ' . $subAlias . '.' . $foreign[$k];
+        }
+
+        $this->_query->innerJoin($rootAlias . '.' . $component . ' ' . 'i');
+
         foreach ($this->_aliases as $alias) {
-            $a = array();
+            $condition = array();
+            $subcondition = array();
 
             foreach ($terms as $term) {
-                $a[] = 'i.keyword = ?';
+                $condition[] = $alias . '.keyword = ?';
+                $subcondition[] = $subAlias . '.keyword = ?';
             }
-            $this->_query->addWhere(implode(' OR ', $a), $terms);
+            $this->_query->addSelect('(SELECT COUNT(' . $subAlias . '.position) FROM '
+                                    . $component . ' ' . $subAlias . ' WHERE '
+                                    . implode(' OR ', $subcondition) . ' AND ' . $joinCondition . ') relevancy');
+
+            $this->_query->addWhere(implode(' OR ', $condition), $terms);
         }
     }
     
