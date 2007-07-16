@@ -162,8 +162,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
             // get the column count
             $count = count($this->_data);
-            
-            $this->_data = $this->_filter->cleanData($this->_data);
+
+            $this->_values = $this->cleanData($this->_data);
 
             $this->prepareIdentifiers($exists);
 
@@ -404,6 +404,27 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
     }
     /**
+     * cleanData
+     *
+     * @param array $data       data array to be cleaned
+     * @return integer
+     */
+    public function cleanData(&$data)
+    {
+    	$tmp = $data;
+        $data = array();
+
+        foreach ($this->getTable()->getColumnNames() as $name) {
+            if ( ! isset($tmp[$name])) {
+                $data[$name] = self::$_null;
+            } else {
+                $data[$name] = $tmp[$name];
+            }
+            unset($tmp[$name]);
+        }
+        return $tmp;
+    }
+    /**
      * hydrate
      * hydrates this object from given array
      *
@@ -412,7 +433,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function hydrate(array $data)
     {
-        $this->_data = $this->_filter->cleanData($data);
+        $this->_values = $this->cleanData($data);
+        $this->_data   = $data;
+
         $this->prepareIdentifiers(true);
     }
     /**
@@ -541,7 +564,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $this->_table->getRepository()->add($this);
         $this->_filter = new Doctrine_Record_Filter($this);
 
-        $this->_data = $this->_filter->cleanData($this->_data);
+        $this->cleanData($this->_data);
 
         $this->prepareIdentifiers($this->exists());
         
@@ -631,37 +654,12 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
 
         $this->_modified = array();
-        $this->_data     = $this->_filter->cleanData($this->_data);
 
         $this->prepareIdentifiers();
 
         $this->_state    = Doctrine_Record::STATE_CLEAN;
 
         return $this;
-    }
-    /**
-     * factoryRefresh
-     * refreshes the data from outer source (Doctrine_Table)
-     *
-     * @throws Doctrine_Record_Exception        When the primary key of this record doesn't match the primary key fetched from a collection
-     * @return void
-     */
-    public function factoryRefresh()
-    {
-        $this->_data = $this->_table->getData();
-        $old  = $this->_id;
-
-        $this->_data = $this->_filter->cleanData($this->_data);
-
-        $this->prepareIdentifiers();
-
-        if ($this->_id != $old)
-            throw new Doctrine_Record_Exception("The refreshed primary key doesn't match the one in the record memory.", Doctrine::ERR_REFRESH);
-
-        $this->_state    = Doctrine_Record::STATE_CLEAN;
-        $this->_modified = array();
-
-        $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
     }
     /**
      * getTable

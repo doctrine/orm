@@ -920,11 +920,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             }
             
             if ($found) {
-                $this->data = array();
                 $recordName = $this->getClassnameToReturn();
-                $record = new $recordName($this, true);    
+                $record = new $recordName($this, true);
+                $this->data = array();
 
-                
                 return $record;
             }
 

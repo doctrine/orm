@@ -719,37 +719,6 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         return $this->_aliasMap;
     }
     /**
-     * mapAggregateValues
-     * map the aggregate values of given dataset row to a given record
-     *
-     * @param Doctrine_Record $record
-     * @param array $row
-     * @return Doctrine_Record
-     */
-    public function mapAggregateValues(&$record, array $row, $alias)
-    {
-        $found = false;     
-
-        // map each aggregate value
-        foreach ($row as $index => $value) {
-            $agg = false;
-
-            if (isset($this->_aliasMap[$alias]['agg'][$index])) {
-                $agg = $this->_aliasMap[$alias]['agg'][$index];
-            }
-            if ($agg) {
-                if (is_array($record)) {
-                    $record[$agg] = $value;
-                } else {
-                    $record->mapValue($agg, $value);
-                }
-                $found = true;
-            }
-        }
-
-        return $found;
-    }
-    /**
      * getCachedForm
      * returns the cached form of this query for given resultSet
      *
@@ -1001,6 +970,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 $alias = $cache[$key]['alias'];
                 $field = $cache[$key]['field'];
 
+                if (isset($this->_aliasMap[$alias]['agg'][$field])) {
+                    $field = $this->_aliasMap[$alias]['agg'][$field];
+                }
+
+
                 $componentName  = $map['table']->getComponentName();
                 if (isset($map['relation'])) {
                     $componentAlias = $map['relation']->getAlias();
@@ -1024,9 +998,6 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     // component changed
                     $element = $driver->getElement($currData[$alias], $componentName);
 
-                    // map aggregate values (if any)
-                    $this->mapAggregateValues($element, $currData[$alias], $alias);
-                    
                     $oneToOne = false;
 
                     if ($alias === $rootAlias) {
@@ -1099,9 +1070,6 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             // component changed       
 
             $element = $driver->getElement($currData[$alias], $componentName);
-
-            // map aggregate values (if any)
-            $this->mapAggregateValues($element, $currData[$alias], $alias);
 
             $oneToOne = false;
 
