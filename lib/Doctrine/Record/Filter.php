@@ -86,39 +86,6 @@ class Doctrine_Record_Filter extends Doctrine_Object
         $this->_record->setModified($modified);
     }
     /**
-     * cleanData
-     * this method does several things to records internal data
-     *
-     * 1. It unserializes array and object typed columns
-     * 2. Uncompresses gzip typed columns
-     * 3. Gets the appropriate enum values for enum typed columns
-     * 4. Initializes special null object pointer for null values (for fast column existence checking purposes)
-     *
-     *
-     * example:
-     *
-     * $data = array("name" => "John", "lastname" => null, "id" => 1, "unknown" => "unknown");
-     * $data after operation:
-     * $data = array("name" => "John", "lastname" => Object(Doctrine_Null));
-     *
-     * here column 'id' is removed since its auto-incremented primary key (read-only)
-     *
-     * @throws Doctrine_Record_Exception        if unserialization of array/object typed column fails or
-     *                                          if uncompression of gzip typed column fails
-     *
-     * @param array $data                       data array to be cleaned
-     * @return integer
-     */
-    public function cleanData($data)
-    {
-        foreach ($this->_record->getTable()->getColumnNames() as $name) {
-            if ( ! isset($data[$name])) {
-                $data[$name] = self::$_null;
-            }
-        }
-        return $data;
-    }
-    /**
      * prepareIdentifiers
      * prepares identifiers for later use
      *
