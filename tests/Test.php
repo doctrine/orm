@@ -1,5 +1,5 @@
 <?php
-class GroupTest
+class GroupTest extends UnitTestCase
 {
     protected $_testCases = array();
 
@@ -16,42 +16,28 @@ class GroupTest
     }
     public function run(HtmlReporter $reporter)
     {
-    	foreach ($this->_testCases as $testCase) {
+    	foreach ($this->_testCases as $k => $testCase) {
     	    $testCase->run();
+    	    
+    	    $this->_passed += $testCase->getPassCount();
+    	    $this->_failed += $testCase->getFailCount();
+    	    $this->_messages += $testCase->getMessages();
+
+    	    $this->_testCases[$k] = null;
     	}
         $reporter->setTestCase($this);
         
         $reporter->paintHeader();
         $reporter->paintFooter();
     }
-    public function getMessages()
-    {
-    	$messages = array();
-        foreach($this->_testCases as $testCase) {
-            $messages = array_merge($messages, $testCase->getMessages());
-        }
-        return $messages;
-    }
-    public function getFailCount()
-    {
-    	$fails = 0;
-        foreach ($this->_testCases as $testCase) {
-            $fails += $testCase->getFailCount();
-        }
-        return $fails;
-    }
+
+
     public function getTestCaseCount()
     {
         return count($this->_testCases);
     }
-    public function getPassCount()
-    {
-    	$passes = 0;
-        foreach ($this->_testCases as $testCase) {
-            $passes += $testCase->getPassCount();
-        }
-        return $passes;
-    }
+
+
 }
 class HtmlReporter
 {
