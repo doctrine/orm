@@ -1,32 +1,32 @@
 body, html {
-	margin: 0;
-	padding: 0;
-	font-family: "Trebuchet MS", sans-serif;
-	font-size: medium;
+    margin: 0;
+    padding: 0;
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: medium;
     background: white;
     color: black;
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-family: "Lucida Bright", "Times New Roman", serif;
+    font-family: "Lucida Bright", "Times New Roman", serif;
 }
 
 h1 {
-	text-align: center;
-	font-size: 2em;
-	margin-bottom: 1em;
-	margin-top: 0;
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 1em;
+    margin-top: 0;
 }
 
 h2 {
-	font-size: 1.5em;
-	text-align: left;
-	margin: 0.67em 0;
+    font-size: 1.5em;
+    text-align: left;
+    margin: 0.67em 0;
 }
 
 h3 {
-	font-size: 1.17em;
-	margin: 1em 0;
+    font-size: 1.17em;
+    margin: 1em 0;
 }
 
 h4 {
@@ -39,74 +39,74 @@ h4 {
 }
 
 p, ul, ol, dl {
-	line-height: 1.5em;
-	text-align: justify;
-	font-size: medium;
+    line-height: 1.5em;
+    text-align: justify;
+    font-size: medium;
 }
 
 ul {
-	list-style-type: square;
+    list-style-type: square;
 }
 
 dd {
-	margin-bottom: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 table {
-	border: 1px solid #aaaaaa;
-	border-collapse: collapse;
-	margin: 0.5em 0;
-	color: black;
-	background-color: #f9f9f9;
-	line-height: 1.5em;
+    border: 1px solid #aaaaaa;
+    border-collapse: collapse;
+    margin: 0.5em 0;
+    color: black;
+    background-color: #f9f9f9;
+    line-height: 1.5em;
 }
 
 td, th {
-	padding: 0.2em;
-	border: 1px solid #aaaaaa;
+    padding: 0.2em;
+    border: 1px solid #aaaaaa;
 }
 
 th {
     color: black;
-	background-color: #f2f2f2;
+    background-color: #f2f2f2;
 }
 
 a:link {
-	color: #3465a4;
-	background-color: inherit;
-	text-decoration: none;
+    color: #3465a4;
+    background-color: inherit;
+    text-decoration: none;
 }
 
 a:visited {
-	color: #75507b;
-	background-color: inherit;
-	text-decoration: none;
+    color: #75507b;
+    background-color: inherit;
+    text-decoration: none;
 }
 
 a:link:hover,
 a:link:active,
 a:visited:hover,
 a:visited:active {
-	text-decoration: underline;
-	color: #555753;
-	background-color: inherit;
+    text-decoration: underline;
+    color: #555753;
+    background-color: inherit;
 }
 
 /*** Code blocks and highlighting**********************************************/
 
 pre, tt {
-	font-family: "Bitstream Vera Sans Mono", monospace;
-	font-size: small;
+    font-family: "Bitstream Vera Sans Mono", monospace;
+    font-size: small;
 }
 
 pre {
-	font-weight: bold;
-	padding: 1em;
-	margin: 1em 0;
-	line-height: 1.2em;
-	color: black;
-	background-color: #f6f6f6;
-	border: 1px solid #cccccc;
+    font-weight: bold;
+    padding: 1em;
+    margin: 1em 0;
+    line-height: 1.2em;
+    color: black;
+    background-color: #f6f6f6;
+    border: 1px solid #cccccc;
     
     /* Pup's Box Flow Hack, Rev 2 */
     overflow/**/: auto;
@@ -123,36 +123,36 @@ pre, x:-moz-any-link {
 }
 
 pre .default {
-	color: #000000;
-	background-color: inherit;
+    color: #000000;
+    background-color: inherit;
 }
 
 pre .keyword {
-	color: #3465a4;
-	background-color: inherit;
+    color: #3465a4;
+    background-color: inherit;
 }
 
 pre .string {
-	color: #ef2929;
-	background-color: inherit;
+    color: #ef2929;
+    background-color: inherit;
 }
 
 pre .comment {
-	color: #888a85;
-	background-color: inherit;
+    color: #888a85;
+    background-color: inherit;
 }
 
 /** Page layout ***************************************************************/
 
 #sidebar {
-	float: right;
-	margin: 1em;
-	padding: 0;
+    float: right;
+    margin: 1em;
+    padding: 0;
 }
 
 #wrap {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 #content {
@@ -195,8 +195,8 @@ ul.tree {
 .tree .expander:visited,
 .tree .expander:active,
 .tree .expander:hover {
-	color: black;
-	background-color: inherit;
+    color: black;
+    background-color: inherit;
     text-decoration: none;
 }
 
@@ -207,11 +207,11 @@ ul.tree {
 /** Table of Contents *********************************************************/
 
 #table-of-contents {
-	border: 1px solid #cccccc;
-	color: black;
-	background-color: #f6f6f6;
-	padding: 1em;
-	margin: 0;
+    border: 1px solid #cccccc;
+    color: black;
+    background-color: #f6f6f6;
+    padding: 1em;
+    margin: 0;
 }
 
 #table-of-contents p,
