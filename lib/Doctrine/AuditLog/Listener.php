@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+Doctrine::autoload('Doctrine_Record_Listener');
 /**
  * Doctrine_AuditLog_Listener
  *
@@ -29,7 +30,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_AuditLog_Listener extends Doctrine_EventListener
+class Doctrine_AuditLog_Listener extends Doctrine_Record_Listener
 {
     
     protected $_auditLog;
