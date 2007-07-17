@@ -154,9 +154,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     protected $_parser;
     /**
-     * @var Doctrine_AuditLog $_auditLog
+     * @var array $_templates                   an array containing all templates attached to this table
      */
-    protected $_auditLog;
+    protected $_templates;
+
+
     /**
      * the constructor
      * @throws Doctrine_Connection_Exception    if there are no opened connections
@@ -1238,13 +1240,19 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function isTree() {
         return ( ! is_null($this->options['treeImpl'])) ? true : false;
     }
-    public function getAuditLog()
+
+    public function getTemplate($template)
     {
-        if ( ! isset($this->_auditLog)) {
-            $this->_auditLog = new Doctrine_AuditLog($this);
-        }
-        
-        return $this->_auditLog;
+    	if ( ! isset($this->_templates[$template])) {
+            throw new Doctrine_Table_Exception('Template ' . $template . ' not loaded');
+    	}
+    	
+    	return $this->_templates[$template];
+    }
+    
+    public function addTemplate($template, Doctrine_Template $impl)
+    {
+        $this->_templates[$template] = $impl;
     }
     /**
      * returns a string representation of this object

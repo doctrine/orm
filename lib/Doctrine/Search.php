@@ -33,6 +33,7 @@
 class Doctrine_Search
 {
     protected $_options = array('generateFiles' => true);
+
     
     public function __construct(array $options)
     {
@@ -98,12 +99,17 @@ class Doctrine_Search
 
         $columns = array('keyword'  => array('type'    => 'string',
                                              'length'  => 200,
-                                             'notnull' => true),
+                                             'notnull' => true,
+                                             'primary' => true,
+                                             ),
                          'field'    => array('type'    => 'string',
                                              'length'  => 50,
-                                             'notnull' => true),
+                                             'notnull' => true,
+                                             'primary' => true),
                          'position' => array('type'    => 'integer',
-                                             'length'  => 8));
+                                             'length'  => 8,
+                                             'primary' => true,
+                                             ));
 
         $id = $table->getIdentifier();
 
@@ -120,6 +126,7 @@ class Doctrine_Search
 
             $col = strtolower($name . '_' . $column);
 
+            $def['primary'] = true;
             $fk[$col] = $def;
         }
         

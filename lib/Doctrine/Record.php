@@ -1370,7 +1370,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
     public function revert($version)
     {
-        $data = $this->_table->getAuditLog()->getVersion($this, $version);
+        $data = $this->_table
+                ->getTemplate('Doctrine_Template_Versionable')
+                ->getAuditLog()
+                ->getVersion($this, $version);
         
         $this->_data = $data[0];
     }
@@ -1385,6 +1388,37 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     	$tpl->setTable($this->_table);
         $tpl->setUp();
         $tpl->setTableDefinition();
+        return $this;
+    }
+    
+    public function actAs($tpl, $options = array())
+    {
+
+        if ( ! is_object($tpl)) {
+            if (class_exists($tpl)) {
+                $tpl = new $tpl($options);
+            } else {
+                $className = 'Doctrine_Template_' . ucwords(strtolower($tpl));
+
+                if ( ! class_exists($className)) {
+                    throw new Doctrine_Record_Exception("Couldn't load plugin.");
+                }
+
+                $tpl = new $className($options);
+            }
+        }
+
+        if ( ! ($tpl instanceof Doctrine_Template)) {
+            throw new Doctrine_Record_Exception('Loaded plugin class is not an istance of Doctrine_Template.');
+        }
+        $className = get_class($tpl);
+        
+        $this->_table->addTemplate($className, $tpl);
+
+        $tpl->setTable($this->_table);
+        $tpl->setUp();
+        $tpl->setTableDefinition();
+
         return $this;
     }
     /**
