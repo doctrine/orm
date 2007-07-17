@@ -38,22 +38,31 @@ class Doctrine_AuditLog_Listener extends Doctrine_Record_Listener
     public function __construct(Doctrine_AuditLog $auditLog) {
         $this->_auditLog = $auditLog;
     }
-    public function onPreInsert(Doctrine_Record $record)
+    public function preInsert(Doctrine_Event $event)
     {
     	$versionColumn = $this->_auditLog->getOption('versionColumn');
 
-        $record->set($versionColumn, 1);
+        $event->getInvoker()->set($versionColumn, 1);
     }
-    public function onPreDelete(Doctrine_Record $record)
+    public function preDelete(Doctrine_Event $event)
     {
+        $class = $this->_auditLog->getOption('className');
+
+        $record  = $event->getInvoker();
+
+        $version = new $class();
+        $version->merge($record->toArray());
+
     	$versionColumn = $this->_auditLog->getOption('versionColumn');
     	$version = $record->get($versionColumn);
 
         $record->set($versionColumn, ++$version);
     }
-    public function onPreUpdate(Doctrine_Record $record)
+    public function preUpdate(Doctrine_Event $event)
     {
     	$versionColumn = $this->_auditLog->getOption('versionColumn');
+    	$record  = $event->getInvoker();
+
     	$version = $record->get($versionColumn);
 
         $record->set($versionColumn, ++$version);

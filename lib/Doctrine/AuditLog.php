@@ -35,7 +35,7 @@ class Doctrine_AuditLog
                             'className'     => '%CLASS%Version',
                             'versionColumn' => 'version',
                             'generateFiles' => false,
-                            'table'         => null,
+                            'table'         => false,
                             );
 
     protected $_auditTable;
@@ -43,6 +43,10 @@ class Doctrine_AuditLog
     public function __construct($options)
     {
         $this->_options = array_merge($this->_options, $options);
+        
+        $this->_options['className'] = str_replace('%CLASS%', 
+                                                   $this->_options['table']->getComponentName(),
+                                                   $this->_options['className']);
     }
     /**
      * __get
@@ -109,13 +113,13 @@ class Doctrine_AuditLog
     }
 
     public function getVersion(Doctrine_Record $record, $version)
-    {
-        $className = str_replace('%CLASS%', $this->_table->getComponentName(), $this->_options['className']);
-        
+    {           
+        $className = $this->_options['className'];
+
         $q = new Doctrine_Query();
-        
+
         $values = array();
-        foreach ((array) $this->_table->getIdentifier() as $id) {
+        foreach ((array) $this->_options['table']->getIdentifier() as $id) {
             $conditions[] = $className . '.' . $id . ' = ?';
             $values[] = $record->get($id);
         }
@@ -123,9 +127,10 @@ class Doctrine_AuditLog
         
         $values[] = $version;
 
-        return $q->from($className)
-                 ->where($where)
-                 ->execute($values, Doctrine_HYDRATE::HYDRATE_ARRAY);
+        $q->from($className)
+          ->where($where);
+
+        return $q->execute($values, Doctrine_HYDRATE::HYDRATE_ARRAY);
     }
     public function buildDefinition(Doctrine_Table $table)
     {
