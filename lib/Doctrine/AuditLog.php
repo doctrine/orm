@@ -129,7 +129,7 @@ class Doctrine_AuditLog
         return $q->execute($values, Doctrine_HYDRATE::HYDRATE_ARRAY);
     }
     public function buildDefinition(Doctrine_Table $table)
-    {              
+    {
         $this->_options['className'] = str_replace('%CLASS%', 
                                                    $this->_options['table']->getComponentName(),
                                                    $this->_options['className']);
@@ -143,14 +143,15 @@ class Doctrine_AuditLog
         }
 
         $columns = $table->getColumns();
+        
+        // the version column should be part of the primary key definition
+        $columns[$this->_options['versionColumn']]['primary'] = true;
 
         $id = $table->getIdentifier();
 
         $options = array('className' => $className);
 
         $builder = new Doctrine_Import_Builder();
-
-        $options['primary'][] = $this->_options['versionColumn'];
 
         $def = $builder->buildDefinition($options, $columns);
 

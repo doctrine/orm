@@ -1375,6 +1375,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 ->getAuditLog()
                 ->getVersion($this, $version);
         
+        if ( ! isset($data[0])) {
+            throw new Doctrine_Record_Exception('Version ' . $version . ' does not exist!');                       	
+        }
+
         $this->_data = $data[0];
     }
     /**
