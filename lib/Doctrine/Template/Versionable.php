@@ -18,9 +18,8 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-Doctrine::autoload('Doctrine_Record_Listener');
 /**
- * Doctrine_AuditLog_Listener
+ * Doctrine_Template_Versionable
  *
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -30,48 +29,23 @@ Doctrine::autoload('Doctrine_Record_Listener');
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_AuditLog_Listener extends Doctrine_Record_Listener
+class Doctrine_Template_Versionable extends Doctrine_Template
 {
-    
     protected $_auditLog;
 
-    public function __construct(Doctrine_AuditLog $auditLog) {
-        $this->_auditLog = $auditLog;
-    }
-    public function preInsert(Doctrine_Event $event)
+    public function __construct(array $options)
     {
-    	$versionColumn = $this->_auditLog->getOption('versionColumn');
-
-        $event->getInvoker()->set($versionColumn, 1);
+        $this->_auditLog = new Doctrine_AuditLog($options);
     }
-    public function preDelete(Doctrine_Event $event)
+    public function setUp()
     {
-        $class = $this->_auditLog->getOption('className');
+    	$this->_auditLog->setOption('table', $this->_table);
+        $this->_auditLog->buildDefinition($this->_table);
 
-        $record  = $event->getInvoker();
-
-        $version = new $class();
-        $version->merge($record->toArray());
-        $version->save();
-
-    	$versionColumn = $this->_auditLog->getOption('versionColumn');
-    	$version = $record->get($versionColumn);
-
-        $record->set($versionColumn, ++$version);
+        $this->addListener(new Doctrine_AuditLog_Listener($this->_auditLog));
     }
-    public function preUpdate(Doctrine_Event $event)
+    public function getAuditLog()
     {
-    	$class = $this->_auditLog->getOption('className');
-        $record  = $event->getInvoker();
-        
-        $version = new $class();
-        $version->merge($record->toArray());
-        $version->save();        
-
-    	$versionColumn = $this->_auditLog->getOption('versionColumn');
-
-    	$version = $record->get($versionColumn);
-
-        $record->set($versionColumn, ++$version);
+        return $this->_auditLog;
     }
 }

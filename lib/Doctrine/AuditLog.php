@@ -43,10 +43,6 @@ class Doctrine_AuditLog
     public function __construct($options)
     {
         $this->_options = array_merge($this->_options, $options);
-        
-        $this->_options['className'] = str_replace('%CLASS%', 
-                                                   $this->_options['table']->getComponentName(),
-                                                   $this->_options['className']);
     }
     /**
      * __get
@@ -133,7 +129,11 @@ class Doctrine_AuditLog
         return $q->execute($values, Doctrine_HYDRATE::HYDRATE_ARRAY);
     }
     public function buildDefinition(Doctrine_Table $table)
-    {
+    {              
+        $this->_options['className'] = str_replace('%CLASS%', 
+                                                   $this->_options['table']->getComponentName(),
+                                                   $this->_options['className']);
+
         $name = $table->getComponentName();
 
         $className = $name . 'Version';
