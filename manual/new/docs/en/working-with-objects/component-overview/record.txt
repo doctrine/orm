@@ -204,6 +204,16 @@ $user->save();
 $user->id; // 1
 </code>
 
+++++ Mapping custom values
+
+There might be situations where you want to map custom values to records. For example values that depend on some outer sources and you only want these values to be availible at runtime not persisting those values into database. This can be achieved as follows:
+
+<code type="php">
+$user->mapValue('isRegistered', true);
+
+$user->isRegistered; // true
+</code>
+
 
 ++++ Serializing
 
