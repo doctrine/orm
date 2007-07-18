@@ -42,10 +42,8 @@ echo 'Longest query: ' . $longestQuery . "\n";
 ++ Locking Manager
 ++ Connection Profiler
 ++ AuditLog and versioning
-Doctrine_AuditLog provides a full versioning solution. Lets say we have a NewsItem class that we want to be versioned. This means that everytime a NewsItem object is updated its version number is increased.
+Doctrine_AuditLog provides a full versioning solution. Lets say we have a NewsItem class that we want to be versioned. This functionality can be applied by simply adding $this->actAs('Versionable') into your record setup. 
 
-
-+++ Creating a versioned record
 <code type='php'>
 class NewsItem extends Doctrine_Record
 {
@@ -53,16 +51,26 @@ class NewsItem extends Doctrine_Record
     {
         $this->hasColumn('title', 'string', 200);
         $this->hasColumn('content', 'string');
+        // the versioning plugin needs version column
+        $this->hasColumn('version', 'integer');
     }
 
     public function setUp()
     {
-        $this->loadTemplate(new Doctrine_AuditLog_Template());
+        $this->actAs('Versionable');
     }
 }
 </code>
 
+Now when we have defined this record to be versionable, Doctrine does internally the following things:
+
+* It creates a class called NewsItemVersion on-the-fly, the table this record is pointing at is news_item_version
+* Everytime a NewsItem object is deleted / updated the previous version is stored into news_item_version
+* Everytime a NewsItem object is updated its version number is increased.
+
+
 +++ Using versioning
+
 <code type='php'>
 $newsItem = new NewsItem();
 $newsItem->title = 'No news is good news';
@@ -71,17 +79,44 @@ $newsItem->content = 'All quiet on the western front';
 $newsItem->save();
 $newsItem->version; // 1
 
-$newsItem->title = 'A different title'; 
+$newsItem->title = 'A different title';
 $newsItem->save();
 $newsItem->version; // 2
 </code>
 
++++ Reverting changes
+
+Doctrine_Record provides a method called revert() which can be used for reverting to specified version. Internally Doctrine queries the version table and fetches the data for given version. If the given version is not found a Doctrine_Record_Exception is being thrown.
 
 <code type='php'>
 $newsItem->revert(1);
 
 $newsItem->title; // No news is good news
 </code>
+
++++ Advanced usage
+
+There are many options for the versioning plugin. Sometimes you may want to use other version column than 'version'. This can be achieved by giving the options parameter to actAs() method.
+
+<code type='php'>
+class NewsItem extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('title', 'string', 200);
+        $this->hasColumn('content', 'string');
+        // the versioning plugin needs version column
+        $this->hasColumn('news_version', 'integer');
+    }
+
+    public function setUp()
+    {
+        $this->actAs('Versionable', array('versionColumn' => 'news_version'));
+    }
+}
+</code>
+
+You can also control the name of the versioning record and the name of the version table with option attributes 'className' and 'tableName'.
 
 ++ Hook
 ++ Soft-delete
