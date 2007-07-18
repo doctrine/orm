@@ -32,23 +32,23 @@
  */
 class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase 
 {
-    public function prepareData() 
+
+    public function prepareData()
     { }
+
     public function prepareTables()
     { 
-        $this->tables = array('Versionable');
+    	$this->profiler = new Doctrine_Connection_Profiler();
+    	$this->conn->addListener($this->profiler);
+        $this->tables = array('VersioningTest', 'VersioningTestVersion');
         
         parent::prepareTables();
     }
-    public function testVersionTableSqlReturnsProperQuery()
+
+    public function testVersioningListenerListensAllManipulationOperations()
     {
-        $table = $this->conn->getTable('Versionable');
+        $entity = new VersioningTest();
 
-        $auditLog = $table->getAuditLog();
-
-        $auditLog->audit();
-
-        $entity = new Versionable();
         $entity->name = 'zYne';
         $entity->save();
         $this->assertEqual($entity->version, 1);
@@ -58,36 +58,28 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($entity->version, 2);
 
-
         $entity->delete();
         $this->assertEqual($entity->version, 3);
 
         $entity->revert(2);
 
         $this->assertEqual($entity->name, 'zYne 2');
+        $this->assertEqual($entity->version, 2);
     }
-    public function testUpdateTriggerSqlReturnsProperQuery()
+    
+    public function testRevertThrowsExceptionForTransientRecords()
     {
-        $table = $this->conn->getTable('User');
+        $entity = new VersioningTest();
         
-        $auditLog = new Doctrine_AuditLog($table);
-        
-        $sql = $auditLog->updateTriggerSql($table);
-
-        $this->assertEqual($sql, 'CREATE TRIGGER entity_dut UPDATE ON entity BEGIN INSERT INTO entity_dvt (id, name, loginname, password, type, created, updated, email_id) VALUES (old.id, old.name, old.loginname, old.password, old.type, old.created, old.updated, old.email_id); END;');
-    }
-    public function testDeleteTriggerSqlReturnsProperQuery()
-    {
-        $table = $this->conn->getTable('User');
-        
-        $auditLog = new Doctrine_AuditLog($table);
-        
-        $sql = $auditLog->deleteTriggerSql($table);
-
-        $this->assertEqual($sql, 'CREATE TRIGGER entity_ddt BEFORE DELETE ON entity BEGIN INSERT INTO entity_dvt (id, name, loginname, password, type, created, updated, email_id) VALUES (old.id, old.name, old.loginname, old.password, old.type, old.created, old.updated, old.email_id); END;');
+        try {
+            $entity->revert(1);
+            $this->fail();
+        } catch (Doctrine_Record_Exception $e) {
+            $this->pass();
+        }
     }
 }
-class Versionable extends Doctrine_Record 
+class VersioningTest extends Doctrine_Record 
 {
     public function setTableDefinition()
     {
@@ -96,6 +88,6 @@ class Versionable extends Doctrine_Record
     }
     public function setUp()
     {
-
+        $this->actAs('Versionable');
     }
 }
