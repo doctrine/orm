@@ -38,7 +38,6 @@ echo 'Longest query: ' . $longestQuery . "\n";
 </code>
 
 +++ Advanced usage
-++ Cache
 ++ Locking Manager
 ++ Connection Profiler
 ++ AuditLog and versioning
