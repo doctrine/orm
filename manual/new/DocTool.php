@@ -217,7 +217,7 @@ class DocTool
 	    }
 	    
 	    if ($section->getLevel() > $this->getOption('max-level')) {
-	        echo '<a id="' . $this->makeAnchor($section->getPath()) . '">';
+	        echo '<a href="#'. $this->makeAnchor($section->getPath()) .'" id="' . $this->makeAnchor($section->getPath()) . '">';
 	        echo $name;
 	        echo '</a>';
 	    } else {
