@@ -9,7 +9,7 @@
  * @package    Text_Wiki
  * @author     Paul M. Jones <pmjones@php.net>
  * @license    http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version    CVS: $Id: Interwiki.php,v 1.14 2006/02/25 05:03:13 toggg Exp $
+ * @version    CVS: $Id: Interwiki.php,v 1.15 2007/03/15 00:08:47 justinpatrin Exp $
  * @link       http://pear.php.net/package/Text_Wiki
  */
 
@@ -86,7 +86,7 @@ class Text_Wiki_Render_Xhtml_Interwiki extends Text_Wiki_Render {
         $output = "<a$css href=\"$href\"";
 
         // are we targeting a specific window?
-        if ($target) {
+        if ($target && $target != '_self') {
             // this is XHTML compliant, suggested by Aaron Kalin.
             // code tip is actually from youngpup.net, and it
             // uses the $target as the new window name.

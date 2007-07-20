@@ -104,7 +104,7 @@ The fields of this type should be able to handle 8 bit characters. Drivers take 
 
 By default Doctrine will use variable length character types. If fixed length types should be used can be controlled via the fixed modifier.
 
-<code type='php'>
+<code type="php">
 class Test extends Doctrine_Record {
     public function setTableDefinition() {
         $this->hasColumn('stringtest', 'string', 200, array('fixed' => true));

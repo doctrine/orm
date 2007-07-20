@@ -62,45 +62,22 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
             if (substr($options['text'], 0, 5) != '<?php') {
                 // PHP code example:
                 // add the PHP tags
-                $text = "<?php\n" . $options['text'] . "\n?>"; // <?php
+                $text = "<?php\n\n" . $options['text'] . "\n\n?>"; // <?php
             }
 
             // convert tabs to four spaces
             $text = str_replace("\t", "    ", $text);
 
             // colorize the code block (also converts HTML entities and adds
-            // <code>...</code> tags)
-            ob_start();
-            highlight_string($text);
-            $text = ob_get_contents();
-            ob_end_clean();
+            // <pre>...</pre> tags)
+            $h = new PHP_Highlight(true);
+            $h->loadString($text);
+            $text = $h->toHtml(true);
 
-            // replace <br /> tags with simple newlines.
-            // replace non-breaking space with simple spaces.
-            // translate HTML <font> and color to XHTML <span> and style.
-            // courtesy of research by A. Kalin :-).
-            $map = array(
-                '<br />'  => "\n",
-                '&nbsp;'  => ' ',
-                '<font'   => '<span',
-                '</font>' => '</span>',
-                'color="' => 'style="color:'
-            );
-            $text = strtr($text, $map);
+            $text = str_replace('&nbsp;', ' ', $text);
 
-            // get rid of the last newline inside the code block
-            // (becuase higlight_string puts one there)
-            if (substr($text, -8) == "\n</code>") {
-                $text = substr($text, 0, -8) . "</code>";
-            }
-
-            // replace all <code> tags with classed tags
-            if ($css_php) {
-                $text = str_replace('<code>', "<code$css_php>", $text);
-            }
-
-            // done
-            $text = "<pre$css>$text</pre>";
+            $text = str_replace('<pre>', "<pre><code$css_php>", $text);
+            $text = str_replace('</pre>', "</code></pre>", $text);
 
         } elseif ($type == 'html' || $type == 'xhtml') {
 

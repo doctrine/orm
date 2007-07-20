@@ -9,7 +9,7 @@
  * @package    Text_Wiki
  * @author     Paul M. Jones <pmjones@php.net>
  * @license    http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version    CVS: $Id: Image.php,v 1.16 2006/02/10 23:07:03 toggg Exp $
+ * @version    CVS: $Id: Image.php,v 1.17 2007/03/15 15:04:50 justinpatrin Exp $
  * @link       http://pear.php.net/package/Text_Wiki
  */
 
@@ -82,15 +82,10 @@ class Text_Wiki_Render_Xhtml_Image extends Text_Wiki_Render {
         unset($options['attr']['link']);
 
         // stephane@metacites.net -- 25/07/2004
-        // we make up an align="center" value for the <img> tag.
-        if (isset($options['attr']['align']) &&
-            $options['attr']['align'] == 'center') {
-
-            // unset so it won't show up as an attribute
-            unset($options['attr']['align']);
-
+        // use CSS for all alignment
+        if (isset($options['attr']['align'])) {
             // make sure we have a style attribute
-            if (! isset($options['attr']['style'])) {
+            if (!isset($options['attr']['style'])) {
                 // no style, set up a blank one
                 $options['attr']['style'] = '';
             } else {
@@ -98,9 +93,18 @@ class Text_Wiki_Render_Xhtml_Image extends Text_Wiki_Render {
                 $options['attr']['style'] .= ' ';
             }
 
-            // add a "center" style to the existing style.
-            $options['attr']['style'] .=
-                'display: block; margin-left: auto; margin-right: auto;';
+            if ($options['attr']['align'] == 'center') {
+                // add a "center" style to the existing style.
+                $options['attr']['style'] .=
+                    'display: block; margin-left: auto; margin-right: auto;';
+            } else {
+                // add a float style to the existing style
+                $options['attr']['style'] .=
+                    'float: '.$options['attr']['align'];
+            }
+            
+            // unset so it won't show up as an attribute
+            unset($options['attr']['align']);
         }
 
         // stephane@metacites.net -- 25/07/2004

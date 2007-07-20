@@ -9,7 +9,7 @@
  * @package    Text_Wiki
  * @author     Paul M. Jones <pmjones@php.net>
  * @license    http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version    CVS: $Id: Box.php,v 1.2 2005/07/30 08:03:28 toggg Exp $
+ * @version    CVS: $Id: Box.php,v 1.3 2007/03/03 23:00:54 mic Exp $
  * @link       http://pear.php.net/package/Text_Wiki
  */
 
@@ -26,7 +26,7 @@
 class Text_Wiki_Render_Xhtml_Box extends Text_Wiki_Render {
 
     var $conf = array(
-        'css' => null
+        'css' => 'simplebox'
     );
 
     /**
@@ -45,8 +45,13 @@ class Text_Wiki_Render_Xhtml_Box extends Text_Wiki_Render {
     function token($options)
     {
         if ($options['type'] == 'start') {
-            $css = $this->formatConf(' class="%s"', 'css');
-            return "<div class='simplebox'$css>";
+            if ($options['css']) {
+                $css = ' class="' . $options['css']. '"';
+            }
+            else {
+                $css = $this->formatConf(' class="%s"', 'css');
+            }
+            return "<div $css>";
         }
 
         if ($options['type'] == 'end') {

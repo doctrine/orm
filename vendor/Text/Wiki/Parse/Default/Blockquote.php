@@ -12,7 +12,7 @@
 * 
 * @license LGPL
 * 
-* @version $Id: Blockquote.php,v 1.3 2005/02/23 17:38:29 pmjones Exp $
+* @version $Id: Blockquote.php,v 1.4 2006/10/21 05:56:28 justinpatrin Exp $
 * 
 */
 
@@ -76,7 +76,7 @@ class Text_Wiki_Parse_Blockquote extends Text_Wiki_Parse {
     function process(&$matches)
     {
         // the replacement text we will return to parse()
-        $return = '';
+        $return = "\n";
         
         // the list of post-processing matches
         $list = array();
@@ -91,10 +91,8 @@ class Text_Wiki_Parse_Blockquote extends Text_Wiki_Parse {
             PREG_SET_ORDER
         );
         
-        // a stack of starts and ends; we keep this so that we know what
-        // indent level we're at.
-        $stack = array();
-        
+        $curLevel = 0;
+
         // loop through each list-item element.
         foreach ($list as $key => $val) {
             
@@ -105,75 +103,78 @@ class Text_Wiki_Parse_Blockquote extends Text_Wiki_Parse {
             // we number levels starting at 1, not zero
             $level = strlen($val[1]);
             
-            // get the text of the line
-            $text = $val[2];
-            
             // add a level to the list?
-            while ($level > count($stack)) {
-                
+            while ($level > $curLevel) {
                 // the current indent level is greater than the number
                 // of stack elements, so we must be starting a new
                 // level.  push the new level onto the stack with a 
                 // dummy value (boolean true)...
-                array_push($stack, true);
+                ++$curLevel;
                 
-                $return .= "\n";
+                //$return .= "\n";
                 
                 // ...and add a start token to the return.
                 $return .= $this->wiki->addToken(
                     $this->rule, 
                     array(
                         'type' => 'start',
-                        'level' => $level - 1
+                        'level' => $curLevel
                     )
                 );
                 
-                $return .= "\n\n";
+                //$return .= "\n\n";
             }
             
             // remove a level?
-            while (count($stack) > $level) {
+            while ($curLevel > $level) {
                 
                 // as long as the stack count is greater than the
                 // current indent level, we need to end list types.
                 // continue adding end-list tokens until the stack count
                 // and the indent level are the same.
-                array_pop($stack);
                 
-                $return .= "\n\n";
+                //$return .= "\n\n";
                 
                 $return .= $this->wiki->addToken(
                     $this->rule, 
                     array (
                         'type' => 'end',
-                        'level' => count($stack)
+                        'level' => $curLevel
                     )
                 );
                 
-                $return .= "\n";
+                //$return .= "\n";
+                --$curLevel;
             }
             
             // add the line text.
-            $return .= $text;
+            $return .= $val[2];
         }
+        
+        // the last char of the matched pattern must be \n but we don't
+        // want this to be inside the tokens
+        $return = substr($return, 0, -1);
         
         // the last line may have been indented.  go through the stack
         // and create end-tokens until the stack is empty.
-        $return .= "\n";
-        
-        while (count($stack) > 0) {
-            array_pop($stack);
+        //$return .= "\n";
+
+        while ($curLevel > 0) {
             $return .= $this->wiki->addToken(
                 $this->rule, 
                 array (
                     'type' => 'end',
-                    'level' => count($stack)
+                    'level' => $curLevel
                 )
             );
+            --$curLevel;
         }
         
+        // put back the trailing \n
+        $return .= "\n";
+
         // we're done!  send back the replacement text.
-        return "\n$return\n\n";
+        return $return;
     }
 }
 ?>

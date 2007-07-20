@@ -4,7 +4,7 @@ Searching is a huge topic, hence an entire chapter has been devoted to a plugin 
 
 Consider we have a class called NewsItem with the following definition:
 
-<code type='php'>
+<code type="php">
 class NewsItem extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -27,7 +27,7 @@ contains word 'framework') the database would have to traverse through each row 
 
 Doctrine solves this with its search component and inverse indexes. First lets alter our definition a bit:
 
-<code type='php'>
+<code type="php">
 class NewsItem extends Doctrine_Record
 {
     public function setTableDefinition()

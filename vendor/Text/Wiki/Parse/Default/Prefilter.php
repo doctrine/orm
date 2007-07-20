@@ -12,7 +12,7 @@
 * 
 * @license LGPL
 * 
-* @version $Id: Prefilter.php,v 1.3 2005/02/23 17:38:29 pmjones Exp $
+* @version $Id: Prefilter.php,v 1.4 2006/12/08 08:30:37 justinpatrin Exp $
 * 
 */
 
@@ -65,6 +65,12 @@ class Text_Wiki_Parse_Prefilter extends Text_Wiki_Parse {
         // add extra newlines at the top and end; this
         // seems to help many rules.
         $this->wiki->source = "\n" . $this->wiki->source . "\n\n";
+
+        $this->wiki->source = str_replace("\n----\n","\n\n----\n\n",
+                                          $this->wiki->source);
+        $this->wiki->source = preg_replace("/\n(\\+{1,6})(.*)\n/m",
+                                           "\n\n\\1 \\2\n\n",
+                                           $this->wiki->source);
         
         // finally, compress all instances of 3 or more newlines
         // down to two newlines.

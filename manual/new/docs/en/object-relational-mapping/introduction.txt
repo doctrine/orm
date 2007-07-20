@@ -5,7 +5,7 @@ Doctrine_Record::hasColumn() takes 4 arguments:
 # **column length**
 # **column constraints and validators**
 
-<code type='php'>
+<code type="php">
 class Email extends Doctrine_Record {
     public function setTableDefinition() {
         // setting custom table name:

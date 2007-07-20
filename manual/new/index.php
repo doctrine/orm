@@ -1,7 +1,8 @@
 <?php
 error_reporting(E_ALL);
 
-$includePath = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'vendor';
+$includePath = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'vendor'
+             . PATH_SEPARATOR . dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib';
 
 set_include_path($includePath);
 
@@ -45,12 +46,6 @@ if ($cache->begin()) {
 
     $tool = new DocTool('docs/en.txt');
     // $tool->setOption('clean-url', true);
-    
-    $supportedLangs = array('en', 'fi');
-    foreach ($supportedLangs as $language) {
-        include "lang/$language.php";
-        $tool->addLanguage($lang[$language], $language);
-    }
     
     $baseUrl = '';
     $title = 'Doctrine Manual';

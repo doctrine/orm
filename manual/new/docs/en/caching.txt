@@ -6,7 +6,7 @@
 
 Initializing a new cache driver instance:
 
-<code type='php'>
+<code type="php">
 $cache = new Doctrine_Cache_Memcache($options);
 </code>
 
@@ -14,7 +14,7 @@ $cache = new Doctrine_Cache_Memcache($options);
 +++ Memcache
 Memcache driver stores cache records into a memcached server. Memcached is a high-performance, distributed memory object caching system. In order to use this backend, you need a memcached daemon and the memcache PECL extension.
 
-<code type='php'>
+<code type="php">
 // memcache allows multiple servers
 $servers = array('host' => 'localhost',
                  'port' => 11211,
@@ -35,7 +35,7 @@ The Alternative PHP Cache (APC) is a free and open opcode cache for PHP. It was 
 
 The APC cache driver of Doctrine stores cache records in shared memory.
 
-<code type='php'>
+<code type="php">
 $cache = new Doctrine_Cache_Apc();
 </code>
 
@@ -46,7 +46,7 @@ Db caching backend stores cache records into given database. Usually some fast f
 
 Initializing sqlite cache driver can be done as above:
 
-<code type='php'>
+<code type="php">
 $conn  = Doctrine_Manager::connection(new PDO('sqlite::memory:'));
 
 $cache = new Doctrine_Cache_Sqlite(array('connection' => $conn));
@@ -75,14 +75,14 @@ So not only does the DQL query cache skip the standard database query execution 
 You can set a connection or manager level cache driver by using Doctrine::ATTR_CACHE. Setting a connection level cache driver means that all queries executed with this connection use the specified cache driver whereas setting a manager level cache driver means that all connections (unless overridden at connection level) will use the given cache driver.
 
 Setting a manager level cache driver:
-<code type='php'>
+<code type="php">
 $manager = Doctrine_Manager::getInstance();
 
 $manager->setAttribute(Doctrine::ATTR_CACHE, $cacheDriver);
 </code>
 
 Setting a connection level cache driver:
-<code type='php'>
+<code type="php">
 $manager = Doctrine_Manager::getInstance();
 $conn    = $manager->openConnection('pgsql://user:pass@localhost/test');
 
@@ -90,14 +90,14 @@ $conn->setAttribute(Doctrine::ATTR_CACHE, $cacheDriver);
 </code>
 
 Usually the cache entries are valid for only some time. You can set global value for how long the cache entries should be considered valid by using Doctrine::ATTR_CACHE_LIFESPAN.
-<code type='php'>
+<code type="php">
 $manager = Doctrine_Manager::getInstance();
 
 // set the lifespan as one hour (60 seconds * 60 minutes = 1 hour = 3600 secs)
 $manager->setAttribute(Doctrine::ATTR_CACHE_LIFESPAN, 3600);
 </code>
 Now as we have set a cache driver for use we can make a DQL query to use it:
-<code type='php'>
+<code type="php">
 $query = new Doctrine_Query();
 
 // fetch blog titles and the number of comments
@@ -114,7 +114,7 @@ $entries = $query->execute();
 
 In the previous chapter we used global caching attributes. These attributes can be overriden at the query level. You can override the cache driver by calling useCache with a valid cacheDriver:
 
-<code type='php'>
+<code type="php">
 $query = new Doctrine_Query();
 
 $query->useCache(new Doctrine_Cache_Apc());
@@ -122,7 +122,7 @@ $query->useCache(new Doctrine_Cache_Apc());
 
 Also you can override the lifespan attribute by calling setCacheLifeSpan():
 
-<code type='php'>
+<code type="php">
 $query = new Doctrine_Query();
 
 // set the lifespan as half an hour

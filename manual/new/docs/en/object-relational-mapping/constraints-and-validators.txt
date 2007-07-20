@@ -15,7 +15,7 @@ A not-null constraint simply specifies that a column must not assume the null va
 
 The following definition uses a notnull constraint for column {{name}}. This means that the specified column doesn't accept null values.
 
-<code type='php'>
+<code type="php">
 class User extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -45,7 +45,7 @@ In general, a unique constraint is violated when there are two or more rows in t
 
 The following definition uses a unique constraint for column {{name}}.
 
-<code type='php'>
+<code type="php">
 class User extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -59,7 +59,7 @@ class User extends Doctrine_Record
 
 The following definition adds a unique constraint for columns {{name}} and {{age}}.
 
-<code type='php'>
+<code type="php">
 class User extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -87,7 +87,7 @@ Doctrine provides the following simple check operators:
 
 Consider the following example:
 
-<code type='php'>
+<code type="php">
 class Product extends Doctrine_Record
 {
     public function setTableDefinition()

@@ -7,7 +7,7 @@
 
 {{Doctrine_Connection_Profiler}} can be enabled by adding it as an eventlistener for {{Doctrine_Connection}}.
 
-<code type='php'>
+<code type="php">
 $conn = Doctrine_Manager::connection($dsn);
 
 $profiler = new Doctrine_Connection_Profiler();
@@ -18,7 +18,7 @@ $conn->setListener($profiler);
 
 Perhaps some of your pages is loading slowly. The following shows how to build a complete profiler report from the connection:
 
-<code type='php'>
+<code type="php">
 $totalTime    = $profiler->getTotalElapsedSecs();
 $queryCount   = $profiler->getTotalNumQueries();
 $longestTime  = 0;
@@ -43,7 +43,7 @@ echo 'Longest query: ' . $longestQuery . "\n";
 ++ AuditLog and versioning
 Doctrine_AuditLog provides a full versioning solution. Lets say we have a NewsItem class that we want to be versioned. This functionality can be applied by simply adding $this->actAs('Versionable') into your record setup. 
 
-<code type='php'>
+<code type="php">
 class NewsItem extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -70,7 +70,7 @@ Now when we have defined this record to be versionable, Doctrine does internally
 
 +++ Using versioning
 
-<code type='php'>
+<code type="php">
 $newsItem = new NewsItem();
 $newsItem->title = 'No news is good news';
 $newsItem->content = 'All quiet on the western front';
@@ -87,7 +87,7 @@ $newsItem->version; // 2
 
 Doctrine_Record provides a method called revert() which can be used for reverting to specified version. Internally Doctrine queries the version table and fetches the data for given version. If the given version is not found a Doctrine_Record_Exception is being thrown.
 
-<code type='php'>
+<code type="php">
 $newsItem->revert(1);
 
 $newsItem->title; // No news is good news
@@ -97,7 +97,7 @@ $newsItem->title; // No news is good news
 
 There are many options for the versioning plugin. Sometimes you may want to use other version column than 'version'. This can be achieved by giving the options parameter to actAs() method.
 
-<code type='php'>
+<code type="php">
 class NewsItem extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -124,7 +124,7 @@ Soft-delete is a very simple plugin for achieving the following behaviour: when 
 
 The following code snippet shows what you need in order to achieve this kind of behaviour. Notice how we define two event hooks: preDelete and postDelete. Also notice how the preDelete hook skips the actual delete-operation with skipOperation() call. For more info about the event hooks see the Event listener section.
 
-<code type='php'>
+<code type="php">
 class SoftDeleteTest extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -146,7 +146,7 @@ class SoftDeleteTest extends Doctrine_Record
 
 Now lets put the plugin in action:
 
-<code type='php'>
+<code type="php">
 
 // save a new record
 $record = new SoftDeleteTest();

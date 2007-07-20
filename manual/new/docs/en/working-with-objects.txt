@@ -7,7 +7,7 @@ Whenever you fetch an object that has not all of its fields loaded from database
 
 Lets say we have a User class with the following definition:
 
-<code type='php'>
+<code type="php">
 class User extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -21,7 +21,7 @@ class User extends Doctrine_Record
 
 In the following example we fetch all the Users with the fields name and password loaded directly. Then we lazy-load a huge field called description for one user.
 
-<code type='php'>
+<code type="php">
 $users = Doctrine_Query::create()->select('u.name, u.password')->from('User u');
 
 // the following lazy-loads the description fields and executes one additional database query

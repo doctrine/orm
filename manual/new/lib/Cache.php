@@ -57,7 +57,7 @@ class Cache
      */    
     public function clear()
     {
-        if ($handle = opendir($this->_dir)) {
+        if ($handle = @opendir($this->_dir)) {
             while ($file = readdir($handle)) {
                 if ($file !== '.' && $file !== '..') {
                     @unlink($this->_dir . '/' . $file);

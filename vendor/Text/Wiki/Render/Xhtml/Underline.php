@@ -46,11 +46,11 @@ class Text_Wiki_Render_Xhtml_Underline extends Text_Wiki_Render {
     {
         if ($options['type'] == 'start') {
             $css = $this->formatConf(' class="%s"', 'css');
-            return "<span style=\"text-decoration: underline;\"$css>";
+            return "<u$css>";
         }
 
         if ($options['type'] == 'end') {
-            return '</span>';
+            return '</u>';
         }
     }
 }

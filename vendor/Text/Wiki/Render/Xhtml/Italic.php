@@ -46,11 +46,11 @@ class Text_Wiki_Render_Xhtml_Italic extends Text_Wiki_Render {
     {
         if ($options['type'] == 'start') {
             $css = $this->formatConf(' class="%s"', 'css');
-            return "<em$css>";
+            return "<i$css>";
         }
 
         if ($options['type'] == 'end') {
-            return '</em>';
+            return '</i>';
         }
     }
 }

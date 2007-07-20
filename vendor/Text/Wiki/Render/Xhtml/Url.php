@@ -9,7 +9,7 @@
  * @package    Text_Wiki
  * @author     Paul M. Jones <pmjones@php.net>
  * @license    http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version    CVS: $Id: Url.php,v 1.13 2006/02/10 23:07:03 toggg Exp $
+ * @version    CVS: $Id: Url.php,v 1.18 2007/05/26 17:15:41 mic Exp $
  * @link       http://pear.php.net/package/Text_Wiki
  */
 
@@ -73,46 +73,58 @@ class Text_Wiki_Render_Xhtml_Url extends Text_Wiki_Render {
 
             // generate an image tag
             $css = $this->formatConf(' class="%s"', 'css_img');
-            $output = "<img$css src=\"$href\" alt=\"$text\" />";
+            $start = "<img$css src=\"$href\" alt=\"$text\" title=\"$text\" /><!-- ";
+            $end = " -->";
 
         } else {
 
             // should we build a target clause?
             if ($href{0} == '#' ||
-            	strtolower(substr($href, 0, 7)) == 'mailto:') {
-            	// targets not allowed for on-page anchors
-            	// and mailto: links.
+              strtolower(substr($href, 0, 7)) == 'mailto:') {
+              // targets not allowed for on-page anchors
+              // and mailto: links.
                 $target = '';
             } else {
-				// allow targets on non-anchor non-mailto links
+        // allow targets on non-anchor non-mailto links
                 $target = $this->getConf('target');
             }
 
             // generate a regular link (not an image)
             $text = $this->textEncode($text);
             $css = $this->formatConf(' class="%s"', "css_$type");
-            $output = "<a$css href=\"$href\"";
+            $start = "<a$css href=\"$href\"";
 
-            /*
-            if ($target) {
+            if ($target && $target != '_self') {
                 // use a "popup" window.  this is XHTML compliant, suggested by
                 // Aaron Kalin.  uses the $target as the new window name.
                 $target = $this->textEncode($target);
-                $output .= " onclick=\"window.open(this.href, '$target');";
-                $output .= " return false;\"";
+                $start .= " onclick=\"window.open(this.href, '$target');";
+                $start .= " return false;\"";
             }
-            */
+            
+            if (isset($name)) {
+                $start .= " id=\"$name\"";
+            }
 
             // finish up output
-            $output .= ">$text</a>";
+            $start .= ">";
+            $end = "</a>";
 
             // make numbered references look like footnotes when no
             // CSS class specified, make them superscript by default
             if ($type == 'footnote' && ! $css) {
-                $output = '<sup>' . $output . '</sup>';
+                $start = '<sup>' . $start;
+                $end = $end . '</sup>';
             }
         }
 
+        if ($options['type'] == 'start') {
+            $output = $start;
+        } else if ($options['type'] == 'end') {
+            $output = $end;
+        } else {
+            $output = $start . $text . $end;
+        }
         return $output;
     }
 }

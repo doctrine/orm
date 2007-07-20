@@ -1,29 +1,26 @@
 <?php
-// vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4:
+
 /**
- * Bold rule end renderer for Xhtml
+ *
+ * Address rule end renderer for Xhtml
  *
  * PHP versions 4 and 5
  *
  * @category   Text
+ *
  * @package    Text_Wiki
- * @author     Paul M. Jones <pmjones@php.net>
+ *
+ * @author     Michele Tomaiuolo <tomamic@yahoo.it>
+ *
  * @license    http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version    CVS: $Id: Bold.php,v 1.7 2005/07/30 08:03:28 toggg Exp $
+ *
+ * @version    CVS: $Id: Address.php,v 1.1 2007/02/01 09:33:00 mic Exp $
+ *
  * @link       http://pear.php.net/package/Text_Wiki
+ *
  */
 
-/**
- * This class renders bold text in XHTML.
- *
- * @category   Text
- * @package    Text_Wiki
- * @author     Paul M. Jones <pmjones@php.net>
- * @license    http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version    Release: @package_version@
- * @link       http://pear.php.net/package/Text_Wiki
- */
-class Text_Wiki_Render_Xhtml_Bold extends Text_Wiki_Render {
+class Text_Wiki_Render_Xhtml_Address extends Text_Wiki_Render {
 
     var $conf = array(
         'css' => null
@@ -46,11 +43,11 @@ class Text_Wiki_Render_Xhtml_Bold extends Text_Wiki_Render {
     {
         if ($options['type'] == 'start') {
             $css = $this->formatConf(' class="%s"', 'css');
-            return "<b$css>";
+            return "<address$css>";
         }
 
         if ($options['type'] == 'end') {
-            return '</b>';
+            return '</address>';
         }
     }
 }

@@ -6,7 +6,7 @@ An short example:
 
 We want to create a database table called 'user' with columns id(primary key), name, username, password and created. Provided that you have already installed Doctrine these few lines of code are all you need:
 
-<code type='php'>
+<code type="php">
 require_once('lib/Doctrine.php');
 
 spl_autoload_register(array('Doctrine', 'autoload'));

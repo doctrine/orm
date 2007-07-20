@@ -9,7 +9,7 @@ Doctrine offers method called {{compile()}} to solve this issue. The compile met
 
 Compiling is a method for making a single file of most used doctrine runtime components including the compiled file instead of multiple files (in worst cases dozens of files) can improve performance by an order of magnitude. In cases where this might fail, a {{Doctrine_Exception}} is throw detailing the error.
 
-<code type='php'>
+<code type="php">
 Doctrine::compile();
 // on some other script:
 require_once('path_to_doctrine/Doctrine.compiled.php');
@@ -23,7 +23,7 @@ Doctrine supports exporting record classes into database. This means that based 
 
 Lets say we have a classes called User and Phonenumber with the following definitions:
 
-<code type='php'>
+<code type="php">
 // file User.php
 class User extends Doctrine_Record
 {
@@ -56,7 +56,7 @@ class Phonenumber extends Doctrine_Record
 
 Now lets say these classes are in directory 'models/'. We can make Doctrine to iterate through this directory and attach these classes into your database structure with the following script:
 
-<code type='php'>
+<code type="php">
 
 require_once('path-to-doctrine/lib/Doctrine.php');
 
@@ -86,7 +86,7 @@ Pay attention to the following things:
 
 There might be situations where you don't want to execute the export queries immediately rather you want to get the query strings and maybe attach them to a build.sql file. This can be easily achieved as follows:
 
-<code type='php'>
+<code type="php">
 require_once('path-to-doctrine/lib/Doctrine.php');
 
 spl_autoload_register(array('Doctrine', 'autoload'));
@@ -100,7 +100,7 @@ print_r($queries);
 </code>
 
 Notice that the methods Doctrine::export() and Doctrine::exportSql() are just short cuts for Doctrine_Export::export() and Doctrine_Export::exportSql(). So the following code is equivalent with the previous example:
-<code type='php'>
+<code type="php">
 require_once('path-to-doctrine/lib/Doctrine.php');
 
 spl_autoload_register(array('Doctrine', 'autoload'));
@@ -118,7 +118,7 @@ print_r($queries);
 +++ Convenience methods
 
 In the previous example we exported all record classes within a directory. Sometimes you may want to export specific classes. It can be achieved by giving exportClasses() an array of class names:
-<code type='php'>
+<code type="php">
 require_once('path-to-doctrine/lib/Doctrine.php');
 
 spl_autoload_register(array('Doctrine', 'autoload'));
@@ -135,7 +135,7 @@ Consider the same situation and you want to get the array of sql queries needed 
 
 +++ Export options
 
-<code type='php'>
+<code type="php">
 // export everything, table definitions and constraints
 
 $manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);

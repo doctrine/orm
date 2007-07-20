@@ -6,13 +6,13 @@ Using raw sql for fetching might be useful when you want to utilize database spe
 
 Creating Doctrine_RawSql object is easy:
 
-<code type='php'>
+<code type="php">
 $q = new Doctrine_RawSql();
 </code>
 
 Optionally a connection parameter can be given:
 
-<code type='php'>
+<code type="php">
 $q = new Doctrine_RawSql($conn); // here $conn is an instance of Doctrine_Connection
 </code>
 
@@ -22,7 +22,7 @@ The first thing to notice when using Doctrine_RawSql is that you always have to 
 
 The following example should clarify the usage of these:
 
-<code type='php'>
+<code type="php">
 $q = new Doctrine_RawSql();
 
 $q->select('{u.*}')
@@ -45,7 +45,7 @@ When fetching from multiple components the addComponent calls become a bit more 
 
 Consider the following model:
 
-<code type='php'>
+<code type="php">
 // file User.php
 class User extends Doctrine_Record
 {
@@ -78,7 +78,7 @@ class Phonenumber extends Doctrine_Record
 
 In the following example we fetch all users and their phonenumbers:
 
-<code type='php'>
+<code type="php">
 $q = new Doctrine_RawSql();
 
 $q->select('{u.*}, {p.*}')

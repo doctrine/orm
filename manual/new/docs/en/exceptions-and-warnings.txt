@@ -2,7 +2,7 @@
 
 Doctrine_Manager_Exception is thrown if something failed at the connection management
 
-<code type='php'>
+<code type="php">
 try {
     $manager->getConnection('unknown');
 } catch (Doctrine_Manager_Exception) {
@@ -18,7 +18,7 @@ thrown if something failed during the relation parsing
 
 thrown if something failed at the database level
 
-<code type='php'>
+<code type="php">
 try {
     $conn->execute('SELECT * FROM unknowntable');
 } catch (Doctrine_Connection_Exception) {

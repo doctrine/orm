@@ -48,9 +48,7 @@ class Text_Wiki_Parse_Code extends Text_Wiki_Parse {
     * @var string
     * 
     */
-    
-/*    var $regex = '/^(\<code( .+)?\>)\n(.+)\n(\<\/code\>)(\s|$)/Umsi';*/
-    var $regex = ';^<code(\s[^>]*)?>((?:(?R)|.*?)*)\n</code>(\s|$);msi';
+    var $regex = ';^<code(\s[^>]*)?>(?:\s*)(.*?)(?:\s*)</code>(\s|$);msi';
     
     /**
     * 

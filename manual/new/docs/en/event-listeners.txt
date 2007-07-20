@@ -8,7 +8,7 @@ Doctrine provides flexible event listener architecture that not only allows list
 There are several different listeners and hooks for various Doctrine components. Listeners are separate classes where as hooks are empty template methods which are defined in the base class.
 
 An example of using Doctrine_Record hooks:
-<code type='php'>
+<code type="php">
 class Blog extends Doctrine_Record 
 {
     public function setTableDefinition()
@@ -39,7 +39,7 @@ Connection listeners are used for listening the methods of Doctrine_Connection a
 +++ Creating a new listener
 There are three different ways of defining a listener. First you can create a listener by making a class that inherits Doctrine_EventListener:
 
-<code type='php'>
+<code type="php">
 class MyListener extends Doctrine_EventListener
 {
     public function preExec(Doctrine_Event $event)
@@ -53,7 +53,7 @@ Note that by declaring a class that extends Doctrine_EventListener you don't hav
 
 Sometimes it may not be possible to define a listener that extends Doctrine_EventListener (you might have a listener that inherits some other base class). In this case you can make it implement Doctrine_EventListener_Interface.
 
-<code type='php'>
+<code type="php">
 class MyListener implements Doctrine_EventListener_Interface 
 {
     // notice: all listener methods must be defined here 
@@ -70,7 +70,7 @@ class MyListener implements Doctrine_EventListener_Interface
 
 The third way of creating a listener is a very elegant one. You can make a class that implements Doctrine_Overloadable. This interface has only one method: __call(), which can be used for catching *all* the events.
 
-<code type='php'>
+<code type="php">
 class MyDebugger implements Doctrine_Overloadable
 {
     public function __call($methodName, $args) 
@@ -84,13 +84,13 @@ class MyDebugger implements Doctrine_Overloadable
 
 You can attach the listeners to a connection with setListener().
 
-<code type='php'>
+<code type="php">
 $conn->setListener(new MyDebugger());
 </code>
 
 If you need to use multiple listeners you can use addListener().
 
-<code type='php'>
+<code type="php">
 $conn->addListener(new MyDebugger());
 $conn->addListener(new MyLogger());
 </code>
@@ -153,7 +153,7 @@ Here is a list of all availible listener methods:
 || postValidate() || Doctrine_Validator::validate() ||
 
 Just like with connection listeners there are three ways of defining a record listener: by extending Doctrine_Record_Listener, by implement Doctrine_Record_Listener_Interface or by implementing Doctrine_Overloadable. In the following we'll create a global level listener by implementing Doctrine_Overloadable:
-<code type='php'>
+<code type="php">
 class Logger extends Doctrine_Overloadable
 {
     public function __call($m, $a) 
@@ -167,13 +167,13 @@ class Logger extends Doctrine_Overloadable
 
 Attaching the listener to manager is easy:
 
-<code type='php'>
+<code type="php">
 $manager->addRecordListener(new Logger());
 </code>
 
 Note that by adding a manager level listener it affects on all connections and all tables / records within these connections. In the following we create a connection level listener:
 
-<code type='php'>
+<code type="php">
 class Debugger extends Doctrine_Record_Listener
 {
     public function preInsert(Doctrine_Event $event)
@@ -189,13 +189,13 @@ class Debugger extends Doctrine_Record_Listener
 
 Attaching the listener to a connection is as easy as:
 
-<code type='php'>
+<code type="php">
 $conn->addRecordListener(new Debugger());
 </code>
 
 Many times you want the listeners to be table specific so that they only apply on the actions on that given table. Here is an example:
 
-<code type='php'>
+<code type="php">
 class Debugger extends Doctrine_Record_Listener
 {
     public function postDelete(Doctrine_Event $event)
@@ -207,7 +207,7 @@ class Debugger extends Doctrine_Record_Listener
 
 Attaching this listener to given table can be done as follows:
 
-<code type='php'>
+<code type="php">
 class MyRecord extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -238,7 +238,7 @@ class MyRecord extends Doctrine_Record
 || postValidate() || Doctrine_Validator::validate() ||
 
 Example 1. Using insert and update hooks
-<code type='php'>
+<code type="php">
 class Blog extends Doctrine_Record 
 {
     public function setTableDefinition()
@@ -264,7 +264,7 @@ class Blog extends Doctrine_Record
 
 All different event listeners in Doctrine allow chaining. This means that more than one listener can be attached for listening the same methods. The following example attaches two listeners for given connection:
 
-<code type='php'>
+<code type="php">
 // here Debugger and Logger both inherit Doctrine_EventListener
 
 $conn->addListener(new Debugger());
@@ -274,7 +274,7 @@ $conn->addListener(new Logger());
 ++ The Event object
 +++ Getting the invoker
 You can get the object that invoked the event by calling getInvoker():
-<code type='php'>
+<code type="php">
 class MyListener extends Doctrine_EventListener
 {
     public function preExec(Doctrine_Event $event)
@@ -295,7 +295,7 @@ Doctrine_Event uses constants as event codes. Above is the list of all availible
 * Doctrine_Event::STMT_FETCH 
 * Doctrine_Event::STMT_FETCHALL
 
-<code type='php'>
+<code type="php">
 class MyListener extends Doctrine_EventListener
 {
     public function preExec(Doctrine_Event $event)
@@ -318,7 +318,7 @@ class MyListener extends Doctrine_EventListener
 * Doctrine_Event::RECORD_SERIALIZE
 * Doctrine_Event::RECORD_UNSERIALIZE
 
-<code type='php'>
+<code type="php">
 class MyRecord extends Doctrine_Record
 {
     public function preUpdate(Doctrine_Event $event)
@@ -331,7 +331,7 @@ class MyRecord extends Doctrine_Record
 
 The method getInvoker() returns the object that invoked the given event. For example for event Doctrine_Event::CONN_QUERY the invoker is a Doctrine_Connection object. Example:
 
-<code type='php'>
+<code type="php">
 class MyRecord extends Doctrine_Record
 {
     public function preUpdate(Doctrine_Event $event)
@@ -346,7 +346,7 @@ Doctrine_Event provides many methods for altering the execution of the listened 
 
 For some reason you may want to skip the execution of the listened method. It can be done as follows (note that preExec could be any listener method):
 
-<code type='php'>
+<code type="php">
 class MyListener extends Doctrine_EventListener
 {
     public function preExec(Doctrine_Event $event)
@@ -363,7 +363,7 @@ class MyListener extends Doctrine_EventListener
 
 When using a chain of listeners you might want to skip the execution of the next listener. It can be achieved as follows:
 
-<code type='php'>
+<code type="php">
 class MyListener extends Doctrine_EventListener
 {
     public function preExec(Doctrine_Event $event)

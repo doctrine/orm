@@ -12,7 +12,7 @@
 * 
 * @license LGPL
 * 
-* @version $Id: Freelink.php,v 1.4 2005/10/19 23:43:53 toggg Exp $
+* @version $Id: Freelink.php,v 1.8 2006/12/08 08:23:51 justinpatrin Exp $
 * 
 */
 
@@ -41,6 +41,9 @@
 
 class Text_Wiki_Parse_Freelink extends Text_Wiki_Parse {
     
+    var $conf = array (
+                       'utf-8' => false
+    );
     
     /**
     * 
@@ -56,16 +59,20 @@ class Text_Wiki_Parse_Freelink extends Text_Wiki_Parse {
     function Text_Wiki_Parse_Freelink(&$obj)
     {
         parent::Text_Wiki_Parse($obj);
-        
+        if ($this->getConf('utf-8')) {
+            $any = '\p{L}';
+        } else {
+            $any = '';
+        }
         $this->regex =
             '/' .                                                   // START regex
             "\\(\\(" .                                               // double open-parens
             "(" .                                                   // START freelink page patter
-            "[-A-Za-z0-9 _+\\/.,;:!?'\"\\[\\]\\{\\}&\xc0-\xff]+" . // 1 or more of just about any character
+            "[-A-Za-z0-9 _+\\/.,;:!?'\"\\[\\]\\{\\}&".$any."\xc0-\xff]+" . // 1 or more of just about any character
             ")" .                                                   // END  freelink page pattern
             "(" .                                                   // START display-name
             "\|" .                                                   // a pipe to start the display name
-            "[-A-Za-z0-9 _+\\/.,;:!?'\"\\[\\]\\{\\}&\xc0-\xff]+" . // 1 or more of just about any character
+            "[-A-Za-z0-9 _+\\/.,;:!?'\"\\[\\]\\{\\}&".$any."\xc0-\xff]+" . // 1 or more of just about any character
             ")?" .                                                   // END display-name pattern 0 or 1
             "(" .                                                   // START pattern for named anchors
             "\#" .                                                   // a hash mark
@@ -73,7 +80,7 @@ class Text_Wiki_Parse_Freelink extends Text_Wiki_Parse {
             "[-A-Za-z0-9_:.]*" .                                   // 0 or more alpha, digit, underscore
             ")?" .                                                   // END named anchors pattern 0 or 1
             "()\\)\\)" .                                           // double close-parens
-            '/';                                                   // END regex
+            '/'.($this->getConf('utf-8') ? 'u' : '');              // END regex
     }
     
     

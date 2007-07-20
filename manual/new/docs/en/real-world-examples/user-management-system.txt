@@ -11,7 +11,7 @@ In the following example we make a user management system where
 # When an entity is updated a current timestamp will be assigned to 'updated' field
 # Entities will always be fetched in batches
 
-<code type='php'>
+<code type="php">
 class Entity extends Doctrine_Record 
 {
     public function setUp() 

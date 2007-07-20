@@ -9,7 +9,7 @@
  * @package    Text_Wiki
  * @author     Paul M. Jones <pmjones@php.net>
  * @license    http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version    CVS: $Id: Phplookup.php,v 1.11 2006/02/10 23:07:03 toggg Exp $
+ * @version    CVS: $Id: Phplookup.php,v 1.12 2007/03/15 00:08:47 justinpatrin Exp $
  * @link       http://pear.php.net/package/Text_Wiki
  */
 
@@ -54,7 +54,7 @@ class Text_Wiki_Render_Xhtml_Phplookup extends Text_Wiki_Render {
 
         // are we targeting another window?
         $target = $this->getConf('target', '');
-        if ($target) {
+        if ($target && $target != '_self') {
             // use a "popup" window.  this is XHTML compliant, suggested by
             // Aaron Kalin.  uses the $target as the new window name.
             $target = $this->textEncode($target);

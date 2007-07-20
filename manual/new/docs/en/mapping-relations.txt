@@ -344,7 +344,7 @@ The entity table has a column called {{type}} which tells whether an entity is a
 
 The only thing we have to do is to create 3 records (the same as before) and add call the {{Doctrine_Table::setInheritanceMap()}} method inside the {{setUp()}} method.
 
-<code type='php'>
+<code type="php">
 class Entity extends Doctrine_Record 
 {
     public function setTableDefinition() 
@@ -379,7 +379,7 @@ class Group extends Entity
 
 If we want to be able to fetch a record from the {{Entity}} table and automatically get a {{User}} record if the {{Entity}} we fetched is a user we have to do set the subclasses option in the parent class. The adjusted example:
 
-<code type='php'>
+<code type="php">
 class Entity extends Doctrine_Record 
 {
     public function setTableDefinition() 
@@ -415,7 +415,7 @@ class Group extends Entity
 
 We can then do the following given the previous table mapping.
 
-<code type='php'>
+<code type="php">
 $user = new User();
 $user->name = 'Bjarte S. Karlsen';
 $user->username = 'meus';
@@ -444,7 +444,7 @@ A foreign key constraint specifies that the values in a column (or a group of co
 
 Say you have the product table with the following definition:
 
-<code type='php'>
+<code type="php">
 class Product extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -458,7 +458,7 @@ class Product extends Doctrine_Record
 
 Let's also assume you have a table storing orders of those products. We want to ensure that the order table only contains orders of products that actually exist. So we define a foreign key constraint in the orders table that references the products table:
 
-<code type='php'>
+<code type="php">
 class Order extends Doctrine_Record
 {
     public function setTableDefinition()
@@ -512,7 +512,7 @@ Rejects the delete or update operation for the parent table. NO ACTION and RESTR
 
 In the following example we define two classes, User and Phonenumber with their relation being one-to-many. We also add a foreign key constraint with onDelete cascade action. This means that everytime a users is being deleted its associated phonenumbers will also be deleted.
 
-<code type='php'>
+<code type="php">
 class User extends Doctrine_Record
 {
     public function setTableDefinition()

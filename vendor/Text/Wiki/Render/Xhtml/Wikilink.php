@@ -9,7 +9,7 @@
  * @package    Text_Wiki
  * @author     Paul M. Jones <pmjones@php.net>
  * @license    http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version    CVS: $Id: Wikilink.php,v 1.21 2006/07/28 14:52:52 justinpatrin Exp $
+ * @version    CVS: $Id: Wikilink.php,v 1.22 2006/12/08 21:25:24 justinpatrin Exp $
  * @link       http://pear.php.net/package/Text_Wiki
  */
 
@@ -102,7 +102,7 @@ class Text_Wiki_Render_Xhtml_Wikilink extends Text_Wiki_Render {
             }
 
             // get the CSS class and generate output
-            $css = sprintf(' class="%s"', $this->textEncode($this->getConf('css')));
+            $css = ' class="'.$this->textEncode($this->getConf('css')).'"';
 
             $start = '<a'.$css.' href="'.$this->textEncode($href).'">';
             $end = '</a>';
@@ -136,7 +136,7 @@ class Text_Wiki_Render_Xhtml_Wikilink extends Text_Wiki_Render {
             }
 
             // get the appropriate CSS class and new-link text
-            $css = sprintf(' class="%s"', $this->textEncode($this->getConf('css_new')));
+            $css = ' class="'.$this->textEncode($this->getConf('css_new')).'"';
             $new = $this->getConf('new_text');
 
             // what kind of linking are we doing?
