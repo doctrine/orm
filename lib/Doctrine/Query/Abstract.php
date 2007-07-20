@@ -44,6 +44,17 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
         return $this->parseQueryPart('select', $select, true);
     }
     /**
+     * addFrom
+     * adds fields to the FROM part of the query
+     *
+     * @param string $from        Query FROM part
+     * @return Doctrine_Query
+     */
+    public function addFrom($from)
+    {
+        return $this->parseQueryPart('from', $from, true);
+    }
+    /**
      * addWhere
      * adds conditions to the WHERE part of the query
      *
