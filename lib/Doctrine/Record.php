@@ -44,8 +44,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     const STATE_DIRTY       = 1;
     /**
      * TDIRTY STATE
-     * a Doctrine_Record is in transient dirty state when it is created and some of its fields are modified
-     * but it is NOT yet persisted into database
+     * a Doctrine_Record is in transient dirty state when it is created 
+     * and some of its fields are modified but it is NOT yet persisted into database
      */
     const STATE_TDIRTY      = 2;
     /**
@@ -66,7 +66,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     const STATE_TCLEAN      = 5;
     /**
      * LOCKED STATE
-     * a Doctrine_Record is temporarily locked during deletes
+     * a Doctrine_Record is temporarily locked during deletes and saves
+     *
+     * This state is used internally to ensure that circular deletes
+     * and saves will not cause infinite loops
      */
     const STATE_LOCKED     = 6;
     /**
@@ -1368,25 +1371,36 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         
         return $this->_node;
     }
+    /**
+     * revert
+     * reverts this record to given version, this method only works if versioning plugin
+     * is enabled
+     *
+     * @throws Doctrine_Record_Exception    if given version does not exist
+     * @param integer $version      an integer > 1
+     * @return Doctrine_Record      this object
+     */
     public function revert($version)
     {
         $data = $this->_table
                 ->getTemplate('Doctrine_Template_Versionable')
                 ->getAuditLog()
                 ->getVersion($this, $version);
-        
+
         if ( ! isset($data[0])) {
-            throw new Doctrine_Record_Exception('Version ' . $version . ' does not exist!');                       	
+            throw new Doctrine_Record_Exception('Version ' . $version . ' does not exist!');
         }
 
         $this->_data = $data[0];
+
+        return $this;
     }
     /**
      * loadTemplate
      *
      * @param string $template
      */
-    public function loadTemplate($template, $options = array())
+    public function loadTemplate($template, array $options = array())
     {
     	$tpl = new $template($options);
     	$tpl->setTable($this->_table);
@@ -1394,19 +1408,26 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $tpl->setTableDefinition();
         return $this;
     }
-    
-    public function actAs($tpl, $options = array())
+    /**
+     * actAs
+     * loads a given plugin 
+     *
+     * @param mixed $tpl
+     * @param array $options
+     */
+    public function actAs($tpl, array $options = array())
     {
 
         if ( ! is_object($tpl)) {
-            if (class_exists($tpl)) {
+            if (class_exists($tpl, true)) {
                 $tpl = new $tpl($options);
             } else {
                 $className = 'Doctrine_Template_' . ucwords(strtolower($tpl));
 
-                if ( ! class_exists($className)) {
+                if ( ! class_exists($className, true)) {
                     throw new Doctrine_Record_Exception("Couldn't load plugin.");
                 }
+
 
                 $tpl = new $className($options);
             }
