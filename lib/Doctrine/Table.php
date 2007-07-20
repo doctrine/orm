@@ -1196,7 +1196,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     return (boolean) $value;
                 break;
                 case 'integer':
-                    return (int) $value;
+                    // don't do any casting here PHP INT_MAX is smaller than what the databases support
                 break;
             }
         }
