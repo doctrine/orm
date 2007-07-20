@@ -32,5 +32,9 @@
  */
 class Doctrine_Search_Indexer_TestCase extends Doctrine_UnitTestCase
 {
+    public function testIndexexCanRecursivelyIndexDirectories()
+    {
+        $indexer = new Doctrine_Search_Indexer();
 
+    }
 }
