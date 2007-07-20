@@ -11,6 +11,6 @@ class SearchTest extends Doctrine_Record
     	$options = array('generateFiles' => false,
                          'fields' => array('title', 'content'));
 
-        $this->loadTemplate('Doctrine_Search_Template', $options);
+        $this->actAs('Searchable', $options);
     }
 }
