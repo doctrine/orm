@@ -372,7 +372,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                     }
     
                     // take snapshots of all collections used within this transaction
-                    foreach (array_unique($this->_collections) as $coll) {
+                    foreach ($this->_collections as $coll) {
                         $coll->takeSnapshot();
                     }
                     $this->_collections = array();
