@@ -1,0 +1,12 @@
+This file contains only contains some plain text copied from wikipedia.
+
+In database products the ability to handle transactions allows the user to ensure that integrity of a database is maintained.
+
+A single transaction might require several queries, each reading and/or writing information in the database. When this happens it is usually important to be sure that the database is not left with only some of the queries carried out. For example, when doing a money transfer, if the money was debited from one account, it is important that it also be credited to the depositing account. Also, transactions should not interfere with each other. For more information about desirable transaction properties, see ACID.
+
+A simple transaction is usually issued to the database system in a language like SQL in this form:
+
+Begin the transaction 
+Execute several queries (although any updates to the database aren't actually visible to the outside world yet) 
+Commit the transaction (updates become visible if the transaction is successful) 
+If one of the queries fails the database system may rollback either the entire transaction or just the failed query. This behaviour is dependent on the DBMS in use and how it is set up. The transaction can also be rolled back manually at any time before the commit.
