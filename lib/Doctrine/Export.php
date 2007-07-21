@@ -33,6 +33,19 @@ Doctrine::autoload('Doctrine_Connection_Module');
  */
 class Doctrine_Export extends Doctrine_Connection_Module
 {
+    protected $valid_default_values = array(
+        'text'      => '',
+        'boolean'   => true,
+        'integer'   => 0,
+        'decimal'   => 0.0,
+        'float'     => 0.0,
+        'timestamp' => '1970-01-01 00:00:00',
+        'time'      => '00:00:00',
+        'date'      => '1970-01-01',
+        'clob'      => '',
+        'blob'      => '',
+    );
+
     /**
      * drop an existing database
      * (this method is implemented by the drivers)
@@ -658,10 +671,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 $field['default'] = empty($field['notnull'])
                     ? null : $this->valid_default_values[$field['type']];
 
-                if ($field['default'] === ''
-                    && ($conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
-                ) {
-                    $field['default'] = ' ';
+                if ($field['default'] === '' && 
+                   ($conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)) {
+                    $field['default'] = null;
                 }
             }
     
