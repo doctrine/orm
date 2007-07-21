@@ -108,7 +108,7 @@ class Doctrine_Hydrate_Record extends Doctrine_Object
     public function flush()
     {
         // take snapshots from all initialized collections
-        foreach (array_unique($this->_collections) as $key => $coll) {
+        foreach ($this->_collections as $key => $coll) {
             $coll->takeSnapshot();
         }
         foreach ($this->_tables as $table) {

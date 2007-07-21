@@ -176,6 +176,8 @@ $test->addTestCase(new Doctrine_Relation_TestCase());
 //$test->addTestCase(new Doctrine_Relation_Access_TestCase());
 //$test->addTestCase(new Doctrine_Relation_ManyToMany_TestCase());
 
+$test->addTestCase(new Doctrine_Relation_ManyToMany2_TestCase());
+
 
 $test->addTestCase(new Doctrine_Relation_OneToMany_TestCase());
 
