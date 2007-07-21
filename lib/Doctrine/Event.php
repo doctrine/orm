@@ -52,7 +52,7 @@ class Doctrine_Event
     const SAVEPOINT_ROLLBACK = 35;
     const SAVEPOINT_COMMIT   = 36;
 
-    /**
+    /*
      * RECORD EVENT CODES
      */
     const RECORD_DELETE      = 21;
@@ -123,22 +123,52 @@ class Doctrine_Event
     public function getName() 
     {
         switch ($this->_code) {
-            case self::QUERY:
+            case self::CONN_QUERY:
                 return 'query';
-            case self::EXEC:
+            case self::CONN_EXEC:
                 return 'exec';
-            case self::EXECUTE:
-                return 'execute';
-            case self::PREPARE:
+            case self::CONN_PREPARE:
                 return 'prepare';
-            case self::BEGIN:
-                return 'begin';
-            case self::COMMIT:
-                return 'commit';
-            case self::ROLLBACK:
-                return 'rollback';
-            case self::CONNECT:
+            case self::CONN_CONNECT:
                 return 'connect';
+            case self::CONN_CLOSE:
+                return 'close';
+            case self::CONN_ERROR:
+                return 'error';
+
+            case self::STMT_EXECUTE:
+                return 'execute';
+            case self::STMT_FETCH:
+                return 'fetch';
+            case self::STMT_FETCHALL:
+                return 'fetch all';
+            
+            case self::TX_BEGIN:
+                return 'begin';
+            case self::TX_COMMIT:
+                return 'commit';
+            case self::TX_ROLLBACK:
+                return 'rollback';
+
+            case self::SAVEPOINT_CREATE:
+                return 'create savepoint';
+            case self::SAVEPOINT_ROLLBACK:
+                return 'rollback savepoint';
+            case self::SAVEPOINT_COMMIT:
+                return 'commit Ssavepoint';
+ 
+            case self::RECORD_DELETE:
+                return 'delete record';
+            case self::RECORD_SAVE:
+                return 'save record';
+            case self::RECORD_UPDATE:
+                return 'update record';
+            case self::RECORD_INSERT:
+                return 'insert record';
+            case self::RECORD_SERIALIZE:
+                return 'serialize record';
+            case self::RECORD_UNSERIALIZE:
+                return 'unserialize record';
         }
     }
     /**
