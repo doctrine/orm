@@ -1176,8 +1176,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function prepareValue($field, $value)
     {
-        if ($value === null || $value === self::$_null) {
+        if ($value === self::$_null) {
             return self::$_null;
+        } else if ($value === null) {
+            return null;
         } else {
             $type = $this->getTypeOf($field);
 
