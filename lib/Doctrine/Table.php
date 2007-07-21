@@ -536,6 +536,18 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $this->_parser->bind($args[0], $options);
         }
     }
+
+    /** 
+     * hasRelation
+     *
+     * @param string $alias      the relation to check if exists
+     * @return boolean           true if the relation exists otherwise false
+     */
+    public function hasRelation($alias)
+    {
+        return $this->_parser->hasRelation($alias);
+    }	
+
     /**
      * getRelation
      *
