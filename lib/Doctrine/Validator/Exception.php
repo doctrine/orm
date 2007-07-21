@@ -42,6 +42,7 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
     public function __construct(array $invalid)
     {
         $this->invalid = $invalid;
+        parent::__construct($this->generateMessage());
     }
 
     public function getInvalidRecords()
@@ -68,4 +69,14 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
 
         return parent::__toString();
     }
+
+    private function generateMessage()
+    {
+        $message = "";
+        foreach ($this->invalid as $record){
+           $message .= "Validaton error in class " . get_class($record) . " ";
+        }
+        return $message;
+    }
+
 }
