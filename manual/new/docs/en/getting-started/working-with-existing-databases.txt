@@ -28,8 +28,7 @@ Now we would like to convert it into Doctrine record class. It can be achieved e
 require_once('lib/Doctrine.php');
 
 spl_autoload_register(array('Doctrine', 'autoload'));
-
-$conn = Doctrine_Manager::connection(new Doctrine_Db('mysql://root:dc34@localhost/test'));
+$conn = Doctrine_Manager::connection('mysql://root:dc34@localhost/test');
 
 // import method takes one parameter: the import directory (the directory where
 // the generated record files will be put in
