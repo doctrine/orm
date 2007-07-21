@@ -336,7 +336,7 @@ $test->addTestCase(new Doctrine_Search_TestCase());
 
 //$test->addTestCase(new Doctrine_AuditLog_TestCase());
 
-//$test->addTestCase(new Doctrine_NestedSet_SingleRoot_TestCase());
+$test->addTestCase(new Doctrine_NestedSet_SingleRoot_TestCase());
 
 // Cache tests
 //$test->addTestCase(new Doctrine_Cache_Query_SqliteTestCase());

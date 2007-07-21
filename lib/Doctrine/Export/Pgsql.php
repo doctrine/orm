@@ -283,5 +283,68 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         return 'DROP SEQUENCE ' . $sequenceName;
     }
 
+    /**
+     * Creates a table.
+     *
+     * @param unknown_type $name
+     * @param array $fields
+     * @param array $options
+     * @return unknown
+     */
+    public function createTableSql($name, array $fields, array $options = array())
+    {
+        if ( ! $name) {
+            throw new Doctrine_Export_Exception('no valid table name specified');
+        }
+        
+        if (empty($fields)) {
+            throw new Doctrine_Export_Exception('no fields specified for table ' . $name);
+        }
+
+        $queryFields = $this->getFieldDeclarationList($fields);
+
+
+        if (isset($options['primary']) && ! empty($options['primary'])) {
+            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
+        }
+
+        $name  = $this->conn->quoteIdentifier($name, true);
+        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+
+        $sql[] = $query;
+
+        if (isset($options['indexes']) && ! empty($options['indexes'])) {
+            foreach($options['indexes'] as $index => $definition) {
+                $sql[] = $this->createIndexSql($name, $index, $definition);
+            }
+        }
+        
+        if (isset($options['foreignKeys'])) {
+
+            foreach ((array) $options['foreignKeys'] as $k => $definition) {
+                if (is_array($definition)) {
+                    $sql[] = $this->createForeignKeySql($name, $definition);
+                }
+            }
+        }
+        
+        return $sql;
+    }
+    
+    /**
+     * createForeignKeySql
+     *
+     * @param string    $table         name of the table on which the foreign key is to be created
+     * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     * @return string
+     */
+    public function createForeignKeySql($table, array $definition)
+    {
+        $table = $this->conn->quoteIdentifier($table);
+
+        $query = 'ALTER TABLE ' . $table . ' ADD ' . $this->getForeignKeyDeclaration($definition);
+
+        return $query;
+    }
 }
 

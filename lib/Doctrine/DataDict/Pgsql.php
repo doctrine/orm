@@ -496,7 +496,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
                     if (preg_match('/^(is|has)/', $field['name'])) {
                         $type = array_reverse($type);
                     }
-                } elseif (strstr($db_type, 'text')) {
+                } elseif (strstr($dbType, 'text')) {
                     $type[] = 'clob';
                 }
                 if ($fixed !== false) {
@@ -545,7 +545,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
                 $length = null;
                 break;
             default:
-                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$db_type);
+                throw new Doctrine_DataDict_Exception('unknown database attribute type: '.$dbType);
         }
 
         return array('type'     => $type,

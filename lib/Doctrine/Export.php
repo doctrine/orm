@@ -44,6 +44,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         'date'      => '1970-01-01',
         'clob'      => '',
         'blob'      => '',
+        'string'    => ''
     );
 
     /**
@@ -426,7 +427,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $query = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
 
         $fields = array();
-        foreach (array_keys($definition['fields']) as $field) {
+        foreach ($definition['fields'] as $field) {
             $fields[] = $this->conn->quoteIdentifier($field);
         }
         $query .= ' (' . implode(', ', $fields) . ')';
@@ -672,7 +673,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                     ? null : $this->valid_default_values[$field['type']];
 
                 if ($field['default'] === '' && 
-                   ($conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)) {
+                   ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)) {
                     $field['default'] = null;
                 }
             }
@@ -704,7 +705,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 throw new Doctrine_Export_Exception('Unknown index type ' . $definition['type']);
             }
         }
-        
+
         if ( ! isset($definition['fields']) || ! is_array($definition['fields'])) {
             throw new Doctrine_Export_Exception('No index columns given.');
         }
@@ -942,7 +943,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $this->conn->beginTransaction();
 
         foreach ($sql as $query) {
-            try { 
+            try {
                 $this->conn->exec($query);
             } catch (Doctrine_Connection_Exception $e) {
                 // we only want to silence table already exists errors

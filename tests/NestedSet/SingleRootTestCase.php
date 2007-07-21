@@ -49,6 +49,14 @@ class Doctrine_NestedSet_SingleRoot_TestCase extends Doctrine_UnitTestCase
         $node2->name = 'node2';
         $node2->getNode()->insertAsLastChildOf($node);
     }
+    
+    public function testLftRgtValues()
+    {
+        $treeMngr = $this->conn->getTable('NestedSetTest_SingleRootNode')->getTree();
+        $root = $treeMngr->fetchRoot();
+        $this->assertEqual(1, $root['lft']);
+        $this->assertEqual(4, $root['rgt']);
+    }
 
     public function testGetDescendants()
     {
