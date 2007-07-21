@@ -447,9 +447,9 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
             $field['name'] = '';
         }
 
-        $db_type = strtolower($field['type']);
+        $dbType = strtolower($field['type']);
 
-        switch ($db_type) {
+        switch ($dbType) {
             case 'smallint':
             case 'int2':
                 $type[] = 'integer';
