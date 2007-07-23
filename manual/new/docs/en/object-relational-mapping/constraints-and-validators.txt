@@ -75,9 +75,7 @@ class User extends Doctrine_Record
 
 +++ Check
 
-Doctrine check constraints act as database level constraints as well as application level validators. When a record with check validators is exported additional CHECK constraints are being added to CREATE TABLE statement.
-
-Doctrine provides the following simple check operators:
+Some of the Doctrine validators also act as database level check constraints. When a record with these validators is exported additional CHECK constraints are being added to CREATE TABLE statement.
 
 Consider the following example which uses 'min' validator:
 
