@@ -282,6 +282,8 @@ $test->addTestCase(new Doctrine_Query_AggregateValue_TestCase());
 
 $test->addTestCase(new Doctrine_NewCore_TestCase());
 
+$test->addTestCase(new Doctrine_Ticket337_TestCase());
+
 // Record
 
 $test->addTestCase(new Doctrine_Record_State_TestCase());
