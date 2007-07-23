@@ -121,7 +121,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      *      -- foreignKeys                  the foreign keys of this table
      *
-     *      -- collation
+     *      -- checks                       the check constraints of this table, eg. 'price > dicounted_price'
+     *
+     *      -- collation                    collation attribute
      *
      *      -- indexes                      the index definitions of this table
      *
@@ -467,6 +469,23 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function addForeignKey(array $definition)
     {
         $this->options['foreignKeys'][] = $definition;
+    }
+    /**
+     * addCheckConstraint
+     * 
+     * adds a check constraint to this table
+     *
+     * @return void
+     */
+    public function addCheckConstraint($definition, $name)
+    {
+    	if (is_string($name)) {
+            $this->options['checks'][$name] = $definition;
+        } else {
+            $this->options['checks'][] = $definition;
+        }
+        
+        return $this;
     }
     /**
      * addIndex

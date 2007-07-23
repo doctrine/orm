@@ -180,7 +180,19 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         }
 
         $name  = $this->conn->quoteIdentifier($name, true);
-        $query[] = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+        $sql   = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+
+        if ($check = $this->getCheckDeclaration($fields)) {
+            $sql .= ', ' . $check;
+        }
+
+        if (isset($options['checks']) && $check = $this->getCheckDeclaration($options['checks'])) {
+            $sql .= ', ' . $check;
+        }
+
+        $sql .= ')';
+
+        $query[] = $sql;
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach ($options['indexes'] as $index => $definition) {
