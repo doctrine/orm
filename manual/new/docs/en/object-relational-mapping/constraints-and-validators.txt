@@ -85,7 +85,7 @@ class Product extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->hasColumn('id', 'integer', 4, 'primary');
-        $this->hasColumn('price', 'decimal', 18, array('min' => 0);
+        $this->hasColumn('price', 'decimal', 18, array('min' => 0));
     }
 }
 </code>
@@ -110,7 +110,7 @@ class Product extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->hasColumn('id', 'integer', 4, 'primary');
-        $this->hasColumn('price', 'decimal', 18, array('min' => 0, 'max' => 1000000);
+        $this->hasColumn('price', 'decimal', 18, array('min' => 0, 'max' => 1000000));
     }
 }
 </code>
@@ -134,8 +134,8 @@ class Product extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->hasColumn('id', 'integer', 4, 'primary');
-        $this->hasColumn('price', 'decimal', 18, array('min' => 0, 'max' => 1000000);
-        $this->hasColumn('discounted_price', 'decimal', 18, array('min' => 0, 'max' => 1000000);
+        $this->hasColumn('price', 'decimal', 18, array('min' => 0, 'max' => 1000000));
+        $this->hasColumn('discounted_price', 'decimal', 18, array('min' => 0, 'max' => 1000000));
         
         $this->check('price > discounted_price');
     }
