@@ -1452,6 +1452,26 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $this;
     }
+    
+    /**
+     * check
+     * adds a check constraint
+     *
+     * @param mixed $constraint     either a SQL constraint portion or an array of CHECK constraints
+     * @param string $name          optional constraint name
+     * @return Doctrine_Record      this object
+     */
+    public function check($constraint, $name = null)
+    {
+    	if (is_array($constraint)) {
+            foreach ($constraint as $name => $def) {
+                $this->_table->addCheckConstraint($def, $name);
+            }
+        } else {
+            $this->_table->addCheckConstraint($constraint, $name);
+        }
+        return $this;
+    }
     /**
      * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
      *
