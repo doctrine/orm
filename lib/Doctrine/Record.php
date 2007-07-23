@@ -425,6 +425,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
             unset($tmp[$name]);
         }
+
         return $tmp;
     }
     /**
@@ -734,10 +735,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function get($name, $load = true)
     {
-        $value    = self::$_null;
-        $lower    = strtolower($name);
+        $value = self::$_null;
+        $lower = strtolower($name);
 
-        $lower    = $this->_table->getColumnName($lower);
+        $lower = $this->_table->getColumnName($lower);
 
         if (isset($this->_data[$lower])) {
             // check if the property is null (= it is the Doctrine_Null object located in self::$_null)
@@ -1042,6 +1043,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 default:
                     if ($this->_data[$v] instanceof Doctrine_Record) {
                         $this->_data[$v] = $this->_data[$v]->getIncremented();
+                    }
+                    
+                    if ($this->_data[$v] === null) {
+                        throw new Doctrine_Record_Exception('Unexpected null value.');
                     }
 
                     $a[$v] = $this->_data[$v];
