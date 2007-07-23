@@ -224,9 +224,13 @@ END;
         return $content;
     }
 
-    public function buildRecord($table, $columns, $relations)
+    public function buildRecord($options, $columns, $relations)
     {
-        if (empty($fileName)) {
+    	if ( ! isset($options['className'])) {
+    	    throw new Doctrine_Import_Builder_Exception('Missing class name.');
+    	}
+
+        if ( ! isset($options['fileName'])) {
             if (empty($this->path)) {
                 $errMsg = 'No build target directory set.';
                 throw new Doctrine_Import_Builder_Exception($errMsg);
@@ -238,15 +242,15 @@ END;
                 throw new Doctrine_Import_Builder_Exception($errMsg);
             }
 
-            $fileName  = $this->path . DIRECTORY_SEPARATOR . $className . $this->suffix;
+            $options['fileName']  = $this->path . DIRECTORY_SEPARATOR . $options['className'] . $this->suffix;
         }
 
         $content = $this->buildDefinition($options, $columns, $relations);
 
-        $bytes = file_put_contents($fileName, '<?php' . PHP_EOL . $content);
+        $bytes = file_put_contents($options['fileName'], '<?php' . PHP_EOL . $content);
 
         if ($bytes === false) {
-            throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $fileName);
+            throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $options['fileName']);
         }
     }
 }
