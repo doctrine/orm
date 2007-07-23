@@ -686,10 +686,38 @@ class Doctrine_Export extends Doctrine_Connection_Module
         return $default;
     }
     /**
+     * Obtain DBMS specific SQL code portion needed to set a CHECK constraint
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param array $definition     check definition
+     * @return string               DBMS specific SQL code portion needed to set a CHECK constraint
+     */
+    public function getCheckDeclaration(array $definition)
+    {
+        $query .= 'CHECK ';
+
+        $constraints = array();
+        foreach ($definition as $field => $def) {
+            if (isset($def['min'])) {
+                $constraints[] = 'CHECK (' . $field . ' > ' . $def['min'] . ')';
+            }
+
+            if (isset($def['max'])) {
+                $constraints[] = 'CHECK (' . $field . ' < ' . $def['max'] . ')';
+            }
+
+            if (is_string($def)) {
+                $constraints[] = 'CHECK (' . $def . ')';
+            }
+        }
+
+        $query .= implode(', ', $constraints);
+    }
+    /**
      * Obtain DBMS specific SQL code portion needed to set an index 
      * declaration to be used in statements like CREATE TABLE.
      *
-     * @param string $charset       name of the index
+     * @param string $name          name of the index
      * @param array $definition     index definition
      * @return string               DBMS specific SQL code portion needed to set an index
      */
