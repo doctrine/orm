@@ -414,52 +414,65 @@ if(PHP_SAPI === "cli"){
 }else{
    $reporter = new MyReporter();
 }
+//uncomment this to run codecoverage
+//xdebug_start_code_coverage();
 $test->run($reporter);
+/* remote to enable coverage
 $path = Doctrine::getPath() . DIRECTORY_SEPARATOR;
 
 ?>
-<?php
-/**
 <table>
 <tr>
     <td>class</td>
     <td>coverage</td>
 </tr>
 
+<?php
 $coverage = xdebug_get_code_coverage();
-ksort($coverage);
+$totallines = 0;
+$totalcovered = 0;
+
 foreach ($coverage as $file => $lines) {
-
     $pos = strpos($file, $path);
-
-    $values = array_values($lines);
-    $i = count($values);
-    $covered = 0;
-    while ($i--) {
-        if ($values[$i] > 0) {
-            $covered++;
-        }
+    if($pos === false && $pos !== 0){
+        continue;
     }
 
-    if ($pos !== false) {
-        $class = str_replace(DIRECTORY_SEPARATOR, '_', substr($file, strlen($path), -4));
+    $covered = 0;
+    $coveredLines = array_values($lines);
+    array_walk($coveredLines, "countCovered");
+    $class = str_replace(DIRECTORY_SEPARATOR, '_', substr($file, strlen($path), -4));
+    if (strpos($class, '_Interface')) {
+        continue;
+    }
 
-        if (strpos($class, '_Interface')) {
-            continue;
-        }
+    if(!class_exists($class)){
+        continue;
+    }
+    $refl = new ReflectionClass($class);
+    $total = 0;
+    foreach ($refl->getMethods() as $method) {
+        $total += ($method->getEndLine() - $method->getStartLine());
+    }
+    $totallines += $total;
+    $totalcovered += $covered;
 
-        $refl = new ReflectionClass($class);
-        $total = 0;
-        foreach ($refl->getMethods() as $method) {
-            $total += ($method->getEndLine() - $method->getStartLine());
-        }
-        if ($total === 0) {
-            $total = 1;
-        }
-        print "<tr><td>" . $class . "</td><td>" . round(($covered / $total) * 100, 2) . " % </td></tr>";
+    if ($total === 0) {
+        $total = 1;
+    }
+    print "<tr><td>" . $class . "</td><td>" . round(($covered / $total) * 100, 2) . " % </td></tr>";
+}
+if ($totallines === 0) {
+    $totallines = 1;
+}
+print "<tr><td>TOTAL</td><td>" . round(($totalcovered / $totallines) * 100, 2) . " % </td></tr>";
+
+function countCovered($value, $key){
+    global $covered;
+    if($value >= 1){
+        $covered++;
     }
 }
-*/
 ?>
 </table>
 </body>
