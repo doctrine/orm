@@ -282,7 +282,7 @@ $test->addTestCase(new Doctrine_Query_AggregateValue_TestCase());
 
 $test->addTestCase(new Doctrine_NewCore_TestCase());
 
-$test->addTestCase(new Doctrine_Ticket337_TestCase());
+//$test->addTestCase(new Doctrine_Ticket337_TestCase());
 
 // Record
 
@@ -352,10 +352,43 @@ $test->addTestCase(new Doctrine_NestedSet_SingleRoot_TestCase());
 //$test->addTestCase(new Doctrine_Cache_TestCase());
 
 
+class CliReporter extends HtmlReporter{
+    public function paintHeader(){
+        echo "Doctrine UnitTests\n";
+        echo "====================\n";
+    }
+    public function paintFooter(){
+ 	    foreach ($this->_test->getMessages() as $message) {
+    	   print $message . "\n";
+    	}
+        echo "====================\n";
+        print "Tested: " . $this->_test->getTestCaseCount() . ' test cases' ."\n";
+        print "Successes: " . $this->_test->getPassCount() . " passes. \n";
+        print "Failures: " . $this->_test->getFailCount() . " fails. \n";
+    }
+}
+
 class MyReporter extends HtmlReporter {
-    public function paintHeader() {}
+    public function paintHeader() {
+    ?>
+<html>
+<head>
+  <title>Doctrine Unit Tests</title>
+  <style>
+.fail { color: red; } pre { background-color: lightgray; }
+  </style>
+</head>
+
+<body>
+
+<h1>Doctrine Unit Tests</h1>
+<?php
+
+    }
+
     public function paintFooter()
     {
+
     	print "<pre>";
     	foreach ($this->_test->getMessages() as $message) {
     	   print $message . "\n";
@@ -375,20 +408,13 @@ class MyReporter extends HtmlReporter {
 
 
 ?>
-<html>
-<head>
-  <title>Doctrine Unit Tests</title>
-  <style>
-.fail { color: red; } pre { background-color: lightgray; }
-  </style>
-</head>
-
-<body>
-
-<h1>Doctrine Unit Tests</h1>
-
 <?php
-$test->run(new MyReporter());
+if(PHP_SAPI === "cli"){
+    $reporter = new CliReporter();
+}else{
+   $reporter = new MyReporter();
+}
+$test->run($reporter);
 $path = Doctrine::getPath() . DIRECTORY_SEPARATOR;
 
 ?>
