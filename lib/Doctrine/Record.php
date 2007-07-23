@@ -1044,10 +1044,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                     if ($this->_data[$v] instanceof Doctrine_Record) {
                         $this->_data[$v] = $this->_data[$v]->getIncremented();
                     }
-                    
+                    /** TODO:
                     if ($this->_data[$v] === null) {
                         throw new Doctrine_Record_Exception('Unexpected null value.');
                     }
+                    */
 
                     $a[$v] = $this->_data[$v];
             }

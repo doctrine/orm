@@ -67,11 +67,6 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * @var array $_collections             an array of Doctrine_Collection objects that were affected during the Transaction
      */
     protected $_collections     = array();
-    /**
-     * @var array $_saved                   an array of already saved records, this array is used for avoiding infinite loops in circular
-     *                                      saving operations
-     */
-    protected $_saved         = array();
 
     /**
      * addCollection
@@ -90,38 +85,6 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
         return $this;
     }
-
-    /**
-     * addSaved
-     * adds a record into internal array of saved records
-     *
-     * at the end of each commit this array is emptied
-     *
-     * @param Doctrine_Record           record to be added
-     * @retrun Doctrine_Transaction     this object
-     */
-    public function addSaved(Doctrine_Record $record)
-    {
-        $this->_saved[] = $record;
-
-        return $this;
-    }
-    
-    /**
-     * isSaved
-     * returns whether or not given record is already saved
-     *
-     * this method is used for avoiding infinite loops within
-     * cascading saves
-     *
-     * @param Doctrine_Record       record to be checked
-     * @return boolean              whether or not given record is already saved
-     */
-    public function isSaved(Doctrine_Record $record)
-    {
-        return in_array($record, $this->_saved, true);
-    }
-
     /**
      * getState
      * returns the state of this connection
@@ -376,7 +339,6 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                         $coll->takeSnapshot();
                     }
                     $this->_collections = array();
-                    $this->_saved = array();
                     $this->conn->getDbh()->commit();
     
                     //$this->conn->unitOfWork->reset();
@@ -442,7 +404,6 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
                     throw new Doctrine_Transaction_Exception($e->getMessage());
                 }
             }
-            $this->_saved = array();
 
             $listener->postTransactionRollback($event);
         }

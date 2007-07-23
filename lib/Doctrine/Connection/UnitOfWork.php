@@ -141,21 +141,52 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     {
     	$conn = $this->getConnection();
         
-        if ($conn->transaction->isSaved($record)) {
+        $state = $record->state();
+        if ($state === Doctrine_Record::STATE_LOCKED) {
             return false;
         }
 
-        $conn->transaction->addSaved($record);
+        $record->state(Doctrine_Record::STATE_LOCKED);
 
         $conn->beginTransaction();
 
         $saveLater = $this->saveRelated($record);
 
+        $record->state($state);
+
         if ($record->isValid()) {
-            $this->save($record);
+            $event = new Doctrine_Event($record, Doctrine_Event::RECORD_SAVE);
+    
+            $record->preSave($event);
+    
+            $record->getTable()->getRecordListener()->preSave($event);
+    
+            if ( ! $event->skipOperation) {
+                switch ($state) {
+                    case Doctrine_Record::STATE_TDIRTY:
+                        $this->insert($record);
+                        break;
+                    case Doctrine_Record::STATE_DIRTY:
+                    case Doctrine_Record::STATE_PROXY:
+                        $this->update($record);
+                        break;
+                    case Doctrine_Record::STATE_CLEAN:
+                    case Doctrine_Record::STATE_TCLEAN:
+
+                        break;
+                }
+            }
+    
+            $record->getTable()->getRecordListener()->postSave($event);
+            
+            $record->postSave($event);
         } else {
             $conn->transaction->addInvalid($record);
         }
+        
+        $state = $record->state();
+
+        $record->state(Doctrine_Record::STATE_LOCKED);
 
         foreach ($saveLater as $fk) {
             $alias = $fk->getAlias();
@@ -169,8 +200,10 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         // save the MANY-TO-MANY associations
         $this->saveAssociations($record);
 
+        $record->state($state);
+
         $conn->commit();
-        
+
         return true;
     }
     /**
@@ -262,26 +295,25 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         foreach ($record->getReferences() as $k => $v) {
             $rel = $record->getTable()->getRelation($k);
 
-            if ($rel instanceof Doctrine_Relation_ForeignKey ||
-                $rel instanceof Doctrine_Relation_LocalKey) {
-                $local = $rel->getLocal();
-                $foreign = $rel->getForeign();
+            $local = $rel->getLocal();
+            $foreign = $rel->getForeign();
 
-                if ($record->getTable()->hasPrimaryKey($rel->getLocal())) {
-                    if ( ! $record->exists()) {
-                        $saveLater[$k] = $rel;
-                    } else {
-                        $v->save($this->conn);
-                    }
+            if ($rel instanceof Doctrine_Relation_ForeignKey) {
+                //if ( ! $record->exists()) {
+                    $saveLater[$k] = $rel;
+                /**
                 } else {
-                    // ONE-TO-ONE relationship
-                    $obj = $record->get($rel->getAlias());
+                    $v->save($this->conn);
+                }
+                */
+            } elseif ($rel instanceof Doctrine_Relation_LocalKey) {
+                // ONE-TO-ONE relationship
+                $obj = $record->get($rel->getAlias());
 
-                    // Protection against infinite function recursion before attempting to save
-                    if ($obj instanceof Doctrine_Record &&
-                        $obj->isModified()) {
-                        $obj->save($this->conn);
-                    }
+                // Protection against infinite function recursion before attempting to save
+                if ($obj instanceof Doctrine_Record &&
+                    $obj->isModified()) {
+                    $obj->save($this->conn);
                 }
             }
         }
@@ -319,11 +351,15 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
                     $this->conn->execute($query, array($r->getIncremented(), $record->getIncremented()));
                 }
+
                 foreach ($v->getInsertDiff() as $r) {
+                    
+
                     $assocRecord = $assocTable->create();
                     $assocRecord->set($rel->getForeign(), $r);
                     $assocRecord->set($rel->getLocal(), $record);
-                    $assocRecord->save($this->conn);
+
+                    $this->saveGraph($assocRecord);
                 }
             }
         }

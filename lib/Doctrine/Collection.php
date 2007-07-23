@@ -635,7 +635,6 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $record->delete($conn);
         }
 
-        Doctrine::debug(true);
         $conn->commit();
 
         $this->data = array();
