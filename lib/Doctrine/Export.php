@@ -229,7 +229,17 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
 
         $name  = $this->conn->quoteIdentifier($name, true);
-        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields;
+        
+        $check = $this->getCheckDeclaration($fields);
+        
+        if ( ! empty($check)) {
+            $query .= ', ' . $check;
+        }
+
+        $query .= ')';
+
+
 
         $sql[] = $query;
 
@@ -694,24 +704,22 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function getCheckDeclaration(array $definition)
     {
-        $query .= 'CHECK ';
-
         $constraints = array();
         foreach ($definition as $field => $def) {
-            if (isset($def['min'])) {
-                $constraints[] = 'CHECK (' . $field . ' > ' . $def['min'] . ')';
-            }
-
-            if (isset($def['max'])) {
-                $constraints[] = 'CHECK (' . $field . ' < ' . $def['max'] . ')';
-            }
-
             if (is_string($def)) {
                 $constraints[] = 'CHECK (' . $def . ')';
+            } else {
+                if (isset($def['min'])) {
+                    $constraints[] = 'CHECK (' . $field . ' >= ' . $def['min'] . ')';
+                }
+
+                if (isset($def['max'])) {
+                    $constraints[] = 'CHECK (' . $field . ' <= ' . $def['max'] . ')';
+                }
             }
         }
 
-        $query .= implode(', ', $constraints);
+        return implode(', ', $constraints);
     }
     /**
      * Obtain DBMS specific SQL code portion needed to set an index 
