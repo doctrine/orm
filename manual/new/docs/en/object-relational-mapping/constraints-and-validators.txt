@@ -97,7 +97,7 @@ CREATE TABLE product (
     id INTEGER,
     price NUMERIC,
     PRIMARY KEY(id),
-    CHECK (price > 0))
+    CHECK (price >= 0))
 </code>
 
 So Doctrine optionally ensures even at the database level that the price of any product cannot be below zero.
@@ -122,8 +122,8 @@ CREATE TABLE product (
     id INTEGER,
     price NUMERIC,
     PRIMARY KEY(id),
-    CHECK (price > 0),
-    CHECK (price < 1000000))
+    CHECK (price >= 0),
+    CHECK (price <= 1000000))
 </code>
 
 Lastly you can create any kind of CHECK constraints by using the check() method of the Doctrine_Record. In the last example we add constraint to ensure that price is always higher than the discounted price.
@@ -149,8 +149,8 @@ CREATE TABLE product (
     id INTEGER,
     price NUMERIC,
     PRIMARY KEY(id),
-    CHECK (price > 0),
-    CHECK (price < 1000000),
+    CHECK (price >= 0),
+    CHECK (price <= 1000000),
     CHECK (price > discounted_price))
 </code>
 
