@@ -16,18 +16,19 @@ class GroupTest extends UnitTestCase
     }
     public function run(HtmlReporter $reporter)
     {
+
+        $reporter->paintHeader();
     	foreach ($this->_testCases as $k => $testCase) {
     	    $testCase->run();
     	    
     	    $this->_passed += $testCase->getPassCount();
     	    $this->_failed += $testCase->getFailCount();
-    	    $this->_messages += $testCase->getMessages();
+            $this->_messages = array_merge($this->_messages, $testCase->getMessages());
 
     	    $this->_testCases[$k] = null;
     	}
         $reporter->setTestCase($this);
         
-        $reporter->paintHeader();
         $reporter->paintFooter();
     }
 
@@ -113,7 +114,6 @@ class UnitTestCase
 
 
         foreach ($trace as $stack) {
-
             if (substr($stack['function'], 0, 4) === 'test') {
                 $class = new ReflectionClass($stack['class']);
 
@@ -121,13 +121,12 @@ class UnitTestCase
                     $line = $stack['line'];
                 }
 
-                $this->_messages[] = $class->getName() . ' : method ' . $stack['function'] . ' failed on line ' . $line;
+                $errorMessage = $class->getName() . ' : method ' . $stack['function'] . ' failed on line ' . $line;
+                $this->_messages[] =  $errorMessage;
                 break;
             }
             $line = $stack['line'];
-
     	}
-
         $this->_failed++;
     }
     public function run() 
