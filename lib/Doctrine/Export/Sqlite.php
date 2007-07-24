@@ -180,7 +180,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         }
 
         $name  = $this->conn->quoteIdentifier($name, true);
-        $sql   = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+        $sql   = 'CREATE TABLE ' . $name . ' (' . $queryFields;
 
         if ($check = $this->getCheckDeclaration($fields)) {
             $sql .= ', ' . $check;
