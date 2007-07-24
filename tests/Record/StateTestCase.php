@@ -130,4 +130,20 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase {
         
         $this->assertEqual($count, count($this->dbh));
     }
+
+    public function testAssignFieldsToProxies() {
+
+        $user = new User();
+        $user->name = 'someuser';
+        $user->password = '123';
+        $user->save();
+
+        $this->connection->clear();
+
+        $user = $this->connection->queryOne("SELECT u.name FROM User u WHERE u.name = 'someuser'");
+        $user->name = 'someother';
+        $user->save();
+        $this->assertEqual($user->name, 'someother');
+    	
+    }
 }
