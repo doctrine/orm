@@ -180,8 +180,15 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      * @param string $update        Query UPDATE part
      * @return Doctrine_Query
      */
-    public function set($key, $value)
+    public function set($key, $value, $params = null)
     {
+        if ($params !== null) {
+            if (is_array($params)) {
+                $this->_params = array_merge($this->_params, $params);
+            } else {
+                $this->_params[] = $params;
+            }
+        }
         return $this->parseQueryPart('set', $key . ' = ' . $value, true);
     }
     /**
@@ -238,7 +245,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function where($where, $params = array())
     {
-        $this->_params = array();
+        //$this->_params = array();
         if (is_array($params)) {
             $this->_params = $params;
         } else {

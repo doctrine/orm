@@ -533,10 +533,10 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
                 // Update lft/rgt/root/level for all descendants
                 $q = new Doctrine_Query($conn);
                 $q = $q->update($componentName)
-                        ->set($componentName . '.lft', 'lft + ' . $diff)
-                        ->set($componentName . '.rgt', 'rgt + ' . $diff)
-                        ->set($componentName . '.level', 'level + ' . $levelDiff)
-                        ->set($componentName . '.' . $rootColName, $newRoot)
+                        ->set($componentName . '.lft', 'lft + ?', $diff)
+                        ->set($componentName . '.rgt', 'rgt + ?', $diff)
+                        ->set($componentName . '.level', 'level + ?', $levelDiff)
+                        ->set($componentName . '.' . $rootColName, '?', $newRoot)
                         ->where($componentName . '.lft > ? AND ' . $componentName . '.rgt < ?',
                         array($oldLft, $oldRgt));
                 $q = $this->_tree->returnQueryWithRootId($q, $oldRoot);
@@ -656,10 +656,10 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
             $rootColName = $this->record->getTable()->getTree()->getAttribute('rootColumnName');
             $q = new Doctrine_Query($conn);
             $q = $q->update($componentName)
-                    ->set($componentName . '.lft', 'lft + ' . $diff)
-                    ->set($componentName . '.rgt', 'rgt + ' . $diff)
-                    ->set($componentName . '.level', 'level - ' . $oldLevel)
-                    ->set($componentName . '.' . $rootColName, $newRoot)
+                    ->set($componentName . '.lft', 'lft + ?', $diff)
+                    ->set($componentName . '.rgt', 'rgt + ?', $diff)
+                    ->set($componentName . '.level', 'level - ?', $oldLevel)
+                    ->set($componentName . '.' . $rootColName, '?', $newRoot)
                     ->where($componentName . '.lft > ? AND ' . $componentName . '.rgt < ?',
                     array($oldLft, $oldRgt));
             $q = $this->_tree->returnQueryWithRootId($q, $oldRoot);
@@ -820,7 +820,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         // update level for descendants
         $q = new Doctrine_Query();
         $q = $q->update($componentName)
-                ->set($componentName . '.level', 'level + ' . $levelDiff)
+                ->set($componentName . '.level', 'level + ?', $levelDiff)
                 ->where($componentName . '.lft > ? AND ' . $componentName . '.rgt < ?',
                         array($left, $right));
         $q = $this->_tree->returnQueryWithRootId($q, $rootId);
@@ -850,16 +850,16 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         // shift left columns
         $componentName = $this->record->getTable()->getComponentName();
         $qLeft = $qLeft->update($componentName)
-                                ->set($componentName . '.lft', 'lft + ' . $delta)
+                                ->set($componentName . '.lft', 'lft + ?', $delta)
                                 ->where($componentName . '.lft >= ?', $first);
-
+        
         $qLeft = $this->record->getTable()->getTree()->returnQueryWithRootId($qLeft, $rootId);
         
         $resultLeft = $qLeft->execute();
         
         // shift right columns
         $resultRight = $qRight->update($componentName)
-                                ->set($componentName . '.rgt', 'rgt + ' . $delta)
+                                ->set($componentName . '.rgt', 'rgt + ?', $delta)
                                 ->where($componentName . '.rgt >= ?', $first);
 
         $qRight = $this->record->getTable()->getTree()->returnQueryWithRootId($qRight, $rootId);
@@ -883,7 +883,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         // shift left column values
         $componentName = $this->record->getTable()->getComponentName();
         $qLeft = $qLeft->update($componentName)
-                                ->set($componentName . '.lft', 'lft + ' . $delta)
+                                ->set($componentName . '.lft', 'lft + ?', $delta)
                                 ->where($componentName . '.lft >= ? AND ' . $componentName . '.lft <= ?', array($first, $last));
         
         $qLeft = $this->record->getTable()->getTree()->returnQueryWithRootId($qLeft, $rootId);
@@ -892,7 +892,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         
         // shift right column values
         $qRight = $qRight->update($componentName)
-                                ->set($componentName . '.rgt', 'rgt + ' . $delta)
+                                ->set($componentName . '.rgt', 'rgt + ?', $delta)
                                 ->where($componentName . '.rgt >= ? AND ' . $componentName . '.rgt <= ?', array($first, $last));
 
         $qRight = $this->record->getTable()->getTree()->returnQueryWithRootId($qRight, $rootId);
