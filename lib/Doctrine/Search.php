@@ -32,7 +32,8 @@
  */
 class Doctrine_Search
 {
-    protected $_options = array('generateFiles' => true);
+    protected $_options = array('generateFiles' => true,
+                                'className'     => '%CLASS%Index');
 
     
     public function __construct(array $options)
@@ -50,7 +51,7 @@ class Doctrine_Search
             return $this->_options[$option];
         }
         
-        return null;
+        throw new Doctrine_Search_Exception('Unknown option ' . $option);
     }
     
     public function analyze($text)
@@ -64,6 +65,13 @@ class Doctrine_Search
 
         return $this;
     }
+    /**
+     * updateIndex
+     * updates the index
+     *
+     * @param Doctrine_Record $record
+     * @return integer
+     */
     public function updateIndex(Doctrine_Record $record) 
     {
     	$fields = $this->getOption('fields');
@@ -91,7 +99,7 @@ class Doctrine_Search
     {
         $name = $table->getComponentName();
 
-        $className = $name . 'Index';
+        $className = $this->getOption('className');
         
         if (class_exists($className)) {
             return false;
