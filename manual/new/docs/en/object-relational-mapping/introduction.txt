@@ -39,3 +39,5 @@ class Email extends Doctrine_Record {
     }
 }
 </code>
+
+Note that validators / column constraints and the column length fields are optional.  The length may be omitted by using **null** for the length arguement, allowing doctrine to use a default length and permitting a fourth arguement for validation or column constraints.
