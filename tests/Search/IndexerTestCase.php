@@ -32,9 +32,37 @@
  */
 class Doctrine_Search_Indexer_TestCase extends Doctrine_UnitTestCase
 {
+    public function prepareData()
+    { }
+    public function prepareTables()
+    {
+        $this->tables = array('Doctrine_File', 'Doctrine_File_Index');
+        
+        parent::prepareTables();
+    }
+
     public function testIndexexCanRecursivelyIndexDirectories()
     {
+    	$profiler = new Doctrine_Connection_Profiler();
+    	$this->conn->addListener($profiler);
+
         $indexer = new Doctrine_Search_Indexer();
 
+        $indexer->indexDirectory(dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files');
+    }
+    
+    public function testIndexerAddsFiles()
+    {
+        $files = Doctrine_Query::create()->from('Doctrine_File')->execute();
+
+        $this->assertEqual($files->count(), 2);
+    }
+
+    public function testSearchingFiles()
+    {
+        $files = Doctrine_Query::create()->select('DISTINCT i.file_id')->from('Doctrine_File_Index i')
+                 ->where('i.keyword = ?', array('database'))->execute(array(), Doctrine_Hydrate::HYDRATE_ARRAY);
+
+        $this->assertEqual(count($files), 11);
     }
 }
