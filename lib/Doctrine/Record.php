@@ -742,7 +742,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         if (isset($this->_data[$lower])) {
             // check if the property is null (= it is the Doctrine_Null object located in self::$_null)
-            if ($this->_data[$lower] === self::$_null) {
+            if ($this->_data[$lower] === self::$_null && $load) {
                 $this->load();
             }
 
@@ -824,7 +824,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
 
             if ($load) {
-                $old = $this->get($lower, false);
+                $old = $this->get($lower, $load);
             } else {
                 $old = $this->_data[$lower];
             }
@@ -1012,12 +1012,14 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param array $array
      * @return array
      */
-    public function getPrepared(array $array = array()) {
+    public function getPrepared(array $array = array()) 
+    {
         $a = array();
 
         if (empty($array)) {
             $array = $this->_modified;
         }
+
         foreach ($array as $k => $v) {
             $type = $this->_table->getTypeOf($v);
 
@@ -1038,7 +1040,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                     $a[$v] = $this->getTable()->getConnection()->convertBooleans($this->_data[$v]);
                 break;
                 case 'enum':
-                    $a[$v] = $this->_table->enumIndex($v,$this->_data[$v]);
+                    $a[$v] = $this->_table->enumIndex($v, $this->_data[$v]);
                     break;
                 default:
                     if ($this->_data[$v] instanceof Doctrine_Record) {
