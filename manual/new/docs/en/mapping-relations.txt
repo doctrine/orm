@@ -1,6 +1,6 @@
 ++ Introduction
 
-In Doctrine all record relations are being set with {{hasMany}}, {{hasOne}}, {{ownsMany}} and {{ownsOne}} methods. Doctrine supports almost any kind of database relation from simple one-to-one foreign key relations to join table self-referencing relations.
+In Doctrine all record relations are being set with {{hasMany}}, {{hasOne}} methods. Doctrine supports almost any kind of database relation from simple one-to-one foreign key relations to join table self-referencing relations.
 
 
 ++ Relation aliases
@@ -18,8 +18,8 @@ class Forum_Board extends Doctrine_Record
     public function setUp() 
     {
         // notice the 'as' keyword here
-        $this->ownsMany('Forum_Thread as Threads', array('local' => 'id',
-                                                         'foreign' => 'board_id');
+        $this->hasMany('Forum_Thread as Threads', array('local' => 'id',
+                                                        'foreign' => 'board_id');
     }
 }
 
@@ -56,8 +56,8 @@ class User extends Doctrine_Record
     public function setUp() 
     {
         $this->hasOne('Address', array('local' => 'id', 'foreign' => 'user_id'));
-        $this->ownsOne('Email', array('local' => 'email_id', 'foreign' => 'id'));
-        $this->ownsMany('Phonenumber', array('local' => 'id', 'foreign' => 'user_id'));
+        $this->hasOne('Email', array('local' => 'email_id', 'foreign' => 'id'));
+        $this->hasMany('Phonenumber', array('local' => 'id', 'foreign' => 'user_id'));
     }
     public function setTableDefinition() 
     {
@@ -94,7 +94,7 @@ class User extends Doctrine_Record
 {
     public function setUp()
     {
-        $this->ownsMany('Phonenumber', array('local' => 'id', 'foreign' => 'user_id'));
+        $this->hasMany('Phonenumber', array('local' => 'id', 'foreign' => 'user_id'));
     }
     public function setTableDefinition() 
     {
