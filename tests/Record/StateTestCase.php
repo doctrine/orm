@@ -30,11 +30,38 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase {
-    public function prepareTables() { }
+class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase 
+{
+    public function prepareTables() 
+    { 
+        $this->tables = array('Entity');
+        
+        parent::prepareTables();
+    }
+
     public function prepareData() { }
-    
-    public function testAssignUnknownState() {
+
+    public function testAssignFieldsToProxies() 
+    {
+        $user = new User();
+        $user->name = 'someuser';
+        $user->password = '123';
+        $user->save();
+
+        $this->connection->clear();
+
+        $user = $this->connection->queryOne("SELECT u.name FROM User u WHERE u.name = 'someuser'");
+        $this->assertEqual($user->name, 'someuser');
+
+        $user->name = 'someother';
+        $this->assertEqual($user->name, 'someother');
+
+        $user->save();
+        $this->assertEqual($user->name, 'someother');
+    }
+
+    public function testAssignUnknownState() 
+    {
         $user = new User();
         try {
             $user->state(123123);
@@ -52,7 +79,8 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->state(), Doctrine_Record::STATE_TCLEAN);
     }
 
-    public function testAssignDirtyState() {
+    public function testAssignDirtyState() 
+    {
         $user = new User();
 
         $user->state(Doctrine_Record::STATE_DIRTY);
@@ -63,7 +91,9 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($user->state(), Doctrine_Record::STATE_DIRTY);
     }
-    public function testAssignCleanState() {
+
+    public function testAssignCleanState() 
+    {
         $user = new User();
 
         $user->state(Doctrine_Record::STATE_CLEAN);
@@ -74,7 +104,9 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($user->state(), Doctrine_Record::STATE_CLEAN);
     }
-    public function testAssignTransientCleanState() {
+
+    public function testAssignTransientCleanState() 
+    {
         $user = new User();
 
         $user->state(Doctrine_Record::STATE_TCLEAN);
@@ -85,7 +117,9 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($user->state(), Doctrine_Record::STATE_TCLEAN);
     }
-    public function testAssignTransientDirtyState() {
+
+    public function testAssignTransientDirtyState() 
+    {
         $user = new User();
 
         $user->state(Doctrine_Record::STATE_TDIRTY);
@@ -96,7 +130,9 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($user->state(), Doctrine_Record::STATE_TDIRTY);
     }
-    public function testAssignProxyState() {
+
+    public function testAssignProxyState()
+    {
         $user = new User();
 
         $user->state(Doctrine_Record::STATE_PROXY);
@@ -107,6 +143,7 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($user->state(), Doctrine_Record::STATE_PROXY);
     }
+
     public function testProxiesAreAutomaticallyUpdatedWithFetches()
     {
         $user = new User();
@@ -129,21 +166,5 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($user->password, '123');
         
         $this->assertEqual($count, count($this->dbh));
-    }
-
-    public function testAssignFieldsToProxies() {
-
-        $user = new User();
-        $user->name = 'someuser';
-        $user->password = '123';
-        $user->save();
-
-        $this->connection->clear();
-
-        $user = $this->connection->queryOne("SELECT u.name FROM User u WHERE u.name = 'someuser'");
-        $user->name = 'someother';
-        $user->save();
-        $this->assertEqual($user->name, 'someother');
-    	
     }
 }
