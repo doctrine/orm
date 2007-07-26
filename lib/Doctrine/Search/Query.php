@@ -79,7 +79,7 @@ class Doctrine_Search_Query
                 return false;
             break;
             case 1:
-            // only one term found, use fast
+                // only one term found, use fast and simple query
                 $select = 'SELECT COUNT(keyword) AS relevance, ' . $foreignId;
                 $from = 'FROM ' . $this->_table->getTableName();
 
@@ -100,16 +100,48 @@ class Doctrine_Search_Query
                         $where .= ' AND (position + ' . $k . ') = (SELECT position FROM ' . $this->_table->getTableName() . ' WHERE keyword = ?)';
                     }
                 }
-
-                $groupby = 'GROUP BY ' . $foreignId;
-                $orderby = 'ORDER BY relevance';
-
             break;
             default:
-                
+                $select = 'SELECT COUNT(keyword) AS relevance, ' . $foreignId;
+                $from = 'FROM ' . $this->_table->getTableName();
+
+                $where = 'WHERE ';
+                $cond = array();
+                $params = array();
+
+                foreach ($terms as $term) {
+                    $data   = $this->parseTerm($term);
+                    $params = array_merge($params, $data[1]);
+                    $cond[] = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' ' . $data[0] . ')';
+                }
+                $where .= implode(' AND ', $cond);
         }
         
+        $groupby = 'GROUP BY ' . $foreignId;
+        $orderby = 'ORDER BY relevance';
+
         $this->_sql = $select . ' ' . $from . ' ' . $where . ' ' . $groupby . ' ' . $orderby;
+    }
+    public function parseTerm($term)
+    {
+        if (strpos($term, "'") === false) {
+            $where = 'WHERE keyword = ?';
+            
+            $params = array($term);
+        } else {
+            $term = trim($term, "' ");
+            
+            $where = 'WHERE keyword = ?';
+            $terms = Doctrine_Tokenizer::quoteExplode($term);
+            $params = $terms;
+            foreach ($terms as $k => $word) {
+                if ($k === 0) {
+                    continue;
+                }
+                $where .= ' AND (position + ' . $k . ') = (SELECT position FROM ' . $this->_table->getTableName() . ' WHERE keyword = ?)';
+            }
+        }  
+        return array($where, $params);
     }
     public function search2($text)
     {
