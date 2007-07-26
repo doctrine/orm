@@ -122,6 +122,8 @@ class Doctrine_Import_Mysql extends Doctrine_Import
 
             $decl = $this->conn->dataDict->getPortableDeclaration($val);
 
+            $values = isset($decl['values']) ? $decl['values'] : array();
+
             $description = array(
                 'name'      => $val['field'],
                 'type'      => $decl['type'][0],
@@ -130,7 +132,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
                 'length'    => $decl['length'],
                 'fixed'     => $decl['fixed'],
                 'unsigned'  => $decl['unsigned'],
-                'values'    => $decl['values'],
+                'values'    => $values,
                 'primary'   => (strtolower($val['key']) == 'pri'),
                 'default'   => $val['default'],
                 'notnull'   => (bool) ($val['null'] != 'YES'),
