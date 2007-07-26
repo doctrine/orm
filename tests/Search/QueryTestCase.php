@@ -57,68 +57,85 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $e->save();
     }
-
-    public function testQuerying()
+    public function testQuerySupportsSingleWordSearch()
     {
-        $q = new Doctrine_Query();
-        $q->select('s.*')
-          ->from('SearchTest s');
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $q->search('doctrine'); 
+        
+        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+             . 'FROM search_test_index WHERE keyword = ?';
+    
+        $this->assertEqual($q->getSql(), $sql);
+    }
+    
+    public function testQuerySupportsMultiWordSearch()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $q->search('doctrine orm');
 
-        $sq = new Doctrine_Search_Query($q);
-        $sq->addAlias('i');
-        $sq->search('ORM framework');
+        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+             . 'FROM search_test_index '
+             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY search_test_id';
 
-        //print $q->getDql();
-        //$coll = $sq->execute();
+        $this->assertEqual($q->getSql(), $sql);
+    }
+    
+    public function testQuerySupportsMultiWordSearchWithWeights()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $q->search('doctrine^2 orm');
 
+        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+             . 'FROM search_test_index '
+             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY search_test_id';
 
-
-        //$this->assertEqual($coll[0]->relevancy, 2);
-        //$this->assertEqual($coll[1]->relevancy, 0);
+        $this->assertEqual($q->getSql(), $sql);
     }
 
-    public function testGettingRelevancyValues()
+    public function testQuerySupportsMultiWordOrOperatorSearchWithQuotes()
     {
-    	$dql = 'SELECT s.*,
-                    (SELECT COUNT(o.position)
-                        FROM SearchTestIndex o
-                        WHERE o.keyword = ?
-                        AND s.id = o.searchtest_id) relevancy
-                FROM SearchTest s LEFT JOIN s.SearchTestIndex i2
-                WHERE i2.keyword = ?';
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $q->search("doctrine^2 OR 'dbal database'");
 
-        $q = new Doctrine_Query();
-
-        $q->parseQuery($dql);
-        $coll = $q->execute(array('orm', 'orm'), Doctrine_Hydrate::HYDRATE_ARRAY);
-        //print_r($coll);
-        //$this->assertEqual($coll[0]->relevancy, 2);
-        //$this->assertEqual($coll[1]->relevancy, 0);
+        $sql = "SELECT foreign_id, SUM(relevancy) AS relevancy_sum FROM
+                        (SELECT COUNT(keyword) * 2 AS relevancy, foreign_id
+                            FROM search_index
+                            WHERE keyword = 'doctrine'
+                            GROUP BY foreign_id
+                    UNION
+                         SELECT COUNT(keyword) AS relevancy, foreign_id
+                            FROM search_index) AS query_alias
+                            WHERE keyword = 'dbal' AND (position + 1) = (SELECT position FROM search_index WHERE keyword = 'database')
+                            GROUP BY foreign_id
+                GROUP BY foreign_id
+                ORDER BY relevancy_sum";
     }
-    /**
-    public function testGettingWeightedRelevancyValues()
+
+    public function testQuerySupportsMultiWordAndOperatorSearchWithQuotes()
     {
-    	$dql = "SELECT s.*,
-                    ((SELECT COUNT(i.id)
-                        FROM SearchTestIndex i
-                        WHERE i.keyword = ?
-                        AND i.searchtest_id = s.id
-                        AND i.field = 'title') * 2
-                        +
-                     (SELECT COUNT(i.id)
-                        FROM SearchTestIndex i
-                        WHERE i.keyword = ?
-                        AND i.searchtest_id = s.id
-                        AND i.field = 'content')) relevancy
-                FROM SearchTest s";
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $q->search("doctrine AND 'dbal database'");
 
-        $q = new Doctrine_Query();
-
-        $q->parseQuery($dql);
-        $coll = $q->execute(array('orm'));
-
-        $this->assertEqual($coll[0]->relevancy, 2);
-        $this->assertEqual($coll[1]->relevancy, 0);
+        $sql = "SELECT foreign_id, SUM(relevancy) AS relevancy_sum FROM
+                        (SELECT COUNT(keyword) * 2 AS relevancy, foreign_id
+                            FROM search_index
+                            WHERE keyword = 'doctrine'
+                            GROUP BY foreign_id
+                    UNION
+                         SELECT COUNT(keyword) AS relevancy, foreign_id
+                            FROM search_index) AS query_alias
+                            WHERE keyword = 'dbal' AND (position + 1) = (SELECT position FROM search_index WHERE keyword = 'database')
+                            GROUP BY foreign_id
+                WHERE search_test_id IN (SELECT search_test_id FROM search_test_index
+                                            WHERE keyword = ?)
+                  AND seach_test_id IN (SELECT search_test_id FROM search_test_index
+                                            WHERE keyword = 'dbal'
+                                            AND (position + 1) = (SELECT position FROM search_index WHERE keyword = 'database')
+                GROUP BY foreign_id
+                ORDER BY relevancy_sum";
     }
-    */
 }
