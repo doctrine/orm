@@ -74,37 +74,37 @@ class Doctrine_Search_Query
         $foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
         
         $numTerms = count($terms);
+        
+        $weighted = false;
+        if (strpos($text, '^') === false) {
+            $select = 'SELECT COUNT(keyword) AS relevance, ' . $foreignId;
+            $from = 'FROM ' . $this->_table->getTableName();
+        } else {
+            // organize terms according weights
+            
+            foreach ($terms as $k => $term) {
+                $e = explode('^', $term);
+                $x = (isset($e[1]) && is_numeric($e[1])) ? $e[1] : 1;
+
+                $weightedTerms[$x][] = $term;
+            }
+            $weighted = true;
+
+            $select = 'SELECT SUM(sub_relevance) AS relevance, ' . $foreignId;
+            $from = 'FROM ' ;
+        }
+
         switch ($numTerms) {
             case 0:
                 return false;
             break;
             case 1:
                 // only one term found, use fast and simple query
-                $select = 'SELECT COUNT(keyword) AS relevance, ' . $foreignId;
-                $from = 'FROM ' . $this->_table->getTableName();
-
-                if (strpos($terms[0], "'") === false) {
-                    $where = 'WHERE keyword = ?';
-                    
-                    $params = array($terms[0]);
-                } else {
-                    $terms[0] = trim($terms[0], "' ");
-                    
-                    $where = 'WHERE keyword = ?';
-                    $terms = Doctrine_Tokenizer::quoteExplode($terms[0]);
-                    $params = $terms;
-                    foreach ($terms as $k => $term) {
-                        if ($k === 0) {
-                            continue;
-                        }
-                        $where .= ' AND (position + ' . $k . ') = (SELECT position FROM ' . $this->_table->getTableName() . ' WHERE keyword = ?)';
-                    }
-                }
+                $data = $this->parseTerm($terms[0]);
+                $where = $data[0];
+                $params = $data[1];
             break;
             default:
-                $select = 'SELECT COUNT(keyword) AS relevance, ' . $foreignId;
-                $from = 'FROM ' . $this->_table->getTableName();
-
                 $where = 'WHERE ';
                 $cond = array();
                 $params = array();
@@ -143,42 +143,7 @@ class Doctrine_Search_Query
         }  
         return array($where, $params);
     }
-    public function search2($text)
-    {
-    	$text = strtolower($text);
 
-        $terms = Doctrine_Tokenizer::quoteExplode($text);
-
-        $map = $this->_query->getRootDeclaration();
-        $rootAlias = $this->_query->getRootAlias();
-
-        $component = $map['table']->getComponentName() . 'Index';
-        $subAlias = 'i2';
-
-        $rel = $map['table']->getRelation($component);
-
-        $foreign = (array) $rel->getForeign();
-        foreach ((array) $rel->getLocal() as $k => $field) {
-            $joinCondition = $rootAlias . '.' . $field . ' = ' . $subAlias . '.' . $foreign[$k];
-        }
-
-        $this->_query->innerJoin($rootAlias . '.' . $component . ' ' . 'i');
-
-        foreach ($this->_aliases as $alias) {
-            $condition = array();
-            $subcondition = array();
-
-            foreach ($terms as $term) {
-                $condition[] = $alias . '.keyword = ?';
-                $subcondition[] = $subAlias . '.keyword = ?';
-            }
-            $this->_query->addSelect('(SELECT COUNT(' . $subAlias . '.position) FROM '
-                                    . $component . ' ' . $subAlias . ' WHERE '
-                                    . implode(' OR ', $subcondition) . ' AND ' . $joinCondition . ') relevancy');
-
-            $this->_query->addWhere(implode(' OR ', $condition), $terms);
-        }
-    }
     public function getSql()
     {
         return $this->_sql;
