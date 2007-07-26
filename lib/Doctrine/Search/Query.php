@@ -37,24 +37,23 @@ class Doctrine_Search_Query
      */
     protected $_query;
     /**
-     * @var array $_aliases                 an array of searchable component aliases
+     * @var Doctrine_Table $_table          the index table
      */
-    protected $_aliases = array();
+    protected $_table = array();
+    
+    protected $_sql = '';
     /**
-     * @param Doctrine_Query $query         the base query
+     * @param octrine_Table $_table         the index table
      */
-    public function __construct($query)
+    public function __construct($table)
     {
-        if (is_string($query)) {
-            $this->_query = new Doctrine_Query();
-            $this->_query->parseQuery($query);
-        } elseif ($query instanceof Doctrine_Query) {
-            $this->_query = $query;
-        } else {
-            throw new Doctrine_Exception('Constructor argument should be either Doctrine_Query object or a valid DQL query string');
-        }
-        
-        $this->_query->getQuery();
+    	if (is_string($table)) {
+    	   $table = Doctrine_Manager::table($table);
+    	}
+
+        $this->_table = $table;
+
+        $this->_query = new Doctrine_Query();
     }
     /**
      * getQuery
@@ -65,13 +64,54 @@ class Doctrine_Search_Query
     {
         return $this->_query;
     }
-    
-    public function addAlias($alias)
-    {
-        $this->_aliases[] = $alias;
-    }
 
     public function search($text)
+    {
+    	$text = strtolower(trim($text));
+
+        $terms = Doctrine_Tokenizer::quoteExplode($text);
+        
+        $foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
+        
+        $numTerms = count($terms);
+        switch ($numTerms) {
+            case 0:
+                return false;
+            break;
+            case 1:
+            // only one term found, use fast
+                $select = 'SELECT COUNT(keyword) AS relevance, ' . $foreignId;
+                $from = 'FROM ' . $this->_table->getTableName();
+
+                if (strpos($terms[0], "'") === false) {
+                    $where = 'WHERE keyword = ?';
+                    
+                    $params = array($terms[0]);
+                } else {
+                    $terms[0] = trim($terms[0], "' ");
+                    
+                    $where = 'WHERE keyword = ?';
+                    $terms = Doctrine_Tokenizer::quoteExplode($terms[0]);
+                    $params = $terms;
+                    foreach ($terms as $k => $term) {
+                        if ($k === 0) {
+                            continue;
+                        }
+                        $where .= ' AND (position + ' . $k . ') = (SELECT position FROM ' . $this->_table->getTableName() . ' WHERE keyword = ?)';
+                    }
+                }
+
+                $groupby = 'GROUP BY ' . $foreignId;
+                $orderby = 'ORDER BY relevance';
+
+            break;
+            default:
+                
+        }
+        
+        $this->_sql = $select . ' ' . $from . ' ' . $where . ' ' . $groupby . ' ' . $orderby;
+    }
+    public function search2($text)
     {
     	$text = strtolower($text);
 
@@ -107,7 +147,10 @@ class Doctrine_Search_Query
             $this->_query->addWhere(implode(' OR ', $condition), $terms);
         }
     }
-    
+    public function getSql()
+    {
+        return $this->_sql;
+    }
     public function execute()
     {
         $resultSet = $this->_query->execute(); 

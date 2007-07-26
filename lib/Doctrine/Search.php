@@ -132,7 +132,7 @@ class Doctrine_Search
             unset($def['sequence']);
             unset($def['primary']);
 
-            $col = strtolower($name . '_' . $column);
+            $col = strtolower(Doctrine::tableize($name) . '_' . $column);
 
             $def['primary'] = true;
             $fk[$col] = $def;
