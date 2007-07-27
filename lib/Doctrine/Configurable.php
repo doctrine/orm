@@ -82,19 +82,6 @@ abstract class Doctrine_Configurable extends Doctrine_Object
                 $this->setEventListener($value);
                 break;
             case Doctrine::ATTR_LOCKMODE:
-                if ($this instanceof Doctrine_Connection) {
-                    if ($this->transaction->getState() != Doctrine_Transaction::STATE_SLEEP) {
-                        throw new Doctrine_Exception("Couldn't set lockmode. There are transactions open.");
-                    }
-                } elseif ($this instanceof Doctrine_Manager) {
-                    foreach ($this as $connection) {
-                        if ($connection->transaction->getState() != Doctrine_Transaction::STATE_SLEEP) {
-                            throw new Doctrine_Exception("Couldn't set lockmode. There are transactions open.");
-                        }
-                    }
-                } else {
-                    throw new Doctrine_Exception("Lockmode attribute can only be set at the global or connection level.");
-                }
                 break;
             case Doctrine::ATTR_CREATE_TABLES:
                     throw new Doctrine_Exception("ATTR_CREATE_TABLES has been deprecated. See exporting in the first chapter of the manual.");
