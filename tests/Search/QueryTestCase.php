@@ -35,7 +35,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     public function prepareTables()
     {
         $this->tables = array('SearchTest', 'SearchTestIndex');
-        
+
         parent::prepareTables();
     }
     public function prepareData()
@@ -63,7 +63,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
 
         $ret = $q->tokenizeClause('doctrine AND orm');
-        
+
         $this->assertEqual($ret, array('doctrine', 'orm'));
     }
 
@@ -91,7 +91,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
 
         $ret = $q->tokenizeClause('doctrine OR orm dbal AND database OR rdbms');
-        print_r($ret);
+
         $expected = array(array('doctrine', 'orm'), 'dbal', array('database', 'rdbms'));
 
         $this->assertEqual($ret, $expected);
@@ -106,27 +106,38 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($ret, $expected);
     }
-    /**
+
     public function testParseClauseSupportsAndOperator()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('doctrine AND orm');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+        $sql = '(search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)) '
+             . 'AND (search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?))';
 
         $this->assertEqual($ret, $sql);
     }
 
-    
+    public function testParseClauseSupportsMixingOfOperatorsAndParenthesis()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $ret = $q->parseClause('((doctrine OR orm) AND dbal) OR database');
+
+        $sql = '(search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?)) '
+             . 'AND (search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?))'
+             . ' OR keyword = ?';
+
+        $this->assertEqual($ret, $sql);
+    }
+
     public function testParseClauseSupportsMixingOfOperators3()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('doctrine OR orm AND dbal');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
-        
+        $sql = '(search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?)) '
+             . 'AND (search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?))';
+
         $this->assertEqual($ret, $sql);
     }
 
@@ -135,9 +146,9 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('(doctrine OR orm) AND dbal');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
-        
+        $sql = '(search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?)) '
+             . 'AND (search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?))';
+
         $this->assertEqual($ret, $sql);
     }
 
@@ -145,13 +156,26 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('(doctrine OR orm) dbal');
-        print $ret;
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
-        
+
+        $sql = '(search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?)) '
+             . 'AND (search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?))';
+
         $this->assertEqual($ret, $sql);
     }
 
+    public function testParseClauseSupportsMixingOfOperatorsAndDeeplyNestedParenthesis()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $ret = $q->parseClause('(((doctrine OR orm) AND dbal) OR database) AND rdbms');
+
+        $sql = '((search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?)) '
+             . 'AND (search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?))'
+             . ' OR keyword = ?) AND (search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?))';
+
+        $this->assertEqual($ret, $sql);
+    }
+
+                /**
     public function testSearchSupportsAndOperator()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
