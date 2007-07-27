@@ -47,10 +47,10 @@ class Doctrine_Tokenizer
      * @param string $e1        the first bracket, usually '('
      * @param string $e2        the second bracket, usually ')'
      */
-    public static function bracketTrim($str,$e1 = '(',$e2 = ')')
+    public static function bracketTrim($str, $e1 = '(', $e2 = ')')
     {
-        if(substr($str,0,1) == $e1 && substr($str,-1) == $e2) {
-            return substr($str,1,-1);
+        if (substr($str,0,1) == $e1 && substr($str,-1) == $e2) {
+            return substr($str, 1, -1);
         } else {
             return $str;
         }
