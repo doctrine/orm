@@ -178,9 +178,18 @@ class Doctrine_Search_Query
                 if (is_array($term)) {
                     $parsed = $this->parseTerms($term);
                 } else {
-                    $parsed = $this->parseClause($term);
+                    if (strpos($term, '(') === false) {
+                        $parsed = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $this->parseClause($term) . ')';
+                    } else {
+                        $parsed = $this->parseClause($term);
+                    }
                 }
-                $ret[] = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $parsed . ')';
+
+                if (strlen($parsed) > 20) {
+                    $ret[] = '(' . $parsed . ')';
+                } else {
+                    $ret[] = $parsed;
+                }
             }
 
             $r = implode(' AND ', $ret);
@@ -193,34 +202,24 @@ class Doctrine_Search_Query
     }
     public function parseTerms(array $terms)
     {
+    	$foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
+
         if (count($terms) > 1) {
             $ret = array();
             foreach ($terms as $term) {
-                $parsed = $this->parseClause($term);
-                if (strlen($parsed) > 20) {
-                    $ret[] = '(' . $parsed. ')';
-                } else {
-                    $ret[] = $parsed;
-                }
+                $ret[] = $this->parseClause($term);
             }
+            $parsed = implode(' OR ', $ret);
 
-            return implode(' OR ', $ret);
+            if (strpos($parsed, '(') === false) {
+                $parsed = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $parsed . ')';
+            }       
+
+            return $parsed;
         } else {
             $ret = $this->parseTerm($terms[0]);
             return $ret[0];
         }
-    }
-    public function parseAndSeparatedTerms($terms, $foreignId) 
-    {
-        $ret = array();
-
-        foreach ($terms as $term) {
-            $parsed = $this->parseClause($term);
-
-            $ret[] = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $parsed . ')';
-        }
-
-        $r = implode(' AND ', $ret);
     }
     public function parseTerm($term)
     {
