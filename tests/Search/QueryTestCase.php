@@ -57,7 +57,140 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $e->save();
     }
+
+    public function testTokenizeClauseSupportsAndOperator()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+
+        $ret = $q->tokenizeClause('doctrine AND orm');
+        
+        $this->assertEqual($ret, array('doctrine', 'orm'));
+    }
+
+    public function testTokenizeClauseSupportsOrOperator()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+
+        $ret = $q->tokenizeClause('doctrine OR orm');
+
+        $this->assertIdentical($ret, array(array('doctrine', 'orm')));
+    }
+
+    public function testTokenizeClauseSupportsMixingOfOperators()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+
+        $ret = $q->tokenizeClause('doctrine OR orm OR dbal AND database OR rdbms');
+        $expected = array(array('doctrine', 'orm', 'dbal'), array('database', 'rdbms'));
+
+        $this->assertEqual($ret, $expected);
+    }
+
+    public function testTokenizeClauseSupportsMixingOfOperatorsAndSpaces()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+
+        $ret = $q->tokenizeClause('doctrine OR orm dbal AND database OR rdbms');
+        print_r($ret);
+        $expected = array(array('doctrine', 'orm'), 'dbal', array('database', 'rdbms'));
+
+        $this->assertEqual($ret, $expected);
+    }
+
+    public function testTokenizeClauseSupportsMixingOfOperatorsAndParenthesis()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+
+        $ret = $q->tokenizeClause('doctrine OR orm OR (dbal AND database OR rdbms)');
+        $expected = array(array('doctrine', 'orm', '(dbal AND database OR rdbms)'));
+
+        $this->assertEqual($ret, $expected);
+    }
     /**
+    public function testParseClauseSupportsAndOperator()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $ret = $q->parseClause('doctrine AND orm');
+
+        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+
+        $this->assertEqual($ret, $sql);
+    }
+
+    
+    public function testParseClauseSupportsMixingOfOperators3()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $ret = $q->parseClause('doctrine OR orm AND dbal');
+
+        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) '
+             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+        
+        $this->assertEqual($ret, $sql);
+    }
+
+    public function testParseClauseSupportsMixingOfOperators()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $ret = $q->parseClause('(doctrine OR orm) AND dbal');
+
+        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) '
+             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+        
+        $this->assertEqual($ret, $sql);
+    }
+
+    public function testParseClauseSupportsMixingOfOperators2()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $ret = $q->parseClause('(doctrine OR orm) dbal');
+        print $ret;
+        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) '
+             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+        
+        $this->assertEqual($ret, $sql);
+    }
+
+    public function testSearchSupportsAndOperator()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $q->search('doctrine AND orm');
+
+        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+             . 'FROM search_test_index '
+             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY search_test_id ORDER BY relevance';
+
+        $this->assertEqual($q->getSql(), $sql);
+    }
+    public function testSearchSupportsOrOperator()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $q->search('doctrine OR orm');
+
+        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+             . 'FROM search_test_index '
+             . 'WHERE keyword = ? OR keyword = ? '
+             . 'GROUP BY search_test_id ORDER BY relevance';
+
+        $this->assertEqual($q->getSql(), $sql);
+    }
+    public function testSearchSupportsMixingOfOperators()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $q->search('(doctrine OR orm) AND dbal');
+
+        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+             . 'FROM search_test_index '
+             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) '
+             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY search_test_id ORDER BY relevance';
+
+        $this->assertEqual($q->getSql(), $sql);
+    }
+
     public function testQuerySupportsSingleWordSearch()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
@@ -123,7 +256,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($q->getSql(), $sql);
     }
-    */
+
     public function testQuerySupportsMultiWordOrOperatorSearchWithQuotes()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
@@ -141,12 +274,12 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
              . 'GROUP BY foreign_id) '
              . 'GROUP BY foreign_id '
              . 'ORDER BY relevancy_sum';
-             
+
         print $q->getSql() . "<br>";
         print $sql;
         $this->assertEqual($q->getSql(), $sql);
     }
-        /**
+        */    /**
     public function testQuerySupportsMultiWordAndOperatorSearchWithQuotes()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
