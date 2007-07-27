@@ -32,6 +32,8 @@
  */
 class Doctrine_Search_Query
 {
+    const OPERATOR_OR = 0;
+    const OPERATOR_AND = 1;
     /**
      * @var Doctrine_Query $query           the base query
      */
@@ -69,7 +71,7 @@ class Doctrine_Search_Query
     {
     	$text = strtolower(trim($text));
 
-        $terms = Doctrine_Tokenizer::quoteExplode($text);
+        $terms = Doctrine_Tokenizer::sqlExplode($text, ' AND ', '(', ')');
         
         $foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
         
@@ -81,7 +83,7 @@ class Doctrine_Search_Query
             $from = 'FROM ' . $this->_table->getTableName();
         } else {
             // organize terms according weights
-            
+
             foreach ($terms as $k => $term) {
                 $e = explode('^', $term);
                 $x = (isset($e[1]) && is_numeric($e[1])) ? $e[1] : 1;
@@ -122,16 +124,107 @@ class Doctrine_Search_Query
 
         $this->_sql = $select . ' ' . $from . ' ' . $where . ' ' . $groupby . ' ' . $orderby;
     }
+    public function tokenizeClause($clause)
+    {
+    	$clause = Doctrine_Tokenizer::bracketTrim($clause);
+
+        $terms = Doctrine_Tokenizer::sqlExplode($clause, ' ', '(', ')');
+
+        $operator = self::OPERATOR_AND;
+
+        $ret = array();
+
+        $pending = false;
+
+        $i = 0;
+        $prev = false;
+        foreach ($terms as $k => $term) {
+            $term = trim($term);
+
+            if ($term === 'AND') {
+                $operator = self::OPERATOR_AND;
+            } elseif ($term === 'OR') {
+                $operator = self::OPERATOR_OR;
+            } else {
+                if ($operator === self::OPERATOR_OR) {
+                    if ( ! is_array($ret[($i-1)])) {
+                        $ret[($i-1)] = array($ret[($i-1)], $term);
+                    } else {
+                        $ret[($i-1)][] = $term;
+                    }
+                } else {
+                    $ret[$i] = $term;
+
+                    $i++;
+                }
+                $operator = self::OPERATOR_AND;
+            }
+        }
+        return $ret;
+    }
+    public function parseClause($clause)
+    {
+    	$clause = Doctrine_Tokenizer::bracketTrim($clause);
+
+    	$foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
+
+        $terms = Doctrine_Tokenizer::sqlExplode($clause, ' ', '(', ')');
+
+        foreach ($terms as $k => $term) {
+            $terms[$k] = $term;
+        }
+
+    	$terms = Doctrine_Tokenizer::sqlExplode($clause, ' AND ', '(', ')');
+
+        if (count($terms) > 1) {
+            $ret = array();
+    
+            foreach ($terms as $term) {
+                $parsed = $this->parseClause($term);
+    
+                $ret[] = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $parsed . ')';
+            }
+    
+            $r = implode(' AND ', $ret); 
+        } else {
+            $terms = Doctrine_Tokenizer::sqlExplode($clause, ' OR ', '(', ')');
+
+            if (count($terms) > 1) {
+                $ret = array();
+                foreach ($terms as $term) {
+                    $ret[] = $this->parseClause($term);
+                }
+
+                $r = implode(' OR ', $ret);
+            } else {
+                $ret = $this->parseTerm($clause);
+                return $ret[0];
+            }
+        }
+        return $r;
+    }
+    public function parseAndSeparatedTerms($terms, $foreignId) 
+    {
+        $ret = array();
+
+        foreach ($terms as $term) {
+            $parsed = $this->parseClause($term);
+
+            $ret[] = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $parsed . ')';
+        }
+
+        $r = implode(' AND ', $ret);    	
+    }
     public function parseTerm($term)
     {
         if (strpos($term, "'") === false) {
-            $where = 'WHERE keyword = ?';
+            $where = 'keyword = ?';
             
             $params = array($term);
         } else {
             $term = trim($term, "' ");
             
-            $where = 'WHERE keyword = ?';
+            $where = 'keyword = ?';
             $terms = Doctrine_Tokenizer::quoteExplode($term);
             $params = $terms;
             foreach ($terms as $k => $word) {
