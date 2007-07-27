@@ -22,7 +22,7 @@
 /**
  * Doctrine_Hydrate is a base class for Doctrine_RawSql and Doctrine_Query.
  * Its purpose is to populate object graphs.
- *                         
+ *
  *
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -66,7 +66,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * Constant for the record (object) hydration mode.
      */
     const HYDRATE_RECORD = 2;
-    
+
     /**
      * @var array $params                       query input parameters
      */
@@ -149,7 +149,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * @var boolean $_expireCache           a boolean value that indicates whether or not to force cache expiration
      */
     protected $_expireCache     = false;
-    
+
     protected $_timeToLive;
 
     protected $_tableAliases    = array();
@@ -204,11 +204,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     public function getRoot()
     {
         $map = reset($this->_aliasMap);
-        
+
         if ( ! isset($map['table'])) {
             throw new Doctrine_Hydrate_Exception('Root component not initialized.');
         }
-        
+
         return $map['table'];
     }
     /**
@@ -230,15 +230,15 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      */
     public function useCache($driver = true, $timeToLive = null)
     {
-    	if ($driver !== null) {
+        if ($driver !== null) {
             if ($driver !== true) {
                 if ( ! ($driver instanceof Doctrine_Cache_Interface)) {
                     $msg = 'First argument should be instance of Doctrine_Cache_Interface or null.';
-                    
+
                     throw new Doctrine_Hydrate_Exception($msg);
                 }
             }
-    	}
+        }
         $this->_cache = $driver;
 
         return $this->setCacheLifeSpan($timeToLive);
@@ -252,7 +252,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     public function expireCache($expire = true)
     {
         $this->_expireCache = true;
-        
+
         return $this;
     }
     /**
@@ -263,11 +263,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      */
     public function setCacheLifeSpan($timeToLive)
     {
-    	if ($timeToLive !== null) {
-    	   $timeToLive = (int) $timeToLive;
-    	}
+        if ($timeToLive !== null) {
+            $timeToLive = (int) $timeToLive;
+        }
         $this->_timeToLive = $timeToLive;
-        
+
         return $this;
     }
     /**
@@ -278,11 +278,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      */
     public function getCacheDriver()
     {
-    	if ($this->_cache instanceof Doctrine_Cache_Interface) {
-    	    return $this->_cache;
-    	} else {
-    	    return $this->_conn->getCacheDriver();
-    	}
+        if ($this->_cache instanceof Doctrine_Cache_Interface) {
+            return $this->_cache;
+        } else {
+            return $this->_conn->getCacheDriver();
+        }
     }
     /**
      * Sets the fetchmode.
@@ -431,7 +431,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     public function addTableAlias($tableAlias, $componentAlias)
     {
         $this->_tableAliases[$tableAlias] = $componentAlias;
-        
+
         return $this;
     }
     /**
@@ -776,9 +776,9 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      */
     public function execute($params = array(), $hydrationMode = null)
     {
-    	if ($this->_cache) {
-    	    $cacheDriver = $this->getCacheDriver();               	
-    	                   	
+        if ($this->_cache) {
+            $cacheDriver = $this->getCacheDriver();
+
             $dql  = $this->getDql();
             // calculate hash for dql query
             $hash = md5($dql . var_export($params, true));
@@ -792,7 +792,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 $array = $this->parseData2($stmt, self::HYDRATE_ARRAY);
 
                 $cached = $this->getCachedForm($array);
-                
+
                 $cacheDriver->save($hash, $cached, $this->_timeToLive);
             } else {
                 $cached = unserialize($cached);
@@ -904,8 +904,45 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
 
         return $str;
     }
+    /**
+     * fetchArray
+     * Convenience method to execute using array fetching as hydration mode.
+     *
+     * @param string $params
+     * @return array
+     */
     public function fetchArray($params = array()) {
         return $this->execute($params, self::HYDRATE_ARRAY);
+    }
+    /**
+     * fetchOne
+     * Convenience method to execute the query and return the first item
+     * of the collection.
+     *
+     * @param string $params Parameters
+     * @param int $hydrationMode Hydration mode
+     * @return mixed Array or Doctrine_Collection or false if no result.
+     */
+    public function fetchOne($params = array(), $hydrationMode = null)
+    {
+        if (is_null($hydrationMode)) {
+            $hydrationMode = $this->_hydrationMode;
+        }
+
+        $collection = $this->execute($params, $hydrationMode);
+
+        switch ($hydrationMode) {
+            case self::HYDRATE_RECORD:
+                if (count($collection) > 0) {
+                    return $collection->getFirst();
+                }
+            case self::HYDRATE_ARRAY:
+                if (!empty($collection[0])) {
+                    return $collection[0];
+                }
+        }
+
+        return false;
     }
     /**
      * parseData
@@ -935,7 +972,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         if ($hydrationMode === null) {
             $hydrationMode = $this->_hydrationMode;
         }
-        
+
         if ($hydrationMode === self::HYDRATE_ARRAY) {
             $driver = new Doctrine_Hydrate_Array();
         } else {
@@ -1002,7 +1039,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
 
                     if ($alias === $rootAlias) {
                         // dealing with root component
-                        
+
                         $index = $driver->search($element, $array);
                         if ($index === false) {
                             $array[] = $element;
@@ -1012,11 +1049,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     } else {
                         $parent   = $map['parent'];
                         $relation = $map['relation'];
-                        
+
                         if (!isset($prev[$parent])) {
                             break;
                         }
-                        
+
                         // check the type of the relation
                         if ( ! $relation->isOneToOne()) {
                             // initialize the collection
@@ -1026,7 +1063,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                                 // append element
                                 if (isset($identifiable[$alias])) {
                                     $index = $driver->search($element, $prev[$parent][$componentAlias]);
-    
+
                                     if ($index === false) {
                                         $prev[$parent][$componentAlias][] = $element;
                                     }
@@ -1046,7 +1083,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     }
 
                     $this->_setLastElement($prev, $coll, $index, $alias, $oneToOne);
-                    
+
                     $currData[$alias] = array();
                     $identifiable[$alias] = null;
                 }
@@ -1084,7 +1121,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 $parent   = $this->_aliasMap[$alias]['parent'];
                 $relation = $this->_aliasMap[$alias]['relation'];
                 $componentAlias = $relation->getAlias();
-                
+
                 if (!isset($prev[$parent])) {
                     break;
                 }
@@ -1141,9 +1178,9 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      */
     public function _setLastElement(&$prev, &$coll, $index, $alias, $oneToOne)
     {
-    	if ($coll === self::$_null) {
-    	   return false;
-    	}
+        if ($coll === self::$_null) {
+            return false;
+        }
         if ($index !== false) {
             $prev[$alias] =& $coll[$index];
         } else {
@@ -1165,7 +1202,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     unset($prev[$alias]);
                 }
             }
-        }    	
+        }
     }
     /**
      * @return string                   returns a string representation of this object
@@ -1174,4 +1211,4 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     {
         return Doctrine_Lib::formatSql($this->getQuery());
     }
-} 
+}
