@@ -49,9 +49,9 @@ class Doctrine_Search_Query
      */
     public function __construct($table)
     {
-    	if (is_string($table)) {
-    	   $table = Doctrine_Manager::table($table);
-    	}
+        if (is_string($table)) {
+           $table = Doctrine_Manager::table($table);
+        }
 
         $this->_table = $table;
 
@@ -69,7 +69,7 @@ class Doctrine_Search_Query
 
     public function search($text)
     {
-    	$text = strtolower(trim($text));
+        $text = strtolower(trim($text));
 
         $terms = Doctrine_Tokenizer::sqlExplode($text, ' AND ', '(', ')');
         
@@ -126,7 +126,7 @@ class Doctrine_Search_Query
     }
     public function tokenizeClause($clause)
     {
-    	$clause = Doctrine_Tokenizer::bracketTrim($clause);
+        $clause = Doctrine_Tokenizer::bracketTrim($clause);
 
         $terms = Doctrine_Tokenizer::sqlExplode($clause, ' ', '(', ')');
 
@@ -162,46 +162,53 @@ class Doctrine_Search_Query
         }
         return $ret;
     }
+
     public function parseClause($clause)
     {
-    	$clause = Doctrine_Tokenizer::bracketTrim($clause);
+        $clause = Doctrine_Tokenizer::bracketTrim($clause);
 
-    	$foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
+        $foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
 
-        $terms = Doctrine_Tokenizer::sqlExplode($clause, ' ', '(', ')');
-
-        foreach ($terms as $k => $term) {
-            $terms[$k] = $term;
-        }
-
-    	$terms = Doctrine_Tokenizer::sqlExplode($clause, ' AND ', '(', ')');
+        $terms = $this->tokenizeClause($clause);
 
         if (count($terms) > 1) {
             $ret = array();
-    
+
             foreach ($terms as $term) {
-                $parsed = $this->parseClause($term);
-    
+                if (is_array($term)) {
+                    $parsed = $this->parseTerms($term);
+                } else {
+                    $parsed = $this->parseClause($term);
+                }
                 $ret[] = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $parsed . ')';
             }
-    
-            $r = implode(' AND ', $ret); 
+
+            $r = implode(' AND ', $ret);
         } else {
-            $terms = Doctrine_Tokenizer::sqlExplode($clause, ' OR ', '(', ')');
+            $terms = (is_array($terms[0])) ? $terms[0] : array($terms[0]);
 
-            if (count($terms) > 1) {
-                $ret = array();
-                foreach ($terms as $term) {
-                    $ret[] = $this->parseClause($term);
-                }
-
-                $r = implode(' OR ', $ret);
-            } else {
-                $ret = $this->parseTerm($clause);
-                return $ret[0];
-            }
+            return $this->parseTerms($terms);
         }
         return $r;
+    }
+    public function parseTerms(array $terms)
+    {
+        if (count($terms) > 1) {
+            $ret = array();
+            foreach ($terms as $term) {
+                $parsed = $this->parseClause($term);
+                if (strlen($parsed) > 20) {
+                    $ret[] = '(' . $parsed. ')';
+                } else {
+                    $ret[] = $parsed;
+                }
+            }
+
+            return implode(' OR ', $ret);
+        } else {
+            $ret = $this->parseTerm($terms[0]);
+            return $ret[0];
+        }
     }
     public function parseAndSeparatedTerms($terms, $foreignId) 
     {
@@ -213,7 +220,7 @@ class Doctrine_Search_Query
             $ret[] = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $parsed . ')';
         }
 
-        $r = implode(' AND ', $ret);    	
+        $r = implode(' AND ', $ret);
     }
     public function parseTerm($term)
     {
