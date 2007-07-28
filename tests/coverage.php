@@ -8,8 +8,32 @@ $path = "/home/bjartka/workspace/doctrine/lib/";
 <html>
 <head>
 <style type="text/css">
-    .covered{ background: #eee;}
-    
+    .covered{ background: green;}
+    .normal{ background: white;}
+    .error{ background: red;}
+
+ dl.table-display
+{
+margin: 2em 0;
+padding: 0;
+font-family: georgia, times, serif;
+}
+
+.table-display dt
+{
+float: left;
+margin: 0 0 0 0;
+padding: 0 .5em 0 .5em;
+}
+
+/* commented backslash hack for mac-ie5 \*/
+dt { clear: both; }
+/* end hack */
+
+.table-display dd{
+    float: left;
+    margin: 0 0 0 0;
+    }
 </style>
 </head>
 <body>
@@ -24,19 +48,20 @@ function getCoverageReport($file){
     }
     $coveredLines = $coverage[$file]; 
     $fileArray = file($file);
-    $html .= '<dl class="filelist">' . "\n";
+    $html .= '<dl class="table-display">' . "\n";
     foreach($fileArray as $num => $line){
-        $linenum = $num+1;
+       $linenum = $num+1;
        $html .= '<dt>' . $linenum . '</dt>' . "\n";
        $class ="normal";
        if(isset($coveredLines[$linenum]) && $coveredLines[$linenum] == 1){
            $class = "covered";
+       }else if(isset($coveredLines[$linenum]) && $coveredLines[$linenum] == -1){
+           $class ="error";
        }
        $html .= '<dd class="' . $class . '">' . htmlspecialchars($line) . '</dd>' . "\n";
     }
     $html .='</dl></div>';
     return $html;
-
 }
 
 if(isset($_GET["file"])){

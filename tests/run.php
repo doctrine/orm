@@ -358,6 +358,7 @@ class CliReporter extends HtmlReporter{
         echo "====================\n";
     }
     public function paintFooter(){
+        echo "\n";
  	    foreach ($this->_test->getMessages() as $message) {
     	   print $message . "\n";
     	}

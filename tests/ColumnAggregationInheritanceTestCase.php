@@ -36,7 +36,6 @@ class Doctrine_ColumnAggregationInheritance_TestCase extends Doctrine_UnitTestCa
 
     public function prepareData() 
     { 
-
         parent::prepareData();
         //we create a test entity that is not a user and not a group
         $entity = new Entity();
