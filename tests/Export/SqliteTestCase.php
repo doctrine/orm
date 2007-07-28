@@ -94,8 +94,14 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase
                          );
 
         $this->export->createTable('sometable', $fields, $options);
-        
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id, name))');
+
+        //this was the old line, but it looks like the table is created first 
+        //and then the index so i replaced it with the ones below
+        //$this->assertEqual($var, 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id, name))');
+
+        $this->assertEqual($this->adapter->pop(),"CREATE INDEX myindex_idx ON sometable (id, name)");
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4))');
     }
     public function testUnknownIndexSortingAttributeThrowsException()
     {
@@ -126,7 +132,13 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase
 
         $this->export->createTable('sometable', $fields, $options);
         
-        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id ASC, name DESC))');
+        //removed this assertion and inserted the two below
+//        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id ASC, name DESC))');
+
+        $this->assertEqual($this->adapter->pop(),"CREATE INDEX myindex_idx ON sometable (id ASC, name DESC)");
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4))');
+
     }
     /**
     public function testExportSupportsEmulationOfCascadingDeletes()
