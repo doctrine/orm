@@ -1005,7 +1005,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $inheritanceMap = $table->getOption('inheritanceMap');
             $nomatch = false;
             foreach ($inheritanceMap as $key => $value) {
-                if ( ! isset($this->data[$key]) || $this->data[$key] !== $value) {
+                if ( ! isset($this->data[$key]) || $this->data[$key] != $value) {
                     $nomatch = true;
                     break;
                 }
