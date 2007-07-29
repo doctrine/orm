@@ -142,7 +142,6 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     {
         // fetch tree
         $q = $this->getBaseQuery();
-        $componentName = $this->table->getComponentName();
 
         $q = $q->addWhere("base.lft >= ?", 1);
 
@@ -277,7 +276,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     private function _createBaseQuery()
     {
         $q = new Doctrine_Query();
-        $q->select("base.*")->from($this->table->getComponentName() . " base");
+        $q->select("base.*")->from($this->getBaseComponent() . " base");
         return $q;
     }
     

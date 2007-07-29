@@ -40,6 +40,8 @@ class Doctrine_Tree
      * @param array $options
      */
     protected $options = array();
+    
+    protected $_baseComponent;
 
     /**
      * constructor, creates tree with reference to table and any options
@@ -51,6 +53,16 @@ class Doctrine_Tree
     {
         $this->table = $table;
         $this->options = $options;
+        $this->_baseComponent = $table->getComponentName();
+        $class = $this->_baseComponent;
+        if ($table->getOption('inheritanceMap')) {
+            $subclasses = $table->getOption('subclasses');
+            while (in_array($class, $subclasses)) {
+                $class = get_parent_class($class);
+            }
+            $this->_baseComponent = $class;
+        }
+        //echo $this->_baseComponent;
     }
 
     /**
@@ -106,5 +118,13 @@ class Doctrine_Tree
     public function setAttribute($name, $value)
     {
       $this->options[$name] = $value;
+    }
+    
+    /**
+     * Returns the base tree component.
+     */
+    public function getBaseComponent()
+    {
+        return $this->_baseComponent;
     }
 }
