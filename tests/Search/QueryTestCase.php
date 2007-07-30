@@ -57,14 +57,14 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $e->save();
     }
-    /*'
+
     public function testTokenizeClauseSupportsAndOperator()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
 
         $ret = $q->tokenizeClause('doctrine AND orm');
 
-        $this->assertEqual($ret, array('doctrine', 'orm'));
+        $this->assertEqual($ret, array(array('doctrine', 'orm')));
     }
 
     public function testTokenizeClauseSupportsOrOperator()
@@ -73,7 +73,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $ret = $q->tokenizeClause('doctrine OR orm');
 
-        $this->assertIdentical($ret, array(array('doctrine', 'orm')));
+        $this->assertIdentical($ret, array('doctrine', 'orm'));
     }
 
     public function testTokenizeClauseSupportsMixingOfOperators()
@@ -81,7 +81,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
 
         $ret = $q->tokenizeClause('doctrine OR orm OR dbal AND database OR rdbms');
-        $expected = array(array('doctrine', 'orm', 'dbal'), array('database', 'rdbms'));
+        $expected = array('doctrine', 'orm', array('dbal', 'database'), 'rdbms');
 
         $this->assertEqual($ret, $expected);
     }
@@ -92,7 +92,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $ret = $q->tokenizeClause('doctrine OR orm dbal AND database OR rdbms');
 
-        $expected = array(array('doctrine', 'orm'), 'dbal', array('database', 'rdbms'));
+        $expected = array('doctrine', array('orm', 'dbal', 'database'), 'rdbms');
 
         $this->assertEqual($ret, $expected);
     }
@@ -102,11 +102,11 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
 
         $ret = $q->tokenizeClause('doctrine OR orm OR (dbal AND database OR rdbms)');
-        $expected = array(array('doctrine', 'orm', '(dbal AND database OR rdbms)'));
+        $expected = array('doctrine', 'orm', '(dbal and database or rdbms)');
 
         $this->assertEqual($ret, $expected);
     }
-
+                        /*
     public function testParseClauseSupportsAndOperator()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
@@ -186,7 +186,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($ret, $sql);
     }
-    */
+
     public function testParseClauseSupportsNegationOperator()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
@@ -258,7 +258,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($q->getSql(), $sql);
     }
-    */
+
     public function testSearchSupportsMixingOfOperators()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
