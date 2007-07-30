@@ -96,19 +96,24 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             throw new Doctrine_Export_Exception('no fields specified for table "'.$name.'"');
         }
         $queryFields = $this->getFieldDeclarationList($fields);
-
+        
         // build indexes for all foreign key fields (needed in MySQL!!)
         if (isset($options['foreignKeys'])) {
             foreach ($options['foreignKeys'] as $fk) {
                 $local = $fk['local'];
-                
                 $found = false;
                 if (isset($options['indexes'])) {
                     foreach ($options['indexes'] as $definition) {
-                        if (isset($definition['fields'][$local]) && count($definition['fields']) === 1) {
+                        if (in_array($local, $definition['fields']) && count($definition['fields']) === 1) {
+                            // Index already exists on the column
                             $found = true;
                         }
                     }
+                }
+                if (isset($options['primary']) && !empty($options['primary']) &&
+                        in_array($local, $options['primary'])) {
+                    // field is part of the PK and therefore already indexed
+                    $found = true;
                 }
                 
                 if ( ! $found) {

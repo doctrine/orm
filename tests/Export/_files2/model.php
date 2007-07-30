@@ -15,8 +15,8 @@ class Cms_CategoryLanguages extends Doctrine_Record
 		$this->option('collate', 'utf8_unicode_ci');
 		$this->option('charset', 'utf8');
 		$this->option('type', 'INNODB');
-		$this->index('index_category', array('fields' => 'category_id'));
-		$this->index('index_language', array('fields' => 'language_id'));
+		$this->index('index_category', array('fields' => array('category_id')));
+		$this->index('index_language', array('fields' => array('language_id')));
 	}
 }
 class Cms_Category extends Doctrine_Record 
@@ -36,6 +36,6 @@ class Cms_Category extends Doctrine_Record
 		$this->option('collate', 'utf8_unicode_ci');
 		$this->option('charset', 'utf8');
 		$this->option('type', 'INNODB');
-		$this->index('index_parent', array('fields' => 'parent'));
+		$this->index('index_parent', array('fields' => array('parent')));
 	}
 }

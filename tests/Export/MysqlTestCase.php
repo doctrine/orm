@@ -200,12 +200,11 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
                          'foreignKeys' => array(array('local' => 'foreignKey',
                                                       'foreign' => 'id',
                                                       'foreignTable' => 'sometable')),
-                         'indexes' => array('myindex' => array('fields' => array('foreignKey' => array()))),
+                         'indexes' => array('myindex' => array('fields' => array('foreignKey'))),
                          );
 
 
         $sql = $this->export->createTableSql($name, $fields, $options);
-
         $this->assertEqual($sql[0], 'CREATE TABLE mytable (id TINYINT(1), foreignKey INT, INDEX myindex_idx (foreignKey)) ENGINE = INNODB');
         $this->assertEqual($sql[1], 'ALTER TABLE mytable ADD CONSTRAINT FOREIGN KEY (foreignKey) REFERENCES sometable(id)');
     }
