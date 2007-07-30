@@ -701,17 +701,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
 
         if ($length == null && 
-            $type === 'string' || 
+            $type === 'string' ||
             $type === 'clob' || 
             $type === 'integer' || 
             $type === 'blob' || 
             $type === 'gzip') {
 
             $length = 2147483647;
-        }
-
-        if ((string) (int) $length !== (string) $length) {
-            throw new Doctrine_Table_Exception('Invalid argument given for column length');
         }
 
         $this->columns[$name] = $options;
