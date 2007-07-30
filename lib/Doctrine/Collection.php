@@ -580,6 +580,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         return $this;
     }
+    public function toArray()
+    {
+        return $this->data;	
+    }
     public function getDeleteDiff()
     {
         return array_diff($this->_snapshot, $this->data);
