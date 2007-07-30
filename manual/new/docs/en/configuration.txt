@@ -115,13 +115,34 @@ $manager->setAttribute(Doctrine::ATTR_LISTENER, new MyListener());
 </code>
 ++ Naming convention attributes
 
+Naming convention attributes affect on the naming of different database related elements such as tables, indexes and sequences.
+
 +++ Index name format
 
+Doctrine::ATTR_IDXNAME_FORMAT can be used for changing the naming convention of indexes. By default Doctrine uses the format [name]_idx. So defining an index called 'ageindex' will actually be converted into 'ageindex_idx'.
+
+<code type="php">
+// changing the index naming convention
+$manager->setAttribute(Doctrine::ATTR_IDXNAME_FORMAT, '%s_index');
+</code>
+
 +++ Sequence name format
+
+Similar to Doctrine::ATTR_IDXNAME_FORMAT, Doctrine::ATTR_SEQNAME_FORMAT can be used for changing the naming convention of sequences. By default Doctrine uses the format [name]_seq, hence creating a new sequence with the name of 'mysequence' will lead into creation of sequence called 'mysequence_seq'.
+
+<code type="php">
+// changing the sequence naming convention
+$manager->setAttribute(Doctrine::ATTR_IDXNAME_FORMAT, '%s_sequence');
+</code>
 
 +++ Table name format
 
 +++ Database name format
+
+<code type="php">
+// changing the database naming convention
+$manager->setAttribute(Doctrine::ATTR_DBNAME_FORMAT, 'myframework_%s');
+</code>
 
 ++ Validation attributes
 
