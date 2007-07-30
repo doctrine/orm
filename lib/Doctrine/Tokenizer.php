@@ -38,7 +38,7 @@ class Doctrine_Tokenizer
     }
     public function tokenize() 
     {
-    	
+
     }
     /**
      * trims brackets
@@ -49,7 +49,7 @@ class Doctrine_Tokenizer
      */
     public static function bracketTrim($str, $e1 = '(', $e2 = ')')
     {
-        if (substr($str,0,1) == $e1 && substr($str,-1) == $e2) {
+        if (substr($str, 0, 1) === $e1 && substr($str, -1) === $e2) {
             return substr($str, 1, -1);
         } else {
             return $str;
@@ -81,8 +81,9 @@ class Doctrine_Tokenizer
         if(is_array($d)) {
             $a = preg_split('/('.implode('|', $d).')/', $str);
             $d = stripslashes($d[0]);
-        } else
+        } else {
             $a = explode($d, $str);
+        }
 
         $i = 0;
         $term = array();
@@ -127,8 +128,9 @@ class Doctrine_Tokenizer
         if (is_array($d)) {
             $a = preg_split('/('.implode('|', $d).')/', $str);
             $d = stripslashes($d[0]);
-        } else
+        } else {
             $a = explode($d, $str);
+        }
 
         $i = 0;
         $term = array();
@@ -136,13 +138,13 @@ class Doctrine_Tokenizer
             if (empty($term[$i])) {
                 $term[$i] = trim($val);
 
-                if( ! (substr_count($term[$i], "'") & 1)) {
+                if ( ! (substr_count($term[$i], "'") & 1)) {
                     $i++;
                 }
             } else {
                 $term[$i] .= $d . trim($val);
 
-                if( ! (substr_count($term[$i], "'") & 1)) {
+                if ( ! (substr_count($term[$i], "'") & 1)) {
                     $i++;
                 }
             }
@@ -216,7 +218,7 @@ class Doctrine_Tokenizer
                 $c1 = substr_count($term[$i], $e1);
                 $c2 = substr_count($term[$i], $e2);
 
-                if (substr($term[$i],0,1) == '(') {
+                if (substr($term[$i], 0, 1) == '(') {
                     if($c1 == $c2) {
                         $i++;
                     }
