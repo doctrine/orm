@@ -174,7 +174,18 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($ret, $sql);
     }
+    public function testParseClauseSupportsMixingOfOperatorsAndDeeplyNestedParenthesis2()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $ret = $q->parseClause('rdbms (((doctrine OR orm) AND dbal) OR database)');
 
+        $sql = '(search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)) AND '
+             . '((search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?)) '
+             . 'AND (search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?))'
+             . ' OR keyword = ?)';
+
+        $this->assertEqual($ret, $sql);
+    }
                 /**
     public function testSearchSupportsAndOperator()
     {
