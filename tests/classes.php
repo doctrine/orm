@@ -21,7 +21,8 @@ class Entity extends Doctrine_Record
         $this->hasColumn('created', 'integer',11);
         $this->hasColumn('updated', 'integer',11);
         $this->hasColumn('email_id', 'integer');
-        $this->option('subclasses', array('User','Group'));
+//        $this->option('subclasses', array('User','Group'));
+        $this->setSubclasses(array("User" => array("type" => 0), "Group" => array("type" => 1)));
     }
 }
 class FieldNameTest extends Doctrine_Record 
@@ -83,7 +84,7 @@ class Group extends Entity {
     public function setUp() {
         parent::setUp();
         $this->hasMany('User', 'Groupuser.user_id');
-        $this->option('inheritanceMap', array('type' => 1));
+//        $this->option('inheritanceMap', array('type' => 1));
     }
 }
 class Error extends Doctrine_Record {
@@ -114,7 +115,7 @@ class User extends Entity
         $this->ownsMany('Album', 'Album.user_id');
         $this->ownsMany('Book', 'Book.user_id');
         $this->hasMany('Group', 'Groupuser.group_id');
-        $this->option('inheritanceMap', array('type' => 0));
+//        $this->option('inheritanceMap', array('type' => 0));
     }
     /** Custom validation */
     public function validate() 

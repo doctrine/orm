@@ -95,6 +95,20 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     {
         $this->_table->setOption('inheritanceMap', $map);
     }
+
+    public function setSubclasses($map){
+        if(isset($map[get_class($this)])){
+            $this->_table->setOption('inheritanceMap', $map[get_class($this)]);
+            return;
+        }
+        $this->_table->setOption('subclasses', array_keys($map));
+        $conn = $this->_table->getConnection(); 
+        foreach($map as $key => $value){
+            $table = $conn->getTable($key);
+//            $table->setOption('inheritanceMap', $value);
+        }
+    }
+
     /**
      * attribute
      * sets or retrieves an option

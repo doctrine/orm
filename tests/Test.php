@@ -66,7 +66,12 @@ class UnitTestCase
         if ($value == $value2) {
             $this->_passed++;
         } else {
-            $this->_fail();
+            $seperator = "<br>";
+            if(PHP_SAPI === "cli"){
+                $seperator = "\n";
+             }
+            $message = "$seperator Value1: $value $seperator != $seperator Value2: $value2 $seperator";
+            $this->_fail($message);
         }
     }
 
@@ -107,11 +112,11 @@ class UnitTestCase
     {
         $this->_passed++;
     }
-    public function fail()
+    public function fail($message = "")
     {
-        $this->_fail();	
+        $this->_fail($message);	
     }
-    public function _fail()
+    public function _fail($message = "")
     {
     	$trace = debug_backtrace();
     	array_shift($trace);
@@ -126,7 +131,7 @@ class UnitTestCase
                 }
 
                 $errorMessage = $class->getName() . ' : method ' . $stack['function'] . ' failed on line ' . $line;
-                $this->_messages[] =  $errorMessage;
+                $this->_messages[] =  $errorMessage . " " . $message;
                 break;
             }
             $line = $stack['line'];
