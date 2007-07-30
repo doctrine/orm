@@ -701,11 +701,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
 
         if ($length == null && 
-            $type === 'string' ||
-            $type === 'clob' || 
-            $type === 'integer' || 
-            $type === 'blob' || 
-            $type === 'gzip') {
+            ($type === 'string' ||
+            $type === 'clob' ||
+            $type === 'integer' ||
+            $type === 'blob' ||
+            $type === 'gzip')) {
 
             $length = 2147483647;
         }
