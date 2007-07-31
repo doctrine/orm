@@ -53,7 +53,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
 
         $users->save();
     }
-
+    /**
     public function testRecordSupportsValueMapping()
     {
         $record = new User();
@@ -77,7 +77,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
 
     public function testAggregateValueIsMappedToNewRecordOnEmptyResultSet()
     {
-    	$this->connection->clear();
+        $this->connection->clear();
 
         $q = new Doctrine_Query();
 
@@ -124,21 +124,21 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users[0]->count, 2);
         $this->assertEqual($users[1]->count, 2);
     }
-
+    */
     public function testAggregateValueMappingSupportsLeftJoins() 
     {
         $q = new Doctrine_Query();
 
         $q->select('u.name, COUNT(p.id) count')->from('User u')->leftJoin('u.Phonenumber p')->groupby('u.id');
-    
-        $users = $q->execute();
 
-        $this->assertEqual($users->count(), 4);
+        $users = $q->execute();   
 
-        $this->assertEqual($users[0]->Phonenumber[0]->count, 3);
-        $this->assertEqual($users[1]->Phonenumber[0]->count, 0);
-        $this->assertEqual($users[2]->Phonenumber[0]->count, 2);
-        $this->assertEqual($users[3]->Phonenumber[0]->count, 1);
+        $this->assertEqual(count($users), 4);
+
+        $this->assertEqual($users[0]['Phonenumber'][0]['count'], 3);
+        $this->assertEqual($users[1]['Phonenumber'][0]['count'], 0);
+        $this->assertEqual($users[2]['Phonenumber'][0]['count'], 2);
+        $this->assertEqual($users[3]['Phonenumber'][0]['count'], 1);
     }
 
     public function testAggregateValueMappingSupportsLeftJoins2()

@@ -61,6 +61,29 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
 
         $this->connection->clear();
     }
+    
+    public function testQuerySupportsCustomJoins()
+    {
+    	$q = new Doctrine_Query();
+
+        $q->select('c.*, c2.*, d.*')
+          ->from('Record_Country c')->innerJoin('c.City c2 ON c2.id = 2')
+          ->where('c.id = ?', array(1));
+
+        $this->assertEqual($q->getSql(), 'SELECT r.id AS r__id, r.name AS r__name, r2.id AS r2__id, r2.name AS r2__name, r2.country_id AS r2__country_id, r2.district_id AS r2__district_id FROM record__country r INNER JOIN record__city r2 ON r2.id = 2 WHERE r.id = ?');
+    }
+
+    public function testQuerySupportsCustomJoinsAndWithKeyword()
+    {
+    	$q = new Doctrine_Query();
+
+        $q->select('c.*, c2.*, d.*')
+          ->from('Record_Country c')->innerJoin('c.City c2 WITH c2.id = 2')
+          ->where('c.id = ?', array(1));
+
+        $this->assertEqual($q->getSql(), 'SELECT r.id AS r__id, r.name AS r__name, r2.id AS r2__id, r2.name AS r2__name, r2.country_id AS r2__country_id, r2.district_id AS r2__district_id FROM record__country r INNER JOIN record__city r2 ON r.id = r2.country_id AND r2.id = 2 WHERE r.id = ?');
+    }
+
     public function testRecordHydrationWorksWithDeeplyNestedStructuresAndArrayFetching()
     {
         $q = new Doctrine_Query();
@@ -100,6 +123,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($c->City[0]->District->name, 'District 1');
         $this->assertEqual($c->City[2]->District->name, 'District 2');
     }
+
     public function testManyToManyJoinUsesProperTableAliases()
     {
         $q = new Doctrine_Query();
@@ -117,6 +141,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e INNER JOIN entity_reference e3 ON e.id = e3.entity1 OR e.id = e3.entity2 INNER JOIN entity e2 ON (e2.id = e3.entity2 OR e2.id = e3.entity1) AND e2.id != e.id');
     }
+
     public function testMultipleJoins()
     {
         $q = new Doctrine_Query();
@@ -131,6 +156,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
             $this->fail();
         }
     }
+
     public function testMultipleJoins2()
     {
         $q = new Doctrine_Query();
@@ -145,5 +171,4 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
             $this->fail();
         }
     }
-
 }
