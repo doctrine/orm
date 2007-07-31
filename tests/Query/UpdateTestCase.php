@@ -72,5 +72,13 @@ class Doctrine_Query_Update_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($q->getQuery(), "UPDATE entity SET name = 'someone' WHERE id = 5 AND (type = 0)");
     }
+    public function testUpdateSupportsColumnReferencing()
+    {
+        $q = new Doctrine_Query();
+
+        $q->update('User u')->set('u.id', 'u.id + 1');
+
+        $this->assertEqual($q->getQuery(), "UPDATE entity SET id = id + 1 WHERE (type = 0)");
+    }
 }
 ?>
