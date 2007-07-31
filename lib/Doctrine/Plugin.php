@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Template_Searchable
+ * Doctrine_Plugin
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
@@ -30,34 +30,50 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Template_Searchable extends Doctrine_Template
-{     
-    protected $_search;
-
-    public function __construct(array $options)
+class Doctrine_Plugin 
+{
+    /**
+     * @var array $_options     an array of plugin specific options
+     */
+    protected $_options = array();
+    /**
+     * returns the value of an option
+     *
+     * @param $option       the name of the option to retrieve
+     * @return mixed        the value of the option
+     */
+    public function getOption($name)
     {
-        $this->_search = new Doctrine_Search($options);
+        if ( ! isset($this->_options[$name])) {
+            throw new Doctrine_Plugin_Exception('Unknown option ' . $name);
+        }
+        
+        return $this->_options[$name];
     }
-    public function setUp()
+    /**
+     * sets given value to an option
+     *
+     * @param $option       the name of the option to be changed
+     * @param $value        the value of the option
+     * @return Doctrine_Plugin  this object
+     */
+    public function setOption($name, $value)
     {
-        $id = $this->_table->getIdentifier();
-        $name = $this->_table->getComponentName();
-        $className = $this->_search->getOption('className');
-
-        if (strpos($className, '%CLASS%') !== false) {
-            $this->_search->setOption('className', str_replace('%CLASS%', $name, $className));
-            $className = $this->_search->getOption('className');
-        }
-        $this->_search->buildDefinition($this->_table);
-
-        foreach ((array) $id as $column) {
-            $foreign[] = strtolower($this->_table->getComponentName() . '_' . $column);
+        if ( ! isset($this->_options[$name])) {
+            throw new Doctrine_Plugin_Exception('Unknown option ' . $name);
         }
 
-        $foreign = (count($foreign) > 1) ? $foreign : current($foreign);
-
-        $this->hasMany($className, array('local' => $id, 'foreign' => $foreign));
-
-        $this->addListener(new Doctrine_Search_Listener($this->_search));
+        $this->_options[$name] = $value;
+        
+        return $this;
+    }
+    /**
+     * returns all options and their associated values
+     *
+     * @return array    all options as an associative array
+     */
+    public function getOptions()
+    {
+        return $this->_options;	
     }
 }
