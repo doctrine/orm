@@ -34,24 +34,23 @@ class Doctrine_Query_Set extends Doctrine_Query_Part
 {
     public function parse($dql)
     {
-        $parts = Doctrine_Tokenizer::sqlExplode($dql, ',');
+        preg_match_all("/[a-z0-9_]+\.[a-z0-9_]+[\.[a-z0-9]+]*/i", $dql, $m);
 
-        $result = array();
-        foreach ($parts as $part) {
-            $set = Doctrine_Tokenizer::sqlExplode($part, '=');
-
-            $e   = explode('.', trim($set[0]));
-            $field = array_pop($e);
-
-            $reference = implode('.', $e);
-
-            $alias     = $this->query->getTableAlias($reference);
-            $map       = $this->query->getAliasDeclaration($reference);
-
-            $result[]  = $map['table']->getColumnName($field) . ' = ' . $set[1];
+        if (isset($m[0])) {
+            foreach ($m[0] as $part) {
+                $e   = explode('.', trim($part));
+                $field = array_pop($e);
+    
+                $reference = implode('.', $e);
+    
+                $alias = $this->query->getTableAlias($reference);
+                $map   = $this->query->getAliasDeclaration($reference);
+    
+                $dql = str_replace($part, $map['table']->getColumnName($field), $dql);
+            }
         }
-        
-        return implode(', ', $result);
+
+        return $dql;
     }
 }
 
