@@ -61,3 +61,15 @@ SQL:
 SELECT u.id AS u__id, p.id AS p__id FROM User u LEFT JOIN Phonenumber p ON u.id = p.user_id AND u.id = 2
 </code>
 
+The Doctrine_Query API offers two convenience methods for adding JOINS. These are called innerJoin() and leftJoin(), which usage should be quite intuitive as shown below:
+
+<code type="php">
+$q = new Doctrine_Query();
+$q->from('User u')
+  ->leftJoin('u.Group g')
+  ->innerJoin('u.Phonenumber p WITH u.id > 3')
+  ->leftJoin('u.Email e');
+
+$users = $q->execute();
+</code>
+
