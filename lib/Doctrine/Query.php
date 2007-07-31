@@ -263,7 +263,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
             $this->_parsers[$name] = new $class($this);
         }
-        
+
         return $this->_parsers[$name];
     }
     /**
@@ -674,7 +674,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
             if (isset($this->_pendingJoinConditions[$k])) {
                 $parser = new Doctrine_Query_JoinCondition($this);
-                $part  .= ' AND ' . $parser->parse($this->_pendingJoinConditions[$k]);
+                
+                if (strpos($part, ' ON ') !== false) {
+                    $part .= ' AND ';
+                } else {
+                    $part .= ' ON ';
+                }
+                $part .= $parser->parse($this->_pendingJoinConditions[$k]);
 
                 unset($this->_pendingJoinConditions[$k]);
             }
@@ -1113,16 +1119,26 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $this;
     }
+
     public function load($path, $loadFields = true) 
     {
         // parse custom join conditions
         $e = explode(' ON ', $path);
-        
+
         $joinCondition = '';
 
         if (count($e) > 1) {
             $joinCondition = $e[1];
+            $overrideJoin = true;
             $path = $e[0];
+        } else {
+            $e = explode(' WITH ', $path);
+
+            if (count($e) > 1) {
+                $joinCondition = $e[1];
+                $path = $e[0];
+            }
+            $overrideJoin = false;
         }
 
         $tmp            = explode(' ', $path);
@@ -1207,45 +1223,61 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
   
                     $assocAlias = $this->getTableAlias($assocPath, $asf->getTableName());
 
-                    $queryPart = $join . $assocTableName . ' ' . $assocAlias . ' ON ' . $localAlias  . '.'
-                                                               . $table->getIdentifier() . ' = '
-                                                               . $assocAlias . '.' . $relation->getLocal();
+                    $queryPart = $join . $assocTableName . ' ' . $assocAlias;
+                    
+
+                    $queryPart .= ' ON ' . $localAlias
+                                . '.'
+                                . $table->getIdentifier()
+                                . ' = '
+                                . $assocAlias . '.' . $relation->getLocal();
 
                     if ($relation->isEqual()) {
-                        $queryPart .= ' OR ' . $localAlias  . '.'
-                                    . $table->getIdentifier() . ' = '
+                        // equal nest relation needs additional condition
+                        $queryPart .= ' OR ' . $localAlias
+                                    . '.'
+                                    . $table->getIdentifier()
+                                    . ' = '
                                     . $assocAlias . '.' . $relation->getForeign();
-
+  
                     }
 
                     $this->parts['from'][] = $queryPart;
 
-                    $queryPart = $join . $foreignSql . ' ON ';
-                    if ($relation->isEqual()) {
-                        $queryPart .= '(';
-                    } 
-                    $queryPart .= $this->_conn->quoteIdentifier($foreignAlias . '.' . $relation->getTable()->getIdentifier())
-                                . ' = '
-                                . $this->_conn->quoteIdentifier($assocAlias . '.' . $relation->getForeign());
+                    $queryPart = $join . $foreignSql;
 
-                    if ($relation->isEqual()) {
-                        $queryPart .= ' OR '
-                                    . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getIdentifier())
-                                    . ' = ' 
-                                    . $this->_conn->quoteIdentifier($assocAlias . '.' . $relation->getLocal())
-                                    . ') AND ' 
-                                    . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getIdentifier())
-                                    . ' != '  
-                                    . $this->_conn->quoteIdentifier($localAlias . '.' . $table->getIdentifier());
+                    if ( ! $overrideJoin) {
+                        $queryPart .= ' ON ';
+
+                        if ($relation->isEqual()) {
+                            $queryPart .= '(';
+                        } 
+
+                        $queryPart .= $this->_conn->quoteIdentifier($foreignAlias . '.' . $relation->getTable()->getIdentifier())
+                                    . ' = '
+                                    . $this->_conn->quoteIdentifier($assocAlias . '.' . $relation->getForeign());
+    
+                        if ($relation->isEqual()) {
+                            $queryPart .= ' OR '
+                                        . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getIdentifier())
+                                        . ' = ' 
+                                        . $this->_conn->quoteIdentifier($assocAlias . '.' . $relation->getLocal())
+                                        . ') AND ' 
+                                        . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getIdentifier())
+                                        . ' != '  
+                                        . $this->_conn->quoteIdentifier($localAlias . '.' . $table->getIdentifier());
+                        }
                     }
-
                 } else {
 
-                    $queryPart = $join . $foreignSql
-                               . ' ON ' 
-                               . $this->_conn->quoteIdentifier($localAlias . '.' . $relation->getLocal())
-                               . ' = ' 
-                               . $this->_conn->quoteIdentifier($foreignAlias . '.' . $relation->getForeign());
+                    $queryPart = $join . $foreignSql;
+                    
+                    if ( ! $overrideJoin) {
+                        $queryPart .= ' ON '
+                                   . $this->_conn->quoteIdentifier($localAlias . '.' . $relation->getLocal())
+                                   . ' = ' 
+                                   . $this->_conn->quoteIdentifier($foreignAlias . '.' . $relation->getForeign());
+                    }
 
                 }
                 $this->parts['from'][$componentAlias] = $queryPart;
