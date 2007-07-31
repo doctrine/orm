@@ -3,6 +3,7 @@
 ++ UPDATE queries
 ++ DELETE queries
 ++ FROM clause
+++ JOIN syntax
 ++ WHERE clause
 ++ Conditional expressions
 ++ Functional Expressions
