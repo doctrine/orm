@@ -5,13 +5,13 @@ Doctrine always adds a primary key column named 'id' to tables that doesn't have
 Lets say we want to create a database table called 'user' with columns id(primary key), name, username, password and created. Provided that you have already installed Doctrine these few lines of code are all you need:
 
 User.php :
-<code>
+<code type="php">
 class User extends Doctrine_Record 
 {
     public function setTableDefinition() 
     {
         // set 'user' table columns, note that
-        // id column is always auto-created
+        // id column is auto-created as no primary key is specified
         
         $this->hasColumn('name', 'string',30);
         $this->hasColumn('username', 'string',20);
@@ -32,6 +32,6 @@ spl_autoload_register(array('Doctrine', 'autoload'));
 $conn = Doctrine_Manager::connection('pgsql://user:pass@localhost/test');
 
 $conn->export->exportClasses(array('User'));
-</code> 
+</code>
 
 We now have a user model that supports basic CRUD opperations! 
