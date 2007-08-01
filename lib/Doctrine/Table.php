@@ -700,14 +700,32 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
 
 
-        if ($length == null && 
-            ($type === 'string' ||
-            $type === 'clob' ||
-            $type === 'integer' ||
-            $type === 'blob' ||
-            $type === 'gzip')) {
 
-            $length = 2147483647;
+        if ($length == null) {
+            switch ($type) {
+                case 'string':
+                case 'clob':
+                case 'integer':
+                case 'array':
+                case 'object':
+                case 'blob':
+                case 'gzip':
+                    // use php int max
+                    $length = 2147483647;
+                break;
+                case 'boolean':
+                    $length = 1;
+                case 'date':
+                    // YYYY-MM-DD ISO 8601
+                    $length = 10;
+                case 'time':
+                    // HH:NN:SS+00:00 ISO 8601
+                    $length = 14;
+                case 'timestamp':
+                    // YYYY-MM-DDTHH:MM:SS+00:00 ISO 8601
+                    $length = 25;
+                break;
+            }
         }
 
         $this->columns[$name] = $options;
