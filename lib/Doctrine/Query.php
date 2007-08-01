@@ -1378,7 +1378,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
          // build the query base
          $q  = 'SELECT COUNT(DISTINCT ' . $this->getTableAlias($componentAlias)
-             . '.' . $table->getIdentifier()
+             . '.' . implode(',', (array) $table->getIdentifier())
              . ') AS num_results';
 
          foreach ($this->parts['select'] as $field) {
