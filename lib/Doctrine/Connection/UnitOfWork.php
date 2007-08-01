@@ -140,7 +140,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     public function saveGraph(Doctrine_Record $record)
     {
     	$conn = $this->getConnection();
-        
+
         $state = $record->state();
         if ($state === Doctrine_Record::STATE_LOCKED) {
             return false;
@@ -156,11 +156,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         if ($record->isValid()) {
             $event = new Doctrine_Event($record, Doctrine_Event::RECORD_SAVE);
-    
+
             $record->preSave($event);
     
             $record->getTable()->getRecordListener()->preSave($event);
-    
+
             if ( ! $event->skipOperation) {
                 switch ($state) {
                     case Doctrine_Record::STATE_TDIRTY:
@@ -176,7 +176,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                         break;
                 }
             }
-    
+
             $record->getTable()->getRecordListener()->postSave($event);
             
             $record->postSave($event);
@@ -299,13 +299,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             $foreign = $rel->getForeign();
 
             if ($rel instanceof Doctrine_Relation_ForeignKey) {
-                //if ( ! $record->exists()) {
-                    $saveLater[$k] = $rel;
-                /**
-                } else {
-                    $v->save($this->conn);
-                }
-                */
+                $saveLater[$k] = $rel;
             } elseif ($rel instanceof Doctrine_Relation_LocalKey) {
                 // ONE-TO-ONE relationship
                 $obj = $record->get($rel->getAlias());
@@ -353,7 +347,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 }
 
                 foreach ($v->getInsertDiff() as $r) {
-                    
+
 
                     $assocRecord = $assocTable->create();
                     $assocRecord->set($rel->getForeign(), $r);
@@ -428,14 +422,14 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     public function update(Doctrine_Record $record)
     {
         $event = new Doctrine_Event($record, Doctrine_Event::RECORD_UPDATE);
-        
+
         $record->preUpdate($event);
 
         $record->getTable()->getRecordListener()->preUpdate($event);
-
+          
         if ( ! $event->skipOperation) {
             $array = $record->getPrepared();
-    
+
             if (empty($array)) {
                 return false;
             }
@@ -457,7 +451,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                     }
                 }
             }
-    
+
             $params = array_values($array);
             $id     = $record->identifier();
     

@@ -71,54 +71,23 @@ class Doctrine_Search_Query
     {
         $text = strtolower(trim($text));
 
-        $terms = Doctrine_Tokenizer::sqlExplode($text, ' AND ', '(', ')');
-        
         $foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
-        
-        $numTerms = count($terms);
-        
+
         $weighted = false;
         if (strpos($text, '^') === false) {
             $select = 'SELECT COUNT(keyword) AS relevance, ' . $foreignId;
             $from = 'FROM ' . $this->_table->getTableName();
         } else {
             // organize terms according weights
-
-            foreach ($terms as $k => $term) {
-                $e = explode('^', $term);
-                $x = (isset($e[1]) && is_numeric($e[1])) ? $e[1] : 1;
-
-                $weightedTerms[$x][] = $term;
-            }
             $weighted = true;
 
             $select = 'SELECT SUM(sub_relevance) AS relevance, ' . $foreignId;
             $from = 'FROM ' ;
         }
-
-        switch ($numTerms) {
-            case 0:
-                return false;
-            break;
-            case 1:
-                // only one term found, use fast and simple query
-                $data = $this->parseTerm($terms[0]);
-                $where = $data[0];
-                $params = $data[1];
-            break;
-            default:
-                $where = 'WHERE ';
-                $cond = array();
-                $params = array();
-
-                foreach ($terms as $term) {
-                    $data   = $this->parseTerm($term);
-                    $params = array_merge($params, $data[1]);
-                    $cond[] = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' ' . $data[0] . ')';
-                }
-                $where .= implode(' AND ', $cond);
-        }
         
+        $where = 'WHERE ';
+        $where .= $this->parseClause($text);
+
         $groupby = 'GROUP BY ' . $foreignId;
         $orderby = 'ORDER BY relevance';
 
@@ -126,6 +95,7 @@ class Doctrine_Search_Query
     }
     public function tokenizeClause($clause)
     {
+    	$clause = strtolower(trim($clause));
         $clause = Doctrine_Tokenizer::bracketTrim($clause);
 
         $terms = Doctrine_Tokenizer::sqlExplode($clause, ' ', '(', ')');
@@ -141,25 +111,30 @@ class Doctrine_Search_Query
         foreach ($terms as $k => $term) {
             $term = trim($term);
 
-            if ($term === 'AND') {
+            if ($term === 'and') {
                 $operator = self::OPERATOR_AND;
-            } elseif ($term === 'OR') {
+            } elseif ($term === 'or') {
                 $operator = self::OPERATOR_OR;
             } else {
                 if ($operator === self::OPERATOR_OR) {
-                    if ( ! is_array($ret[($i-1)])) {
-                        $ret[($i-1)] = array($ret[($i-1)], $term);
-                    } else {
-                        $ret[($i-1)][] = $term;
-                    }
-                } else {
-                    $ret[$i] = $term;
-
+                    $ret[$i] = $term;      
                     $i++;
+                } else {
+                    if ($k === 0) {
+                        $ret[$i] = $term;
+                        $i++;
+                    } else {
+                        if ( ! is_array($ret[($i - 1)])) {
+                            $ret[($i - 1)] = array_merge(array($ret[($i - 1)]), array($term));
+                        } else {
+                            $ret[($i - 1)][] = $term;
+                        }
+                    }
                 }
                 $operator = self::OPERATOR_AND;
             }
         }
+
         return $ret;
     }
 
@@ -179,7 +154,13 @@ class Doctrine_Search_Query
                     $parsed = $this->parseTerms($term);
                 } else {
                     if (strpos($term, '(') === false) {
-                        $parsed = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $this->parseClause($term) . ')';
+                        if (substr($term, 0, 1) === '-') {
+                            $operator = 'NOT IN';
+                            $term = substr($term, 1);
+                        } else {
+                            $operator = 'IN';
+                        }
+                        $parsed = $foreignId . ' ' . $operator . ' (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $this->parseClause($term) . ')';
                     } else {
                         $parsed = $this->parseClause($term);
                     }
@@ -213,7 +194,7 @@ class Doctrine_Search_Query
 
             if (strpos($parsed, '(') === false) {
                 $parsed = $foreignId . ' IN (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ' . $parsed . ')';
-            }       
+            }
 
             return $parsed;
         } else {
@@ -223,7 +204,11 @@ class Doctrine_Search_Query
     }
     public function parseTerm($term)
     {
+    	$negation = false;
+
+
         if (strpos($term, "'") === false) {
+
             $where = 'keyword = ?';
             
             $params = array($term);
@@ -239,7 +224,7 @@ class Doctrine_Search_Query
                 }
                 $where .= ' AND (position + ' . $k . ') = (SELECT position FROM ' . $this->_table->getTableName() . ' WHERE keyword = ?)';
             }
-        }  
+        }
         return array($where, $params);
     }
 
