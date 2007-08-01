@@ -246,6 +246,20 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($this->export->getIndexFieldDeclarationList($fields), 'id(10) ASC, name(1) DESC');
     }
+    public function testCreateTableSupportsIndexesUsingSingleFieldString()
+    {
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
+                         'name' => array('type' => 'string', 'length' => 4),
+                         );
+
+        $options = array('primary' => array('id'),
+                         'indexes' => array('myindex' => array(
+                                                    'fields' => 'name'))
+                         );
+
+        $this->export->createTable('sometable', $fields, $options);        
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INT UNSIGNED AUTO_INCREMENT, name VARCHAR(4), INDEX myindex_idx (name), PRIMARY KEY(id)) ENGINE = INNODB');
+    }
     public function testCreateTableSupportsIndexesWithCustomSorting()
     {
         $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
