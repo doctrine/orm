@@ -104,7 +104,10 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 $found = false;
                 if (isset($options['indexes'])) {
                     foreach ($options['indexes'] as $definition) {
-                        if (in_array($local, $definition['fields']) && count($definition['fields']) === 1) {
+                        if (is_string($definition['fields'])) {
+                            // Check if index already exists on the column                            
+                            $found = ($local == $definition['fields']);                        
+                        } else if (in_array($local, $definition['fields']) && count($definition['fields']) === 1) {
                             // Index already exists on the column
                             $found = true;
                         }
