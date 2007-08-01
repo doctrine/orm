@@ -191,11 +191,12 @@ class Doctrine_Tokenizer
             $str = preg_split('/(' . implode('|', $d) . ')/', $str);
             $d = stripslashes($d[0]);
         } else {
-            $str = explode("$d",$str);
+            $str = explode($d, $str);
         }
 
         $i = 0;
         $term = array();
+
         foreach ($str as $key => $val) {
             if (empty($term[$i])) {
                 $term[$i] = trim($val);
@@ -203,11 +204,11 @@ class Doctrine_Tokenizer
                 $s1 = substr_count($term[$i], $e1);
                 $s2 = substr_count($term[$i], $e2);
 
-                if (substr($term[$i],0,1) == '(') {
+                if (strpos($term[$i], '(') !== false) {
                     if($s1 == $s2) {
                         $i++;
                     }
-                } else {
+                } else { 
                     if ( ! (substr_count($term[$i], "'") & 1) &&
                          ! (substr_count($term[$i], "\"") & 1)) {
                         $i++;
@@ -218,13 +219,13 @@ class Doctrine_Tokenizer
                 $c1 = substr_count($term[$i], $e1);
                 $c2 = substr_count($term[$i], $e2);
 
-                if (substr($term[$i], 0, 1) == '(') {
+                if (strpos($term[$i], '(') !== false) {
                     if($c1 == $c2) {
                         $i++;
                     }
                 } else {
                     if ( ! (substr_count($term[$i], "'") & 1) &&
-                         ! (substr_count($term[$i], "\"") & 1)) { 
+                         ! (substr_count($term[$i], "\"") & 1)) {
                         $i++;
                     }
                 }
