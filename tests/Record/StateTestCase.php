@@ -219,7 +219,6 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         $user2->save() ;
 
         // the logic would suggest the object to go back to PROXY mode (becausse $user2->loginname is null aka not sync with DB)
-		// because we know loginname should be equal to 'bogus' IF NOT in proxy state
         $boolState = ($user2->loginname == null) && ($user2->state() === Doctrine_Record::STATE_PROXY) ;
         // this one will currently fail 
         $this->assertTrue($boolState) ;
