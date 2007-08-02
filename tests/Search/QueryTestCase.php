@@ -210,7 +210,8 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
 
         $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
              . 'FROM search_test_index WHERE keyword = ? GROUP BY search_test_id ORDER BY relevance';
-
+        
+        $this->assertEqual($q->getParams(), array('doctrine'));  
         $this->assertEqual($q->getSql(), $sql);
     }
 
@@ -225,6 +226,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
              . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
              . 'GROUP BY search_test_id ORDER BY relevance';
 
+        $this->assertEqual($q->getParams(), array('doctrine', 'orm', 'dbal'));
         $this->assertEqual($q->getSql(), $sql);
     }
 
@@ -238,6 +240,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
              . 'AND (position + 1) = (SELECT position FROM search_test_index WHERE keyword = ?) '
              . 'GROUP BY search_test_id ORDER BY relevance';
 
+        $this->assertEqual($q->getParams(), array('doctrine', 'orm'));
         $this->assertEqual($q->getSql(), $sql);
     }
 
