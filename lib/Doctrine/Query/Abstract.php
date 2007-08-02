@@ -72,6 +72,35 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
         return $this->parseQueryPart('where', $where, true);
     }
     /**
+     * whereIn
+     * adds IN condition to the query WHERE part
+     *
+     * @param string $expr
+     * @param mixed $params         an array of parameters or a simple scalar
+     * @return Doctrine_Query
+     */
+    public function whereIn($params = array())
+    {
+        if (is_array($params)) {
+            $this->_params = array_merge($this->_params, $params);
+        } else {
+            $this->_params[] = $params;
+        }
+        $a = array();
+        foreach ($params as $k => $value) {
+            if ($value instanceof Doctrine_Expression) {
+                $value = $value->getSql();
+                unset($values[$k]);
+            } else {
+                $value = '?';      	
+            }
+            $a[] = $value;
+        }
+        $where = $expr . ' IN (' . implode(', ', $a) . ')';
+
+        return $this->parseQueryPart('where', $where, true);
+    }
+    /**
      * addGroupBy
      * adds fields to the GROUP BY part of the query
      *
