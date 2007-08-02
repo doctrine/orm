@@ -252,6 +252,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
              . 'AND (position + 2) = (SELECT position FROM search_test_index WHERE keyword = ?) '
              . 'GROUP BY search_test_id ORDER BY relevance';
 
+        $this->assertEqual($q->getParams(), array('doctrine', 'orm', 'dbal'));
         $this->assertEqual($q->getSql(), $sql);
     }
 
@@ -309,6 +310,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
              . 'AND (position + 1) = (SELECT position FROM search_test_index WHERE keyword = ?)) '
              . 'GROUP BY search_test_id ORDER BY relevance';
 
+        $this->assertEqual($q->getParams(), array('doctrine', 'orm', 'database'));
         $this->assertEqual($q->getSql(), $sql);
     }
 
