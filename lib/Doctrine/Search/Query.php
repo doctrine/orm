@@ -32,8 +32,6 @@
  */
 class Doctrine_Search_Query
 {
-    const OPERATOR_OR = 0;
-    const OPERATOR_AND = 1;
     /**
      * @var Doctrine_Query $query           the base query
      */
@@ -44,6 +42,8 @@ class Doctrine_Search_Query
     protected $_table = array();
     
     protected $_sql = '';
+    
+    protected $_params = array();
     
 
     protected $_condition;
@@ -186,25 +186,44 @@ class Doctrine_Search_Query
     	$negation = false;
 
         if (strpos($term, "'") === false) {
-            $where = 'keyword = ?';
-            
-            $params = array($term);
+            $where = $this->parseWord($term);
         } else {
             $term = trim($term, "' ");
-            
-            $where = 'keyword = ?';
+
             $terms = Doctrine_Tokenizer::quoteExplode($term);
-            $params = $terms;
+            $where = $this->parseWord($terms[0]);
+
             foreach ($terms as $k => $word) {
                 if ($k === 0) {
                     continue;
                 }
-                $where .= ' AND (position + ' . $k . ') = (SELECT position FROM ' . $this->_table->getTableName() . ' WHERE keyword = ?)';
+                $where .= ' AND (position + ' . $k . ') = (SELECT position FROM ' . $this->_table->getTableName() . ' WHERE ' . $this->parseWord($word) . ')';
             }
         }
         return $where;
     }
+    public function parseWord($word) 
+    {
+        if (strpos($word, '?') !== false ||
+            strpos($word, '*') !== false) {
+            
+            $word = str_replace('*', '%', $word);
 
+            $where = 'keyword LIKE ?';
+            
+            $params = array($word);
+        } else {
+            $where = 'keyword = ?';
+        }
+        
+        $this->_params[] = $word;
+
+        return $where;
+    }
+    public function getParams()
+    {
+        return $this->_params;
+    }
     public function getSql()
     {
         return $this->_sql;
