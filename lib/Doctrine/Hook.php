@@ -65,6 +65,7 @@ class Doctrine_Hook
                               'string'    => 'Doctrine_Hook_WordLike',
                               'varchar'   => 'Doctrine_Hook_WordLike',
                               'integer'   => 'Doctrine_Hook_Integer',
+                              'enum'      => 'Doctrine_Hook_Integer',
                               'time'      => 'Doctrine_Hook_Time',
                               'date'      => 'Doctrine_Hook_Date',
                               );
@@ -128,6 +129,9 @@ class Doctrine_Hook
             return false;
         }
         foreach ($params as $name => $value) {
+            if ($value === '' || $value === '-') {
+                continue;
+            }
             $e = explode('.', $name);
 
             if (count($e) == 2) {
