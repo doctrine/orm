@@ -37,13 +37,12 @@ class NewsItem extends Doctrine_Record
     }
     public function setUp()
     {
-        $this->loadTemplate('Doctrine_Search_Template',
-                            array('fields' => array('title', 'content')));
+        $this->actAs('Searchable', array('fields' => array('title', 'content')));
     }
 }
 </code>
 
-Here we tell Doctrine that NewsItem class uses Doctrine_Search_Template and fields title and content are marked as fulltext indexed fields. This means that everytime a NewsItem is added or updated Doctrine will:
+Here we tell Doctrine that NewsItem class acts as searchable (internally Doctrine loads Doctrine_Template_Searchable) and fields title and content are marked as fulltext indexed fields. This means that everytime a NewsItem is added or updated Doctrine will:
 
 1. Update the inverse search index or
 2. Add new pending entry to the inverse search index (its efficient to update the inverse search index in batches)
@@ -62,5 +61,4 @@ The structure of the inverse index Doctrine uses is the following:
 In the NewsItem example the [foreign_keys] would simply contain one field newsitem_id with foreign key references to NewsItem(id) and with onDelete => CASCADE constraint.
 
 ++ Index building
-
-
+++ Query language
