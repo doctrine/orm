@@ -167,4 +167,66 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         
         $this->assertEqual($count, count($this->dbh));
     }
+    
+    public function testProxyToDirtyToProxy() {
+    	
+    	define('UNAME','someuser') ;
+    	define('UPWD1','123') ;
+    	define('UPWD2','456') ;
+    	define('ULNAME','somelogin') ;
+    	
+    	$user = new User() ;
+    	$user->name      = UNAME ;
+    	$user->password  = UPWD1 ;
+    	$user->loginname = ULNAME ;
+    	$user->save() ;
+    	
+        $this->assertEqual($user->name,UNAME) ;
+        $this->assertEqual($user->password,UPWD1) ;
+        $this->assertEqual($user->loginname,ULNAME) ;
+        
+        // to make sure it is saved correctly
+        $user1 = $this->connection->queryOne("FROM User u WHERE u.name = '" . UNAME . "'");
+        $this->assertEqual($user1->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($user1->name,UNAME) ;
+        $this->assertEqual($user1->password,UPWD1) ;
+        $this->assertEqual($user1->loginname,ULNAME) ;
+        
+    	$this->connection->clear() ;
+    	//$this->clearCache() ;
+    	
+    	// now lets fetch partially the object
+		//$users = Doctrine_Query::create($this->connection)->select('u.name')->from('User u')->where("u.name='someuser'")->execute() ;
+        //$user2 = $users[0] ;
+		$user2 = $this->connection->queryOne("SELECT u.name FROM User u WHERE u.name = '" . UNAME . "'");
+        
+        // the object should be in state proxy with only 'name' fetched ...
+        $this->assertEqual($user2->state(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($user2->name,UNAME) ;
+        $this->assertEqual($user2->password,null) ;
+        $this->assertEqual($user2->loginname,null) ;
+        
+        // lets edit the object
+        $user2->password = UPWD2 ;
+        
+        // now it should be dirty (but may be PDIRTY ... ?)
+        $this->assertEqual($user2->state(),Doctrine_Record::STATE_DIRTY) ;
+        $this->assertEqual($user2->name,UNAME) ;
+        $this->assertEqual($user2->password,UPWD2) ;
+        $this->assertEqual($user2->loginname,null) ;
+                
+        // lets save
+        $user2->save() ;
+
+        // the logic would suggest the object to go back to PROXY mode (becausse $user2->loginname is null aka not sync with DB)
+		// because we know loginname should be equal to 'bogus' IF NOT in proxy state
+        $boolState = ($user2->loginname == null) && ($user2->state() === Doctrine_Record::STATE_PROXY) ;
+        // this one will currently fail 
+        $this->assertTrue($boolState) ;
+        // this will also currently fail (becausse it currently goes back to STATE_CLEAN, which shouldnt be the case)
+        //$this->assertEqual($user2->state(), Doctrine_Record::STATE_PROXY);
+        $this->assertEqual($user2->name,UNAME) ;
+        $this->assertEqual($user2->password,UPWD2) ;
+        $this->assertEqual($user2->loginname,null) ;
+     }
 }
