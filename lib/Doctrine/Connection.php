@@ -473,7 +473,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         // build the statement
         $query = 'INSERT INTO ' . $this->quoteIdentifier($table) 
-               . '(' . implode(', ', $cols) . ') '
+               . ' (' . implode(', ', $cols) . ') '
                . 'VALUES (';
         
         $a = array();
