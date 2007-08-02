@@ -269,6 +269,34 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($q->getSql(), $sql);
     }
 
+    public function testQuerySupportsMultiWordSearchAndSingleLetterWildcards()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $q->search('doct?ine orm');
+
+        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+             . 'FROM search_test_index '
+             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword LIKE ?) '
+             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY search_test_id ORDER BY relevance';
+
+        $this->assertEqual($q->getParams(), array('doct?ine', 'orm'));
+        $this->assertEqual($q->getSql(), $sql);
+    }
+    public function testQuerySupportsMultiWordSearchAndMultiLetterWildcards()
+    {
+        $q = new Doctrine_Search_Query('SearchTestIndex');
+        $q->search('doc* orm');
+
+        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+             . 'FROM search_test_index '
+             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword LIKE ?) '
+             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY search_test_id ORDER BY relevance';
+
+        $this->assertEqual($q->getParams(), array('doc%', 'orm'));
+        $this->assertEqual($q->getSql(), $sql);
+    }
     public function testSearchSupportsMultipleTermsWithQuotes()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
