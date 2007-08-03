@@ -37,7 +37,7 @@
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
+class Doctrine_Import_Schema_Xml extends Doctrine_Import_Schema
 {
     /**
      * importArr
@@ -54,26 +54,30 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
             throw new Doctrine_Import_Exception('Could not read schema file '. $schema);
         }
         
-        $xmlObj = simplexml_load_file($schema);
-      
+        if (!($xmlString = file_get_contents($schema))) {
+            throw new Doctrine_Import_Exception('Schema file '. $schema . ' is empty');
+        }
+        
+        $xmlObj = simplexml_load_string($xmlString);
+        
         // Go through all tables...
         foreach ($xmlObj->table as $table) {
             // Go through all columns... 
-            foreach ($table->declaration->field as $field) {
+            foreach ($table->declaration->column as $column) {
                 $colDesc = array(
-                    'name'      => (string) $field->name,
-                    'type'      => (string) $field->type,
-                    'ptype'     => (string) $field->type,
-                    'length'    => (int) $field->length,
-                    'fixed'     => (int) $field->fixed,
-                    'unsigned'  => (bool) $field->unsigned,
-                    'primary'   => (bool) (isset($field->primary) && $field->primary),
-                    'default'   => (string) $field->default,
-                    'notnull'   => (bool) (isset($field->notnull) && $field->notnull),
-                    'autoinc'   => (bool) (isset($field->autoincrement) && $field->autoincrement),
+                    'name'      => (string) $column->name,
+                    'type'      => (string) $column->type,
+                    'ptype'     => (string) $column->type,
+                    'length'    => (int) $column->length,
+                    'fixed'     => (int) $column->fixed,
+                    'unsigned'  => (bool) $column->unsigned,
+                    'primary'   => (bool) (isset($column->primary) && $column->primary),
+                    'default'   => (string) $column->default,
+                    'notnull'   => (bool) (isset($column->notnull) && $column->notnull),
+                    'autoinc'   => (bool) (isset($column->autoincrement) && $column->autoincrement),
                 );
             
-                $columns[(string) $field->name] = $colDesc;
+                $columns[(string) $column->name] = $colDesc;
             }
             
             $tables[(string) $table->name] = $columns;

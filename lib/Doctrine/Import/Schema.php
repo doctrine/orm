@@ -56,7 +56,10 @@ class Doctrine_Import_Schema
         $arr = $this->importSchema($schema);
        
         foreach ($arr as $name => $columns) {
-            $Builder->buildRecord($name, $columns);
+            $options['className'] = $name;
+            $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$name.'.class.php';
+            
+            $builder->buildRecord($options, $columns, array());
         }
     }
 }
