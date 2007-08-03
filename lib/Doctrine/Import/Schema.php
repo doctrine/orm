@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id$
+ * $Id: Schema.php 1838 2007-06-26 00:58:21Z nicobn $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * class Doctrine_Import_XML
+ * class Doctrine_Import_Schema
  *
  * Different methods to import a XML schema. The logic behind using two different
  * methods is simple. Some people will like the idea of producing Doctrine_Record
@@ -33,74 +33,30 @@
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @version     $Revision$
+ * @version     $Revision: 1838 $
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class Doctrine_Import_Xml
+class Doctrine_Import_Schema
 {
     /**
-     * importObj
+     * import
      *
-     * A method to import a XML Schema and translate it into a Doctrine_Record object
+     * A method to import a Schema and translate it into a Doctrine_Record object
      *
      * @param string $schema       The file containing the XML schema
      * @param string $directory    The directory where the Doctrine_Record classes will
      *                             be written
      */
-    public function importObj($schema, $directory)
+    public function import($schema, $directory)
     {
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
 
-        $arr = $this->importArr($schema);
+        $arr = $this->importSchema($schema);
        
         foreach ($arr as $name => $columns) {
             $Builder->buildRecord($name, $columns);
         }
     }
-
-    /**
-     * importArr
-     *
-     * A method to import a XML Schema and translate it into a property array. 
-     * The function returns that property array.
-     *
-     * @param  string $schema   Path to the file containing the XML schema
-     * @return array
-     */
-    public function importArr($schema)
-    {
-        if (!is_readable($schema)) {
-            throw new Doctrine_Import_Exception('Could not read schema file '. $schema);
-        }
-        
-        $xmlObj = simplexml_load_file($schema);
-      
-        // Go through all tables...
-        foreach ($xmlObj->table as $table) {
-            // Go through all columns... 
-            foreach ($table->declaration->field as $field) {
-                $colDesc = array(
-                    'name'      => (string) $field->name,
-                    'type'      => (string) $field->type,
-                    'ptype'     => (string) $field->type,
-                    'length'    => (int) $field->length,
-                    'fixed'     => (int) $field->fixed,
-                    'unsigned'  => (bool) $field->unsigned,
-                    'primary'   => (bool) (isset($field->primary) && $field->primary),
-                    'default'   => (string) $field->default,
-                    'notnull'   => (bool) (isset($field->notnull) && $field->notnull),
-                    'autoinc'   => (bool) (isset($field->autoincrement) && $field->autoincrement),
-                );
-            
-                $columns[(string) $field->name] = $colDesc;
-            }
-            
-            $tables[(string) $table->name] = $columns;
-        }
-        
-        return $tables;
-    }
 }
-
-?>
