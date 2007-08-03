@@ -111,6 +111,11 @@ class Doctrine_Validator extends Doctrine_Object
                     || $name == 'zerofill') {
                     continue;
                 }
+
+                if (strtolower($name) === 'notnull' && isset($column['autoincrement'])) {
+                    continue;
+                }
+
                 if (strtolower($name) == 'length') {
                     if (!$record->getTable()->getAttribute(Doctrine::ATTR_AUTO_LENGTH_VLD)) {
                         if (!$this->validateLength($column, $key, $value)) {
