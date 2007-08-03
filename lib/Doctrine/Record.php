@@ -451,6 +451,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         switch ($this->_table->getIdentifierType()) {
             case Doctrine::IDENTIFIER_AUTOINC:
             case Doctrine::IDENTIFIER_SEQUENCE:
+            case Doctrine::IDENTIFIER_NATURAL:
                 $name = $this->_table->getIdentifier();
 
                 if ($exists) {
@@ -458,20 +459,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                         $this->_id[$name] = $this->_data[$name];
                     }
                 }
-
-                unset($this->_data[$name]);
-
-                break;
-            case Doctrine::IDENTIFIER_NATURAL:
-                $this->_id   = array();
-                $name       = $this->_table->getIdentifier();
-
-                if (isset($this->_data[$name]) && $this->_data[$name] !== self::$_null) {
-                    $this->_id[$name] = $this->_data[$name];
-                }
                 break;
             case Doctrine::IDENTIFIER_COMPOSITE:
-                $names      = $this->_table->getIdentifier();
+                $names = $this->_table->getIdentifier();
 
                 foreach ($names as $name) {
                     if ($this->_data[$name] === self::$_null) {
@@ -1170,13 +1160,24 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function copy()
     {
-        $ret = $this->_table->create($this->_data);
+    	$data = $this->_data;
+
+        if ($this->_table->getIdentifierType() === Doctrine::IDENTIFIER_AUTOINC) {
+            $id = $this->_table->getIdentifier();
+
+            unset($data[$id]);
+        }
+
+        $ret = $this->_table->create($data);
         $modified = array();
-        foreach ($this->_data as $key => $val) {
+
+        foreach ($data as $key => $val) {
             if ( ! ($val instanceof Doctrine_Null)) {
                 $ret->_modified[] = $key;
             }
         }
+        
+
         return $ret;
     }
     /**
@@ -1218,9 +1219,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $this->_state    = Doctrine_Record::STATE_CLEAN;
             $this->_modified = array();
         } else {
-            $name            = $this->_table->getIdentifier();
-
+            $name             = $this->_table->getIdentifier();   
             $this->_id[$name] = $id;
+            $this->_data[$name] = $id;
             $this->_state     = Doctrine_Record::STATE_CLEAN;
             $this->_modified  = array();
         }
