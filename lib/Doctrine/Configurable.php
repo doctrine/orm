@@ -38,9 +38,15 @@ abstract class Doctrine_Configurable extends Doctrine_Object
      */
     protected $attributes = array();
     /**
-     * @var $parent                         the parents of this component
+     * @var Doctrine_Configurable $parent   the parent of this component
      */
     protected $parent;
+    /**
+     * @var array $_impl                    an array containing concrete implementations for class templates
+     *                                      keys as template names and values as names of the concrete 
+     *                                      implementation classes
+     */
+    protected $_impl = array();
     /**
      * setAttribute
      * sets a given attribute
@@ -145,10 +151,42 @@ abstract class Doctrine_Configurable extends Doctrine_Object
                 break;
             default:
                 throw new Doctrine_Exception("Unknown attribute.");
-        };
+        }
 
         $this->attributes[$attribute] = $value;
 
+    }
+    /**
+     * setImpl
+     * binds given class to given template name
+     *
+     * this method is the base of Doctrine dependency injection
+     *
+     * @param string $template      name of the class template
+     * @param string $class         name of the class to be bound
+     * @return Doctrine_Configurable    this object
+     */
+    public function setImpl($template, $class)
+    {
+        $this->_impl[$template] = $class;
+        
+        return $this;
+    }
+    /**
+     * getImpl
+     * returns the implementation for given class
+     *
+     * @return string   name of the concrete implementation
+     */
+    public function getImpl($template)
+    {
+        if ( ! isset($this->_impl[$attribute])) {
+            if (isset($this->parent)) {
+                return $this->parent->getImpl($attribute);
+            }
+            return null;
+        }
+        return $this->_impl[$attribute];
     }
     /**
      * getCacheDriver
