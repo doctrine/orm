@@ -96,14 +96,15 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         $this->_table->setOption('inheritanceMap', $map);
     }
 
-    public function setSubclasses($map){
-        if(isset($map[get_class($this)])){
+    public function setSubclasses($map)
+    {
+        if (isset($map[get_class($this)])){
             $this->_table->setOption('inheritanceMap', $map[get_class($this)]);
             return;
         }
         $this->_table->setOption('subclasses', array_keys($map));
         $conn = $this->_table->getConnection(); 
-        foreach($map as $key => $value){
+        foreach ($map as $key => $value) {
             $table = $conn->getTable($key);
 //            $table->setOption('inheritanceMap', $value);
         }
@@ -233,5 +234,24 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         foreach ($definitions as $name => $options) {
             $this->hasColumn($name, $options['type'], $options['length'], $options);
         }
+    }     
+    /**
+     * check
+     * adds a check constraint
+     *
+     * @param mixed $constraint     either a SQL constraint portion or an array of CHECK constraints
+     * @param string $name          optional constraint name
+     * @return Doctrine_Record      this object
+     */
+    public function check($constraint, $name = null)
+    {
+    	if (is_array($constraint)) {
+            foreach ($constraint as $name => $def) {
+                $this->_table->addCheckConstraint($def, $name);
+            }
+        } else {
+            $this->_table->addCheckConstraint($constraint, $name);
+        }
+        return $this;
     }
 }
