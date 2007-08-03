@@ -32,18 +32,119 @@
  */
 class Doctrine_Template_TestCase extends Doctrine_UnitTestCase 
 {
-    public function testTemplatesGenerateFiles()
-    {
-    	@unlink('../models/BlogTag.php');
+    public function prepareTables()
+    { }
+    public function prepareData() 
+    { }
 
-        $blog = new Blog();
+    public function testAccessingNonExistingImplementationThrowsException()
+    {
+    	try {
+            $user = new ConcreteUser();
+            $user->Group;
+            $this->fail();
+        } catch (Doctrine_Relation_Parser_Exception $e) {
+            $this->pass();
+        }
+    }
     
-        $this->assertTrue(file_exists('../models/BlogTag.php'));
-    }
-    public function testTemplateRelationsSupportConcreteInheritance()
+    public function testAccessingExistingImplementationSupportsAssociations()
     {
-        $tag = new BlogTag();
+    	$this->manager->setImpl('UserTemplate', 'ConcreteUser')
+                      ->setImpl('GroupUserTemplate', 'ConcreteGroupUser')
+                      ->setImpl('GroupTemplate', 'ConcreteGroup')
+                      ->setImpl('EmailTemplate', 'ConcreteEmail');
 
+        $user = new ConcreteUser();
+        $group = $user->Group[0];
+
+        $this->assertTrue($group instanceof ConcreteGroup);
+
+        $this->assertTrue($group->User[0] instanceof ConcreteUser);
     }
+    public function testAccessingExistingImplementationSupportsForeignKeyRelations()
+    {
 
+        $user = new ConcreteUser();
+
+        $this->assertTrue($user->Email[0] instanceof ConcreteEmail);
+    }
+}
+class ConcreteUser extends Doctrine_Record
+{
+    public function setUp()
+    {
+        $this->loadTemplate('UserTemplate');
+    }
+}
+class ConcreteGroup extends Doctrine_Record
+{
+    public function setUp()
+    {
+        $this->loadTemplate('GroupTemplate');
+    }
+}
+class ConcreteEmail extends Doctrine_Record
+{
+    public function setUp()
+    {
+        $this->loadTemplate('EmailTemplate');
+    }
+}
+class ConcreteGroupUser extends Doctrine_Record
+{
+    public function setUp()
+    {
+        $this->loadTemplate('GroupUserTemplate');
+    }
+}
+class UserTemplate extends Doctrine_Template
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string');
+        $this->hasColumn('password', 'string');
+    }
+    public function setUp()
+    {
+        $this->hasMany('GroupTemplate as Group', array('local' => 'user_id',
+                                                       'foreign' => 'group_id',
+                                                       'refClass' => 'GroupUserTemplate'));
+        $this->hasMany('EmailTemplate as Email', array('local' => 'id',
+                                                       'foreign' => 'user_id'));
+    }
+}
+class EmailTemplate extends Doctrine_Template
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('address', 'string');
+        $this->hasColumn('user_id', 'integer');
+    }
+    public function setUp()
+    {
+        $this->hasOne('UserTemplate as User', array('local' => 'user_id',
+                                                    'foreign' => 'id'));
+    }
+}
+class GroupTemplate extends Doctrine_Template
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string');
+    }
+    public function setUp()
+    {
+        $this->hasMany('UserTemplate as User', array('local' => 'user_id',
+                                                     'foreign' => 'group_id',
+                                                     'refClass' => 'GroupUserTemplate'));
+    }
+}
+class GroupUserTemplate extends Doctrine_Template
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('user_id', 'integer');
+        $this->hasColumn('group_id', 'integer');
+    }
 }

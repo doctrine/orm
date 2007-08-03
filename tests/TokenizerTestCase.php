@@ -31,22 +31,24 @@
  * @version     $Revision: 1181 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Tokenizer_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Tokenizer_TestCase extends Doctrine_UnitTestCase
 {
-    public function prepareData() 
+    public function prepareData()
     { }
-    public function prepareTables() 
+    public function prepareTables()
     { }
+
     public function testSqlExplode()
     {
         $str = "word1 word2 word3";
         $a   = Doctrine_Tokenizer::sqlExplode($str);
+
         $this->assertEqual($a, array("word1", "word2", "word3"));
-        
+
         $str = "word1 (word2 word3)";
         $a   = Doctrine_Tokenizer::sqlExplode($str);
         $this->assertEqual($a, array("word1", "(word2 word3)"));
-        
+
         $str = "word1 'word2 word3'";
         $a   = Doctrine_Tokenizer::sqlExplode($str);
         $this->assertEqual($a, array("word1", "'word2 word3'"));
@@ -97,6 +99,14 @@ class Doctrine_Tokenizer_TestCase extends Doctrine_UnitTestCase
 
         $str = "something ((  ))";
         $a   = Doctrine_Tokenizer::sqlExplode($str);
-        $this->assertEqual($a, array("something", "((  ))")); 
+        $this->assertEqual($a, array("something", "((  ))"));
+    }
+
+    public function testSqlExplode2()
+    {
+        $str = 'rdbms (dbal OR database)';
+        $a   = Doctrine_Tokenizer::sqlExplode($str, ' OR ');
+
+        $this->assertEqual($a, array('rdbms (dbal OR database)'));
     }
 }
