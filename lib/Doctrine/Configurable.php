@@ -180,13 +180,13 @@ abstract class Doctrine_Configurable extends Doctrine_Object
      */
     public function getImpl($template)
     {
-        if ( ! isset($this->_impl[$attribute])) {
+        if ( ! isset($this->_impl[$template])) {
             if (isset($this->parent)) {
-                return $this->parent->getImpl($attribute);
+                return $this->parent->getImpl($template);
             }
             return null;
         }
-        return $this->_impl[$attribute];
+        return $this->_impl[$template];
     }
     /**
      * getCacheDriver

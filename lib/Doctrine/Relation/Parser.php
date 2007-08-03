@@ -110,59 +110,6 @@ class Doctrine_Relation_Parser
             throw new Doctrine_Relation_Exception('Relation type not set.');
         }
 
-        if (strpos($name, '[Component]') !== false) {
-            $name = str_replace('[Component]', $this->_table->getComponentName(), $name);
-            $templateName = substr($name, strlen($this->_table->getComponentName()));
-
-            if (substr($name, -8) === 'Template') {
-                $name = substr($name, 0, -8);
-            }
-            
-            $parent = new ReflectionClass($this->_table->getComponentName());
-
-            $fileName = dirname($parent->getFileName()) . DIRECTORY_SEPARATOR . $name . '.php';
-
-            if (file_exists($fileName)) {
-                require_once($fileName);
-            }
-            if ( ! class_exists($name)) {
-                $template = new $templateName();
-
-                $conn = $this->_table->getConnection();
-
-                $refl = new ReflectionClass($templateName);
-                $file = file($refl->getFileName());
-
-                $lines[] = 'class ' . $name . ' extends Doctrine_Record' . "\n";
-                $lines[] = '{'. "\n";
-                
-                // read all template method definitions
-                foreach ($refl->getMethods() as $method) {
-                    if ($method->getDeclaringClass()->getName() === $refl->getName()) {
-                        $start = $method->getStartLine() - 1;
-                        $end   = $method->getEndLine() - 1;
-                        // append method definitions
-                        $lines = array_merge($lines, array_slice($file, $start, ($end - $start) + 1));
-                    }
-                }
-
-                $lines[] = '}' . "\n";
-
-                if (file_exists($fileName)) {
-                    throw new Doctrine_Template_Exception("Couldn't generate class for template.");
-                }
-                $code = str_replace('[Component]', $this->_table->getComponentName(), implode("", $lines));
-
-                // create the actual class file
-                $fp = fopen($fileName, 'w+');
-                fwrite($fp, "<?php \n" . $code);
-                fclose($fp);
-                
-                // include the generated class
-                require_once($fileName);
-            }
-        }
-
         $this->_pending[$alias] = array_merge($options, array('class' => $name, 'alias' => $alias));
 
         $m = Doctrine_Manager::getInstance();
@@ -262,6 +209,30 @@ class Doctrine_Relation_Parser
         return $this->_relations;
     }
     /**
+     * getImpl
+     * returns the table class of the concrete implementation for given template
+     * if the given template is not a template then this method just returns the
+     * table class for the given record
+     *
+     * @param string $template
+     */
+    public function getImpl($template)
+    {
+    	$conn = $this->_table->getConnection();
+
+        if (in_array('Doctrine_Template', class_parents($template))) {
+            $impl = $this->_table->getImpl($template);
+            
+            if ($impl === null) {
+                throw new Doctrine_Relation_Parser_Exception("Couldn't find concrete implementation for template " . $template);
+            }
+        } else {
+            $impl = $template;
+        }
+
+        return $conn->getTable($impl);
+    }
+    /**
      * Completes the given association definition
      *
      * @param array $def    definition array to be completed
@@ -270,8 +241,9 @@ class Doctrine_Relation_Parser
     public function completeAssocDefinition($def) 
     {
     	$conn = $this->_table->getConnection();
-        $def['table']    = $conn->getTable($def['class']);
-        $def['refTable'] = $conn->getTable($def['refClass']);
+        $def['table'] = $this->getImpl($def['class']);
+        $def['class'] = $def['table']->getComponentName();
+        $def['refTable'] = $this->getImpl($def['refClass']);
 
         $id = $def['refTable']->getIdentifier();
 
@@ -378,7 +350,9 @@ class Doctrine_Relation_Parser
     public function completeDefinition($def)
     {
     	$conn = $this->_table->getConnection();
-        $def['table'] = $conn->getTable($def['class']);
+        $def['table'] = $this->getImpl($def['class']);
+        $def['class'] = $def['table']->getComponentName();
+
         $foreignClasses = array_merge($def['table']->getOption('parents'), array($def['class']));
         $localClasses   = array_merge($this->_table->getOption('parents'), array($this->_table->getComponentName()));
 

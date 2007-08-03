@@ -72,10 +72,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * and saves will not cause infinite loops
      */
     const STATE_LOCKED     = 6;
-    /**
-     * @var object Doctrine_Table $_table   the factory that created this data access object
-     */
-    protected $_table;
+
     /**
      * @var Doctrine_Node_<TreeImpl>        node object
      */

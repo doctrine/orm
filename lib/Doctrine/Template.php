@@ -32,10 +32,7 @@ Doctrine::autoload('Doctrine_Record_Abstract');
  */
 class Doctrine_Template extends Doctrine_Record_Abstract
 {
-    /**
-     * @param Doctrine_Table $_table     reference to associated Doctrine_Table instance
-     */
-    protected $_table;
+
     /**
      * setTable
      *
@@ -55,10 +52,10 @@ class Doctrine_Template extends Doctrine_Record_Abstract
     {
         return $this->_table;
     }
-    
+
     public function setUp()
     {
-    	
+
     }
 
     public function setTableDefinition()

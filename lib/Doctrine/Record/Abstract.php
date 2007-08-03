@@ -33,6 +33,10 @@ Doctrine::autoload('Doctrine_Access');
 abstract class Doctrine_Record_Abstract extends Doctrine_Access
 {
     /**
+     * @param Doctrine_Table $_table     reference to associated Doctrine_Table instance
+     */
+    protected $_table;
+    /**
      * addListener
      *
      * @param Doctrine_EventListener_Interface|Doctrine_Overloadable $listener
@@ -244,7 +248,9 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     {
     	$tpl = new $template($options);
     	$tpl->setTable($this->_table);
+
         $tpl->setUp();
+
         $tpl->setTableDefinition();
         return $this;
     }
