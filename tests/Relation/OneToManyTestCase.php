@@ -36,7 +36,7 @@ class Doctrine_Relation_OneToMany_TestCase extends Doctrine_UnitTestCase
     { }
     public function prepareTables()
     {
-        $this->tables = array('Entity', 'Phonenumber', 'Email', 'Policy', 'PolicyAsset');
+        $this->tables = array('Entity', 'Phonenumber', 'Email', 'Policy', 'PolicyAsset', 'Role', 'Auth');
         
         parent::prepareTables();
     }
@@ -94,8 +94,53 @@ class Doctrine_Relation_OneToMany_TestCase extends Doctrine_UnitTestCase
         $nr->save();
         $nr->Entity = $e;
     }
+    public function testRelationSaving3() 
+    {
+        // create roles and user with role1 and role2
+        $this->conn->beginTransaction();
+        $role = new Role();
+        $role->name = 'role1';
+        $role->save();
+     
+        $auth = new Auth();
+        $auth->name = 'auth1';
+        $auth->Role = $role;
+        $auth->save();
+        
+        $this->conn->commit();
+     
+        $this->conn->clear();
+
+        $auths = $this->conn->query('FROM Auth a LEFT JOIN a.Role r');
+
+        $this->assertEqual($auths[0]->Role->name, 'role1'); 
+    }
 }
-class Policy extends Doctrine_Record 
+class Role extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('name', 'string', 20, array('unique' => true));
+    }
+    public function setUp() 
+    {
+        $this->hasMany('Auth', array('local' => 'id', 'foreign' => 'roleid'));
+    }
+}
+ 
+class Auth extends Doctrine_Record 
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('roleid', 'integer', 10);
+        $this->hasColumn('name', 'string', 50);
+    }
+    public function setUp() 
+    {
+        $this->hasOne('Role', array('local' => 'roleid', 'foreign' => 'id'));
+    }
+}
+class Policy extends Doctrine_Record
 {
     public function setTableDefinition()
     {
