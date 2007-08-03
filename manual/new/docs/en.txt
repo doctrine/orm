@@ -9,6 +9,7 @@
 + Transactions
 + Caching
 + Event listeners
++ Class templates
 + Plugins
 + Searching
 + Database abstraction

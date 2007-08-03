@@ -1,0 +1,157 @@
+++ Introduction
+
+Many times you may find classes having similar things within your models. These things may contain anything related to the schema of the component itself (relations, column definitions, index definitions etc.). One obvious way of refactoring the code is having a base class with some classes extending it.
+
+However inheritance solves only a fraction of things. The following subchapters show how many times using Doctrine_Template is much more powerful and flexible than using inheritance.
+
+Doctrine_Template is a class templating system. Templates are basically ready-to-use little components that your Record classes can load. When a template is being loaded its setTableDefinition() and setUp() methods are being invoked and the method calls inside them are being directed into the class in question.
+
+++ Simple templates
+
+In the following example we define a template called TimestampTemplate. Basically the purpose of this template is to add date columns 'created' and 'updated' to the record class that loads this template. Additionally this template uses a listener called Timestamp listener which updates these fields based on record actions.
+
+<code type="php">
+class TimestampListener extends Doctrine_Record_Listener
+{
+    public function preInsert(Doctrine_Event $event)
+    {
+        $event->getInvoker()->created = date('Y-m-d', time());
+        $event->getInvoker()->updated = date('Y-m-d', time());
+    }
+    public function preUpdate(Doctrine_Event $event)
+    {
+        $event->getInvoker()->created = date('Y-m-d', time());
+        $event->getInvoker()->updated = date('Y-m-d', time());
+    }
+}
+class TimestampTemplate extends Doctrine_Template
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('created', 'date');
+        $this->hasColumn('updated', 'date');
+
+        $this->setListener(new TimestampListener());
+    }
+}
+</code>
+
+Lets say we have a class called Blog that needs the timestamp functionality. All we need to do is to add loadTemplate() call in the class definition.
+
+<code type="php">
+class Blog extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('title', 'string', 200);
+        $this->hasColumn('content', 'string');
+    }
+    public function setUp()
+    {
+        $this->loadTemplate('TimestampTemplate');
+    }
+}
+</code>
+
+
+++ Templates with relations
+
+Many times the situations tend to be much more complex than the situation in the previous chapter. You may have model classes with relations to other model classes and you may want to replace given class with some extended class.
+
+Consider we have two classes, User and Email, with the following definitions:
+
+<code type="php">
+class User extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string');
+    }
+    public function setUp()
+    {
+        $this->hasMany('Email', array('local' => 'id', 'foreign' => 'user_id'));
+    }
+}
+class Email extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('address', 'string');
+        $this->hasColumn('user_id', 'integer');
+    }
+    public function setUp()
+    {
+        $this->hasOne('User', array('local' => 'user_id', 'foreign' => 'id'));
+    }
+}
+</code>
+
+Now if we extend the User and Email classes and create, for example, classes ExtendedUser and ExtendedEmail, the ExtendedUser will still have a relation to the Email class - not the ExtendedEmail class. We could ofcourse override the setUp() method of the User class and define relation to the ExtendedEmail class, but then we lose the whole point of inheritance. Doctrine_Template can solve this problem elegantly with its dependency injection solution.
+
+In the following example we'll define two templates, UserTemplate and EmailTemplate, with almost identical definitions as the User and Email class had.
+
+<code type="php">
+class UserTemplate extends Doctrine_Template
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string');
+    }
+    public function setUp()
+    {
+        $this->hasMany('EmailTemplate as Email', array('local' => 'id', 'foreign' => 'user_id'));
+    }
+}
+class EmailTemplate extends Doctrine_Template
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('address', 'string');
+        $this->hasColumn('user_id', 'integer');
+    }
+    public function setUp()
+    {
+        $this->hasOne('UserTemplate as User', array('local' => 'user_id', 'foreign' => 'id'));
+    }
+}
+</code>
+
+Notice how we set the relations. We are not pointing to concrete Record classes, rather we are setting the relations to templates. This tells Doctrine that it should try to find concrete Record classes for those templates. If Doctrine can't find these concrete implementations the relation parser will throw an exception, but before we go ahead of things here are the actual record classes:
+
+<code type="php">
+class User extends Doctrine_Record
+{
+    public function setUp()
+    {
+        $this->loadTemplate('UserTemplate');
+    }
+}
+class Email extends Doctrine_Record
+{
+    public function setUp()
+    {
+        $this->loadTemplate('EmailTemplate');
+    }
+}
+</code>
+
+Now consider the following code snippet. This does NOT work since we haven't yet set any concrete implementations for the templates.
+
+<code type="php">
+$user = new User();
+$user->Email; // throws an exception
+</code>
+
+The following version works. Notice how we set the concrete implementations for the templates globally using Doctrine_Manager.
+
+<code type="php">
+$manager = Doctrine_Manager::getInstance();
+$manager->setImpl('UserTemplate', 'User')
+        ->setImpl('EmailTemplate', 'Email');
+
+$user = new User();
+$user->Email;
+</code>
+
+The implementations for the templates can be set at manager, connection and even at the table level.
+
