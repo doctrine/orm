@@ -1403,57 +1403,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $this;
     }
-    /**
-     * loadTemplate
-     *
-     * @param string $template
-     */
-    public function loadTemplate($template, array $options = array())
-    {
-    	$tpl = new $template($options);
-    	$tpl->setTable($this->_table);
-        $tpl->setUp();
-        $tpl->setTableDefinition();
-        return $this;
-    }
-    /**
-     * actAs
-     * loads a given plugin 
-     *
-     * @param mixed $tpl
-     * @param array $options
-     */
-    public function actAs($tpl, array $options = array())
-    {
 
-        if ( ! is_object($tpl)) {
-            if (class_exists($tpl, true)) {
-                $tpl = new $tpl($options);
-            } else {
-                $className = 'Doctrine_Template_' . ucwords(strtolower($tpl));
-
-                if ( ! class_exists($className, true)) {
-                    throw new Doctrine_Record_Exception("Couldn't load plugin.");
-                }
-
-
-                $tpl = new $className($options);
-            }
-        }
-
-        if ( ! ($tpl instanceof Doctrine_Template)) {
-            throw new Doctrine_Record_Exception('Loaded plugin class is not an istance of Doctrine_Template.');
-        }
-        $className = get_class($tpl);
-        
-        $this->_table->addTemplate($className, $tpl);
-
-        $tpl->setTable($this->_table);
-        $tpl->setUp();
-        $tpl->setTableDefinition();
-
-        return $this;
-    }
     /**
      * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
      *
