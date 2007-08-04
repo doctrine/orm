@@ -31,11 +31,16 @@
  */
 class Doctrine_Template_NestedSet extends Doctrine_Template
 {
+    private $_options;
+    
     public function __construct(array $options)
-    {}
+    {
+        $this->_options = $options;
+    }
     
     public function setUp()
     {
+        $this->_table->setOption('treeOptions', $this->_options);
         $this->_table->setOption('treeImpl', 'NestedSet');
     }
 }

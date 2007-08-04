@@ -471,7 +471,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     
     /**
      * Accomplishes moving of nodes between different trees.
-     * Used by the move* methods if the root value of the two nodes are different.
+     * Used by the move* methods if the root values of the two nodes are different.
      *
      * @param Doctrine_Record $dest
      * @param unknown_type $newLeftValue
