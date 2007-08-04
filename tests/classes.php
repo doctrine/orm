@@ -893,9 +893,7 @@ class ValidatorTest_AddressModel extends Doctrine_Record {
 class NestedSetTest_SingleRootNode extends Doctrine_Record {
     
     public function setTableDefinition() {
-        // Nested set options
-        $this->option('treeImpl', 'NestedSet');
-        
+        $this->actAs('NestedSet');
         $this->hasColumn('name', 'string', 50, array('notnull'));
     }
     

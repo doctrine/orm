@@ -32,6 +32,7 @@
 class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Interface
 {
     private $_baseQuery;
+    private $_baseAlias = "base";
     
     /**
      * constructor, creates tree with reference to table and sets default root options
@@ -109,7 +110,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     public function fetchRoot($rootId = 1)
     {
         $q = $this->getBaseQuery();
-        $q = $q->addWhere('base.lft = ?', 1);
+        $q = $q->addWhere($this->_baseAlias . '.lft = ?', 1);
         
         // if tree has many roots, then specify root id
         $q = $this->returnQueryWithRootId($q, $rootId);
@@ -143,14 +144,15 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         // fetch tree
         $q = $this->getBaseQuery();
 
-        $q = $q->addWhere("base.lft >= ?", 1);
+        $q = $q->addWhere($this->_baseAlias . ".lft >= ?", 1);
 
         // if tree has many roots, then specify root id
         $rootId = isset($options['root_id']) ? $options['root_id'] : '1';
         if (is_array($rootId)) {
-            $q->addOrderBy("base." . $this->getAttribute('rootColumnName') . ", base.lft ASC");
+            $q->addOrderBy($this->_baseAlias . "." . $this->getAttribute('rootColumnName') .
+                    ", " . $this->_baseAlias . ".lft ASC");
         } else {
-            $q->addOrderBy("base.lft ASC");
+            $q->addOrderBy($this->_baseAlias . ".lft ASC");
         }
         
         $q = $this->returnQueryWithRootId($q, $rootId);
@@ -182,7 +184,8 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         
         $q = $this->getBaseQuery();
         $params = array($record->get('lft'), $record->get('rgt'));
-        $q->addWhere("base.lft >= ? AND base.rgt <= ?", $params)->addOrderBy("base.lft asc");
+        $q->addWhere($this->_baseAlias . ".lft >= ? AND " . $this->_baseAlias . ".rgt <= ?", $params)
+                ->addOrderBy($this->_baseAlias . ".lft asc");
         $q = $this->returnQueryWithRootId($q, $record->getNode()->getRootValue());
         return $q->execute();
     }
@@ -196,8 +199,8 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     public function fetchRoots()
     {
         $q = $this->getBaseQuery();
-        $q = $q->addWhere('base.lft = ?', 1);
-        return $q->execute();      
+        $q = $q->addWhere($this->_baseAlias . '.lft = ?', 1);
+        return $q->execute();
     }
 
     /**
@@ -273,10 +276,20 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      * Enter description here...
      *
      */
+    public function getBaseAlias()
+    {
+        return $this->_baseAlias;
+    }
+    
+    /**
+     * Enter description here...
+     *
+     */
     private function _createBaseQuery()
     {
+        $this->_baseAlias = "base";
         $q = new Doctrine_Query();
-        $q->select("base.*")->from($this->getBaseComponent() . " base");
+        $q->select($this->_baseAlias . ".*")->from($this->getBaseComponent() . " " . $this->_baseAlias);
         return $q;
     }
     
@@ -287,9 +300,10 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      */
     public function setBaseQuery(Doctrine_Query $query)
     {
-        $query->addSelect("base.lft, base.rgt, base.level");
+        $this->_baseAlias = $query->getRootAlias();
+        $query->addSelect($this->_baseAlias . ".lft, " . $this->_baseAlias . ".rgt, ". $this->_baseAlias . ".level");
         if ($this->getAttribute('rootColumnName')) {
-            $query->addSelect("base." . $this->getAttribute('rootColumnName'));
+            $query->addSelect($this->_baseAlias . "." . $this->getAttribute('rootColumnName'));
         }
         $this->_baseQuery = $query;
     }

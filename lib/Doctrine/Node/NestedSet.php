@@ -79,8 +79,9 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function getPrevSibling()
     {
+        $baseAlias = $this->_tree->getBaseAlias();
         $q = $this->_tree->getBaseQuery();
-        $q = $q->addWhere('base.rgt = ?', $this->getLeftValue() - 1);
+        $q = $q->addWhere("$baseAlias.rgt = ?", $this->getLeftValue() - 1);
         $q = $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $result = $q->execute();
 
@@ -104,8 +105,9 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function getNextSibling()
     {
+        $baseAlias = $this->_tree->getBaseAlias();
         $q = $this->_tree->getBaseQuery();
-        $q = $q->addWhere('base.lft = ?', $this->getRightValue() + 1);
+        $q = $q->addWhere("$baseAlias.lft = ?", $this->getRightValue() + 1);
         $q = $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $result = $q->execute();
 
@@ -149,8 +151,9 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function getFirstChild()
     {
+        $baseAlias = $this->_tree->getBaseAlias();
         $q = $this->_tree->getBaseQuery();
-        $q->addWhere('base.lft = ?', $this->getLeftValue() + 1);
+        $q->addWhere("$baseAlias.lft = ?", $this->getLeftValue() + 1);
         $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $result = $q->execute();
 
@@ -174,8 +177,9 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function getLastChild()
     {
+        $baseAlias = $this->_tree->getBaseAlias();
         $q = $this->_tree->getBaseQuery();
-        $q->addWhere('base.rgt = ?', $this->getRightValue() - 1);
+        $q->addWhere("$baseAlias.rgt = ?", $this->getRightValue() - 1);
         $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $result = $q->execute();
 
@@ -211,17 +215,18 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function getDescendants($depth = null, $includeNode = false)
     {
+        $baseAlias = $this->_tree->getBaseAlias();
         $q = $this->_tree->getBaseQuery();
         $params = array($this->record->get('lft'), $this->record->get('rgt'));
         
         if ($includeNode) {
-            $q->addWhere("base.lft >= ? AND base.rgt <= ?", $params)->addOrderBy("base.lft asc");
+            $q->addWhere("$baseAlias.lft >= ? AND $baseAlias.rgt <= ?", $params)->addOrderBy("$baseAlias.lft asc");
         } else {
-            $q->addWhere("base.lft > ? AND base.rgt < ?", $params)->addOrderBy("base.lft asc");
+            $q->addWhere("$baseAlias.lft > ? AND $baseAlias.rgt < ?", $params)->addOrderBy("$baseAlias.lft asc");
         }
         
         if ($depth !== null) {
-            $q->addWhere("base.level <= ?", $this->record['level'] + $depth);
+            $q->addWhere("$baseAlias.level <= ?", $this->record['level'] + $depth);
         }
         
         $q = $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
@@ -241,9 +246,10 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function getParent()
     {
+        $baseAlias = $this->_tree->getBaseAlias();
         $q = $this->_tree->getBaseQuery();
-        $q->addWhere("base.lft < ? AND base.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
-                ->addOrderBy("base.rgt asc");
+        $q->addWhere("$baseAlias.lft < ? AND $baseAlias.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
+                ->addOrderBy("$baseAlias.rgt asc");
         $q = $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $result = $q->execute();
         
@@ -269,11 +275,12 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */
     public function getAncestors($depth = null)
     {
+        $baseAlias = $this->_tree->getBaseAlias();
         $q = $this->_tree->getBaseQuery();
-        $q->addWhere("base.lft < ? AND base.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
-                ->addOrderBy("base.lft asc");
+        $q->addWhere("$baseAlias.lft < ? AND $baseAlias.rgt > ?", array($this->getLeftValue(), $this->getRightValue()))
+                ->addOrderBy("$baseAlias.lft asc");
         if ($depth !== null) {
-            $q->addWhere("base.level >= ?", $this->record['level'] - $depth);
+            $q->addWhere("$baseAlias.level >= ?", $this->record['level'] - $depth);
         }
         $q = $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
         $ancestors = $q->execute();
@@ -765,9 +772,10 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         $oldRoot = $this->getRootValue();
         $q = $this->_tree->getBaseQuery();
         
+        $baseAlias = $this->_tree->getBaseAlias();
         $componentName = $this->_tree->getBaseComponent();
 
-        $q = $q->addWhere('base.lft >= ? AND base.rgt <= ?', array($this->getLeftValue(), $this->getRightValue()));
+        $q = $q->addWhere("$baseAlias.lft >= ? AND $baseAlias.rgt <= ?", array($this->getLeftValue(), $this->getRightValue()));
 
         $q = $this->record->getTable()->getTree()->returnQueryWithRootId($q, $oldRoot);
         
@@ -950,9 +958,10 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function getLevel()
     {
         if (!isset($this->record['level'])) {
+            $baseAlias = $this->_tree->getBaseAlias();
             $componentName = $this->_tree->getBaseComponent();
             $q = $this->_tree->getBaseQuery();
-            $q = $q->addWhere('base.lft < ? AND base.rgt > ?', array($this->getLeftValue(), $this->getRightValue()));
+            $q = $q->addWhere("$baseAlias.lft < ? AND $baseAlias.rgt > ?", array($this->getLeftValue(), $this->getRightValue()));
 
             $q = $this->_tree->returnQueryWithRootId($q, $this->getRootValue());
             
