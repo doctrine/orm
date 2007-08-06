@@ -1,4 +1,4 @@
-++++ Introduction
++++ Introduction
 
 Nested Set is a solution for storing hierarchical data that provides very fast read access. However, updating nested set trees is more costly.
 Therefore this solution is best suited for hierarchies that are much more frequently read than written to. And because of the nature of the web,
@@ -10,7 +10,7 @@ For more detailed information on the Nested Set, read here:
 * [http://dev.mysql.com/tech-resources/articles/hierarchical-data.html http://dev.mysql.com/tech-resources/articles/hierarchical-data.html]
 
 
-++++ Setting up
++++ Setting up
 
 To set up your model as Nested Set, you must add the following code to your model's table definition.
 
@@ -45,7 +45,7 @@ Detailed information on Doctrine's templating model can be found in chapter 12: 
 
 **You must never assign values to lft, rgt, level. These are managed transparently by the nested set implementation.**
 
-++++ More than 1 tree in a single table
++++ More than 1 tree in a single table
 
 The nested set implementation can be configured to allow your table to have multiple root nodes, and therefore multiple trees within the same table.
 
@@ -66,7 +66,7 @@ The example below shows how to setup and use multiple roots based upon the set u
 
 The rootColumnName is the column that is used to differentiate between trees. When you create a new node to insert it into an existing tree you dont need to care about this field. This is done by the nested set implementation. However, when you want to create a new root node you have the option to set the "root_id" manually. The nested set implementation will recognize that. In the same way you can move nodes between different trees without caring about the "root_id". All of this is handled for you.
 
-++++ Working with the tree(s)
++++ Working with the tree(s)
 
 After you successfully set up your model as a nested set you can start working with it. Working with Doctrine's nested set implementation is all about 2 classes: Doctrine_Tree_NestedSet and Doctrine_Node_NestedSet. These are nested set implementations of the interfaces Doctrine_Tree_Interface and Doctrine_Node_Interface. Tree objects are bound to your table objects and node objects are bound to your record objects. This looks as follows:
 <code type="php">
@@ -81,7 +81,7 @@ After you successfully set up your model as a nested set you can start working w
 
 In the following sub-chapters you'll see code snippets that demonstrate the most frequently used operations with the node and tree classes.
 
-+++++ Creating a root node
+++++ Creating a root node
 
 <code type="php">
 ...
@@ -92,7 +92,7 @@ $treeObject->createRoot($root); // calls $root->save() internally
 ...
 </code>
 
-+++++ Inserting a node
+++++ Inserting a node
 
 <code type="php">
 ...
@@ -103,7 +103,7 @@ $record->getNode()->insertAsLastChildOf($someOtherRecord); // calls $record->sav
 ...
 </code>
 
-+++++ Deleting a node
+++++ Deleting a node
 
 <code type="php">
 ...
@@ -114,7 +114,7 @@ $record->getNode()->delete(); // calls $record->delete() internally. It's import
 
 Deleting a node will also delete all descendants of that node. So make sure you move them elsewhere before you delete the node if you dont want to delete them.
 
-+++++ Moving a node
+++++ Moving a node
 
 <code type="php">
 ...
@@ -125,7 +125,7 @@ $record->getNode()->moveAsLastChildOf($someOtherRecord);
 
 There are 4 move methods: moveAsLastChildOf($other), moveAsFirstChildOf($other), moveAsPreviousSiblingOf($other) and moveAsNextSiblingOf($other). The method names are self-explanatory.
 
-+++++ Examining a node
+++++ Examining a node
 
 <code type="php">
 ...
@@ -135,7 +135,7 @@ $isRoot = $record->getNode()->isRoot(); // true/false
 ...
 </code>
 
-+++++ Examining and retrieving siblings
+++++ Examining and retrieving siblings
 
 <code type="php">
 ...
@@ -150,7 +150,7 @@ $siblings = $record->getNode()->getSiblings(); // an array of all siblings
 ...
 </code>
 
-+++++ Examining and retrieving children / parents / descendants / ancestors
+++++ Examining and retrieving children / parents / descendants / ancestors
 
 <code type="php">
 ...
@@ -176,7 +176,7 @@ $numDescendants = $record->getNode()->getNumberDescendants(); // returns the num
 
 getDescendants() and getAncestors() both accept a parameter that you can use to specify the "depth" of the resulting branch. For example getDescendants(1) retrieves only the direct descendants (the descendants that are 1 level below, that's the same as getChildren()). In the same fashion getAncestors(1) would only retrieve the direct ancestor (the parent), etc. getAncestors() can be very useful to efficiently determine the path of this node up to the root node or up to some specific ancestor (i.e. to construct a breadcrumb navigation).
 
-+++++ Simply Example: Displaying a tree
+++++ Simply Example: Displaying a tree
 
 <code type="php">
 ...
@@ -188,11 +188,11 @@ foreach ($tree as $node) {
 ...
 </code>
 
-++++ Advanced usage
++++ Advanced usage
 
 The previous sections have explained the basic usage of Doctrine's nested set implementation. This section will go one step further.
 
-+++++ Fetching a tree with relations
+++++ Fetching a tree with relations
 
 If you're a demanding software developer this question may already have come into your mind: "How do i fetch a tree/branch with related data?". Simple example: You want to display a tree of categories, but you also want to display some related data of each category, let's say some details of the hottest product in that category. Fetching the tree as seen in the previous sections and simply accessing the relations while iterating over the tree is possible but produces a lot of unnecessary database queries. Luckily, Doctrine_Query and some flexibility in the nested set implementation have come to your rescue. The nested set implementation uses Doctrine_Query objects for all it's database work. By giving you access to the base query object of the nested set implementation you can unleash the full power of Doctrine_Query while using your nested set. Take a look at the following code snippet:
 

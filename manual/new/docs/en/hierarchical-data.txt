@@ -1,5 +1,5 @@
-+++ Introduction
-+++ Adjacency list
-+++ Nested set
-+++ Materialized path
-+++ Examples
+++ Introduction
+++ Adjacency list
+++ Nested set
+++ Materialized path
+++ Examples
