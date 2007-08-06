@@ -3,6 +3,7 @@
 + Object relational mapping
 + Mapping relations
 + Working with objects
++ Hierarchical data
 + Configuration
 + DQL (Doctrine Query Language)
 + Native SQL
