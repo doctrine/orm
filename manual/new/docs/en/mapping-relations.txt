@@ -358,8 +358,10 @@ class Entity extends Doctrine_Record
         // this column is used for column
         // aggregation inheritance
         $this->hasColumn('type', 'integer', 11);
-        $this->setSubclasses("User" => array("type" => 1"), "Group" =>
-        array("type" => 2));
+        $this->setSubclasses(array(
+            "User" => array("type" => 1),
+            "Group" => array("type" => 2)
+        ));
     }
 }
 
