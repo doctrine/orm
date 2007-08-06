@@ -1,4 +1,47 @@
 ++ Dealing with relations
+++ Many-to-Many relations
++++ Creating a new link
+Lets say we have two classes User and Group which are linked trhough a GroupUser association class. When working with transient (new) records the fastest way for adding a User and couple of Groups for it is:
+<code type='php'>
+$user = new User();
+$user->name = 'Some User';
+$user->Group[0]->name = 'Some Group';
+$user->Group[1]->name = 'Some Other Group';
+$user->save();
+</code>
+
+However in real world scenarious you often already have existing groups, where you want to add a given user. The most efficient way of doing this is:
+<code type='php'>
+$gu = new GroupUser();
+$gu->user_id = $userId;
+$gu->group_id = $groupId;
+$gu->save();
+</code>
+
++++ Deleting a link
+
+While the obvious and convinient way of deleting a link between User and Group would be the following, you still should *NOT* do this:
+
+<code type='php'>
+$user = $conn->getTable('User')->find(5);
+$user->GroupUser
+     ->remove(0)
+     ->remove(1);
+</code>
+
+The right way to delete links between many-to-many associated records is by using the DQL DELETE statement. Convenient and recommended way of using DQL DELETE is trhough the Query API.
+
+<code type='php'>
+$deleted = Doctrine_Query::create()
+           ->delete()
+           ->from('GroupUser')
+           ->addWhere('user_id = 5')
+           ->whereIn('group_id', $groupIds);
+           ->execute();
+// print out the deleted links
+print $deleted;
+</code>
+
 ++ Component overview
 ++ Fetching objects
 +++ Field lazy-loading
