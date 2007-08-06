@@ -23,7 +23,7 @@ $user->Email->address = 'some@one.info';
 $user->save();
 </code>
 
-When accessing one-to-many related records, Doctrine creates a Doctrine_Collection for the related component. Lets say we have users and phonenumbers and their relations is one-to-many. You can add phonenumbers easily as shown above:
+When accessing one-to-many related records, Doctrine creates a Doctrine_Collection for the related component. Lets say we have users and phonenumbers and their relation is one-to-many. You can add phonenumbers easily as shown above:
 
 <code type="php">
 $user = new User();
@@ -67,7 +67,7 @@ $user->save();
 
 +++ Deleting related records
 
-You can delete related records individually be calling {{delete()}} on each record. If you want to delete a whole record graph just call delete on the owner record.
+You can delete related records individually be calling {{delete()}} on a record or on a collection.
 
 <code type="php">
 $user->Email->delete();
@@ -78,3 +78,18 @@ $user->Phonenumber[3]->delete();
 
 $user->delete();
 </code>
+
+Usually in a typical web application the primary keys of the related objects that are to be deleted come from a form. In this case the most efficient way of deleting the related records is using DQL DELETE statement. Lets say we have once again users and phonenumbers with their relation being one-to-many. Deleting the given phonenumbers for given user id can be achieved as follows:
+
+<code type="php">
+$deleted = Doctrine_Query::create()
+           ->delete()
+           ->from('Phonenumber')
+           ->addWhere('user_id = ?', array($userId))
+           ->whereIn('group_id', $groupIds);
+           ->execute();
+// print out the number of deleted phonenumbers
+print $deleted;
+</code>
+
+
