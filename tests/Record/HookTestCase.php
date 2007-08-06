@@ -83,16 +83,22 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
     {
         $r = new SoftDeleteTest();
         $r->name = 'something';
+        $r->something ='something';
         $r->save();
 
         $this->assertEqual($r->name, 'something');
+        $this->assertEqual($r->something, 'something');
+
         $this->assertEqual($r->deleted, null);
         $this->assertEqual($r->getState(), Doctrine_Record::STATE_CLEAN);
 
-        $r->delete();
-
-        $this->assertEqual($r->getState(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($r->deleted, true);
+        try{
+            $r->delete();
+            $this->assertEqual($r->getState(), Doctrine_Record::STATE_CLEAN);
+            $this->assertEqual($r->deleted, true);
+        }catch(Doctrine_Exception $e){
+            $this->fail();
+        }
     }
 }
 class SoftDeleteTest extends Doctrine_Record
@@ -100,6 +106,7 @@ class SoftDeleteTest extends Doctrine_Record
     public function setTableDefinition()
     {
         $this->hasColumn('name', 'string', null, array('primary' => true));
+        $this->hasColumn('something', 'string', '25', array('notnull' => true, 'unique' => true));
         $this->hasColumn('deleted', 'boolean', 1);
     }
     public function preDelete($event)
