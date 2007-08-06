@@ -1,22 +1,41 @@
 +++ Creating related records
 
-When accessing related records and if those records do not exists Doctrine automatically creates new records.
+Accessing related records in Doctrine is easy: you can use exactly the same getters and setters as for the record properties. 
+
+You can use any of the three ways above, however the last one is the recommended one for array portability purposes.
 
 <code type="php">
-// NOTE: related record have always the first letter in uppercase
-$email = $user->Email;
+$user->Email;
 
-$email->address = 'jackdaniels@drinkmore.info';
+$user->get('Email');
 
-$user->save();
+$user['Email'];
+</code>
 
-// alternative:
+When accessing a one-to-one related record that doesn't exist, Doctrine automatically creates the object. So for example the following code is possible:
 
-$user->Email->address = 'jackdaniels@drinkmore.info';
+<code type="php">
+$user = new User();
+$user->name = 'some user';
 
+$user->Email->address = 'some@one.info';
+// saves the user and the associated email
 $user->save();
 </code>
 
+When accessing one-to-many related records, Doctrine creates a Doctrine_Collection for the related component. Lets say we have users and phonenumbers and their relations is one-to-many. You can add phonenumbers easily as shown above:
+
+<code type="php">
+$user = new User();
+$user->name = 'some user';
+
+$user->Phonenumber[]->phonenumber = '123 123';
+$user->Phonenumber[]->phonenumber = '456 123';
+$user->Phonenumber[]->phonenumber = '123 777';
+
+// saves the user and the associated phonenumbers
+$user->save();
+</code>
 
 +++ Retrieving related records
 
@@ -59,6 +78,3 @@ $user->Phonenumber[3]->delete();
 
 $user->delete();
 </code>
-
-
-+++ Working with associations
