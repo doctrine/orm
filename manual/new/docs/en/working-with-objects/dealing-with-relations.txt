@@ -39,15 +39,34 @@ $user->save();
 
 +++ Retrieving related records
 
-You can retrieve related records by the very same {{Doctrine_Record}} methods you've already propably used for accessing record properties. When accessing related record you just simply use the class names. 
+You can retrieve related records by the very same {{Doctrine_Record}} methods as in the previous subchapter. Please note that whenever you access a related component that isn't already loaded Doctrine uses one SQL SELECT statement for the fetching, hence the following example executes 4 SQL SELECTs.
 
 <code type="php">
+$user = $conn->getTable('User')->find(5);
+
 print $user->Email['address'];
 
 print $user->Phonenumber[0]->phonenumber;
 
 print $user->Group[0]->name;
 </code>
+
+Much more efficient way of doing this is using DQL. The following example uses only one SQL query for the retrieval of related components.
+
+<code type="php">
+$user = Doctrine_Query::create()
+        ->from('User u')
+        ->leftJoin('u.Email e')
+        ->leftJoin('u.Phonenumber p')
+        ->leftJoin('u.Group g')
+        ->execute();
+
+print $user->Email['address'];
+
+print $user->Phonenumber[0]->phonenumber;
+
+print $user->Group[0]->name;
+</code>   
 
 
 +++ Updating related records
