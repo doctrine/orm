@@ -292,34 +292,21 @@ class Doctrine_Tokenizer
             }
             if (empty($term[$i])) {
                 $term[$i] = trim($val);
-
-                $s1 = substr_count($term[$i], $e1);
-                $s2 = substr_count($term[$i], $e2);
-
-                if (strpos($term[$i], '(') !== false) {
-                    if($s1 == $s2) {
-                        $i++;
-                    }
-                } else {
-                    if ( ! (substr_count($term[$i], "'") & 1) &&
-                         ! (substr_count($term[$i], "\"") & 1)) {
-                        $i++;
-                    }
-                }
             } else {
                 $term[$i] .= $str[($key + 1)] . trim($val);
-                $c1 = substr_count($term[$i], $e1);
-                $c2 = substr_count($term[$i], $e2);
+            }
+            
+            $c1 = substr_count($term[$i], $e1);
+            $c2 = substr_count($term[$i], $e2);
 
-                if (strpos($term[$i], '(') !== false) {
-                    if($c1 == $c2) {
-                        $i++;
-                    }
-                } else {
-                    if ( ! (substr_count($term[$i], "'") & 1) &&
-                         ! (substr_count($term[$i], "\"") & 1)) {
-                        $i++;
-                    }
+            if (strpos($term[$i], '(') !== false) {
+                if($c1 == $c2) {
+                    $i++;
+                }
+            } else {
+                if ( ! (substr_count($term[$i], "'") & 1) &&
+                     ! (substr_count($term[$i], "\"") & 1)) {
+                    $i++;
                 }
             }
         }
