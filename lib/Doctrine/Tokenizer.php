@@ -291,11 +291,11 @@ class Doctrine_Tokenizer
                 continue;
             }
             if (empty($term[$i])) {
-                $term[$i] = trim($val);
+                $term[$i] = $val;
             } else {
-                $term[$i] .= $str[($key + 1)] . trim($val);
+                $term[$i] .= $str[($key - 1)] . $val;
             }
-            
+
             $c1 = substr_count($term[$i], $e1);
             $c2 = substr_count($term[$i], $e2);
 
