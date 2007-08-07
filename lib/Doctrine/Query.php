@@ -457,6 +457,87 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $this->pendingSubqueries[] = array($subquery, $alias);
     }
     /**
+     * parseClause
+     * parses given DQL clause
+     *
+     * this method handles three tasks:
+     * 
+     * 1. Converts all DQL functions to their native SQL equivalents
+     * 2. Converts all component references to their table alias equivalents
+     * 3. Quotes all identifiers
+     *
+     * @return string   SQL string
+     */
+    public function parseClause($clause) 
+    {
+        $terms = Doctrine_Tokenizer::clauseExplode($clause, array(' ', '+', '-', '*', '/'));
+
+        $str = '';
+        foreach ($terms as $term) {
+            $pos = strpos($term[0], '(');
+
+            if ($pos !== false) {
+                $name = substr($term[0], 0, $pos);
+                if ($name !== '') {
+                    $argStr = substr($term[0], ($pos + 1), -1);
+    
+                    $args   = array();
+                    // parse args
+    
+                    foreach (Doctrine_Tokenizer::sqlExplode($argStr, ',') as $expr) {
+                       $args[] = $this->parseClause($expr);
+                    }
+    
+                    // convert DQL function to its RDBMS specific equivalent
+                    try {
+                        $expr = call_user_func_array(array($this->_conn->expression, $name), $args);
+                    } catch(Doctrine_Expression_Exception $e) {
+                        throw new Doctrine_Query_Exception('Unknown function ' . $func . '.');
+                    }
+                    $term[0] = $expr;
+                } else {
+                    $term[0] = '(' . Doctrine_Tokenizer::bracketTrim($term[0]) . ')';
+                }
+            } else {
+                if (substr($term[0], 0, 1) !== "'" && substr($term[0], -1) !== "'") {
+                    if (strpos($term[0], '.') !== false) {
+                        if ( ! is_numeric($term[0])) {
+                            $e = explode('.', $term[0]);
+
+                            $field = array_pop($e);
+                            $componentAlias = implode('.', $e);
+            
+                            // check the existence of the component alias
+                            if ( ! isset($this->_aliasMap[$componentAlias])) {
+                                throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
+                            }
+            
+                            $table = $this->_aliasMap[$componentAlias]['table'];
+            
+                            $field = $table->getColumnName($field);
+            
+                            // check column existence
+                            if ( ! $table->hasColumn($field)) {
+                                throw new Doctrine_Query_Exception('Unknown column ' . $field);
+                            }
+            
+                            $tableAlias = $this->getTableAlias($componentAlias);
+
+                            // build sql expression
+
+                            $term[0] = $this->_conn->quoteIdentifier($tableAlias) 
+                                     . '.' 
+                                     . $this->_conn->quoteIdentifier($field);
+                        }
+                    }
+                }
+            }
+
+            $str .= $term[0] . $term[1];
+        }
+        return $str;
+    }
+    /**
      * parseAggregateFunction
      * parses an aggregate function and returns the parsed form
      *
