@@ -498,7 +498,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $this->_data = array_merge($this->_data, $this->_id);
 
         foreach ($this->_data as $k => $v) {
-            if ($v instanceof Doctrine_Record) {
+            if ($v instanceof Doctrine_Record && $this->_table->getTypeOf($k) != 'object') {
                 unset($vars['_data'][$k]);
             } elseif ($v === self::$_null) {
                 unset($vars['_data'][$k]);
@@ -552,6 +552,23 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $this->$k = $v;
         }
 
+        foreach ($this->_data as $k => $v) {
+
+            switch ($this->_table->getTypeOf($k)) {
+                case 'array':
+                case 'object':
+                    $this->_data[$k] = unserialize($this->_data[$k]);
+                    break;
+                case 'gzip':
+                   $this->_data[$k] = gzuncompress($this->_data[$k]);
+                    break;
+                case 'enum':
+                    $this->_data[$k] = $this->_table->enumValue($k, $this->_data[$k]);
+                    break;
+                
+            }
+        }
+        
         $this->_table->getRepository()->add($this);
         $this->_filter = new Doctrine_Record_Filter($this);
 
@@ -800,9 +817,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $lower = strtolower($name);
 
         $lower = $this->_table->getColumnName($lower);
+        
+        $type = $this->_table->getTypeOf($name);
 
         if (isset($this->_data[$lower])) {
-            if ($value instanceof Doctrine_Record) {
+            if ($value instanceof Doctrine_Record && $type != 'object') {
                 $id = $value->getIncremented();
 
                 if ($id !== null) {
