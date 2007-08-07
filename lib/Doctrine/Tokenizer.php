@@ -34,7 +34,7 @@ class Doctrine_Tokenizer
 {
     public function __construct() 
     {
-    	
+        
     }
     public function tokenize() 
     {
@@ -181,14 +181,19 @@ class Doctrine_Tokenizer
      */
     public static function sqlExplode($str, $d = ' ', $e1 = '(', $e2 = ')')
     {
-    	if ($d == ' ') {
-    		$d = array(' ', '\s');
-    	}
+        if ($d == ' ') {
+            $d = array(' ', '\s');
+        }
         if (is_array($d)) {
-        	if (in_array(' ', $d)) {
-        		$d[] = '\s';
-        	}
-            $str = preg_split('/(' . implode('|', $d) . ')/', $str);
+            $d = array_map('preg_quote', $d);
+
+            if (in_array(' ', $d)) {
+                $d[] = '\s';
+            }
+
+            $split = '§(' . implode('|', $d) . ')§';
+
+            $str = preg_split($split, $str);
             $d = stripslashes($d[0]);
         } else {
             $str = explode($d, $str);
@@ -208,7 +213,7 @@ class Doctrine_Tokenizer
                     if($s1 == $s2) {
                         $i++;
                     }
-                } else { 
+                } else {
                     if ( ! (substr_count($term[$i], "'") & 1) &&
                          ! (substr_count($term[$i], "\"") & 1)) {
                         $i++;
@@ -231,6 +236,95 @@ class Doctrine_Tokenizer
                 }
             }
         }
+        return $term;
+    }
+    /**
+     * clauseExplode
+     *
+     * explodes a string into array using custom brackets and
+     * quote delimeters
+     *
+     *
+     * example:
+     *
+     * parameters:
+     *      $str = "(age < 20 AND age > 18) AND name LIKE 'John Doe'"
+     *      $d   = ' '
+     *      $e1  = '('
+     *      $e2  = ')'
+     *
+     * would return an array:
+     *      array('(age < 20 AND age > 18)',
+     *            'name',
+     *            'LIKE',
+     *            'John Doe')
+     *
+     * @param string $str
+     * @param string $d         the delimeter which explodes the string
+     * @param string $e1        the first bracket, usually '('
+     * @param string $e2        the second bracket, usually ')'
+     *
+     * @return array
+     */
+    public static function clauseExplode($str, array $d, $e1 = '(', $e2 = ')')
+    {
+        if (is_array($d)) {
+            $d = array_map('preg_quote', $d);
+
+            if (in_array(' ', $d)) {
+                $d[] = '\s';
+            }
+
+            $split = '§(' . implode('|', $d) . ')§';
+
+            $str = preg_split($split, $str, -1, PREG_SPLIT_DELIM_CAPTURE);
+        }
+
+        $i = 0;
+        $term = array();
+
+        foreach ($str as $key => $val) {
+            if ($key & 1) {
+                if (isset($term[($i - 1)]) && ! is_array($term[($i - 1)])) {
+                    $term[($i - 1)] = array($term[($i - 1)], $val);
+                }
+                continue;
+            }
+            if (empty($term[$i])) {
+                $term[$i] = trim($val);
+
+                $s1 = substr_count($term[$i], $e1);
+                $s2 = substr_count($term[$i], $e2);
+
+                if (strpos($term[$i], '(') !== false) {
+                    if($s1 == $s2) {
+                        $i++;
+                    }
+                } else {
+                    if ( ! (substr_count($term[$i], "'") & 1) &&
+                         ! (substr_count($term[$i], "\"") & 1)) {
+                        $i++;
+                    }
+                }
+            } else {
+                $term[$i] .= $str[($key + 1)] . trim($val);
+                $c1 = substr_count($term[$i], $e1);
+                $c2 = substr_count($term[$i], $e2);
+
+                if (strpos($term[$i], '(') !== false) {
+                    if($c1 == $c2) {
+                        $i++;
+                    }
+                } else {
+                    if ( ! (substr_count($term[$i], "'") & 1) &&
+                         ! (substr_count($term[$i], "\"") & 1)) {
+                        $i++;
+                    }
+                }
+            }
+        }
+        $term[$i - 1] = array($term[$i - 1], '');
+
         return $term;
     }
 }
