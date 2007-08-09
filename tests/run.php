@@ -72,7 +72,7 @@ $test->addTestCase(new Doctrine_Ticket330_TestCase());
     */
 /**  */
 
-//$test->addTestCase(new Doctrine_TicketNjero_TestCase());
+$test->addTestCase(new Doctrine_TicketNjero_TestCase());
 
 
 // Connection drivers (not yet fully tested)

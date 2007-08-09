@@ -11,7 +11,6 @@
  * @since       1.0
  * @version     $Revision$
  */
- 
 class CoverageCodeN extends Doctrine_Record {
   
   public function setTableDefinition(){
@@ -116,6 +115,11 @@ class Doctrine_TicketNjero_TestCase extends Doctrine_UnitTestCase
       $coverage_code->description = "Full Coverage";
       $coverage_code->save();
       
+      $coverage_code = new CoverageCodeN();
+      $coverage_code->code = 3; # note we skip 2
+      $coverage_code->description = "Partial Coverage";
+      $coverage_code->save();
+
       $liability_code = new LiabilityCodeN();
       $liability_code->code = 1;
       $liability_code->description = "Limited Territory";
@@ -123,7 +127,7 @@ class Doctrine_TicketNjero_TestCase extends Doctrine_UnitTestCase
 
       $rate = new RateN();
       $rate->policy_code = 1;
-      $rate->coverage_code = 1;
+      $rate->coverage_code = 3;
       $rate->liability_code = 1;
       $rate->total_rate = 123.45;
       $rate->save();
@@ -134,12 +138,17 @@ class Doctrine_TicketNjero_TestCase extends Doctrine_UnitTestCase
       $policy->save();
         
       $q = new Doctrine_Query();
-      $p = $q->from("PolicyN p")
-             ->where("p.id = 1")
+      $p = $q->from('PolicyN p, p.RateN r, r.PolicyCodeN y, r.CoverageCodeN c, r.LiabilityCodeN l')
+             ->where('(p.id = ?)', array('1'))
              ->execute()
              ->getFirst();
 
       $this->assertEqual($p->rate_id, 1);
       $this->assertEqual($p->RateN->id, 1);
+      $this->assertEqual($p->RateN->policy_code, 1);
+      $this->assertEqual($p->RateN->coverage_code, 3);
+      $this->assertEqual($p->RateN->liability_code, 1);
+      echo "The following should be '3' or there should have been an assertion failure: " . $p->RateN->coverage_code . "\n";
+
     }
 }?>
