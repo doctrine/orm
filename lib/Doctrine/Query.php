@@ -1280,6 +1280,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $join = ($delimeter == ':') ? 'INNER JOIN ' : 'LEFT JOIN ';
 
                 $relation = $table->getRelation($name);
+                $localTable = $table;
+
                 $table    = $relation->getTable();
                 $this->_aliasMap[$componentAlias] = array('table'    => $table,
                                                           'parent'   => $parent,
@@ -1321,7 +1323,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
                     $queryPart .= ' ON ' . $localAlias
                                 . '.'
-                                . $table->getColumnName($table->getIdentifier())
+                                . $localTable->getIdentifier()
                                 . ' = '
                                 . $assocAlias . '.' . $relation->getLocal();
 
