@@ -34,6 +34,10 @@
  */
 final class Doctrine_Null
 { 
+    public function exists()
+    {
+        return false;	
+    }
     public function __toString()
     {
     	return '';
