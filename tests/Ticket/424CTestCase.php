@@ -99,29 +99,30 @@ class mmrUser_C extends Doctrine_Record
     public function setUp() 
     {
         $this->hasMany('mmrGroup_C as Group', array('local' => 'user_id', 
-                                      'foreign' => 'group_id',
-                                      'refClass' => 'mmrGroupUser_C'));
+                                                    'foreign' => 'group_id',
+                                                    'refClass' => 'mmrGroupUser_C'));
 
     }
 
-    public function setTableDefinition() 
+    public function setTableDefinition()
     {
-      // Works when 
-        $this->hasColumn('g_id as id', 'string', 30, array (  'primary' => true));
+        // Works when
+        $this->hasColumn('u_id as id', 'string', 30, array('primary' => true));
         $this->hasColumn('name', 'string', 30);
     }
 }
 
 class mmrGroup_C extends Doctrine_Record
 {
-    public function setUp() {
+    public function setUp()
+    {
         $this->hasMany('mmrUser_C', array('local' => 'group_id',
-                                     'foreign' => 'user_id',
-                                     'refClass' => 'mmrGroupUser_C'));
+                                          'foreign' => 'user_id',
+                                          'refClass' => 'mmrGroupUser_C'));
     }
-    public function setTableDefinition() {
-      // Works when 
-        $this->hasColumn('u_id as id', 'string', 30, array (  'primary' => true));
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('g_id as id', 'string', 30, array('primary' => true));
         $this->hasColumn('name', 'string', 30);
     }
 }
