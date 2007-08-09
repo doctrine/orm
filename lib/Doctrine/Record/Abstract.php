@@ -268,7 +268,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
             if (class_exists($tpl, true)) {
                 $tpl = new $tpl($options);
             } else {
-                $className = 'Doctrine_Template_' . ucwords(strtolower($tpl));
+                $className = 'Doctrine_Template_' . $tpl;
 
                 if ( ! class_exists($className, true)) {
                     throw new Doctrine_Record_Exception("Couldn't load plugin.");
