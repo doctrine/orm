@@ -148,7 +148,6 @@ class Doctrine_TicketNjero_TestCase extends Doctrine_UnitTestCase
       $this->assertEqual($p->RateN->policy_code, 1);
       $this->assertEqual($p->RateN->coverage_code, 3);
       $this->assertEqual($p->RateN->liability_code, 1);
-      echo "The following should be '3' or there should have been an assertion failure: " . $p->RateN->coverage_code . "\n";
 
     }
 }?>
