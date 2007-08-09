@@ -139,29 +139,29 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
         }
     }
     /**
-     * onClose
+     * postClose
      * an event invoked after Doctrine_Connection is closed
      *
      * @param Doctrine_Event $event
      * @return void
      */
-    public function onClose(Doctrine_Event $event)
+    public function postClose(Doctrine_Event $event)
     {
         foreach ($this->listeners as $listener) {
-            $listener->onClose($event);
+            $listener->postClose($event);
         }
     }
     /**
-     * onClose
+     * preClose
      * an event invoked before Doctrine_Connection is closed
      *
      * @param Doctrine_Event $event
      * @return void
      */
-    public function onPreClose(Doctrine_Event $event)
+    public function preClose(Doctrine_Event $event)
     {
         foreach ($this->listeners as $listener) {
-            $listener->onPreClose($event);
+            $listener->preClose($event);
         }
     }
     /**
