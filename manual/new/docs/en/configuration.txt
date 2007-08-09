@@ -74,10 +74,10 @@ Delimited identifiers are known to generally work correctly under the following 
 * Sqlite
 * Firebird
 
-When using the {{quote_identifiers}} option, all of the field identifiers will be automatically quoted in the resulting SQL statements:
+When using the {{ATTR_QUOTE_IDENTIFIER}} option, all of the field identifiers will be automatically quoted in the resulting SQL statements:
 
 <code type="php">
-$conn->setAttribute('quote_identifiers', true);
+$conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
 </code>
 
 will result in a SQL statement that all the field names are quoted with the backtick '`' operator (in MySQL). 
