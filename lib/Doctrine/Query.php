@@ -460,11 +460,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * parseClause
      * parses given DQL clause
      *
-     * this method handles three tasks:
-     * 
+     * this method handles five tasks:
+     *
      * 1. Converts all DQL functions to their native SQL equivalents
      * 2. Converts all component references to their table alias equivalents
-     * 3. Quotes all identifiers
+     * 3. Converts all column aliases to actual column names
+     * 4. Quotes all identifiers
+     * 5. Parses nested clauses and subqueries recursively
      *
      * @return string   SQL string
      */
@@ -496,7 +498,18 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     }
                     $term[0] = $expr;
                 } else {
-                    $term[0] = '(' . Doctrine_Tokenizer::bracketTrim($term[0]) . ')';
+                    $trimmed = trim(Doctrine_Tokenizer::bracketTrim($term[0]));
+                    
+                    // check for possible subqueries
+                    if (substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
+                        // parse subquery
+                        $trimmed = $this->createSubquery()->parseQuery($trimmed)->getQuery();
+                    } else {
+                        // parse normal clause
+                        $trimmed = $this->parseClause($trimmed);
+                    }
+
+                    $term[0] = '(' . $trimmed . ')';
                 }
             } else {
                 if (substr($term[0], 0, 1) !== "'" && substr($term[0], -1) !== "'") {
@@ -513,7 +526,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                             }
             
                             $table = $this->_aliasMap[$componentAlias]['table'];
-            
+
+                            // get the actual field name from alias
                             $field = $table->getColumnName($field);
             
                             // check column existence
@@ -524,7 +538,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                             $tableAlias = $this->getTableAlias($componentAlias);
 
                             // build sql expression
-
                             $term[0] = $this->_conn->quoteIdentifier($tableAlias) 
                                      . '.' 
                                      . $this->_conn->quoteIdentifier($field);
@@ -1292,7 +1305,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 }
 
                 if ($relation instanceof Doctrine_Relation_Association) {
-                    $asf = $relation->getAssociationFactory();
+                    $asf = $relation->getAssociationTable();
   
                     $assocTableName = $asf->getTableName();
   
@@ -1305,11 +1318,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     $assocAlias = $this->getTableAlias($assocPath, $asf->getTableName());
 
                     $queryPart = $join . $assocTableName . ' ' . $assocAlias;
-                    
 
                     $queryPart .= ' ON ' . $localAlias
                                 . '.'
-                                . $table->getIdentifier()
+                                . $table->getColumnName($table->getIdentifier())
                                 . ' = '
                                 . $assocAlias . '.' . $relation->getLocal();
 
@@ -1317,7 +1329,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                         // equal nest relation needs additional condition
                         $queryPart .= ' OR ' . $localAlias
                                     . '.'
-                                    . $table->getIdentifier()
+                                    . $table->getColumnName($table->getIdentifier())
                                     . ' = '
                                     . $assocAlias . '.' . $relation->getForeign();
   
@@ -1340,7 +1352,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     
                         if ($relation->isEqual()) {
                             $queryPart .= ' OR '
-                                        . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getIdentifier())
+                                        . $this->_conn->quoteIdentifier($foreignAlias . '.' . $table->getColumnName($table->getIdentifier()))
                                         . ' = ' 
                                         . $this->_conn->quoteIdentifier($assocAlias . '.' . $relation->getLocal())
                                         . ') AND ' 
