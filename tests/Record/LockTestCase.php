@@ -1,7 +1,6 @@
 <?php
-
 class Doctrine_Record_Lock_TestCase extends Doctrine_UnitTestCase {
-    public function prepareTables() 
+    public function prepareTables()
     {
         $this->tables[] = 'rec1';
         $this->tables[] = 'rec2';

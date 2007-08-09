@@ -39,9 +39,29 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         parent::prepareTables();
     }
 
-    public function prepareData() { }
+    public function prepareData() 
+    { }
 
-    public function testAssignFieldsToProxies() 
+    public function testAssigningAutoincId()
+    {
+        $user = new User();
+        
+        $this->assertEqual($user->id, null);
+        
+        $user->name = 'zYne';
+
+        $user->save();
+
+        $this->assertEqual($user->id, 1);
+        
+        $user->id = 2;
+
+        $this->assertEqual($user->id, 2);
+        
+        $user->save();
+    }
+    /**
+    public function testAssignFieldsToProxies()
     {
         $user = new User();
         $user->name = 'someuser';
@@ -228,4 +248,5 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user2->password,UPWD2) ;
         $this->assertEqual($user2->loginname,null) ;
      }
+     */
 }

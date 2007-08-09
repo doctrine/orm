@@ -42,6 +42,67 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         parent::prepareTables();
     }
 
+    public function testOne2OneForeign() 
+    {
+        $user = new User();
+        $user->name = "Richard Linklater";
+        
+        $rel = $user->getTable()->getRelation('Account');
+
+        $this->assertTrue($rel instanceof Doctrine_Relation_ForeignKey);
+
+        $account = $user->Account;
+        $account->amount = 1000;
+        $this->assertTrue($account instanceof Account);
+        $this->assertEqual($account->state(), Doctrine_Record::STATE_TDIRTY);
+        $this->assertEqual($account->entity_id->getOid(), $user->getOid());
+        $this->assertEqual($account->amount, 1000);
+        $this->assertEqual($user->name, "Richard Linklater");
+
+        $user->save();
+        $this->assertEqual($account->entity_id, $user->id);
+
+        $user->refresh();
+
+        $account = $user->Account;
+        $this->assertTrue($account instanceof Account);
+        $this->assertEqual($account->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($account->entity_id, $user->id);
+        $this->assertEqual($account->amount, 1000);
+        $this->assertEqual($user->name, "Richard Linklater");
+
+
+        $user = new User();
+        $user->name = 'John Rambo';
+        $account = $user->Account;
+        $account->amount = 2000;
+        $this->assertEqual($account->getTable()->getColumnNames(), array('id', 'entity_id', 'amount'));
+
+        $this->connection->flush();
+        $this->assertEqual($user->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertTrue($account instanceof Account);
+
+        $this->assertEqual($account->getTable()->getColumnNames(), array('id', 'entity_id', 'amount'));
+        $this->assertEqual($account->entity_id, $user->id);
+        $this->assertEqual($account->amount, 2000);
+
+
+        $user = $user->getTable()->find($user->id);
+        $this->assertEqual($user->state(), Doctrine_Record::STATE_CLEAN);
+
+
+        $account = $user->Account;
+        $this->assertTrue($account instanceof Account);
+
+        $this->assertEqual($account->state(), Doctrine_Record::STATE_CLEAN);
+        $this->assertEqual($account->getTable()->getColumnNames(), array('id', 'entity_id', 'amount'));
+
+        $this->assertEqual($account->entity_id, $user->id);
+        $this->assertEqual($account->amount, 2000);
+        $this->assertEqual($user->name, "John Rambo");
+
+    }
+
     public function testIssetForPrimaryKey() 
     {
         $this->assertTrue(isset($this->users[0]->id));
@@ -50,9 +111,9 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
 
         $user = new User();
 
-        $this->assertFalse(isset($user->id));
-        $this->assertFalse(isset($user['id']));
-        $this->assertFalse($user->contains('id'));
+        $this->assertTrue(isset($user->id));
+        $this->assertTrue(isset($user['id']));
+        $this->assertTrue($user->contains('id'));
     }
 
     public function testNotNullConstraint() 
@@ -312,60 +373,6 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
 
     }
 
-    public function testOne2OneForeign() 
-    {
-
-        $user = new User();
-        $user->name = "Richard Linklater";
-        $account = $user->Account;
-        $account->amount = 1000;
-        $this->assertTrue($account instanceof Account);
-        $this->assertEqual($account->state(), Doctrine_Record::STATE_TDIRTY);
-        $this->assertEqual($account->entity_id->getOid(), $user->getOid());
-        $this->assertEqual($account->amount, 1000);
-        $this->assertEqual($user->name, "Richard Linklater");
-
-        $user->save();
-
-        $user->refresh();
-        $account = $user->Account;
-        $this->assertTrue($account instanceof Account);
-        $this->assertEqual($account->state(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($account->entity_id, $user->id);
-        $this->assertEqual($account->amount, 1000);
-        $this->assertEqual($user->name, "Richard Linklater");
-
-
-        $user = new User();
-        $user->name = "John Rambo";
-        $account = $user->Account;
-        $account->amount = 2000;
-        $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
-
-        $this->connection->flush();
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_CLEAN);
-        $this->assertTrue($account instanceof Account);
-
-        $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
-        $this->assertEqual($account->entity_id, $user->id);
-        $this->assertEqual($account->amount, 2000);
-
-
-        $user = $user->getTable()->find($user->id);
-        $this->assertEqual($user->state(), Doctrine_Record::STATE_CLEAN);
-
-
-        $account = $user->Account;
-        $this->assertTrue($account instanceof Account);
-
-        $this->assertEqual($account->state(), Doctrine_Record::STATE_CLEAN);
-        $this->assertEqual($account->getTable()->getColumnNames(), array("id","entity_id","amount"));
-
-        $this->assertEqual($account->entity_id, $user->id);
-        $this->assertEqual($account->amount, 2000);
-        $this->assertEqual($user->name, "John Rambo");
-
-    }
 
     public function testGet()
     {
