@@ -1016,6 +1016,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->clear();
         
         $this->dbh = null;
+        $this->isConnected = false;
 
         $this->getAttribute(Doctrine::ATTR_LISTENER)->postClose($event);
     }
