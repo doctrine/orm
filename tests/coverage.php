@@ -39,19 +39,18 @@ dt { clear: both; }
 <body>
 <?
 $result = unserialize(file_get_contents("coverage.txt"));
-$coverage = $result["coverage"];
 
 function getCoverageReport($file){
     global $result;
     $coverage = $result["coverage"];
-    $path = $result["coverage"];
+    $path = $result["path"];
     $html = '<div id="coverage">';
     if(!isset($coverage[$file])){
         $html .= 'No coverage for this file</div>';
         return $html;
     }
     $coveredLines = $coverage[$file]; 
-    $fileArray = file(str_replace($path, Doctrine::getPath(), $file));
+    $fileArray = file(str_replace($path, Doctrine::getPath() . "/", $file));
     $html .= '<dl class="table-display">' . "\n";
     foreach($fileArray as $num => $line){
        $linenum = $num+1;
