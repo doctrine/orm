@@ -272,7 +272,9 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
         $default = $autoinc = '';
         $type    = $this->getNativeDeclaration($field);
 
-        if (isset($field['autoincrement']) && $field['autoincrement']) {
+        $autoincrement = isset($field['autoincrement']) && $field['autoincrement'];
+
+        if ($autoincrement){
             $autoinc = ' PRIMARY KEY AUTOINCREMENT';
             $type    = 'INTEGER';
         } elseif (array_key_exists('default', $field)) {
@@ -289,7 +291,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
         $notnull  = (isset($field['notnull']) && $field['notnull']) ? ' NOT NULL' : '';
 
         // sqlite does not support unsigned attribute for autoinremented fields
-        $unsigned = (isset($field['unsigned']) && $field['unsigned'] && ! $field['autoincrement']) ? ' UNSIGNED' : '';
+        $unsigned = (isset($field['unsigned']) && $field['unsigned'] && !$autoincrement) ? ' UNSIGNED' : '';
 
         $name = $this->conn->quoteIdentifier($name, true);
         return $name . ' ' . $type . $unsigned . $default . $notnull . $autoinc;
