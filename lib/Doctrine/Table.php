@@ -705,6 +705,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             switch ($type) {
                 case 'string':
                 case 'clob':
+                case 'float':
                 case 'integer':
                 case 'array':
                 case 'object':
