@@ -347,8 +347,6 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 }
 
                 foreach ($v->getInsertDiff() as $r) {
-
-
                     $assocRecord = $assocTable->create();
                     $assocRecord->set($rel->getForeign(), $r);
                     $assocRecord->set($rel->getLocal(), $record);
@@ -426,7 +424,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $record->preUpdate($event);
 
         $record->getTable()->getRecordListener()->preUpdate($event);
-          
+
         if ( ! $event->skipOperation) {
             $array = $record->getPrepared();
 
@@ -466,7 +464,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                   . ' WHERE ' . implode(' = ? AND ', $record->getTable()->getPrimaryKeys())
                   . ' = ?';
     
-            $stmt = $this->conn->getDbh()->prepare($sql);
+            $stmt = $this->conn->prepare($sql);
             $stmt->execute($params);
     
             $record->assignIdentifier(true);
