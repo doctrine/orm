@@ -197,6 +197,32 @@ class Doctrine_Transaction_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($this->adapter->pop(), 'COMMIT');
     }
+    public function testNestedTransaction()
+    {
+        $conn = Doctrine_Manager::connection();
+        
+        try {
+            $conn->beginTransaction();
+        
+            // Create new client
+            $user = new User();
+            $user->set('name', 'Test User');
+            $user->save();
+
+            // Create new credit card
+            $phonenumber = new Phonenumber();
+            $phonenumber->set('entity_id', $user->get('id'));
+            $phonenumber->set('phonenumber', '123 123');
+            $phonenumber->save();
+            
+            $conn->commit();    
+        } catch (Exception $e) {
+            $conn->rollback();
+        }
+        
+        $this->assertTrue($user->id > 0);
+        $this->assertTrue($phonenumber->id > 0);
+    }
 
 }
 class TransactionListener extends Doctrine_EventListener 
