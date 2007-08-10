@@ -49,7 +49,7 @@ class Doctrine_Validator extends Doctrine_Object
             if (class_exists($class)) {
                 self::$validators[$name] = new $class;
             } else {
-                throw new Doctrine_Exception("Validator named '$name' not availible.");
+                throw new Doctrine_Exception("Validator named '$name' not available.");
             }
 
         }
