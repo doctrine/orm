@@ -48,7 +48,13 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation
         if (empty($id) || ! $this->definition['table']->getAttribute(Doctrine::ATTR_LOAD_REFERENCES)) {
             $related = $this->getTable()->create();
         } else {
-            $related = $this->getTable()->find($id);
+            $dql  = 'FROM ' . $this->getTable()->getComponentName()
+                 . ' WHERE ' . $this->getCondition();
+
+            $related = $this->getTable()
+                            ->getConnection()
+                            ->query($dql, array($id))
+                            ->getFirst();
             
             if ( ! $related) {
                 $related = $this->getTable()->create();
@@ -59,4 +65,18 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation
 
         return $related;
     }
+    
+    /**
+     * getCondition
+     *
+     * @param string $alias
+     */
+    public function getCondition($alias = null)
+    {
+    	if ( ! $alias) {
+    	   $alias = $this->getTable()->getComponentName();
+    	}
+    	return $alias . '.' . $this->definition['foreign'] . ' = ?';
+    }
+
 }

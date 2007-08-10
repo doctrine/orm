@@ -883,7 +883,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                         throw new Doctrine_Record_Exception("Couldn't call Doctrine::set(), second argument should be an instance of Doctrine_Record or Doctrine_Null when setting one-to-one references.");
                     }
                     if ($rel instanceof Doctrine_Relation_LocalKey) {
-                        $this->set($rel->getLocal(), $value, false);
+                        $this->set($rel->getLocal(), $value->rawGet($rel->getForeign()), false);
                     } else {
                         $value->set($rel->getForeign(), $this, false);
                     }                            
