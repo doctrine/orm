@@ -138,6 +138,11 @@ class Doctrine_TicketNjero_TestCase extends Doctrine_UnitTestCase
       $policy->save();
         
       $q = new Doctrine_Query();
+
+      # If I use
+      # $p = $q->from('PolicyN p')
+      # this test passes, but there is another issue just not reflected in this test yet, see "in my app" note below
+
       $p = $q->from('PolicyN p, p.RateN r, r.PolicyCodeN y, r.CoverageCodeN c, r.LiabilityCodeN l')
              ->where('(p.id = ?)', array('1'))
              ->execute()
@@ -146,8 +151,16 @@ class Doctrine_TicketNjero_TestCase extends Doctrine_UnitTestCase
       $this->assertEqual($p->rate_id, 1);
       $this->assertEqual($p->RateN->id, 1);
       $this->assertEqual($p->RateN->policy_code, 1);
-      $this->assertEqual($p->RateN->coverage_code, 3);
+      $this->assertEqual($p->RateN->coverage_code, 3); # fail
       $this->assertEqual($p->RateN->liability_code, 1);
+
+      $c = $p->RateN->coverage_code;
+      $c2 = $p->RateN->CoverageCodeN->code;
+      $c3 = $p->RateN->coverage_code;
+
+      $this->assertEqual($c, $c2); # fail
+      $this->assertEqual($c, $c3); # in my app this fails as well, but I can't reproduce this
+      #echo "Values " . serialize(array($c, $c2, $c3));
 
     }
 }?>
