@@ -2,7 +2,6 @@
 // include doctrine, and register it's autoloader
 require_once dirname(__FILE__) . '/../lib/Doctrine.php';
 spl_autoload_register(array('Doctrine', 'autoload'));
-$path = "/home/bjartka/workspace/doctrine/lib/";
 
 ?>
 <html>
@@ -10,7 +9,8 @@ $path = "/home/bjartka/workspace/doctrine/lib/";
 <style type="text/css">
     .covered{ background: green;}
     .normal{ background: white;}
-    .error{ background: red;}
+    .red{ background: red;}
+    .orange{ background: #f90;}
 
  dl.table-display
 {
@@ -38,9 +38,11 @@ dt { clear: both; }
 </head>
 <body>
 <?
+$result = unserialize(file_get_contents("coverage.txt"));
+$coverage = $result["coverage"];
 
 function getCoverageReport($file){
-    $coverage = unserialize(file_get_contents("coverage.txt"));
+    global $coverage;
     $html = '<div id="coverage">';
     if(!isset($coverage[$file])){
         $html .= 'No coverage for this file</div>';
@@ -56,7 +58,9 @@ function getCoverageReport($file){
        if(isset($coveredLines[$linenum]) && $coveredLines[$linenum] == 1){
            $class = "covered";
        }else if(isset($coveredLines[$linenum]) && $coveredLines[$linenum] == -1){
-           $class ="error";
+           $class ="red";
+       }else if(isset($coveredLines[$linenum]) && $coveredLines[$linenum] == -2){
+           $class ="orange";
        }
        $html .= '<dd class="' . $class . '">' . htmlspecialchars($line) . '</dd>' . "\n";
     }
@@ -67,12 +71,13 @@ function getCoverageReport($file){
 if(isset($_GET["file"])){
     $file = $_GET["file"];
     echo '<a href="coverage.php">Back to filelist</a>';
+    echo '<a href="cc.php">Back to coverage report</a>';
     echo '<h1>Coverage for ' . $file . '</h1>';
     echo getCoverageReport($file);    
 
     }else{
 echo "<ul>";
-$it = new RecursiveDirectoryIterator($path);
+$it = new RecursiveDirectoryIterator(Doctrine::getPath());
 foreach(new RecursiveIteratorIterator($it) as $file){
     if(strpos($file->getPathname(), ".svn")){
         continue;

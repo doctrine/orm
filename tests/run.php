@@ -418,68 +418,19 @@ if(PHP_SAPI === "cli"){
 }else{
    $reporter = new MyReporter();
 }
-//uncomment this to run codecoverage
-//xdebug_start_code_coverage();
+
+//use this for normal testing
 $test->run($reporter);
-/* remote to enable coverage
-$path = Doctrine::getPath() . DIRECTORY_SEPARATOR;
 
-?>
-<table>
-<tr>
-    <td>class</td>
-    <td>coverage</td>
-</tr>
-
-<?php
-$coverage = xdebug_get_code_coverage();
-$totallines = 0;
-$totalcovered = 0;
-
-foreach ($coverage as $file => $lines) {
-    $pos = strpos($file, $path);
-    if($pos === false && $pos !== 0){
-        continue;
-    }
-
-    $covered = 0;
-    $coveredLines = array_values($lines);
-    array_walk($coveredLines, "countCovered");
-    $class = str_replace(DIRECTORY_SEPARATOR, '_', substr($file, strlen($path), -4));
-    if (strpos($class, '_Interface')) {
-        continue;
-    }
-
-    if(!class_exists($class)){
-        continue;
-    }
-    $refl = new ReflectionClass($class);
-    $total = 0;
-    foreach ($refl->getMethods() as $method) {
-        $total += ($method->getEndLine() - $method->getStartLine());
-    }
-    $totallines += $total;
-    $totalcovered += $covered;
-
-    if ($total === 0) {
-        $total = 1;
-    }
-    print "<tr><td>" . $class . "</td><td>" . round(($covered / $total) * 100, 2) . " % </td></tr>";
-}
-if ($totallines === 0) {
-    $totallines = 1;
-}
-print "<tr><td>TOTAL</td><td>" . round(($totalcovered / $totallines) * 100, 2) . " % </td></tr>";
-
-function countCovered($value, $key){
-    global $covered;
-    if($value >= 1){
-        $covered++;
-    }
-}
-?>
-</table>
-</body>
-</html>
-*/
-?>
+/*
+ *
+ * Use this code to get code coverage. Then goto cc.php file to see resul
+ *
+xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
+$test->run($reporter);
+$result["path"] = Doctrine::getPath() . DIRECTORY_SEPARATOR;
+$result["coverage"] = xdebug_get_code_coverage();
+xdebug_stop_code_coverage();
+file_put_contents("coverage.txt", serialize($result));
+//look at the cc.php file in a browser to see the report
+//*/
