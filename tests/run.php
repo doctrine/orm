@@ -419,18 +419,15 @@ if(PHP_SAPI === "cli"){
    $reporter = new MyReporter();
 }
 
-//use this for normal testing
-$test->run($reporter);
+$argv = $_SERVER["argv"];
+if(isset($argv[1]) && $argv[1] == "coverage"){
+    xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
+    $test->run($reporter);
+    $result["path"] = Doctrine::getPath() . DIRECTORY_SEPARATOR;
+    $result["coverage"] = xdebug_get_code_coverage();
+    xdebug_stop_code_coverage();
+    file_put_contents("coverage.txt", serialize($result));
+}else{
+    $test->run($reporter);
+}
 
-/*
- *
- * Use this code to get code coverage. Then goto cc.php file to see resul
- *
-xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
-$test->run($reporter);
-$result["path"] = Doctrine::getPath() . DIRECTORY_SEPARATOR;
-$result["coverage"] = xdebug_get_code_coverage();
-xdebug_stop_code_coverage();
-file_put_contents("coverage.txt", serialize($result));
-//look at the cc.php file in a browser to see the report
-//*/

@@ -67,10 +67,18 @@ if(isset($_GET["file"])){
 class Doctrine_Coverage_Report
 {
 
+    const COVERED = 1;
+    const MAYBE = -2;
+    const NOTCOVERED = -1;
+
     private $path;
     private $coverage;
     private $key;
     private $covered;
+    private $totallines = 0;
+    private $totalcovered = 0;
+    private $totalmaybe = 0;
+    private $totalnotcovered = 0;
 
     public function __construct($file)
     {
@@ -87,7 +95,7 @@ class Doctrine_Coverage_Report
         $html = '<div id="coverage">';
         if( !isset( $this->coverage[$key]))
         {
-            echo 'No coverage for this file</div>';
+            echo '<h2>This file has not been tested!</h2>';
         }
         $coveredLines = $this->coverage[$key];
         $fileArray = file(Doctrine::getPath() . "/".$fileName);
@@ -109,16 +117,84 @@ class Doctrine_Coverage_Report
         echo $html;
     }
 
+    public function generateNotCoveredFiles()
+    {
+        $it = new RecursiveDirectoryIterator(Doctrine::getPath());
+
+        $notCoveredArray = array();
+        foreach( new RecursiveIteratorIterator($it) as $file){
+            if( strpos($file->getPathname(), ".svn")){
+                continue;
+            }
+            $path = Doctrine::getPath() . DIRECTORY_SEPERATOR;
+            $coveredPath = str_replace($path, $this->path, $file->getPathname());
+            if( isset($this->coverage[$coveredPath])){
+                continue;
+            }
+
+            $class = str_replace(DIRECTORY_SEPARATOR, '_', substr($file, strlen($this->path), -4));
+            if (strpos($class, '_Interface')) {
+                continue;
+            }
+
+            if(!class_exists($class)){
+                continue;
+            }
+
+            try{
+                $refClass = new ReflectionClass($class);
+            }catch(Exception $e){
+                echo $e->getMessage();
+                continue;
+            }
+            $lines = 0;
+            $methodLines = 0;
+            foreach($refClass->getMethods() as $refMethod){
+
+                if($refMethod->getDeclaringClass() != $refClass){
+                    continue;
+                }
+                $methodLines = $refMethod->getEndLine() - $refMethod->getStartLine();
+                $lines += $methodLines;
+            }
+            if($methodLines == 0){
+                $notCoveredArray[$class] = array("covered" => 0, "maybe" => 0, "notcovered"=>$lines, "total" => $lines, "percentage" => 100);
+             }else{
+                $notCoveredArray[$class] = array("covered" => 0, "maybe" => 0, "notcovered"=>$lines, "total" => $lines, "percentage" => 0);
+             }
+            $this->totallines += $lines;
+            $this->totalnotcovered += $lines;
+        }
+        return $notCoveredArray;
+    }
+
     public function showSummary()
     {
         if(isset($_GET["order"])){
             $this->sortBy = $_GET["order"];
         }
-        $totallines = 0;
-        $totalcovered = 0;
-        $totalmaybe = 0;
-        $totalnotcovered = 0;
+        $coveredArray = $this->generateCoverage();
+        $notcoveredArray = $this->generateNotCoveredFiles();
+        $coveredArray = array_merge($coveredArray, $notcoveredArray);
 
+        //lets sort it.
+        uasort($coveredArray, array($this,"sortArray"));
+
+        //and flip if it perhaps?
+        if(isset($_GET["desc"]) && $_GET["desc"] == "true"){
+            $coveredArray = array_reverse($coveredArray, true);
+        }
+
+        //ugly code to print out the result:
+        echo "<tr><td>" . TOTAL . "</td><td>" . round((($this->totalcovered + $this->totalmaybe) / $this->totallines) * 100, 2) . " % </td><td>$this->totallines</td><td>$this->totalcovered</td><td>$this->totalmaybe</td><td>$this->totalnotcovered</td><td></td></tr>";
+        foreach($coveredArray as $class => $info){
+            $fileName = str_replace("_", "/", $class) . ".php";
+            echo "<tr><td>" . $class . "</td><td>" . $info["percentage"] . " % </td><td>" . $info["total"] . "</td><td>" . $info["covered"] . "</td><td>" . $info["maybe"] . "</td><td>" . $info["notcovered"]. "</td><td><a href=\"cc.php?file=" . $fileName . "\">coverage</a></td></tr>";
+        }
+    }
+
+    public function generateCoverage()
+    {
         $coveredArray = array();
         foreach ($this->coverage as $file => $lines) {
             $pos = strpos($file, $this->path);
@@ -142,22 +218,22 @@ class Doctrine_Coverage_Report
             $notcovered = 0;
             foreach($lines as $result){
                 switch($result){
-                case "1":
+                case self::COVERED:
                     $covered++;
                     break;
-                case "-1":
+                case self::NOTCOVERED:
                     $notcovered++;
                     break;
-                case "-2":
+                case self::MAYBE:
                     $maybe++;
                     break;
                 }
             }
             $covered--; //again we have to remove that last line.
-            $totallines += $total;
-            $totalcovered += $covered;
-            $totalnotcovered += $notcovered;
-            $totalmaybe += $maybe;
+            $this->totallines += $total;
+            $this->totalcovered += $covered;
+            $this->totalnotcovered += $notcovered;
+            $this->totalmaybe += $maybe;
 
             if ($total === 0) {
                 $total = 1;
@@ -165,18 +241,7 @@ class Doctrine_Coverage_Report
             $percentage = round((($covered + $maybe) / $total) * 100, 2);
             $coveredArray[$class] = array("covered" => $covered, "maybe" => $maybe, "notcovered"=>$notcovered, "total" => $total, "percentage" => $percentage);
         }
-
-
-        //lets sort it
-        uasort($coveredArray, array($this,"sortArray"));
-        if(isset($_GET["desc"]) && $_GET["desc"] == "true"){
-            $coveredArray = array_reverse($coveredArray, true);
-        }
-       echo "<tr><td>" . TOTAL . "</td><td>" . round((($totalcovered + $totalmaybe) / $totallines) * 100, 2) . " % </td><td>$totallines</td><td>$totalcovered</td><td>$totalmaybe</td><td>$totalnotcovered</td><td></td></tr>";
-        foreach($coveredArray as $class => $info){
-            $fileName = str_replace("_", "/", $class) . ".php";
-            echo "<tr><td>" . $class . "</td><td>" . $info["percentage"] . " % </td><td>" . $info["total"] . "</td><td>" . $info["covered"] . "</td><td>" . $info["maybe"] . "</td><td>" . $info["notcovered"]. "</td><td><a href=\"cc.php?file=" . $fileName . "\">coverage</a></td></tr>";
-        }
+        return $coveredArray;
     }
 
     public function sortArray($a, $b)
