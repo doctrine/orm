@@ -224,7 +224,7 @@ Some advantages of the subqueries:
 // finding all users which don't belong to any group 1
 $query = "FROM User WHERE User.id NOT IN 
                         (SELECT u.id FROM User u 
-                         INNER JOIN u.Group g WHERE g.id = ?";
+                         INNER JOIN u.Group g WHERE g.id = ?)";
                          
 $users = $conn->query($query, array(1));
 
