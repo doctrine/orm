@@ -1,4 +1,24 @@
 <?php
+/*
+ *  $Id: Doctrine.php 1976 2007-07-11 22:03:47Z zYne $
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.com>.
+ */
+
 require_once dirname(__FILE__) . '/../lib/Doctrine.php';
 spl_autoload_register(array('Doctrine', 'autoload'));
 
@@ -39,11 +59,11 @@ dt { clear: both; }
 <body>
 <?php
 
-if(isset($_GET["file"])){
+if (isset($_GET["file"])){
     echo '<h1>Coverage for ' . $_GET["file"] . '</h1>';
     echo '<a href="cc.php">Back to coverage report</a>';
     $reporter->showFile($_GET["file"]);
-}else{
+} else {
 ?>
     <h1>Coverage report for Doctrine</h1>
     <p>Default mode shows results sorted by percentage. This can be changed with GET variables:<br /> <ul><li>order = covered|total|maybe|notcovered|percentage</li><li>desc=true</li></ul></p>
@@ -58,11 +78,17 @@ if(isset($_GET["file"])){
 </html>
 
 <?php
-
-/*
+/**
+ * Doctrine
+ * the base class of Doctrine framework
  *
- * This class is a mess right now. Will clean it up later perhaps. If we do not 
- * change to simpletest..
+ * @package     Doctrine
+ * @author      Bjarte S. Karlsen <bjartka@pvv.ntnu.no>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @category    Object Relational Mapping
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision: 1976 $
  */
 class Doctrine_Coverage_Report
 {
@@ -80,6 +106,12 @@ class Doctrine_Coverage_Report
     private $totalmaybe = 0;
     private $totalnotcovered = 0;
 
+    /*
+     * Create a new coverage report
+     *
+     * @param string $file The name of the file where coverage data is stored
+     *
+     */
     public function __construct($file)
     {
         $result = unserialize(file_get_contents("coverage.txt"));
@@ -89,26 +121,31 @@ class Doctrine_Coverage_Report
         $this->sortBy ="percentage"; // default sort
     }
 
+    /*
+     * Show graphical coverage report for a file
+     *
+     * @param string $fileName The name of the file to show
+     */
     public function showFile($fileName)
     {
         $key = $this->path . $fileName;
         $html = '<div id="coverage">';
-        if( !isset( $this->coverage[$key]))
+        if (!isset( $this->coverage[$key]))
         {
             echo '<h2>This file has not been tested!</h2>';
         }
         $coveredLines = $this->coverage[$key];
         $fileArray = file(Doctrine::getPath() . "/".$fileName);
         $html .= '<dl class="table-display">' . "\n";
-        foreach( $fileArray as $num => $line){
+        foreach ($fileArray as $num => $line){
             $linenum = $num+1;
             $html .= '<dt>' . $linenum . '</dt>' . "\n";
             $class ="normal";
-            if( isset($coveredLines[$linenum]) && $coveredLines[$linenum] == 1){
+            if (isset($coveredLines[$linenum]) && $coveredLines[$linenum] == 1){
                 $class = "covered";
-            }else if( isset($coveredLines[$linenum]) && $coveredLines[$linenum] == -1){
+            } else if (isset($coveredLines[$linenum]) && $coveredLines[$linenum] == -1) {
                 $class ="red";
-            }else if( isset($coveredLines[$linenum]) && $coveredLines[$linenum] == -2){
+            } else if (isset($coveredLines[$linenum]) && $coveredLines[$linenum] == -2) {
                 $class ="orange";
             }
             $html .= '<dd class="' . $class . '">' . htmlspecialchars($line) . '</dd>' . "\n";
@@ -117,62 +154,76 @@ class Doctrine_Coverage_Report
         echo $html;
     }
 
+    /*
+     * Generate coverage data for non tested files
+     *
+     * Scans all files and records data for those that are not in the coverage 
+     * record.
+     *
+     * @return array An array with coverage data
+     */
     public function generateNotCoveredFiles()
     {
         $it = new RecursiveDirectoryIterator(Doctrine::getPath());
 
         $notCoveredArray = array();
-        foreach( new RecursiveIteratorIterator($it) as $file){
-            if( strpos($file->getPathname(), ".svn")){
+        foreach (new RecursiveIteratorIterator($it) as $file){
+            if (strpos($file->getPathname(), ".svn")){
                 continue;
             }
             $path = Doctrine::getPath() . DIRECTORY_SEPARATOR;
             $coveredPath = str_replace($path, $this->path, $file->getPathname());
-            if( isset($this->coverage[$coveredPath])){
+            if (isset($this->coverage[$coveredPath])){
                 continue;
-						}
+            }
 
-						$class = str_replace($path, "", $file->getPathname());
-						$class = str_replace(DIRECTORY_SEPARATOR, "_", $class);
-						$class = substr($class, 0,-4);
+            $class = str_replace($path, "", $file->getPathname());
+            $class = str_replace(DIRECTORY_SEPARATOR, "_", $class);
+            $class = substr($class, 0,-4);
             if (strpos($class, '_Interface')) {
                 continue;
             }
 
-            if(!class_exists($class)){
+            if ( ! class_exists($class)){
                 continue;
             }
 
             try{
                 $refClass = new ReflectionClass($class);
-            }catch(Exception $e){
+            } catch (Exception $e){
                 echo $e->getMessage();
                 continue;
             }
             $lines = 0;
             $methodLines = 0;
-            foreach($refClass->getMethods() as $refMethod){
+            foreach ($refClass->getMethods() as $refMethod){
 
-                if($refMethod->getDeclaringClass() != $refClass){
+                if ($refMethod->getDeclaringClass() != $refClass){
                     continue;
                 }
                 $methodLines = $refMethod->getEndLine() - $refMethod->getStartLine();
                 $lines += $methodLines;
             }
-            if($methodLines == 0){
+            if ($methodLines == 0){
                 $notCoveredArray[$class] = array("covered" => 0, "maybe" => 0, "notcovered"=>$lines, "total" => $lines, "percentage" => 100);
-             }else{
+            } else {
                 $notCoveredArray[$class] = array("covered" => 0, "maybe" => 0, "notcovered"=>$lines, "total" => $lines, "percentage" => 0);
-             }
+            }
             $this->totallines += $lines;
             $this->totalnotcovered += $lines;
         }
         return $notCoveredArray;
     }
 
+    /*
+     * Show a summary of all files in Doctrine and their coverage data
+     *
+     * @uses generateNonCoveredFiles
+     * @uses generateCoverage
+     */
     public function showSummary()
     {
-        if(isset($_GET["order"])){
+        if (isset($_GET["order"])){
             $this->sortBy = $_GET["order"];
         }
         $coveredArray = $this->generateCoverage();
@@ -183,7 +234,7 @@ class Doctrine_Coverage_Report
         uasort($coveredArray, array($this,"sortArray"));
 
         //and flip if it perhaps?
-        if(isset($_GET["desc"]) && $_GET["desc"] == "true"){
+        if (isset($_GET["desc"]) && $_GET["desc"] == "true"){
             $coveredArray = array_reverse($coveredArray, true);
         }
 
@@ -195,12 +246,17 @@ class Doctrine_Coverage_Report
         }
     }
 
+    /*
+     * Generate coverage data for tested files
+     *
+     *@return array An array of coverage data
+     */
     public function generateCoverage()
     {
         $coveredArray = array();
         foreach ($this->coverage as $file => $lines) {
             $pos = strpos($file, $this->path);
-            if($pos === false && $pos !== 0){
+            if ($pos === false && $pos !== 0){
                 continue;
             }
 
@@ -210,7 +266,7 @@ class Doctrine_Coverage_Report
                 continue;
             }
 
-            if(!class_exists($class)){
+            if ( ! class_exists($class)){
                 continue;
             }
 
@@ -218,7 +274,7 @@ class Doctrine_Coverage_Report
             $covered = 0;
             $maybe = 0;
             $notcovered = 0;
-            foreach($lines as $result){
+            foreach ($lines as $result){
                 switch($result){
                 case self::COVERED:
                     $covered++;
@@ -246,12 +302,16 @@ class Doctrine_Coverage_Report
         return $coveredArray;
     }
 
+   /*
+    * Uasort function to sort the array by key
+    *
+    */
     public function sortArray($a, $b)
     {
         if ($a[$this->sortBy] == $b[$this->sortBy]) {
             return 0;
         }
-        return ($a[$this->sortBy] < $b[$this->sortBy]) ? -1 : 1;
+        return ( $a[$this->sortBy] < $b[$this->sortBy]) ? -1 : 1;
     }
 }
 
