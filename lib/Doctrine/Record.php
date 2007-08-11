@@ -1258,7 +1258,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $this->_state    = Doctrine_Record::STATE_TCLEAN;
             $this->_modified = array();
         } elseif ($id === true) {
-            $this->prepareIdentifiers(false);
+            $this->prepareIdentifiers(true);
             $this->_state    = Doctrine_Record::STATE_CLEAN;
             $this->_modified = array();
         } else {
