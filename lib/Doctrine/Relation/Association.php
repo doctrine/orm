@@ -57,16 +57,11 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     	$component = $this->definition['refTable']->getComponentName();
         switch ($context) {
             case "record":
-                $sub    = 'SQL:SELECT ' . $this->definition['foreign'].
-                          ' FROM '  . $this->definition['refTable']->getTableName().
-                          ' WHERE ' . $this->definition['local'] .
-                          ' IN ('   . substr(str_repeat("?, ", $count),0,-2) .
-                          ')';
-
+                $sub  = substr(str_repeat("?, ", $count),0,-2);
                 $dql  = 'FROM ' . $this->getTable()->getComponentName();
                 $dql .= '.' . $component;
                 $dql .= ' WHERE ' . $this->getTable()->getComponentName()
-                      . '.' . $this->getTable()->getIdentifier() . ' IN (' . $sub . ')';
+                . '.' . $component . '.' . $this->definition['local'] . ' IN (' . $sub . ')';
                 break;
             case "collection":
                 $sub  = substr(str_repeat("?, ", $count),0,-2);
@@ -93,6 +88,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
         } else {
             $coll = Doctrine_Query::create()->parseQuery($this->getRelationDql(1))->execute(array($id));
         }
+        $coll->setReference($record, $this);
         return $coll;
     }
 }
