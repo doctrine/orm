@@ -1115,9 +1115,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     {
         $e = Doctrine_Tokenizer::sqlExplode($query, ' ');
 
-        foreach($e as $k=>$part) {
+        foreach ($e as $k=>$part) {
             $part = trim($part);
-            switch(strtolower($part)) {
+            switch (strtolower($part)) {
                 case 'delete':
                 case 'update':
                 case 'select':
@@ -1133,16 +1133,17 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 case 'order':
                 case 'group':
                     $i = ($k + 1);
-                    if(isset($e[$i]) && strtolower($e[$i]) === "by") {
+                    if (isset($e[$i]) && strtolower($e[$i]) === 'by') {
                         $p = $part;
                         $parts[$part] = array();
-                    } else
+                    } else {
                         $parts[$p][] = $part;
+                    }
                 break;
-                case "by":
+                case 'by':
                     continue;
                 default:
-                    if( ! isset($p))
+                    if ( ! isset($p))
                         throw new Doctrine_Query_Exception("Couldn't parse query.");
 
                     $parts[$p][] = $part;
