@@ -172,7 +172,7 @@ class Doctrine_Coverage_Report
         if(isset($_GET["desc"]) && $_GET["desc"] == "true"){
             $coveredArray = array_reverse($coveredArray, true);
         }
-       echo "<tr><td>" . TOTAL . "</td><td>" . round((($totalcovered + $totalmaybe) / $totallines) * 100, 2) . " % </td><td>$totallines</td><td>$totalcovered</td><td>$totalmaybe</td><td>$totaldead</td><td></td></tr>";
+       echo "<tr><td>" . TOTAL . "</td><td>" . round((($totalcovered + $totalmaybe) / $totallines) * 100, 2) . " % </td><td>$totallines</td><td>$totalcovered</td><td>$totalmaybe</td><td>$totalnotcovered</td><td></td></tr>";
         foreach($coveredArray as $class => $info){
             $fileName = str_replace("_", "/", $class) . ".php";
             echo "<tr><td>" . $class . "</td><td>" . $info["percentage"] . " % </td><td>" . $info["total"] . "</td><td>" . $info["covered"] . "</td><td>" . $info["maybe"] . "</td><td>" . $info["notcovered"]. "</td><td><a href=\"cc.php?file=" . $fileName . "\">coverage</a></td></tr>";
