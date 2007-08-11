@@ -39,6 +39,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->tables[] = 'fieldNameTest';
         $this->tables[] = 'GzipTest';
         $this->tables[] = 'Book';
+        $this->tables[] = 'EntityAddress';
         parent::prepareTables();
     }
 
@@ -869,5 +870,21 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $user = $this->connection->getTable("User")->find(4);
         $this->assertTrue($user->getIterator() instanceof ArrayIterator);
     }
+    
+    public function testRefreshRelated()
+    {
+    	$user = $this->connection->getTable("User")->find(4);
+    	$user->Address[0]->address = "Address #1";
+      $user->Address[1]->address = "Address #2";
+      $user->save();
+      $this->assertEqual(count($user->Address), 2);
+      Doctrine_Query::create()->delete()->from('EntityAddress')->where('user_id = ? AND address_id = ?', array($user->id, $user->Address[1]->id))->execute();
+      $user->refreshRelated('Address');
+      $this->assertEqual(count($user->Address), 1);
+      Doctrine_Query::create()->delete()->from('EntityAddress')->where('user_id = ? AND address_id = ?', array($user->id, $user->Address[0]->id))->execute();
+      $user->refreshRelated();
+      $this->assertEqual(count($user->Address), 0);
+    }
+    
 }
 ?>

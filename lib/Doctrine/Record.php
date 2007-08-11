@@ -669,6 +669,26 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $this;
     }
+    
+    /**
+     * refresh
+     * refres data of related objects from the database
+     *
+     * @param string $name                      name of a related component.
+     *                                          if set, this method only refreshes the specified related component
+     */
+    public function refreshRelated($name = null)
+    {
+        if (is_null($name)) {
+            foreach ($this->_table->getRelations() as $rel) {
+            	$this->_references[$rel->getAlias()] = $rel->fetchRelatedFor($this);
+            }
+        } else {
+            $rel = $this->_table->getRelation($name);
+            $this->_references[$name] = $rel->fetchRelatedFor($this);
+        }
+    }
+    
     /**
      * getTable
      * returns the table object for this record
