@@ -170,6 +170,17 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
         return 'MOD(' . $expression1 . ', ' . $expression2 . ')';
     }
     /**
+     * trim
+     * returns the string $str with leading and proceeding space characters removed
+     *
+     * @param string $str       literal string or column name
+     * @return string
+     */
+    public function trim($str)
+    {
+        return 'TRIM(' . $str . ')';
+    }
+    /**
      * ltrim
      * returns the string $str with leading space characters removed
      *
