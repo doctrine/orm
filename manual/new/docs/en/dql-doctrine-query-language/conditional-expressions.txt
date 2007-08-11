@@ -158,17 +158,17 @@ The NOT EXISTS operator returns TRUE if the subquery returns 0 rows and FALSE ot
 Finding all articles which have readers:
 
 <code>
-FROM Article
-  WHERE EXISTS (FROM ReaderLog(id)
-                WHERE ReaderLog.article_id = Article.id)
+FROM Article a
+  WHERE EXISTS (SELECT r.id FROM ReaderLog r
+                WHERE r.article_id = a.id)
 </code>
 
 Finding all articles which don't have readers:
 
 <code>
-FROM Article
-  WHERE NOT EXISTS (FROM ReaderLog(id)
-                WHERE ReaderLog.article_id = Article.id)
+FROM Article a
+  WHERE NOT EXISTS (SELECT r.id FROM ReaderLog r
+                WHERE r.article_id = a.id)
 </code>     
 
 
