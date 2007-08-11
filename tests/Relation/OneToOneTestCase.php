@@ -69,4 +69,18 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($ref->name, 'ref 1');
         $this->assertEqual($ref->createdBy->name, 'ref 2');
     }
+
+    public function testUnsetRelation()
+    {
+        $user = new User();
+        $user->name = "test";
+        $email = new Email();
+        $email->address = "test@test.com";
+        $user->Email = $email;
+        $user->save();
+        $this->assertTrue($user->Email instanceOf Email);
+        $user->Email = Email::getNullObject();
+        $user->save();
+        $this->assertTrue($user->Email instanceOf Doctrine_Null);
+    }
 }
