@@ -46,7 +46,7 @@ if(isset($_GET["file"])){
 }else{
 ?>
     <h1>Coverage report for Doctrine</h1>
-    <p>Default mode shows results sorted by perentage. This can be changed with order = covered|total|maybe|notcovered|percentage and desc=true GET variables</p>
+    <p>Default mode shows results sorted by percentage. This can be changed with GET variables:<br /> <ul><li>order = covered|total|maybe|notcovered|percentage</li><li>desc=true</li></ul></p>
     <table>
      <tr><th></th><th>Percentage</th><th>Total</th><th>Covered</th><th>Maybe</th><th>Not Covered</th><th></th></tr>
 <?php
