@@ -73,13 +73,14 @@ class Doctrine_Query_From extends Doctrine_Query_Part
 
             foreach (Doctrine_Tokenizer::bracketExplode($part, ',') as $reference) {
                 $reference = trim($reference);
-                $e         = explode('.', $reference);
+                $e = explode(' ', $reference);
+                $e2 = explode('.', $e[0]);
 
                 if ($operator) {
-                    $reference = array_shift($e) . $operator . implode('.', $e);
+                    $e[0] = array_shift($e2) . $operator . implode('.', $e2);
                 }
 
-                $table = $this->query->load($reference);
+                $table = $this->query->load(implode(' ', $e));
             }
 
             $operator = ($last == 'INNER') ? ':' : '.';

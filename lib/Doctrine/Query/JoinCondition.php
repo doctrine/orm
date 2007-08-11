@@ -58,7 +58,7 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
 
                 if (substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
                     // subquery found
-                    $q     = new Doctrine_Query();
+                    $q = $this->query->createSubquery();
                     $value = '(' . $q->parseQuery($trimmed)->getQuery() . ')';
                 } elseif (substr($trimmed, 0, 4) == 'SQL:') {
                     $value = '(' . substr($trimmed, 4) . ')';
