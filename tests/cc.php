@@ -126,13 +126,15 @@ class Doctrine_Coverage_Report
             if( strpos($file->getPathname(), ".svn")){
                 continue;
             }
-            $path = Doctrine::getPath() . DIRECTORY_SEPERATOR;
+            $path = Doctrine::getPath() . DIRECTORY_SEPARATOR;
             $coveredPath = str_replace($path, $this->path, $file->getPathname());
             if( isset($this->coverage[$coveredPath])){
                 continue;
-            }
+						}
 
-            $class = str_replace(DIRECTORY_SEPARATOR, '_', substr($file, strlen($this->path), -4));
+						$class = str_replace($path, "", $file->getPathname());
+						$class = str_replace(DIRECTORY_SEPARATOR, "_", $class);
+						$class = substr($class, 0,-4);
             if (strpos($class, '_Interface')) {
                 continue;
             }
