@@ -27,6 +27,7 @@ $user = $conn->getTable('User')->find(5);
 $user->GroupUser
      ->remove(0)
      ->remove(1);
+$user->save();
 </code>
 
 This is due to a fact that $user->GroupUser loads all group links for given user. This can time-consuming task if user belongs to many groups. Even if the user belongs to few groups this will still execute an unnecessary SELECT statement.
