@@ -1444,7 +1444,37 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $this;
     }
+    /**
+     * removeLink
+     *
+     * @param string $alias
+     * @param array $ids
+     */
+    public function removeLinks($alias, $ids)
+    {
+        $ids = (array) $ids;
+        
+        $q = new Doctrine_Query();
 
+        $rel = $this->getTable()->getRelation($alias);
+
+        $q->delete()
+          ->from($rel->getAssociationTable()->getComponentName())
+          ->where($rel->getLocal() . ' = ?', $this->identifier())
+          ->whereIn($rel->getForeign(), $ids)
+          ->execute();
+          
+        if (isset($this->references[$alias])) {
+            foreach ($this->references[$alias] as $k => $record) {
+                if (in_array($record->identifier(), $ids)) {
+                    $this->references[$alias]->remove($k);
+                }
+            }
+            $this->references[$alias]->takeSnapshot();
+        }
+        
+        return $this;
+    }
     /**
      * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
      *
