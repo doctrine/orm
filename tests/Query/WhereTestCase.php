@@ -33,12 +33,13 @@
  */
 class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase 
 {
-    public function prepareData() { }
-    public function prepareTables() {
-        $this->tables = array('Entity', 'EnumTest', 'GroupUser');
+    public function prepareData() 
+    { }
+    public function prepareTables() 
+    {
+        $this->tables = array('Entity', 'EnumTest', 'GroupUser', 'Account', 'Book');
         parent::prepareTables();
     }
-
     public function testDirectParameterSetting() 
     {
         $this->connection->clear();
@@ -49,12 +50,44 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
 
         $q = new Doctrine_Query();
 
-        $q->from('User')->addWhere('User.id = ?',1);
+        $q->from('User')->addWhere('User.id = ?', 1);
 
         $users = $q->execute();
 
         $this->assertEqual($users->count(), 1);
         $this->assertEqual($users[0]->name, 'someone');
+    }
+
+    public function testFunctionalExpressionAreSupportedInWherePart()
+    {
+        $q = new Doctrine_Query();
+
+        $q->select('u.name')->from('User u')->addWhere('TRIM(u.name) = ?', 'someone');
+
+        $users = $q->execute();
+
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name FROM entity e WHERE TRIM(e.name) = ? AND (e.type = 0)');
+        $this->assertEqual($users->count(), 1);
+        $this->assertEqual($users[0]->name, 'someone');
+    }
+
+    public function testArithmeticExpressionAreSupportedInWherePart()
+    {
+        $this->connection->clear();
+
+        $account = new Account();
+        $account->amount = 1000;
+        $account->save();
+
+        $q = new Doctrine_Query();
+
+        $q->from('Account a')->addWhere('((a.amount + 5000) * a.amount + 3) < 10000000');
+
+        $accounts = $q->execute();
+
+        $this->assertEqual($q->getSql(), 'SELECT a.id AS a__id, a.entity_id AS a__entity_id, a.amount AS a__amount FROM account a WHERE ((a.amount + 5000) * a.amount + 3) < 10000000');
+        $this->assertEqual($accounts->count(), 1);
+        $this->assertEqual($accounts[0]->amount, 1000);
     }
 
     public function testDirectMultipleParameterSetting() 
@@ -117,12 +150,13 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
         
         // find all users which have groups
         try {
-            $q->from('User u')->where('EXISTS (SELECT Groupuser.id FROM Groupuser WHERE Groupuser.user_id = u.id)');
+            $q->from('User u')->where('EXISTS (SELECT g.id FROM Groupuser g WHERE g.user_id = u.id)');
             $this->pass();
         } catch(Doctrine_Exception $e) {
             $this->fail();
         }
         $users = $q->execute();
+
         $this->assertEqual($users->count(), 1);
         $this->assertEqual($users[0]->name, 'someone with a group');
     }
@@ -271,5 +305,5 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(empty($p[':id']));
         $q->execute(array(1, 'verified'));
     }
+
 }
-?>
