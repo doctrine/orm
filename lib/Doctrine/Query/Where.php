@@ -63,11 +63,18 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
         
                 $field = array_pop($a);
                 $reference = implode('.', $a);
-                $map = $this->query->load($reference, false);
-        
-                $alias = $this->query->getTableAlias($reference);
-                $table = $map['table'];
-        
+                
+                if (empty($reference)) {
+                    $map = $this->query->getRootDeclaration();  
+                    
+                    $alias = $this->query->getTableAlias($this->query->getRootAlias());
+                    $table = $map['table'];                     	
+                } else {
+                    $map = $this->query->load($reference, false);
+    
+                    $alias = $this->query->getTableAlias($reference);
+                    $table = $map['table'];
+                }
                 if ($this->query->getType() === Doctrine_Query::SELECT) {
                     $first = $conn->quoteIdentifier($alias)
                            . '.'
