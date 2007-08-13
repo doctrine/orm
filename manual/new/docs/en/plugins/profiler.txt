@@ -16,12 +16,12 @@ Perhaps some of your pages is loading slowly. The following shows how to build a
 
 <code type="php">
 $time = 0;
-foreach($profiler as $event){
+foreach ($profiler as $event) {
     $time += $event->getElapsedSecs();
     echo $event->getName() . " " . sprintf("%f", $event->getElapsedSecs()) . "<br>\n";
     echo $event->getQuery() . "<br>\n";
     $params = $event->getParams();
-    if(!empty($params)){
+    if( ! empty($params)) {
         var_dump($params);
     }
 }
