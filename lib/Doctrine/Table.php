@@ -205,88 +205,86 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         // create database table
         if (method_exists($record, 'setTableDefinition')) {
             $record->setTableDefinition();
-
-            // set the table definition for the given tree implementation
-            if ($this->isTree()) {
-                $this->getTree()->setTableDefinition();
-            }
-            
-            $this->columnCount = count($this->columns);
-
-            if (isset($this->columns)) {
-                // get the declaring class of setTableDefinition method
-                $method = new ReflectionMethod($this->options['name'], 'setTableDefinition');
-                $class  = $method->getDeclaringClass();
-
-                $this->options['declaringClass'] = $class;
-
-                if ( ! isset($this->options['tableName'])) {
-                    $this->options['tableName'] = Doctrine::tableize($class->getName());
-                }
-                switch (count($this->primaryKeys)) {
-                case 0:
-                    $this->columns = array_merge(array('id' =>
-                                                  array('type'          => 'integer',
-                                                        'length'        => 20,
-                                                        'autoincrement' => true,
-                                                        'primary'       => true)), $this->columns);
-
-                    $this->primaryKeys[] = 'id';
-                    $this->identifier = 'id';
-                    $this->identifierType = Doctrine::IDENTIFIER_AUTOINC;
-                    $this->columnCount++;
-                    break;
-                default:
-                    if (count($this->primaryKeys) > 1) {
-                        $this->identifier = $this->primaryKeys;
-                        $this->identifierType = Doctrine::IDENTIFIER_COMPOSITE;
-
-                    } else {
-                        foreach ($this->primaryKeys as $pk) {
-                            $e = $this->columns[$pk];
-
-                            $found = false;
-
-                            foreach ($e as $option => $value) {
-                                if ($found)
-                                    break;
-
-                                $e2 = explode(':', $option);
-
-                                switch (strtolower($e2[0])) {
-                                    case 'autoincrement':
-                                    case 'autoinc':
-                                        $this->identifierType = Doctrine::IDENTIFIER_AUTOINC;
-                                        $found = true;
-                                        break;
-                                    case 'seq':
-                                    case 'sequence':
-                                        $this->identifierType = Doctrine::IDENTIFIER_SEQUENCE;
-                                        $found = true;
-    
-                                        if ($value) {
-                                            $this->options['sequenceName'] = $value;
-                                        } else {
-                                            if (($sequence = $this->getAttribute(Doctrine::ATTR_DEFAULT_SEQUENCE)) !== null) {
-                                                $this->options['sequenceName'] = $sequence;
-                                            } else {
-                                                $this->options['sequenceName'] = $this->conn->getSequenceName($this->options['tableName']);
-                                            }
-                                        }
-                                        break;
-                                }
-                            }
-                            if ( ! isset($this->identifierType)) {
-                                $this->identifierType = Doctrine::IDENTIFIER_NATURAL;
-                            }
-                            $this->identifier = $pk;
-                        }
-                    }
-                }
-            }
+            // get the declaring class of setTableDefinition method
+            $method = new ReflectionMethod($this->options['name'], 'setTableDefinition');
+            $class  = $method->getDeclaringClass();
         } else {
-            throw new Doctrine_Table_Exception("Class '$name' has no table definition.");
+            $class = new ReflectionClass($class);
         }
+        $this->options['declaringClass'] = $class;
+
+        // set the table definition for the given tree implementation
+        if ($this->isTree()) {
+            $this->getTree()->setTableDefinition();
+        }
+        
+        $this->columnCount = count($this->columns);
+
+        if ( ! isset($this->options['tableName'])) {
+            $this->options['tableName'] = Doctrine::tableize($class->getName());
+        }
+
+        switch (count($this->primaryKeys)) {
+            case 0:
+                $this->columns = array_merge(array('id' =>
+                                              array('type'          => 'integer',
+                                                    'length'        => 20,
+                                                    'autoincrement' => true,
+                                                    'primary'       => true)), $this->columns);
+    
+                $this->primaryKeys[] = 'id';
+                $this->identifier = 'id';
+                $this->identifierType = Doctrine::IDENTIFIER_AUTOINC;
+                $this->columnCount++;
+                break;
+            default:
+                if (count($this->primaryKeys) > 1) {
+                    $this->identifier = $this->primaryKeys;
+                    $this->identifierType = Doctrine::IDENTIFIER_COMPOSITE;
+    
+                } else {
+                    foreach ($this->primaryKeys as $pk) {
+                        $e = $this->columns[$pk];
+    
+                        $found = false;
+    
+                        foreach ($e as $option => $value) {
+                            if ($found)
+                                break;
+    
+                            $e2 = explode(':', $option);
+    
+                            switch (strtolower($e2[0])) {
+                                case 'autoincrement':
+                                case 'autoinc':
+                                    $this->identifierType = Doctrine::IDENTIFIER_AUTOINC;
+                                    $found = true;
+                                    break;
+                                case 'seq':
+                                case 'sequence':
+                                    $this->identifierType = Doctrine::IDENTIFIER_SEQUENCE;
+                                    $found = true;
+    
+                                    if ($value) {
+                                        $this->options['sequenceName'] = $value;
+                                    } else {
+                                        if (($sequence = $this->getAttribute(Doctrine::ATTR_DEFAULT_SEQUENCE)) !== null) {
+                                            $this->options['sequenceName'] = $sequence;
+                                        } else {
+                                            $this->options['sequenceName'] = $this->conn->getSequenceName($this->options['tableName']);
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        if ( ! isset($this->identifierType)) {
+                            $this->identifierType = Doctrine::IDENTIFIER_NATURAL;
+                        }
+                        $this->identifier = $pk;
+                    }
+            }
+        }
+
 
         $record->setUp();
 
@@ -895,7 +893,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function findAll()
     {
         $graph = new Doctrine_Query($this->conn);
-        $users = $graph->query("FROM ".$this->options['name']);
+        $users = $graph->query('FROM ' . $this->options['name']);
         return $users;
     }
     /**
@@ -1047,12 +1045,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if ($id !== null) {
             $query = 'SELECT ' . implode(', ',$this->primaryKeys) 
                 . ' FROM ' . $this->getTableName() 
-                . ' WHERE ' . implode(' = ? && ',$this->primaryKeys).' = ?';
+                . ' WHERE ' . implode(' = ? && ',$this->primaryKeys) . ' = ?';
             $query = $this->applyInheritance($query);
 
             $params = array_merge(array($id), array_values($this->options['inheritanceMap']));
 
-            $this->data = $this->conn->execute($query,$params)->fetch(PDO::FETCH_ASSOC);
+            $this->data = $this->conn->execute($query, $params)->fetch(PDO::FETCH_ASSOC);
 
             if ($this->data === false)
                 return false;
