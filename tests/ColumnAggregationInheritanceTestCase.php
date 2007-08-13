@@ -48,7 +48,7 @@ class Doctrine_ColumnAggregationInheritance_TestCase extends Doctrine_UnitTestCa
     public function testQueriedClassReturnedIfNoSubclassMatch()
     {
         $q = new Doctrine_Query();
-        $entityOther = $q->from('Entity')->where('id=?')->execute(array($this->otherEntity->id))->getFirst();
+        $entityOther = $q->from('Entity')->where('id = ?')->execute(array($this->otherEntity->id))->getFirst();
         $this->assertTrue($entityOther instanceOf Entity);
     }
 
@@ -62,4 +62,27 @@ class Doctrine_ColumnAggregationInheritance_TestCase extends Doctrine_UnitTestCa
         $user = $q->from('Entity')->where('id=?')->execute(array(5))->getFirst();
         $this->assertTrue($user instanceOf User);
     }
+    public function testStringColumnInheritance()
+    {
+        $q = new Doctrine_Query();
+        
+        $q->from('InheritanceChildTest');
+
+        $this->assertEqual($q->getSql(), "SELECT i.id AS i__id, i.name AS i__name, i.type AS i__type FROM inheritance_test i WHERE (i.type = 'type 1')");
+    }
 }
+class InheritanceTest extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string');
+        $this->hasColumn('type', 'string');
+        
+        $this->setSubclasses(array('InheritanceChildTest' => array('type' => 'type 1'), 
+                                   'InheritanceChild2Test' => array('type' => 'type 2')));
+    }
+}
+class InheritanceChildTest extends InheritanceTest
+{ }
+class InheritanceChild2Test extends InheritanceTest
+{ }
