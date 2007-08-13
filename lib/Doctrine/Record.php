@@ -837,14 +837,14 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $lower = strtolower($name);
 
         $lower = $this->_table->getColumnName($lower);
-        
-        $type = $this->_table->getTypeOf($name);
 
         if (isset($this->_data[$lower])) {
-            if ($value instanceof Doctrine_Record && $type != 'object') {
+            if ($value instanceof Doctrine_Record) {
+                $type = $this->_table->getTypeOf($name);
+
                 $id = $value->getIncremented();
 
-                if ($id !== null) {
+                if ($id !== null && $type !== 'object') {
                     $value = $id;
                 }
             }
