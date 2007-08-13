@@ -882,10 +882,10 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     $identifier = $this->_conn->quoteIdentifier($tableAlias . $field);
 
                     if ($index > 0) {
-                        $b[] = '(' . $identifier . ' = ' . $value
+                        $b[] = '(' . $identifier . ' = ' . $this->_conn->quote($value)
                              . ' OR ' . $identifier . ' IS NULL)';
                     } else {
-                        $b[] = $identifier . ' = ' . $value;
+                        $b[] = $identifier . ' = ' . $this->_conn->quote($value);
                     }
                 }
 
@@ -987,7 +987,6 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         }
 
         while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {
-
             $parse = true;
 
             foreach ($data as $key => $value) {
