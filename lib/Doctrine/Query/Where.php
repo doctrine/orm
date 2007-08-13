@@ -68,9 +68,13 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 $alias = $this->query->getTableAlias($reference);
                 $table = $map['table'];
         
-                $first = $conn->quoteIdentifier($alias) 
-                       . '.' 
-                       . $conn->quoteIdentifier($table->getColumnName($field));
+                if ($this->query->getType() === Doctrine_Query::SELECT) {
+                    $first = $conn->quoteIdentifier($alias)
+                           . '.'
+                           . $conn->quoteIdentifier($table->getColumnName($field));
+                } else {
+                    $first = $conn->quoteIdentifier($table->getColumnName($field));
+                }
             } else {
                 $first = $this->query->parseClause($first);
             }
@@ -126,8 +130,11 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 $this->query->addEnumParam($value, null, null);
             }
         } else {
-            // check if value is enumerated value
-            $enumIndex = $table->enumIndex($field, trim($value, "'"));
+            $enumIndex = false;
+            if (isset($table) && isset($field)) {
+                // check if value is enumerated value
+                $enumIndex = $table->enumIndex($field, trim($value, "'"));
+            }
 
             if ($enumIndex !== false) {
                 $value = $enumIndex;
