@@ -1457,14 +1457,22 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
             $q->execute();
 
-            if (isset($this->_references[$alias])) {
-                foreach ($this->_references[$alias] as $k => $record) {
-                    if (in_array(current($record->identifier()), $ids)) {
-                        $this->_references[$alias]->remove($k);
-                    }
+
+        } elseif ($rel instanceof Doctrine_Relation_ForeignKey) {
+            $q->update($rel->getTable()->getComponentName())
+              ->set($rel->getForeign(), '?', array(null))
+              ->addWhere($rel->getForeign() . ' = ?', array_values($this->identifier()))
+              ->whereIn($rel->getTable()->getIdentifier(), $ids);
+
+            $q->execute();
+        }
+        if (isset($this->_references[$alias])) {
+            foreach ($this->_references[$alias] as $k => $record) {
+                if (in_array(current($record->identifier()), $ids)) {
+                    $this->_references[$alias]->remove($k);
                 }
-                $this->_references[$alias]->takeSnapshot();
             }
+            $this->_references[$alias]->takeSnapshot();
         }
         return $this;
     }
