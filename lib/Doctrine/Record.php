@@ -1441,7 +1441,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param array $ids        the identifiers of the related records
      * @return Doctrine_Record  this object
      */
-    public function removeLinks($alias, $ids)
+    public function unlink($alias, $ids)
     {
         $ids = (array) $ids;
         
@@ -1452,17 +1452,18 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         if ($rel instanceof Doctrine_Relation_Association) {
             $q->delete()
               ->from($rel->getAssociationTable()->getComponentName())
-              ->where($rel->getLocal() . ' = ?', $this->identifier())
-              ->whereIn($rel->getForeign(), $ids)
-              ->execute();
-              
-            if (isset($this->references[$alias])) {
-                foreach ($this->references[$alias] as $k => $record) {
-                    if (in_array($record->identifier(), $ids)) {
-                        $this->references[$alias]->remove($k);
+              ->where($rel->getLocal() . ' = ?', array_values($this->identifier()))
+              ->whereIn($rel->getForeign(), $ids);
+
+            $q->execute();
+
+            if (isset($this->_references[$alias])) {
+                foreach ($this->_references[$alias] as $k => $record) {
+                    if (in_array(current($record->identifier()), $ids)) {
+                        $this->_references[$alias]->remove($k);
                     }
                 }
-                $this->references[$alias]->takeSnapshot();
+                $this->_references[$alias]->takeSnapshot();
             }
         }
         return $this;
