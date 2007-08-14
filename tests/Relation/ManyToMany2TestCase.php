@@ -71,22 +71,66 @@ class Doctrine_Relation_ManyToMany2_TestCase extends Doctrine_UnitTestCase
         }
         
     }
-    public function testManyToManyJoinsandSave() 
+    public function testManyToManyJoinsandSave()
     {
-         $q = new Doctrine_Query();
-         $newdata = $q->select('d.*, i.*, u.*, c.*')
+        $q = new Doctrine_Query();
+        $newdata = $q->select('d.*, i.*, u.*, c.*')
                        ->from('TestMovie d, d.MovieBookmarks i, i.UserVotes u, u.User c')
                        ->execute()
-                       ->getFirst();     
-          $newdata['MovieBookmarks'][0]['UserVotes'][0]['User']['name'] = 'user2';
-          try {
-             $newdata->save();
-             $this->pass();
-         } catch(Doctrine_Exception $e) {
-					 print $e;
-             $this->fail();
-         }
-     }
+                       ->getFirst();
+        $newdata['MovieBookmarks'][0]['UserVotes'][0]['User']['name'] = 'user2';
+        try {
+            $newdata->save();
+            $this->pass();
+        } catch(Doctrine_Exception $e) {
+            $this->fail();
+        }
+    }
+
+    public function testInitMoreData()
+    {
+        $user = new TestUser();
+        $user->name = 'test user';
+        $user->save();
+
+        $movie = new TestMovie();
+        $movie->name = 'test movie';
+        $movie->save();
+
+        $movie = new TestMovie();
+        $movie->name = 'test movie 2';
+        $movie->save();
+
+        $this->conn->clear();
+    }
+
+    public function testManyToManyDirectLinksUpdating()
+    {
+        $users = $this->conn->query("FROM TestUser u WHERE u.name = 'test user'");
+
+        $this->assertEqual($users->count(), 1);
+
+        $movies = $this->conn->query("FROM TestMovie m WHERE m.name IN ('test movie', 'test movie 2')");
+
+        $this->assertEqual($movies->count(), 2);
+
+        $profiler = new Doctrine_Connection_Profiler();
+        
+        $this->conn->addListener($profiler);
+
+        $this->assertEqual($users[0]->UserBookmarks->count(), 0);
+        $users[0]->UserBookmarks = $movies;
+        $this->assertEqual($users[0]->UserBookmarks->count(), 2);
+
+        $users[0]->save();
+
+        $this->assertEqual($users[0]->UserBookmarks->count(), 2);
+        /**
+        foreach ($profiler->getAll() as $event) {
+            print $event->getQuery() . "<br>";
+        }
+        */
+    }
 }
 
 class TestUser extends Doctrine_Record 
