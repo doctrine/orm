@@ -1534,13 +1534,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     
     public function copy(Doctrine_Query $query = null)
     {
-        if( !$query )
-        {
+        if (!$query) {
           $query = $this;
         }
         
         $new = new Doctrine_Query();
         $new->_dqlParts = $query->_dqlParts;
+        $new->_hydrationMode = $query->_hydrationMode;
       
         return $new;
     }
