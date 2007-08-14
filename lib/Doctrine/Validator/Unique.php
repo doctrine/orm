@@ -55,7 +55,7 @@ class Doctrine_Validator_Unique
         // If the record is not new we need to add primary key checks because its ok if the 
         // unique value already exists in the database IF the record in the database is the same
         // as the one that is validated here.
-        $state = $record->getState();
+        $state = $record->state();
         if (! ($state == Doctrine_Record::STATE_TDIRTY || $state == Doctrine_Record::STATE_TCLEAN)) {
             foreach ($table->getPrimaryKeys() as $pk) {
                 $sql .= " AND {$pk} != ?";

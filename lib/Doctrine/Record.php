@@ -579,17 +579,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $this->postUnserialize($event);
     }
     /**
-     * getState
-     * returns the current state of the object
-     *
-     * @see Doctrine_Record::STATE_* constants
-     * @return integer
-     */
-    public function getState()
-    {
-        return $this->_state;
-    }
-    /**
      * state
      * returns / assigns the state of this record
      *
