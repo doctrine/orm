@@ -79,13 +79,9 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      * @param mixed $params         an array of parameters or a simple scalar
      * @return Doctrine_Query
      */
-    public function whereIn($params = array())
+    public function whereIn($expr, $params = array())
     {
-        if (is_array($params)) {
-            $this->_params = array_merge($this->_params, $params);
-        } else {
-            $this->_params[] = $params;
-        }
+        $params = (array) $params;
         $a = array();
         foreach ($params as $k => $value) {
             if ($value instanceof Doctrine_Expression) {
@@ -96,6 +92,9 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
             }
             $a[] = $value;
         }
+
+        $this->_params = array_merge($this->_params, $params);
+
         $where = $expr . ' IN (' . implode(', ', $a) . ')';
 
         return $this->parseQueryPart('where', $where, true);
