@@ -269,7 +269,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         if (!isset($this->_baseQuery)) {
             $this->_baseQuery = $this->_createBaseQuery();
         }
-        return clone $this->_baseQuery;
+        return $this->_baseQuery->copy();
     }
     
     /**

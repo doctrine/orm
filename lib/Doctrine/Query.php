@@ -1531,4 +1531,17 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $this->execute($params);
     }
+    
+    public function copy(Doctrine_Query $query = null)
+    {
+        if( !$query )
+        {
+          $query = $this;
+        }
+        
+        $new = new Doctrine_Query();
+        $new->_dqlParts = $query->_dqlParts;
+      
+        return $new;
+    }
 }
