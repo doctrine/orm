@@ -211,14 +211,20 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function set($key, $value, $params = null)
     {
-        if ($params !== null) {
-            if (is_array($params)) {
-                $this->_params = array_merge($this->_params, $params);
-            } else {
-                $this->_params[] = $params;
+    	if (is_array($key)) {
+            foreach ($key as $k => $v) {
+                $this->set($k, '?', array($v));                           	
             }
+    	} else {
+            if ($params !== null) {
+                if (is_array($params)) {
+                    $this->_params = array_merge($this->_params, $params);
+                } else {
+                    $this->_params[] = $params;
+                }
+            }
+            return $this->parseQueryPart('set', $key . ' = ' . $value, true);
         }
-        return $this->parseQueryPart('set', $key . ' = ' . $value, true);
     }
     /**
      * from
