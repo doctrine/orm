@@ -35,7 +35,7 @@ class Doctrine_Query_Groupby extends Doctrine_Query_Part
     /**
      * DQL GROUP BY PARSER
      * parses the group by part of the query string
-
+     *
      * @param string $str
      * @return void
      */
@@ -45,11 +45,17 @@ class Doctrine_Query_Groupby extends Doctrine_Query_Part
         foreach (explode(',', $str) as $reference) {
             $reference = trim($reference);
             $e     = explode('.', $reference);
-            $field = array_pop($e);
-            $ref   = implode('.', $e);
-            $this->query->load($ref);
-
-            $r[] = $this->query->getTableAlias($ref) . '.' . $field;
+            
+            if (count($e) > 1) {
+                $field = array_pop($e);
+                $ref   = implode('.', $e);
+                $this->query->load($ref);
+    
+                $r[] = $this->query->getTableAlias($ref) . '.' . $field;
+            } else {
+                $alias = end($e);
+                $r[] = $this->query->getAggregateAlias($alias);
+            }
         }
         return implode(', ', $r);
     }
