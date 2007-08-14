@@ -20,9 +20,10 @@
  */
 
 /**
- * Doctrine_ColumnAlias_TestCase
+ * Doctrine_ColumnAggregationInheritance_TestCase
  *
  * @package     Doctrine
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Bjarte Stien Karlsen <bjartka@pvv.ntnu.no> 
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
