@@ -66,7 +66,7 @@ print $user->Email['address'];
 print $user->Phonenumber[0]->phonenumber;
 
 print $user->Group[0]->name;
-</code>   
+</code>
 
 
 +++ Updating related records
@@ -105,10 +105,18 @@ $deleted = Doctrine_Query::create()
            ->delete()
            ->from('Phonenumber')
            ->addWhere('user_id = ?', array($userId))
-           ->whereIn('group_id', $groupIds);
+           ->whereIn('id', $phonenumberIds);
            ->execute();
 // print out the number of deleted phonenumbers
 print $deleted;
 </code>
 
+Sometimes you may not want to delete the phonenumber records but to simply unlink the relations by setting the foreing key fields to null. This can ofcourse be achieved with DQL but perhaps to most elegant way of doing this is by using Doctrine_Record::unlink(). Please note that the unlink method is very smart. It not only sets the foreign fields for related phonenumbers to null but it also removes all given phonenumber references from the User object.
 
+Lets say we have a User who has 3 Phonenumbers (with identifiers 1, 2 and 3). Now unlinking the Phonenumbers 1 and 3 can be achieved as easily as:
+
+<code type="php">
+$user->unlink('Phonenumber', array(1, 3));
+
+$user->Phonenumber->count(); // 1
+</code> 
