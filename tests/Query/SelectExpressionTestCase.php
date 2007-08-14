@@ -33,6 +33,13 @@
  */
 class Doctrine_Query_SelectExpression_TestCase extends Doctrine_UnitTestCase 
 {
+    public function prepareData() 
+    { }
+    public function prepareTables() 
+    { 
+        $this->tables = array('User');
+        parent::prepareTables();
+    }
     public function testAdditionExpression()
     {
         $query = new Doctrine_Query();
