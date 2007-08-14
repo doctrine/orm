@@ -1434,10 +1434,12 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         return $this;
     }
     /**
-     * removeLink
+     * removeLinks
+     * removes links from this record to given records
      *
-     * @param string $alias
-     * @param array $ids
+     * @param string $alias     related component alias
+     * @param array $ids        the identifiers of the related records
+     * @return Doctrine_Record  this object
      */
     public function removeLinks($alias, $ids)
     {
@@ -1447,21 +1449,22 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         $rel = $this->getTable()->getRelation($alias);
 
-        $q->delete()
-          ->from($rel->getAssociationTable()->getComponentName())
-          ->where($rel->getLocal() . ' = ?', $this->identifier())
-          ->whereIn($rel->getForeign(), $ids)
-          ->execute();
-          
-        if (isset($this->references[$alias])) {
-            foreach ($this->references[$alias] as $k => $record) {
-                if (in_array($record->identifier(), $ids)) {
-                    $this->references[$alias]->remove($k);
+        if ($rel instanceof Doctrine_Relation_Association) {
+            $q->delete()
+              ->from($rel->getAssociationTable()->getComponentName())
+              ->where($rel->getLocal() . ' = ?', $this->identifier())
+              ->whereIn($rel->getForeign(), $ids)
+              ->execute();
+              
+            if (isset($this->references[$alias])) {
+                foreach ($this->references[$alias] as $k => $record) {
+                    if (in_array($record->identifier(), $ids)) {
+                        $this->references[$alias]->remove($k);
+                    }
                 }
+                $this->references[$alias]->takeSnapshot();
             }
-            $this->references[$alias]->takeSnapshot();
         }
-        
         return $this;
     }
     /**
