@@ -17,7 +17,7 @@ class Blog extends Doctrine_Record
         $this->hasColumn('content', 'string');
         $this->hasColumn('created', 'date');
     }
-    public function preInsert()
+    public function preInsert($event)
     {
         $this->created = date('Y-m-d', time());
     }
@@ -226,16 +226,16 @@ class MyRecord extends Doctrine_Record
 
 ++ Record hooks
 ||~ Methods     ||~ Listens ||
-|| preSave() || Doctrine_Record::save() ||
-|| postSave() || Doctrine_Record::save() ||
-|| preUpdate() || Doctrine_Record::save() when the record state is DIRTY ||
-|| postUpdate() || Doctrine_Record::save() when the record state is DIRTY ||
-|| preInsert() || Doctrine_Record::save() when the record state is TDIRTY ||
-|| postInsert() || Doctrine_Record::save() when the record state is TDIRTY ||
-|| preDelete() || Doctrine_Record::delete() ||
-|| postDelete() || Doctrine_Record::delete() ||
-|| preValidate() || Doctrine_Validator::validate() ||
-|| postValidate() || Doctrine_Validator::validate() ||
+|| preSave($event) || Doctrine_Record::save() ||
+|| postSave($event) || Doctrine_Record::save() ||
+|| preUpdate($event) || Doctrine_Record::save() when the record state is DIRTY ||
+|| postUpdate($event) || Doctrine_Record::save() when the record state is DIRTY ||
+|| preInsert($event) || Doctrine_Record::save() when the record state is TDIRTY ||
+|| postInsert($event) || Doctrine_Record::save() when the record state is TDIRTY ||
+|| preDelete($event) || Doctrine_Record::delete() ||
+|| postDelete($event) || Doctrine_Record::delete() ||
+|| preValidate($event) || Doctrine_Validator::validate() ||
+|| postValidate($event) || Doctrine_Validator::validate() ||
 
 Example 1. Using insert and update hooks
 <code type="php">
@@ -248,11 +248,11 @@ class Blog extends Doctrine_Record
         $this->hasColumn('created', 'date');
         $this->hasColumn('updated', 'date');
     }
-    public function preInsert()
+    public function preInsert($event)
     {
         $this->created = date('Y-m-d', time());
     }
-    public function preUpdate()
+    public function preUpdate($event)
     {
         $this->updated = date('Y-m-d', time());
     }
