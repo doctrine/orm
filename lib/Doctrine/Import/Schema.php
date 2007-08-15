@@ -37,16 +37,25 @@
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class Doctrine_Import_Schema
+abstract class Doctrine_Import_Schema
 {
+    /**
+     * Import the schema and return it in an array
+     *
+     * @param  string $schema
+     * @access public
+     */
+    abstract function importSchema($schema);
+    
     /**
      * import
      *
      * A method to import a Schema and translate it into a Doctrine_Record object
      *
-     * @param string $schema       The file containing the XML schema
-     * @param string $directory    The directory where the Doctrine_Record classes will
-     *                             be written
+     * @param  string $schema       The file containing the XML schema
+     * @param  string $directory    The directory where the Doctrine_Record class will
+     *                              be written
+     * @access public
      */
     public function imprt($schema, $directory)
     {
@@ -61,5 +70,5 @@ class Doctrine_Import_Schema
             
             $builder->buildRecord($options, $columns, array());
         }
-    }
+    }    
 }

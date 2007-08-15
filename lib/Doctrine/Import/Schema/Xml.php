@@ -40,7 +40,7 @@
 class Doctrine_Import_Schema_Xml extends Doctrine_Import_Schema
 {
     /**
-     * importArr
+     * importSchema
      *
      * A method to import a XML Schema and translate it into a property array. 
      * The function returns that property array.
