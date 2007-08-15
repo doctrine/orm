@@ -94,7 +94,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      *              export                      Doctrine_Export driver, handles db structure modification abstraction (contains
      *                                          methods such as alterTable, createConstraint etc.)
-     *              import                      Doctrine_Import driver, handles db schema reading
+     *              imprt                       Doctrine_Import driver, handles db schema reading
      *
      *              sequence                    Doctrine_Sequence driver, handles sequential id generation and retrieval
      *
@@ -116,7 +116,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                              'expression'  => false,
                              'dataDict'    => false,
                              'export'      => false,
-                             'import'      => false,
+                             'imprt'      => false,
                              'sequence'    => false,
                              'unitOfWork'  => false,
                              'formatter'   => false,

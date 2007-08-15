@@ -408,16 +408,16 @@ final class Doctrine
         }
     }
     /**
-     * import
+     * imprt
      * method for importing existing schema to Doctrine_Record classes
      *
      * @param string $directory
      * @param array $info
      * @return boolean
      */
-    public static function import($directory, array $databases = array())
+    public static function imprt($directory, array $databases = array())
     {
-        return Doctrine_Manager::connection()->import->import($directory, $databases);
+        return Doctrine_Manager::connection()->imprt->imprt($directory, $databases);
     }
     /**
      * export

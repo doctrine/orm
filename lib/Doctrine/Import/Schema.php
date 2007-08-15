@@ -48,7 +48,7 @@ class Doctrine_Import_Schema
      * @param string $directory    The directory where the Doctrine_Record classes will
      *                             be written
      */
-    public function import($schema, $directory)
+    public function imprt($schema, $directory)
     {
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
