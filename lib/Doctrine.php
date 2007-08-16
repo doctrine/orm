@@ -408,26 +408,26 @@ final class Doctrine
         }
     }
     /**
-     * imprt
+     * importSchema
      * method for importing existing schema to Doctrine_Record classes
      *
      * @param string $directory
      * @param array $info
      * @return boolean
      */
-    public static function imprt($directory, array $databases = array())
+    public static function importSchema($directory, array $databases = array())
     {
-        return Doctrine_Manager::connection()->imprt->imprt($directory, $databases);
+        return Doctrine_Manager::connection()->import->importSchema($directory, $databases);
     }
     /**
-     * export
+     * exportSchema
      * method for exporting Doctrine_Record classes to a schema
      *
      * @param string $directory
      */
-    public static function export($directory = null)
+    public static function exportSchema($directory = null)
     {
-        return Doctrine_Manager::connection()->export->export($directory);
+        return Doctrine_Manager::connection()->export->exportSchema($directory);
     }
     /**
      * exportSql

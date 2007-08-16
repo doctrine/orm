@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<tables>
+    <table>
+        <name>user</name>
+        <class>User</class>
+        <declaration>
+            <field>
+                <name>id</name>
+                <type>integer</type>
+                <notnull>true</notnull>
+                <autoincrement>true</autoincrement>
+            </field>
+            <field>
+                <name>username</name>
+                <type>string</type>
+                <length>20</length>
+                <notnull>true</notnull>
+            </field>
+        </declaration>
+    </table>
+
+    <table>
+        <name>group</name>
+        <class>Group</class>
+        <declaration>
+            <field>
+                <name>id</name>
+                <type>integer</type>
+                <notnull>true</notnull>
+                <autoincrement>true</autoincrement>
+            </field>
+            <field>
+                <name>name</name>
+                <type>string</type>
+                <length>20</length>
+                <notnull>true</notnull>
+            </field>
+        </declaration>
+    </table>
+</tables>

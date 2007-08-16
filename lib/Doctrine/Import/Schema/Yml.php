@@ -39,26 +39,40 @@
  */
 class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
 {
+	/**
+	 * parse
+	 *
+	 * @param string $schema 
+	 * @return void
+	 */
+    public function parse($schema)
+    {
+        if (!is_readable($schema)) {
+            throw new Doctrine_Import_Exception('Could not read schema file '. $schema);
+        }
+
+		return array();
+    }
+    
     /**
-     * importSchema
+     * parseSchema
      *
-     * A method to import a Yml Schema and translate it into a property array. 
+     * A method to parse a Yml Schema and translate it into a property array. 
      * The function returns that property array.
      *
      * @param  string $schema   Path to the file containing the XML schema
      * @return array
      */
-    public function importSchema($schema)
-    {
-        if (!is_readable($schema)) {
-            throw new Doctrine_Import_Exception('Could not read schema file '. $schema);
-        }
-        
-        // Need to figure out best way to have yaml loading/dumping in Doctrine
-        // $yamlArr = YamlLoad($schema);
-      
+    public function parseSchema($schema)
+    { 
+        $array = $this->parse($schema);
+      	
+		$tables = array();
+		
+		// Not working yet
+		/*
         // Go through all tables...
-        foreach ($yamlArr['table'] as $table) {
+        foreach ($array['table'] as $table) {
             // Go through all columns... 
             foreach ($table['declaration']['field'] as $field) {
                 $colDesc = array(
@@ -79,6 +93,7 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
             
             $tables[(string) $table['name']] = $columns;
         }
+		*/
         
         return $tables;
     }

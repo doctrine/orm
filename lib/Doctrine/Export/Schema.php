@@ -36,6 +36,54 @@
  * @version     $Revision: 1838 $
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>
  */
-class Doctrine_Export_Schema
+abstract class Doctrine_Export_Schema
 {
+    /**
+     * build
+     * 
+     * Build the schema string to be dumped to file
+     *
+     * @param string $array 
+     * @return void
+     */
+    abstract function build($array);
+    
+    /**
+     * dump
+     * 
+     * Dump the array to the schema file
+     *
+     * @param string $array
+     * @param string $schema
+     * @return void
+     */
+    abstract function dump($array, $schema);
+    
+    /**
+     * buildSchema
+     * 
+     * Build schema array that can be dumped to file
+     *
+     * @param string $directory 
+     * @return void
+     */
+    public function buildSchema($directory)
+    {
+        // we need to figure out how we can build all the model information for the passed directory/directories
+        return array();
+    }
+    
+    /**
+     * exportSchema
+     *
+     * @param string $schema 
+     * @param string $directory 
+     * @return void
+     */
+    public function exportSchema($schema, $directory)
+    {
+        $array = $this->buildSchema($directory);
+        
+        $this->dump($arr, $schema);
+    }
 }

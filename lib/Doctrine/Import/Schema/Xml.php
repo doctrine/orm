@@ -39,16 +39,13 @@
  */
 class Doctrine_Import_Schema_Xml extends Doctrine_Import_Schema
 {
-    /**
-     * importSchema
-     *
-     * A method to import a XML Schema and translate it into a property array. 
-     * The function returns that property array.
-     *
-     * @param  string $schema   Path to the file containing the XML schema
-     * @return array
-     */
-    public function importSchema($schema)
+	/**
+	 * parse
+	 *
+	 * @param string $schema 
+	 * @return void
+	 */
+    public function parse($schema)
     {
         if (!is_readable($schema)) {
             throw new Doctrine_Import_Exception('Could not read schema file '. $schema);
@@ -58,29 +55,48 @@ class Doctrine_Import_Schema_Xml extends Doctrine_Import_Schema
             throw new Doctrine_Import_Exception('Schema file '. $schema . ' is empty');
         }
         
-        $xmlObj = simplexml_load_string($xmlString);
+        return simplexml_load_string($xmlString);
+    }
+    
+    /**
+     * parseSchema
+     *
+     * A method to parse a XML Schema and translate it into a property array. 
+     * The function returns that property array.
+     *
+     * @param  string $schema   Path to the file containing the XML schema
+     * @return array
+     */
+    public function parseSchema($schema)
+    {        
+        $xmlObj = $this->parse($schema);
         
         // Go through all tables...
         foreach ($xmlObj->table as $table) {
             // Go through all columns... 
-            foreach ($table->declaration->column as $column) {
+            foreach ($table->declaration->field as $field) {
                 $colDesc = array(
-                    'name'      => (string) $column->name,
-                    'type'      => (string) $column->type,
-                    'ptype'     => (string) $column->type,
-                    'length'    => (int) $column->length,
-                    'fixed'     => (int) $column->fixed,
-                    'unsigned'  => (bool) $column->unsigned,
-                    'primary'   => (bool) (isset($column->primary) && $column->primary),
-                    'default'   => (string) $column->default,
-                    'notnull'   => (bool) (isset($column->notnull) && $column->notnull),
-                    'autoinc'   => (bool) (isset($column->autoincrement) && $column->autoincrement),
+                    'name'      => (string) $field->name,
+                    'type'      => (string) $field->type,
+                    'ptype'     => (string) $field->type,
+                    'length'    => (int) $field->length,
+                    'fixed'     => (int) $field->fixed,
+                    'unsigned'  => (bool) $field->unsigned,
+                    'primary'   => (bool) (isset($field->primary) && $field->primary),
+                    'default'   => (string) $field->default,
+                    'notnull'   => (bool) (isset($field->notnull) && $field->notnull),
+                    'autoinc'   => (bool) (isset($field->autoincrement) && $field->autoincrement),
                 );
             
-                $columns[(string) $column->name] = $colDesc;
+                $columns[(string) $field->name] = $colDesc;
             }
             
-            $tables[(string) $table->name] = $columns;
+            $class = $table->class ? (string) $table->class:(string) $table->name;
+            
+            $tables[(string) $table->name]['name'] = (string) $table->name;
+            $tables[(string) $table->name]['class'] = (string) $class;
+            
+            $tables[(string) $table->name]['columns'] = $columns;
         }
         
         return $tables;

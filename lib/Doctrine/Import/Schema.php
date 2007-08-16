@@ -40,15 +40,27 @@
 abstract class Doctrine_Import_Schema
 {
     /**
-     * Import the schema and return it in an array
+     * parse
+     *
+     * Function to do the actual parsing of the file
+     *
+     * @param string $schema 
+     * @return void
+     * @author Jonathan H. Wage
+     */
+    
+    abstract function parse($schema);
+    
+    /**
+     * Parse the schema and return it in an array
      *
      * @param  string $schema
      * @access public
      */
-    abstract function importSchema($schema);
+    abstract function parseSchema($schema);
     
     /**
-     * import
+     * importSchema
      *
      * A method to import a Schema and translate it into a Doctrine_Record object
      *
@@ -57,16 +69,18 @@ abstract class Doctrine_Import_Schema
      *                              be written
      * @access public
      */
-    public function imprt($schema, $directory)
+    public function importSchema($schema, $directory)
     {
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
 
-        $arr = $this->importSchema($schema);
-       
-        foreach ($arr as $name => $columns) {
-            $options['className'] = $name;
-            $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$name.'.class.php';
+        $array = $this->parseSchema($schema);
+        
+        foreach ($array as $name => $properties) {
+            $options['className'] = $properties['class'];
+            $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['class'].'.class.php';
+            
+            $columns = $properties['columns'];
             
             $builder->buildRecord($options, $columns, array());
         }

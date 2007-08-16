@@ -88,7 +88,7 @@ class Doctrine_Export_Record_TestCase extends Doctrine_UnitTestCase
 
     public function testExportModelFromDirectory()
     {
-        Doctrine::export(dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files2');
+        Doctrine::exportSchema(dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files2');
 
         $this->assertEqual($this->adapter->pop(), 'COMMIT');
         $this->assertEqual($this->adapter->pop(), 'ALTER TABLE cms__category_languages ADD CONSTRAINT FOREIGN KEY (category_id) REFERENCES cms__category(id) ON DELETE CASCADE');

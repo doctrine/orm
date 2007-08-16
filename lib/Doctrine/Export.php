@@ -958,7 +958,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         return '';
     } 
     /**
-     * export
+     * exportSchema
      * method for exporting Doctrine_Record classes to a schema
      *
      * if the directory parameter is given this method first iterates 
@@ -972,7 +972,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * @param string $directory     optional directory parameter
      * @return void
      */
-    public function export($directory = null)
+    public function exportSchema($directory = null)
     {
         $sql = $this->exportSql($directory);
 

@@ -31,4 +31,32 @@
  */
 class Doctrine_Export_Schema_Yml extends Doctrine_Export_Schema
 {
+    /**
+     * build
+     * 
+     * Build the schema yml string to be dumped to file
+     *
+     * @param string $array 
+     * @return void
+     */
+    public function build($array)
+    {
+        return var_dump($array);
+    }
+    
+    /**
+     * dump
+     * 
+     * Dump the array to the schema file
+     *
+     * @param string $arr 
+     * @param string $schema
+     * @return void
+     */
+    public function dump($arr, $schema)
+    {
+        $yml = $this->build($array);
+        
+        file_put_contents($schema, $yml);
+    }
 }

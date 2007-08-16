@@ -326,6 +326,15 @@ $test->addTestCase(new Doctrine_Query_Cache_TestCase());
 $test->addTestCase(new Doctrine_Cache_Apc_TestCase());
 
 $test->addTestCase(new Doctrine_Query_SelectExpression_TestCase());
+
+$test->addTestCase(new Doctrine_Import_Schema_Yml_TestCase());
+
+$test->addTestCase(new Doctrine_Import_Schema_Xml_TestCase());
+
+$test->addTestCase(new Doctrine_Export_Schema_Yml_TestCase());
+
+$test->addTestCase(new Doctrine_Export_Schema_Xml_TestCase());
+
                                                         /**
 $test->addTestCase(new Doctrine_Cache_Memcache_TestCase());
 
