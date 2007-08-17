@@ -1478,7 +1478,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     }
     public function __call($method, $args) 
     {
-        foreach ($this->_table->getTemplates as $template) {
+        foreach ($this->_table->getTemplates() as $template) {
             if (method_exists($template, $method)) {
                 return call_user_func_array(array($template, $method), $args);
             }
