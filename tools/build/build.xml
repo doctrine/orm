@@ -91,7 +91,7 @@
 		<!-- <exec command="make pdf" dir="${build.src.dir}/docs/latex"/> -->		
 		
 		<mkdir dir="${build.dest.dir}/docs/API/phpdoc" />
-		<phpdoc title="Doctrine Documentation" destdir="${build.dest.dir}/docs/API/phpdoc/html" 
+		<phpdocext title="Doctrine Documentation" destdir="${build.dest.dir}/docs/API/phpdoc/html" 
                         sourcepath="${project.base.dir}/lib" output="HTML:Smarty:PHP"/>
 	</target>
 	
