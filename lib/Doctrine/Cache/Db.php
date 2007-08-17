@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Cache_Sqlite
+ * Doctrine_Cache_Db
  *
  * @package     Doctrine
  * @subpackage  Doctrine_Cache
@@ -45,6 +45,13 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
 
     	    throw new Doctrine_Cache_Exception('Connection option not set.');
     	}
+    	
+    	if ( ! isset($options['tableName']) ||
+    	     ! is_string($options['tableName'])) {
+    	     
+    	     throw new Doctrine_Cache_Exception('Table name option not set.');
+    	}
+    	
 
         $this->_options = $options;
     }
@@ -69,15 +76,20 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
      */
     public function fetch($id, $testCacheValidity = true)
     {
-        $sql    = 'SELECT data, expires FROM cache WHERE id = ?';
+        $sql = 'SELECT data, expire FROM ' . $this->_options['tableName']
+             . ' WHERE id = ?';
 
         if ($testCacheValidity) {
             $sql .= ' AND (expire=0 OR expire > ' . time() . ')';
         }
 
         $result = $this->getConnection()->fetchAssoc($sql, array($id));
-
-        return unserialize($result['data']);
+        
+        if ( ! isset($result[0])) {
+            return false;
+        }
+        
+        return unserialize($result[0]['data']);
     }
     /**
      * Test if a cache is available or not (for the given id)
@@ -87,7 +99,8 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
      */
     public function contains($id) 
     {
-        $sql = 'SELECT expires FROM cache WHERE id = ? AND (expire=0 OR expire > ' . time() . ')';
+        $sql = 'SELECT expire FROM ' . $this->_options['tableName']
+             . ' WHERE id = ? AND (expire=0 OR expire > ' . time() . ')';
 
         return $this->getConnection()->fetchOne($sql, array($id));
     }
@@ -103,9 +116,16 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
      */
     public function save($data, $id, $lifeTime = false)
     {
-        $sql = 'INSERT INTO cache (id, data, expires) VALUES (?, ?, ?)';
-
-        $params = array($id, serialize($data), (time() + $lifeTime));
+        $sql = 'INSERT INTO ' . $this->_options['tableName']
+             . ' (id, data, expire) VALUES (?, ?, ?)';
+        
+        if ($lifeTime) {
+            $expire = time() + $lifeTime;
+        } else {
+            $expire = 0;
+        }
+        
+        $params = array($id, serialize($data), $expire);
 
         return (bool) $this->getConnection()->exec($sql, $params);
     }
@@ -117,10 +137,23 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
      */
     public function delete($id) 
     {
-        $sql = 'DELETE FROM cache WHERE id = ?';
+        $sql = 'DELETE FROM ' . $this->_options['tableName'] . ' WHERE id = ?';
 
         return (bool) $this->getConnection()->exec($sql, array($id));
     }
+    
+    /**
+     * Removes all cache records
+     *
+     * $return bool true on success, false on failure
+     */
+    public function deleteAll()
+    {
+        $sql = 'DELETE FROM ' . $this->_options['tableName'];
+        
+        return (bool) $this->getConnection()->exec($sql);
+    }
+    
     /**
      * count
      * returns the number of cached elements
@@ -129,6 +162,35 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
      */
     public function count()
     {
-        return (int) $this->getConnection()->fetchOne('SELECT COUNT(*) FROM cache');
+        $sql = 'SELECT COUNT(*) FROM ' . $this->_options['tableName'];
+        
+        return (int) $this->getConnection()->fetchOne($sql);
+    }
+    
+    /**
+     * Creates the cache table.
+     */
+    public function createTable()
+    {
+        $name = $this->_options['tableName'];
+        
+        $fields = array(
+            'id' => array(
+                'type'   => 'string',
+                'length' => 255
+            ),
+            'data' => array(
+                'type'    => 'blob'
+            ),
+            'expire' => array(
+                'type'    => 'timestamp'
+            )
+        );
+        
+        $options = array(
+            'primary' => array('id')
+        );
+        
+        $this->getConnection()->export->createTable($name, $fields, $options);
     }
 }
