@@ -123,7 +123,7 @@ $record->getNode()->moveAsLastChildOf($someOtherRecord);
 ...
 </code>
 
-There are 4 move methods: moveAsLastChildOf($other), moveAsFirstChildOf($other), moveAsPreviousSiblingOf($other) and moveAsNextSiblingOf($other). The method names are self-explanatory.
+There are 4 move methods: moveAsLastChildOf($other), moveAsFirstChildOf($other), moveAsPrevSiblingOf($other) and moveAsNextSiblingOf($other). The method names are self-explanatory.
 
 ++++ Examining a node
 
