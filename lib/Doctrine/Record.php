@@ -188,8 +188,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
             $repository = $this->_table->getRepository();
             $repository->add($this);
+            
+            $this->construct();
         }
-        $this->construct();
+        
     }
     /**
      * _index
