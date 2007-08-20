@@ -318,12 +318,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */     
     public function getNumberChildren()
     {
-        $count = 0;
-        $children = $this->getChildren();
-        while ($children->next()) {
-            $count++;
-        }
-        return $count; 
+        return count($this->getChildren());
     }
 
     /**
