@@ -65,7 +65,7 @@ class Doctrine_Hydrate_Array
         foreach ($data as $key => $val) {
             $found = true;
             foreach ($element as $k => $e) {
-                if ($val[$k] !== $e) {
+                if (isset($val[$k]) && $val[$k] !== $e) {
                     $found = false;
                 }
             }
