@@ -1043,7 +1043,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
             // check if class is an instance of Doctrine_Record and not abstract
             // class must have method setTableDefinition (to avoid non-Record subclasses like symfony's sfDoctrineRecord)
-            if ($class->isSubclassOf($parent) && ! $class->isAbstract() && method_exists($class->getName(), 'setTableDefinition')) {
+            if ($class->isSubclassOf($parent) && ! $class->isAbstract() && $class->hasMethod('setTableDefinition')
+                && $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() == $class->getName()) {
                 $record = new $name();
                 $table  = $record->getTable();
                 $data = $table->getExportableFormat();
