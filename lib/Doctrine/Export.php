@@ -228,8 +228,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             }
         }
 
-        $name  = $this->conn->quoteIdentifier($name, true);
-        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields;
+        $query = 'CREATE TABLE ' . $this->conn->quoteIdentifier($name, true) . ' (' . $queryFields;
         
         $check = $this->getCheckDeclaration($fields);
         
