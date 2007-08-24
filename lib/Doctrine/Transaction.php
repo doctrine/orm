@@ -129,9 +129,17 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      */
     public function addInvalid(Doctrine_Record $record)
     {
-        if (in_array($record, $this->invalid)) {
-            return false;
+        /**
+         * for some weird reason in_array cannot be used here (php bug ?)
+         *
+         * if used it results in fatal error : [ nesting level too deep ]
+         */
+        foreach ($this->invalid as $val) {
+            if ($val === $record) {
+                return false;
+            }
         }
+
         $this->invalid[] = $record;
         return true;
     }
