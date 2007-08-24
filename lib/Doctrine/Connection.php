@@ -469,10 +469,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             return false;
         }
         // column names are specified as array keys
-        $cols = array();
-        foreach ($values as $key => $value) {
-            $cols[] = $this->quoteIdentifier($key);
-        }
+        $cols = array_keys($values);
 
         // build the statement
         $query = 'INSERT INTO ' . $this->quoteIdentifier($table) 
