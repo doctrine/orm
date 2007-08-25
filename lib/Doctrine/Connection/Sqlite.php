@@ -84,10 +84,15 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
     public function connect() 
     {
         parent::connect();
-        
-        $this->dbh->sqliteCreateFunction('md5',    array('Doctrine_Expression_Sqlite', 'md5Impl'), 1);
+
         $this->dbh->sqliteCreateFunction('mod',    array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
         $this->dbh->sqliteCreateFunction('concat', array('Doctrine_Expression_Sqlite', 'concatImpl'));
+        $this->dbh->sqliteCreateFunction('md5', 'md5', 1);
+        $this->dbh->sqliteCreateFunction('sha1', 'sha1', 1);
+        $this->dbh->sqliteCreateFunction('locate', 'strpos', 2);
+        $this->dbh->sqliteCreateFunction('rtrim', 'rtrim', 1);
+        $this->dbh->sqliteCreateFunction('ltrim', 'ltrim', 1);
+        $this->dbh->sqliteCreateFunction('trim', 'trim', 1);
         $this->dbh->sqliteCreateFunction('now', 'time', 0);
     }
     /**
