@@ -32,7 +32,7 @@ $conn = Doctrine_Manager::connection('mysql://root:dc34@localhost/test');
 
 // import method takes one parameter: the import directory (the directory where
 // the generated record files will be put in
-$conn->import->import('myrecords');
+$conn->import->importSchema('myrecords');
 </code>
 
 That's it! Now there should be a file called File.php in your myrecords directory. The file should look like:

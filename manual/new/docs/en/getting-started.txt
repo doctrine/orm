@@ -66,7 +66,7 @@ spl_autoload_register(array('Doctrine', 'autoload'));
 $manager = Doctrine_Manager::getInstance();
 $conn    = $manager->openConnection('pgsql://user:pass@localhost/test');
 
-Doctrine::export('models');
+Doctrine::exportSchema('models');
 </code>
 
 This would execute the following queries on mysql.
@@ -99,7 +99,7 @@ $queries = Doctrine::exportSql('models');
 print_r($queries);
 </code>
 
-Notice that the methods Doctrine::export() and Doctrine::exportSql() are just short cuts for Doctrine_Export::export() and Doctrine_Export::exportSql(). So the following code is equivalent with the previous example:
+Note that the methods Doctrine::exportSchema() and Doctrine::exportSql() are just short cuts for Doctrine_Export::exportSchema() and Doctrine_Export::exportSql(). So the following code is equivalent with the previous example:
 <code type="php">
 require_once('path-to-doctrine/lib/Doctrine.php');
 
