@@ -468,25 +468,26 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         if (empty($values)) {
             return false;
         }
+
         // column names are specified as array keys
-        $cols = array_keys($values);
+        $cols = array();
+        // the query VALUES will contain either expresions (eg 'NOW()') or ?
+        $a = array();
+        foreach ($values as $k => $value) {
+            $cols[] = $this->quoteIdentifier($k);
+            if ($value instanceof Doctrine_Expression) {
+                $a[] = $value->getSql();
+                unset($values[$k]);
+            } else {
+                $a[] = '?';
+            }
+        }
 
         // build the statement
         $query = 'INSERT INTO ' . $this->quoteIdentifier($table) 
                . ' (' . implode(', ', $cols) . ') '
                . 'VALUES (';
-        
-        $a = array();
-        foreach ($values as $k => $value) {
-            if ($value instanceof Doctrine_Expression) {
-                $value = $value->getSql();
-                unset($values[$k]);
-            } else {
-                $value = '?';      	
-            }
-            $a[] = $value;
 
-        }
         $query .= implode(', ', $a) . ')';
         // prepare and execute the statement
 
