@@ -92,6 +92,34 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
      * @param string|array(string) strings that will be concatinated.
      * @return string
      */
+
+
+    /**
+     * PostgreSQLs AGE(<timestamp1> [, <timestamp2>]) function.
+     *
+     * @param string $timestamp1 timestamp to subtract from NOW()
+     * @param string $timestamp2 optional; if given: subtract arguments
+     * @return string
+     */
+    public function age($timestamp1, $timestamp2 = null) {
+       if( $timestamp2 == null ) {
+           return 'AGE(' . $timestamp1 . ')';
+       }
+       return 'AGE(' . $timestamp1 . ', ' . $timestamp2 . ')';
+    }
+
+    /**
+     * PostgreSQLs DATE_PART( <text>, <time> ) function.
+     *
+     * @param string $text what to extract
+     * @param string $time timestamp or interval to extract from
+     * @return string
+     */
+    public function date_part($text, $time) {
+       return 'DATE_PART(' . $text . ', ' . $time . ')';
+    }
+
+
     public function concat()
     {
         $args = func_get_args();
