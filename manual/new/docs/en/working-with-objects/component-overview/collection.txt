@@ -17,12 +17,12 @@ $users = new Doctrine_Collection($conn->getTable('User'));
 $users = new Doctrine_Collection('User');
 
 // adding some data
-$coll[0]->name = 'Arnold';
+$users[0]->name = 'Arnold';
 
-$coll[1]->name = 'Somebody';
+$users[1]->name = 'Somebody';
 
 // finally save it!
-$coll->save();
+$users->save();
 </code>
 
 
