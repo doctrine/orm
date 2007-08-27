@@ -283,9 +283,9 @@ END;
      *
      * @return void
      */
-    public function createTableSql($name, array $fields, array $options = array())
+    public function createTableSql($name, array $fields, array $options = array(), $exportForeignKeySql = true)
     {
-        $sql = parent::createTableSql($name, $fields, $options);
+        $sql = parent::createTableSql($name, $fields, $options, $exportForeignKeySql);
 
         foreach ($fields as $fieldName => $field) {
             if (isset($field['autoincrement']) && $field['autoincrement'] ||
