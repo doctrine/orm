@@ -53,7 +53,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
 
         $users->save();
     }
-    /**
+
     public function testRecordSupportsValueMapping()
     {
         $record = new User();
@@ -124,7 +124,7 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users[0]->count, 2);
         $this->assertEqual($users[1]->count, 2);
     }
-    */
+
     public function testAggregateValueMappingSupportsLeftJoins() 
     {
         $q = new Doctrine_Query();
