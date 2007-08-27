@@ -205,7 +205,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *
      * @return string
      */
-    public function createTableSql($name, array $fields, array $options = array())
+    public function createTableSql($name, array $fields, array $options = array(), $exportForeignKeySql = true)
     {
         if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');
@@ -242,7 +242,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         $sql[] = $query;
 
-        if (isset($options['foreignKeys'])) {
+        if (isset($options['foreignKeys']) && $exportForeignKeySql) {
 
             foreach ((array) $options['foreignKeys'] as $k => $definition) {
                 if (is_array($definition)) {
@@ -1047,8 +1047,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 $record = new $name();
                 $table  = $record->getTable();
                 $data = $table->getExportableFormat();
-
-                $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
+                $exportForeignKeySql = is_bool($table->getOption('export_foreign_key_sql')) ? $table->getOption('export_foreign_key_sql'):true;
+                
+                $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options'], $exportForeignKeySql);
 
                 if (is_array($query)) {
                     $sql = array_merge($sql, $query);

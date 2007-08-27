@@ -295,16 +295,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $this->repository = new Doctrine_Table_Repository($this);
     }
     /**
-     * getTemplates
-     * returns all templates attached to this table
-     *
-     * @return array    an array containing all templates
-     */
-    public function getTemplates()
-    {
-        return $this->_templates;	
-    }
-    /**
      * export
      * exports this table to database based on column and option definitions
      *

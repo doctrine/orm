@@ -155,7 +155,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      *
      * @return void
      */
-    public function createTableSql($name, array $fields, array $options = array())
+    public function createTableSql($name, array $fields, array $options = array(), $exportForeignKeySql = true)
     {
         if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');

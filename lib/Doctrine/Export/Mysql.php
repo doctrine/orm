@@ -87,7 +87,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      *
      * @return void
      */
-    public function createTableSql($name, array $fields, array $options = array()) 
+    public function createTableSql($name, array $fields, array $options = array(), $exportForeignKeySql = true) 
     {
         if ( ! $name)
             throw new Doctrine_Export_Exception('no valid table name specified');
@@ -169,7 +169,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
         $sql[] = $query;
 
-        if (isset($options['foreignKeys'])) {
+        if (isset($options['foreignKeys']) && $exportForeignKeySql) {
 
             foreach ((array) $options['foreignKeys'] as $k => $definition) {
                 if (is_array($definition)) {

@@ -148,7 +148,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function option($name, $value = null)
     {
-        if ($value == null) {
+        if ($value === null) {
             if (is_array($name)) {
                 foreach ($name as $k => $v) {
                     $this->_table->setOption($k, $v);
