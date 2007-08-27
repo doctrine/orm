@@ -28,3 +28,17 @@ class MyCustomOptionRecord extends Doctrine_Record
     }
 }
 </code>
+
+Doctrine offers the ability to turn off foreign key constraints for specific Models.
+
+<code type="php">
+class MyCustomOptionRecord extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string');
+
+        $this->option('export_foreign_key_sql', false);
+    }
+}
+</code>
