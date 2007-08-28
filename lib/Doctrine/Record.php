@@ -1111,9 +1111,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * toArray
      * returns the record as an array
      *
+     * @param boolean $deep - Return also the relations
      * @return array
      */
-    public function toArray()
+    public function toArray($deep = false)
     {
         $a = array();
 
@@ -1126,6 +1127,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         if ($this->_table->getIdentifierType() ==  Doctrine::IDENTIFIER_AUTOINC) {
             $i      = $this->_table->getIdentifier();
             $a[$i]  = $this->getIncremented();
+        }
+        if ($deep) {
+            foreach ($this->_references as $key => $relation) {
+                $a[$key] = $relation->toArray($deep);
+            }
         }
         return array_merge($a, $this->_values);
     }

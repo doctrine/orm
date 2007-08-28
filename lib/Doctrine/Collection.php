@@ -580,9 +580,25 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         return $this;
     }
-    public function toArray()
+    /**
+     * toArray
+     * Mimics the result of a $query->execute(array(), Doctrine::FETCH_ARRAY);
+     *
+     * @param boolean $deep
+     */
+    public function toArray($deep = false)
     {
-        return $this->data;	
+        if ($deep) {
+            $data = array();
+            foreach ($this->data as $key => $record) {
+                $data[$key] = $record->toArray($deep);
+            }
+            return $data;
+        } else {
+            // this is preserved for backwards compatibility
+            // but could be replaced with above code
+            return $this->data;
+        }
     }
     public function getDeleteDiff()
     {
