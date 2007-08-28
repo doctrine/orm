@@ -94,4 +94,9 @@ class Doctrine_Expression
 
         return $this->_expression;
     }
+
+    public function __toString()
+    {
+        return $this->getSql();
+    }
 }
