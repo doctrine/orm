@@ -203,7 +203,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
 
         if (isset($changes['add']) && is_array($changes['add'])) {
             foreach ($changes['add'] as $fieldName => $field) {
-                $query = 'ADD ' . $this->conn->getDeclaration($field['type'], $fieldName, $field);
+                $query = 'ADD ' . $this->getDeclaration($fieldName, $field);
                 $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
             }
         }
