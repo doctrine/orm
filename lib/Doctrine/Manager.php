@@ -291,6 +291,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 if (isset($parts['host']) && $parts['host'] == ':memory') {
                     $parts['database'] = ':memory:';
                     $parts['dsn']      = 'sqlite::memory:';
+                } else {
+                    $parts['database'] = $parts['path'];
+                    $parts['dsn'] = $parts['scheme'] . ':' . $parts['path'];     	
                 }
 
                 break;
