@@ -38,7 +38,7 @@ class MyCustomOptionRecord extends Doctrine_Record
     {
         $this->hasColumn('name', 'string');
 
-        $this->option('export_foreign_key_sql', false);
+        $this->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL ^ Doctrine::EXPORT_CONSTRAINTS);
     }
 }
 </code>
