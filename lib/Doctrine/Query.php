@@ -1534,8 +1534,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     
     public function copy(Doctrine_Query $query = null)
     {
-        if (!$query) {
-          $query = $this;
+        if ( ! $query) {
+            $query = $this;
         }
         
         $new = new Doctrine_Query();
@@ -1551,8 +1551,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * PHP's current GC to reclaim the memory.
      * This method can therefore be used to reduce memory usage when creating a lot
      * of query objects during a request.
+     *
+     * @return Doctrine_Query   this object
      */
-    public function free() {
+    public function free() 
+    {
         $this->reset();
         $this->_parsers = array();
         $this->_dqlParts = array();
