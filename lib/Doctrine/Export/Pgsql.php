@@ -291,7 +291,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
      * @param array $options
      * @return unknown
      */
-    public function createTableSql($name, array $fields, array $options = array(), $exportForeignKeySql = true)
+    public function createTableSql($name, array $fields, array $options = array())
     {
         if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');
@@ -318,7 +318,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
             }
         }
         
-        if (isset($options['foreignKeys']) && $exportForeignKeySql) {
+        if (isset($options['foreignKeys'])) {
 
             foreach ((array) $options['foreignKeys'] as $k => $definition) {
                 if (is_array($definition)) {
