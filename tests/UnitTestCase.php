@@ -132,6 +132,7 @@ class Doctrine_UnitTestCase extends UnitTestCase
         } catch(Doctrine_Manager_Exception $e) {
             if($this->driverName == 'main') {
                 $this->dbh = new PDO('sqlite::memory:');
+                $this->dbh->sqliteCreateFunction('trim', 'trim', 1);
             } else {
                 $this->dbh = $this->adapter = new Doctrine_Adapter_Mock($this->driverName);
             }
