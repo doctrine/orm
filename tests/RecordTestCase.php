@@ -803,7 +803,11 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $user->Group[0] = $record;
 
         $record = $gf->find(3);
-        $user->Group[1] = $record;
+        if ($record === false) {
+            $this->fail("Group record with id 3 couldn't be retrived");
+        } else {
+            $user->Group[1] = $record;
+        }
 
 
         $user->save();
