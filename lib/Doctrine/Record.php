@@ -1484,6 +1484,19 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         return $this;
     }
+    /**
+     * __call
+     * this method is a magic method that is being used for method overloading
+     *
+     * the function of this method is to try to find given method from the templates
+     * this record is using and if it finds given method it will execute it
+     *
+     * So, in sense, this method replicates the usage of mixins (as seen in some programming languages)
+     *
+     * @param string $method        name of the method
+     * @param array $args           method arguments
+     * @return mixed                the return value of the given method
+     */
     public function __call($method, $args) 
     {
         foreach ($this->_table->getTemplates() as $template) {
