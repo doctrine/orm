@@ -1544,4 +1544,18 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
       
         return $new;
     }
+    
+    /**
+     * Frees the resources used by the query object. It especially breaks a 
+     * cyclic reference between the query object and it's parsers. This enables
+     * PHP's current GC to reclaim the memory.
+     * This method can therefore be used to reduce memory usage when creating a lot
+     * of query objects during a request.
+     */
+    public function free() {
+        $this->reset();
+        $this->_parsers = array();
+        $this->_dqlParts = array();
+        $this->_enumParams = array();
+    }
 }
