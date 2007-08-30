@@ -174,7 +174,7 @@ class Group extends Doctrine_Record
     }
 }
 
-class GroupUser extends Doctrine_Record 
+class GroupUser extends Doctrine_Record
 {
     public function setTableDefinition() 
     {
@@ -299,6 +299,31 @@ class Group extends Entity
 
 
 +++ One table, one class
+
+One-table-one-class inheritance is the only inheritance type that allows additional fields for inherited classes. As shown in the example above adding additional columns is very easy:
+
+<code type="php">
+class TextItem extends Doctrine_Record
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('topic', 'string', 100);
+    }
+}
+
+class Comment extends TextItem
+{
+    public function setTableDefinition() 
+    {
+        parent::setTableDefinition();    
+
+        $this->hasColumn('content', 'string', 300);
+    }
+}
+</code>
+
+
+In one-table-one-class inheritance you don't necessarily have to define additional columns, but in order to make Doctrine create separate tables for each class you'll have to make iterative setTableDefinition() calls. 
 
 In the following example we have three database tables called {{entity}}, {{user}} and {{group}}. Users and groups are both entities. The only thing we have to do is write 3 classes ({{Entity}}, {{Group}} and {{User}}) and make iterative {{setTableDefinition}} method calls.
 
