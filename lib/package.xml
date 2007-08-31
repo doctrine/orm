@@ -3,7 +3,7 @@
  <name>Doctrine</name>
  <channel>pear.phpdoctrine.net</channel>
  <summary>PHP5 Database ORM</summary>
- <description>-</description>
+ <description>Doctrine is a feature-rich, fully optimizable ORM framework for PHP, combining an easy ActiveRecord setup and ultra-high performance.</description>
  <lead>
   <name>Konsta Vesterinen</name>
   <email>kvesteri@cc.hut.fi</email>
