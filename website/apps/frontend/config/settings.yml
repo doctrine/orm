@@ -1,0 +1,103 @@
+prod:
+  .settings:
+    no_script_name:           on
+
+dev:
+  .settings:
+    # E_ALL | E_STRICT = 4095
+    error_reporting:        4095
+    web_debug:              on
+    cache:                  off
+    no_script_name:         off
+    etag:                   off
+
+test:
+  .settings:
+    # E_ALL | E_STRICT & ~E_NOTICE = 2047
+    error_reporting:        2047
+    cache:                  off
+    web_debug:              off
+    no_script_name:         off
+    etag:                   off
+
+#all:
+#  .actions:
+#    default_module:         default   # Default module and action to be called when
+#    default_action:         index     # A routing rule doesn't set it
+#
+#    error_404_module:       default   # To be called when a 404 error is raised
+#    error_404_action:       error404  # Or when the requested URL doesn't match any route
+#
+#    login_module:           default   # To be called when a non-authenticated user
+#    login_action:           login     # Tries to access a secure page
+#
+#    secure_module:          default   # To be called when a user doesn't have
+#    secure_action:          secure    # The credentials required for an action
+#
+#    module_disabled_module: default   # To be called when a user requests 
+#    module_disabled_action: disabled  # A module disabled in the module.yml
+#
+#    unavailable_module:     default   # To be called when a user requests a page
+#    unavailable_action:  unavailable  # From an application disabled via the available setting below
+#
+#  .settings:
+#    available:              on        # Enable the whole application. Switch to off to redirect all requests to the unavailable module and action.
+#
+#    # Optional features. Deactivating unused features boots performance a bit.
+#    use_database:           on        # Enable database manager. Set to off if you don't use a database.
+#    use_security:           on        # Enable security features (login and credentials). Set to off for public applications.
+#    use_flash:              on        # Enable flash parameter feature. Set to off if you never use the set_flash() method in actions.
+#    i18n:                   off       # Enable interface translation. Set to off if your application should not be translated.
+#    check_symfony_version:  off       # Enable check of symfony version for every request. Set to on to have symfony clear the cache automatically when the framework is upgraded. Set to off if you always clear the cache after an upgrade.
+#    use_process_cache:      on        # Enable symfony optimizations based on PHP accelerators. Set to off for tests or when you have enabled a PHP accelerator in your server but don't want symfony to use it internally.
+#    compressed:             off       # Enable PHP response compression. Set to on to compress the outgoing HTML via the PHP handler.
+#    check_lock:             off       # Enable the application lock system triggered by the clear-cache and disable tasks. Set to on to have all requests to disabled applications redirected to the $sf_symfony_data_dir/web/arrors/unavailable.php page.
+#
+#    # Output escaping settings
+#    escaping_strategy:      bc        # Determines how variables are made available to templates. Accepted values: bc, both, on, off. The value off deactivates escaping completely and gives a slight boost.
+#    escaping_method:   ESC_ENTITIES   # Function or helper used for escaping. Accepted values: ESC_RAW, ESC_ENTITIES, ESC_JS, ESC_JS_NO_ENTITIES.
+#
+#    # Routing settings
+#    suffix:                 .         # Default suffix for generated URLs. If set to a single dot (.), no suffix is added. Possible values: .html, .php, and so on.
+#    no_script_name:         off       # Enable the front controller name in generated URLs
+#
+#    # Validation settings, used for error generation by the Validation helper
+#    validation_error_prefix:    ' &darr;&nbsp;'
+#    validation_error_suffix:    ' &nbsp;&darr;'
+#    validation_error_class:     form_error
+#    validation_error_id_prefix: error_for_
+#
+#    # Cache settings
+#    cache:                  off       # Enable the template cache
+#    etag:                   on        # Enable etag handling
+#
+#    # Logging and debugging settings
+#    web_debug:              off       # Enable the web debug toolbar
+#    error_reporting:        341       # Determines which events are logged. The default value is E_PARSE | E_COMPILE_ERROR | E_ERROR | E_CORE_ERROR | E_USER_ERROR = 341
+#
+#    # Assets paths
+#    rich_text_js_dir:       js/tiny_mce
+#    prototype_web_dir:      /sf/prototype
+#    admin_web_dir:          /sf/sf_admin
+#    web_debug_web_dir:      /sf/sf_web_debug
+#
+#    # Helpers included in all templates by default
+#    standard_helpers:       [Partial, Cache, Form]
+#
+#    # Activated modules from plugins or from the symfony core
+#    enabled_modules:        [default]
+#
+#    # Charset used for the response
+#    charset:                utf-8
+#
+#    # Miscellaneous
+#    strip_comments:         on         # Remove comments in core framework classes as defined in the core_compile.yml
+#    autoloading_functions:  ~          # Functions called when a class is requested and this it is not already loaded. Expects an array of callables. Used by the framework bridges.
+#    timeout:                1800       # Session timeout, in seconds
+#    max_forwards:           5
+#    path_info_array:        SERVER
+#    path_info_key:          PATH_INFO
+#    url_format:             PATH
+#
+#    # ORM
+#    orm:                    propel

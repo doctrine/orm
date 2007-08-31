@@ -1,0 +1,131 @@
+body
+{
+  position: absolute;
+  height: 100%;
+}
+
+#wrapper
+{
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+#wrapper #header
+{
+  height: 75px;
+  background: #483737 url(../images/header_bg.png) repeat-x top left;
+  border-bottom: 1px solid #333333;
+}
+
+#wrapper #header h1
+{
+  color: #FFFFFF;
+  font-size: 26px;
+  font-weight: bold;
+  margin-left: 25px;
+  padding-top: 10px;
+}
+
+#wrapper #header h1 a
+{
+  color: white;
+}
+
+#wrapper #header h2
+{
+  color: #908A8A;
+  margin-left: 25px;
+  font-size: 14px;
+}
+
+#wrapper #menu
+{
+  position: absolute;
+  top: 50px;
+  right: 5px;
+}
+
+#wrapper #menu ul
+{
+  list-style: none;
+}
+
+#wrapper #menu ul li
+{
+  font-size: 14px;
+  font-weight: bold;
+  float: left;
+  border-right: 2px solid #D75C0C;
+  padding-right: 6px;
+  padding-left: 6px;
+}
+
+#wrapper #menu ul li#last
+{
+  border: 0px;
+}
+
+#wrapper #menu ul li a
+{
+  color: white;
+}
+
+#wrapper #left
+{
+  float: left;
+  width: 10px;
+  height: 100%;
+  background: #AA0000;
+  background: #AA0000 url(../images/right_bg.png) repeat-x top left;
+  border-right: 1px solid #333333;
+}
+
+#wrapper #right
+{
+  padding: 15px;
+  float: right;
+  width: 225px;
+  min-height: 300px;
+  background: #AA0000 url(../images/right_bg.png) repeat-x top left;
+  color: #FFFFFF;
+  border-left: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+  margin-left: 20px;
+  font-size: 12px;
+}
+
+#wrapper #right a
+{
+  color: #FFFFFF;
+}
+
+#wrapper #right ul
+{
+  list-style: square;
+  margin-left: 5px;
+}
+
+#wrapper #content
+{
+  background: #FFFFFF url(../images/content_bg.png) repeat-x top left;
+  min-height: 300px;
+  margin-left: 10px;
+  padding: 15px;
+}
+
+#wrapper #footer
+{
+  background: #483737;
+  height: 30px;
+  clear: both;
+}
+
+#wrapper #footer h1
+{
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 8px;
+}

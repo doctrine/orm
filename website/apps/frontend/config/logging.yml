@@ -1,0 +1,22 @@
+prod:
+  enabled: off
+  level:   err
+  rotate:  on
+  purge:   off
+
+#all:
+#  enabled: on
+#  level:   debug
+#  rotate:  off
+#  period:  7
+#  history: 10
+#  purge:   on
+#  loggers:
+#    sf_web_debug:
+#      class: sfWebDebugLogger
+#      param:
+#        condition: %SF_WEB_DEBUG%
+#    sf_file_debug:
+#      class: sfFileLogger
+#      param:
+#        file: %SF_LOG_DIR%/%SF_APP%_%SF_ENVIRONMENT%.log

@@ -1,0 +1,10 @@
+autoload:
+#  Doctrine:
+#    name: Doctrine classes
+#    ext: .php
+#    path: %SF_PLUGINS_DIR%/sfDoctrine/doctrine
+#    recursive: on
+  doctrine_model_classes:
+    name: Doctrine model classes
+    ext: .class.php
+    path:    %SF_LIB_DIR%/model/doctrine

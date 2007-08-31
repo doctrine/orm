@@ -1,0 +1,39 @@
+# default rules
+homepage:
+  url:   /
+  param: { module: main, action: index }
+
+api_documentation_page:
+  url:   /documentation/api/:q
+  param: { module: api_documentation, action: index }
+
+about:
+  url:   /about
+  param: { module: main, action: about }
+
+download:
+  url:   /download
+  param: { module: main, action: download }
+
+manual:
+  url:   /documentation/manual
+  param: { module: manual, action: index }
+
+api_documentation:
+  url:   /documentation/api
+  param: { module: api_documentation, action: index }
+
+trac:
+  url:   /trac
+  param: { module: main, action: trac }
+
+default_symfony:
+  url:   /symfony/:action/*
+  param: { module: default }
+
+default_index:
+  url:   /:module
+  param: { action: index }
+
+default:
+  url:   /:module/:action/*

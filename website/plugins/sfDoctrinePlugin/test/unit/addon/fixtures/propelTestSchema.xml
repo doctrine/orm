@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="doctrineTestSchema" defaultIdMethod="native">
+	<table name="testTable" phpName="TestTable">
+		<column name="name" type="longvarchar" />
+		<column name="description" type="longvarchar" />
+		<column name="id" type="integer" primaryKey="true" autoIncrement="true" />
+		<foreign-key foreignTable="dummy">
+		  <reference foreign="id" local="dummy_id"/>
+		</foreign-key>
+	</table>
+	<table name="dummy" phpName="DummyPHP">
+	 <column name="foo" type="integer"/>
+  </table>
+</database>

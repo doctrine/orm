@@ -1,0 +1,202 @@
+#manual h1, #manual h2, #manual h3, #manual h4, #manual h5, #manual h6 {
+    font-family: "Nimbus Sans L", "Arial", sans-serif;
+    border-bottom: 1px solid #aaaaaa;
+    line-height: 1.5em;
+    padding-bottom: 0.1em;
+}
+
+#manual h1 {
+    font-size: 2em;
+    margin-bottom: 1em;
+    margin-top: 0;
+}
+
+#manual h2 {
+    font-size: 1.5em;
+    text-align: left;
+    margin: 0.67em 0;
+}
+
+#manual h3 {
+    font-size: 1.17em;
+    margin: 1em 0;
+}
+
+#manual h4 {
+    font-size: 1em;
+    margin: 1.33em 0;
+}
+
+#manual .chapter + #manual .chapter {
+    margin-top: 3em;
+}
+
+#manual p, #manual ul, #manual ol, #manual dl {
+    line-height: 1.5em;
+    text-align: justify;
+    font-size: small;
+}
+
+#manual dd {
+    margin-bottom: 0.5em;
+}
+
+#manual table {
+    border: 1px solid #aaaaaa;
+    border-collapse: collapse;
+    margin: 0.5em 0;
+    color: black;
+    background-color: #f9f9f9;
+    line-height: 1.5em;
+    font-size: small;
+}
+
+#manual td, #manual th {
+    padding: 0.2em;
+    border: 1px solid #aaaaaa;
+}
+
+#manual th {
+    color: black;
+    background-color: #f2f2f2;
+}
+
+/*** Code blocks and highlighting**********************************************/
+
+#manual pre, #manual code, #manual tt {
+    font-family: "Bitstream Vera Sans Mono", "Courier New" monospace;
+    font-size: small;
+}
+
+#manual pre {
+    font-weight: bold;
+    padding: 1em;
+    margin: 1em 0;
+    line-height: 1.2em;
+    color: black;
+    background-color: #f7f7f7;
+    border: 1px solid #d7d7d7;
+    
+    /* Pup's Box Flow Hack, Rev 2 */
+    overflow/**/: auto;
+    \height: 1%;
+}
+
+/* This rule applies only to Firefox */
+#manual pre, x:-moz-any-link {
+    /* overflow: auto causes artefacts */
+    overflow: hidden;
+    
+    /* prevents text to be hidden by wrapping it */
+    white-space: -moz-pre-wrap !important;  
+}
+
+#manual pre .default {
+    color: #000000;
+    font-weight: bold;
+    background-color: inherit;
+}
+
+#manual pre .keyword {
+    color: #778899;
+    font-weight: bold;
+    background-color: inherit;
+}
+
+#manual pre .string {
+    color: #bb8844;
+    font-weight: normal;
+    background-color: inherit;
+}
+
+#manual pre .comment {
+    color: #999988;
+    font-style: italic;
+    font-weight: bold;
+    background-color: inherit;
+}
+
+/** Tree specific styles ******************************************************/
+
+ul.tree, ul.tree ul {
+    list-style-type: none;
+    padding-left: 1em;
+    text-align: left;
+    margin: 0;
+    font-size: 1em;
+}
+
+ul.tree {
+    margin-top: 1em;
+}
+
+.tree a {
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tree .expander {
+    color: black;
+    background-color: inherit;
+    display: block;
+    float: left;
+    margin: 0;
+    border: none;
+    margin-left: -1.5em;
+    padding: 0;
+    text-align: center;
+    width: 1em;
+}
+
+.tree .expander:link,
+.tree .expander:visited,
+.tree .expander:active,
+.tree .expander:hover {
+    color: black;
+    background-color: inherit;
+    text-decoration: none;
+}
+
+.tree ul.closed {
+    display: none;
+}
+
+/** Table of Contents *********************************************************/
+
+#table-of-contents {
+    border: 1px solid #d9d9d3;
+    color: black;
+    background-color: #F7F7F0;
+    padding: 1em;
+    margin: 0;
+}
+
+#table-of-contents p,
+#table-of-contents ul.tree {
+    font-size: small;
+}
+
+#table-of-contents p {
+    margin-bottom: 0;
+}
+
+#table-of-contents h1 {
+    display: block;
+    font-size: 1.5em;
+    margin-right: 0.5em;
+    margin-bottom: 0;
+    text-align: left;
+    border: none;
+}
+
+#toc-toggles {
+    margin: 0;
+    padding: 0;
+    text-align: right;
+    font-size: small;
+}
+
+#toc-toggles a {
+    margin-left: 0.5em;
+}
