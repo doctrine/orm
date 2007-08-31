@@ -6,6 +6,7 @@
  <description>Doctrine is a feature-rich, fully optimizable ORM framework for PHP, combining an easy ActiveRecord setup and ultra-high performance.</description>
  <lead>
   <name>Konsta Vesterinen</name>
+  <user>zYne-</user>
   <email>kvesteri@cc.hut.fi</email>
   <active>yes</active>
  </lead>
