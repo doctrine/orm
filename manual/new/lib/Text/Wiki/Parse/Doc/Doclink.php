@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * Parses for links to other documentation sections.
+ *
+ * @category Text
+ * @package Text_Wiki
+ * @author Janne Vanhala <jpvanhal@cc.hut.fi>
+ * @license LGPL
+ * @version $Id$
+ *
+ */
 class Text_Wiki_Parse_Doclink extends Text_Wiki_Parse {
 
     var $conf = array(

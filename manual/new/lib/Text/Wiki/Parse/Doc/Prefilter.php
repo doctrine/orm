@@ -61,11 +61,15 @@ class Text_Wiki_Parse_Prefilter extends Text_Wiki_Parse {
         // convert tabs to four-spaces
         $this->wiki->source = str_replace("\t", "    ",
             $this->wiki->source);
-            
-        // add extra newline before code tags to prevent xhtml validation errors
+        
+        // remove trailing spaces
+        $this->wiki->source = preg_replace('/ +\n/', "\n", $this->wiki->source);
+        
+        // add extra newlines before and after code tags to prevent xhtml
+        // validation errors
         $this->wiki->source = preg_replace(
             ';^(<code(?:\s[^>]*)?>(?:.*?)</code>(?:\s|$));msi',
-            "\n\\1", $this->wiki->source);
+            "\n$1\n\n", $this->wiki->source);
            
         // add extra newlines at the top and end; this
         // seems to help many rules.

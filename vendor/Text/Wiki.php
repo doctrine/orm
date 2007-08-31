@@ -1007,9 +1007,10 @@ class Text_Wiki {
         }
 
         if ($this->renderingType == 'preg') {
-            $this->output = preg_replace_callback('/'.$this->delim.'(\d+)'.$this->delim.'/',
+            $this->output .= preg_replace_callback('/'.$this->delim.'(\d+)'.$this->delim.'/',
                                             array(&$this, '_renderToken'),
                                             $this->source);
+
             /*
 //Damn strtok()! Why does it "skip" empty parts of the string. It's useless now!
         } elseif ($this->renderingType == 'strtok') {

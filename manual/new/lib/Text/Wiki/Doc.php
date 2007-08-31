@@ -29,6 +29,7 @@ class Text_Wiki_Doc extends Text_Wiki {
         'Delimiter',
         'Code',
         'Raw',
+        'Heading',
         'Horiz',
         'Break',
         'Blockquote',

@@ -12,7 +12,7 @@
  * @version    CVS: $Id: Code.php,v 1.13 2006/02/10 23:07:03 toggg Exp $
  * @link       http://pear.php.net/package/Text_Wiki
  */
-
+require_once('highlight.php');
 /**
  * This class renders code blocks in XHTML.
  *
@@ -47,7 +47,7 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
     */
 
     function token($options)
-    {
+    {   
         $text = $options['text'];
         $attr = $options['attr'];
         $type = strtolower($attr['type']);
@@ -72,7 +72,7 @@ class Text_Wiki_Render_Xhtml_Code extends Text_Wiki_Render {
             // <pre>...</pre> tags)
             $h = new PHP_Highlight(true);
             $h->loadString($text);
-            $text = $h->toHtml(true);
+            $text = @$h->toHtml(true);
 
             $text = str_replace('&nbsp;', ' ', $text);
 
