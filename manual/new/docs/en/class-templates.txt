@@ -155,3 +155,43 @@ $user->Email;
 
 The implementations for the templates can be set at manager, connection and even at the table level.
 
+++ Delegate methods
+
+Besides from acting as a full table definition delegate system, Doctrine_Template allows the delegation of method calls. This means that every method within the loaded templates is availible in the record that loaded the templates. Internally the implementation uses magic method called __call() to achieve this functionality.
+
+Lets take an example: we have a User class that loads authentication functionality through a template.
+
+<code type="php">
+class User extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('fullname', 'string', 30);
+    }
+    public function setUp()
+    {
+        $this->loadTemplate('AuthTemplate');
+    }
+}
+class AuthTemplate extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('username', 'string', 16);
+        $this->hasColumn('password', 'string', 16);
+    }
+    public function login($username, $password)
+    {
+        // some login functionality here
+    }
+}
+</code>
+
+Now you can simply use the methods found in AuthTemplate within the User class as shown above.
+
+<code type="php">
+$user->login($username, $password);
+</code>
+
+
+
