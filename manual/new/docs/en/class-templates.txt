@@ -173,7 +173,7 @@ class User extends Doctrine_Record
         $this->loadTemplate('AuthTemplate');
     }
 }
-class AuthTemplate extends Doctrine_Record
+class AuthTemplate extends Doctrine_Template
 {
     public function setTableDefinition()
     {
