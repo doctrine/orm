@@ -25,6 +25,6 @@ $users = $q->execute();
 
 Now lets print out the drinkers club's creation date. 
 
-<code>
+<code type="php">
 print $users['jack daniels']->Group['drinkers club']->createdAt;
 </code>
