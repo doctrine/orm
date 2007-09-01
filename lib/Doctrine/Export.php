@@ -1042,19 +1042,30 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
             // check if class is an instance of Doctrine_Record and not abstract
             // class must have method setTableDefinition (to avoid non-Record subclasses like symfony's sfDoctrineRecord)
-            if ($class->isSubclassOf($parent) && ! $class->isAbstract() && $class->hasMethod('setTableDefinition')
-                && $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() == $class->getName()) {
-                $record = new $name();
-                $table  = $record->getTable();
-                $data = $table->getExportableFormat();
-                
-                $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
+            // we have to recursively iterate through the class parents just to be sure that the classes using for example
+            // column aggregation inheritance are properly exporterd to database
+            while ($class->isAbstract() &&
+                   ! $class->isSubclassOf($parent) &&
+                   ! $class->hasMethod('setTableDefinition') &&
+                   $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() !== $class->getName()) {
 
-                if (is_array($query)) {
-                    $sql = array_merge($sql, $query);
-                } else {
-                    $sql[] = $query;
+                $class = $class->getParent();
+                
+                if ($class === null) {
+                    break;
                 }
+            }
+
+            $record = new $name();
+            $table  = $record->getTable();
+            $data = $table->getExportableFormat();
+                
+            $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
+
+            if (is_array($query)) {
+                $sql = array_merge($sql, $query);
+            } else {
+                $sql[] = $query;
             }
         }
         $sql = array_unique($sql);
