@@ -40,7 +40,7 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareTables()
     {
-    	$this->tables = array('Entity', 'User', 'Group', 'Phonenumber', 'Email', 'Book');
+    	$this->tables = array('Entity', 'User', 'Group', 'GroupUser', 'Account', 'Album', 'Phonenumber', 'Email', 'Book');
     	
     	parent::prepareTables();
     }
@@ -58,8 +58,13 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
         $coll[]->name = 'new user';
 
         $this->assertEqual($coll->count(), 7);
+        $this->assertEqual(count($coll->getSnapshot()), 8);
+
+        $count = $this->conn->count();
 
         $coll->save();
+        print $this->conn->count();
+        print $count;
 
         $this->connection->clear();
         $coll = Doctrine_Query::create()->from('User u')->execute();
@@ -113,17 +118,27 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($users[0]->Group[0]->name, 'PHP');
         $this->assertEqual($users[0]->Group[1]->name, 'Web');
-    
+        $this->assertEqual(count($user->Group->getSnapshot()), 2);
         unset($user->Group[0]);
 
         $user->save();
+        $this->assertEqual(count($user->Group), 1);
 
         $this->assertEqual(count($user->Group->getSnapshot()), 1);
         unset($user->Group[1]);
         $this->assertEqual(count($user->Group->getSnapshot()), 1);
+        
+        $count = count($this->conn);
         $user->save();
 
         $this->assertEqual(count($user->Group->getSnapshot()), 0);
+        
+        $this->conn->clear();
+
+        $users = Doctrine_Query::create()->from('User u LEFT JOIN u.Group g')
+                 ->where('u.id = ' . $user->id)->execute();
+        
+        $this->assertEqual(count($user->Group), 0);
 
     }
 

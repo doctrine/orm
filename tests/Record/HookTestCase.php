@@ -37,10 +37,10 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
     public function prepareTables() 
     { 
         $this->tables = array('RecordHookTest', 'SoftDeleteTest');
-        
+
         parent::prepareTables();
     }
-    
+    /**
     public function testInsertHooksGetInvoked()
     {
         $r = new RecordHookTest();
@@ -67,7 +67,7 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($r->pop(), 'preUpdate');
         $this->assertEqual($r->pop(), 'preSave');
     }
-    
+
     public function testDeleteHooksGetInvoked()
     {
         $records = Doctrine_Query::create()->from('RecordHookTest t')->where("t.name = 'record 2'")->execute();
@@ -78,7 +78,7 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($r->pop(), 'postDelete');
         $this->assertEqual($r->pop(), 'preDelete');
     }
-    
+    */
     public function testSoftDelete()
     {
         $r = new SoftDeleteTest();
@@ -92,14 +92,15 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($r->deleted, null);
         $this->assertEqual($r->state(), Doctrine_Record::STATE_CLEAN);
 
-        try{
+        try {
             $r->delete();
             $this->assertEqual($r->state(), Doctrine_Record::STATE_CLEAN);
             $this->assertEqual($r->deleted, true);
-        }catch(Doctrine_Exception $e){
+        } catch(Doctrine_Exception $e) {
             $this->fail();
         }
     }
+
 }
 class SoftDeleteTest extends Doctrine_Record
 {
@@ -116,6 +117,7 @@ class SoftDeleteTest extends Doctrine_Record
     public function postDelete($event)
     {
         $this->deleted = true;
+
         $this->save();
     }
 }
