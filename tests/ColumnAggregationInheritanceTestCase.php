@@ -72,12 +72,13 @@ class Doctrine_ColumnAggregationInheritance_TestCase extends Doctrine_UnitTestCa
         $this->assertEqual($q->getSql(), "SELECT i.id AS i__id, i.name AS i__name, i.type AS i__type FROM inheritance_test i WHERE (i.type = 'type 1')");
     }
 
-		public function testSubclassFieldSetWhenCreatingNewSubclassedRecord()
-		{
-  			$child = new InheritanceChildTest();
-			  $this->assertTrue(isset($child->type));
-				$this->assertEqual("type 1", $child->type);
-		}
+    public function testSubclassFieldSetWhenCreatingNewSubclassedRecord()
+    {
+        $child = new InheritanceChildTest();
+        $this->assertTrue(isset($child->type));
+
+        $this->assertEqual('type 1', $child->type);
+    }
 }
 class InheritanceTest extends Doctrine_Record
 {
