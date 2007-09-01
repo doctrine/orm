@@ -815,7 +815,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function exec($query, array $params = array()) {
     	$this->connect();
-
+        print $query . print_r($params, true) . "<br>";
         try {
             if ( ! empty($params)) {
                 $stmt = $this->prepare($query);

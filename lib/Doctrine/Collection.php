@@ -622,6 +622,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $conn = $this->_table->getConnection();
         }
         $conn->beginTransaction();
+
         $conn->transaction->addCollection($this);
 
         $this->processDiff();
@@ -631,7 +632,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
 
         $conn->commit();
-        
+
         return $this;
     }
     /**

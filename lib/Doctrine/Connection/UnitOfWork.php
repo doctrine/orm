@@ -183,7 +183,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         } else {
             $conn->transaction->addInvalid($record);
         }
-        
+
         $state = $record->state();
 
         $record->state(Doctrine_Record::STATE_LOCKED);
@@ -261,18 +261,24 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         
         $record->getTable()->getRecordListener()->preDelete($event);
 
+        $state = $record->state();
+
         $record->state(Doctrine_Record::STATE_LOCKED);
 
         $this->deleteComposites($record);
-        
-        $record->state(Doctrine_Record::STATE_TDIRTY);
 
         if ( ! $event->skipOperation) {
-            $this->conn->transaction->addDelete($record);
+            $record->state(Doctrine_Record::STATE_TDIRTY);
+
+            $this->deleteRecord($record);
 
             $record->state(Doctrine_Record::STATE_TCLEAN);
+        } else {
+            // return to original state   
+            $record->state($state);
         }
-        
+
+
         $record->getTable()->getRecordListener()->postDelete($event);
 
         $record->postDelete($event);
@@ -281,7 +287,77 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         return true;
     }
+    
+    public function deleteRecord(Doctrine_Record $record)
+    {
+        $ids = $record->identifier();
+        $tmp = array();
+        
+        foreach (array_keys($ids) as $id) {
+            $tmp[] = $id . ' = ? ';
+        }
+        
+        $params = array_values($ids);
 
+        $query = 'DELETE FROM '
+               . $this->conn->quoteIdentifier($record->getTable()->getTableName())
+               . ' WHERE ' . implode(' AND ', $tmp);
+
+
+        return $this->conn->exec($query, $params);
+    }
+    /**
+     * deleteMultiple
+     * deletes all records from the pending delete list
+     *
+     * @return void
+     */
+    public function deleteMultiple(array $records)
+    {
+
+        foreach ($this->delete as $name => $deletes) {
+            $record = false;
+            $ids    = array();
+
+    	    if (is_array($deletes[count($deletes)-1]->getTable()->getIdentifier())) {
+                if (count($deletes) > 0) {
+                    $query = 'DELETE FROM '
+                           . $this->conn->quoteIdentifier($deletes[0]->getTable()->getTableName())
+                           . ' WHERE ';
+    
+                    $params = array();
+                    $cond = array();
+                    foreach ($deletes as $k => $record) {
+                        $ids = $record->identifier();
+                        $tmp = array();
+                        foreach (array_keys($ids) as $id){
+                            $tmp[] = $id . ' = ? ';
+                        }
+                        $params = array_merge($params, array_values($ids));
+                        $cond[] = '(' . implode(' AND ', $tmp) . ')';
+                    }
+                    $query .= implode(' OR ', $cond);
+
+                    $this->conn->execute($query, $params);
+                }
+    	    } else {
+    		    foreach ($deletes as $k => $record) {
+                    $ids[] = $record->getIncremented();
+    		    }
+    		    if ($record instanceof Doctrine_Record) {
+        			$params = substr(str_repeat('?, ', count($ids)), 0, -2);
+    
+        			$query = 'DELETE FROM '
+        				   . $this->conn->quoteIdentifier($record->getTable()->getTableName())
+        				   . ' WHERE '
+        				   . $record->getTable()->getIdentifier()
+        				   . ' IN(' . $params . ')';
+        
+        			$this->conn->execute($query, $ids);
+    		    }
+    	    }
+        }
+    }
     /**
      * saveRelated
      * saves all related records to $record
@@ -325,7 +401,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      * 3, 4 and 5, this method would first destroy the associations to 1 and 2 and then
      * save new associations to 4 and 5
      *
-     * @throws PDOException         if something went wrong at database level
+     * @throws Doctrine_Connection_Exception         if something went wrong at database level
      * @param Doctrine_Record $record
      * @return void
      */
