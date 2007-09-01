@@ -677,14 +677,15 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @param string $query             DQL query
      * @param array $params             query parameters
+     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
      * @see Doctrine_Query
      * @return Doctrine_Collection      Collection of Doctrine_Record objects
      */
-    public function query($query, array $params = array()) 
+    public function query($query, array $params = array(), $hydrationMode = null)
     {
         $parser = new Doctrine_Query($this);
 
-        return $parser->query($query, $params);
+        return $parser->query($query, $params, $hydrationMode);
     }
     /**
      * prepare

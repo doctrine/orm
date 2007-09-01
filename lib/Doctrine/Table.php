@@ -853,10 +853,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * finds a record by its identifier
      *
      * @param $id                       database row id
+     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
      * @return Doctrine_Record|false    a record for given database identifier
      */
-    public function find($id)
+    public function find($id, $hydrationMode = null)
     {
+        if ($hydrationMode === null) {
+            $hydrationMode = Doctrine::FETCH_RECORD;
+        }
         if ($id !== null) {
             if ( ! is_array($id)) {
                 $id = array($id);
@@ -867,13 +871,22 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $records = Doctrine_Query::create()
                        ->from($this->getComponentName())
                        ->where(implode(' = ? AND ', $this->primaryKeys) . ' = ?')
-                       ->execute($id);
+                       ->execute($id, $hydrationMode);
 
             if (count($records) === 0) {
                 return false;
             }
 
-            return $records->getFirst();
+            switch ($hydrationMode) {
+                case Doctrine::FETCH_RECORD:
+                    if (count($records) > 0) {
+                        return $records->getFirst();
+                    }
+                case Doctrine::FETCH_ARRAY:
+                    if (!empty($records[0])) {
+                        return $records[0];
+                    }
+            }
         }
         return false;
     }
@@ -898,12 +911,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * findAll
      * returns a collection of records
      *
+     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
      * @return Doctrine_Collection
      */
-    public function findAll()
+    public function findAll($hydrationMode = null)
     {
         $graph = new Doctrine_Query($this->conn);
-        $users = $graph->query('FROM ' . $this->options['name']);
+        $users = $graph->query('FROM ' . $this->options['name'], array(), $hydrationMode);
         return $users;
     }
     /**
@@ -913,16 +927,17 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      * @param string $dql               DQL after WHERE clause
      * @param array $params             query parameters
+     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
      * @return Doctrine_Collection
      */
-    public function findBySql($dql, array $params = array()) {
+    public function findBySql($dql, array $params = array(), $hydrationMode = null) {
         $q = new Doctrine_Query($this->conn);
-        $users = $q->query('FROM ' . $this->options['name'] . ' WHERE ' . $dql, $params);
+        $users = $q->query('FROM ' . $this->options['name'] . ' WHERE ' . $dql, $params, $hydrationMode);
         return $users;
     }
 
-    public function findByDql($dql, array $params = array()) {
-        return $this->findBySql($dql, $params);
+    public function findByDql($dql, array $params = array(), $hydrationMode = null) {
+        return $this->findBySql($dql, $params, $hydrationMode);
     }
     /**
      * clear

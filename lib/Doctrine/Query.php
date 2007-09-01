@@ -1520,16 +1520,17 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * query
      * query the database with DQL (Doctrine Query Language)
      *
-     * @param string $query     DQL query
-     * @param array $params     prepared statement parameters
+     * @param string $query      DQL query
+     * @param array $params      prepared statement parameters
+     * @param int $hydrationMode Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
      * @see Doctrine::FETCH_* constants
      * @return mixed
      */
-    public function query($query, $params = array())
+    public function query($query, $params = array(), $hydrationMode = null)
     {
         $this->parseQuery($query);
 
-        return $this->execute($params);
+        return $this->execute($params, $hydrationMode);
     }
     
     public function copy(Doctrine_Query $query = null)
