@@ -52,7 +52,7 @@ class Sensei_Doc_Renderer_Pdf extends Sensei_Doc_Renderer
     {
         exec($this->_options['pdflatex_path'], $output);
         
-        if ( ! isset($output[0]) || ! preg_match('/^This is pdfTeXk/', $output[0])) {
+        if ( ! isset($output[0]) || ! preg_match('/^This is pdfe?TeXk?/', $output[0])) {
             $message = 'pdfLaTeX does not seem to be installed, or pdflatex_path'
                      . ' option does not point to pdfLaTeX executable.';
             throw new Sensei_Doc_Renderer_Exception($message);
