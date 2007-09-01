@@ -1,10 +1,10 @@
 Syntax:
 
 <code>
-[[LEFT | INNER] JOIN <component_reference1>] [ON | WITH] <join_condition>, 
-[[LEFT | INNER] JOIN <component_reference2>] [ON | WITH] <join_condition>,
-... 
-[[LEFT | INNER] JOIN <component_referenceN>] [ON | WITH] <join_condition>
+[[LEFT | INNER] JOIN <component_reference1>] [ON | WITH] <join_condition1> [MAP] <map_condition1>,
+[[LEFT | INNER] JOIN <component_reference2>] [ON | WITH] <join_condition2> [MAP] <map_condition2>,
+...
+[[LEFT | INNER] JOIN <component_referenceN>] [ON | WITH] <join_conditionN> [MAP] <map_conditionN>
 </code>
 
 DQL supports two kinds of joins INNER JOINs and LEFT JOINs. For each joined component, you can optionally specify an alias.
@@ -37,6 +37,7 @@ Would have a SQL equivalent:
 SELECT u.id AS u__id, p.id AS p__id FROM User u LEFT JOIN Phonenumber p ON u.id = p.user_id
 </code>
 
++++ ON keyword
 If you want to override this behaviour and add your own custom join condition you can do it with the {{ON}} keyword. Consider the following DQL query:
 
 <code>
@@ -49,6 +50,7 @@ This query would be converted into SQL:
 SELECT u.id AS u__id, p.id AS p__id FROM User u LEFT JOIN Phonenumber p ON u.id = 2
 </code>
 
++++ WITH keyword
 Most of the time you don't need to override the primary join condition, rather you may want to add some custom conditions. This can be achieved with the {{WITH}} keyword.
 
 DQL:
@@ -61,6 +63,7 @@ SQL:
 SELECT u.id AS u__id, p.id AS p__id FROM User u LEFT JOIN Phonenumber p ON u.id = p.user_id AND u.id = 2
 </code>
 
+
 The Doctrine_Query API offers two convenience methods for adding JOINS. These are called innerJoin() and leftJoin(), which usage should be quite intuitive as shown below:
 
 <code type="php">
@@ -71,5 +74,4 @@ $q->from('User u')
   ->leftJoin('u.Email e');
 
 $users = $q->execute();
-</code>
-
+</code> 

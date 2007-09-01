@@ -4,6 +4,7 @@
 ++ DELETE queries
 ++ FROM clause
 ++ JOIN syntax
+++ MAP keyword
 ++ WHERE clause
 ++ Conditional expressions
 ++ Functional Expressions
