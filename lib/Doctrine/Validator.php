@@ -108,7 +108,8 @@ class Doctrine_Validator extends Doctrine_Object
                     || $name == 'default'
                     || $name == 'values'
                     || $name == 'sequence'
-                    || $name == 'zerofill') {
+                    || $name == 'zerofill'
+                    || $name == 'scale') {
                     continue;
                 }
 
