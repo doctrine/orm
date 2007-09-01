@@ -32,11 +32,14 @@ Doctrine::autoload('Doctrine_Record_Abstract');
  */
 class Doctrine_Template extends Doctrine_Record_Abstract
 {
-
+    /**
+     * @param Doctrine_Record $_invoker     the record that invoked the last delegated call
+     */
+    protected $_invoker;
     /**
      * setTable
      *
-     * @param Doctrine_Table $_table     the table object this Template belongs to
+     * @param Doctrine_Table $_table        the table object this Template belongs to
      */
     public function setTable(Doctrine_Table $table)
     {
@@ -46,13 +49,34 @@ class Doctrine_Template extends Doctrine_Record_Abstract
      * getTable
      * returns the associated table object
      *
-     * @return Doctrine_Table   the associated table object
+     * @return Doctrine_Table               the associated table object
      */
     public function getTable()
     {
         return $this->_table;
     }
-
+    /**
+     * setInvoker
+     *
+     * sets the last used invoker
+     *
+     * @param Doctrine_Record $invoker      the record that invoked the last delegated call
+     * @return Doctrine_Template            this object
+     */
+    public function setInvoker(Doctrine_Record $invoker)
+    {
+        $this->_invoker = $invoker;
+    }
+    /**
+     * setInvoker
+     * returns the last used invoker
+     *
+     * @return Doctrine_Record              the record that invoked the last delegated call
+     */
+    public function getInvoker()
+    {
+        return $this->_invoker;
+    }
     public function setUp()
     {
 

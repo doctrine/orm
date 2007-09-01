@@ -1503,6 +1503,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         foreach ($this->_table->getTemplates() as $template) {
             if (method_exists($template, $method)) {
+                $template->setInvoker($this);
+                
                 return call_user_func_array(array($template, $method), $args);
             }
         }
