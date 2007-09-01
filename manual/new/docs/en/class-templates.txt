@@ -190,8 +190,33 @@ class AuthTemplate extends Doctrine_Record
 Now you can simply use the methods found in AuthTemplate within the User class as shown above.
 
 <code type="php">
+$user = new User();
+
 $user->login($username, $password);
 </code>
+
+You can get the record that invoked the delegate method by using the getInvoker() method of Doctrine_Template. Consider the AuthTemplate example. If we want to have access to User object we just need to do the following:
+
+<code type="php">
+class AuthTemplate extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('username', 'string', 16);
+        $this->hasColumn('password', 'string', 16);
+    }
+    public function login($username, $password)
+    {
+        // do something with the Invoker object here
+        $object = $this->getInvoker();
+    }
+}
+</code>
+
+
+++ Working with multiple templates
+
+Each class can consists of multiple templates. If the templates contain similar definitions the most recently loaded template always overrides the former.
 
 
 
