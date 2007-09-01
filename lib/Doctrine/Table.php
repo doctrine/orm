@@ -188,7 +188,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         // get parent classes
 
         do {
-            if ($class == "Doctrine_Record") {
+            if ($class === 'Doctrine_Record') {
                 break;                        
             }
 
