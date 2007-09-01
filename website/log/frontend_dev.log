@@ -10998,3 +10998,393 @@ Aug 31 18:37:42 symfony [info] {sfTimerManager} View "Success" for "api_document
 Aug 31 18:37:42 symfony [info] {sfTimerManager} Partial "global/_header" 0.58 ms (1)
 Aug 31 18:37:42 symfony [info] {sfTimerManager} Partial "global/_menu" 1.28 ms (1)
 Aug 31 18:37:42 symfony [info] {sfTimerManager} Partial "global/_footer" 0.44 ms (1)
+Sep 01 00:52:09 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:52:09 symfony [info] {sfRouting} connect "/"
+Sep 01 00:52:09 symfony [info] {sfRouting} connect "/documentation/api/:q"
+Sep 01 00:52:09 symfony [info] {sfRouting} connect "/about"
+Sep 01 00:52:09 symfony [info] {sfRouting} connect "/download"
+Sep 01 00:52:09 symfony [info] {sfRouting} connect "/documentation/manual"
+Sep 01 00:52:09 symfony [info] {sfRouting} connect "/documentation/api"
+Sep 01 00:52:09 symfony [info] {sfRouting} connect "/trac"
+Sep 01 00:52:09 symfony [info] {sfRouting} connect "/symfony/:action/*"
+Sep 01 00:52:09 symfony [info] {sfRouting} connect "/:module"
+Sep 01 00:52:09 symfony [info] {sfRouting} connect "/:module/:action/*"
+Sep 01 00:52:09 symfony [info] {sfContext} initialization
+Sep 01 00:52:09 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:52:27 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:52:27 symfony [info] {sfContext} initialization
+Sep 01 00:52:27 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:52:28 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:52:28 symfony [info] {sfContext} initialization
+Sep 01 00:52:28 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:52:55 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:52:55 symfony [info] {sfContext} initialization
+Sep 01 00:52:55 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:52:56 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:52:56 symfony [info] {sfContext} initialization
+Sep 01 00:52:56 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:52:57 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:52:57 symfony [info] {sfContext} initialization
+Sep 01 00:52:57 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:03 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:03 symfony [info] {sfContext} initialization
+Sep 01 00:53:03 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:04 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:04 symfony [info] {sfContext} initialization
+Sep 01 00:53:04 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:05 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:05 symfony [info] {sfContext} initialization
+Sep 01 00:53:05 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:15 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:15 symfony [info] {sfContext} initialization
+Sep 01 00:53:15 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:15 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:15 symfony [info] {sfContext} initialization
+Sep 01 00:53:15 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:16 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:16 symfony [info] {sfContext} initialization
+Sep 01 00:53:16 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:17 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:17 symfony [info] {sfContext} initialization
+Sep 01 00:53:17 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:33 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:33 symfony [info] {sfContext} initialization
+Sep 01 00:53:33 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:34 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:34 symfony [info] {sfContext} initialization
+Sep 01 00:53:34 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:41 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:41 symfony [info] {sfContext} initialization
+Sep 01 00:53:41 symfony [err] {sfConfigurationException} Configuration "config/databases.yml" does not exist or is unreadable
+Sep 01 00:53:42 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:42 symfony [info] {sfContext} initialization
+Sep 01 00:53:42 symfony [info] {sfController} initialization
+Sep 01 00:53:42 symfony [info] {sfRouting} match route [homepage] "/"
+Sep 01 00:53:42 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'index',)
+Sep 01 00:53:42 symfony [info] {sfController} dispatch request
+Sep 01 00:53:42 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:53:42 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:53:42 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:53:42 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:53:42 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:53:42 symfony [info] {sfAction} call "mainActions->executeIndex()"
+Sep 01 00:53:42 symfony [info] {sfView} initialize view for "main/index"
+Sep 01 00:53:42 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/main/templates/indexSuccess.php"
+Sep 01 00:53:42 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:53:42 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:53:42 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:53:42 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:53:42 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:53:42 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:53:42 symfony [info] {sfFilter} render to client
+Sep 01 00:53:42 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:53:42 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:53:42 symfony [info] {sfResponse} send content (72248 o)
+Sep 01 00:53:43 symfony [info] {sfTimerManager} Configuration 81.12 ms (12)
+Sep 01 00:53:43 symfony [info] {sfTimerManager} Action "main/index" 0.47 ms (1)
+Sep 01 00:53:43 symfony [info] {sfTimerManager} View "Success" for "main/index" 46.53 ms (1)
+Sep 01 00:53:43 symfony [info] {sfTimerManager} Partial "global/_header" 8.91 ms (1)
+Sep 01 00:53:43 symfony [info] {sfTimerManager} Partial "global/_menu" 2.59 ms (1)
+Sep 01 00:53:47 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:47 symfony [info] {sfContext} initialization
+Sep 01 00:53:47 symfony [info] {sfController} initialization
+Sep 01 00:53:47 symfony [info] {sfRouting} match route [homepage] "/"
+Sep 01 00:53:47 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'index',)
+Sep 01 00:53:47 symfony [info] {sfController} dispatch request
+Sep 01 00:53:47 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:53:47 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:53:47 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:53:47 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:53:47 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:53:47 symfony [info] {sfAction} call "mainActions->executeIndex()"
+Sep 01 00:53:47 symfony [info] {sfView} initialize view for "main/index"
+Sep 01 00:53:47 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/main/templates/indexSuccess.php"
+Sep 01 00:53:47 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:53:47 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:53:47 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:53:47 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:53:47 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:53:47 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:53:47 symfony [info] {sfFilter} render to client
+Sep 01 00:53:47 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:53:47 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:53:47 symfony [info] {sfResponse} send content (72535 o)
+Sep 01 00:53:48 symfony [info] {sfTimerManager} Configuration 3.75 ms (11)
+Sep 01 00:53:48 symfony [info] {sfTimerManager} Action "main/index" 0.48 ms (1)
+Sep 01 00:53:48 symfony [info] {sfTimerManager} View "Success" for "main/index" 12.26 ms (1)
+Sep 01 00:53:48 symfony [info] {sfTimerManager} Partial "global/_header" 1.10 ms (1)
+Sep 01 00:53:48 symfony [info] {sfTimerManager} Partial "global/_menu" 2.21 ms (1)
+Sep 01 00:53:53 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:53:53 symfony [info] {sfContext} initialization
+Sep 01 00:53:53 symfony [info] {sfController} initialization
+Sep 01 00:53:53 symfony [info] {sfRouting} match route [manual] "/documentation/manual"
+Sep 01 00:53:53 symfony [info] {sfRequest} request parameters array (  'module' => 'manual',  'action' => 'index',)
+Sep 01 00:53:53 symfony [info] {sfController} dispatch request
+Sep 01 00:53:53 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:53:53 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:53:53 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:53:53 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:53:53 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:53:53 symfony [info] {sfAction} call "manualActions->executeIndex()"
+Sep 01 00:53:53 symfony [info] {sfView} initialize view for "manual/index"
+Sep 01 00:53:53 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/manual/templates/indexSuccess.php"
+Sep 01 00:53:53 symfony [info] {PartialHelper} set slot "right"
+Sep 01 00:53:53 symfony [info] {sfView} initialize view for "manual/_table_of_contents"
+Sep 01 00:53:53 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/manual/templates/_table_of_contents.php"
+Sep 01 00:53:53 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:53:53 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:53:53 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:53:53 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:53:53 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:53:53 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:53:53 symfony [info] {PartialHelper} get slot "right"
+Sep 01 00:53:53 symfony [info] {sfFilter} render to client
+Sep 01 00:53:53 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:53:53 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:53:53 symfony [info] {sfResponse} send content (133838 o)
+Sep 01 00:53:54 symfony [info] {sfTimerManager} Configuration 31.02 ms (12)
+Sep 01 00:53:54 symfony [info] {sfTimerManager} Action "manual/index" 137.69 ms (1)
+Sep 01 00:53:54 symfony [info] {sfTimerManager} View "Success" for "manual/index" 99.51 ms (1)
+Sep 01 00:53:54 symfony [info] {sfTimerManager} Partial "manual/_table_of_contents" 1.39 ms (1)
+Sep 01 00:53:54 symfony [info] {sfTimerManager} Partial "global/_header" 1.11 ms (1)
+Sep 01 00:53:54 symfony [info] {sfTimerManager} Partial "global/_menu" 2.20 ms (1)
+Sep 01 00:54:04 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:54:04 symfony [info] {sfContext} initialization
+Sep 01 00:54:04 symfony [info] {sfController} initialization
+Sep 01 00:54:04 symfony [info] {sfRouting} match route [homepage] "/"
+Sep 01 00:54:04 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'index',)
+Sep 01 00:54:04 symfony [info] {sfController} dispatch request
+Sep 01 00:54:04 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:54:04 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:54:04 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:54:04 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:54:04 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:54:04 symfony [info] {sfAction} call "mainActions->executeIndex()"
+Sep 01 00:54:04 symfony [info] {sfView} initialize view for "main/index"
+Sep 01 00:54:04 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/main/templates/indexSuccess.php"
+Sep 01 00:54:04 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:04 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:04 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:54:04 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:54:04 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:54:04 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:54:04 symfony [info] {sfFilter} render to client
+Sep 01 00:54:04 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:54:04 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:54:04 symfony [info] {sfResponse} send content (72278 o)
+Sep 01 00:54:05 symfony [info] {sfTimerManager} Configuration 3.74 ms (11)
+Sep 01 00:54:05 symfony [info] {sfTimerManager} Action "main/index" 0.49 ms (1)
+Sep 01 00:54:05 symfony [info] {sfTimerManager} View "Success" for "main/index" 11.89 ms (1)
+Sep 01 00:54:05 symfony [info] {sfTimerManager} Partial "global/_header" 1.12 ms (1)
+Sep 01 00:54:05 symfony [info] {sfTimerManager} Partial "global/_menu" 2.15 ms (1)
+Sep 01 00:54:08 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:54:08 symfony [info] {sfContext} initialization
+Sep 01 00:54:08 symfony [info] {sfController} initialization
+Sep 01 00:54:08 symfony [info] {sfRouting} match route [homepage] "/"
+Sep 01 00:54:08 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'index',)
+Sep 01 00:54:08 symfony [info] {sfController} dispatch request
+Sep 01 00:54:08 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:54:08 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:54:08 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:54:08 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:54:08 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:54:08 symfony [info] {sfAction} call "mainActions->executeIndex()"
+Sep 01 00:54:08 symfony [info] {sfView} initialize view for "main/index"
+Sep 01 00:54:08 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/main/templates/indexSuccess.php"
+Sep 01 00:54:08 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:08 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:08 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:54:08 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:54:08 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:54:08 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:54:08 symfony [info] {sfFilter} render to client
+Sep 01 00:54:08 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:54:08 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:54:08 symfony [info] {sfResponse} send content (72535 o)
+Sep 01 00:54:08 symfony [info] {sfTimerManager} Configuration 3.83 ms (11)
+Sep 01 00:54:08 symfony [info] {sfTimerManager} Action "main/index" 0.47 ms (1)
+Sep 01 00:54:08 symfony [info] {sfTimerManager} View "Success" for "main/index" 10.89 ms (1)
+Sep 01 00:54:08 symfony [info] {sfTimerManager} Partial "global/_header" 1.08 ms (1)
+Sep 01 00:54:08 symfony [info] {sfTimerManager} Partial "global/_menu" 2.15 ms (1)
+Sep 01 00:54:10 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:54:10 symfony [info] {sfContext} initialization
+Sep 01 00:54:10 symfony [info] {sfController} initialization
+Sep 01 00:54:10 symfony [info] {sfRouting} match route [homepage] "/"
+Sep 01 00:54:10 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'index',)
+Sep 01 00:54:10 symfony [info] {sfController} dispatch request
+Sep 01 00:54:10 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:54:10 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:54:10 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:54:10 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:54:10 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:54:10 symfony [info] {sfAction} call "mainActions->executeIndex()"
+Sep 01 00:54:10 symfony [info] {sfView} initialize view for "main/index"
+Sep 01 00:54:10 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/main/templates/indexSuccess.php"
+Sep 01 00:54:10 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:10 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:10 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:54:10 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:54:10 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:54:10 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:54:10 symfony [info] {sfFilter} render to client
+Sep 01 00:54:10 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:54:10 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:54:10 symfony [info] {sfResponse} send content (72700 o)
+Sep 01 00:54:11 symfony [info] {sfTimerManager} Configuration 3.69 ms (11)
+Sep 01 00:54:11 symfony [info] {sfTimerManager} Action "main/index" 0.47 ms (1)
+Sep 01 00:54:11 symfony [info] {sfTimerManager} View "Success" for "main/index" 10.83 ms (1)
+Sep 01 00:54:11 symfony [info] {sfTimerManager} Partial "global/_header" 1.09 ms (1)
+Sep 01 00:54:11 symfony [info] {sfTimerManager} Partial "global/_menu" 2.20 ms (1)
+Sep 01 00:54:12 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:54:12 symfony [info] {sfContext} initialization
+Sep 01 00:54:12 symfony [info] {sfController} initialization
+Sep 01 00:54:12 symfony [info] {sfRouting} match route [about] "/about"
+Sep 01 00:54:12 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'about',)
+Sep 01 00:54:12 symfony [info] {sfController} dispatch request
+Sep 01 00:54:12 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:54:12 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:54:12 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:54:12 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:54:12 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:54:12 symfony [info] {sfAction} call "mainActions->executeAbout()"
+Sep 01 00:54:12 symfony [info] {sfView} initialize view for "main/about"
+Sep 01 00:54:12 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/main/templates/aboutSuccess.php"
+Sep 01 00:54:12 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:12 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:12 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:54:12 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:54:12 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:54:12 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:54:12 symfony [info] {sfFilter} render to client
+Sep 01 00:54:12 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:54:12 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:54:12 symfony [info] {sfResponse} send content (72756 o)
+Sep 01 00:54:12 symfony [info] {sfTimerManager} Configuration 3.79 ms (11)
+Sep 01 00:54:12 symfony [info] {sfTimerManager} Action "main/about" 0.49 ms (1)
+Sep 01 00:54:12 symfony [info] {sfTimerManager} View "Success" for "main/about" 12.11 ms (1)
+Sep 01 00:54:12 symfony [info] {sfTimerManager} Partial "global/_header" 1.13 ms (1)
+Sep 01 00:54:12 symfony [info] {sfTimerManager} Partial "global/_menu" 2.17 ms (1)
+Sep 01 00:54:14 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:54:14 symfony [info] {sfContext} initialization
+Sep 01 00:54:14 symfony [info] {sfController} initialization
+Sep 01 00:54:14 symfony [info] {sfRouting} match route [homepage] "/"
+Sep 01 00:54:14 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'index',)
+Sep 01 00:54:14 symfony [info] {sfController} dispatch request
+Sep 01 00:54:14 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:54:14 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:54:14 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:54:14 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:54:14 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:54:14 symfony [info] {sfAction} call "mainActions->executeIndex()"
+Sep 01 00:54:14 symfony [info] {sfView} initialize view for "main/index"
+Sep 01 00:54:14 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/main/templates/indexSuccess.php"
+Sep 01 00:54:14 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:14 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:14 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:54:14 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:54:14 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:54:14 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:54:14 symfony [info] {sfFilter} render to client
+Sep 01 00:54:14 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:54:14 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:54:14 symfony [info] {sfResponse} send content (72700 o)
+Sep 01 00:54:15 symfony [info] {sfTimerManager} Configuration 3.73 ms (11)
+Sep 01 00:54:15 symfony [info] {sfTimerManager} Action "main/index" 0.49 ms (1)
+Sep 01 00:54:15 symfony [info] {sfTimerManager} View "Success" for "main/index" 11.81 ms (1)
+Sep 01 00:54:15 symfony [info] {sfTimerManager} Partial "global/_header" 1.12 ms (1)
+Sep 01 00:54:15 symfony [info] {sfTimerManager} Partial "global/_menu" 2.17 ms (1)
+Sep 01 00:54:15 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:54:15 symfony [info] {sfContext} initialization
+Sep 01 00:54:15 symfony [info] {sfController} initialization
+Sep 01 00:54:15 symfony [info] {sfRouting} match route [download] "/download"
+Sep 01 00:54:15 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'download',)
+Sep 01 00:54:15 symfony [info] {sfController} dispatch request
+Sep 01 00:54:15 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:54:15 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:54:15 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:54:15 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:54:15 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:54:15 symfony [info] {sfAction} call "mainActions->executeDownload()"
+Sep 01 00:54:15 symfony [info] {sfView} initialize view for "main/download"
+Sep 01 00:54:15 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/main/templates/downloadSuccess.php"
+Sep 01 00:54:15 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:15 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:54:15 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:54:15 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:54:15 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:54:15 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:54:15 symfony [info] {sfFilter} render to client
+Sep 01 00:54:15 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:54:15 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:54:15 symfony [info] {sfResponse} send content (72810 o)
+Sep 01 00:54:16 symfony [info] {sfTimerManager} Configuration 3.86 ms (11)
+Sep 01 00:54:16 symfony [info] {sfTimerManager} Action "main/download" 0.46 ms (1)
+Sep 01 00:54:16 symfony [info] {sfTimerManager} View "Success" for "main/download" 11.44 ms (1)
+Sep 01 00:54:16 symfony [info] {sfTimerManager} Partial "global/_header" 1.08 ms (1)
+Sep 01 00:54:16 symfony [info] {sfTimerManager} Partial "global/_menu" 2.13 ms (1)
+Sep 01 00:54:19 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:54:19 symfony [info] {sfContext} initialization
+Sep 01 00:54:19 symfony [info] {sfController} initialization
+Sep 01 00:54:19 symfony [info] {sfRouting} match route [api_documentation] "/documentation/api"
+Sep 01 00:54:19 symfony [info] {sfRequest} request parameters array (  'module' => 'api_documentation',  'action' => 'index',)
+Sep 01 00:54:19 symfony [info] {sfController} dispatch request
+Sep 01 00:54:20 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:54:20 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:54:20 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:54:20 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:54:20 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:54:20 symfony [info] {sfAction} call "api_documentationActions->executeIndex()"
+Sep 01 00:54:20 symfony [info] {sfView} initialize view for "api_documentation/index"
+Sep 01 00:54:20 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/api_documentation/templates/indexSuccess.php"
+Sep 01 00:54:20 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/api_documentation_layout.php"
+Sep 01 00:54:20 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/api_documentation_layout.php"
+Sep 01 00:54:20 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:54:20 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:54:20 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:54:20 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:54:20 symfony [info] {sfView} initialize view for "global/_footer"
+Sep 01 00:54:20 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_footer.php"
+Sep 01 00:54:20 symfony [info] {sfFilter} render to client
+Sep 01 00:54:20 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:54:20 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:54:20 symfony [info] {sfResponse} send content (126286 o)
+Sep 01 00:54:20 symfony [info] {sfTimerManager} Configuration 30.61 ms (12)
+Sep 01 00:54:20 symfony [info] {sfTimerManager} Action "api_documentation/index" 0.46 ms (1)
+Sep 01 00:54:20 symfony [info] {sfTimerManager} View "Success" for "api_documentation/index" 144.99 ms (1)
+Sep 01 00:54:20 symfony [info] {sfTimerManager} Partial "global/_header" 1.04 ms (1)
+Sep 01 00:54:20 symfony [info] {sfTimerManager} Partial "global/_menu" 2.14 ms (1)
+Sep 01 00:54:20 symfony [info] {sfTimerManager} Partial "global/_footer" 0.86 ms (1)
+Sep 01 00:55:04 symfony [warning] {sfPhpConfigHandler} php.ini "magic_quotes_gpc" key is better set to "false" (current value is "'1'" - php.ini location: "/etc/php/apache2-php5/php.ini")
+Sep 01 00:55:04 symfony [info] {sfContext} initialization
+Sep 01 00:55:04 symfony [info] {sfController} initialization
+Sep 01 00:55:04 symfony [info] {sfRouting} match route [manual] "/documentation/manual"
+Sep 01 00:55:04 symfony [info] {sfRequest} request parameters array (  'module' => 'manual',  'action' => 'index',)
+Sep 01 00:55:04 symfony [info] {sfController} dispatch request
+Sep 01 00:55:04 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 01 00:55:04 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 01 00:55:04 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 01 00:55:04 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 01 00:55:04 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 01 00:55:04 symfony [info] {sfAction} call "manualActions->executeIndex()"
+Sep 01 00:55:04 symfony [info] {sfView} initialize view for "manual/index"
+Sep 01 00:55:04 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/manual/templates/indexSuccess.php"
+Sep 01 00:55:04 symfony [info] {PartialHelper} set slot "right"
+Sep 01 00:55:04 symfony [info] {sfView} initialize view for "manual/_table_of_contents"
+Sep 01 00:55:04 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/modules/manual/templates/_table_of_contents.php"
+Sep 01 00:55:04 symfony [info] {sfView} decorate content with "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:55:04 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/layout.php"
+Sep 01 00:55:04 symfony [info] {sfView} initialize view for "global/_header"
+Sep 01 00:55:04 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_header.php"
+Sep 01 00:55:04 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 01 00:55:04 symfony [info] {sfView} render "/home/clients/doctrine/svn/trunk/website/apps/frontend/templates/_menu.php"
+Sep 01 00:55:05 symfony [info] {PartialHelper} get slot "right"
+Sep 01 00:55:05 symfony [info] {sfFilter} render to client
+Sep 01 00:55:05 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 01 00:55:05 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 01 00:55:05 symfony [info] {sfResponse} send content (133747 o)
+Sep 01 00:55:05 symfony [info] {sfTimerManager} Configuration 3.84 ms (11)
+Sep 01 00:55:05 symfony [info] {sfTimerManager} Action "manual/index" 131.34 ms (1)
+Sep 01 00:55:05 symfony [info] {sfTimerManager} View "Success" for "manual/index" 89.79 ms (1)
+Sep 01 00:55:05 symfony [info] {sfTimerManager} Partial "manual/_table_of_contents" 0.95 ms (1)
+Sep 01 00:55:05 symfony [info] {sfTimerManager} Partial "global/_header" 1.13 ms (1)
+Sep 01 00:55:05 symfony [info] {sfTimerManager} Partial "global/_menu" 2.23 ms (1)
