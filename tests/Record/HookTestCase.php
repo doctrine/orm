@@ -40,7 +40,7 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
 
         parent::prepareTables();
     }
-    /**
+
     public function testInsertHooksGetInvoked()
     {
         $r = new RecordHookTest();
@@ -78,7 +78,7 @@ class Doctrine_Record_Hook_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($r->pop(), 'postDelete');
         $this->assertEqual($r->pop(), 'preDelete');
     }
-    */
+
     public function testSoftDelete()
     {
         $r = new SoftDeleteTest();

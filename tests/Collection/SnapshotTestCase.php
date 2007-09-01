@@ -63,8 +63,6 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
         $count = $this->conn->count();
 
         $coll->save();
-        print $this->conn->count();
-        print $count;
 
         $this->connection->clear();
         $coll = Doctrine_Query::create()->from('User u')->execute();
