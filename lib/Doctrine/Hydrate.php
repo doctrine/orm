@@ -91,6 +91,9 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      *          parent              the alias of the parent
      *
      *          agg                 the aggregates of this component
+     *
+     *          map                 the name of the column / aggregate value this
+     *                              component is mapped to a collection
      */
     protected $_aliasMap         = array();
     /**
@@ -1034,7 +1037,20 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
 
             $index = $driver->search($element, $array);
             if ($index === false) {
-                $array[] = $element;
+                $key = $map['map'];
+                
+                if (isset($key)) {
+                    if (isset($array[$key])) {
+                        throw new Doctrine_Hydrate_Exception("Couldn't hydrate. Found non-unique key mapping.");
+                    }
+
+                    if ( ! isset($element[$key])) {
+                        throw new Doctrine_Hydrate_Exception("Couldn't hydrate. Found a non-existent key.");
+                    }
+                    $array[$element[$key]] = $element;
+                } else {
+                    $array[] = $element;
+                }
             }
             $this->_setLastElement($prev, $array, $index, $rootAlias, $oneToOne);
             unset($currData[$rootAlias]);
@@ -1050,7 +1066,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 $relation = $map['relation'];
                 $componentAlias = $map['relation']->getAlias();
 
-                if (!isset($prev[$parent])) {
+                if ( ! isset($prev[$parent])) {
                     break;
                 }
 
@@ -1065,7 +1081,19 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                             $index = $driver->search($element, $prev[$parent][$componentAlias]);
 
                             if ($index === false) {
-                                $prev[$parent][$componentAlias][] = $element;
+                                $key = $map['map'];
+
+                                if (isset($key)) {
+                                    if (isset($prev[$parent][$componentAlias][$key])) {
+                                        throw new Doctrine_Hydrate_Exception("Couldn't hydrate. Found non-unique key mapping.");
+                                    }
+                                    if ( ! isset($element[$key])) {
+                                        throw new Doctrine_Hydrate_Exception("Couldn't hydrate. Found a non-existent key.");
+                                    }
+                                    $prev[$parent][$componentAlias][$element[$key]] = $element;
+                                } else {
+                                    $prev[$parent][$componentAlias][] = $element;
+                                }
                             }
                         }
                         // register collection for later snapshots

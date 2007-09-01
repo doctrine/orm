@@ -1217,6 +1217,15 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
     public function load($path, $loadFields = true) 
     {
+    	$e = Doctrine_Tokenizer::quoteExplode($path, ' MAP ');
+
+        $mapWith = null;
+        if (count($e) > 1) {
+            $mapWith = trim($e[1]);
+            
+            $path = $e[0];
+        }
+
         // parse custom join conditions
         $e = explode(' ON ', $path);
 
@@ -1286,7 +1295,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $table    = $relation->getTable();
                 $this->_aliasMap[$componentAlias] = array('table'    => $table,
                                                           'parent'   => $parent,
-                                                          'relation' => $relation);
+                                                          'relation' => $relation,
+                                                          'map'      => null);
                 if ( ! $relation->isOneToOne()) {
                    $this->needsSubquery = true;
                 }
@@ -1405,7 +1415,16 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
             $parent = $prevPath;
         }
+        if (isset($mapWith)) {
+            $e = explode('.', $mapWith);
+            $table = $this->_aliasMap[$componentAlias]['table'];
+            
+            if ( ! $table->hasColumn($e[1])) {
+                throw new Doctrine_Query_Exception("Couldn't use key mapping. Column " . $e[1] . " does not exist.");                                	
+            }
 
+            $this->_aliasMap[$componentAlias]['map'] = $table->getColumnName($e[1]);
+        }
         return $this->_aliasMap[$componentAlias];
     }
 
@@ -1435,7 +1454,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         $this->parts['from'][] = $queryPart;
         $this->tableAliases[$tableAlias]  = $componentAlias;
-        $this->_aliasMap[$componentAlias] = array('table' => $table);
+        $this->_aliasMap[$componentAlias] = array('table' => $table, 'map' => null);
         
         return $table;
     }
