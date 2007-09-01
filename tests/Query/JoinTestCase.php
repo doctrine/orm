@@ -34,9 +34,9 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareTables()
     {
-        $this->tables = array('Record_Country', 'Record_City', 'Record_District', 'Entity', 
+        $this->tables = array('Record_Country', 'Record_City', 'Record_District', 'Entity',
                               'User', 'Group', 'Email', 'Phonenumber', 'Groupuser', 'Account');
-        
+
         parent::prepareTables();
     }
     public function prepareData()
@@ -61,7 +61,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
 
         $this->connection->clear();
     }
-    
+
     public function testQuerySupportsCustomJoins()
     {
     	$q = new Doctrine_Query();
@@ -147,7 +147,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
         $q->select('u.id, g.id, e.id')->from('User u')
           ->leftJoin('u.Group g')->leftJoin('g.Email e');
-        
+
         $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e2.id AS e2__id, e3.id AS e3__id FROM entity e LEFT JOIN groupuser g ON e.id = g.user_id LEFT JOIN entity e2 ON e2.id = g.group_id LEFT JOIN email e3 ON e2.email_id = e3.id WHERE (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))');
         try {
             $q->execute();
@@ -162,13 +162,46 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
         $q->select('u.id, g.id, e.id')->from('Group g')
           ->leftJoin('g.User u')->leftJoin('u.Account a');
-        
+
         $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e2.id AS e2__id FROM entity e LEFT JOIN groupuser g ON e.id = g.group_id LEFT JOIN entity e2 ON e2.id = g.user_id LEFT JOIN account a ON e2.id = a.entity_id WHERE (e.type = 1 AND (e2.type = 0 OR e2.type IS NULL))');
         try {
             $q->execute();
             $this->pass();
         } catch (Doctrine_Exception $e) {
             $this->fail();
+        }
+    }
+
+    public function testMapKeywordForQueryWithOneComponent()
+    {
+        $q = new Doctrine_Query();
+        $coll = $q->from('Record_City c MAP c.name')->fetchArray();
+        
+        $this->assertTrue(isset($coll['City 1']));
+        $this->assertTrue(isset($coll['City 2']));
+        $this->assertTrue(isset($coll['City 3']));
+    }
+
+    public function testMapKeywordSupportsJoins()
+    {
+        $q = new Doctrine_Query();
+        $country = $q->from('Record_Country c LEFT JOIN c.City c2 MAP c2.name')->fetchOne();
+        $coll = $country->City;
+
+        $this->assertTrue(isset($coll['City 1']));
+        $this->assertTrue(isset($coll['City 2']));
+        $this->assertTrue(isset($coll['City 3']));
+    }
+    
+    public function testMapKeywordThrowsExceptionOnNonExistentColumn()
+    {
+    	try {
+            $q = new Doctrine_Query();
+            $country = $q->from('Record_Country c LEFT JOIN c.City c2 MAP c2.unknown')->fetchOne();
+        
+            $this->fail();
+        } catch (Doctrine_Query_Exception $e) {
+            $this->pass();
         }
     }
 }
