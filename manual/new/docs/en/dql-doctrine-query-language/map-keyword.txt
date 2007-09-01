@@ -1,5 +1,3 @@
-+++ MAP keyword
-
 The MAP keyword offers a way of mapping certain columns as collection / array keys. By default Doctrine maps multiple elements to numerically indexed arrays / collections. The mapping starts from zero. In order to override this behaviour you need to use MAP keyword as shown above:
 
 <code type="php">
