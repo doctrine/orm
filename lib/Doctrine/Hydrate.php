@@ -968,10 +968,6 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         $rootMap   = reset($this->_aliasMap);
         $rootAlias = key($this->_aliasMap);
         $componentName = $rootMap['table']->getComponentName();
-        $index = 0;
-        $incr  = true;
-        $lastAlias = '';
-        $currData  = array();
 
         if ($hydrationMode === null) {
             $hydrationMode = $this->_hydrationMode;
@@ -984,14 +980,14 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         }
 
         $array = $driver->getElementCollection($componentName);
-        $identifiable = array();
 
         if ($stmt === false || $stmt === 0) {
             return $array;
         }
 
         while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {
-            $parse = true;
+            $currData  = array();
+            $identifiable = array();
 
             foreach ($data as $key => $value) {
 
@@ -1015,14 +1011,6 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 }
 
 
-                $componentName  = $map['table']->getComponentName();
-                if (isset($map['relation'])) {
-                    $componentAlias = $map['relation']->getAlias();
-                } else {
-                    $componentAlias = $map['table']->getComponentName();
-                }
-
-
                 if ( ! isset($currData[$alias])) {
                     $currData[$alias] = array();
                 }
@@ -1031,99 +1019,36 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     $prev[$alias] = array();
                 }
 
-
-                $skip = false;
-                if (($alias !== $lastAlias || $parse) && ! empty($currData[$alias])) {
-
-                    // component changed
-                    $element = $driver->getElement($currData[$alias], $componentName);
-
-                    $oneToOne = false;
-
-                    if ($alias === $rootAlias) {
-                        // dealing with root component
-
-                        $index = $driver->search($element, $array);
-                        if ($index === false) {
-                            $array[] = $element;
-                        }
-
-                        $coll =& $array;
-                    } else {
-                        $parent   = $map['parent'];
-                        $relation = $map['relation'];
-
-                        if (!isset($prev[$parent])) {
-                            break;
-                        }
-
-                        // check the type of the relation
-                        if ( ! $relation->isOneToOne()) {
-                            // initialize the collection
-
-                            if ($driver->initRelated($prev[$parent], $componentAlias)) {
-
-                                // append element
-                                if (isset($identifiable[$alias])) {
-                                    $index = $driver->search($element, $prev[$parent][$componentAlias]);
-
-                                    if ($index === false) {
-                                        $prev[$parent][$componentAlias][] = $element;
-                                    }
-                                }
-                                // register collection for later snapshots
-                                $driver->registerCollection($prev[$parent][$componentAlias]);
-                            }
-                        } else {
-                            if ( ! isset($identifiable[$alias])) {
-                                $prev[$parent][$componentAlias] = $driver->getNullPointer();
-                            } else {
-                                $prev[$parent][$componentAlias] = $element;
-                            }
-                            $oneToOne = true;
-                        }
-                        $coll =& $prev[$parent][$componentAlias];
-                    }
-
-                    $this->_setLastElement($prev, $coll, $index, $alias, $oneToOne);
-
-                    $currData[$alias] = array();
-                    $identifiable[$alias] = null;
-                }
-
-
-
                 $currData[$alias][$field] = $table->prepareValue($field, $value);
-                $index = false;
                 if ($value !== null) {
                     $identifiable[$alias] = true;
                 }
-                $lastAlias = $alias;
-                $parse = false;
-
             }
-        }
 
-        foreach ($currData as $alias => $data) {
-            $table = $this->_aliasMap[$alias]['table'];
+            // dealing with root component
+            $table = $this->_aliasMap[$rootAlias]['table'];
             $componentName = $table->getComponentName();
-            // component changed       
-
-            $element = $driver->getElement($currData[$alias], $componentName);
+            $element = $driver->getElement($currData[$rootAlias], $componentName);
 
             $oneToOne = false;
 
-            if ($alias === $rootAlias) {
-                // dealing with root component
-                $index = $driver->search($element, $array);
-                if ($index === false) {
-                    $array[] = $element;
-                }
-                $coll =& $array;
-            } else {
-                $parent   = $this->_aliasMap[$alias]['parent'];
-                $relation = $this->_aliasMap[$alias]['relation'];
-                $componentAlias = $relation->getAlias();
+            $index = $driver->search($element, $array);
+            if ($index === false) {
+                $array[] = $element;
+            }
+            $this->_setLastElement($prev, $array, $index, $rootAlias, $oneToOne);
+            unset($currData[$rootAlias]);
+
+            foreach ($currData as $alias => $data) {
+                $index = false;
+                $map   = $this->_aliasMap[$alias];
+                $table = $this->_aliasMap[$alias]['table'];
+                $componentName = $table->getComponentName();
+                $element = $driver->getElement($data, $componentName);
+
+                $parent   = $map['parent'];
+                $relation = $map['relation'];
+                $componentAlias = $map['relation']->getAlias();
 
                 if (!isset($prev[$parent])) {
                     break;
@@ -1150,19 +1075,13 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     if ( ! isset($identifiable[$alias])) {
                         $prev[$parent][$componentAlias] = $driver->getNullPointer();
                     } else {
-
                         $prev[$parent][$componentAlias] = $element;
                     }
                     $oneToOne = true;
                 }
                 $coll =& $prev[$parent][$componentAlias];
+                $this->_setLastElement($prev, $coll, $index, $alias, $oneToOne);
             }
-
-            $this->_setLastElement($prev, $coll, $index, $alias, $oneToOne);
-
-            $index = false;
-            $currData[$alias] = array();
-            unset($identifiable[$alias]);
         }
 
         $driver->flush();
