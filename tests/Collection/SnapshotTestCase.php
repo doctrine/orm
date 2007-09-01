@@ -40,13 +40,16 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareTables()
     {
-    	$this->tables[] = 'Book';
+    	$this->tables = array('Entity', 'User', 'Group', 'Phonenumber', 'Email', 'Book');
     	
     	parent::prepareTables();
     }
+
     public function testDiffForSimpleCollection()
     {
-        $coll = Doctrine_Query::create()->from('User u')->orderby('u.id')->execute();
+        $q = Doctrine_Query::create()->from('User u')->orderby('u.id');
+
+        $coll = $q->execute();
         $this->assertEqual($coll->count(), 8);
 
         unset($coll[0]);
@@ -62,6 +65,7 @@ class Doctrine_Collection_Snapshot_TestCase extends Doctrine_UnitTestCase
         $coll = Doctrine_Query::create()->from('User u')->execute();
         $this->assertEqual($coll->count(), 7);
     }
+
     public function testDiffForOneToManyRelatedCollection()
     {
         $q = new Doctrine_Query();
