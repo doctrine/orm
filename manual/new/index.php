@@ -56,7 +56,7 @@ function autoload($class)
  */
 function getSvnRevision($file)
 {
-    $cmd = 'HOME=/tmp /usr/bin/svn info ' . escapeshellcmd($file);
+    $cmd = 'HOME=/tmp /usr/bin/svn info ' . escapeshellarg($file);
     exec($cmd, $output);
     foreach ($output as $line) {
         if (preg_match('/^Last Changed Rev: ([0-9]+)$/', $line, $matches)) {
