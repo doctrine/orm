@@ -430,9 +430,12 @@ if(isset($argv[0]) && $argv[0] == "coverage"){
     $coverage = true;
  }
 
-if( ! empty($argv)){
+if( ! empty($argv)) {
     $testGroup = new GroupTest("Custom");
-    foreach($argv as $group){
+    foreach($argv as $group) {
+        if( ! isset($$group)) {
+            die($group . " is not a valid group of tests\n");
+        }
         $testGroup->addTestCase($$group);
      }
  } else {
