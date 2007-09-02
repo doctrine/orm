@@ -30,8 +30,8 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase {
-
+class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase 
+{
     public function prepareData() 
     { }
     public function prepareTables() 
