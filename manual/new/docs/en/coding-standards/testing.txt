@@ -1,18 +1,3 @@
-+++ Running tests
-Tests can be run either in a browser via the url DOCTRINE_PATH/tests/run.php or
-on the command line. 
-
-On the command line navigate to the DOCTRINE_PATH/tests folder and run 
-<code type="bash">
-php run.php
-</code>
-
-On the command line the testing script has several options. 
- * in order to generate coverage report run the script with the -coverage flag.
- * in order to run just a subselect of tests use the -group flag.
- * in order to filter the tests aginst a custom string use the -filter flag. 
- * for more information run the script with the -help flag. 
-
 +++ Writing tests
 
 ++++ Classes
