@@ -3,22 +3,22 @@
 ini_set('max_execution_time', 900);
 
 function parseOptions($array) {
-  $currentName="";
-  $options=array();
-  foreach($array as $name){
-    if(strpos($name,"-")===0) {
-      $name=str_replace("-","",$name);      
-      $currentName=$name;
-      if( ! isset($options[$currentName])) {
-        $options[$currentName]=array();         
-      }
-    } else {
-      $values=$options[$currentName];
-      array_push($values,$name);    
-      $options[$currentName]=$values;
+    $currentName="";
+    $options=array();
+    foreach($array as $name) {
+        if(strpos($name,"-")===0) {
+            $name=str_replace("-","",$name);      
+            $currentName=$name;
+            if( ! isset($options[$currentName])) {
+                $options[$currentName]=array();         
+            }
+        } else {
+            $values=$options[$currentName];
+            array_push($values,$name);    
+            $options[$currentName]=$values;
+        }
     }
-  }
-  return $options;
+    return $options;
 }
 
 function autoload($class) {
@@ -471,7 +471,7 @@ if (isset($options["help"])) {
     echo "\n Flags:\n";
     echo " -coverage will generate coverage report data that can be viewed with the cc.php script in this folder. NB! This takes time. You need xdebug to run this\n";
     echo " -group <groupName1> <groupName2> <className1> Use this option to run just a group of tests or tests with a given classname. Groups are currently defined as the variable name they are called in this script. \n";
-   echo " - filter <string1> <string2> case insensitive strings that will be applied to the className of the tests. A test_classname must contain all of these strings to be run\n"; 
+    echo " - filter <string1> <string2> case insensitive strings that will be applied to the className of the tests. A test_classname must contain all of these strings to be run\n"; 
     echo "\nAvailable groups:\n tickets\n";
     die();
 }
