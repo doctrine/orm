@@ -4,7 +4,7 @@
 ++ DELETE queries
 ++ FROM clause
 ++ JOIN syntax
-++ MAP keyword
+++ INDEXBY keyword
 ++ WHERE clause
 ++ Conditional expressions
 ++ Functional Expressions
@@ -13,4 +13,4 @@
 ++ ORDER BY clause
 ++ LIMIT and OFFSET clauses
 ++ Examples
-++ BNF 
+++ BNF
