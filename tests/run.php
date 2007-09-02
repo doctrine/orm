@@ -425,7 +425,7 @@ if (PHP_SAPI === "cli") {
 $argv = $_SERVER["argv"];
 $coverage = false;
 array_shift($argv);
-if(isset($argv[1]) && $argv[1] == "coverage"){
+if(isset($argv[0]) && $argv[0] == "coverage"){
     array_shift($argv);
     $coverage = true;
  }

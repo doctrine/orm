@@ -32,28 +32,7 @@ $reporter = new Doctrine_Coverage_Report("coverage.txt");
     .red{ background: red;}
     .orange{ background: #f90;}
 
- dl.table-display
-{
-margin: 2em 0;
-padding: 0;
-font-family: georgia, times, serif;
-}
 
-.table-display dt
-{
-float: left;
-margin: 0 0 0 0;
-padding: 0 .5em 0 .5em;
-}
-
-/* commented backslash hack for mac-ie5 \*/
-dt { clear: both; }
-/* end hack */
-
-.table-display dd{
-    float: left;
-    margin: 0 0 0 0;
-    }
 </style>
 </head>
 <body>
@@ -136,10 +115,10 @@ class Doctrine_Coverage_Report
         }
         $coveredLines = $this->coverage[$key];
         $fileArray = file(Doctrine::getPath() . "/".$fileName);
-        $html .= '<dl class="table-display">' . "\n";
+        $html .= '<table>' . "\n";
         foreach ($fileArray as $num => $line){
             $linenum = $num+1;
-            $html .= '<dt>' . $linenum . '</dt>' . "\n";
+            $html .= '<tr><td>' . $linenum . '</td>' . "\n";
             $class ="normal";
             if (isset($coveredLines[$linenum]) && $coveredLines[$linenum] == 1){
                 $class = "covered";
@@ -148,9 +127,11 @@ class Doctrine_Coverage_Report
             } else if (isset($coveredLines[$linenum]) && $coveredLines[$linenum] == -2) {
                 $class ="orange";
             }
-            $html .= '<dd class="' . $class . '">' . htmlspecialchars($line) . '</dd>' . "\n";
+            
+            $line = str_replace(" ", "&nbsp;", htmlspecialchars($line));
+            $html .= '<td class="' . $class . '">' . $line . '</td></tr>' . "\n";
         }
-        $html .='</dl></div>';
+        $html .='</table></div>';
         echo $html;
     }
 
