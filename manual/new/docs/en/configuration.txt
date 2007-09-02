@@ -95,16 +95,26 @@ SELECT * FROM sometable WHERE id='123'
 
 +++ Exporting
 
+The export attribute is used for telling Doctrine what it should export when exporting classes.
+
+If you don't want to export anything when calling export() you can use:
+
 <code type="php">
 $manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_NONE);
 </code>
 
-
-+++ Fetching strategy
+For exporting tables only (but not constraints) you can use on of the following:
 
 <code type="php">
-// sets the default collection type (fetching strategy)
-$manager->setAttribute(Doctrine::ATTR_FETCHMODE, Doctrine::FETCH_LAZY);
+$manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_TABLES);
+// or you can use
+$manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL ^ Doctrine::EXPORT_CONSTRAINTS);
+</code>
+
+For exporting everything (tables and constraints) you can use:
+
+<code type="php">
+$manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);
 </code>
 
 +++ Event listener
@@ -115,7 +125,9 @@ $manager->setAttribute(Doctrine::ATTR_LISTENER, new MyListener());
 </code>
 ++ Naming convention attributes
 
-Naming convention attributes affect on the naming of different database related elements such as tables, indexes and sequences.
+Naming convention attributes affect on the naming of different database related elements such as tables, indexes and sequences. Basically every naming convention attribute has affect in both ways. When importing schemas from the database to classes and when exporting classes into database.
+
+So for example by default Doctrine naming convention for indexes is %s_idx. Not only do the indexes you set get a special suffix, also the imported classes get their indexes mapped to their non-suffixed equivalents. This applies to all naming convention attributes.
 
 +++ Index name format
 
