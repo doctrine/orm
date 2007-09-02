@@ -177,4 +177,3 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
         }
     }
 }
-?>

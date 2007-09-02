@@ -104,4 +104,3 @@ class Doctrine_Query_Delete_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($q->getQuery(), 'DELETE FROM entity LIMIT 10 OFFSET 20');
     }
 }
-?>

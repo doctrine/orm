@@ -121,4 +121,3 @@ class Doctrine_Query_ComponentAlias_TestCase extends Doctrine_UnitTestCase
     }
 
 }
-?>

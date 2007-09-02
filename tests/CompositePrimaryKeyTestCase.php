@@ -11,4 +11,3 @@ class Doctrine_Composite_PrimaryKey_TestCase extends Doctrine_UnitTestCase {
         parent::prepareTables();
     }
 }
-?>

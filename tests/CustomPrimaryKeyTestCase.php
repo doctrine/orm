@@ -58,4 +58,3 @@ class Doctrine_CustomPrimaryKey_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($c->identifier(), array('uid' => 1));
     }
 }
-?>

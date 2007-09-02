@@ -232,4 +232,3 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
     }
 }
-?>

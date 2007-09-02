@@ -74,4 +74,3 @@ class Doctrine_Collection_Offset_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($coll[6]->getState(), Doctrine_Record::STATE_CLEAN);
     }
 }
-?>

@@ -116,4 +116,3 @@ class Doctrine_DataType_Boolean_TestCase extends Doctrine_UnitTestCase {
     }
 
 }
-?>

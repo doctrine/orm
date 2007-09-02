@@ -96,4 +96,3 @@ class Doctrine_Export_Pgsql_TestCase extends Doctrine_UnitTestCase
                                          ));
     }
 }
-?>

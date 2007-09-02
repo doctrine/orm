@@ -43,4 +43,3 @@ class Doctrine_Record_Filter_TestCase extends Doctrine_UnitTestCase {
 
     }
 }
-?>

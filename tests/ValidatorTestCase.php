@@ -411,4 +411,3 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
         $this->manager->setAttribute(Doctrine::ATTR_VLD, false);
     }
 }
-?>

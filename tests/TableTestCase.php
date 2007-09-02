@@ -237,4 +237,3 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
     }
 
 }
-?>

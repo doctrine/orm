@@ -90,4 +90,3 @@ class Doctrine_Export_Firebird_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (name CHAR(10), type INT, PRIMARY KEY(name, type))');
     }
 }
-?>

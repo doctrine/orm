@@ -204,4 +204,3 @@ class Doctrine_Relation_ManyToMany_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($component->name, 'changed name');
     }
 }
-?>

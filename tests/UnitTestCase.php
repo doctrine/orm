@@ -294,4 +294,3 @@ class Doctrine_UnitTestCase extends UnitTestCase
         $this->init = true;
     }
 }
-?>

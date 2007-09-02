@@ -231,4 +231,3 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users[4]->Phonenumber[0]->max, '444 555');
     }
 }
-?>

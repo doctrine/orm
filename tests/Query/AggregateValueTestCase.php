@@ -216,4 +216,3 @@ class Doctrine_Query_AggregateValue_TestCase extends Doctrine_UnitTestCase
 
 
 }
-?>

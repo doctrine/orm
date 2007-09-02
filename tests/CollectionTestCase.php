@@ -330,4 +330,3 @@ class Doctrine_Collection_TestCase extends Doctrine_UnitTestCase
     }
 
 }
-?>

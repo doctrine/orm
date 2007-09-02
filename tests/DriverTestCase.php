@@ -197,4 +197,3 @@ class Doctrine_Driver_UnitTestCase extends UnitTestCase {
         }
     }
 }
-?>

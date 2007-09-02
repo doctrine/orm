@@ -118,4 +118,3 @@ class Doctrine_Query_Condition_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($query->getQuery(), $sql);
     }
 }
-?>

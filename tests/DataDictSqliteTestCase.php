@@ -61,4 +61,3 @@ class Doctrine_DataDict_Sqlite_TestCase extends Doctrine_UnitTestCase {
     }
 }
 */
-?>

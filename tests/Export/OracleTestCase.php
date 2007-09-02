@@ -151,4 +151,3 @@ class Doctrine_Export_Oracle_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($sql[0], 'CREATE TABLE sometable (id INT UNIQUE, name VARCHAR2(4), PRIMARY KEY(id), INDEX myindex (id, name))');
     }
 }
-?>

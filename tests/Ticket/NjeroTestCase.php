@@ -84,4 +84,3 @@ class Doctrine_Ticket_Njero_TestCase extends Doctrine_UnitTestCase
       #echo "Values " . serialize(array($c, $c2, $c3));
 
     }
-}?>

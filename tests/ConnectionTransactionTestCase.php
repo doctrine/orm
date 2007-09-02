@@ -180,4 +180,3 @@ class Doctrine_Connection_Transaction_TestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($listener->pop(), 'onPreTransactionCommit');
     }
 }
-?>

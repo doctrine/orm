@@ -249,4 +249,3 @@ class Doctrine_RawSql_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual(count($coll), 3);
     }
 }
-?>

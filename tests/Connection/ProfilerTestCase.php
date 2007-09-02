@@ -181,4 +181,3 @@ class Doctrine_Connection_Profiler_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
     }
 }
-?>

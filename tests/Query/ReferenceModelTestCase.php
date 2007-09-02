@@ -200,4 +200,3 @@ class Doctrine_Query_ReferenceModel_TestCase extends Doctrine_UnitTestCase {
     }
     */
 }
-?>

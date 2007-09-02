@@ -117,4 +117,3 @@ class Doctrine_Query_From_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, p.id AS p__id, p.phonenumber AS p__phonenumber FROM entity e INNER JOIN groupuser g ON e.id = g.user_id INNER JOIN entity e2 ON e2.id = g.group_id LEFT JOIN phonenumber p ON e2.id = p.entity_id WHERE (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL))");
     }
 }
-?>

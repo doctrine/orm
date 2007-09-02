@@ -85,4 +85,3 @@ class Doctrine_BatchIterator_TestCase extends Doctrine_UnitTestCase {
     }
 
 }
-?>

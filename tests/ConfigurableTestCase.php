@@ -215,4 +215,3 @@ class Doctrine_Configurable_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_array($this->manager->getAttributes()));
     }
 }
-?>

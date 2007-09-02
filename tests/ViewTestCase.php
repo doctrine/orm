@@ -74,7 +74,5 @@ class Doctrine_View_TestCase extends Doctrine_UnitTestCase
 
     public function testConstructor() 
     {
-                                      	
     }
 }
-?>

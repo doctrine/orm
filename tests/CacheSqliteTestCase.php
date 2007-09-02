@@ -107,4 +107,3 @@ class Doctrine_Cache_SqliteTestCase extends Doctrine_UnitTestCase {
 
     }
 }
-?>

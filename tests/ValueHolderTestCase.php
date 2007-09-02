@@ -58,4 +58,3 @@ class Doctrine_ValueHolder_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue($f);
     }
 }
-?>

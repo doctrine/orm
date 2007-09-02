@@ -135,4 +135,3 @@ class Doctrine_Db_Profiler_TestCase extends Doctrine_UnitTestCase {
         $this->assertTrue(is_numeric($this->profiler->lastEvent()->getElapsedSecs()));
     }
 }
-?>

@@ -152,4 +152,3 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase
     }
     */
 }
-?>

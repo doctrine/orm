@@ -59,4 +59,3 @@ class Doctrine_Manager_TestCase extends Doctrine_UnitTestCase {
     public function prepareData() { }
     public function prepareTables() { }
 }
-?>

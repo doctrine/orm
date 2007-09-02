@@ -37,4 +37,3 @@ class Doctrine_Cache_Query_SqliteTestCase extends Doctrine_UnitTestCase {
         $this->assertEqual($this->cache->count(), 0);
     }
 }
-?>

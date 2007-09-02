@@ -123,4 +123,3 @@ class Doctrine_Access_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user->get('name'), 'Jack');
     }
 }
-?>

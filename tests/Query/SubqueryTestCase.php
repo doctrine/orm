@@ -109,23 +109,22 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
     }
 
     public function testAggregateFunctionsInOrderByAndHavingWithCount()
-	{
-		$q = new Doctrine_Query();
-		
-		$q->select('u.*, COUNT(a.id) num_albums')
-		  ->from('User u')
-		  ->leftJoin('u.Album a')
-		  ->orderby('num_albums desc')
-		  ->groupby('u.id')
-		  ->having('num_albums > 0')
-		  ->limit(5);
-		
-		try {
-			$q->count();
-			$this->pass();
-		} catch (Doctrine_Exception $e) {
-			$this->fail();
-		}
-	}
+    {
+        $q = new Doctrine_Query();
+        
+        $q->select('u.*, COUNT(a.id) num_albums')
+          ->from('User u')
+          ->leftJoin('u.Album a')
+          ->orderby('num_albums desc')
+          ->groupby('u.id')
+          ->having('num_albums > 0')
+          ->limit(5);
+        
+        try {
+            $q->count();
+            $this->pass();
+        } catch (Doctrine_Exception $e) {
+            $this->fail();
+        }
+    }
 }
-?>

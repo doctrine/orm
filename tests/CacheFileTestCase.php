@@ -57,4 +57,3 @@ class Doctrine_Cache_FileTestCase extends Doctrine_UnitTestCase {
     }
 
 }
-?>

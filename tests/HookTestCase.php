@@ -170,4 +170,3 @@ class Doctrine_Hook_TestCase extends Doctrine_UnitTestCase
     }
 
 }
-?>
