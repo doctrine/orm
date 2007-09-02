@@ -3,11 +3,11 @@
 ini_set('max_execution_time', 900);
 
 function parseOptions($array) {
-    $currentName="";
+    $currentName='';
     $options=array();
     foreach($array as $name) {
-        if(strpos($name,"-")===0) {
-            $name=str_replace("-","",$name);      
+        if(strpos($name,'-')===0) {
+            $name=str_replace('-','',$name);      
             $currentName=$name;
             if( ! isset($options[$currentName])) {
                 $options[$currentName]=array();         
@@ -415,39 +415,39 @@ class MyReporter extends HtmlReporter {
     public function paintFooter()
     {
 
-        print "<pre>";
+        print '<pre>';
         foreach ($this->_test->getMessages() as $message) {
-            print $message . "\n";
+            print $message . '\n';
         }
-        print "</pre>";
-        $colour = ($this->_test->getFailCount() > 0 ? "red" : "green");
-        print "<div style=\"";
-        print "padding: 8px; margin-top: 1em; background-color: $colour; color: white;";
-        print "\">";
+        print '</pre>';
+        $colour = ($this->_test->getFailCount() > 0 ? 'red' : 'green');
+        print '<div style=\'';
+        print 'padding: 8px; margin-top: 1em; background-color: $colour; color: white;';
+        print '\'>';
         print $this->_test->getTestCaseCount() . ' test cases';
-        print " test cases complete:\n";
-        print "<strong>" . $this->_test->getPassCount() . "</strong> passes and ";
-        print "<strong>" . $this->_test->getFailCount() . "</strong> fails.";
-        print "</div>\n";
+        print ' test cases complete:\n';
+        print '<strong>' . $this->_test->getPassCount() . '</strong> passes and ';
+        print '<strong>' . $this->_test->getFailCount() . '</strong> fails.';
+        print '</div>';
     }
 }
 
 
 ?>
 <?php
-if (PHP_SAPI === "cli") {
+if (PHP_SAPI === 'cli') {
     $reporter = new CliReporter();
 } else {
     $reporter = new MyReporter();
 }
 
-$argv = $_SERVER["argv"];
+$argv = $_SERVER['argv'];
 array_shift($argv);
 $options = parseOptions($argv);
 
-if( isset($options["group"])) {
-    $testGroup = new GroupTest("Custom");
-    foreach($options["group"] as $group) {
+if( isset($options['group'])) {
+    $testGroup = new GroupTest('Custom');
+    foreach($options['group'] as $group) {
         if( ! isset($$group)) {
             if (class_exists($group)) {
                 $testGroup->addTestCase(new $group);
@@ -459,12 +459,12 @@ if( isset($options["group"])) {
 } else {
     $testGroup = $test;
 }
-$filter = "";
-if(isset($options["filter"])){
-    $filter = $options["filter"];
+$filter = '';
+if (isset($options['filter'])) {
+    $filter = $options['filter'];
 }
 
-if (isset($options["help"])) {
+if (isset($options['help'])) {
     echo "Doctrine test runner help\n";
     echo "===========================\n";
     echo " To run all tests simply run this script without arguments. \n";
@@ -476,13 +476,13 @@ if (isset($options["help"])) {
     die();
 }
 
-if (isset($options["coverage"])) {
+if (isset($options['coverage'])) {
     xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
     $testGroup->run($reporter, $filter);
-    $result["path"] = Doctrine::getPath() . DIRECTORY_SEPARATOR;
-    $result["coverage"] = xdebug_get_code_coverage();
+    $result['path'] = Doctrine::getPath() . DIRECTORY_SEPARATOR;
+    $result['coverage'] = xdebug_get_code_coverage();
     xdebug_stop_code_coverage();
-    file_put_contents("coverage.txt", serialize($result));
+    file_put_contents('coverage.txt', serialize($result));
 } else {
     $testGroup->run($reporter, $filter);
 }

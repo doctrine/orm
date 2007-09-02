@@ -20,14 +20,14 @@ class GroupTest extends UnitTestCase
     }
 
     public function shouldBeRun($testCase, $filter){
-        if( ! is_array($filter)){
+        if( ! is_array($filter)) {
             return true;
          }
-        foreach($filter as $subFilter){
+        foreach($filter as $subFilter) {
             $name = strtolower(get_class($testCase));
             $pos = strpos($name, strtolower($subFilter));
             //it can be 0 so we have to use === to see if false
-            if($pos === false){
+            if ($pos === false) {
                 return false;
              }
         }
