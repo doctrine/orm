@@ -339,8 +339,21 @@ final class Doctrine
     /**
      * export all
      */
-    const EXPORT_ALL                = 3;
+    const EXPORT_ALL                = 4;
+    
 
+    /**
+     * VALIDATION CONSTANTS
+     */
+    const VALIDATE_NONE             = 0;
+
+    const VALIDATE_LENGTHS          = 1;
+    
+    const VALIDATE_TYPES            = 2;
+    
+    const VALIDATE_CONSTRAINTS      = 4;
+    
+    const VALIDATE_ALL              = 5;
 
     /**
      * constant for auto_increment identifier
