@@ -341,7 +341,7 @@ $test->addTestCase(new Doctrine_Template_TestCase());
 $test->addTestCase(new Doctrine_Import_Builder_TestCase());
 
 $test->addTestCase(new Doctrine_Search_TestCase());
-*/
+                                                         */
 //$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
 
 //$test->addTestCase(new Doctrine_AuditLog_TestCase());
@@ -377,7 +377,7 @@ class CliReporter extends HtmlReporter{
 
 class MyReporter extends HtmlReporter {
     public function paintHeader() {
-    ?>
+?>
 <html>
 <head>
   <title>Doctrine Unit Tests</title>
@@ -419,28 +419,31 @@ class MyReporter extends HtmlReporter {
 if (PHP_SAPI === "cli") {
     $reporter = new CliReporter();
 } else {
-   $reporter = new MyReporter();
+    $reporter = new MyReporter();
 }
 
 $argv = $_SERVER["argv"];
-$coverage = false;
 array_shift($argv);
+$coverage = false;
 if(isset($argv[0]) && $argv[0] == "coverage"){
     array_shift($argv);
     $coverage = true;
- }
+}
 
 if( ! empty($argv)) {
     $testGroup = new GroupTest("Custom");
     foreach($argv as $group) {
         if( ! isset($$group)) {
+            if (class_exists($group)) {
+                $testGroup->addTestCase(new $group);
+            }
             die($group . " is not a valid group of tests\n");
         }
         $testGroup->addTestCase($$group);
-     }
- } else {
-     $testGroup = $test;
- }
+    }
+} else {
+    $testGroup = $test;
+}
 if ($coverage) {
     xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
     $testGroup->run($reporter);
