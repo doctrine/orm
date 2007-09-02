@@ -1,8 +1,8 @@
-The MAP keyword offers a way of mapping certain columns as collection / array keys. By default Doctrine maps multiple elements to numerically indexed arrays / collections. The mapping starts from zero. In order to override this behaviour you need to use MAP keyword as shown above:
+The INDEXBY keyword offers a way of mapping certain columns as collection / array keys. By default Doctrine indexes multiple elements to numerically indexed arrays / collections. The mapping starts from zero. In order to override this behaviour you need to use INDEXBY keyword as shown above:
 
 <code type="php">
 $q = new Doctrine_Query();
-$q->from('User u MAP u.name');
+$q->from('User u INDEXBY u.name');
 
 $users = $q->execute();
 </code>
@@ -13,12 +13,12 @@ Now the users in $users collection are accessible through their names.
 print $user['jack daniels']->id;
 </code>
 
-The MAP keyword can be applied to any given JOIN. This means that any given component can have each own mapping behaviour. In the following we use distinct mappings for both Users and Groups. 
+The INDEXBY keyword can be applied to any given JOIN. This means that any given component can have each own indexing behaviour. In the following we use distinct indexing for both Users and Groups.
 
 
 <code type="php">
 $q = new Doctrine_Query();
-$q->from('User u MAP u.name')->innerJoin('u.Group g MAP g.name');
+$q->from('User u INDEXBY u.name')->innerJoin('u.Group g INDEXBY g.name');
 
 $users = $q->execute();
 </code>
