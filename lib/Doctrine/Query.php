@@ -1217,7 +1217,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
     public function load($path, $loadFields = true) 
     {
-    	$e = Doctrine_Tokenizer::quoteExplode($path, ' MAP ');
+    	$e = Doctrine_Tokenizer::quoteExplode($path, ' INDEXBY ');
 
         $mapWith = null;
         if (count($e) > 1) {
@@ -1420,7 +1420,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $table = $this->_aliasMap[$componentAlias]['table'];
             
             if ( ! $table->hasColumn($e[1])) {
-                throw new Doctrine_Query_Exception("Couldn't use key mapping. Column " . $e[1] . " does not exist.");                                	
+                throw new Doctrine_Query_Exception("Couldn't use key mapping. Column " . $e[1] . " does not exist.");
             }
 
             $this->_aliasMap[$componentAlias]['map'] = $table->getColumnName($e[1]);

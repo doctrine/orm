@@ -37,6 +37,28 @@ class Doctrine_Plugin
      */
     protected $_options = array();
     /**
+     * __get
+     * an alias for getOption
+     *
+     * @param string $option
+     */
+    public function __get($option)
+    {
+        if (isset($this->options[$option])) {
+            return $this->_options[$option];
+        }
+        return null;
+    }
+    /**
+     * __isset
+     *
+     * @param string $option
+     */
+    public function __isset($option) 
+    {
+        return isset($this->_options[$option]);
+    }
+    /**
      * returns the value of an option
      *
      * @param $option       the name of the option to retrieve
@@ -74,6 +96,6 @@ class Doctrine_Plugin
      */
     public function getOptions()
     {
-        return $this->_options;	
+        return $this->_options;
     }
 }

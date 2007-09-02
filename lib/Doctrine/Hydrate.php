@@ -948,9 +948,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     return $collection->getFirst();
                 }
             case self::HYDRATE_ARRAY:
-                if (!empty($collection[0])) {
-                    return $collection[0];
-                }
+                return array_shift($collection);
         }
 
         return false;

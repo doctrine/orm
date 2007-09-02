@@ -29,7 +29,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_AuditLog
+class Doctrine_AuditLog extends Doctrine_Plugin
 {
     protected $_options = array(
                             'className'     => '%CLASS%Version',
@@ -43,69 +43,6 @@ class Doctrine_AuditLog
     public function __construct($options)
     {
         $this->_options = array_merge($this->_options, $options);
-    }
-    /**
-     * __get
-     * an alias for getOption
-     *
-     * @param string $option
-     */
-    public function __get($option)
-    {
-        if (isset($this->options[$option])) {
-            return $this->_options[$option];
-        }
-        return null;
-    }
-    /**
-     * __isset
-     *
-     * @param string $option
-     */
-    public function __isset($option) 
-    {
-        return isset($this->_options[$option]);
-    }
-    /**
-     * getOptions
-     * returns all options of this table and the associated values
-     *
-     * @return array    all options and their values
-     */
-    public function getOptions()
-    {
-        return $this->_options;
-    }
-    /**
-     * setOption
-     * sets an option and returns this object in order to
-     * allow flexible method chaining
-     *
-     * @see slef::$_options             for available options
-     * @param string $name              the name of the option to set
-     * @param mixed $value              the value of the option
-     * @return Doctrine_AuditLog        this object
-     */
-    public function setOption($name, $value)
-    {
-        if ( ! isset($this->_options[$name])) {
-            throw new Doctrine_Exception('Unknown option ' . $name);
-        }
-        $this->_options[$name] = $value;
-    }
-    /**
-     * getOption
-     * returns the value of given option
-     *
-     * @param string $name  the name of the option
-     * @return mixed        the value of given option
-     */
-    public function getOption($name)
-    {
-        if (isset($this->_options[$name])) {
-            return $this->_options[$name];
-        }
-        return null;
     }
 
     public function getVersion(Doctrine_Record $record, $version)
