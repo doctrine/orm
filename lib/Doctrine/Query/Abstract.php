@@ -65,9 +65,9 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     public function addWhere($where, $params = array())
     {
         if (is_array($params)) {
-            $this->_params = array_merge($this->_params, $params);
+            $this->_params['where'] = array_merge($this->_params['where'], $params);
         } else {
-            $this->_params[] = $params;
+            $this->_params['where'][] = $params;
         }
         return $this->parseQueryPart('where', $where, true);
     }
@@ -93,7 +93,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
             $a[] = $value;
         }
 
-        $this->_params = array_merge($this->_params, $params);
+        $this->_params['where'] = array_merge($this->_params['where'], $params);
 
         $where = $expr . ' IN (' . implode(', ', $a) . ')';
 
@@ -121,9 +121,9 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     public function addHaving($having, $params = array())
     {
         if (is_array($params)) {
-            $this->_params = array_merge($this->_params, $params);
+            $this->_params['having'] = array_merge($this->_params['having'], $params);
         } else {
-            $this->_params[] = $params;
+            $this->_params['having'][] = $params;
         }
         return $this->parseQueryPart('having', $having, true);
     }
@@ -217,9 +217,9 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     	} else {
             if ($params !== null) {
                 if (is_array($params)) {
-                    $this->_params = array_merge($this->_params, $params);
+                    $this->_params['set'] = array_merge($this->_params['set'], $params);
                 } else {
-                    $this->_params[] = $params;
+                    $this->_params['set'][] = $params;
                 }
             }
             return $this->parseQueryPart('set', $key . ' = ' . $value, true);
@@ -279,11 +279,11 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function where($where, $params = array())
     {
-        //$this->_params = array();
+        $this->_params['where'] = array();
         if (is_array($params)) {
-            $this->_params = $params;
+            $this->_params['where'] = $params;
         } else {
-            $this->_params[] = $params;
+            $this->_params['where'][] = $params;
         }
 
         return $this->parseQueryPart('where', $where);
@@ -298,11 +298,11 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function having($having, $params = array())
     {
-        $this->_params = array();
+        $this->_params['having'] = array();
         if (is_array($params)) {
-            $this->_params = $params;
+            $this->_params['having'] = $params;
         } else {
-            $this->_params[] = $params;
+            $this->_params['having'][] = $params;
         }
         
         return $this->parseQueryPart('having', $having);

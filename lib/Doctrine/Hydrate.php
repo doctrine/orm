@@ -70,7 +70,9 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     /**
      * @var array $params                       query input parameters
      */
-    protected $_params      = array();
+    protected $_params      = array('where' => array(),
+                                    'set' => array(),
+                                    'having' => array());
     /**
      * @var Doctrine_Connection $conn           Doctrine_Connection object
      */
@@ -688,7 +690,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      */
     public function getParams()
     {
-        return $this->_params;
+        return array_merge($this->_params['set'], $this->_params['where'], $this->_params['having']);
     }
     /**
      * setParams
@@ -751,7 +753,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     }
     public function _execute($params)
     {
-        $params = $this->_conn->convertBooleans(array_merge($this->_params, $params));
+        $params = $this->_conn->convertBooleans($params);
 
         if ( ! $this->_view) {
             $query = $this->getQuery($params);
@@ -783,6 +785,8 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      */
     public function execute($params = array(), $hydrationMode = null)
     {
+        $params = array_merge($this->_params['set'], $this->_params['where'],
+                $this->_params['having'], $params);
         if ($this->_cache) {
             $cacheDriver = $this->getCacheDriver();
 
@@ -1036,10 +1040,9 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             $oneToOne = false;
 
             $index = $driver->search($element, $array);
-            if ($index === false) {
-                $key = $map['map'];
-                
-                if (isset($key)) {
+            if ($index === false) {      
+                if (isset($map['map'])) {
+                    $key = $map['map'];
                     if (isset($array[$key])) {
                         throw new Doctrine_Hydrate_Exception("Couldn't hydrate. Found non-unique key mapping.");
                     }
@@ -1081,9 +1084,8 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                             $index = $driver->search($element, $prev[$parent][$componentAlias]);
 
                             if ($index === false) {
-                                $key = $map['map'];
-
-                                if (isset($key)) {
+                                if (isset($map['map'])) {
+                                    $key = $map['map'];
                                     if (isset($prev[$parent][$componentAlias][$key])) {
                                         throw new Doctrine_Hydrate_Exception("Couldn't hydrate. Found non-unique key mapping.");
                                     }

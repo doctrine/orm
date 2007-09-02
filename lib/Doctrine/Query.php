@@ -1519,7 +1519,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
              $params = array($params);
          }
          // append parameters
-         $params = array_merge($this->_params, $params);
+         $params = array_merge($this->_params['where'], $this->_params['having'], $params);
 
          $results = $this->getConnection()->fetchAll($q, $params);
 

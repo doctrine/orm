@@ -74,7 +74,6 @@ $test->addTestCase(new Doctrine_Ticket330_TestCase());
 
 $test->addTestCase(new Doctrine_TicketNjero_TestCase());
 
-
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
 $test->addTestCase(new Doctrine_Connection_Oracle_TestCase());

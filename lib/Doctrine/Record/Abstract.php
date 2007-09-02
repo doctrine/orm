@@ -110,7 +110,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         $conn = $this->_table->getConnection(); 
         foreach ($map as $key => $value) {
             $table = $conn->getTable($key);
-//            $table->setOption('inheritanceMap', $value);
+            $table->setOption('inheritanceMap', $value);
         }
     }
 
