@@ -87,14 +87,6 @@ abstract class Doctrine_Configurable extends Doctrine_Object
             case Doctrine::ATTR_LISTENER:
                 $this->setEventListener($value);
                 break;
-            case Doctrine::ATTR_LOCKMODE:
-                break;
-            case Doctrine::ATTR_CREATE_TABLES:
-                    throw new Doctrine_Exception("ATTR_CREATE_TABLES has been deprecated. See exporting in the first chapter of the manual.");
-                break;
-            case Doctrine::ATTR_ACCESSORS:
-                    throw new Doctrine_Exception("Get / Set filtering is deprecated (slowed down Doctrine too much).");
-                break;
             case Doctrine::ATTR_COLL_LIMIT:
                 if ($value < 1) {
                     throw new Doctrine_Exception("Collection limit should be a value greater than or equal to 1.");
