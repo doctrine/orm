@@ -2,6 +2,25 @@
 
 ini_set('max_execution_time', 900);
 
+function parseOptions($array) {
+  $currentName="";
+  $options=array();
+  foreach($array as $name){
+    if(strpos($name,"-")===0) {
+      $name=str_replace("-","",$name);      
+      $currentName=$name;
+      if( ! isset($options[$currentName])) {
+        $options[$currentName]=array();         
+      }
+    } else {
+      $values=$options[$currentName];
+      array_push($values,$name);    
+      $options[$currentName]=$values;
+    }
+  }
+  return $options;
+}
+
 function autoload($class) {
     if(strpos($class, 'TestCase') === false) {
         return false;
@@ -424,15 +443,11 @@ if (PHP_SAPI === "cli") {
 
 $argv = $_SERVER["argv"];
 array_shift($argv);
-$coverage = false;
-if(isset($argv[0]) && $argv[0] == "coverage"){
-    array_shift($argv);
-    $coverage = true;
-}
+$options = parseOptions($argv);
 
-if( ! empty($argv)) {
+if( isset($options["group"])) {
     $testGroup = new GroupTest("Custom");
-    foreach($argv as $group) {
+    foreach($options["group"] as $group) {
         if( ! isset($$group)) {
             if (class_exists($group)) {
                 $testGroup->addTestCase(new $group);
@@ -444,13 +459,18 @@ if( ! empty($argv)) {
 } else {
     $testGroup = $test;
 }
-if ($coverage) {
+$filter = "";
+if(isset($options["filter"])){
+    $filter = $options["filter"];
+}
+
+if (isset($options["coverage"])) {
     xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
-    $testGroup->run($reporter);
+    $testGroup->run($reporter, $filter);
     $result["path"] = Doctrine::getPath() . DIRECTORY_SEPARATOR;
     $result["coverage"] = xdebug_get_code_coverage();
     xdebug_stop_code_coverage();
     file_put_contents("coverage.txt", serialize($result));
 } else {
-    $testGroup->run($reporter);
+    $testGroup->run($reporter, $filter);
 }

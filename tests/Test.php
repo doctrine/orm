@@ -19,11 +19,27 @@ class GroupTest extends UnitTestCase
          }
     }
 
-    public function run(HtmlReporter $reporter)
+    public function shouldBeRun($testCase, $filter){
+        if( ! is_array($filter)){
+            return true;
+         }
+        foreach($filter as $subFilter){
+            $name = strtolower(get_class($testCase));
+            $pos = strpos($name, strtolower($subFilter));
+            //it can be 0 so we have to use === to see if false
+            if($pos === false){
+                return false;
+             }
+        }
+        return true;
+    }
+    public function run(HtmlReporter $reporter, $filter)
     {
-
         $reporter->paintHeader();
         foreach ($this->_testCases as $k => $testCase) {
+            if ( ! $this->shouldBeRun($testCase, $filter)) {
+                continue;
+            }
             $testCase->run();
             $this->_passed += $testCase->getPassCount();
             $this->_failed += $testCase->getFailCount();
