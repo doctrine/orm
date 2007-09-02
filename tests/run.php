@@ -423,13 +423,28 @@ if (PHP_SAPI === "cli") {
 }
 
 $argv = $_SERVER["argv"];
-if (isset($argv[1]) && $argv[1] == "coverage") {
+$coverage = false;
+array_shift($argv);
+if(isset($argv[1]) && $argv[1] == "coverage"){
+    array_shift($argv);
+    $coverage = true;
+ }
+
+if( ! empty($argv)){
+    $testGroup = new GroupTest("Custom");
+    foreach($argv as $group){
+        $testGroup->addTestCase($$group);
+     }
+ } else {
+     $testGroup = $test;
+ }
+if ($coverage) {
     xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
-    $test->run($reporter);
+    $testGroup->run($reporter);
     $result["path"] = Doctrine::getPath() . DIRECTORY_SEPARATOR;
     $result["coverage"] = xdebug_get_code_coverage();
     xdebug_stop_code_coverage();
     file_put_contents("coverage.txt", serialize($result));
 } else {
-    $test->run($reporter);
+    $testGroup->run($reporter);
 }
