@@ -44,7 +44,7 @@ class Doctrine_Plugin
      */
     public function __get($option)
     {
-        if (isset($this->options[$option])) {
+        if (isset($this->_options[$option])) {
             return $this->_options[$option];
         }
         return null;
