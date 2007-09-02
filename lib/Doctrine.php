@@ -73,7 +73,7 @@ final class Doctrine
     const ERR_LOADMODULE            = -34;
     const ERR_INSUFFICIENT_DATA     = -35;
     const ERR_CLASS_NAME            = -36;
-    
+
     /**
      * PDO derived constants
      */
@@ -119,13 +119,13 @@ final class Doctrine
     /**
      * ATTRIBUTE CONSTANTS
      */
-     
+
     /**
      * PDO derived attributes
      */
     const ATTR_AUTOCOMMIT           = 0;
     const ATTR_PREFETCH             = 1;
-    const ATTR_TIMEOUT              = 2; 
+    const ATTR_TIMEOUT              = 2;
     const ATTR_ERRMODE              = 3;
     const ATTR_SERVER_VERSION       = 4;
     const ATTR_CLIENT_VERSION       = 5;
@@ -156,7 +156,7 @@ final class Doctrine
     const ATTR_DBNAME_FORMAT        = 117;
     const ATTR_TBLCLASS_FORMAT      = 119;
     const ATTR_EXPORT               = 140;
-    const ATTR_DECIMAL_PLACES       = 141;  
+    const ATTR_DECIMAL_PLACES       = 141;
 
     const ATTR_PORTABILITY          = 106;
     const ATTR_VLD                  = 107;
@@ -169,6 +169,7 @@ final class Doctrine
     const ATTR_DEF_VARCHAR_LENGTH   = 114;
     const ATTR_DEF_TABLESPACE       = 115;
     const ATTR_EMULATE_DATABASE     = 116;
+    const ATTR_USE_NATIVE_ENUM      = 117;
     const ATTR_DEFAULT_SEQUENCE     = 133;
 
     /** TODO: REMOVE THE FOLLOWING CONSTANTS AND UPDATE THE DOCS ! */
@@ -322,7 +323,7 @@ final class Doctrine
     /**
      * EXPORT CONSTANTS
      */
-     
+
     /**
      * turns of exporting
      */
@@ -462,7 +463,7 @@ final class Doctrine
      * @return boolean
      */
     public static function autoload($classname)
-    {  
+    {
         if (class_exists($classname, false)) {
             return false;
         }
@@ -540,7 +541,7 @@ final class Doctrine
     {
         if (preg_match('~(^[a-z])|(_[a-z])|([\W])|(_{2})~', $classname)) {
             return false;
-        }    
+        }
 
         return true;
     }

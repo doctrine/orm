@@ -43,7 +43,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
     protected $parent;
     /**
      * @var array $_impl                    an array containing concrete implementations for class templates
-     *                                      keys as template names and values as names of the concrete 
+     *                                      keys as template names and values as names of the concrete
      *                                      implementation classes
      */
     protected $_impl = array();
@@ -70,7 +70,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
     {
         if (is_string($attribute)) {
             $upper = strtoupper($attribute);
-            
+
             $const = 'Doctrine::ATTR_' . $attribute;
             if (defined($const)) {
                 $this->_state = constant($const);
@@ -93,7 +93,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
                     throw new Doctrine_Exception("ATTR_CREATE_TABLES has been deprecated. See exporting in the first chapter of the manual.");
                 break;
             case Doctrine::ATTR_ACCESSORS:
-                    throw new Doctrine_Exception("Get / Set filtering is deprecated (slowed down Doctrine too much)."); 
+                    throw new Doctrine_Exception("Get / Set filtering is deprecated (slowed down Doctrine too much).");
                 break;
             case Doctrine::ATTR_COLL_LIMIT:
                 if ($value < 1) {
@@ -125,6 +125,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
             case Doctrine::ATTR_ACCESSOR_PREFIX_GET:
             case Doctrine::ATTR_ACCESSOR_PREFIX_SET:
             case Doctrine::ATTR_EMULATE_DATABASE:
+            case Doctrine::ATTR_USE_NATIVE_ENUM:
             case Doctrine::ATTR_DEFAULT_SEQUENCE:
             case Doctrine::ATTR_EXPORT:
             case Doctrine::ATTR_DECIMAL_PLACES:
@@ -169,7 +170,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
     public function setImpl($template, $class)
     {
         $this->_impl[$template] = $class;
-        
+
         return $this;
     }
     /**
@@ -198,7 +199,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
         if ( ! isset($this->attributes[Doctrine::ATTR_CACHE])) {
             throw new Doctrine_Exception('Cache driver not initialized.');
         }
-        
+
         return $this->attributes[Doctrine::ATTR_CACHE];
     }
     /**
@@ -219,7 +220,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
     {
         if ( ! isset($this->attributes[Doctrine::ATTR_RECORD_LISTENER]) ||
              ! ($this->attributes[Doctrine::ATTR_RECORD_LISTENER] instanceof Doctrine_Record_Listener_Chain)) {
-            
+
             $this->attributes[Doctrine::ATTR_RECORD_LISTENER] = new Doctrine_Record_Listener_Chain();
         }
         $this->attributes[Doctrine::ATTR_RECORD_LISTENER]->add($listener, $name);
@@ -268,7 +269,7 @@ abstract class Doctrine_Configurable extends Doctrine_Object
     {
         if ( ! isset($this->attributes[Doctrine::ATTR_LISTENER]) ||
              ! ($this->attributes[Doctrine::ATTR_LISTENER] instanceof Doctrine_EventListener_Chain)) {
-            
+
             $this->attributes[Doctrine::ATTR_LISTENER] = new Doctrine_EventListener_Chain();
         }
         $this->attributes[Doctrine::ATTR_LISTENER]->add($listener, $name);

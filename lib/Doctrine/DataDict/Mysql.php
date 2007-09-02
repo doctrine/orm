@@ -134,9 +134,9 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
      */
     public function getNativeDeclaration($field)
     {
-    	if ( ! isset($field['type'])) {
+        if ( ! isset($field['type'])) {
             throw new Doctrine_DataDict_Exception('Missing column type.');
-    	}
+        }
 
         switch ($field['type']) {
             case 'char':
@@ -185,9 +185,17 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                     }
                 }
                 return 'LONGBLOB';
+            case 'enum':
+                if ($this->conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
+                    $values = array();
+                    foreach ($field['values'] as $value) {
+                      $values[] = $this->conn->quote($value, 'varchar');
+                    }
+                    return 'ENUM('.implode(', ', $values).')';
+                }
+                // fall back to integer
             case 'integer':
             case 'int':
-            case 'enum':
                 if (!empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 1) {
