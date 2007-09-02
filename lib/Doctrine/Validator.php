@@ -136,7 +136,11 @@ class Doctrine_Validator extends Doctrine_Object
                 }
 
                 $validator = self::getValidator($name);
-                if ( ! $validator->validate($record, $key, $value, $args)) {
+                $validator->invoker = $record;
+                $validator->field   = $key;
+                $validator->args    = $args;
+
+                if ( ! $validator->validate($value)) {
                     $errorStack->add($key, $name);
 
                     //$err[$key] = 'not valid';
@@ -182,14 +186,15 @@ class Doctrine_Validator extends Doctrine_Object
         return (count($this->stack) > 0);
     }
     /**
+     * phpType
      * converts a doctrine type to native php type
      *
-     * @param $doctrineType
+     * @param $portableType     portable doctrine type
      * @return string
      */
-    public static function phpType($doctrineType)
+    public static function phpType($portableType)
     {
-        switch ($doctrineType) {
+        switch ($portableType) {
             case 'enum':
                 return 'integer';
             case 'blob':
@@ -201,7 +206,7 @@ class Doctrine_Validator extends Doctrine_Object
                 return 'string';
                 break;
             default:
-                return $doctrineType;
+                return $portableType;
         }
     }
     /**
@@ -236,7 +241,7 @@ class Doctrine_Validator extends Doctrine_Object
             case 'NULL':
                 return true;
                 break;
-        };
+        }
     }
     /**
      * returns the type of loosely typed variable
@@ -259,6 +264,6 @@ class Doctrine_Validator extends Doctrine_Object
                 break;
             default:
                 return $type;
-        };
+        }
     }
 }

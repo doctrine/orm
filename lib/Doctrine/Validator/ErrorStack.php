@@ -109,8 +109,6 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
         $this->errors = array();
     }
 
-    /** IteratorAggregate implementation */
-
     /**
      * Enter description here...
      *
@@ -120,9 +118,6 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
     {
         return new ArrayIterator($this->errors);
     }
-
-    /** Countable implementation */
-
     /**
      * Enter description here...
      *

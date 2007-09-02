@@ -33,13 +33,12 @@
 class Doctrine_Validator_Ip
 {
     /**
-     * @param Doctrine_Record $record
-     * @param string $key
+     * checks if given value is valid ip address
+     *
      * @param mixed $value
-     * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args)
+    public function validate($value)
     {
         return (bool) ip2long(str_replace("\0", '', $value));
     }

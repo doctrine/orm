@@ -30,17 +30,19 @@
  * @version     $Revision$
  * @author      Gijs van Dulmen <gijs@vandulmen.net>
  */
-class Doctrine_Validator_Minlength {
+class Doctrine_Validator_Minlength 
+{
     /**
-     * @param Doctrine_Record $record
-     * @param string $key
+     * checks if given value is more length than the minimum length required
+     *
      * @param mixed $value
-     * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args) {
-       if(isset($args) && strlen( $value ) < $args)
+    public function validate($value)
+    {
+        if (isset($this->args) && strlen($value) < $this->args) {
             return false;
+        }
 
         return true;
     }

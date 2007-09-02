@@ -30,17 +30,16 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator_Nospace
+class Doctrine_Validator_Nospace extends Doctrine_Validator_Driver
 {
     /**
-     * @param Doctrine_Record $record
-     * @param string $key
+     * checks that value doesn't contain any space chars
+     *
      * @param mixed $value
-     * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args)
+    public function validate($value)
     {
-        return ($value === null || ! preg_match('/\s\t\r\n/',$value));
+        return ($value === null || ! preg_match('/\s\t\r\n/', $value));
     }
 }

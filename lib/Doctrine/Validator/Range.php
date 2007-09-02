@@ -33,18 +33,17 @@
 class Doctrine_Validator_Range
 {
     /**
-     * @param Doctrine_Record $record
-     * @param string $key
+     * checks if value is within given range
+     *
      * @param mixed $value
-     * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args)
+    public function validate($value)
     {
-        if (isset($args[0]) && $value < $args[0]) {
+        if (isset($this->args[0]) && $value < $this->args[0]) {
             return false;
         }
-        if (isset($args[1]) && $value > $args[1]) {
+        if (isset($this->args[1]) && $value > $this->args[1]) {
             return false;
         }
         return true;

@@ -33,18 +33,18 @@
 class Doctrine_Validator_Date
 {
     /**
-     * @param Doctrine_Record $record
-     * @param string $key
+     * checks if given value is a valid date
+     *
      * @param mixed $value
-     * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args)
+    public function validate($value)
     {
         if (empty($value)) {
             return true;
         }
-        $e = explode("-", $value);
+        $e = explode('-', $value);
+
         if (count($e) !== 3) {
             return false;
         }

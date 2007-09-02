@@ -277,6 +277,8 @@ class Doctrine_Validator_Country
         'zr' =>	'Zaire',
         'zw' =>	'Zimbabwe');
     /**
+     * returns all available country codes
+     *
      * @return array
      */
     public static function getCountries()
@@ -284,15 +286,15 @@ class Doctrine_Validator_Country
         return self::$countries;
     }
     /**
-     * @param Doctrine_Record $record
-     * @param string $key
+     * checks if given value is a valid country code
+     *
      * @param mixed $value
-     * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args)
+    public function validate($value)
     {
         $value = strtolower($value);
+
         return isset(self::$countries[$value]);
     }
 

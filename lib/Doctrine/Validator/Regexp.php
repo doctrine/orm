@@ -33,23 +33,26 @@
 class Doctrine_Validator_Regexp
 {
     /**
-     * @param Doctrine_Record $record
-     * @param string $key
+     * checks if given value satisfies a regular expression
+     *
      * @param mixed $value
-     * @param string $args
+     * @param mixed $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args)
+    public function validate($value)
     {
-        if (is_array($args)) {
-            foreach ($args as $regexp) {
-                if ( ! preg_match($args, $value)) {
+    	if ( ! isset($this->args)) {
+    	   return true;
+    	}
+        if (is_array($this->args)) {
+            foreach ($this->args as $regexp) {
+                if ( ! preg_match($regexp, $value)) {
                     return false;
                 }
             }
             return true;
         } else {
-            if (preg_match($args, $value)) {
+            if (preg_match($this->args, $value)) {
                 return true;
             }
         }

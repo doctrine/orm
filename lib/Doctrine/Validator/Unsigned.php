@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Validator_Enum
+ * Doctrine_Validator_Unsigned
  *
  * @package     Doctrine
  * @category    Object Relational Mapping
@@ -33,20 +33,16 @@
 class Doctrine_Validator_Unsigned
 {
     /**
-     * @param Doctrine_Record $record
-     * @param string $key
+     * checks if given value is a valid unsigned integer
+     *
      * @param mixed $value
-     * @param string $args
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value, $args)
+    public function validate($value)
     {
         $int = (int) $value;
 
         if ($int != $value || $int < 0) {
-            return false;
-        }
-        if ($int < 0) {
             return false;
         }
         return true;

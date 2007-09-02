@@ -67,10 +67,6 @@ class Doctrine_Validator_Driver
      */
     public function __set($arg, $value)
     {
-        if ( ! isset($this->_args[$arg])) {
-            throw new Doctrine_Plugin_Exception('Unknown argument ' . $arg);
-        }
-
         $this->_args[$arg] = $value;
         
         return $this;
@@ -98,10 +94,6 @@ class Doctrine_Validator_Driver
      */
     public function setArg($arg, $value)
     {
-        if ( ! isset($this->_args[$arg])) {
-            throw new Doctrine_Plugin_Exception('Unknown argument ' . $arg);
-        }
-
         $this->_args[$arg] = $value;
         
         return $this;

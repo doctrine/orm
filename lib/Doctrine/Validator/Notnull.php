@@ -30,16 +30,16 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator_Notnull
+class Doctrine_Validator_Notnull extends Doctrine_Validator_Driver
 {
     /**
-     * @param Doctrine_Record $record
-     * @param string $key
+     * checks that given value isn't null
+     *
      * @param mixed $value
      * @return boolean
      */
-    public function validate(Doctrine_Record $record, $key, $value)
+    public function validate($value)
     {
-        return !is_null($value);
+        return ($value !== null);
     }
 }
