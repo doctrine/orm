@@ -29,6 +29,7 @@ function autoload($class) {
     // create a test case file if it doesn't exist
 
     if ( ! file_exists($file)) {
+        echo "file $file does not exist \n";
         $contents = file_get_contents('template.tpl');
         $contents = sprintf($contents, $class, $class);
 
@@ -50,9 +51,16 @@ spl_autoload_register(array('Doctrine', 'autoload'));
 // register the autoloader function above
 spl_autoload_register('autoload');
 
-require_once dirname(__FILE__) . '/../models/location.php';
-require_once dirname(__FILE__) . '/../models/Blog.php';
-require_once dirname(__FILE__) . '/classes.php';
+// include the models
+$models = new DirectoryIterator(dirname(__FILE__) . '/../models/');
+foreach($models as $key => $file) {
+    if ($file->isFile() && ! $file->isDot()) {
+        require_once $file->getPathname();
+    }
+}
+//require_once dirname(__FILE__) . '/../models/location.php';
+//require_once dirname(__FILE__) . '/../models/Blog.php';
+//require_once dirname(__FILE__) . '/classes.php';
 
 require_once dirname(__FILE__) . '/Test.php';
 require_once dirname(__FILE__) . '/UnitTestCase.php';
@@ -64,13 +72,6 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 // DATABASE ABSTRACTION tests
-
-// Temp tests
-/**
-
-$test->addTestCase(new Doctrine_Ticket330_TestCase());
-    */
-/**  */
 
 $test->addTestCase(new Doctrine_TicketNjero_TestCase());
 
@@ -216,7 +217,7 @@ $test->addTestCase(new Doctrine_EventListener_Chain_TestCase());
 
 $test->addTestCase(new Doctrine_Record_Filter_TestCase());
 
-$test->addTestCase(new Doctrine_SchemaTestCase());
+$test->addTestCase(new Doctrine_Schema_TestCase());
 
 $test->addTestCase(new Doctrine_Query_Condition_TestCase());
 
@@ -281,10 +282,7 @@ $test->addTestCase(new Doctrine_Query_AggregateValue_TestCase());
 
 $test->addTestCase(new Doctrine_NewCore_TestCase());
 
-//$test->addTestCase(new Doctrine_Ticket337_TestCase());
-
 // Record
-
 $test->addTestCase(new Doctrine_Record_State_TestCase());
 $test->addTestCase(new Doctrine_Record_SerializeUnserialize_TestCase());
 
@@ -309,8 +307,6 @@ $test->addTestCase(new Doctrine_Query_JoinCondition_TestCase());
 $test->addTestCase(new Doctrine_Query_MultipleAggregateValue_TestCase());
 
 $test->addTestCase(new Doctrine_Query_TestCase());
-
-$test->addTestCase(new Doctrine_Ticket364_TestCase());
 
 $test->addTestCase(new Doctrine_Query_MysqlSubquery_TestCase());
 
@@ -421,21 +417,21 @@ class MyReporter extends HtmlReporter {
 
 ?>
 <?php
-if(PHP_SAPI === "cli"){
+if (PHP_SAPI === "cli") {
     $reporter = new CliReporter();
-}else{
+} else {
    $reporter = new MyReporter();
 }
 
 $argv = $_SERVER["argv"];
-if(isset($argv[1]) && $argv[1] == "coverage"){
+if (isset($argv[1]) && $argv[1] == "coverage") {
     xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
     $test->run($reporter);
     $result["path"] = Doctrine::getPath() . DIRECTORY_SEPARATOR;
     $result["coverage"] = xdebug_get_code_coverage();
     xdebug_stop_code_coverage();
     file_put_contents("coverage.txt", serialize($result));
-}else{
+} else {
     $test->run($reporter);
 }
 

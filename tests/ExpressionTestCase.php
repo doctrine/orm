@@ -70,11 +70,4 @@ class Doctrine_Expression_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($e->getSql(), "SUBSTR(CONCAT('some', 'one'), 0, 3)");
     }
 }
-class ExpressionTest extends Doctrine_Record
-{
-    public function setTableDefinition()
-    {
-        $this->hasColumn('name', 'string');
-        $this->hasColumn('amount', 'integer');
-    }
-}
+

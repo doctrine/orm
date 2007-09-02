@@ -44,19 +44,3 @@ class Doctrine_OneTableOneClassInheritance_TestCase extends Doctrine_UnitTestCas
         $this->assertEqual($sql[1], 'CREATE TABLE concrete_inheritance_test_child (id INTEGER PRIMARY KEY AUTOINCREMENT, age INTEGER, name VARCHAR(2147483647))');
     }
 }
-class ConcreteInheritanceTestParent extends Doctrine_Record
-{
-    public function setTableDefinition()
-    {
-        $this->hasColumn('name', 'string');
-    }
-}
-class ConcreteInheritanceTestChild extends ConcreteInheritanceTestParent
-{
-    public function setTableDefinition()
-    {
-        $this->hasColumn('age', 'integer');
-        
-        parent::setTableDefinition();
-    }
-}

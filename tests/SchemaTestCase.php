@@ -6,7 +6,7 @@
  * @version $Id$
  * @package Doctrine
  */
-class Doctrine_SchemaTestCase extends Doctrine_UnitTestCase 
+class Doctrine_Schema_TestCase extends Doctrine_UnitTestCase 
 { 
 
 	public function testEverySchemaObjectIsThrowingExceptionOnNonPropertyAssignment()
@@ -181,7 +181,7 @@ class Doctrine_SchemaTestCase extends Doctrine_UnitTestCase
     
     public function testSchemaIsTraversable()
     {
-    	/* @todo complete */
+    	/* @todo complete 
         
     	$schema = new Doctrine_Schema();
 
@@ -197,5 +197,6 @@ class Doctrine_SchemaTestCase extends Doctrine_UnitTestCase
                 }
             }
         }        
+         */
     }
 }

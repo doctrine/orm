@@ -54,12 +54,3 @@ class Doctrine_Export_CheckConstraint_TestCase extends Doctrine_UnitTestCase
         }
     }
 }
-class CheckConstraintTest extends Doctrine_Record
-{
-    public function setTableDefinition()
-    {
-        $this->hasColumn('price', 'decimal', 2, array('max' => 5000, 'min' => 100));
-        $this->hasColumn('discounted_price', 'decimal', 2);
-        $this->check('price > discounted_price');
-    }
-}

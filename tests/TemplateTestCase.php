@@ -70,34 +70,8 @@ class Doctrine_Template_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($user->Email[0] instanceof ConcreteEmail);
     }
 }
-class ConcreteUser extends Doctrine_Record
-{
-    public function setUp()
-    {
-        $this->loadTemplate('UserTemplate');
-    }
-}
-class ConcreteGroup extends Doctrine_Record
-{
-    public function setUp()
-    {
-        $this->loadTemplate('GroupTemplate');
-    }
-}
-class ConcreteEmail extends Doctrine_Record
-{
-    public function setUp()
-    {
-        $this->loadTemplate('EmailTemplate');
-    }
-}
-class ConcreteGroupUser extends Doctrine_Record
-{
-    public function setUp()
-    {
-        $this->loadTemplate('GroupUserTemplate');
-    }
-}
+
+// move these to ../templates?
 class UserTemplate extends Doctrine_Template
 {
     public function setTableDefinition()

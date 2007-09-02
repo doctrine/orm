@@ -111,31 +111,3 @@ class Doctrine_Query_Expression_TestCase extends Doctrine_UnitTestCase
          $this->conn->setAttribute(Doctrine::ATTR_PORTABILITY, Doctrine::PORTABILITY_ALL);
     }
 }
-class Location extends Doctrine_Record
-{
-    public function setTableDefinition()
-    {
-        $this->hasColumn('lat', 'double', 10, array ());
-        $this->hasColumn('lon', 'double', 10, array ());
-    }
-
-    public function setUp()
-    {
-        $this->hasMany('LocationI18n as LocationI18n', array('local' => 'id', 'foreign' => 'id'));
-    }
-}
- 
-class LocationI18n extends Doctrine_Record
-{ 
-    public function setTableDefinition()
-    {
-        $this->hasColumn('name', 'string', 50, array());
-        $this->hasColumn('id', 'integer', 10, array('primary' => true));
-        $this->hasColumn('culture', 'string', 2);
-    }
-    
-    public function setUp()
-    {
-        $this->hasOne('Location as Location', array('local' => 'id'));
-    }
-}

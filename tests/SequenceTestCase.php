@@ -65,17 +65,3 @@ class Doctrine_Sequence_TestCase extends Doctrine_UnitTestCase
         */
     }
 }
-class CustomSequenceRecord extends Doctrine_Record {
-    public function setTableDefinition()
-    {
-        $this->hasColumn('id', 'integer', null, array('primary', 'sequence' => 'custom_seq'));
-        $this->hasColumn('name', 'string');
-    }
-}
-class SequenceRecord extends Doctrine_Record {
-    public function setTableDefinition()
-    {
-        $this->hasColumn('id', 'integer', null, array('primary', 'sequence'));
-        $this->hasColumn('name', 'string');
-    }
-}

@@ -1,5 +1,4 @@
 <?php 
-
 /**
  * Doctrine_TicketNjero_TestCase
  *
@@ -11,85 +10,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class CoverageCodeN extends Doctrine_Record {
-  
-  public function setTableDefinition(){
-    $this->setTableName('coverage_codes');
-    $this->hasColumn('id', 'integer', 4, array('notnull' => true, 'primary' => true, 'autoincrement' => true));
-    $this->hasColumn('code', 'integer', 4, array (  'notnull' => true,  'notblank' => true,));
-    $this->hasColumn('description', 'string', 4000, array (  'notnull' => true,  'notblank' => true,));
-  }
-  
-  public function setUp(){
-#    $this->index('code', array('fields' => 'code'));
-  }  
-}
 
-class PolicyCodeN extends Doctrine_Record {
-  
-  public function setTableDefinition(){
-    $this->setTableName('policy_codes');
-    $this->hasColumn('id', 'integer', 4, array('notnull' => true, 'primary' => true, 'autoincrement' => true));
-    $this->hasColumn('code', 'integer', 4, array (  'notnull' => true,  'notblank' => true,));
-    $this->hasColumn('description', 'string', 4000, array (  'notnull' => true,  'notblank' => true,));
-  }
-  
-  public function setUp(){
-#    $this->index('code', array('fields' => 'code'));
-  }  
-}
-
-class LiabilityCodeN extends Doctrine_Record {
-  
-  public function setTableDefinition(){
-    $this->setTableName('liability_codes');
-    $this->hasColumn('id', 'integer', 4, array('notnull' => true, 'primary' => true, 'autoincrement' => true));
-    $this->hasColumn('code', 'integer', 4, array (  'notnull' => true,  'notblank' => true,));
-    $this->hasColumn('description', 'string', 4000, array (  'notnull' => true,  'notblank' => true,));
-  }
-  
-  public function setUp(){
-#    $this->index('code', array('fields' => 'code'));
-  }  
-}
-
-class PolicyN extends Doctrine_Record {
-  
-  public function setTableDefinition(){
-    $this->setTableName('policies');
-    $this->hasColumn('id', 'integer', 4, array('notnull' => true, 'primary' => true, 'autoincrement' => true));
-    $this->hasColumn('rate_id', 'integer', 4, array ( ));
-    $this->hasColumn('policy_number', 'integer', 4, array (  'unique' => true, ));
-  }
-  
-  public function setUp(){
-    $this->hasOne('RateN', array('local' => 'rate_id', 'foreign' => 'id' ));
-  }
-
-}
-
-class RateN extends Doctrine_Record{
-  
-  public function setTableDefinition(){
-    $this->setTableName('rates');
-    $this->hasColumn('id', 'integer', 4, array('notnull' => true, 'primary' => true, 'autoincrement' => true));
-    $this->hasColumn('policy_code', 'integer', 4, array (  'notnull' => true,  'notblank' => true,));
-    $this->hasColumn('coverage_code', 'integer', 4, array (  'notnull' => true,  'notblank' => true,));
-    $this->hasColumn('liability_code', 'integer', 4, array (  'notnull' => true,  'notblank' => true,));
-    $this->hasColumn('total_rate', 'float', null, array (  'notnull' => true,  'notblank' => true,));
-  }
-  
-  public function setUp(){
-#    $this->index('policy_code_idx', array('fields' => 'policy_code'));
-#    $this->index('coverage_code_idx', array('fields' => 'coverage_code'));
-#    $this->index('liability_code_idx', array('fields' => 'liability_code'));
-    $this->hasOne('PolicyCodeN', array('local' => 'policy_code', 'foreign' => 'code' ));
-    $this->hasOne('CoverageCodeN', array('local' => 'coverage_code', 'foreign' => 'code' ));
-    $this->hasOne('LiabilityCodeN', array('local' => 'liability_code', 'foreign' => 'code' ));
-  }
-  
-}
-  
 class Doctrine_TicketNjero_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareData() { }
@@ -163,4 +84,4 @@ class Doctrine_TicketNjero_TestCase extends Doctrine_UnitTestCase
       #echo "Values " . serialize(array($c, $c2, $c3));
 
     }
-}?>
+}?>
