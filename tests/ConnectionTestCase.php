@@ -214,8 +214,8 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->connection->transaction->getState(), Doctrine_Transaction::STATE_SLEEP);
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
     }
-    
-    public function testNestedTransactions() 
+
+    public function testNestedTransactions()
     {
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
         $this->connection->beginTransaction();
@@ -230,5 +230,20 @@ class Doctrine_Connection_TestCase extends Doctrine_UnitTestCase
         $this->connection->commit();
         $this->assertEqual($this->connection->transaction->getState(), Doctrine_Transaction::STATE_SLEEP);
         $this->assertEqual($this->connection->transaction->getTransactionLevel(),0);
+    }
+
+    public function testSqliteDsn()
+    {
+        $conn = Doctrine_Manager::connection('sqlite:foo.sq3');
+
+        try {
+            $conn->connect();
+
+            $conn->close();
+            $this->pass();
+        } catch (Doctrine_Exception $e) {
+            $this->fail();
+        }
+        unlink('foo.sq3');
     }
 }
