@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Boolean_TestCase
+ * Doctrine_DataType_Boolean_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -30,7 +30,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Boolean_TestCase extends Doctrine_UnitTestCase {
+class Doctrine_DataType_Boolean_TestCase extends Doctrine_UnitTestCase {
     public function prepareData() { }
     public function prepareTables() {
         $this->tables = array("BooleanTest");

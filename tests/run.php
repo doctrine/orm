@@ -29,7 +29,6 @@ function autoload($class) {
     // create a test case file if it doesn't exist
 
     if ( ! file_exists($file)) {
-        echo "file $file does not exist \n";
         $contents = file_get_contents('template.tpl');
         $contents = sprintf($contents, $class, $class);
 
@@ -73,7 +72,9 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 // DATABASE ABSTRACTION tests
 
-$test->addTestCase(new Doctrine_TicketNjero_TestCase());
+
+//TICKET test cases
+$test->addTestCase(new Doctrine_Ticket_Njero_TestCase());
 
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
@@ -188,9 +189,9 @@ $test->addTestCase(new Doctrine_Relation_OneToOne_TestCase());
 $test->addTestCase(new Doctrine_Relation_Parser_TestCase());
 
 // Datatypes
-$test->addTestCase(new Doctrine_Enum_TestCase());
+$test->addTestCase(new Doctrine_DataType_Enum_TestCase());
 
-$test->addTestCase(new Doctrine_Boolean_TestCase());
+$test->addTestCase(new Doctrine_DataType_Boolean_TestCase());
 
 // Utility components
 

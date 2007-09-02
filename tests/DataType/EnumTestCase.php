@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Enum_TestCase
+ * Doctrine_DataType_Enum_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -30,7 +30,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Enum_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_DataType_Enum_TestCase extends Doctrine_UnitTestCase 
 {
     public function prepareData() 
     { }
