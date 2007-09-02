@@ -158,11 +158,32 @@ $manager->setAttribute(Doctrine::ATTR_DBNAME_FORMAT, 'myframework_%s');
 
 ++ Validation attributes
 
-+++ Validation
-<code type="php">
-// turns transactional validation on
-$manager->setAttribute(Doctrine::ATTR_VLD, true);
-</code>
-+++ Automatic length validation
+Doctrine provides complete control over what it validates. The validation procedure can be controlled with Doctrine::ATTR_VALIDATE.
 
-+++ Automatic type validation
+The validation modes are bitwised, so they can be combined using {{|}} and removed using {{^}}. See the examples section below on how to do this.
+
++++ Validation mode constants
+
+: {Doctrine::VALIDATE_NONE} : Turns off the whole validation procedure. This is the default value.
+
+: {Doctrine::VALIDATE_LENGTHS} : Makes Doctrine validate all field lengths.
+
+: {Doctrine::VALIDATE_TYPES} : Makes Doctrine validate all field types. Doctrine does loose type validation. This means that for example string with value '13.3' will not pass as an integer but '13' will.
+
+: {Doctrine::VALIDATE_CONSTRANTS} : Makes Doctrine validate all field constraints such as notnull, email etc.
+
+: {Doctrine::VALIDATE_ALL} : Turns on all validations.
+
++++ Examples
+
+Turning on all validations:
+
+<code type="php">
+$manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_ALL);
+</code>
+
+Validating lengths and types, but not constraints:
+
+<code type="php">
+$manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_LENGTHS | Doctrine::VALIDATE_TYPES);
+</code>
