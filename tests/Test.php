@@ -15,7 +15,7 @@ class GroupTest extends UnitTestCase
         if($testCase instanceOf GroupTest) {
             $this->_testCases = array_merge($this->_testCases, $testCase->getTestCases());
          } else {
-            $this->_testCases[spl_object_hash($testCase)] = $testCase;
+            $this->_testCases[get_class($testCase)] = $testCase;
          }
     }
 
