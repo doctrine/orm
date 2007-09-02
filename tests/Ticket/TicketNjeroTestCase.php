@@ -1,6 +1,6 @@
 <?php 
 /**
- * Doctrine_TicketNjero_TestCase
+ * Doctrine_Ticket_Njero_TestCase
  *
  * @package     Doctrine
  * @author      Jeff Rafter <lists@jeffrafter.com>
@@ -11,17 +11,17 @@
  * @version     $Revision$
  */
 
-class Doctrine_TicketNjero_TestCase extends Doctrine_UnitTestCase
+class Doctrine_Ticket_Njero_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareData() { }
     public function prepareTables()
     {
-    	$this->tables[] = 'CoverageCodeN';
-    	$this->tables[] = 'PolicyCodeN';
-    	$this->tables[] = 'LiabilityCodeN';
-    	$this->tables[] = 'PolicyN';
-    	$this->tables[] = 'RateN';
-    	parent::prepareTables();    	
+        $this->tables[] = 'CoverageCodeN';
+        $this->tables[] = 'PolicyCodeN';
+        $this->tables[] = 'LiabilityCodeN';
+        $this->tables[] = 'PolicyN';
+        $this->tables[] = 'RateN';
+        parent::prepareTables();    
     }
 
     public function testHasOneMultiLevelRelations()

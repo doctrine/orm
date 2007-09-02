@@ -30,7 +30,7 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Ticket381_TestCase extends Doctrine_UnitTestCase {
+class Doctrine_Ticket_381_TestCase extends Doctrine_UnitTestCase {
 
     public function prepareData() 
     { }
