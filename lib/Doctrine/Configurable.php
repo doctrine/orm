@@ -118,6 +118,8 @@ abstract class Doctrine_Configurable extends Doctrine_Object
             case Doctrine::ATTR_VLD:
             case Doctrine::ATTR_AUTO_LENGTH_VLD:
             case Doctrine::ATTR_AUTO_TYPE_VLD:
+                throw new Doctrine_Exception('Deprecated attribute. See http://doctrine.pengus.net/doctrine/manual/new/?chapter=configuration#validation-attributes');
+            case Doctrine::ATTR_VALIDATE:
             case Doctrine::ATTR_QUERY_LIMIT:
             case Doctrine::ATTR_QUOTE_IDENTIFIER:
             case Doctrine::ATTR_PORTABILITY:

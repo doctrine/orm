@@ -159,11 +159,9 @@ final class Doctrine
     const ATTR_DECIMAL_PLACES       = 141;
 
     const ATTR_PORTABILITY          = 106;
-    const ATTR_VLD                  = 107;
+    const ATTR_VALIDATE             = 107;
     const ATTR_COLL_KEY             = 108;
     const ATTR_QUERY_LIMIT          = 109;
-    const ATTR_AUTO_LENGTH_VLD      = 110;
-    const ATTR_AUTO_TYPE_VLD        = 111;
     const ATTR_DEFAULT_TABLE_TYPE   = 112;
     const ATTR_DEF_TEXT_LENGTH      = 113;
     const ATTR_DEF_VARCHAR_LENGTH   = 114;
@@ -174,7 +172,9 @@ final class Doctrine
 
     /** TODO: REMOVE THE FOLLOWING CONSTANTS AND UPDATE THE DOCS ! */
 
-
+    const ATTR_VLD                  = -1;
+    const ATTR_AUTO_LENGTH_VLD      = -2;
+    const ATTR_AUTO_TYPE_VLD        = -3;
     const ATTR_FETCHMODE            = 118;
     const ATTR_BATCH_SIZE           = 119;
     const ATTR_LOCKMODE             = 120;

@@ -237,7 +237,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function isValid()
     {
-        if ( ! $this->_table->getAttribute(Doctrine::ATTR_VLD)) {
+        if ( ! $this->_table->getAttribute(Doctrine::ATTR_VALIDATE)) {
             return true;
         }
         // Clear the stack from any previous errors.

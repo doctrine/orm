@@ -92,7 +92,7 @@ class Doctrine_Validator extends Doctrine_Object
                 }
             }
 
-            if ($record->getTable()->getAttribute(Doctrine::ATTR_AUTO_LENGTH_VLD)) {
+            if ($record->getTable()->getAttribute(Doctrine::ATTR_VALIDATE) & Doctrine::VALIDATE_LENGTHS) {
                 if (!$this->validateLength($column, $key, $value)) {
                     $errorStack->add($key, 'length');
 
@@ -118,7 +118,7 @@ class Doctrine_Validator extends Doctrine_Object
                 }
 
                 if (strtolower($name) == 'length') {
-                    if (!$record->getTable()->getAttribute(Doctrine::ATTR_AUTO_LENGTH_VLD)) {
+                    if ( ! ($record->getTable()->getAttribute(Doctrine::ATTR_VALIDATE) & Doctrine::VALIDATE_LENGTHS)) {
                         if (!$this->validateLength($column, $key, $value)) {
                             $errorStack->add($key, 'length');
                         }
@@ -127,7 +127,7 @@ class Doctrine_Validator extends Doctrine_Object
                 }
 
                 if (strtolower($name) == 'type') {
-                    if (!$record->getTable()->getAttribute(Doctrine::ATTR_AUTO_TYPE_VLD)) {
+                    if ( ! ($record->getTable()->getAttribute(Doctrine::ATTR_VALIDATE) & Doctrine::VALIDATE_TYPES)) {
                         if ( ! self::isValidType($value, $column['type'])) {
                             $errorStack->add($key, 'type');
                         }
@@ -150,7 +150,7 @@ class Doctrine_Validator extends Doctrine_Object
                 }
             }
 
-            if ($record->getTable()->getAttribute(Doctrine::ATTR_AUTO_TYPE_VLD)) {
+            if ($record->getTable()->getAttribute(Doctrine::ATTR_VALIDATE) & Doctrine::VALIDATE_TYPES) {
                 if ( ! self::isValidType($value, $column['type'])) {
                     $errorStack->add($key, 'type');
                     continue;
