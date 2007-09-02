@@ -366,9 +366,9 @@ class CliReporter extends HtmlReporter{
     }
     public function paintFooter(){
         echo "\n";
- 	    foreach ($this->_test->getMessages() as $message) {
-    	   print $message . "\n";
-    	}
+        foreach ($this->_test->getMessages() as $message) {
+            print $message . "\n";
+        }
         echo "====================\n";
         print "Tested: " . $this->_test->getTestCaseCount() . ' test cases' ."\n";
         print "Successes: " . $this->_test->getPassCount() . " passes. \n";
@@ -397,19 +397,19 @@ class MyReporter extends HtmlReporter {
     public function paintFooter()
     {
 
-    	print "<pre>";
-    	foreach ($this->_test->getMessages() as $message) {
-    	   print $message . "\n";
-    	}
-    	print "</pre>";
+        print "<pre>";
+        foreach ($this->_test->getMessages() as $message) {
+            print $message . "\n";
+        }
+        print "</pre>";
         $colour = ($this->_test->getFailCount() > 0 ? "red" : "green");
         print "<div style=\"";
         print "padding: 8px; margin-top: 1em; background-color: $colour; color: white;";
         print "\">";
         print $this->_test->getTestCaseCount() . ' test cases';
         print " test cases complete:\n";
-        print "<strong>" . $this->_test->getPassCount() . "</strong> passes, ";
-        print "<strong>" . $this->_test->getFailCount() . "</strong> fails and ";
+        print "<strong>" . $this->_test->getPassCount() . "</strong> passes and ";
+        print "<strong>" . $this->_test->getFailCount() . "</strong> fails.";
         print "</div>\n";
     }
 }
@@ -434,4 +434,3 @@ if (isset($argv[1]) && $argv[1] == "coverage") {
 } else {
     $test->run($reporter);
 }
-

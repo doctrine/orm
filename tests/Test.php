@@ -18,19 +18,18 @@ class GroupTest extends UnitTestCase
     {
 
         $reporter->paintHeader();
-    	foreach ($this->_testCases as $k => $testCase) {
-    	    $testCase->run();
-    	    
-    	    $this->_passed += $testCase->getPassCount();
-    	    $this->_failed += $testCase->getFailCount();
+        foreach ($this->_testCases as $k => $testCase) {
+            $testCase->run();
+            $this->_passed += $testCase->getPassCount();
+            $this->_failed += $testCase->getFailCount();
             $this->_messages = array_merge($this->_messages, $testCase->getMessages());
 
-    	    $this->_testCases[$k] = null;
+            $this->_testCases[$k] = null;
             if(PHP_SAPI === "cli"){
                 echo ".";
             }
             set_time_limit(900);
-    	}
+        }
         $reporter->setTestCase($this);
         
         $reporter->paintFooter();
