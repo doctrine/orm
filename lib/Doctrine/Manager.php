@@ -112,7 +112,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                         Doctrine::ATTR_LISTENER         => new Doctrine_EventListener(),
                         Doctrine::ATTR_RECORD_LISTENER  => new Doctrine_Record_Listener(),
                         Doctrine::ATTR_THROW_EXCEPTIONS => true,
-                        Doctrine::ATTR_LOCKMODE         => 1,
                         Doctrine::ATTR_VALIDATE         => Doctrine::VALIDATE_NONE,
                         Doctrine::ATTR_QUERY_LIMIT      => Doctrine::LIMIT_RECORDS,
                         Doctrine::ATTR_IDXNAME_FORMAT   => "%s_idx",
