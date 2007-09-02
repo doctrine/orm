@@ -546,4 +546,3 @@ final class Doctrine
         return true;
     }
 }
-?>
