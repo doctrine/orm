@@ -69,12 +69,10 @@ error_reporting(E_ALL | E_STRICT);
 $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
-
-// DATABASE ABSTRACTION tests
-
-
 //TICKET test cases
-$test->addTestCase(new Doctrine_Ticket_Njero_TestCase());
+$tickets = new GroupTest('Tickets tests');
+$tickets->addTestCase(new Doctrine_Ticket_Njero_TestCase());
+$test->addTestCase($tickets);
 
 // Connection drivers (not yet fully tested)
 $test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());

@@ -12,8 +12,13 @@ class GroupTest extends UnitTestCase
 
     public function addTestCase(UnitTestCase $testCase)
     {
-        $this->_testCases[] = $testCase;
+        if($testCase instanceOf GroupTest) {
+            $this->_testCases = array_merge($this->_testCases, $testCase->getTestCases());
+         } else {
+            $this->_testCases[spl_object_hash($testCase)] = $testCase;
+         }
     }
+
     public function run(HtmlReporter $reporter)
     {
 
@@ -41,7 +46,9 @@ class GroupTest extends UnitTestCase
         return count($this->_testCases);
     }
 
-
+    public function getTestCases(){
+        return $this->_testCases;
+    }
 }
 class HtmlReporter
 {
