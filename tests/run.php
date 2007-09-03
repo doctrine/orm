@@ -73,7 +73,10 @@ spl_autoload_register('autoload');
 $models = new DirectoryIterator(dirname(__FILE__) . '/../models/');
 foreach($models as $key => $file) {
     if ($file->isFile() && ! $file->isDot()) {
-        require_once $file->getPathname();
+        $e = explode('.', $file->getFileName());
+        if (end($e) === 'php') {
+          require_once $file->getPathname();
+        }
     }
 }
 //require_once dirname(__FILE__) . '/../models/location.php';
