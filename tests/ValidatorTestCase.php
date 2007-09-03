@@ -181,18 +181,15 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
 
         $validator = new Doctrine_Validator_Email();
 
-        $email = $this->connection->create("Email");
-        $this->assertFalse($validator->validate($email,"address","example@example",null));
-        $this->assertFalse($validator->validate($email,"address","example@@example",null));
-        $this->assertFalse($validator->validate($email,"address","example@example.",null));
-        $this->assertFalse($validator->validate($email,"address","example@e..",null));
+        $this->assertFalse($validator->validate("example@example"));
+        $this->assertFalse($validator->validate("example@@example"));
+        $this->assertFalse($validator->validate("example@example."));
+        $this->assertFalse($validator->validate("example@e.."));
 
-        $this->assertFalse($validator->validate($email,"address","example@e..",null));
-
-        $this->assertTrue($validator->validate($email,"address","null@pookey.co.uk",null));
-        $this->assertTrue($validator->validate($email,"address","null@pookey.com",null));
-        $this->assertTrue($validator->validate($email,"address","null@users.doctrine.pengus.net",null));
-
+        $this->assertTrue($validator->validate("null+doctrine@pookey.co.uk"));
+        $this->assertTrue($validator->validate("null@pookey.co.uk"));
+        $this->assertTrue($validator->validate("null@pookey.com"));
+        $this->assertTrue($validator->validate("null@users.doctrine.pengus.net"));
     }
 
     /**
