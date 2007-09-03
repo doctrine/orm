@@ -79,7 +79,7 @@ class Doctrine_Export_Pgsql_TestCase extends Doctrine_UnitTestCase
     }
     public function testExportSql()
     {
-        $sql = $this->export->exportClassesSql(array("FooRecord", "FooReferenceRecord", "FooLocallyOwned", "FooForeignlyOwned", "FooBarRecord", "BarRecord"));
+        $sql = $this->export->exportClassesSql(array("FooRecord", "FooReferenceRecord", "FooLocallyOwned", "FooForeignlyOwned", "FooForeignlyOwnedWithPK", "FooBarRecord", "BarRecord"));
         //dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files');
 
         $this->assertEqual($sql, array ( 0 => 'CREATE TABLE foo_reference (foo1 BIGINT, foo2 BIGINT, PRIMARY KEY(foo1, foo2))', 
