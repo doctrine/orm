@@ -9,8 +9,8 @@ class Forum_Entry extends Doctrine_Record {
         $this->hasColumn('date', 'integer', 10);
     }
     public function setUp() {
-        $this->hasOne('Forum_Entry as Parent',  'Forum_Entry.parent_entry_id');
-        $this->hasOne('Forum_Thread as Thread', 'Forum_Entry.thread_id');
+        $this->hasOne('Forum_Entry as Parent',  array('local' => 'id', 'foreign' => 'parent_entry_id'));
+        $this->hasOne('Forum_Thread as Thread', array('local' => 'thread_id', 'foreign' => 'id', 'onDelete' => 'CASCADE'));
     }
 }
 

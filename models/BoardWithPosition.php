@@ -5,6 +5,6 @@ class BoardWithPosition extends Doctrine_Record {
         $this->hasColumn('category_id', 'integer');
     }
     public function setUp() {
-        $this->hasOne('CategoryWithPosition as Category', 'BoardWithPosition.category_id');
+        $this->hasOne('CategoryWithPosition as Category', array('local' => 'category_id', 'foreign' => 'id', 'onDelete' => 'CASCADE'));
     }
 }

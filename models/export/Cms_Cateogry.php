@@ -4,7 +4,7 @@ class Cms_Category extends Doctrine_Record
  
 	public function setUp() 
     {
-		$this->ownsMany('Cms_CategoryLanguages as langs', array('local' => 'id', 'foreign' => 'category_id'));
+		$this->hasMany('Cms_CategoryLanguages as langs', array('local' => 'id', 'foreign' => 'category_id'));
 	}
  
 	public function setTableDefinition() 

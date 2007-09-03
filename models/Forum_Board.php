@@ -6,8 +6,8 @@ class Forum_Board extends Doctrine_Record {
         $this->hasColumn('description', 'string', 5000);
     }
     public function setUp() {
-        $this->hasOne('Forum_Category as Category', 'Forum_Board.category_id');
-        $this->ownsMany('Forum_Thread as Threads',  'Forum_Thread.board_id');
+        $this->hasOne('Forum_Category as Category', array('local' => 'category_id', 'foreign' => 'id'));
+        $this->hasMany('Forum_Thread as Threads',  array('local' => 'id', 'foreign' => 'board_id'));
     } 
 }
 
