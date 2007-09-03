@@ -53,7 +53,7 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
     }
     public function testSavingEntriesUpdatesIndex()
     {
-    	$e = new SearchTest();
+        $e = new SearchTest();
 
         $e->title = 'Once there was an ORM framework';
         $e->content = 'There are many ORM frameworks, but nevertheless we decided to create one.';

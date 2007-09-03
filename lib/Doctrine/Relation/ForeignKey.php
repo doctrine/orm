@@ -43,9 +43,9 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
      */
     public function fetchRelatedFor(Doctrine_Record $record)
     {
-    	$id = array();
-    	foreach ((array) $this->definition['local'] as $local) {
-    	   $value = $record->get($local);
+        $id = array();
+        foreach ((array) $this->definition['local'] as $local) {
+           $value = $record->get($local);
            if (isset($value)) {
                $id[] = $value;
            }
@@ -86,10 +86,10 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
      */
     public function getCondition($alias = null)
     {
-    	if ( ! $alias) {
-    	   $alias = $this->getTable()->getComponentName();
-    	}
-    	$conditions = array();
+        if ( ! $alias) {
+           $alias = $this->getTable()->getComponentName();
+        }
+        $conditions = array();
         foreach ((array) $this->definition['foreign'] as $foreign) {
             $conditions[] = $alias . '.' . $foreign . ' = ?';
         }

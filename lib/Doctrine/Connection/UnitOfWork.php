@@ -139,7 +139,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
      */
     public function saveGraph(Doctrine_Record $record)
     {
-    	$conn = $this->getConnection();
+        $conn = $this->getConnection();
 
         $state = $record->state();
         if ($state === Doctrine_Record::STATE_LOCKED) {
@@ -319,7 +319,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             $record = false;
             $ids    = array();
 
-    	    if (is_array($deletes[count($deletes)-1]->getTable()->getIdentifier())) {
+            if (is_array($deletes[count($deletes)-1]->getTable()->getIdentifier())) {
                 if (count($deletes) > 0) {
                     $query = 'DELETE FROM '
                            . $this->conn->quoteIdentifier($deletes[0]->getTable()->getTableName())
@@ -330,7 +330,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                     foreach ($deletes as $k => $record) {
                         $ids = $record->identifier();
                         $tmp = array();
-                        foreach (array_keys($ids) as $id){
+                        foreach (array_keys($ids) as $id) {
                             $tmp[] = $id . ' = ? ';
                         }
                         $params = array_merge($params, array_values($ids));
@@ -340,22 +340,22 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
                     $this->conn->execute($query, $params);
                 }
-    	    } else {
-    		    foreach ($deletes as $k => $record) {
+            } else {
+                foreach ($deletes as $k => $record) {
                     $ids[] = $record->getIncremented();
-    		    }
-    		    if ($record instanceof Doctrine_Record) {
-        			$params = substr(str_repeat('?, ', count($ids)), 0, -2);
+                }
+                if ($record instanceof Doctrine_Record) {
+                    $params = substr(str_repeat('?, ', count($ids)), 0, -2);
     
-        			$query = 'DELETE FROM '
-        				   . $this->conn->quoteIdentifier($record->getTable()->getTableName())
-        				   . ' WHERE '
-        				   . $record->getTable()->getIdentifier()
-        				   . ' IN(' . $params . ')';
+                    $query = 'DELETE FROM '
+                           . $this->conn->quoteIdentifier($record->getTable()->getTableName())
+                           . ' WHERE '
+                           . $record->getTable()->getIdentifier()
+                           . ' IN(' . $params . ')';
         
-        			$this->conn->execute($query, $ids);
-    		    }
-    	    }
+                    $this->conn->execute($query, $ids);
+                }
+            }
         }
     }
     /**
@@ -450,7 +450,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                            $obj->state() != Doctrine_Record::STATE_LOCKED)  {
                             
                             $obj->delete($this->conn);
-                           	
+                               
                     }
                     break;
             }

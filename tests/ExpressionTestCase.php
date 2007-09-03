@@ -40,7 +40,7 @@ class Doctrine_Expression_TestCase extends Doctrine_UnitTestCase
     }
     public function prepareData()
     {
-    	
+        
     }
     public function testSavingWithAnExpression()
     {

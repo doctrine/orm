@@ -57,9 +57,9 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
      */
     public function getNativeDeclaration($field)
     {
-    	if ( ! isset($field['type'])) {
+        if ( ! isset($field['type'])) {
             throw new Doctrine_DataDict_Exception('Missing column type.');
-    	}
+        }
         switch ($field['type']) {
             case 'varchar':
             case 'string':

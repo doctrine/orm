@@ -197,7 +197,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
      */
     public function listUsers()
     {
-    	/**
+        /**
         if ($this->conn->options['emulate_database'] && $this->conn->options['database_name_prefix']) {
             $query = 'SELECT SUBSTR(username, ';
             $query.= (strlen($this->conn->options['database_name_prefix'])+1);

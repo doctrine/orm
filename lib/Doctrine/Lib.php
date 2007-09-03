@@ -83,7 +83,7 @@ class Doctrine_Lib
      * @return string Xml as string 
      */
 
-    public static function getCollectionAsXml(Doctrine_Collection $collection, SimpleXMLElement $incomming_xml = null){
+    public static function getCollectionAsXml(Doctrine_Collection $collection, SimpleXMLElement $incomming_xml = null) {
 
         $collectionName = Doctrine_Lib::plurelize($collection->getTable()->tableName);
         if ( $collection->count != 0) {
@@ -106,7 +106,7 @@ class Doctrine_Lib
         return $xml->asXML();
     }
 
-    public static function plurelize($string){
+    public static function plurelize($string) {
         return $string . "s";
     }
 
@@ -131,10 +131,10 @@ class Doctrine_Lib
         if ( !isset($incomming_xml)) {
             $new_xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><" . $recordname . "></" . $recordname . ">";
             $xml = new SimpleXMLElement($new_xml_string);
-        }else{
+        } else {
             $xml = $incomming_xml->addChild($recordname);
         }
-        foreach($record->obtainIdentifier() as $pk_field => $pk_value){
+        foreach($record->obtainIdentifier() as $pk_field => $pk_value) {
             $xml->addChild($pk_field,$pk_value); 
         }
         $xml_options = $record->option("xml");
@@ -145,12 +145,12 @@ class Doctrine_Lib
             if ((isset($xml_options["ignore_fields"]) && !in_array($field, $xml_options["ignore_fields"])) || !isset($xml_options["ignore_fields"])) {
                 if ($value instanceOf Doctrine_Null) {
                     $xml->addChild($field);
-                } else {	
+                } else {    
                     $xml->addChild($field, $value);
                 }
             }
         }
-        if (!isset($xml_options["include_relations"])) {
+        if ( ! isset($xml_options["include_relations"])) {
             return $xml->asXML();
         }
         $relations = $record->getTable()->getRelations();

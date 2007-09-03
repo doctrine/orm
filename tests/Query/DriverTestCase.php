@@ -39,7 +39,7 @@ class Doctrine_Query_Driver_TestCase extends Doctrine_UnitTestCase
 
     public function testLimitQueriesForPgsql()
     {
-    	$this->dbh = new Doctrine_Adapter_Mock('pgsql');
+        $this->dbh = new Doctrine_Adapter_Mock('pgsql');
 
         $conn = $this->manager->openConnection($this->dbh);
 
@@ -52,7 +52,7 @@ class Doctrine_Query_Driver_TestCase extends Doctrine_UnitTestCase
 
     public function testLimitQueriesForSqlite()
     {
-    	$this->dbh = new Doctrine_Adapter_Mock('sqlite');
+        $this->dbh = new Doctrine_Adapter_Mock('sqlite');
 
         $conn = $this->manager->openConnection($this->dbh);
 
@@ -65,7 +65,7 @@ class Doctrine_Query_Driver_TestCase extends Doctrine_UnitTestCase
     
     public function testLimitQueriesForMysql()
     {
-    	$this->dbh = new Doctrine_Adapter_Mock('mysql');
+        $this->dbh = new Doctrine_Adapter_Mock('mysql');
 
         $conn = $this->manager->openConnection($this->dbh);
 
@@ -78,7 +78,7 @@ class Doctrine_Query_Driver_TestCase extends Doctrine_UnitTestCase
 
     public function testLimitQueriesForOracle()
     {
-    	$this->dbh = new Doctrine_Adapter_Mock('oracle');
+        $this->dbh = new Doctrine_Adapter_Mock('oracle');
 
         $conn = $this->manager->openConnection($this->dbh);
 
@@ -91,7 +91,7 @@ class Doctrine_Query_Driver_TestCase extends Doctrine_UnitTestCase
 
     public function testLimitOffsetQueriesForOracle()
     {
-    	$this->dbh = new Doctrine_Adapter_Mock('oracle');
+        $this->dbh = new Doctrine_Adapter_Mock('oracle');
 
         $conn = $this->manager->openConnection($this->dbh);
 

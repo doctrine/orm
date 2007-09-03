@@ -56,9 +56,9 @@ class Doctrine_DataDict_Informix extends Doctrine_DataDict
      */
     public function getNativeDeclaration($field)
     {
-    	if ( ! isset($field['type'])) {
+        if ( ! isset($field['type'])) {
             throw new Doctrine_DataDict_Exception('Missing column type.');
-    	}
+        }
         switch ($field['type']) {
             case 'char':
             case 'varchar':
@@ -69,7 +69,7 @@ class Doctrine_DataDict_Informix extends Doctrine_DataDict
                     $field['length'] = $this->conn->varchar_max_length;
                 }
 
-                $length = (! empty($field['length'])) ? $field['length'] : false;
+                $length = ( ! empty($field['length'])) ? $field['length'] : false;
                 $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
 
                 return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR(255)')
@@ -79,7 +79,7 @@ class Doctrine_DataDict_Informix extends Doctrine_DataDict
             case 'blob':
                 return 'BLOB';
             case 'integer':
-                if (!empty($field['length'])) {
+                if ( ! empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 1) {
                         return 'SMALLINT';

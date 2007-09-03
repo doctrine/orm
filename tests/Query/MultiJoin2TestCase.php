@@ -89,7 +89,7 @@ class Doctrine_Query_MultiJoin2_TestCase extends Doctrine_UnitTestCase
             $categories[0]->subCategories;
             $this->assertEqual($queryCount + 1, $this->connection->count());
         } catch (Doctrine_Exception $e) {
-            $this->fail();                                	
+            $this->fail();                                    
         }
     }
     

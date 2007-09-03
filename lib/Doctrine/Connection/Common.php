@@ -41,9 +41,9 @@ class Doctrine_Connection_Common extends Doctrine_Connection
      */
     public function modifyLimitQuery($query, $limit = false,$offset = false,$isManip=false)
     {
-    	$limit = (int) $limit;
-    	$offset = (int) $offset;
-    	
+        $limit = (int) $limit;
+        $offset = (int) $offset;
+        
         if ($limit && $offset) {
             $query .= ' LIMIT ' . $limit . ' OFFSET ' . $offset;
         } elseif ($limit && ! $offset) {

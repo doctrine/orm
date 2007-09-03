@@ -74,7 +74,7 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
 
         $e    = $this->exception;
 
-        if( ! empty($e)) {
+        if ( ! empty($e)) {
             $name = $e[0];
 
             $this->exception = array();
@@ -101,7 +101,7 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
 
         $e    = $this->exception;
 
-        if( ! empty($e)) {
+        if ( ! empty($e)) {
             $name = $e[0];
 
             $this->exception = array();
@@ -121,16 +121,16 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
     }
     public function lastInsertId()
     {
-    	$this->queries[] = 'LAST_INSERT_ID()';
-    	if ($this->lastInsertIdFail) {
+        $this->queries[] = 'LAST_INSERT_ID()';
+        if ($this->lastInsertIdFail) {
             return null;
-    	} else {
+        } else {
             return 1;
         }
     }
     public function count() 
     {
-        return count($this->queries);	
+        return count($this->queries);    
     }
     public function beginTransaction()
     {
@@ -150,12 +150,12 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
     { }
     public function getAttribute($attribute) 
     {
-        if($attribute == Doctrine::ATTR_DRIVER_NAME)
+        if ($attribute == Doctrine::ATTR_DRIVER_NAME)
             return strtolower($this->name);
     }
     public function setAttribute($attribute, $value) 
     {
-                                   	
+                                       
     }
     public function sqliteCreateFunction()
     { }

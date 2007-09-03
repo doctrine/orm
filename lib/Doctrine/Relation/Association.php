@@ -44,7 +44,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     }
     public function getAssociationTable()
     {
-    	return $this->definition['refTable'];
+        return $this->definition['refTable'];
     }
     /**
      * getRelationDql
@@ -54,7 +54,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
      */
     public function getRelationDql($count, $context = 'record')
     {
-    	$component = $this->definition['refTable']->getComponentName();
+        $component = $this->definition['refTable']->getComponentName();
         switch ($context) {
             case "record":
                 $sub  = substr(str_repeat("?, ", $count),0,-2);

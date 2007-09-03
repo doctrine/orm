@@ -81,7 +81,7 @@ class Doctrine_Hook
         } elseif ($query instanceof Doctrine_Query) {
             $this->query = $query;
         } else {
-            throw new Doctrine_Exception('Constructor argument should be either Doctrine_Query object or valid DQL query');      	
+            throw new Doctrine_Exception('Constructor argument should be either Doctrine_Query object or valid DQL query');          
         }
         
         $this->query->getQuery();

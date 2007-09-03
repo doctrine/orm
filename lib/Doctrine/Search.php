@@ -74,7 +74,7 @@ class Doctrine_Search
      */
     public function updateIndex(Doctrine_Record $record) 
     {
-    	$fields = $this->getOption('fields');
+        $fields = $this->getOption('fields');
         $class  = $this->getOption('className');
         $name   = $record->getTable()->getComponentName();
 

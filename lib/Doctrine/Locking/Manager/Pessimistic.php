@@ -217,7 +217,7 @@ class Doctrine_Locking_Manager_Pessimistic
             $stmt->bindParam(':object_key', $key);
             $success = $stmt->execute();
 
-            if (!$success) {
+            if ( ! $success) {
                 throw new Doctrine_Locking_Exception("Failed to determine locking user");
             }
 

@@ -34,7 +34,7 @@ class Doctrine_Sequence_Sqlite_TestCase extends Doctrine_UnitTestCase
 {
     public function testCurrIdExecutesSql() 
     {
-     	$this->adapter->forceLastInsertIdFail(false);
+         $this->adapter->forceLastInsertIdFail(false);
 
         $this->sequence->currId('user');
 

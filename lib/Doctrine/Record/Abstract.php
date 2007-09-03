@@ -102,7 +102,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
     public function setSubclasses($map)
     {
-        if (isset($map[get_class($this)])){
+        if (isset($map[get_class($this)])) {
             $this->_table->setOption('inheritanceMap', $map[get_class($this)]);
             return;
         }
@@ -246,8 +246,8 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function loadTemplate($template, array $options = array())
     {
-    	$tpl = new $template($options);
-    	$tpl->setTable($this->_table);
+        $tpl = new $template($options);
+        $tpl->setTable($this->_table);
 
         $tpl->setUp();
 
@@ -302,7 +302,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function check($constraint, $name = null)
     {
-    	if (is_array($constraint)) {
+        if (is_array($constraint)) {
             foreach ($constraint as $name => $def) {
                 $this->_table->addCheckConstraint($def, $name);
             }

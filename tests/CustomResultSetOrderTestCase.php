@@ -81,7 +81,7 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
      */
     public function prepareTables() {
         $this->tables[] = "CategoryWithPosition";
-		$this->tables[] = "BoardWithPosition";
+        $this->tables[] = "BoardWithPosition";
         parent::prepareTables();
     }
     /**

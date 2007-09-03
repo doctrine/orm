@@ -102,10 +102,10 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
      * @return string
      */
     public function age($timestamp1, $timestamp2 = null) {
-       if( $timestamp2 == null ) {
-           return 'AGE(' . $timestamp1 . ')';
-       }
-       return 'AGE(' . $timestamp1 . ', ' . $timestamp2 . ')';
+        if ( $timestamp2 == null ) {
+            return 'AGE(' . $timestamp1 . ')';
+        }
+        return 'AGE(' . $timestamp1 . ', ' . $timestamp2 . ')';
     }
 
     /**
@@ -116,7 +116,7 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
      * @return string
      */
     public function date_part($text, $time) {
-       return 'DATE_PART(' . $text . ', ' . $time . ')';
+        return 'DATE_PART(' . $text . ', ' . $time . ')';
     }
 
 
@@ -174,20 +174,20 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
     public function matchPattern($pattern, $operator = null, $field = null)
     {
         $match = '';
-        if (!is_null($operator)) {
+        if ( ! is_null($operator)) {
             $field = is_null($field) ? '' : $field.' ';
             $operator = strtoupper($operator);
             switch ($operator) {
                 // case insensitive
-                case 'ILIKE':
-                    $match = $field.'ILIKE ';
-                    break;
+            case 'ILIKE':
+                $match = $field.'ILIKE ';
+                break;
                 // case sensitive
-                case 'LIKE':
-                    $match = $field.'LIKE ';
-                    break;
-                default:
-                    throw new Doctrine_Expression_Pgsql_Exception('not a supported operator type:'. $operator);
+            case 'LIKE':
+                $match = $field.'LIKE ';
+                break;
+            default:
+                throw new Doctrine_Expression_Pgsql_Exception('not a supported operator type:'. $operator);
             }
         }
         $match.= "'";

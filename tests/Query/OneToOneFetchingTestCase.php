@@ -138,7 +138,7 @@ class Doctrine_Query_OneToOneFetching_TestCase extends Doctrine_UnitTestCase
             $this->assertEqual('freak.png', $board['lastEntry']['author']['visibleRank']['icon']);
                     
         } catch (Doctrine_Exception $e) {
-            $this->fail();                                	
+            $this->fail();                                    
         }
     }
 
@@ -177,7 +177,7 @@ class Doctrine_Query_OneToOneFetching_TestCase extends Doctrine_UnitTestCase
             $this->assertTrue( ! isset($tmpBoard['lastEntry']));
                     
         } catch (Doctrine_Exception $e) {
-            $this->fail();                                	
+            $this->fail();                                    
         }
         
         $board->lastEntryId = $lastEntryId;
@@ -216,7 +216,7 @@ class Doctrine_Query_OneToOneFetching_TestCase extends Doctrine_UnitTestCase
             $this->assertEqual('freak.png', $board['lastEntry']['author']['visibleRank']['icon']);
                     
         } catch (Doctrine_Exception $e) {
-            $this->fail();                                	
+            $this->fail();                                    
         }
     }
 

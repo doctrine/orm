@@ -136,12 +136,12 @@ class UnitTestCase
     }
     public function fail($message = "")
     {
-        $this->_fail($message);	
+        $this->_fail($message);    
     }
     public function _fail($message = "")
     {
-    	$trace = debug_backtrace();
-    	array_shift($trace);
+        $trace = debug_backtrace();
+        array_shift($trace);
 
 
         foreach ($trace as $stack) {
@@ -157,7 +157,7 @@ class UnitTestCase
                 break;
             }
             $line = $stack['line'];
-    	}
+        }
         $this->_failed++;
     }
     public function run() 

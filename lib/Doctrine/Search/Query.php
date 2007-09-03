@@ -183,7 +183,7 @@ class Doctrine_Search_Query
 
     public function parseTerm($term)
     {
-    	$negation = false;
+        $negation = false;
 
         if (strpos($term, "'") === false) {
             $where = $this->parseWord($term);

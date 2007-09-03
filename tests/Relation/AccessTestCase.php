@@ -145,7 +145,7 @@ class Doctrine_Relation_Access_TestCase extends Doctrine_UnitTestCase {
         $other = $this->connection->query($query);
         $check1 = array();
         foreach($other as $oth) {
-            if(!isset($check1[$oth->other_thing_id])) {
+            if( ! isset($check1[$oth->other_thing_id])) {
                 $check1[$oth->other_thing_id] = array();
             }
             $check1[$oth->other_thing_id][$oth->id] = $oth;
@@ -154,7 +154,7 @@ class Doctrine_Relation_Access_TestCase extends Doctrine_UnitTestCase {
         $ones = $this->connection->query($query);
         $check2 = array();
         foreach($ones as $one) {
-            if(!isset($check2[$one->one_thing_id])) {
+            if( ! isset($check2[$one->one_thing_id])) {
                 $check2[$one->one_thing_id] = array();
             }
             $check2[$one->one_thing_id][$one->id] = $one;

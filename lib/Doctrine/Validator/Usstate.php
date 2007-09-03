@@ -33,7 +33,7 @@
 class Doctrine_Validator_Usstate
 {
     private static $states = array (
-                'AK' =>	true,
+                'AK' =>    true,
                 'AL' => true,
                 'AR' => true,
                 'AZ' => true,
@@ -84,8 +84,8 @@ class Doctrine_Validator_Usstate
                 'VT' => true,
                 'WA' => true,
                 'WI' => true,
-                'WV' =>	true,
-                'WY' =>	true
+                'WV' =>    true,
+                'WY' =>    true
             );
     public function getStates()
     {

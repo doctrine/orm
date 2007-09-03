@@ -140,7 +140,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
 
         switch ($field['type']) {
             case 'char':
-                $length = (! empty($field['length'])) ? $field['length'] : false;
+                $length = ( ! empty($field['length'])) ? $field['length'] : false;
 
                 return $length ? 'CHAR('.$length.')' : 'CHAR(255)';
             case 'varchar':
@@ -162,7 +162,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                 return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
                     : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
             case 'clob':
-                if (!empty($field['length'])) {
+                if ( ! empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 255) {
                         return 'TINYTEXT';
@@ -174,7 +174,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                 }
                 return 'LONGTEXT';
             case 'blob':
-                if (!empty($field['length'])) {
+                if ( ! empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 255) {
                         return 'TINYBLOB';
@@ -196,7 +196,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
                 // fall back to integer
             case 'integer':
             case 'int':
-                if (!empty($field['length'])) {
+                if ( ! empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 1) {
                         return 'TINYINT';
@@ -439,7 +439,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
     public function getIntegerDeclaration($name, $field)
     {
         $default = $autoinc = '';
-        if (!empty($field['autoincrement'])) {
+        if ( ! empty($field['autoincrement'])) {
             $autoinc = ' AUTO_INCREMENT';
         } elseif (array_key_exists('default', $field)) {
             if ($field['default'] === '') {

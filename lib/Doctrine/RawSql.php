@@ -129,7 +129,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
      */
     public function getQuery()
     {
-    	$select = array();
+        $select = array();
 
         foreach ($this->fields as $field) {
             $e = explode('.', $field);

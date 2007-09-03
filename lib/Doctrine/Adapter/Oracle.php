@@ -110,7 +110,7 @@ class Doctrine_Adapter_Oracle extends Doctrine_Adapter
             return;
         }
 
-        if (!extension_loaded('oci8')) {
+        if ( ! extension_loaded('oci8')) {
             throw new Doctrine_Adapter_Oracle_Exception('The OCI8 extension is required for this adapter but not loaded');
         }
 
@@ -126,7 +126,7 @@ class Doctrine_Adapter_Oracle extends Doctrine_Adapter
         }
 
         // check the connection
-        if (!$this->_connection) {
+        if ( ! $this->_connection) {
             throw new Doctrine_Adapter_Oracle_Exception(oci_error());
         }
     }
@@ -199,7 +199,7 @@ class Doctrine_Adapter_Oracle extends Doctrine_Adapter
      */
     protected function _commit()
     {
-        if (!oci_commit($this->_connection)) {
+        if ( ! oci_commit($this->_connection)) {
             throw new Doctrine_Adapter_Oracle_Exception(oci_error($this->_connection));
         }
         $this->_setExecuteMode(OCI_COMMIT_ON_SUCCESS);
@@ -212,7 +212,7 @@ class Doctrine_Adapter_Oracle extends Doctrine_Adapter
      */
     protected function _rollBack()
     {
-        if (!oci_rollback($this->_connection)) {
+        if ( ! oci_rollback($this->_connection)) {
             throw new Doctrine_Adapter_Oracle_Exception(oci_error($this->_connection));
         }
         $this->_setExecuteMode(OCI_COMMIT_ON_SUCCESS);

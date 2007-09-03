@@ -56,7 +56,7 @@ abstract class Doctrine_Cache_Driver implements Doctrine_Cache_Interface
      */
     public function setOption($option, $value)
     {
-    	if (isset($this->_options[$option])) {
+        if (isset($this->_options[$option])) {
             $this->_options[$option] = $value;
             return true;
         }

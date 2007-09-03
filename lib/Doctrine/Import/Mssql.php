@@ -170,7 +170,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
         $result = array();
 
         foreach ($indexes as $index) {
-            if (!in_array($index, $pkAll) && $index != null) {
+            if ( ! in_array($index, $pkAll) && $index != null) {
                 $result[] = $this->conn->formatter->fixIndexName($index);
             }
         }

@@ -109,7 +109,7 @@ class Doctrine_Coverage_Report
     {
         $key = $this->path . $fileName;
         $html = '<div id="coverage">';
-        if (!isset( $this->coverage[$key]))
+        if ( ! isset( $this->coverage[$key]))
         {
             echo '<h2>This file has not been tested!</h2>';
         }

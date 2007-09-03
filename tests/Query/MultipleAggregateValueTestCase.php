@@ -35,62 +35,62 @@ class Doctrine_Query_MultipleAggregateValue_TestCase extends Doctrine_UnitTestCa
 {
     public function prepareData() 
     { }
-	public function testInitData()
-	{
-		$user = new User();
-		$user->name = 'jon';
-		
-		$user->Album[0] = new Album();
-		$user->Album[1] = new Album();
-		$user->Album[2] = new Album();
-		
-		$user->Book[0] = new Book();
-		$user->Book[1] = new Book();
-		$user->save();
-	}
-	
-	public function testMultipleAggregateValues()
-	{
-	    $query = new Doctrine_Query();
-		$query->select('u.*, COUNT(DISTINCT b.id) num_books, COUNT(DISTINCT a.id) num_albums');
-		$query->from('User u');
-		$query->leftJoin('u.Album a, u.Book b');
-		$query->where("u.name = 'jon'");
-		$query->limit(1);
-		
-		$user = $query->execute()->getFirst();
-		
-		try {
-			$name = $user->name;
-			$num_albums = $user->Album[0]->num_albums;
-			$num_books = $user->Book[0]->num_books;	
-		} catch (Doctrine_Exception $e) {
-			$this->fail();
-		}
-		
-		$this->assertEqual($num_albums, 3);
-		$this->assertEqual($num_books, 2);
-	}
-	public function testMultipleAggregateValuesWithArrayFetching()
-	{
-	    $query = new Doctrine_Query();
-		$query->select('u.*, COUNT(DISTINCT b.id) num_books, COUNT(DISTINCT a.id) num_albums');
-		$query->from('User u');
-		$query->leftJoin('u.Album a, u.Book b');
-		$query->where("u.name = 'jon'");
-		$query->limit(1);
-		
-		$users = $query->execute(array(), Doctrine::FETCH_ARRAY);
+    public function testInitData()
+    {
+        $user = new User();
+        $user->name = 'jon';
+        
+        $user->Album[0] = new Album();
+        $user->Album[1] = new Album();
+        $user->Album[2] = new Album();
+        
+        $user->Book[0] = new Book();
+        $user->Book[1] = new Book();
+        $user->save();
+    }
+    
+    public function testMultipleAggregateValues()
+    {
+        $query = new Doctrine_Query();
+        $query->select('u.*, COUNT(DISTINCT b.id) num_books, COUNT(DISTINCT a.id) num_albums');
+        $query->from('User u');
+        $query->leftJoin('u.Album a, u.Book b');
+        $query->where("u.name = 'jon'");
+        $query->limit(1);
+        
+        $user = $query->execute()->getFirst();
+        
+        try {
+            $name = $user->name;
+            $num_albums = $user->Album[0]->num_albums;
+            $num_books = $user->Book[0]->num_books;    
+        } catch (Doctrine_Exception $e) {
+            $this->fail();
+        }
+        
+        $this->assertEqual($num_albums, 3);
+        $this->assertEqual($num_books, 2);
+    }
+    public function testMultipleAggregateValuesWithArrayFetching()
+    {
+        $query = new Doctrine_Query();
+        $query->select('u.*, COUNT(DISTINCT b.id) num_books, COUNT(DISTINCT a.id) num_albums');
+        $query->from('User u');
+        $query->leftJoin('u.Album a, u.Book b');
+        $query->where("u.name = 'jon'");
+        $query->limit(1);
+        
+        $users = $query->execute(array(), Doctrine::FETCH_ARRAY);
 
-		try {
-			$name = $users[0]['name'];
-			$num_albums = $users[0]['Album'][0]['num_albums'];
-			$num_books = $users[0]['Book'][0]['num_books'];
-		} catch (Doctrine_Exception $e) {
-			$this->fail();
-		}
+        try {
+            $name = $users[0]['name'];
+            $num_albums = $users[0]['Album'][0]['num_albums'];
+            $num_books = $users[0]['Book'][0]['num_books'];
+        } catch (Doctrine_Exception $e) {
+            $this->fail();
+        }
 
-		$this->assertEqual($num_albums, 3);
-		$this->assertEqual($num_books, 2);
-	}
+        $this->assertEqual($num_albums, 3);
+        $this->assertEqual($num_books, 2);
+    }
 }

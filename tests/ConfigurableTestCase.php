@@ -121,7 +121,7 @@ class Doctrine_Configurable_TestCase extends Doctrine_UnitTestCase {
                            Doctrine::PORTABILITY_RTRIM | Doctrine::PORTABILITY_FIX_CASE);
     }
     public function testDefaultListenerIsDoctrineEventListener() {
-        $this->assertTrue($this->manager->getAttribute(Doctrine::ATTR_LISTENER) instanceof Doctrine_EventListener);                                                                 	
+        $this->assertTrue($this->manager->getAttribute(Doctrine::ATTR_LISTENER) instanceof Doctrine_EventListener);                                                                     
     }
     public function testListenerAttributeAcceptsEventListenerObjects() {
         $this->manager->setAttribute(Doctrine::ATTR_LISTENER, new Doctrine_EventListener_Debugger());

@@ -67,13 +67,13 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
      */
     public function __construct($driver, $options = array())
     {
-    	if (is_object($driver)) {
-    	   if ( ! ($driver instanceof Doctrine_Cache_Interface)) {
-    	       throw new Doctrine_Cache_Exception('Driver should implement Doctrine_Cache_Interface.');
-    	   }
-    	   
-    	   $this->_driver = $driver;
-    	   $this->_driver->setOptions($options);
+        if (is_object($driver)) {
+           if ( ! ($driver instanceof Doctrine_Cache_Interface)) {
+               throw new Doctrine_Cache_Exception('Driver should implement Doctrine_Cache_Interface.');
+           }
+           
+           $this->_driver = $driver;
+           $this->_driver->setOptions($options);
         } else {
             $class = 'Doctrine_Cache_' . ucwords(strtolower($driver));
     
@@ -103,12 +103,12 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
      */
     public function setOption($option, $value)
     {
-    	// sanity check (we need this since we are using isset() instead of array_key_exists())
-    	if ($value === null) {
+        // sanity check (we need this since we are using isset() instead of array_key_exists())
+        if ($value === null) {
             throw new Doctrine_Cache_Exception('Null values not accepted for options.');
-    	}
+        }
 
-    	if (isset($this->_options[$option])) {
+        if (isset($this->_options[$option])) {
             $this->_options[$option] = $value;
             return true;
         }
@@ -138,7 +138,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
      */
     public function add($query, $namespace = null)
     {
-    	if (isset($namespace)) {
+        if (isset($namespace)) {
             $this->_queries[$namespace][] = $query;
         } else {
             $this->_queries[] = $query;
@@ -153,7 +153,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     public function getAll($namespace = null)
     {
         if (isset($namespace)) {
-            if( ! isset($this->_queries[$namespace])) {
+            if ( ! isset($this->_queries[$namespace])) {
                 return array();
             }
 
@@ -216,7 +216,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     {
         $rand = (mt_rand() / mt_getrandmax());
 
-    	if ($rand <= $this->_options['cleanPropability']) {
+        if ($rand <= $this->_options['cleanPropability']) {
             $queries = $this->readStats();
 
             $stats   = array();
@@ -249,14 +249,14 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
      */
     public function readStats() 
     {
-    	if ($this->_options['statsFile'] !== false) {
-    	   $content = file_get_contents($this->_options['statsFile']);
+        if ($this->_options['statsFile'] !== false) {
+           $content = file_get_contents($this->_options['statsFile']);
            
            $e = explode("\n", $content);
            
            return array_map('unserialize', $e);
-    	}
-    	return array();
+        }
+        return array();
     }
     /**
      * appendStats
@@ -266,7 +266,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
      */
     public function appendStats()
     {
-    	if ($this->_options['statsFile'] !== false) {
+        if ($this->_options['statsFile'] !== false) {
 
             if ( ! file_exists($this->_options['statsFile'])) {
                 throw new Doctrine_Cache_Exception("Couldn't save cache statistics. Cache statistics file doesn't exists!");
@@ -335,7 +335,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     public function preFetch(Doctrine_Event $event)
     {
         $ret = current($this->_data);
-    	next($this->_data);
+        next($this->_data);
         return $ret;
     }
     /**

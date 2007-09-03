@@ -38,8 +38,8 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
 
     public function prepareTables()
     { 
-    	$this->profiler = new Doctrine_Connection_Profiler();
-    	$this->conn->addListener($this->profiler);
+        $this->profiler = new Doctrine_Connection_Profiler();
+        $this->conn->addListener($this->profiler);
         $this->tables = array('VersioningTest', 'VersioningTestVersion');
         
         parent::prepareTables();

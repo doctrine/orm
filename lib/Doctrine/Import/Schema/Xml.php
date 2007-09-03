@@ -39,19 +39,19 @@
  */
 class Doctrine_Import_Schema_Xml extends Doctrine_Import_Schema
 {
-	/**
-	 * parse
-	 *
-	 * @param string $schema 
-	 * @return void
-	 */
+    /**
+     * parse
+     *
+     * @param string $schema 
+     * @return void
+     */
     public function parse($schema)
     {
-        if (!is_readable($schema)) {
+        if ( ! is_readable($schema)) {
             throw new Doctrine_Import_Exception('Could not read schema file '. $schema);
         }
         
-        if (!($xmlString = file_get_contents($schema))) {
+        if ( ! ($xmlString = file_get_contents($schema))) {
             throw new Doctrine_Import_Exception('Schema file '. $schema . ' is empty');
         }
         

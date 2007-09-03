@@ -40,7 +40,7 @@ class Doctrine_IntegrityMapper
     }
     public function invokeIntegrityActions(Doctrine_Record $record)
     {
-    	$deleteActions = Doctrine_Manager::getInstance()
+        $deleteActions = Doctrine_Manager::getInstance()
                          ->getDeleteActions($record->getTable()->getComponentName());
                          
         foreach ($record->getTable()->getRelations() as $relation) {
@@ -97,7 +97,7 @@ class Doctrine_IntegrityMapper
     }
     public function buildIntegrityRelations(Doctrine_Table $table, &$aliases, &$fields, &$indexes, &$components)
     {
-    	$deleteActions = Doctrine_Manager::getInstance()
+        $deleteActions = Doctrine_Manager::getInstance()
                          ->getDeleteActions($table->getComponentName());
 
         foreach ($table->getRelations() as $relation) {

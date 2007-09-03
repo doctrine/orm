@@ -55,9 +55,9 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
      */
     public function getNativeDeclaration(array $field)
     {
-    	if ( ! isset($field['type'])) {
+        if ( ! isset($field['type'])) {
             throw new Doctrine_DataDict_Exception('Missing column type.');
-    	}
+        }
         switch ($field['type']) {
             case 'string':
             case 'array':
@@ -78,7 +78,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
             case 'integer':
             case 'enum':
             case 'int':
-                if (!empty($field['length'])) {
+                if ( ! empty($field['length'])) {
                     return 'NUMBER('.$field['length'].')';
                 }
                 return 'INT';
@@ -110,7 +110,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
         $dbType = strtolower($field['type']);
         $type = array();
         $length = $unsigned = $fixed = null;
-        if (!empty($field['length'])) {
+        if ( ! empty($field['length'])) {
             $length = $field['length'];
         }
 
@@ -156,7 +156,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
                 $type[] = 'float';
                 break;
             case 'number':
-                if (!empty($field['scale'])) {
+                if ( ! empty($field['scale'])) {
                     $type[] = 'decimal';
                 } else {
                     $type[] = 'integer';

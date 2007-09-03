@@ -263,9 +263,9 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
     }
     public function testEnumValuesWorkInPlaceholders()
     {
-    	$e = new EnumTest;
-    	$e->status = 'verified';
-    	$e->save();
+        $e = new EnumTest;
+        $e->status = 'verified';
+        $e->save();
 
         $q = new Doctrine_Query();
         

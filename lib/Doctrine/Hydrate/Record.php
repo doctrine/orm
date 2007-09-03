@@ -52,7 +52,7 @@ class Doctrine_Hydrate_Record extends Doctrine_Object
     }
     public function initRelated($record, $name)
     {
-    	if ( ! is_array($record)) {
+        if ( ! is_array($record)) {
             $record[$name];
 
             return true;
@@ -74,7 +74,7 @@ class Doctrine_Hydrate_Record extends Doctrine_Object
      */
     public function isIdentifiable(array $row, Doctrine_Table $table)
     {
-    	$primaryKeys = $table->getIdentifier();
+        $primaryKeys = $table->getIdentifier();
 
         if (is_array($primaryKeys)) {
             foreach ($primaryKeys as $id) {
@@ -95,7 +95,7 @@ class Doctrine_Hydrate_Record extends Doctrine_Object
     }
     public function getElement(array $data, $component)
     {
-    	if ( ! isset($this->_tables[$component])) {
+        if ( ! isset($this->_tables[$component])) {
             $this->_tables[$component] = Doctrine_Manager::getInstance()->getTable($component);
             $this->_tables[$component]->setAttribute(Doctrine::ATTR_LOAD_REFERENCES, false);
         }

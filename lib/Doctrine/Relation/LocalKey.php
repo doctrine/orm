@@ -73,10 +73,10 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation
      */
     public function getCondition($alias = null)
     {
-    	if ( ! $alias) {
-    	   $alias = $this->getTable()->getComponentName();
-    	}
-    	return $alias . '.' . $this->definition['foreign'] . ' = ?';
+        if ( ! $alias) {
+           $alias = $this->getTable()->getComponentName();
+        }
+        return $alias . '.' . $this->definition['foreign'] . ' = ?';
     }
 
 }

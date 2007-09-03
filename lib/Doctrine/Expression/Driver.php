@@ -296,7 +296,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
      */
     public function concat()
     {
-    	$args = func_get_args();
+        $args = func_get_args();
 
         return 'CONCAT(' . join(', ', (array) $args) . ')';
     }
@@ -703,7 +703,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
      */
     public function __call($m, $a) 
     {
-    	if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EXPR) {
+        if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EXPR) {
             throw new Doctrine_Expression_Exception('Unknown expression ' . $m);
         }
         return $m . '(' . implode(', ', $a) . ')';

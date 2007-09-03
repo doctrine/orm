@@ -96,7 +96,7 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable,
      * @param Doctrine_Schema_Relation Relation
      *
     */
-    public function setRelation(Doctrine_Schema_Relation $relation){
+    public function setRelation(Doctrine_Schema_Relation $relation) {
          $this->relations[] = $relation;
     }
     /**
@@ -104,7 +104,7 @@ class Doctrine_Schema_Table extends Doctrine_Schema_Object implements Countable,
      *
      * @return array Array of Doctrine_Schema_Relation
     */
-    public function getRelations(){
+    public function getRelations() {
         return $this->relations;
     }
 

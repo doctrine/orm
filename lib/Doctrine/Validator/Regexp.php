@@ -41,9 +41,9 @@ class Doctrine_Validator_Regexp
      */
     public function validate($value)
     {
-    	if ( ! isset($this->args)) {
-    	   return true;
-    	}
+        if ( ! isset($this->args)) {
+           return true;
+        }
         if (is_array($this->args)) {
             foreach ($this->args as $regexp) {
                 if ( ! preg_match($regexp, $value)) {

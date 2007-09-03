@@ -370,8 +370,8 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function errorStack($stack = null)
     {
-        if($stack !== null) {
-            if( ! ($stack instanceof Doctrine_Validator_ErrorStack)) {
+        if ($stack !== null) {
+            if ( ! ($stack instanceof Doctrine_Validator_ErrorStack)) {
                throw new Doctrine_Record_Exception('Argument should be an instance of Doctrine_Validator_ErrorStack.');
             }
             $this->_errorStack = $stack;
@@ -413,7 +413,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function cleanData(&$data)
     {
-    	$tmp = $data;
+        $tmp = $data;
         $data = array();
 
         foreach ($this->getTable()->getColumnNames() as $name) {
@@ -483,7 +483,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function serialize()
     {
-    	$event = new Doctrine_Event($this, Doctrine_Event::RECORD_SERIALIZE);
+        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_SERIALIZE);
 
         $this->preSerialize($event);
 
@@ -536,9 +536,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function unserialize($serialized)
     {
-    	$event = new Doctrine_Event($this, Doctrine_Event::RECORD_UNSERIALIZE);
+        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_UNSERIALIZE);
 
-    	$this->preUnserialize($event);
+        $this->preUnserialize($event);
 
         $manager    = Doctrine_Manager::getInstance();
         $connection = $manager->getConnectionForComponent(get_class($this));
@@ -674,7 +674,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         if (is_null($name)) {
             foreach ($this->_table->getRelations() as $rel) {
-            	$this->_references[$rel->getAlias()] = $rel->fetchRelatedFor($this);
+                $this->_references[$rel->getAlias()] = $rel->fetchRelatedFor($this);
             }
         } else {
             $rel = $this->_table->getRelation($name);
@@ -897,7 +897,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                     }
                     if ($rel instanceof Doctrine_Relation_LocalKey) {
                         $foreign = $rel->getForeign();
-                        if (!empty($foreign) && $foreign != $value->getTable()->getIdentifier())
+                        if ( ! empty($foreign) && $foreign != $value->getTable()->getIdentifier())
                           $this->set($rel->getLocal(), $value->rawGet($foreign), false);
                         else
                           $this->set($rel->getLocal(), $value, false);                          
@@ -933,7 +933,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             return true;
         }
         if (isset($this->_values[$lower])) {
-            return true;                                  	
+            return true;                                      
         }
         if (isset($this->_references[$name]) && 
             $this->_references[$name] !== self::$_null) {
@@ -1202,7 +1202,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function copy()
     {
-    	$data = $this->_data;
+        $data = $this->_data;
 
         if ($this->_table->getIdentifierType() === Doctrine::IDENTIFIER_AUTOINC) {
             $id = $this->_table->getIdentifier();
@@ -1228,7 +1228,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @return Doctrine_Record
      */
-    public function copyDeep(){
+    public function copyDeep() {
         $copy = $this->copy();
 
         foreach ($this->_references as $key => $value) {

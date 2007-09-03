@@ -184,7 +184,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      */
     public function getRootAlias()
     {
-        if (!$this->_aliasMap) {
+        if ( ! $this->_aliasMap) {
           $this->getSql();
         }
         

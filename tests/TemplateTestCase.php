@@ -39,7 +39,7 @@ class Doctrine_Template_TestCase extends Doctrine_UnitTestCase
 
     public function testAccessingNonExistingImplementationThrowsException()
     {
-    	try {
+        try {
             $user = new ConcreteUser();
             $user->Group;
             $this->fail();
@@ -50,7 +50,7 @@ class Doctrine_Template_TestCase extends Doctrine_UnitTestCase
     
     public function testAccessingExistingImplementationSupportsAssociations()
     {
-    	$this->manager->setImpl('UserTemplate', 'ConcreteUser')
+        $this->manager->setImpl('UserTemplate', 'ConcreteUser')
                       ->setImpl('GroupUserTemplate', 'ConcreteGroupUser')
                       ->setImpl('GroupTemplate', 'ConcreteGroup')
                       ->setImpl('EmailTemplate', 'ConcreteEmail');

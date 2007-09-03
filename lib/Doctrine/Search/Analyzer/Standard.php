@@ -266,7 +266,7 @@ class Doctrine_Search_Analyzer_Standard implements Doctrine_Search_Analyzer_Inte
 
     public function analyze($text)
     {
-    	$text = preg_replace('/[.()&#!,?^£@%&{}+]/', ' ', $text);
+        $text = preg_replace('/[.()&#!,?^£@%&{}+]/', ' ', $text);
         $text = str_replace('  ', ' ', $text);
 
         $terms = explode(' ', $text);

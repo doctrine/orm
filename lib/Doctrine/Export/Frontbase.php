@@ -159,7 +159,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
      */
     public function alterTable($name, array $changes, $check)
     {
-        foreach ($changes as $changeName => $change){
+        foreach ($changes as $changeName => $change) {
             switch ($changeName) {
             case 'add':
             case 'remove':
@@ -177,12 +177,12 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
         }
 
         $query = '';
-        if (!empty($changes['name'])) {
+        if ( ! empty($changes['name'])) {
             $changeName = $this->conn->quoteIdentifier($changes['name'], true);
             $query .= 'RENAME TO ' . $changeName;
         }
 
-        if (!empty($changes['add']) && is_array($changes['add'])) {
+        if ( ! empty($changes['add']) && is_array($changes['add'])) {
             foreach ($changes['add'] as $fieldName => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -191,7 +191,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
             }
         }
 
-        if (!empty($changes['remove']) && is_array($changes['remove'])) {
+        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
             foreach ($changes['remove'] as $fieldName => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -202,13 +202,13 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
         }
 
         $rename = array();
-        if (!empty($changes['rename']) && is_array($changes['rename'])) {
+        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
             foreach ($changes['rename'] as $fieldName => $field) {
                 $rename[$field['name']] = $fieldName;
             }
         }
 
-        if (!empty($changes['change']) && is_array($changes['change'])) {
+        if ( ! empty($changes['change']) && is_array($changes['change'])) {
             foreach ($changes['change'] as $fieldName => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -224,7 +224,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
             }
         }
 
-        if (!empty($rename) && is_array($rename)) {
+        if ( ! empty($rename) && is_array($rename)) {
             foreach ($rename as $renamedFieldName => $renamed_field) {
                 if ($query) {
                     $query.= ', ';
@@ -235,7 +235,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
             }
         }
 
-        if (!$query) {
+        if ( ! $query) {
             return true;
         }
 

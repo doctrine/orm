@@ -93,7 +93,7 @@ class Doctrine_Validator extends Doctrine_Object
             }
 
             if ($record->getTable()->getAttribute(Doctrine::ATTR_VALIDATE) & Doctrine::VALIDATE_LENGTHS) {
-                if (!$this->validateLength($column, $key, $value)) {
+                if ( ! $this->validateLength($column, $key, $value)) {
                     $errorStack->add($key, 'length');
 
                     continue;
@@ -119,7 +119,7 @@ class Doctrine_Validator extends Doctrine_Object
 
                 if (strtolower($name) == 'length') {
                     if ( ! ($record->getTable()->getAttribute(Doctrine::ATTR_VALIDATE) & Doctrine::VALIDATE_LENGTHS)) {
-                        if (!$this->validateLength($column, $key, $value)) {
+                        if ( ! $this->validateLength($column, $key, $value)) {
                             $errorStack->add($key, 'length');
                         }
                     }

@@ -43,7 +43,7 @@ class Doctrine_DataDict extends Doctrine_Connection_Module
     {
         $type = !empty($current['type']) ? $current['type'] : null;
 
-        if (!method_exists($this, "_compare{$type}Definition")) {
+        if ( ! method_exists($this, "_compare{$type}Definition")) {
             throw new Doctrine_DataDict_Exception('type "'.$current['type'].'" is not yet supported');
         }
 

@@ -64,7 +64,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
 
     public function testQuerySupportsCustomJoins()
     {
-    	$q = new Doctrine_Query();
+        $q = new Doctrine_Query();
 
         $q->select('c.*, c2.*, d.*')
           ->from('Record_Country c')->innerJoin('c.City c2 ON c2.id = 2')
@@ -75,7 +75,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
 
     public function testQuerySupportsCustomJoinsAndWithKeyword()
     {
-    	$q = new Doctrine_Query();
+        $q = new Doctrine_Query();
 
         $q->select('c.*, c2.*, d.*')
           ->from('Record_Country c')->innerJoin('c.City c2 WITH c2.id = 2')
@@ -195,7 +195,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
     
     public function testMapKeywordThrowsExceptionOnNonExistentColumn()
     {
-    	try {
+        try {
             $q = new Doctrine_Query();
             $country = $q->from('Record_Country c LEFT JOIN c.City c2 MAP c2.unknown')->fetchOne();
         

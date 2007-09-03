@@ -68,11 +68,11 @@ class Doctrine_Relation_Parser
      */
     public function getPendingRelation($name) 
     {
-    	if ( ! isset($this->_pending[$name])) {
+        if ( ! isset($this->_pending[$name])) {
             throw new Doctrine_Relation_Exception('Unknown pending relation ' . $name);
-    	}
-    	
-    	return $this->_pending[$name];
+        }
+        
+        return $this->_pending[$name];
     }
     
     public function hasRelation($name)
@@ -218,7 +218,7 @@ class Doctrine_Relation_Parser
      */
     public function getImpl($template)
     {
-    	$conn = $this->_table->getConnection();
+        $conn = $this->_table->getConnection();
 
         if (in_array('Doctrine_Template', class_parents($template))) {
             $impl = $this->_table->getImpl($template);
@@ -240,7 +240,7 @@ class Doctrine_Relation_Parser
      */
     public function completeAssocDefinition($def) 
     {
-    	$conn = $this->_table->getConnection();
+        $conn = $this->_table->getConnection();
         $def['table'] = $this->getImpl($def['class']);
         $def['class'] = $def['table']->getComponentName();
         $def['refTable'] = $this->getImpl($def['refClass']);
@@ -291,16 +291,16 @@ class Doctrine_Relation_Parser
      */
     public function getIdentifiers(Doctrine_Table $table)
     {
-    	if (is_array($table->getIdentifier())) {
+        if (is_array($table->getIdentifier())) {
             $columns = array();
             foreach((array) $table->getIdentifier() as $identifier) {
                 $columns[] = strtolower($table->getComponentName())
                            . '_' . $table->getIdentifier();
             }
-    	} else {
+        } else {
             $columns = strtolower($table->getComponentName())
                            . '_' . $table->getIdentifier();
-    	}
+        }
 
         return $columns;
     }
@@ -349,7 +349,7 @@ class Doctrine_Relation_Parser
      */
     public function completeDefinition($def)
     {
-    	$conn = $this->_table->getConnection();
+        $conn = $this->_table->getConnection();
         $def['table'] = $this->getImpl($def['class']);
         $def['class'] = $def['table']->getComponentName();
 

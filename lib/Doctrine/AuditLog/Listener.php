@@ -40,7 +40,7 @@ class Doctrine_AuditLog_Listener extends Doctrine_Record_Listener
     }
     public function preInsert(Doctrine_Event $event)
     {
-    	$versionColumn = $this->_auditLog->getOption('versionColumn');
+        $versionColumn = $this->_auditLog->getOption('versionColumn');
 
         $event->getInvoker()->set($versionColumn, 1);
     }
@@ -54,23 +54,23 @@ class Doctrine_AuditLog_Listener extends Doctrine_Record_Listener
         $version->merge($record->toArray());
         $version->save();
 
-    	$versionColumn = $this->_auditLog->getOption('versionColumn');
-    	$version = $record->get($versionColumn);
+        $versionColumn = $this->_auditLog->getOption('versionColumn');
+        $version = $record->get($versionColumn);
 
         $record->set($versionColumn, ++$version);
     }
     public function preUpdate(Doctrine_Event $event)
     {
-    	$class = $this->_auditLog->getOption('className');
+        $class = $this->_auditLog->getOption('className');
         $record  = $event->getInvoker();
         
         $version = new $class();
         $version->merge($record->toArray());
         $version->save();        
 
-    	$versionColumn = $this->_auditLog->getOption('versionColumn');
+        $versionColumn = $this->_auditLog->getOption('versionColumn');
 
-    	$version = $record->get($versionColumn);
+        $version = $record->get($versionColumn);
 
         $record->set($versionColumn, ++$version);
     }

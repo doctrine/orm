@@ -109,7 +109,7 @@ class TestObject
     
     public function __construct($value)
     {
-    	$this->test_field = $value;
+        $this->test_field = $value;
     }
         
 }

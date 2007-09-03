@@ -189,18 +189,18 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
     }
     
     public function testProxyToDirtyToProxy() {
-    	
-    	define('UNAME','someuser') ;
-    	define('UPWD1','123') ;
-    	define('UPWD2','456') ;
-    	define('ULNAME','somelogin') ;
-    	
-    	$user = new User() ;
-    	$user->name      = UNAME ;
-    	$user->password  = UPWD1 ;
-    	$user->loginname = ULNAME ;
-    	$user->save() ;
-    	
+        
+        define('UNAME','someuser') ;
+        define('UPWD1','123') ;
+        define('UPWD2','456') ;
+        define('ULNAME','somelogin') ;
+        
+        $user = new User() ;
+        $user->name      = UNAME ;
+        $user->password  = UPWD1 ;
+        $user->loginname = ULNAME ;
+        $user->save() ;
+        
         $this->assertEqual($user->name,UNAME) ;
         $this->assertEqual($user->password,UPWD1) ;
         $this->assertEqual($user->loginname,ULNAME) ;
@@ -212,13 +212,13 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user1->password,UPWD1) ;
         $this->assertEqual($user1->loginname,ULNAME) ;
         
-    	$this->connection->clear() ;
-    	//$this->clearCache() ;
-    	
-    	// now lets fetch partially the object
-		//$users = Doctrine_Query::create($this->connection)->select('u.name')->from('User u')->where("u.name='someuser'")->execute() ;
+        $this->connection->clear() ;
+        //$this->clearCache() ;
+        
+        // now lets fetch partially the object
+        //$users = Doctrine_Query::create($this->connection)->select('u.name')->from('User u')->where("u.name='someuser'")->execute() ;
         //$user2 = $users[0] ;
-		$user2 = $this->connection->queryOne("SELECT u.name FROM User u WHERE u.name = '" . UNAME . "'");
+        $user2 = $this->connection->queryOne("SELECT u.name FROM User u WHERE u.name = '" . UNAME . "'");
         
         // the object should be in state proxy with only 'name' fetched ...
         $this->assertEqual($user2->state(), Doctrine_Record::STATE_PROXY);

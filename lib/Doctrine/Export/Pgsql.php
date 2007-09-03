@@ -232,7 +232,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
                     $query = 'ALTER ' . $fieldName . ' SET DEFAULT ' . $this->conn->quote($field['definition']['default'], $field['definition']['type']);
                     $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
                 }
-                if (!empty($field['notnull'])) {
+                if ( ! empty($field['notnull'])) {
                     $query = 'ALTER ' . $fieldName . ' ' . ($field['definition']['notnull'] ? 'SET' : 'DROP') . ' NOT NULL';
                     $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
                 }

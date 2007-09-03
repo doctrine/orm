@@ -44,7 +44,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     {
         // set default many root attributes
         $options['hasManyRoots'] = isset($options['hasManyRoots']) ? $options['hasManyRoots'] : false;
-        if($options['hasManyRoots'])
+        if ($options['hasManyRoots'])
             $options['rootColumnName'] = isset($options['rootColumnName']) ? $options['rootColumnName'] : 'root_id';
   
         parent::__construct($table, $options);
@@ -266,7 +266,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      */
     public function getBaseQuery()
     {
-        if (!isset($this->_baseQuery)) {
+        if ( ! isset($this->_baseQuery)) {
             $this->_baseQuery = $this->_createBaseQuery();
         }
         return $this->_baseQuery->copy();

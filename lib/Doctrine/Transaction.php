@@ -207,7 +207,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      */
     public function commit($savepoint = null)
     {
-    	$this->conn->connect();
+        $this->conn->connect();
 
         if ($this->transactionLevel == 0) {
             return false;
@@ -363,7 +363,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      */
     private function removeSavePoints($savepoint)
     {
-    	$this->savePoints = array_values($this->savePoints);
+        $this->savePoints = array_values($this->savePoints);
 
         $found = false;
         $i = 0;

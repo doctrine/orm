@@ -750,7 +750,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     {
         if ($record === null) {
           return ($this->getRightValue() > $this->getLeftValue());
-        } else if( $record instanceof Doctrine_Record ) {
+        } else if ( $record instanceof Doctrine_Record ) {
           return ($record->getNode()->getRightValue() > $record->getNode()->getLeftValue());
         } else {
           return false;
@@ -817,7 +817,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         // Make room in the new branch
         $this->shiftRLValues($destLeft, $treeSize, $rootId);
 
-        if ($left >= $destLeft){ // src was shifted too?
+        if ($left >= $destLeft) { // src was shifted too?
             $left += $treeSize;
             $right += $treeSize;
         }
@@ -952,7 +952,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */    
     public function getLevel()
     {
-        if (!isset($this->record['level'])) {
+        if ( ! isset($this->record['level'])) {
             $baseAlias = $this->_tree->getBaseAlias();
             $componentName = $this->_tree->getBaseComponent();
             $q = $this->_tree->getBaseQuery();

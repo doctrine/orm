@@ -84,7 +84,7 @@ class Doctrine_Relation_TestCase extends Doctrine_UnitTestCase
 
     public function testUnlinkSupportsOneToManyRelations()
     {
-    	$this->conn->clear();
+        $this->conn->clear();
 
         $users = Doctrine_Query::create()->from('User u')->where('u.name = ?', array('zYne'))->execute();
         

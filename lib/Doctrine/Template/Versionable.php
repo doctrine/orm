@@ -39,7 +39,7 @@ class Doctrine_Template_Versionable extends Doctrine_Template
     }
     public function setUp()
     {
-    	$this->_auditLog->setOption('table', $this->_table);
+        $this->_auditLog->setOption('table', $this->_table);
         $this->_auditLog->buildDefinition($this->_table);
 
         $this->addListener(new Doctrine_AuditLog_Listener($this->_auditLog));

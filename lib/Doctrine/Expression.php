@@ -80,7 +80,7 @@ class Doctrine_Expression
 
     public function parseClause($clause)
     {
-    	$e = Doctrine_Tokenizer::bracketExplode($clause, ' ');
+        $e = Doctrine_Tokenizer::bracketExplode($clause, ' ');
 
         foreach ($e as $k => $expr) {
             $e[$k] = $this->parseExpression($expr);

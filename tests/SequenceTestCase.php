@@ -40,7 +40,7 @@ class Doctrine_Sequence_TestCase extends Doctrine_UnitTestCase
     }
     public function testSequencesAreSupportedForRecords()
     {
-    	$this->adapter->forceLastInsertIdFail();
+        $this->adapter->forceLastInsertIdFail();
         $r = new CustomSequenceRecord;
         $r->name = 'custom seq';
         $r->save();

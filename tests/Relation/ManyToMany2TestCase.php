@@ -32,40 +32,40 @@
  */
 class Doctrine_Relation_ManyToMany2_TestCase extends Doctrine_UnitTestCase 
 {
-	public function prepareData() 
+    public function prepareData() 
     {
-	}
-	
+    }
+    
     public function prepareTables() 
     {
-    	$this->tables = array('TestUser', 'TestMovie', 'TestMovieUserBookmark', 'TestMovieUserVote');
+        $this->tables = array('TestUser', 'TestMovie', 'TestMovieUserBookmark', 'TestMovieUserVote');
         parent::prepareTables();
     }
     
     public function testManyToManyCreateSelectAndUpdate() 
     {
-    	$user = new TestUser();
+        $user = new TestUser();
         $user['name'] = 'tester';
         $user->save();
-    	
-    	$data = new TestMovie();
-    	$data['name'] = 'movie';
-    	$data['User'] =  $user;
-    	$data['MovieBookmarks'][0] = $user;
-    	$data['MovieVotes'][0] = $user;
-    	$data->save(); //All ok here
+        
+        $data = new TestMovie();
+        $data['name'] = 'movie';
+        $data['User'] =  $user;
+        $data['MovieBookmarks'][0] = $user;
+        $data['MovieVotes'][0] = $user;
+        $data->save(); //All ok here
         
         $this->conn->clear();
 
-    	$q = new Doctrine_Query();
-    	$newdata = $q->select('m.*')
-    	 			 ->from('TestMovie m')
-	 				 ->execute()
-	 				 ->getFirst();	 
-    	$newdata['name'] = 'movie2';	
-    	try {
-			$newdata->save(); //big failure here
-			$this->pass();
+        $q = new Doctrine_Query();
+        $newdata = $q->select('m.*')
+                      ->from('TestMovie m')
+                      ->execute()
+                      ->getFirst();     
+        $newdata['name'] = 'movie2';    
+        try {
+            $newdata->save(); //big failure here
+            $this->pass();
         } catch(Doctrine_Exception $e) {
             $this->fail();
         }

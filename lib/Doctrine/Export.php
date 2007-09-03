@@ -264,7 +264,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function createTable($name, array $fields, array $options = array())
     {
-    	$sql = (array) $this->createTableSql($name, $fields, $options);
+        $sql = (array) $this->createTableSql($name, $fields, $options);
 
         foreach ($sql as $query) {
             $this->conn->execute($query);
@@ -423,7 +423,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $name   = $this->conn->quoteIdentifier($name);
         $type   = '';
 
-        if(isset($definition['type'])) {
+        if (isset($definition['type'])) {
             switch (strtolower($definition['type'])) {
                 case 'unique':
                     $type = strtoupper($definition['type']) . ' ';
@@ -760,9 +760,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function getIndexFieldDeclarationList(array $fields)
     {
-    	$ret = array();
+        $ret = array();
         foreach ($fields as $field => $definition) {
-            if(is_array($definition)) {
+            if (is_array($definition)) {
                 $ret[] = $this->conn->quoteIdentifier($field);
             } else {
                 $ret[] = $this->conn->quoteIdentifier($definition);
@@ -868,7 +868,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function getForeignKeyReferentialAction($action)
     {
-    	$upper = strtoupper($action);
+        $upper = strtoupper($action);
         switch ($upper) {
             case 'CASCADE':
             case 'SET NULL':
@@ -891,7 +891,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function getForeignKeyBaseDeclaration(array $definition)
     {
-    	$sql = '';
+        $sql = '';
         if (isset($definition['name'])) {
             $sql .= 'CONSTRAINT ' . $this->conn->quoteIdentifier($definition['name']) . ' ';
         }
@@ -982,7 +982,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 $this->conn->exec($query);
             } catch (Doctrine_Connection_Exception $e) {
                 // we only want to silence table already exists errors
-                if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
+                if ($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
                     $this->conn->rollback();
                     throw $e;
                 }
@@ -1010,7 +1010,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 $this->conn->exec($query);
             } catch (Doctrine_Connection_Exception $e) {
                 // we only want to silence table already exists errors
-                if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
+                if ($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
                     $this->conn->rollback();
                     throw $e;
                 }
@@ -1093,10 +1093,10 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportSql($directory = null)
     {
-    	$declared = get_declared_classes();
+        $declared = get_declared_classes();
 
-       	if ($directory !== null) {
-       	    foreach ((array) $directory as $dir) {
+           if ($directory !== null) {
+               foreach ((array) $directory as $dir) {
                 $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
                                                         RecursiveIteratorIterator::LEAVES_ONLY);
 
@@ -1123,8 +1123,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportTable(Doctrine_Table $table)
     {
-    	/**
-    	TODO: maybe there should be portability option for the following check
+        /**
+        TODO: maybe there should be portability option for the following check
         if ( ! Doctrine::isValidClassname($table->getOption('declaringClass')->getName())) {
             throw new Doctrine_Export_Exception('Class name not valid.');
         }
@@ -1136,7 +1136,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $this->conn->export->createTable($data['tableName'], $data['columns'], $data['options']);
         } catch(Doctrine_Connection_Exception $e) {
             // we only want to silence table already exists errors
-            if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
+            if ($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
                 throw $e;
             }
         }

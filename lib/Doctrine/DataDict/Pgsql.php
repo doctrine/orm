@@ -360,9 +360,9 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
      */
     public function getNativeDeclaration(array $field)
     {
-    	if ( ! isset($field['type'])) {
+        if ( ! isset($field['type'])) {
             throw new Doctrine_DataDict_Exception('Missing column type.');
-    	}
+        }
         switch ($field['type']) {
             case 'char':
             case 'string':
@@ -385,8 +385,8 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
             case 'enum':
             case 'integer':
             case 'int':
-                if (!empty($field['autoincrement'])) {
-                    if (!empty($field['length'])) {
+                if ( ! empty($field['autoincrement'])) {
+                    if ( ! empty($field['length'])) {
                         $length = $field['length'];
                         if ($length > 4) {
                             return 'BIGSERIAL';
@@ -394,7 +394,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
                     }
                     return 'SERIAL';
                 }
-                if (!empty($field['length'])) {
+                if ( ! empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 2) {
                         return 'SMALLINT';
@@ -578,7 +578,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
     public function getIntegerDeclaration($name, $field)
     {
         /**
-        if (!empty($field['unsigned'])) {
+        if ( ! empty($field['unsigned'])) {
             $this->conn->warnings[] = "unsigned integer field \"$name\" is being declared as signed integer";
         }
         */

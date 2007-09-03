@@ -321,7 +321,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
             return true;
         }
         $query = '';
-        if (!empty($changes['add']) && is_array($changes['add'])) {
+        if ( ! empty($changes['add']) && is_array($changes['add'])) {
             foreach ($changes['add'] as $fieldName => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -330,7 +330,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
             }
         }
 
-        if (!empty($changes['remove']) && is_array($changes['remove'])) {
+        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
             foreach ($changes['remove'] as $field_name => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -340,7 +340,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
             }
         }
 
-        if (!empty($changes['rename']) && is_array($changes['rename'])) {
+        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
             foreach ($changes['rename'] as $field_name => $field) {
                 if ($query) {
                     $query.= ', ';
@@ -350,7 +350,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
             }
         }
 
-        if (!empty($changes['change']) && is_array($changes['change'])) {
+        if ( ! empty($changes['change']) && is_array($changes['change'])) {
             // missing support to change DEFAULT and NULLability
             foreach ($changes['change'] as $fieldName => $field) {
                 $this->checkSupportedChanges($field);
@@ -363,7 +363,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
             }
         }
 
-        if (!strlen($query)) {
+        if ( ! strlen($query)) {
             return false;
         }
 
@@ -409,7 +409,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
 
         $query_sort = '';
         foreach ($definition['fields'] as $field) {
-            if (!strcmp($query_sort, '') && isset($field['sorting'])) {
+            if ( ! strcmp($query_sort, '') && isset($field['sorting'])) {
                 switch ($field['sorting']) {
                     case 'ascending':
                         $query_sort = ' ASC';
@@ -456,18 +456,18 @@ class Doctrine_Export_Firebird extends Doctrine_Export
     {
         $table = $this->conn->quoteIdentifier($table, true);
 
-        if (!empty($name)) {
+        if ( ! empty($name)) {
             $name = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name), true);
         }
         $query = "ALTER TABLE $table ADD";
-        if (!empty($definition['primary'])) {
-            if (!empty($name)) {
+        if ( ! empty($definition['primary'])) {
+            if ( ! empty($name)) {
                 $query.= ' CONSTRAINT '.$name;
             }
             $query.= ' PRIMARY KEY';
         } else {
             $query.= ' CONSTRAINT '. $name;
-            if (!empty($definition['unique'])) {
+            if ( ! empty($definition['unique'])) {
                $query.= ' UNIQUE';
             }
         }

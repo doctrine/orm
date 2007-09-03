@@ -64,7 +64,7 @@ class Doctrine_Record_Filter extends Doctrine_Object
      */
     public function assignDefaultValues($data, $overwrite = false)
     {
-    	$table = $this->_record->getTable();
+        $table = $this->_record->getTable();
 
         if ( ! $table->hasDefaultValues()) {
             return false;
@@ -95,7 +95,7 @@ class Doctrine_Record_Filter extends Doctrine_Object
     private function prepareIdentifiers($exists = true)
     {
         $id = $this->_table->getIdentifier();
-    	$this->_id   = array();
+        $this->_id   = array();
         if (count($id) > 1) {
             foreach ($id as $name) {
                 if ($this->_data[$name] === self::$_null) {
@@ -104,7 +104,7 @@ class Doctrine_Record_Filter extends Doctrine_Object
                     $this->_id[$name] = $this->_data[$name];
                 }
             }
-    	} else {
+        } else {
             if (isset($this->_data[$id]) && $this->_data[$id] !== self::$_null) {
                 $this->_id[$id] = $this->_data[$id];
             }

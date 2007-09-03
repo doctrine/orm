@@ -54,7 +54,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
      */
     public function bindColumn($column, $param, $type = null)
     {
-    	
+        
     }
     /**
      * bindValue
@@ -72,7 +72,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
      */
     public function bindValue($param, $value, $type = null)
     {
-    	
+        
     }
     /**
      * bindParam
@@ -103,7 +103,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
      */
     public function bindParam($column, $variable, $type = null, $length = null, $driverOptions = array())
     {
-    	
+        
     }
     /**
      * closeCursor
@@ -125,7 +125,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
      */
     public function columnCount()
     {
-        return 0;    	
+        return 0;        
     }
     /**
      * errorCode
@@ -216,7 +216,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
      */
     public function execute($params = null)
     {
-    	if(is_object($this->mock)) {
+        if (is_object($this->mock)) {
             $this->mock->addQuery($this->queryString);
         }
         return true;

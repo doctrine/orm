@@ -118,15 +118,15 @@ abstract class Doctrine_Relation implements ArrayAccess
      */
     public function __construct(array $definition)
     {
-    	$def = array();
-    	foreach ($this->definition as $key => $val) {
+        $def = array();
+        foreach ($this->definition as $key => $val) {
             if ( ! isset($definition[$key]) && $val) {
                 throw new Doctrine_Exception($key . ' is required!');
             }
             if (isset($definition[$key])) {
                 $def[$key] = $definition[$key];
             } else {
-                $def[$key] = null;      	
+                $def[$key] = null;          
             }
         }
 
@@ -276,7 +276,7 @@ abstract class Doctrine_Relation implements ArrayAccess
      */
     public function getRelationDql($count)
     {
-    	$component = $this->getTable()->getComponentName();
+        $component = $this->getTable()->getComponentName();
 
         $dql  = 'FROM ' . $component
               . ' WHERE ' . $component . '.' . $this->definition['foreign']
@@ -302,7 +302,7 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         $r[] = "<pre>";
         foreach ($this->definition as $k => $v) {
-            if(is_object($v)) {
+            if (is_object($v)) {
                 $v = 'Object(' . get_class($v) . ')';
             }
             $r[] = $k . ' : ' . $v;

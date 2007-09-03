@@ -61,8 +61,8 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
      * @return boolean
      */
     public function setFilterQueryType() {
-                                         	
-    }                                     	
+                                             
+    }                                         
     /**
      * method overloader
      * this method is used for invoking different listeners, for the full
@@ -85,7 +85,7 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
             // pre-event listener found
             $a[0]->start();
 
-            if( ! in_array($a[0], $this->events, true)) {
+            if ( ! in_array($a[0], $this->events, true)) {
                 $this->events[] = $a[0];
             }
         } else {
@@ -126,7 +126,7 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
      */
     public function getAll() 
     {
-    	return $this->events;
+        return $this->events;
     }
     /**
      * getIterator

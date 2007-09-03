@@ -51,14 +51,14 @@ class Doctrine_Hydrate_Array
     }
     public function initRelated(array &$data, $name)
     {
-    	if ( ! isset($data[$name])) {
+        if ( ! isset($data[$name])) {
             $data[$name] = array();
         }
         return true;
     }
     public function getNullPointer() 
     {
-        return null;	
+        return null;    
     }
     public function search(array $element, array $data)
     {
@@ -77,6 +77,6 @@ class Doctrine_Hydrate_Array
     }
     public function flush()
     {
-    	
+        
     }
 }

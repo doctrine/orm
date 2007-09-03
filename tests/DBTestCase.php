@@ -183,7 +183,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
 
     public function testListeningErrorHandlingMethodsOnExec()
     {
-    	$this->conn->setAttribute(Doctrine::ATTR_THROW_EXCEPTIONS, false);
+        $this->conn->setAttribute(Doctrine::ATTR_THROW_EXCEPTIONS, false);
         $listener = $this->conn->getListener()->get(0);
         $this->conn->exec('DELETE FROM unknown');
 
@@ -195,7 +195,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
 
     public function testListeningErrorHandlingMethodsOnQuery()
     {
-    	$this->conn->setAttribute(Doctrine::ATTR_THROW_EXCEPTIONS, false);
+        $this->conn->setAttribute(Doctrine::ATTR_THROW_EXCEPTIONS, false);
         $listener = $this->conn->getListener()->get(0);
         $this->conn->execute('DELETE FROM unknown');
 
@@ -207,7 +207,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
 
     public function testListeningErrorHandlingMethodsOnPrepare()
     {
-    	$this->conn->setAttribute(Doctrine::ATTR_THROW_EXCEPTIONS, false);
+        $this->conn->setAttribute(Doctrine::ATTR_THROW_EXCEPTIONS, false);
         $listener = $this->conn->getListener()->get(0);
 
         $this->conn->prepare('INSERT INTO unknown (id) VALUES (?)');
@@ -220,7 +220,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
 
     public function testListeningErrorHandlingMethodsOnStatementExecute()
     {
-    	$this->conn->setAttribute(Doctrine::ATTR_THROW_EXCEPTIONS, false);
+        $this->conn->setAttribute(Doctrine::ATTR_THROW_EXCEPTIONS, false);
         $listener = $this->conn->getListener()->get(0);
 
         $stmt = $this->conn->prepare('INSERT INTO entity (id) VALUES (?)');
@@ -315,7 +315,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
     }
     public function testInvalidDSN() 
     {
-    	$manager = Doctrine_Manager::getInstance();
+        $manager = Doctrine_Manager::getInstance();
         try {
             $this->conn = $manager->openConnection('');
             $this->fail();
@@ -337,7 +337,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
     }
     public function testInvalidScheme() 
     {
-    	$manager = Doctrine_Manager::getInstance();
+        $manager = Doctrine_Manager::getInstance();
         try {
             $this->conn = $manager->openConnection('unknown://:memory:');
             $this->fail();
@@ -347,7 +347,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
     }
     public function testInvalidHost() 
     {
-    	$manager = Doctrine_Manager::getInstance();
+        $manager = Doctrine_Manager::getInstance();
         try {
             $this->conn = $manager->openConnection('mysql://user:password@');
             $this->fail();
@@ -357,7 +357,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
     }
     public function testInvalidDatabase() 
     {
-    	$manager = Doctrine_Manager::getInstance();
+        $manager = Doctrine_Manager::getInstance();
         try {
             $this->conn = $manager->openConnection('mysql://user:password@host/');
             $this->fail();

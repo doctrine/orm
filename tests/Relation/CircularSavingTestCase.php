@@ -43,8 +43,8 @@ class Doctrine_Relation_CircularSaving_TestCase extends Doctrine_UnitTestCase
         parent::prepareTables();
     }
 
-	public function testMultiplePrimaryKeys()
-	{
+    public function testMultiplePrimaryKeys()
+    {
         $r = new Doctrine_Collection('NestReference');
         $r[0]->parent_id = 1;
         $r[0]->child_id = 2;

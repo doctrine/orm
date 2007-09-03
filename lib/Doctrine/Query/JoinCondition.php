@@ -38,7 +38,7 @@ class Doctrine_Query_JoinCondition extends Doctrine_Query_Condition
 
         $e         = Doctrine_Tokenizer::sqlExplode($condition);
 
-        if(count($e) > 2) {
+        if (count($e) > 2) {
             $a         = explode('.', $e[0]);
             $field     = array_pop($a);
             $reference = implode('.', $a);

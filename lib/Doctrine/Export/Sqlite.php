@@ -44,7 +44,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
     public function dropDatabase($name)
     {
         $databaseFile = $this->conn->getDatabaseFile($name);
-        if (!@file_exists($databaseFile)) {
+        if ( ! @file_exists($databaseFile)) {
             throw new Doctrine_Export_Exception('database does not exist');
         }
         $result = @unlink($databaseFile);
@@ -103,7 +103,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      */
     public function getIndexFieldDeclarationList(array $fields)
     {
-    	$declFields = array();
+        $declFields = array();
 
         foreach ($fields as $fieldName => $field) {
             $fieldString = $fieldName;
@@ -168,7 +168,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         
         $autoinc = false;
         foreach($fields as $field) {
-            if(isset($field['autoincrement']) && $field['autoincrement'] || 
+            if (isset($field['autoincrement']) && $field['autoincrement'] || 
               (isset($field['autoinc']) && $field['autoinc'])) {
                 $autoinc = true;
                 break;

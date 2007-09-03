@@ -162,10 +162,10 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
         try {
             $record = $this->objTable->find('4', Doctrine::FETCH_ARRAY);
             $this->assertTrue(is_array($record));
-            $this->assertTrue(!is_object($record));
+            $this->assertTrue( ! is_object($record));
             $this->assertTrue(array_key_exists('id', $record));
             $this->assertTrue(array_key_exists('name', $record));
-            $this->assertTrue(! $record instanceof Doctrine_Record);
+            $this->assertTrue( ! $record instanceof Doctrine_Record);
         } catch(Exception $e) {
             $this->assertTrue(false);
         }
@@ -199,9 +199,9 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($users instanceof Doctrine_Collection);
 
         $users = $this->objTable->findAll(Doctrine::FETCH_ARRAY);
-        $this->assertTrue(! $users instanceof Doctrine_Collection);
+        $this->assertTrue( ! $users instanceof Doctrine_Collection);
         $this->assertTrue(is_array($users));
-        $this->assertTrue(!is_object($users));
+        $this->assertTrue( ! is_object($users));
         $this->assertEqual(count($users), 8);
     }
 

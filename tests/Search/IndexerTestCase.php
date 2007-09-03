@@ -43,8 +43,8 @@ class Doctrine_Search_Indexer_TestCase extends Doctrine_UnitTestCase
 
     public function testIndexexCanRecursivelyIndexDirectories()
     {
-    	$profiler = new Doctrine_Connection_Profiler();
-    	$this->conn->addListener($profiler);
+        $profiler = new Doctrine_Connection_Profiler();
+        $this->conn->addListener($profiler);
 
         $indexer = new Doctrine_Search_Indexer();
 

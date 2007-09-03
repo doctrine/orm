@@ -345,7 +345,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             }
             $columns[$name] = $definition;
 
-            if(isset($definition['primary']) && $definition['primary']) {
+            if (isset($definition['primary']) && $definition['primary']) {
                 $primary[] = $name;
             }
         }
@@ -487,7 +487,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function addCheckConstraint($definition, $name)
     {
-    	if (is_string($name)) {
+        if (is_string($name)) {
             $this->options['checks'][$name] = $definition;
         } else {
             $this->options['checks'][] = $definition;
@@ -521,7 +521,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     }
     public function bind($args, $type)
     {
-    	$options = array();
+        $options = array();
         $options['type'] = $type;
 
         if ( ! isset($args[1])) {
@@ -668,7 +668,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function getColumnName($alias)
     {
         $alias = strtolower($alias);
-        if(isset($this->columnAliases[$alias])) {
+        if (isset($this->columnAliases[$alias])) {
             return $this->columnAliases[$alias];
         }
 
@@ -883,7 +883,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                         return $records->getFirst();
                     }
                 case Doctrine::FETCH_ARRAY:
-                    if (!empty($records[0])) {
+                    if ( ! empty($records[0])) {
                         return $records[0];
                     }
             }
@@ -977,7 +977,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function getRecord()
     {
-    	if ( ! empty($this->data)) {
+        if ( ! empty($this->data)) {
             $this->data = array_change_key_case($this->data, CASE_LOWER);
 
             $key = $this->getIdentifier();
@@ -1041,7 +1041,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function getClassnameToReturn()
     {
-        if (!isset($this->options['subclasses'])) {
+        if ( ! isset($this->options['subclasses'])) {
             return $this->options['name'];
         }
         foreach ($this->options['subclasses'] as $subclass) {
@@ -1126,7 +1126,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             return $index;
         }
 
-        if (!$this->conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)
+        if ( ! $this->conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)
             && isset($this->columns[$field]['values'][$index])
         ) {
             return $this->columns[$field]['values'][$index];
@@ -1330,11 +1330,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
     public function getTemplate($template)
     {
-    	if ( ! isset($this->_templates[$template])) {
+        if ( ! isset($this->_templates[$template])) {
             throw new Doctrine_Table_Exception('Template ' . $template . ' not loaded');
-    	}
+        }
 
-    	return $this->_templates[$template];
+        return $this->_templates[$template];
     }
 
     public function addTemplate($template, Doctrine_Template $impl)

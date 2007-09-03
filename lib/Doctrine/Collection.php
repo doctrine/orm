@@ -113,7 +113,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function setData(array $data) 
     {
-    	$this->data = $data;
+        $this->data = $data;
     }
     /**
      * this method is automatically called when this Doctrine_Collection is serialized
@@ -300,8 +300,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function get($key)
     {
-    	if ($key === null || ! isset($this->data[$key])) {
-    	    $record = $this->_table->create();
+        if ($key === null || ! isset($this->data[$key])) {
+            $record = $this->_table->create();
 
             if (isset($this->referenceField)) {
                 $value = $this->reference->get($this->relation->getLocal());
@@ -316,7 +316,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $this->data[] = $record;
 
             return $record;
-    	}
+        }
 
         return $this->data[$key];
     }

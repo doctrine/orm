@@ -101,17 +101,17 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
      */
     public function convertBooleans($item)
     {
-    	if (is_array($item)) {
+        if (is_array($item)) {
             foreach ($item as $key => $value) {
                 if (is_bool($value)) {
                     $item[$key] = ($value) ? 'true' : 'false';
                 }
             }
-    	} else {
-    	   if (is_bool($item)) {
-    	       $item = ($item) ? 'true' : 'false';
-    	   }
-    	}
+        } else {
+           if (is_bool($item)) {
+               $item = ($item) ? 'true' : 'false';
+           }
+        }
         return $item;
     }
     /**

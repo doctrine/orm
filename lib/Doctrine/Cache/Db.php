@@ -40,18 +40,18 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
      */
     public function __construct($options) 
     {
-    	if ( ! isset($options['connection']) || 
+        if ( ! isset($options['connection']) || 
              ! ($options['connection'] instanceof Doctrine_Connection)) {
 
-    	    throw new Doctrine_Cache_Exception('Connection option not set.');
-    	}
-    	
-    	if ( ! isset($options['tableName']) ||
-    	     ! is_string($options['tableName'])) {
-    	     
-    	     throw new Doctrine_Cache_Exception('Table name option not set.');
-    	}
-    	
+            throw new Doctrine_Cache_Exception('Connection option not set.');
+        }
+        
+        if ( ! isset($options['tableName']) ||
+             ! is_string($options['tableName'])) {
+             
+             throw new Doctrine_Cache_Exception('Table name option not set.');
+        }
+        
 
         $this->_options = $options;
     }

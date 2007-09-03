@@ -79,16 +79,16 @@ class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
 
         $this->conn->set("name",$dbName);
         $tableNames = $dataDict->listTables();
-        foreach ($tableNames as $tableName){
+        foreach ($tableNames as $tableName) {
             $table = new Doctrine_Schema_Table();
             $table->set("name",$tableName);
             $tableColumns = $dataDict->listTableColumns($tableName);
-            foreach ($tableColumns as $tableColumn){
+            foreach ($tableColumns as $tableColumn) {
                 $table->addColumn($tableColumn);
             }
             $this->conn->addTable($table);
-            if ($fks = $dataDict->listTableConstraints($tableName)){
-                foreach ($fks as $fk){
+            if ($fks = $dataDict->listTableConstraints($tableName)) {
+                foreach ($fks as $fk) {
                     $relation = new Doctrine_Schema_Relation();
                     $relation->setRelationBetween($fk['referencingColumn'],$fk['referencedTable'],$fk['referencedColumn']);
                     $table->setRelation($relation);

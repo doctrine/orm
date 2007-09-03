@@ -89,7 +89,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      */
     public function bindColumn($column, $param, $type = null)
     {
-        if($type === null) {
+        if ($type === null) {
             return $this->_stmt->bindColumn($column, $param);
         } else {
             return $this->_stmt->bindColumn($column, $param, $type);
@@ -111,7 +111,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      */
     public function bindValue($param, $value, $type = null)
     {
-        if($type === null) {
+        if ($type === null) {
             return $this->_stmt->bindValue($param, $value);
         } else {
             return $this->_stmt->bindValue($param, $value, $type);
@@ -146,7 +146,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      */
     public function bindParam($column, $variable, $type = null, $length = null, $driverOptions = array())
     {
-        if($type === null) {
+        if ($type === null) {
             return $this->_stmt->bindParam($column, $variable);
         } else {
             return $this->_stmt->bindParam($column, $variable, $type, $length, $driverOptions);

@@ -322,9 +322,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function getDqlPart($queryPart)
     {
-    	if ( ! isset($this->_dqlParts[$queryPart])) {
-    	   throw new Doctrine_Query_Exception('Unknown query part ' . $queryPart);
-    	}
+        if ( ! isset($this->_dqlParts[$queryPart])) {
+           throw new Doctrine_Query_Exception('Unknown query part ' . $queryPart);
+        }
 
         return $this->_dqlParts[$queryPart];
     }
@@ -757,7 +757,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $aliases = array_merge($this->subqueryAliases,
                             array_keys($this->neededTables));
 
-                if( ! in_array($e[3], $aliases) &&
+                if ( ! in_array($e[3], $aliases) &&
                     ! in_array($e[2], $aliases) &&
 
                     ! empty($this->pendingFields)) {
@@ -1217,7 +1217,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
     public function load($path, $loadFields = true) 
     {
-    	$e = Doctrine_Tokenizer::quoteExplode($path, ' INDEXBY ');
+        $e = Doctrine_Tokenizer::quoteExplode($path, ' INDEXBY ');
 
         $mapWith = null;
         if (count($e) > 1) {
@@ -1322,7 +1322,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
   
                     $assocTableName = $asf->getTableName();
   
-                    if( ! $loadFields || ! empty($map) || $joinCondition) {
+                    if ( ! $loadFields || ! empty($map) || $joinCondition) {
                         $this->subqueryAliases[] = $assocTableName;
                     }
 
@@ -1404,7 +1404,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     $restoreState = true;
                 }
 
-                if(isset($this->pendingFields[$componentAlias])) {
+                if (isset($this->pendingFields[$componentAlias])) {
                     $this->processPendingFields($componentAlias);
                 }
 

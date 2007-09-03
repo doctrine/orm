@@ -145,12 +145,12 @@ class Doctrine_Adapter_Db2 extends Doctrine_Adapter
             $conn_func_name = 'db2_connect';
         }
 
-        if (!isset($this->_config['options'])) {
+        if ( ! isset($this->_config['options'])) {
             // config options were not set, so set it to an empty array
             $this->_config['options'] = array();
         }
 
-        if (!isset($this->_config['options']['autocommit'])) {
+        if ( ! isset($this->_config['options']['autocommit'])) {
             // set execution mode
             $this->_config['options']['autocommit'] = &$this->_execute_mode;
         }
@@ -181,7 +181,7 @@ class Doctrine_Adapter_Db2 extends Doctrine_Adapter
         }
 
         // check the connection
-        if (!$this->_connection) {
+        if ( ! $this->_connection) {
             throw new Doctrine_Adapter_Db2_Exception(db2_conn_errormsg(), db2_conn_error());
         }
     }
@@ -286,7 +286,7 @@ class Doctrine_Adapter_Db2 extends Doctrine_Adapter
      */
     protected function _commit()
     {
-        if (!db2_commit($this->_connection)) {
+        if ( ! db2_commit($this->_connection)) {
             throw new Doctrine_Adapter_Db2_Exception(
                 db2_conn_errormsg($this->_connection),
                 db2_conn_error($this->_connection));
@@ -302,7 +302,7 @@ class Doctrine_Adapter_Db2 extends Doctrine_Adapter
      */
     protected function _rollBack()
     {
-        if (!db2_rollback($this->_connection)) {
+        if ( ! db2_rollback($this->_connection)) {
             throw new Doctrine_Adapter_Db2_Exception(
                 db2_conn_errormsg($this->_connection),
                 db2_conn_error($this->_connection));

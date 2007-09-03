@@ -88,7 +88,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
                 $value = $value->getSql();
                 unset($values[$k]);
             } else {
-                $value = '?';      	
+                $value = '?';          
             }
             $a[] = $value;
         }
@@ -184,7 +184,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function delete()
     {
-    	$this->type = self::DELETE;
+        $this->type = self::DELETE;
 
         return $this;
     }
@@ -197,7 +197,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function update($update)
     {
-    	$this->type = self::UPDATE;
+        $this->type = self::UPDATE;
 
         return $this->parseQueryPart('from', $update);
     }
@@ -210,11 +210,11 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      */
     public function set($key, $value, $params = null)
     {
-    	if (is_array($key)) {
+        if (is_array($key)) {
             foreach ($key as $k => $v) {
-                $this->set($k, '?', array($v));                           	
+                $this->set($k, '?', array($v));                               
             }
-    	} else {
+        } else {
             if ($params !== null) {
                 if (is_array($params)) {
                     $this->_params['set'] = array_merge($this->_params['set'], $params);

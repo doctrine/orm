@@ -39,19 +39,19 @@
  */
 class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
 {
-	/**
-	 * parse
-	 *
-	 * @param string $schema 
-	 * @return void
-	 */
+    /**
+     * parse
+     *
+     * @param string $schema 
+     * @return void
+     */
     public function parse($schema)
     {
-        if (!is_readable($schema)) {
+        if ( ! is_readable($schema)) {
             throw new Doctrine_Import_Exception('Could not read schema file '. $schema);
         }
 
-		return array();
+        return array();
     }
     
     /**
@@ -66,11 +66,11 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
     public function parseSchema($schema)
     { 
         $array = $this->parse($schema);
-      	
-		$tables = array();
-		
-		// Not working yet
-		/*
+          
+        $tables = array();
+        
+        // Not working yet
+        /*
         // Go through all tables...
         foreach ($array['table'] as $table) {
             // Go through all columns... 
@@ -93,7 +93,7 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
             
             $tables[(string) $table['name']] = $columns;
         }
-		*/
+        */
         
         return $tables;
     }

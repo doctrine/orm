@@ -48,7 +48,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
     public function listSequences($database = null)
     {
         $query = 'SHOW TABLES';
-        if (!is_null($database)) {
+        if ( ! is_null($database)) {
             $query .= ' FROM ' . $database;
         }
         $tableNames = $this->conn->fetchColumn($query);
@@ -81,7 +81,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
 
         $result = array();
         foreach ($indexes as $indexData) {
-            if (!$indexData[$nonUnique]) {
+            if ( ! $indexData[$nonUnique]) {
                 if ($indexData[$keyName] !== 'PRIMARY') {
                     $index = $this->conn->fixIndexName($indexData[$keyName]);
                 } else {
@@ -102,7 +102,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      */
     public function listTableForeignKeys($table) 
     {
-        $sql = 'SHOW CREATE TABLE ' . $this->conn->quoteIdentifier($table, true);	
+        $sql = 'SHOW CREATE TABLE ' . $this->conn->quoteIdentifier($table, true);    
     }
     /**
      * lists table constraints
@@ -195,7 +195,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
      */
     public function listViews($database = null)
     {
-        if (!is_null($database)) {
+        if ( ! is_null($database)) {
             $query = sprintf($this->sql['listViews'], ' FROM ' . $database);
         }
 

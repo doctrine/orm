@@ -59,9 +59,9 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
      */
     public function getNativeDeclaration($field)
     {
-    	if ( ! isset($field['type'])) {
+        if ( ! isset($field['type'])) {
             throw new Doctrine_DataDict_Exception('Missing column type.');
-    	}
+        }
         switch ($field['type']) {
             case 'array':
             case 'object':
@@ -78,7 +78,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
                 return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$this->conn->options['default_text_field_length'].')')
                     : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
             case 'clob':
-                if (!empty($field['length'])) {
+                if ( ! empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 8000) {
                         return 'VARCHAR('.$length.')';
@@ -86,7 +86,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
                  }
                  return 'TEXT';
             case 'blob':
-                if (!empty($field['length'])) {
+                if ( ! empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 8000) {
                         return "VARBINARY($length)";

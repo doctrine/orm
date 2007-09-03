@@ -163,7 +163,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function __construct(Doctrine_Manager $manager, $adapter, $user = null, $pass = null)
     {
-    	if (is_object($adapter)) {
+        if (is_object($adapter)) {
             if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
                 throw new Doctrine_Connection_Exception('First argument should be an instance of PDO or implement Doctrine_Adapter_Interface');
             }
@@ -171,7 +171,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
             $this->isConnected = true;
 
-        } elseif(is_array($adapter)) {
+        } elseif (is_array($adapter)) {
             $this->pendingAttributes[Doctrine::ATTR_DRIVER_NAME] = $adapter['scheme'];
 
             $this->options['dsn']      = $adapter['dsn'];
@@ -196,12 +196,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function getAttribute($attribute)
     {
 
-    	if ($attribute >= 100) {
+        if ($attribute >= 100) {
             if ( ! isset($this->attributes[$attribute])) {
                 return $this->parent->getAttribute($attribute);
             }
             return $this->attributes[$attribute];
-    	}
+        }
 
         if ($this->isConnected) {
             try {
@@ -235,9 +235,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function setAttribute($attribute, $value)
     {
-    	if ($attribute >= 100) {
+        if ($attribute >= 100) {
             parent::setAttribute($attribute, $value);
-    	} else {
+        } else {
             if ($this->isConnected) {
                 $this->dbh->setAttribute($attribute, $value);
             } else {
@@ -310,8 +310,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function getDbh()
     {
-    	$this->connect();
-    	
+        $this->connect();
+        
         return $this->dbh;
     }
     /**
@@ -348,14 +348,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             if (class_exists($class)) {
                 $this->dbh = new $class($this->options['dsn'], $this->options['username'], $this->options['password']);
             } else {
-                throw new Doctrine_Connection_Exception("Couldn't locate driver named " . $e[0]);      	
+                throw new Doctrine_Connection_Exception("Couldn't locate driver named " . $e[0]);          
             }
         }
 
         // attach the pending attributes to adapter
         foreach($this->pendingAttributes as $attr => $value) {
             // some drivers don't support setting this so we just skip it
-            if($attr == Doctrine::ATTR_DRIVER_NAME) {
+            if ($attr == Doctrine::ATTR_DRIVER_NAME) {
                 continue;
             }
             $this->dbh->setAttribute($attr, $value);
@@ -540,7 +540,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function quoteIdentifier($str, $checkOption = true)
     {
-    	// quick fix for the identifiers that contain a dot
+        // quick fix for the identifiers that contain a dot
         if (strpos($str, '.')) {
             $e = explode('.', $str);
             
@@ -781,7 +781,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function execute($query, array $params = array())
     {
-    	$this->connect();
+        $this->connect();
 
         try {
             if ( ! empty($params)) {
@@ -815,7 +815,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @return PDOStatement|Doctrine_Adapter_Statement
      */
     public function exec($query, array $params = array()) {
-    	$this->connect();
+        $this->connect();
 
         try {
             if ( ! empty($params)) {
@@ -849,9 +849,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function rethrowException(Exception $e, $invoker)
     {
-    	$event = new Doctrine_Event($this, Doctrine_Event::CONN_ERROR);
+        $event = new Doctrine_Event($this, Doctrine_Event::CONN_ERROR);
 
-    	$this->getListener()->preError($event);
+        $this->getListener()->preError($event);
 
         $name = 'Doctrine_Connection_' . $this->driverName . '_Exception';
 
@@ -1011,7 +1011,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function close()
     {
-    	$event = new Doctrine_Event($this, Doctrine_Event::CONN_CLOSE);
+        $event = new Doctrine_Event($this, Doctrine_Event::CONN_CLOSE);
 
         $this->getAttribute(Doctrine::ATTR_LISTENER)->preClose($event);
 
@@ -1039,7 +1039,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function errorCode()
     {
-    	$this->connect();
+        $this->connect();
 
         return $this->dbh->errorCode();
     }
@@ -1051,7 +1051,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      */
     public function errorInfo()
     {
-    	$this->connect();
+        $this->connect();
 
         return $this->dbh->errorInfo();
     }

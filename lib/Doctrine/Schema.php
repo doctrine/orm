@@ -60,7 +60,7 @@ class Doctrine_Schema extends Doctrine_Schema_Object implements Countable, Itera
      * @return array of Doctrine_Schema_Database
      *
      */
-    public function getDatabases(){
+    public function getDatabases() {
          return $this->childs;
     }
     /**

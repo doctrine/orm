@@ -34,16 +34,16 @@ class Doctrine_DataType
 {
     public function __construct()
     {
-    	
+        
     }
     
     public function getName()
     {
-    	
+        
     }
     
     public function getDefaultLength()
     {
-    	
+        
     }
 }

@@ -9,15 +9,15 @@
 class Doctrine_Schema_TestCase extends Doctrine_UnitTestCase 
 { 
 
-	public function testEverySchemaObjectIsThrowingExceptionOnNonPropertyAssignment()
+    public function testEverySchemaObjectIsThrowingExceptionOnNonPropertyAssignment()
     {
-    	$isException = false;     
-    	$obj = new Doctrine_Schema();
-    	try {
-    		$obj->no_such_property = 'this should throw an exception';
-    	} catch (Doctrine_Schema_Exception $e)
+        $isException = false;     
+        $obj = new Doctrine_Schema();
+        try {
+            $obj->no_such_property = 'this should throw an exception';
+        } catch (Doctrine_Schema_Exception $e)
         {
-        	$isException = true;
+            $isException = true;
         }
         $this->assertTrue($isException);
 
@@ -62,7 +62,7 @@ class Doctrine_Schema_TestCase extends Doctrine_UnitTestCase
         $this->assertTrue($isException);
     }
 
-	public function testEverySchemaObjectIsThrowingExceptionOnNonPropertyAccess()
+    public function testEverySchemaObjectIsThrowingExceptionOnNonPropertyAccess()
     {
         $isException = false;     
         $obj = new Doctrine_Schema();
@@ -181,19 +181,19 @@ class Doctrine_Schema_TestCase extends Doctrine_UnitTestCase
     
     public function testSchemaIsTraversable()
     {
-    	/* @todo complete 
+        /* @todo complete 
         
-    	$schema = new Doctrine_Schema();
+        $schema = new Doctrine_Schema();
 
         foreach($schema as $key => $db)
         {
             $this->assertEqual($db->name, $key);
-        	foreach($db as $key => $table)
+            foreach($db as $key => $table)
             {
                 $this->assertEqual($table->name, $key);
-            	foreach($table as $key => $col)
+                foreach($table as $key => $col)
                 {
-                	$this->assertEqual($col->name, $key);
+                    $this->assertEqual($col->name, $key);
                 }
             }
         }        

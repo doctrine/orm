@@ -78,10 +78,10 @@ class AdapterMock implements Doctrine_Adapter_Interface {
     }
     public function lastInsertId()
     {
-    	$this->queries[] = 'LAST_INSERT_ID()';
-    	if ($this->lastInsertIdFail) {
+        $this->queries[] = 'LAST_INSERT_ID()';
+        if ($this->lastInsertIdFail) {
             return null;
-    	} else {
+        } else {
             return 1;
         }
     }
@@ -102,7 +102,7 @@ class AdapterMock implements Doctrine_Adapter_Interface {
             return strtolower($this->name);
     }
     public function setAttribute($attribute, $value) {
-                                   	
+                                       
     }
 }
 class AdapterStatementMock {

@@ -165,8 +165,8 @@ END;
     }
     public function buildRelationDefinition(array $relations)
     {
-    	$ret = array();
-    	$i = 0;
+        $ret = array();
+        $i = 0;
         foreach ($relations as $name => $relation) {
             $alias = (isset($relation['alias']) && $relation['alias'] !== $name) ? ' as ' . $relation['alias'] : '';
 
@@ -211,9 +211,9 @@ END;
 
     public function buildDefinition(array $options, array $columns, array $relations = array())
     {
-    	if ( ! isset($options['className'])) {
-    	    throw new Doctrine_Import_Builder_Exception('Missing class name.');
-    	}
+        if ( ! isset($options['className'])) {
+            throw new Doctrine_Import_Builder_Exception('Missing class name.');
+        }
 
         //$opt     = array(0 => str_repeat(' ', 8) . '$this->setTableName(\''. $table .'\');');
 
@@ -226,9 +226,9 @@ END;
 
     public function buildRecord($options, $columns, $relations)
     {
-    	if ( ! isset($options['className'])) {
-    	    throw new Doctrine_Import_Builder_Exception('Missing class name.');
-    	}
+        if ( ! isset($options['className'])) {
+            throw new Doctrine_Import_Builder_Exception('Missing class name.');
+        }
 
         if ( ! isset($options['fileName'])) {
             if (empty($this->path)) {

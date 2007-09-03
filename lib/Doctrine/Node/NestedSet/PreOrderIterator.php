@@ -154,7 +154,7 @@ class Doctrine_Node_NestedSet_PreOrderIterator implements Iterator
 
     private function updateLevel()
     {
-        if (!(isset($this->options['include_record']) && $this->options['include_record'] && $this->index == 0)) {
+        if ( ! (isset($this->options['include_record']) && $this->options['include_record'] && $this->index == 0)) {
             $left = $this->collection->get($this->key)->getNode()->getLeftValue();
             $this->level += $this->prevLeft - $left + 2;
             $this->prevLeft = $left;

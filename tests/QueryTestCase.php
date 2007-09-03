@@ -49,7 +49,7 @@ class MyQuery extends Doctrine_Query
 {
     public function preQuery()
     {
-    	if ($this->getRoot()->getComponentName() == 'User') {
+        if ($this->getRoot()->getComponentName() == 'User') {
             $this->where('u.id = 4');
         }
     }

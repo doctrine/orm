@@ -49,11 +49,11 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
     */
     public function testAdapterQueryChecksCache()
     {
-    	$query = 'SELECT * FROM user';
+        $query = 'SELECT * FROM user';
 
         $resultSet = array(array('name' => 'John'), array('name' => 'Arnold'));
 
-    	$this->cache->getDriver()->save(md5(serialize($query)), $resultSet);
+        $this->cache->getDriver()->save(md5(serialize($query)), $resultSet);
 
         $count = $this->dbh->getAdapter()->count();
 
@@ -65,11 +65,11 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
     }
     public function testAdapterStatementExecuteChecksCache()
     {
-    	$query  = 'SELECT * FROM user WHERE id = ?';
+        $query  = 'SELECT * FROM user WHERE id = ?';
         $params = array(1);
         $resultSet = array(array('name' => 'John'), array('name' => 'Arnold'));
 
-    	$this->cache->getDriver()->save(md5(serialize(array($query, $params))), $resultSet);
+        $this->cache->getDriver()->save(md5(serialize(array($query, $params))), $resultSet);
 
         $count = $this->dbh->getAdapter()->count();
 
@@ -115,13 +115,13 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
     }
     public function testAdapterStatementExecuteAddsQueriesToCache()
     {
-    	$this->cache->setOption('savePropability', 1);
+        $this->cache->setOption('savePropability', 1);
 
-    	$driver = $this->cache->getDriver();
+        $driver = $this->cache->getDriver();
 
-    	$driver->deleteAll();
+        $driver->deleteAll();
 
-    	$this->assertEqual($driver->count(), 0);
+        $this->assertEqual($driver->count(), 0);
 
         $stmt = $this->dbh->prepare('SELECT * FROM user WHERE id = ?');
 
@@ -131,9 +131,9 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
     }
     public function testAppendStatsWritesQueriesToStatsFile()
     {
-    	$this->cache->setOption('addStatsPropability', 1);
-    	
-    	$data = array(1,2,3);
+        $this->cache->setOption('addStatsPropability', 1);
+        
+        $data = array(1,2,3);
 
         $this->cache->add('SELECT * FROM user');
         $this->cache->add(array('SELECT * FROM user WHERE id = ?', array(1)));
@@ -147,7 +147,7 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
     }
     public function testCleanRemovesDriver()
     {
-    	$this->cache->setOption('cleanPropability', 1);
+        $this->cache->setOption('cleanPropability', 1);
 
         $this->cache->add('SELECT * FROM user');
         $this->cache->add(array('SELECT * FROM user WHERE id = ?', array(1)));
@@ -164,7 +164,7 @@ class Doctrine_Cache_TestCase extends Doctrine_UnitTestCase
     {
         parent::setUp();
 
-    	if ( ! isset($this->cache)) {
+        if ( ! isset($this->cache)) {
             $this->cache = new Doctrine_Cache('Array');
             $this->cache->setOption('cacheFile', false);
             $this->cache->setOption('savePropability', 0);

@@ -57,9 +57,9 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
      */
     public function getNativeDeclaration(array $field)
     {
-    	if ( ! isset($field['type'])) {
+        if ( ! isset($field['type'])) {
             throw new Doctrine_DataDict_Exception('Missing column type.');
-    	}
+        }
         switch ($field['type']) {
             case 'text':
             case 'object':
@@ -75,7 +75,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
                 return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$this->conn->getAttribute(Doctrine::ATTR_DEFAULT_TEXTFLD_LENGTH).')')
                     : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
             case 'clob':
-                if (!empty($field['length'])) {
+                if ( ! empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 255) {
                         return 'TINYTEXT';
@@ -87,7 +87,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
                 }
                 return 'LONGTEXT';
             case 'blob':
-                if (!empty($field['length'])) {
+                if ( ! empty($field['length'])) {
                     $length = $field['length'];
                     if ($length <= 255) {
                         return 'TINYBLOB';
@@ -274,7 +274,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
 
         $autoincrement = isset($field['autoincrement']) && $field['autoincrement'];
 
-        if ($autoincrement){
+        if ($autoincrement) {
             $autoinc = ' PRIMARY KEY AUTOINCREMENT';
             $type    = 'INTEGER';
         } elseif (array_key_exists('default', $field)) {

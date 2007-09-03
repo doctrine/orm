@@ -164,7 +164,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             $optionStrings[] = 'ENGINE = ' . $type;
         }
 
-        if (!empty($optionStrings)) {
+        if ( ! empty($optionStrings)) {
             $query.= ' '.implode(' ', $optionStrings);
         }
         $sql[] = $query;
@@ -524,7 +524,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     {
         $name   = $this->conn->quoteIdentifier($name);
         $type   = '';
-        if(isset($definition['type'])) {
+        if (isset($definition['type'])) {
             switch (strtolower($definition['type'])) {
                 case 'fulltext':
                 case 'unique':
@@ -557,7 +557,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      */
     public function getIndexFieldDeclarationList(array $fields)
     {
-    	$declFields = array();
+        $declFields = array();
 
         foreach ($fields as $fieldName => $field) {
             $fieldString = $fieldName;
@@ -596,13 +596,13 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     public function getAdvancedForeignKeyOptions(array $definition)
     {
         $query = '';
-        if (!empty($definition['match'])) {
+        if ( ! empty($definition['match'])) {
             $query .= ' MATCH ' . $definition['match'];
         }
-        if (!empty($definition['onUpdate'])) {
+        if ( ! empty($definition['onUpdate'])) {
             $query .= ' ON UPDATE ' . $this->getForeignKeyReferentialAction($definition['onUpdate']);
         }
-        if (!empty($definition['onDelete'])) {
+        if ( ! empty($definition['onDelete'])) {
             $query .= ' ON DELETE ' . $this->getForeignKeyReferentialAction($definition['onDelete']);
         }
         return $query;

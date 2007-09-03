@@ -68,7 +68,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                     $map = $this->query->getRootDeclaration();  
                     
                     $alias = $this->query->getTableAlias($this->query->getRootAlias());
-                    $table = $map['table'];                     	
+                    $table = $map['table'];                         
                 } else {
                     $map = $this->query->load($reference, false);
     
@@ -129,7 +129,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                 }
                 $value = '(' . implode(', ', $value) . ')';
             }
-        } elseif(substr($value, 0, 1) == ':' || $value === '?') {
+        } elseif (substr($value, 0, 1) == ':' || $value === '?') {
             // placeholder found
             if (isset($table) && isset($field) && $table->getTypeOf($field) == 'enum') {
                 $this->query->addEnumParam($value, $table, $field);
