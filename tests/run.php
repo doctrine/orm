@@ -6,10 +6,10 @@ function parseOptions($array) {
     $currentName='';
     $options=array();
     foreach($array as $name) {
-        if(strpos($name,'-')===0) {
+        if (strpos($name,'-')===0) {
             $name=str_replace('-','',$name);      
             $currentName=$name;
-            if( ! isset($options[$currentName])) {
+            if ( ! isset($options[$currentName])) {
                 $options[$currentName]=array();         
             }
         } else {
@@ -22,7 +22,7 @@ function parseOptions($array) {
 }
 
 function autoload($class) {
-    if(strpos($class, 'TestCase') === false) {
+    if (strpos($class, 'TestCase') === false) {
         return false;
     }
 
@@ -39,7 +39,7 @@ function autoload($class) {
 
     $file   = $dir . '_' . substr(implode('_', $e), 0, -(strlen('_TestCase'))) . 'TestCase.php';
 
-    if($count > 3) {
+    if ( $count > 3) {
         $file   = str_replace('_', DIRECTORY_SEPARATOR, $file);
     } else {
         $file   = str_replace('_', '', $file);
@@ -51,7 +51,7 @@ function autoload($class) {
         $contents = file_get_contents('template.tpl');
         $contents = sprintf($contents, $class, $class);
 
-        if( ! file_exists($dir)) {
+        if ( ! file_exists($dir)) {
             mkdir($dir, 0777);
         }
 
@@ -89,28 +89,34 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 //TICKET test cases
-$tickets = new GroupTest('Tickets tests');
-$tickets->addTestCase(new Doctrine_Ticket_Njero_TestCase());
-$test->addTestCase($tickets);
+$ticket = new GroupTest('Tickets tests');
+$ticket->addTestCase(new Doctrine_Ticket_Njero_TestCase());
+//If you write a ticket testcase add it here like shown above!
+
+$test->addTestCase($ticket);
 
 // Connection drivers (not yet fully tested)
-$test->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
-$test->addTestCase(new Doctrine_Connection_Oracle_TestCase());
-$test->addTestCase(new Doctrine_Connection_Sqlite_TestCase());
-$test->addTestCase(new Doctrine_Connection_Mssql_TestCase()); 
-$test->addTestCase(new Doctrine_Connection_Mysql_TestCase());
-$test->addTestCase(new Doctrine_Connection_Firebird_TestCase());
-$test->addTestCase(new Doctrine_Connection_Informix_TestCase());
+$driver = new GroupTest("Driver tests");
+$driver->addTestCase(new Doctrine_Connection_Pgsql_TestCase());
+$driver->addTestCase(new Doctrine_Connection_Oracle_TestCase());
+$driver->addTestCase(new Doctrine_Connection_Sqlite_TestCase());
+$driver->addTestCase(new Doctrine_Connection_Mssql_TestCase()); 
+$driver->addTestCase(new Doctrine_Connection_Mysql_TestCase());
+$driver->addTestCase(new Doctrine_Connection_Firebird_TestCase());
+$driver->addTestCase(new Doctrine_Connection_Informix_TestCase());
+$test->addTestCase($driver);
 
 // Transaction module (FULLY TESTED)
-$test->addTestCase(new Doctrine_Transaction_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Firebird_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Informix_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Mysql_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Mssql_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Pgsql_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Oracle_TestCase());
-$test->addTestCase(new Doctrine_Transaction_Sqlite_TestCase());
+$transaction = new GroupTest("Transaction tests");
+$transaction->addTestCase(new Doctrine_Transaction_TestCase());
+$transaction->addTestCase(new Doctrine_Transaction_Firebird_TestCase());
+$transaction->addTestCase(new Doctrine_Transaction_Informix_TestCase());
+$transaction->addTestCase(new Doctrine_Transaction_Mysql_TestCase());
+$transaction->addTestCase(new Doctrine_Transaction_Mssql_TestCase());
+$transaction->addTestCase(new Doctrine_Transaction_Pgsql_TestCase());
+$transaction->addTestCase(new Doctrine_Transaction_Oracle_TestCase());
+$transaction->addTestCase(new Doctrine_Transaction_Sqlite_TestCase());
+$test->addTestCase($transaction);
 
 // DataDict module (FULLY TESTED)
 $test->addTestCase(new Doctrine_DataDict_TestCase());
@@ -445,10 +451,10 @@ $argv = $_SERVER['argv'];
 array_shift($argv);
 $options = parseOptions($argv);
 
-if( isset($options['group'])) {
+if (isset($options['group'])) {
     $testGroup = new GroupTest('Custom');
     foreach($options['group'] as $group) {
-        if( ! isset($$group)) {
+        if ( ! isset($$group)) {
             if (class_exists($group)) {
                 $testGroup->addTestCase(new $group);
             }
@@ -472,7 +478,7 @@ if (isset($options['help'])) {
     echo " -coverage will generate coverage report data that can be viewed with the cc.php script in this folder. NB! This takes time. You need xdebug to run this\n";
     echo " -group <groupName1> <groupName2> <className1> Use this option to run just a group of tests or tests with a given classname. Groups are currently defined as the variable name they are called in this script. \n";
     echo " - filter <string1> <string2> case insensitive strings that will be applied to the className of the tests. A test_classname must contain all of these strings to be run\n"; 
-    echo "\nAvailable groups:\n tickets\n";
+    echo "\nAvailable groups:\n tickets, transaction, driver\n";
     die();
 }
 
