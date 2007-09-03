@@ -92,11 +92,10 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 
 
 //TICKET test cases
-$ticket = new GroupTest('Tickets tests');
-$ticket->addTestCase(new Doctrine_Ticket_Njero_TestCase());
+$tickets = new GroupTest('Tickets tests');
+$tickets->addTestCase(new Doctrine_Ticket_Njero_TestCase());
 //If you write a ticket testcase add it here like shown above!
-
-$test->addTestCase($ticket);
+$test->addTestCase($tickets);
 
 // Connection drivers (not yet fully tested)
 $driver = new GroupTest("Driver tests");
