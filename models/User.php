@@ -1,6 +1,10 @@
 <?php
+
+require_once('Entity.php');
+
 class UserTable extends Doctrine_Table { }
-class User extends Entity 
+
+class User extends Entity
 {
     public function setUp() 
     {
