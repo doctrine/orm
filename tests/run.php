@@ -94,6 +94,7 @@ $test = new GroupTest('Doctrine Framework Unit Tests');
 //TICKET test cases
 $tickets = new GroupTest('Tickets tests');
 $tickets->addTestCase(new Doctrine_Ticket_Njero_TestCase());
+$tickets->addTestCase(new Doctrine_Ticket_428_TestCase());
 //If you write a ticket testcase add it here like shown above!
 $test->addTestCase($tickets);
 
