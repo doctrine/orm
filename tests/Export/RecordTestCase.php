@@ -50,7 +50,11 @@ class Doctrine_Export_Record_TestCase extends Doctrine_UnitTestCase
         $sql = $this->conn->export->exportClassesSql(array('ForeignKeyTest'));
 
         $this->assertEqual($sql[0], 'CREATE TABLE foreign_key_test (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, parent_id BIGINT, INDEX parent_id_idx (parent_id), PRIMARY KEY(id)) ENGINE = INNODB');
-        //$this->assertEqual($sql[1], 'ALTER TABLE foreign_key_test ADD CONSTRAINT FOREIGN KEY (parent_id) REFERENCES foreign_key_test(id) ON UPDATE RESTRICT ON DELETE CASCADE');
+        if (isset($sql[1])) {
+            $this->assertEqual($sql[1], 'ALTER TABLE foreign_key_test ADD CONSTRAINT FOREIGN KEY (parent_id) REFERENCES foreign_key_test(id) ON UPDATE RESTRICT ON DELETE CASCADE');
+        } else {
+            $this->fail('$sql should contain ALTER TABLE statement');
+        }
     }
 
     public function testExportSupportsIndexes()
@@ -72,7 +76,11 @@ class Doctrine_Export_Record_TestCase extends Doctrine_UnitTestCase
         $sql = $this->conn->export->exportClassesSql(array('ForeignKeyTest'));
 
         $this->assertEqual($sql[0], 'CREATE TABLE foreign_key_test (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, parent_id BIGINT, INDEX parent_id_idx (parent_id), PRIMARY KEY(id)) ENGINE = INNODB');
-        //$this->assertEqual($sql[1], 'ALTER TABLE foreign_key_test ADD CONSTRAINT FOREIGN KEY (parent_id) REFERENCES foreign_key_test(id) ON UPDATE RESTRICT ON DELETE CASCADE');
+        if (isset($sql[1])) {
+            $this->assertEqual($sql[1], 'ALTER TABLE foreign_key_test ADD CONSTRAINT FOREIGN KEY (parent_id) REFERENCES foreign_key_test(id) ON UPDATE RESTRICT ON DELETE CASCADE');
+        } else {
+            $this->fail('$sql should contain ALTER TABLE statement');
+        }
     }
 
     public function testExportSupportsForeignKeysForManyToManyRelations()
