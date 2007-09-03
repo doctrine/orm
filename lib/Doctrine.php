@@ -339,7 +339,7 @@ final class Doctrine
     /**
      * export all
      */
-    const EXPORT_ALL                = 4;
+    const EXPORT_ALL                = 3;
     
 
     /**
