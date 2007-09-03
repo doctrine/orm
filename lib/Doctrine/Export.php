@@ -1047,7 +1047,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
             while ($class->isAbstract() ||
                    ! $class->isSubclassOf($parent) ||
                    ! $class->hasMethod('setTableDefinition') ||
-                   $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() !== $class->getName()) {
+                   ( $class->hasMethod('setTableDefinition') &&
+                     $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() !== $class->getName())) {
 
                 $class = $class->getParentClass();
                 if ($class === false) {
