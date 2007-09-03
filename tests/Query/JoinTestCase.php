@@ -175,7 +175,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
     public function testMapKeywordForQueryWithOneComponent()
     {
         $q = new Doctrine_Query();
-        $coll = $q->from('Record_City c MAP c.name')->fetchArray();
+        $coll = $q->from('Record_City c INDEXBY c.name')->fetchArray();
         
         $this->assertTrue(isset($coll['City 1']));
         $this->assertTrue(isset($coll['City 2']));
@@ -185,7 +185,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
     public function testMapKeywordSupportsJoins()
     {
         $q = new Doctrine_Query();
-        $country = $q->from('Record_Country c LEFT JOIN c.City c2 MAP c2.name')->fetchOne();
+        $country = $q->from('Record_Country c LEFT JOIN c.City c2 INDEXBY c2.name')->fetchOne();
         $coll = $country->City;
 
         $this->assertTrue(isset($coll['City 1']));
@@ -197,7 +197,7 @@ class Doctrine_Query_Join_TestCase extends Doctrine_UnitTestCase
     {
         try {
             $q = new Doctrine_Query();
-            $country = $q->from('Record_Country c LEFT JOIN c.City c2 MAP c2.unknown')->fetchOne();
+            $country = $q->from('Record_Country c LEFT JOIN c.City c2 INDEXBY c2.unknown')->fetchOne();
         
             $this->fail();
         } catch (Doctrine_Query_Exception $e) {
