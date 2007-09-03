@@ -32,41 +32,31 @@
  */
 class Doctrine_Expression_TestCase extends Doctrine_UnitTestCase
 {
-    public function prepareTables()
-    {
-        $this->tables = array('ExpressionTest');
-        
-        parent::prepareTables();
-    }
     public function prepareData()
     {
-        
     }
+
     public function testSavingWithAnExpression()
     {
+        $e = new Doctrine_Expression("CONCAT('some', 'one')");
+        $this->assertEqual($e->getSql(), "CONCAT('some', 'one')");
 
-        $e = new ExpressionTest();
-
-        $e->name = new Doctrine_Expression("CONCAT('some', 'one')");
-
-        $e->save();
-
-        $e->refresh();
-
-        $this->assertEqual($e->name, 'someone');
+        $u = new User();
+        $u->name = $e;
+        $u->save();
+        $u->refresh();
+        $this->assertEqual($u->name, 'someone');
     }
 
     public function testExpressionParserSupportsNumericalClauses()
     {
         $e = new Doctrine_Expression('1 + 2');
-        
         $this->assertEqual($e->getSql(), '1 + 2');
     }
 
     public function testExpressionParserSupportsFunctionComposition()
     {
         $e = new Doctrine_Expression("SUBSTRING(CONCAT('some', 'one'), 0, 3)");
-
         $this->assertEqual($e->getSql(), "SUBSTR(CONCAT('some', 'one'), 0, 3)");
     }
 }
