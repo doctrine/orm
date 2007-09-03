@@ -103,7 +103,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         return $this->conn->exec($this->dropIndexSql($table, $name));
     }
-    
+
     /**
      * dropIndexSql
      *
@@ -111,7 +111,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * @param string    $name         name of the index to be dropped
      * @return string                 SQL that is used for dropping an index
      */
-    public function dropIndexSql($table, $name) 
+    public function dropIndexSql($table, $name)
     {
         $name = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
         return 'DROP INDEX ' . $name;
@@ -210,7 +210,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');
         }
-        
+
         if (empty($fields)) {
             throw new Doctrine_Export_Exception('no fields specified for table ' . $name);
         }
@@ -229,9 +229,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
 
         $query = 'CREATE TABLE ' . $this->conn->quoteIdentifier($name, true) . ' (' . $queryFields;
-        
+
         $check = $this->getCheckDeclaration($fields);
-        
+
         if ( ! empty($check)) {
             $query .= ', ' . $check;
         }
@@ -249,7 +249,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                     $sql[] = $this->createForeignKeySql($name, $definition);
                 }
             }
-        }   
+        }
         return $sql;
     }
     /**
@@ -281,7 +281,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *                              'comment' => 'Foo',
      *                              'charset' => 'utf8',
      *                              'collate' => 'utf8_unicode_ci',
-     *                          );     
+     *                          );
      * @return void
      */
     public function createSequence($seqName, $start = 1, array $options = array())
@@ -631,7 +631,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *          Text value with the default COLLATION for this field.
      *      unique
      *          unique constraint
-     *      check   
+     *      check
      *          column check constraint
      *
      * @return string  DBMS specific SQL code portion that should be used to
@@ -652,7 +652,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         $unique    = (isset($field['unique']) && $field['unique']) ?
                     ' ' . $this->getUniqueFieldDeclaration() : '';
-                    
+
         $check     = (isset($field['check']) && $field['check']) ?
                     ' ' . $field['check'] : '';
 
@@ -681,14 +681,14 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 $field['default'] = empty($field['notnull'])
                     ? null : $this->valid_default_values[$field['type']];
 
-                if ($field['default'] === '' && 
+                if ($field['default'] === '' &&
                    ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)) {
                     $field['default'] = null;
                 }
             }
-    
+
             if ($field['type'] === 'boolean') {
-                $fields['default'] = $this->conn->convertBooleans($field['default']);                                 	
+                $fields['default'] = $this->conn->convertBooleans($field['default']);
             }
             $default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
         }
@@ -721,7 +721,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         return implode(', ', $constraints);
     }
     /**
-     * Obtain DBMS specific SQL code portion needed to set an index 
+     * Obtain DBMS specific SQL code portion needed to set an index
      * declaration to be used in statements like CREATE TABLE.
      *
      * @param string $name          name of the index
@@ -748,7 +748,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $query = $type . 'INDEX ' . $name;
 
         $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
-        
+
         return $query;
     }
     /**
@@ -795,7 +795,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *
      * @param array $definition         an associative array with the following structure:
      *          name                    optional constraint name
-     * 
+     *
      *          local                   the local field(s)
      *
      *          foreign                 the foreign reference field(s)
@@ -803,23 +803,23 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *          foreignTable            the name of the foreign table
      *
      *          onDelete                referential delete action
-     *  
+     *
      *          onUpdate                referential update action
      *
      *          deferred                deferred constraint checking
      *
      * The onDelete and onUpdate keys accept the following values:
      *
-     * CASCADE: Delete or update the row from the parent table and automatically delete or 
+     * CASCADE: Delete or update the row from the parent table and automatically delete or
      *          update the matching rows in the child table. Both ON DELETE CASCADE and ON UPDATE CASCADE are supported.
      *          Between two tables, you should not define several ON UPDATE CASCADE clauses that act on the same column
      *          in the parent table or in the child table.
      *
      * SET NULL: Delete or update the row from the parent table and set the foreign key column or columns in the
-     *          child table to NULL. This is valid only if the foreign key columns do not have the NOT NULL qualifier 
+     *          child table to NULL. This is valid only if the foreign key columns do not have the NOT NULL qualifier
      *          specified. Both ON DELETE SET NULL and ON UPDATE SET NULL clauses are supported.
      *
-     * NO ACTION: In standard SQL, NO ACTION means no action in the sense that an attempt to delete or update a primary 
+     * NO ACTION: In standard SQL, NO ACTION means no action in the sense that an attempt to delete or update a primary
      *           key value is not allowed to proceed if there is a related foreign key value in the referenced table.
      *
      * RESTRICT: Rejects the delete or update operation for the parent table. NO ACTION and RESTRICT are the same as
@@ -918,7 +918,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
               . ') REFERENCES '
               . $definition['foreignTable'] . '('
               . implode(', ', array_map(array($this->conn, 'quoteIdentifier'), $definition['foreign'])) . ')';
-        
+
         return $sql;
     }
     /**
@@ -955,12 +955,12 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function getCollationFieldDeclaration($collation)
     {
         return '';
-    } 
+    }
     /**
      * exportSchema
      * method for exporting Doctrine_Record classes to a schema
      *
-     * if the directory parameter is given this method first iterates 
+     * if the directory parameter is given this method first iterates
      * recursively trhough the given directory in order to find any model classes
      *
      * Then it iterates through all declared classes and creates tables for the ones
@@ -985,7 +985,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 if($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
                     $this->conn->rollback();
                     throw $e;
-                }                                           
+                }
             }
         }
         $this->conn->commit();
@@ -1034,7 +1034,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $sql = array();
         $fks = array();
 
-        // we iterate trhough the diff of previously declared classes 
+        // we iterate trhough the diff of previously declared classes
         // and currently declared classes
         foreach ($classes as $name) {
             $class = new ReflectionClass($name);
@@ -1044,22 +1044,25 @@ class Doctrine_Export extends Doctrine_Connection_Module
             // class must have method setTableDefinition (to avoid non-Record subclasses like symfony's sfDoctrineRecord)
             // we have to recursively iterate through the class parents just to be sure that the classes using for example
             // column aggregation inheritance are properly exporterd to database
-            while ($class->isAbstract() &&
-                   ! $class->isSubclassOf($parent) &&
-                   ! $class->hasMethod('setTableDefinition') &&
+            while ($class->isAbstract() ||
+                   ! $class->isSubclassOf($parent) ||
+                   ! $class->hasMethod('setTableDefinition') ||
                    $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() !== $class->getName()) {
 
-                $class = $class->getParent();
-                
-                if ($class === null) {
+                $class = $class->getParentClass();
+                if ($class === false) {
                     break;
                 }
+            }
+
+            if ($class === false) {
+              continue;
             }
 
             $record = new $name();
             $table  = $record->getTable();
             $data = $table->getExportableFormat();
-                
+
             $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
 
             if (is_array($query)) {
@@ -1077,7 +1080,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * exportSql
      * returns the sql for exporting Doctrine_Record classes to a schema
      *
-     * if the directory parameter is given this method first iterates 
+     * if the directory parameter is given this method first iterates
      * recursively trhough the given directory in order to find any model classes
      *
      * Then it iterates through all declared classes and creates tables for the ones
@@ -1096,7 +1099,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
        	    foreach ((array) $directory as $dir) {
                 $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
                                                         RecursiveIteratorIterator::LEAVES_ONLY);
-                                                        
+
                 foreach ($it as $file) {
                     $e = explode('.', $file->getFileName());
                     if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
