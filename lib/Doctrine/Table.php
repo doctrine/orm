@@ -884,7 +884,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     }
                 case Doctrine::FETCH_ARRAY:
                     if ( ! empty($records[0])) {
-                        return $records[0];
+                        return array_shift($records);
                     }
             }
         }
