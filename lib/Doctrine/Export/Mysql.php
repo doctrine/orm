@@ -502,7 +502,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                     ? null : $this->valid_default_values[$field['type']];
 
                 if ($field['default'] === ''
-                    && ($conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
+                    && ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_EMPTY_TO_NULL)
                 ) {
                     $field['default'] = ' ';
                 }
