@@ -47,6 +47,10 @@ class Doctrine_I18n extends Doctrine_Plugin
 
     public function buildDefinition(Doctrine_Table $table)
     {
+    	if (empty($this->_options['fields'])) {
+    	    throw new Doctrine_I18n_Exception('Fields not set.');
+    	}
+
         $this->_options['className'] = str_replace('%CLASS%', 
                                                    $this->_options['table']->getComponentName(),
                                                    $this->_options['className']);
@@ -61,7 +65,7 @@ class Doctrine_I18n extends Doctrine_Plugin
 
         $id = $table->getIdentifier();
 
-        $options = array('className' => $className);
+        $options = array('className' => $this->_options['className']);
 
         $fk = array();
         foreach ((array) $id as $column) {
