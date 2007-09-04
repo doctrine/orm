@@ -80,17 +80,12 @@ abstract class Doctrine_Configurable extends Doctrine_Object
         }
         switch ($attribute) {
             case Doctrine::ATTR_FETCHMODE:
-                if ($value < 0) {
-                   throw new Doctrine_Exception("Unknown fetchmode. See Doctrine::FETCH_* constants.");
-                }
-                break;
+            case Doctrine::ATTR_COLL_LIMIT:
+            case Doctrine::ATTR_ACCESSOR_PREFIX_GET:
+            case Doctrine::ATTR_ACCESSOR_PREFIX_SET:
+                throw new Doctrine_Exception('Deprecated attribute. See http://doctrine.pengus.net/doctrine/manual/new/?chapter=configuration');
             case Doctrine::ATTR_LISTENER:
                 $this->setEventListener($value);
-                break;
-            case Doctrine::ATTR_COLL_LIMIT:
-                if ($value < 1) {
-                    throw new Doctrine_Exception("Collection limit should be a value greater than or equal to 1.");
-                }
                 break;
             case Doctrine::ATTR_COLL_KEY:
                 if ( ! ($this instanceof Doctrine_Table)) {
@@ -116,8 +111,6 @@ abstract class Doctrine_Configurable extends Doctrine_Object
             case Doctrine::ATTR_QUOTE_IDENTIFIER:
             case Doctrine::ATTR_PORTABILITY:
             case Doctrine::ATTR_DEFAULT_TABLE_TYPE:
-            case Doctrine::ATTR_ACCESSOR_PREFIX_GET:
-            case Doctrine::ATTR_ACCESSOR_PREFIX_SET:
             case Doctrine::ATTR_EMULATE_DATABASE:
             case Doctrine::ATTR_USE_NATIVE_ENUM:
             case Doctrine::ATTR_DEFAULT_SEQUENCE:
