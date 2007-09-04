@@ -380,7 +380,7 @@ class MyReporter extends HtmlReporter {
         print '</pre>';
         $colour = ($this->_test->getFailCount() > 0 ? 'red' : 'green');
         print '<div style=\'';
-        print 'padding: 8px; margin-top: 1em; background-color: $colour; color: white;';
+        print "padding: 8px; margin-top: 1em; background-color: $colour; color: white;";
         print '\'>';
         print $this->_test->getTestCaseCount() . ' test cases.';
         print '<strong>' . $this->_test->getPassCount() . '</strong> passes and ';
