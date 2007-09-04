@@ -681,6 +681,17 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $this->_references[$name] = $rel->fetchRelatedFor($this);
         }
     }
+
+    /**
+     * clearRelated
+     * unsets all the relationships this object has
+     *
+     * (references to related objects still remain on Table objects)
+     */
+    public function clearRelated()
+    {
+        $this->_references = array();
+    }
     
     /**
      * getTable

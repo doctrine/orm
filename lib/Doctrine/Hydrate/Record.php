@@ -101,7 +101,11 @@ class Doctrine_Hydrate_Record extends Doctrine_Object
         }
         $this->_tables[$component]->setData($data);
         $record = $this->_tables[$component]->getRecord();
-        $this->_records[] = $record;
+
+        if ( ! isset($this->_records[$record->getOid()]) ) {
+            $record->clearRelated();
+            $this->_records[$record->getOid()] = $record;
+        }
 
         return $record;
     }
