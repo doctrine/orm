@@ -252,12 +252,12 @@ class Doctrine_Query_Limit_TestCase extends Doctrine_UnitTestCase
         
         $this->connection->clear();
         $q = new Doctrine_Query();
-        $q->from('User')->where('User.Group.id = ?')->orderby('User.id DESC')->limit(5);
-        $users = $q->execute(array(12));
+        $q->from('User')->where('User.Group.name = ?')->orderby('User.id DESC')->limit(5);
+        $users = $q->execute(array('Tough guys inc.'));
 
         $this->assertEqual($users->count(), 3);
 
-        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e LEFT JOIN groupuser g ON e.id = g.user_id LEFT JOIN entity e2 ON e2.id = g.group_id WHERE e2.id = ? AND (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL)) ORDER BY e.id DESC LIMIT 5");
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e LEFT JOIN groupuser g ON e.id = g.user_id LEFT JOIN entity e2 ON e2.id = g.group_id WHERE e2.name = ? AND (e.type = 0 AND (e2.type = 1 OR e2.type IS NULL)) ORDER BY e.id DESC LIMIT 5");
         $this->manager->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_RECORDS);
     }
 
