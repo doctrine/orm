@@ -399,7 +399,7 @@ if (PHP_SAPI === 'cli') {
     $reporter = new MyReporter();
 }
 
-$argv = $_SERVER['argv'];
+$argv = isset($_SERVER['argv']) ? $_SERVER['argv'] : array();
 array_shift($argv);
 $options = parseOptions($argv);
 

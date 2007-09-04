@@ -68,7 +68,22 @@ class Doctrine_Node implements IteratorAggregate
     {
         $this->record = $record;
         $this->options = $options;
-        $this->_tree = $this->record->getTable()->getTree();
+        
+        // Make sure that the tree object of the root component is used in the case
+        // of column aggregation inheritance.
+        $class = $record->getTable()->getComponentName();
+        $table = $record->getTable();
+        if ($table->getOption('inheritanceMap')) {
+            $subclasses = $table->getOption('subclasses');
+            while (in_array($class, $subclasses)) {
+                $class = get_parent_class($class);
+            }
+        }
+        if ($class != $table->getComponentName()) {
+            $this->_tree = $table->getConnection()->getTable($class)->getTree();
+        } else {
+            $this->_tree = $table->getTree();
+        }
     }
 
     /**
