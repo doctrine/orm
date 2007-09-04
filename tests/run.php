@@ -375,15 +375,14 @@ class MyReporter extends HtmlReporter {
 
         print '<pre>';
         foreach ($this->_test->getMessages() as $message) {
-            print $message . '\n';
+            print $message;
         }
         print '</pre>';
         $colour = ($this->_test->getFailCount() > 0 ? 'red' : 'green');
         print '<div style=\'';
         print 'padding: 8px; margin-top: 1em; background-color: $colour; color: white;';
         print '\'>';
-        print $this->_test->getTestCaseCount() . ' test cases';
-        print ' test cases complete:\n';
+        print $this->_test->getTestCaseCount() . ' test cases.';
         print '<strong>' . $this->_test->getPassCount() . '</strong> passes and ';
         print '<strong>' . $this->_test->getFailCount() . '</strong> fails.';
         print '</div>';
