@@ -9,7 +9,7 @@ In the following example we set an attribute at the global level:
 // setting a global level attribute
 $manager = Doctrine_Manager::getInstance();
 
-$manager->setAttribute(Doctrine::ATTR_VLD, false);
+$manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_ALL);
 </code>
 
 In the next example above we override the global attribute on given connection.
@@ -19,7 +19,7 @@ In the next example above we override the global attribute on given connection.
 
 $conn = $manager->openConnection(new PDO('dsn', 'username', 'pw'));
 
-$conn->setAttribute(Doctrine::ATTR_VLD, true);
+$conn->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_NONE);
 </code>
 
 In the last example we override once again the connection level attribute in the table level.
