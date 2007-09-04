@@ -31,7 +31,13 @@ DQL LIMIT clause is portable on all supported databases. Special attention have 
 
 +++ The limit-subquery-algorithm
 
-The limit-subquery-algorithm is an algorithm that DQL parser uses internally when one-to-many / many-to-many relational data is being fetched simultaneously. This kind of special algorithm is needed for the LIMIT clause to limit the number of records instead of sql result set rows. 
+The limit-subquery-algorithm is an algorithm that DQL parser uses internally when one-to-many / many-to-many relational data is being fetched simultaneously. This kind of special algorithm is needed for the LIMIT clause to limit the number of records instead of sql result set rows.
+
+This behaviour can be overwritten using the configuration system (at global, connection or table level) using:
+<code type="php">
+$table->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_ROWS);
+$table->setAttribute(Doctrine::ATTR_QUERY_LIMIT, Doctrine::LIMIT_RECORDS); // revert
+</code>
 
 In the following example we have users and phonenumbers with their relation being one-to-many. Now lets say we want fetch the first 20 users and all their related phonenumbers.
 
