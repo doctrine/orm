@@ -180,7 +180,9 @@ class Doctrine_UnitTestCase extends UnitTestCase
     }
     public function prepareTables() {
         foreach($this->tables as $name) {
-            $query = 'DROP TABLE ' . Doctrine::tableize($name);
+            $name = ucwords($name);
+            $table = $this->connection->getTable($name);
+            $query = 'DROP TABLE ' . $table->getTableName();
             try {
                 $this->conn->exec($query);
             } catch(Doctrine_Connection_Exception $e) {
