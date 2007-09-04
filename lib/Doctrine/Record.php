@@ -642,15 +642,14 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         $id = array_values($id);
 
-        $records = Doctrine_Query::create()
-                   ->from($this->_table->getComponentName())
-                   ->where(implode(' = ? AND ', $this->_table->getPrimaryKeys()) . ' = ?')
-                   ->execute($id);
+        // Use FETCH_ARRAY to avoid clearing object relations
+        $record = $this->getTable()->find($id, Doctrine::FETCH_ARRAY);
 
-
-        if (count($records) === 0) {
+        if ($record === false) {
             throw new Doctrine_Record_Exception('Failed to refresh. Record does not exist.');
         }
+
+        $this->hydrate($record);
 
         $this->_modified = array();
 
