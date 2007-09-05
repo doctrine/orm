@@ -375,7 +375,7 @@ class MyReporter extends HtmlReporter {
 
         print '<pre>';
         foreach ($this->_test->getMessages() as $message) {
-            print $message;
+            print "<p>$message</p>";
         }
         print '</pre>';
         $colour = ($this->_test->getFailCount() > 0 ? 'red' : 'green');
@@ -394,13 +394,14 @@ class MyReporter extends HtmlReporter {
 <?php
 if (PHP_SAPI === 'cli') {
     $reporter = new CliReporter();
+    $argv = $_SERVER['argv'];
+    array_shift($argv);
+    $options = parseOptions($argv);
 } else {
+    $options = $_GET;
     $reporter = new MyReporter();
 }
 
-$argv = isset($_SERVER['argv']) ? $_SERVER['argv'] : array();
-array_shift($argv);
-$options = parseOptions($argv);
 
 if (isset($options['group'])) {
     $testGroup = new GroupTest('Custom');
