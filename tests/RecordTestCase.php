@@ -742,6 +742,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $gf   = $this->connection->getTable("Group");
 
         $this->assertTrue($user->Group instanceof Doctrine_Collection);
+        $this->assertTrue($user->Group[0]->id == 3);
 
 
         // ADDING ASSOCIATED REFERENCES
@@ -784,6 +785,8 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->connection->clear();
         $user = $this->objTable->find(5);
         $this->assertEqual($user->Group->count(), 1);
+        $this->assertTrue($user->Group[0]->id == 3);
+        $this->assertTrue($gf->findAll()->count() == 3);
 
 
         // REPLACING OLD ASSOCIATED REFERENCE
