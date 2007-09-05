@@ -341,6 +341,12 @@ final class Doctrine
      */
     const EXPORT_ALL                = 3;
     
+    /**
+     * HYDRATION CONSTANTS
+     */
+    const HYDRATE_RECORD            = 2;
+    
+    const HYDRATE_ARRAY             = 3;
 
     /**
      * VALIDATION CONSTANTS
