@@ -58,14 +58,6 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * constant for CREATE queries
      */
     const CREATE = 4;
-    /**
-     * Constant for the array hydration mode.
-     */
-    const HYDRATE_ARRAY = 3;
-    /**
-     * Constant for the record (object) hydration mode.
-     */
-    const HYDRATE_RECORD = 2;
 
     /**
      * @var array $params                       query input parameters
@@ -149,7 +141,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     /**
      * The current hydration mode.
      */
-    protected $_hydrationMode = self::HYDRATE_RECORD;
+    protected $_hydrationMode = Doctrine::HYDRATE_RECORD;
     /**
      * @var boolean $_expireCache           a boolean value that indicates whether or not to force cache expiration
      */
@@ -296,7 +288,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
     /**
      * Sets the fetchmode.
      *
-     * @param integer $fetchmode  One of the Doctrine_Hydrate::HYDRATE_* constants.
+     * @param integer $fetchmode  One of the Doctrine::HYDRATE_* constants.
      */
     public function setHydrationMode($hydrationMode)
     {
@@ -800,7 +792,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             if ($cached === null) {
                 // cache miss
                 $stmt = $this->_execute($params);
-                $array = $this->parseData2($stmt, self::HYDRATE_ARRAY);
+                $array = $this->parseData2($stmt, Doctrine::HYDRATE_ARRAY);
 
                 $cached = $this->getCachedForm($array);
 
@@ -923,7 +915,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      * @return array
      */
     public function fetchArray($params = array()) {
-        return $this->execute($params, self::HYDRATE_ARRAY);
+        return $this->execute($params, Doctrine::HYDRATE_ARRAY);
     }
     /**
      * fetchOne
@@ -943,11 +935,11 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
         $collection = $this->execute($params, $hydrationMode);
 
         switch ($hydrationMode) {
-            case self::HYDRATE_RECORD:
+            case Doctrine::HYDRATE_RECORD:
                 if (count($collection) > 0) {
                     return $collection->getFirst();
                 }
-            case self::HYDRATE_ARRAY:
+            case Doctrine::HYDRATE_ARRAY:
                 return array_shift($collection);
         }
 
@@ -978,7 +970,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             $hydrationMode = $this->_hydrationMode;
         }
 
-        if ($hydrationMode === self::HYDRATE_ARRAY) {
+        if ($hydrationMode === Doctrine::HYDRATE_ARRAY) {
             $driver = new Doctrine_Hydrate_Array();
         } else {
             $driver = new Doctrine_Hydrate_Record();

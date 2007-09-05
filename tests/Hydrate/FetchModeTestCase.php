@@ -157,7 +157,7 @@ class Doctrine_Hydrate_FetchMode_TestCase extends Doctrine_UnitTestCase
 
       $q = new Doctrine_Query();
       $q->select('u.*')->from('User u')->where('u.id = ?');
-      $users = $q->execute(array($u->id), Doctrine_Hydrate::HYDRATE_ARRAY);
+      $users = $q->execute(array($u->id), Doctrine::HYDRATE_ARRAY);
       $this->assertEqual($users[0]['created'], null);
     }
 }
