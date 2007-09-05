@@ -1,3 +1,0 @@
-default:
-  stylesheets:    [main, layout, manual]
-  javascripts:    [manual_toc, manual_tree, mootools.v1.11]

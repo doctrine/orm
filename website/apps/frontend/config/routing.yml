@@ -17,7 +17,7 @@ download:
 
 manual:
   url:   /documentation/manual
-  param: { module: manual, action: index }
+  param: { module: main, action: manual }
 
 api_documentation:
   url:   /documentation/api

@@ -11388,3 +11388,148 @@ Sep 01 00:55:05 symfony [info] {sfTimerManager} View "Success" for "manual/index
 Sep 01 00:55:05 symfony [info] {sfTimerManager} Partial "manual/_table_of_contents" 0.95 ms (1)
 Sep 01 00:55:05 symfony [info] {sfTimerManager} Partial "global/_header" 1.13 ms (1)
 Sep 01 00:55:05 symfony [info] {sfTimerManager} Partial "global/_menu" 2.23 ms (1)
+Sep 05 15:14:38 symfony [info] {sfRouting} connect "/"
+Sep 05 15:14:38 symfony [info] {sfRouting} connect "/documentation/api/:q"
+Sep 05 15:14:38 symfony [info] {sfRouting} connect "/about"
+Sep 05 15:14:38 symfony [info] {sfRouting} connect "/download"
+Sep 05 15:14:38 symfony [info] {sfRouting} connect "/documentation/manual"
+Sep 05 15:14:38 symfony [info] {sfRouting} connect "/documentation/api"
+Sep 05 15:14:38 symfony [info] {sfRouting} connect "/trac"
+Sep 05 15:14:38 symfony [info] {sfRouting} connect "/symfony/:action/*"
+Sep 05 15:14:38 symfony [info] {sfRouting} connect "/:module"
+Sep 05 15:14:38 symfony [info] {sfRouting} connect "/:module/:action/*"
+Sep 05 15:14:38 symfony [info] {sfContext} initialization
+Sep 05 15:14:38 symfony [info] {sfController} initialization
+Sep 05 15:14:38 symfony [info] {sfRouting} match route [homepage] "/"
+Sep 05 15:14:38 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'index',)
+Sep 05 15:14:38 symfony [info] {sfController} dispatch request
+Sep 05 15:14:38 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 05 15:14:38 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 05 15:14:38 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 05 15:14:38 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 05 15:14:38 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 05 15:14:38 symfony [info] {sfAction} call "mainActions->executeIndex()"
+Sep 05 15:14:38 symfony [info] {sfView} initialize view for "main/index"
+Sep 05 15:14:38 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/modules/main/templates/indexSuccess.php"
+Sep 05 15:14:38 symfony [info] {sfView} decorate content with "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/layout.php"
+Sep 05 15:14:38 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/layout.php"
+Sep 05 15:14:38 symfony [info] {sfView} initialize view for "global/_header"
+Sep 05 15:14:38 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/_header.php"
+Sep 05 15:14:38 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 05 15:14:38 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/_menu.php"
+Sep 05 15:14:38 symfony [info] {sfFilter} render to client
+Sep 05 15:14:38 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 05 15:14:38 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 05 15:14:38 symfony [info] {sfResponse} send content (25193 o)
+Sep 05 15:14:38 symfony [info] {sfTimerManager} Configuration 84.42 ms (10)
+Sep 05 15:14:38 symfony [info] {sfTimerManager} Action "main/index" 0.20 ms (1)
+Sep 05 15:14:38 symfony [info] {sfTimerManager} View "Success" for "main/index" 34.84 ms (1)
+Sep 05 15:14:38 symfony [info] {sfTimerManager} Partial "global/_header" 0.90 ms (1)
+Sep 05 15:14:38 symfony [info] {sfTimerManager} Partial "global/_menu" 1.71 ms (1)
+Sep 05 15:14:42 symfony [info] {sfContext} initialization
+Sep 05 15:14:42 symfony [info] {sfController} initialization
+Sep 05 15:14:42 symfony [info] {sfRouting} match route [manual] "/documentation/manual"
+Sep 05 15:14:42 symfony [info] {sfRequest} request parameters array (  'module' => 'manual',  'action' => 'index',)
+Sep 05 15:14:42 symfony [info] {sfController} dispatch request
+Sep 05 15:14:42 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 05 15:14:42 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 05 15:14:42 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 05 15:14:42 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 05 15:14:42 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 05 15:14:42 symfony [info] {sfAction} call "manualActions->executeIndex()"
+Sep 05 15:18:04 symfony [info] {sfContext} initialization
+Sep 05 15:18:04 symfony [info] {sfController} initialization
+Sep 05 15:18:04 symfony [info] {sfRouting} match route [homepage] "/"
+Sep 05 15:18:04 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'index',)
+Sep 05 15:18:04 symfony [info] {sfController} dispatch request
+Sep 05 15:18:04 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 05 15:18:04 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 05 15:18:04 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 05 15:18:04 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 05 15:18:04 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 05 15:18:04 symfony [info] {sfAction} call "mainActions->executeIndex()"
+Sep 05 15:18:04 symfony [info] {sfView} initialize view for "main/index"
+Sep 05 15:18:04 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/modules/main/templates/indexSuccess.php"
+Sep 05 15:18:04 symfony [info] {sfView} decorate content with "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/layout.php"
+Sep 05 15:18:04 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/layout.php"
+Sep 05 15:18:04 symfony [info] {sfView} initialize view for "global/_header"
+Sep 05 15:18:04 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/_header.php"
+Sep 05 15:18:04 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 05 15:18:04 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/_menu.php"
+Sep 05 15:18:04 symfony [info] {sfFilter} render to client
+Sep 05 15:18:04 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 05 15:18:04 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 05 15:18:04 symfony [info] {sfResponse} send content (22372 o)
+Sep 05 15:18:04 symfony [info] {sfTimerManager} Configuration 4.34 ms (11)
+Sep 05 15:18:04 symfony [info] {sfTimerManager} Action "main/index" 0.15 ms (1)
+Sep 05 15:18:04 symfony [info] {sfTimerManager} View "Success" for "main/index" 19.82 ms (1)
+Sep 05 15:18:04 symfony [info] {sfTimerManager} Partial "global/_header" 0.66 ms (1)
+Sep 05 15:18:04 symfony [info] {sfTimerManager} Partial "global/_menu" 1.68 ms (1)
+Sep 05 15:28:27 symfony [info] {sfRouting} connect "/"
+Sep 05 15:28:27 symfony [info] {sfRouting} connect "/documentation/api/:q"
+Sep 05 15:28:27 symfony [info] {sfRouting} connect "/about"
+Sep 05 15:28:27 symfony [info] {sfRouting} connect "/download"
+Sep 05 15:28:27 symfony [info] {sfRouting} connect "/documentation/manual"
+Sep 05 15:28:27 symfony [info] {sfRouting} connect "/documentation/api"
+Sep 05 15:28:27 symfony [info] {sfRouting} connect "/trac"
+Sep 05 15:28:27 symfony [info] {sfRouting} connect "/symfony/:action/*"
+Sep 05 15:28:27 symfony [info] {sfRouting} connect "/:module"
+Sep 05 15:28:27 symfony [info] {sfRouting} connect "/:module/:action/*"
+Sep 05 15:28:27 symfony [info] {sfContext} initialization
+Sep 05 15:28:27 symfony [info] {sfController} initialization
+Sep 05 15:28:27 symfony [info] {sfRouting} match route [homepage] "/"
+Sep 05 15:28:27 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'index',)
+Sep 05 15:28:27 symfony [info] {sfController} dispatch request
+Sep 05 15:28:27 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 05 15:28:27 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 05 15:28:27 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 05 15:28:27 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 05 15:28:27 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 05 15:28:27 symfony [info] {sfAction} call "mainActions->executeIndex()"
+Sep 05 15:28:27 symfony [info] {sfView} initialize view for "main/index"
+Sep 05 15:28:27 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/modules/main/templates/indexSuccess.php"
+Sep 05 15:28:27 symfony [info] {sfView} decorate content with "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/layout.php"
+Sep 05 15:28:27 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/layout.php"
+Sep 05 15:28:27 symfony [info] {sfView} initialize view for "global/_header"
+Sep 05 15:28:27 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/_header.php"
+Sep 05 15:28:27 symfony [info] {sfView} initialize view for "global/_menu"
+Sep 05 15:28:27 symfony [info] {sfView} render "/Users/jwage/Sites/doctrine_trunk/website/apps/frontend/templates/_menu.php"
+Sep 05 15:28:27 symfony [info] {sfFilter} render to client
+Sep 05 15:28:27 symfony [info] {sfResponse} send status "HTTP/1.0 200 OK"
+Sep 05 15:28:27 symfony [info] {sfResponse} send header "Content-Type": "text/html; charset=utf-8"
+Sep 05 15:28:27 symfony [info] {sfResponse} send content (25469 o)
+Sep 05 15:28:27 symfony [info] {sfTimerManager} Configuration 32.80 ms (12)
+Sep 05 15:28:27 symfony [info] {sfTimerManager} Action "main/index" 0.14 ms (1)
+Sep 05 15:28:27 symfony [info] {sfTimerManager} View "Success" for "main/index" 18.36 ms (1)
+Sep 05 15:28:27 symfony [info] {sfTimerManager} Partial "global/_header" 0.64 ms (1)
+Sep 05 15:28:27 symfony [info] {sfTimerManager} Partial "global/_menu" 1.33 ms (1)
+Sep 05 15:28:29 symfony [info] {sfContext} initialization
+Sep 05 15:28:29 symfony [info] {sfController} initialization
+Sep 05 15:28:29 symfony [info] {sfRouting} match route [manual] "/documentation/manual"
+Sep 05 15:28:29 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'manual',)
+Sep 05 15:28:29 symfony [info] {sfController} dispatch request
+Sep 05 15:28:29 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 05 15:28:29 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 05 15:28:29 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 05 15:28:29 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 05 15:28:29 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 05 15:28:29 symfony [info] {sfAction} call "mainActions->executeManual()"
+Sep 05 15:28:29 symfony [info] {sfAction} redirect to "http://doctrine.pengus.net/doctrine_trunk/manual/new"
+Sep 05 15:28:29 symfony [info] {sfResponse} send status "HTTP/1.0 302 Found"
+Sep 05 15:28:29 symfony [info] {sfResponse} send header "Location": "http://doctrine.pengus.net/doctrine_trunk/manual/new"
+Sep 05 15:28:29 symfony [info] {sfResponse} send content (123 o)
+Sep 05 15:29:00 symfony [info] {sfContext} initialization
+Sep 05 15:29:00 symfony [info] {sfController} initialization
+Sep 05 15:29:00 symfony [info] {sfRouting} match route [manual] "/documentation/manual"
+Sep 05 15:29:00 symfony [info] {sfRequest} request parameters array (  'module' => 'main',  'action' => 'manual',)
+Sep 05 15:29:00 symfony [info] {sfController} dispatch request
+Sep 05 15:29:00 symfony [info] {sfFilter} executing filter "sfRenderingFilter"
+Sep 05 15:29:00 symfony [info] {sfFilter} executing filter "sfWebDebugFilter"
+Sep 05 15:29:00 symfony [info] {sfFilter} executing filter "sfCommonFilter"
+Sep 05 15:29:00 symfony [info] {sfFilter} executing filter "sfFlashFilter"
+Sep 05 15:29:00 symfony [info] {sfFilter} executing filter "sfExecutionFilter"
+Sep 05 15:29:00 symfony [info] {sfAction} call "mainActions->executeManual()"
+Sep 05 15:29:00 symfony [info] {sfAction} redirect to "http://doctrine.pengus.net/doctrine/manual/new"
+Sep 05 15:29:00 symfony [info] {sfResponse} send status "HTTP/1.0 302 Found"
+Sep 05 15:29:00 symfony [info] {sfResponse} send header "Location": "http://doctrine.pengus.net/doctrine/manual/new"
+Sep 05 15:29:00 symfony [info] {sfResponse} send content (117 o)
