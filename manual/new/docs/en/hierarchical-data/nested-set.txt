@@ -176,7 +176,7 @@ $numDescendants = $record->getNode()->getNumberDescendants(); // returns the num
 
 getDescendants() and getAncestors() both accept a parameter that you can use to specify the "depth" of the resulting branch. For example getDescendants(1) retrieves only the direct descendants (the descendants that are 1 level below, that's the same as getChildren()). In the same fashion getAncestors(1) would only retrieve the direct ancestor (the parent), etc. getAncestors() can be very useful to efficiently determine the path of this node up to the root node or up to some specific ancestor (i.e. to construct a breadcrumb navigation).
 
-++++ Simply Example: Displaying a tree
+++++ Simple Example: Displaying a tree
 
 <code type="php">
 ...
