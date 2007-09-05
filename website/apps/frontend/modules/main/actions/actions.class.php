@@ -20,7 +20,7 @@ class mainActions extends sfActions
 
   public function executeManual()
   {
-    $this->redirect('http://doctrine.pengus.net/doctrine_trunk/manual/new');
+    $this->redirect('http://doctrine.pengus.net/doctrine/manual/new');
   }
   
   public function executeAbout()
