@@ -272,6 +272,8 @@ class manualActions extends sfActions
 
         case 'Xhtml':
         default:
+            $this->renderer->setOption('template', file_get_contents(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'templates/xhtml.tpl.php'));
+            
             $viewIndex = true;
 
             if (isset($_GET['one-page'])) {

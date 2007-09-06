@@ -200,3 +200,8 @@ ul.tree {
 #toc-toggles a {
     margin-left: 0.5em;
 }
+
+#right ul li
+{
+  list-style-type: none;
+}

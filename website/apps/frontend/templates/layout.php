@@ -36,7 +36,7 @@
   </div>
   
   <div id="footer">
-    <h1>Copyright Doctrine 2007</h1>
+    <?php echo get_partial('global/footer'); ?>
   </div>
 </div>
 
