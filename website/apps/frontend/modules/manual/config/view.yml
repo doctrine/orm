@@ -1,0 +1,4 @@
+default:
+  stylesheets:    [main, layout, manual, manual_iefix: { media: print }]
+  javascripts:    [mootools.v1.11, manual_tree, manual_toc]
+  layout:         manual_layout
