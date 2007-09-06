@@ -1,5 +1,0 @@
-config/doctrine.yml:
-  class:    sfDoctrineConfigHandler
-
-config/schemas.yml:
-  class:    sfDoctrineSchemasConfigHandler
