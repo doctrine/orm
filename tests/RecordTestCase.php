@@ -742,75 +742,69 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $gf   = $this->connection->getTable("Group");
 
         $this->assertTrue($user->Group instanceof Doctrine_Collection);
-        $this->assertTrue($user->Group[0]->id == 3);
+        $this->assertEqual($user->Group->count(), 1);
+        $this->assertEqual($user->Group[0]->id, 3);
 
 
         // ADDING ASSOCIATED REFERENCES
 
 
-        $record = $gf->find(1);
-        $record2 = $gf->find(2);
-        $user->Group[1] = $record;
-        $user->Group[2] = $record2;
+        $group1 = $gf->find(1);
+        $group2 = $gf->find(2);
+        $user->Group[1] = $group1;
+        $user->Group[2] = $group2;
 
-        $this->assertTrue($user->Group->count() == 3);
+        $this->assertEqual($user->Group->count(), 3);
 
         $user->save();
         $coll = $user->Group;
 
 
         // UNSETTING ASSOCIATED REFERENCES
-
-
         unset($user);
         $user = $this->objTable->find(5);
-        $this->assertTrue($user->Group->count() == 3);
+        $this->assertEqual($user->Group->count(), 3);
+        $this->assertEqual($user->Group[1]->id, 2);
+        $this->assertEqual($user->Group[2]->id, 3);
 
         unset($user->Group[1]);
-        $this->assertTrue($user->Group->count() == 2);
+        $this->assertEqual($user->Group->count(), 2);
 
         unset($user->Group[2]);
-        $this->assertTrue($user->Group->count() == 1);
-
-
-
+        $this->assertEqual($user->Group->count(), 1);
 
         $user->save();
-        $this->assertTrue($user->Group->count() == 1);
+        $this->assertEqual($user->Group->count(), 1);
         unset($user);
 
 
         // CHECKING THE PERSISTENCE OF UNSET ASSOCIATED REFERENCES
-
         $this->connection->clear();
         $user = $this->objTable->find(5);
         $this->assertEqual($user->Group->count(), 1);
-        $this->assertTrue($user->Group[0]->id == 3);
-        $this->assertTrue($gf->findAll()->count() == 3);
+        $this->assertEqual($user->Group[0]->id, 1);
+        $this->assertEqual($gf->findAll()->count(), 3);
 
 
         // REPLACING OLD ASSOCIATED REFERENCE
-
-
-        $user->Group[1] = $record;
+        $user->Group[1] = $group1;
         $user->save();
 
-        $user->Group[1] = $record2;
+        $user->Group[0] = $group2;
         $user->save();
 
         $this->assertEqual($user->Group->count(), 2);
-        $this->assertEqual($user->Group[1]->identifier(), $record2->identifier());
-        $this->assertFalse($user->Group[1]->identifier() == $record->identifier());
+        $this->assertEqual($user->Group[0]->identifier(), $group2->identifier());
+        $this->assertEqual($user->Group[1]->identifier(), $group1->identifier());
 
 
-        $user->Group[0] = $record;
-
-        $record = $gf->find(3);
-        if ($record === false) {
+        $group3 = $gf->find(3);
+        if ($group3 === false) {
             $this->fail("Group record with id 3 couldn't be retrived");
         } else {
-            $user->Group[1] = $record;
+            $user->Group[1] = $group3;
         }
+        $user->Group[0] = $group1;
 
 
         $user->save();
@@ -824,7 +818,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $user->save();
         $this->assertEqual($user->Group->count(), 0);
         $user = $this->objTable->find(5);
-        $this->assertEqual($user->Group->count(), 0);  
+        $this->assertEqual($user->Group->count(), 0);
 
 
         // ACCESSING ASSOCIATION OBJECT PROPERTIES
