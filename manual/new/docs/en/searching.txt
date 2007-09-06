@@ -16,7 +16,7 @@ class NewsItem extends Doctrine_Record
 </code>
 
 Now lets say we have an application where users are allowed to search for different news items, an obvious way to implement this would be building a form and based on that form build DQL queries such as:
-<code>
+<code type="sql">
 SELECT n.* FROM NewsItem n WHERE n.title LIKE ? OR n.content LIKE ?
 </code>
 
