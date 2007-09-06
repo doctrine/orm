@@ -306,7 +306,7 @@ final class Doctrine
      * Portability: turn on all portability features.
      * @see Doctrine::ATTR_PORTABILITY
      */
-    const PORTABILITY_ALL           = 33;
+    const PORTABILITY_ALL           = 63;
 
     /**
      * LOCKMODE CONSTANTS
@@ -337,9 +337,13 @@ final class Doctrine
      */
     const EXPORT_CONSTRAINTS        = 2;
     /**
+     * export plugins
+     */
+    const EXPORT_PLUGINS            = 4;
+    /**
      * export all
      */
-    const EXPORT_ALL                = 3;
+    const EXPORT_ALL                = 7;
     
     /**
      * HYDRATION CONSTANTS
