@@ -827,7 +827,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function hasPrimaryKey($key)
     {
-        return in_array($key,$this->primaryKeys);
+        return in_array($key, $this->primaryKeys);
     }
     /**
      * @return Doctrine_Connection
@@ -853,38 +853,20 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * finds a record by its identifier
      *
      * @param $id                       database row id
-     * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
-     * @return Doctrine_Record|false    a record for given database identifier
+     * @param int $hydrationMode        Doctrine::HYDRATE_ARRAY or Doctrine::HYDRATE_RECORD
+     * @return mixed                    Array or Doctrine_Record or false if no result
      */
     public function find($id, $hydrationMode = null)
     {
-        if ($hydrationMode === null) {
-            $hydrationMode = Doctrine::FETCH_RECORD;
+        if (is_null($id)) {
+            return false;
         }
-        if ($id !== null) {
-            if ( ! is_array($id)) {
-                $id = array($id);
-            } else {
-                $id = array_values($id);
-            }
 
-            $records = Doctrine_Query::create()
-                       ->from($this->getComponentName())
-                       ->where(implode(' = ? AND ', $this->primaryKeys) . ' = ?')
-                       ->execute($id, $hydrationMode);
+        $id = is_array($id) ? array_values($id) : array($id);
 
-            if (count($records) === 0) {
-                return false;
-            }
-
-            switch ($hydrationMode) {
-                case Doctrine::FETCH_RECORD:
-                    return $records->getFirst();
-                case Doctrine::FETCH_ARRAY:
-                    return array_shift($records);
-            }
-        }
-        return false;
+        return $this->createQuery()
+            ->where(implode(' = ? AND ', $this->primaryKeys) . ' = ?')
+            ->fetchOne($id, $hydrationMode);
     }
     /**
      * applyInheritance
