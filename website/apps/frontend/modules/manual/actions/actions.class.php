@@ -305,6 +305,8 @@ class manualActions extends sfActions
 
         $title = $this->renderer->getOption('title');
         $this->title = $title;
+        
+        $this->renderer->setOption('url_prefix', '?one-page');
     } else {
         $this->output = $cache->fetch($cacheId);
 

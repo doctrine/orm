@@ -1,3 +1,1 @@
-<div id="manual">
-  %CONTENT%
-</div>
+%CONTENT%
