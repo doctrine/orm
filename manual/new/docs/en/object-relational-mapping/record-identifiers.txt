@@ -37,7 +37,7 @@ Consider three classes Permission, Role and RolePermission. Roles having many pe
 
 Now adding autoincremented primary keys to these classes would be simply stupid. It would require more data and it would make the queries more inefficient. For example fetching all permissions for role 'Admin' would be done as follows (when using autoinc pks):
 
-<code>
+<code type="sql">
 SELECT p.* 
     FROM Permission p
         LEFT JOIN RolePermission rp ON rp.permission_id = p.id
@@ -47,7 +47,7 @@ SELECT p.*
 
 Now remember sql JOINS are always expensive and here we are using two of those. When using natural identifiers the query would look like:
 
-<code>
+<code type="sql">
 SELECT p.*
     FROM Permission p
         LEFT JOIN RolePermission rp ON rp.permission_name = p.name
