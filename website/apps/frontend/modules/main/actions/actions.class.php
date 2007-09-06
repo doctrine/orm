@@ -16,6 +16,9 @@ class mainActions extends sfActions
    */
   public function executeIndex()
   {
+    $blogPostTable = Doctrine_Manager::getInstance()->getTable('BlogPost');
+    
+    $this->latestBlogPosts = $blogPostTable->retrieveLatest(5);
   }
   
   public function executeAbout()

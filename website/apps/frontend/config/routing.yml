@@ -3,6 +3,14 @@ homepage:
   url:   /
   param: { module: main, action: index }
 
+blog:
+  url:   /blog
+  param: { module: blog, action: index }
+
+blog_post:
+  url:   /blog/:slug
+  param: { module: blog, action: view }
+
 api_documentation_page:
   url:   /documentation/api/:q
   param: { module: api_documentation, action: index }

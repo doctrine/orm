@@ -1,14 +1,12 @@
 body
 {
-  position: absolute;
   height: 100%;
+  font-size: 12px;
 }
 
 #wrapper
 {
-  width: 100%;
-  height: 100%;
-  position: relative;
+  
 }
 
 #wrapper #header
@@ -128,4 +126,57 @@ body
   font-weight: bold;
   text-align: center;
   padding-top: 8px;
+}
+
+#right div
+{
+  margin-bottom: 10px;
+}
+
+#right h1, #right h2, #right h3
+{
+  border-bottom: 1px solid #CCCCCC;
+  margin-bottom: 10px;
+}
+
+.content h1
+{
+  font-size: 18px;
+  border-bottom: 1px solid #CCCCCC;
+  margin-bottom: 10px;
+}
+
+.content p
+{
+  margin-bottom: 10px;
+}
+
+.content ul
+{
+  list-style: square;
+  margin-left: 20px;
+}
+
+.content h1
+{
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.content h2
+{
+  font-size: 16px;
+  border-bottom: 1px solid #CCCCCC;
+  margin-bottom: 10px;
+}
+
+.content h3
+{
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.content div
+{
+  margin-bottom: 10px;
 }

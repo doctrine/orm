@@ -6,5 +6,23 @@
  */
 class BlogPostTable extends Doctrine_Table
 {
+  public function retrieveLatest($num)
+  {
+    $query = new Doctrine_Query();
+    $query->from('BlogPost p');
+    $query->limit($num);
+    $query->orderby('p.created_at DESC');
+    
+    return $query->execute();
+  }
   
+  public function retrieveBySlug($slug)
+  {
+    $query = new Doctrine_Query();
+    $query->from('BlogPost p');
+    $query->where('p.slug = ?', $slug);
+    $query->limit(1);
+    
+    return $query->execute()->getFirst();
+  }
 }

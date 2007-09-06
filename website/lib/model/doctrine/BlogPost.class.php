@@ -6,5 +6,10 @@
  */
 class BlogPost extends BaseBlogPost
 {
-  
+  public function filterSetName($name)
+  {
+    $this->setSlug(Common::createSlug($name));
+    
+    return $name;
+  }
 }

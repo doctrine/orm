@@ -25,11 +25,11 @@
     &nbsp;
   </div>
   
-  <div id="right">
-    <?php if( has_slot('right') ): ?>
+  <?php if( has_slot('right') ): ?>
+    <div id="right">
       <?php echo get_slot('right'); ?>
-    <?php endif; ?>
-  </div>
+    </div>
+  <?php endif; ?>
   
   <div id="content">
     <?php echo $sf_data->getRaw('sf_content') ?>

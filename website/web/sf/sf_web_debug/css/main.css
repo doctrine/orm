@@ -1,0 +1,272 @@
+#sfWebDebug
+{
+  padding: 0;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: #333;
+  text-align: left;
+  line-height: 12px;
+}
+
+#sfWebDebug a, #sfWebDebug a:hover
+{
+  text-decoration: none;
+  border: none;
+  background-color: transparent;
+  color: #000;
+}
+
+#sfWebDebug img
+{
+  border: 0;
+}
+
+#sfWebDebugBar
+{
+  position: absolute;
+  margin: 0;
+  padding: 1px 0;
+  right: 0px;
+  top: 0px;
+  opacity: 0.80;
+  filter: alpha(opacity:80);
+  z-index: 10000;
+}
+
+#sfWebDebugBar[id]
+{
+  position: fixed;
+}
+
+#sfWebDebugBar img
+{
+  vertical-align: middle;
+}
+
+#sfWebDebugBar .menu
+{
+  padding: 5px;
+  display: inline;
+}
+
+#sfWebDebugBar .menu li
+{
+  display: inline;
+  list-style: none;
+  margin: 0;
+  padding: 0 5px;
+  border-right: 1px solid #aaa;
+}
+
+#sfWebDebugBar .menu li.last
+{
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+#sfWebDebugDatabaseDetails li
+{
+  margin: 0;
+  margin-left: 30px;
+  padding: 5px 0;
+}
+
+#sfWebDebugShortMessages li
+{
+  margin-bottom: 10px;
+  padding: 5px;
+  background-color: #ddd;
+}
+
+#sfWebDebugShortMessages li
+{
+  list-style: none;
+}
+
+#sfWebDebugDetails
+{
+  margin-right: 7px;
+}
+
+#sfWebDebug pre
+{
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+
+#sfWebDebug h1
+{
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding: 0;
+  border: 0px;
+  background-color: #eee;
+}
+
+#sfWebDebug h2
+{
+  font-size: 14px;
+  font-weight: bold;
+  margin: 10px 0;
+  padding: 0;
+  border: 0px;
+  background: none;
+}
+
+#sfWebDebug .top
+{
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  padding: 10px;
+  z-index: 9999;
+  background-color: #efefef;
+  border-bottom: 1px solid #aaa;
+}
+
+#sfWebDebugLog
+{
+  margin: 0;
+  padding: 3px;
+  font-size: 11px;
+}
+
+#sfWebDebugLogMenu li
+{
+  display: inline;
+  list-style: none;
+  margin: 0;
+  padding: 0 5px;
+  border-right: 1px solid #aaa;
+}
+
+#sfWebDebugConfigSummary
+{
+  display: inline;
+  padding: 5px;
+  background-color: #ddd;
+  border: 1px solid #aaa;
+  margin: 20px 0;
+}
+
+#sfWebDebugConfigSummary li
+{
+  list-style: none;
+  display: inline;
+  margin: 0;
+  padding: 0 5px;
+  border-right: 1px solid #aaa;
+}
+
+#sfWebDebugConfigSummary li.last
+{
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.sfWebDebugInfo, .sfWebDebugInfo td
+{
+  background-color: #ddd;
+}
+
+.sfWebDebugWarning, .sfWebDebugWarning td
+{
+  background-color: orange;
+}
+
+.sfWebDebugError, .sfWebDebugError td
+{
+  background-color: #f99;
+}
+
+.sfWebDebugLogNumber
+{
+  width: 1%;
+}
+
+.sfWebDebugLogType
+{
+  width: 1%;
+  white-space: nowrap;
+  color: darkgreen;
+}
+
+.sfWebDebugLogInfo
+{
+  color: blue;
+}
+
+.ison
+{
+  color: #3f3;
+  margin-right: 5px;
+}
+
+.isoff
+{
+  color: #f33;
+  margin-right: 5px;
+  text-decoration: line-through;
+}
+
+.sfWebDebugLogs
+{
+  padding: 0;
+  margin: 0;
+  border: 1px solid #999;
+  font-family: Arial;
+  font-size: 11px;
+}
+
+.sfWebDebugLogs tr
+{
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.sfWebDebugLogs td
+{
+  margin: 0;
+  border: 0;
+  padding: 1px 3px;
+  vertical-align: top;
+}
+
+.sfWebDebugLogs th
+{
+  margin: 0;
+  border: 0;
+  padding: 3px 5px;
+  vertical-align: top;
+  background-color: #999;
+  color: #eee;
+  white-space: nowrap;
+}
+
+.sfWebDebugDebugInfo
+{
+  margin-left: 10px;
+  padding-left: 5px;
+  border-left: 1px solid #aaa;
+}
+
+.sfWebDebugCache
+{
+  padding: 0;
+  margin: 0;
+  font-family: Arial;
+  position: absolute;
+  overflow: hidden;
+  z-index: 995;
+  font-size: 9px;
+  padding: 2px;
+  filter:alpha(opacity=85);
+  -moz-opacity:0.85;
+  opacity: 0.85;
+}
