@@ -31,19 +31,29 @@
  */
 class Doctrine_Template_I18n extends Doctrine_Template
 {
-    protected $_i18n;
-
     public function __construct(array $options)
     {
-        $this->_i18n = new Doctrine_I18n($options);
+        $this->_plugin = new Doctrine_I18n($options);
     }
     public function setUp()
     {
-        $this->_i18n->setOption('table', $this->_table);
-        $this->_i18n->buildDefinition($this->_table);
+        $this->_plugin->setOption('table', $this->_table);
+        $name = $this->_table->getComponentName();
+        $className = $this->_plugin->getOption('className');
+
+        if (strpos($className, '%CLASS%') !== false) {
+            $this->_plugin->setOption('className', str_replace('%CLASS%', $name, $className));
+            $className = $this->_plugin->getOption('className');
+        }
+
+        $this->_plugin->buildDefinition($this->_table);
+        
+        $id = $this->_table->getIdentifier();
+
+        $this->hasMany($className . ' as Translation', array('local' => $id, 'foreign' => $id));
     }
     public function getI18n()
     {
-        return $this->_i18n;
+        return $this->_plugin;
     }
 }
