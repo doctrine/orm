@@ -51,7 +51,7 @@ class Doctrine_I18n extends Doctrine_Plugin
     	    throw new Doctrine_I18n_Exception('Fields not set.');
     	}
 
-        $this->_options['className'] = str_replace('%CLASS%', 
+        $this->_options['className'] = str_replace('%CLASS%',
                                                    $this->_options['table']->getComponentName(),
                                                    $this->_options['className']);
 
@@ -73,12 +73,8 @@ class Doctrine_I18n extends Doctrine_Plugin
 
             unset($def['autoincrement']);
             unset($def['sequence']);
-            unset($def['primary']);
 
-            $col = strtolower(Doctrine::tableize($name) . '_' . $column);
-
-            $def['primary'] = true;
-            $fk[$col] = $def;
+            $fk[$column] = $def;
         }
 
         $cols = $table->getColumns();
