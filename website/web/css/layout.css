@@ -6,7 +6,7 @@ body
 
 #wrapper
 {
-  
+  background: url(../images/wrap_bg.jpg) repeat-y left 75px;
 }
 
 #wrapper #header
@@ -71,12 +71,10 @@ body
 
 #wrapper #left
 {
+  background: url(../images/right_bg.png) left top repeat-x;
+  height: 100px;
   float: left;
   width: 10px;
-  height: 100%;
-  background: #AA0000;
-  background: #AA0000 url(../images/right_bg.png) repeat-x top left;
-  border-right: 1px solid #333333;
 }
 
 #wrapper #right
@@ -84,7 +82,6 @@ body
   padding: 15px;
   float: right;
   width: 225px;
-  min-height: 300px;
   background: #AA0000 url(../images/right_bg.png) repeat-x top left;
   color: #FFFFFF;
   border-left: 1px solid #333333;
@@ -107,7 +104,7 @@ body
 #wrapper #content
 {
   background: #FFFFFF url(../images/content_bg.png) repeat-x top left;
-  min-height: 300px;
+  border-left: 1px solid #333333;
   margin-left: 10px;
   padding: 15px;
 }
