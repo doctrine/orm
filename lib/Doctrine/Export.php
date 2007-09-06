@@ -1043,7 +1043,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             // check if class is an instance of Doctrine_Record and not abstract
             // class must have method setTableDefinition (to avoid non-Record subclasses like symfony's sfDoctrineRecord)
             // we have to recursively iterate through the class parents just to be sure that the classes using for example
-            // column aggregation inheritance are properly exporterd to database
+            // column aggregation inheritance are properly exported to database
             while ($class->isAbstract() ||
                    ! $class->isSubclassOf($parent) ||
                    ! $class->hasMethod('setTableDefinition') ||
@@ -1057,11 +1057,12 @@ class Doctrine_Export extends Doctrine_Connection_Module
             }
 
             if ($class === false) {
-              continue;
+                continue;
             }
 
             $record = new $name();
             $table  = $record->getTable();
+            
             $data = $table->getExportableFormat();
 
             $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
@@ -1071,9 +1072,35 @@ class Doctrine_Export extends Doctrine_Connection_Module
             } else {
                 $sql[] = $query;
             }
+            if ($table->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_PLUGINS) {
+                $sql = array_merge($sql, $this->exportPluginsSql($table));
+            }
         }
         $sql = array_unique($sql);
         rsort($sql);
+
+        return $sql;
+    }
+    /**
+     * exportPluginsSql
+     * exports plugin tables for given table
+     *
+     * @param Doctrine_Table $table     the table in which the plugins belong to
+     * @return array    an array of sql strings
+     */
+    public function exportPluginsSql(Doctrine_Table $table)
+    {
+    	$sql = array();
+
+        foreach ($table->getTemplates() as $name => $template) {
+            $table = $template->getPlugin()->getOption('pluginTable');
+
+            $data = $table->getExportableFormat();
+
+            $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
+
+            $sql = array_merge($sql, (array) $query);    
+        }
 
         return $sql;
     }

@@ -36,6 +36,9 @@ class Doctrine_Template extends Doctrine_Record_Abstract
      * @param Doctrine_Record $_invoker     the record that invoked the last delegated call
      */
     protected $_invoker;
+    
+    
+    protected $_plugin;
     /**
      * setTable
      *
@@ -76,6 +79,14 @@ class Doctrine_Template extends Doctrine_Record_Abstract
     public function getInvoker()
     {
         return $this->_invoker;
+    }
+    public function get()
+    {
+        throw new Exception();	
+    }
+    public function getPlugin()
+    {
+        return $this->_plugin;
     }
     public function setUp()
     {

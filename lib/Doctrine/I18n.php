@@ -36,6 +36,7 @@ class Doctrine_I18n extends Doctrine_Plugin
                             'fields'        => array(),
                             'generateFiles' => false,
                             'table'         => false,
+                            'pluginTable'   => false,
                             );
 
     protected $_auditTable;
@@ -109,6 +110,8 @@ class Doctrine_I18n extends Doctrine_Plugin
         if ( ! $this->_options['generateFiles']) {
             eval($def);
         }
+        $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
+
         return true;
     }
 }
