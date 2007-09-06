@@ -186,8 +186,8 @@ class manualActions extends sfActions
     spl_autoload_register('autoload');
     
     // Temporary directory used by cache and LaTeX to Pdf conversion
-    $tempDir = $manualPath.'new'.DIRECTORY_SEPARATOR.'tmp';
-
+    $tempDir = $manualPath.DIRECTORY_SEPARATOR.'new'.DIRECTORY_SEPARATOR.'tmp';
+    
     // The file where cached data is saved
     $cacheFile = $tempDir.DIRECTORY_SEPARATOR.'cache.sq3';
 
