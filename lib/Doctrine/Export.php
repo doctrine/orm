@@ -1093,13 +1093,19 @@ class Doctrine_Export extends Doctrine_Connection_Module
     	$sql = array();
 
         foreach ($table->getTemplates() as $name => $template) {
-            $table = $template->getPlugin()->getOption('pluginTable');
+            $plugin = $template->getPlugin();
+
+            if ($plugin === null) {
+                continue;                     	
+            }
+
+            $table = $plugin->getOption('pluginTable');
 
             $data = $table->getExportableFormat();
 
             $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
 
-            $sql = array_merge($sql, (array) $query);    
+            $sql = array_merge($sql, (array) $query);
         }
 
         return $sql;
