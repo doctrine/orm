@@ -13,7 +13,7 @@
   <div id="download_latest_release">
     <h3>Download Latest Release</h3>
     <ul>
-      <li><a href="http://doctrine.pengus.net/trac/attachment/wiki/packages/Doctrine-1.0.0RC1.tgz">Doctrine-1.0.0RC1.tgz</a></li>
+      <li><a href="http://doctrine.pengus.net/trac/attachment/wiki/packages/Doctrine-1.0.0RC1.tgz?format=raw">Doctrine-1.0.0RC1.tgz</a></li>
     </ul>
   </div>
   

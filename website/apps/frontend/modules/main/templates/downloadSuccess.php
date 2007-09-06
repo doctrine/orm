@@ -4,7 +4,7 @@
   <div id="package">
     <h3>Latest Package</h3>
     
-    <p><a href="http://doctrine.pengus.net/trac/attachment/wiki/packages/Doctrine-1.0.0RC1.tgz">http://doctrine.pengus.net/trac/attachment/wiki/packages/Doctrine-1.0.0RC1.tgz</a></p>
+    <p><a href="http://doctrine.pengus.net/trac/attachment/wiki/packages/Doctrine-1.0.0RC1.tgz?format=raw">Doctrine-1.0.0RC1.tgz</a></p>
   </div>
   
   <div id="svn">
