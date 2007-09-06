@@ -158,7 +158,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     /**
      * @var array $_templates                   an array containing all templates attached to this table
      */
-    protected $_templates;
+    protected $_templates = array();
 
 
     /**
