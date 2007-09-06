@@ -47,13 +47,13 @@ DQL overcomes this problem with subqueries and with complex but efficient subque
 
 DQL QUERY:
 
-<code>
+<code type="sql">
 SELECT u.id, u.name, p.* FROM User u LEFT JOIN u.Phonenumber p LIMIT 20
 </code>
 
 SQL QUERY:
  
-<code>
+<code type="sql">
 SELECT
     e.id AS e__id,
     e.name AS e__name,
@@ -72,13 +72,13 @@ In the next example we are going to fetch first 20 users and all their phonenumb
 
 DQL QUERY:
 
-<code>
+<code type="sql">
 SELECT u.id, u.name, p.* FROM User u LEFT JOIN u.Phonenumber p LIMIT 20
 </code>
 
 SQL QUERY:
  
-<code>
+<code type="sql">
 SELECT 
     e.id AS e__id,
     e.name AS e__name,

@@ -1,6 +1,6 @@
 Syntax:
 
-<code>
+<code type="sql">
 WHERE <where_condition>
 </code>
 

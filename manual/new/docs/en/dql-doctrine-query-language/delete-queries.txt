@@ -1,4 +1,4 @@
-<code>
+<code type="sql">
 DELETE FROM <component_name>
     [WHERE <where_condition>]
     [ORDER BY ...]

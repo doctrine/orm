@@ -4,7 +4,7 @@
 
 A string literal is enclosed in single quotes; for example: 'literal'. A string literal that includes a single quote is represented by two single quotes; for example: 'literal''s'.
 
-<code>
+<code type="sql">
 FROM User WHERE User.name = 'Vincent'
 </code>
 
@@ -12,7 +12,7 @@ FROM User WHERE User.name = 'Vincent'
 
 Integer literals support the use of PHP integer literal syntax.
 
-<code>
+<code type="sql">
 FROM User WHERE User.id = 4
 </code>
 
@@ -20,7 +20,7 @@ FROM User WHERE User.id = 4
 
 Float literals support the use of PHP float literal syntax.
 
-<code>
+<code type="sql">
 FROM Account WHERE Account.amount = 432.123
 </code>
 
@@ -28,7 +28,7 @@ FROM Account WHERE Account.amount = 432.123
 
 The boolean literals are true and false.
 
-<code>
+<code type="sql">
 FROM User WHERE User.admin = true
 
 FROM Session WHERE Session.is_authed = false
@@ -38,7 +38,7 @@ FROM Session WHERE Session.is_authed = false
 
 The enumerated values work in the same way as string literals.
 
-<code>
+<code type="sql">
 FROM User WHERE User.type = 'admin'
 </code>
 
@@ -96,7 +96,7 @@ An IN conditional expression returns true if the //operand// is found from resul
 
 When //value list// is being used there must be at least one element in that list.
 
-<code>
+<code type="sql">
 FROM C1 WHERE C1.col1 IN (FROM C2(col1));
 
 FROM User WHERE User.id IN (1,3,4,5)
@@ -104,7 +104,7 @@ FROM User WHERE User.id IN (1,3,4,5)
 
 The keyword IN is an alias for = ANY. Thus, these two statements are equal:
 
-<code>
+<code type="sql">
 FROM C1 WHERE C1.col1 = ANY (FROM C2(col1));
 FROM C1 WHERE C1.col1 IN    (FROM C2(col1));
 </code>
@@ -157,7 +157,7 @@ The NOT EXISTS operator returns TRUE if the subquery returns 0 rows and FALSE ot
 
 Finding all articles which have readers:
 
-<code>
+<code type="sql">
 FROM Article a
   WHERE EXISTS (SELECT r.id FROM ReaderLog r
                 WHERE r.article_id = a.id)
@@ -165,7 +165,7 @@ FROM Article a
 
 Finding all articles which don't have readers:
 
-<code>
+<code type="sql">
 FROM Article a
   WHERE NOT EXISTS (SELECT r.id FROM ReaderLog r
                 WHERE r.article_id = a.id)
@@ -184,19 +184,19 @@ operand comparison_operator ALL (subquery)
 
 An ALL conditional expression returns true if the comparison operation is true for all values in the result of the subquery or the result of the subquery is empty. An ALL conditional expression is false if the result of the comparison is false for at least one row, and is unknown if neither true nor false.
 
-<code>
+<code type="sql">
 FROM C WHERE C.col1 < ALL (FROM C2(col1))
 </code>
 
 An ANY conditional expression returns true if the comparison operation is true for some value in the result of the subquery. An ANY conditional expression is false if the result of the subquery is empty or if the comparison operation is false for every value in the result of the subquery, and is unknown if neither true nor false. 
 
-<code>
+<code type="sql">
 FROM C WHERE C.col1 > ANY (FROM C2(col1))
 </code>
 
 The keyword SOME is an alias for ANY.
  
-<code>
+<code type="sql">
 FROM C WHERE C.col1 > SOME (FROM C2(col1))
 </code>
 
@@ -204,7 +204,7 @@ The comparison operators that can be used with ALL or ANY conditional expression
 
 NOT IN is an alias for <> ALL. Thus, these two statements are equal:
 
-<code>
+<code type="sql">
 FROM C WHERE C.col1 <> ALL (FROM C2(col1));
 FROM C WHERE C.col1 NOT IN (FROM C2(col1));
 </code>

@@ -1,6 +1,6 @@
 {{UPDATE}} statement syntax:
 
-<code>
+<code type="sql">
 UPDATE //component_name//
     SET //col_name1//=//expr1// [, //col_name2//=//expr2// ...]
     [WHERE //where_condition//]
