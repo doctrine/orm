@@ -934,12 +934,13 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
 
         $collection = $this->execute($params, $hydrationMode);
 
+        if (count($collection) === 0) {
+            return false;
+        }
+
         switch ($hydrationMode) {
             case Doctrine::HYDRATE_RECORD:
-                if (count($collection) > 0) {
-                    return $collection->getFirst();
-                }
-                break;
+                return $collection->getFirst();
             case Doctrine::HYDRATE_ARRAY:
                 return array_shift($collection);
         }

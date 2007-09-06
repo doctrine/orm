@@ -879,13 +879,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
             switch ($hydrationMode) {
                 case Doctrine::FETCH_RECORD:
-                    if (count($records) > 0) {
-                        return $records->getFirst();
-                    }
+                    return $records->getFirst();
                 case Doctrine::FETCH_ARRAY:
-                    if ( ! empty($records[0])) {
-                        return array_shift($records);
-                    }
+                    return array_shift($records);
             }
         }
         return false;
