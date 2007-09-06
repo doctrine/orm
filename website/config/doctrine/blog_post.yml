@@ -1,0 +1,22 @@
+---
+BlogPost: 
+  tableName: blog_post
+  columns: 
+    id:
+      type: integer
+      size: 4
+      primary: true
+      autoincrement: true
+    created_at:  
+      type: timestamp
+    updated_at: 
+      type: timestamp
+    name:
+      type: string
+      size: 255
+    slug:
+      type: string
+      size: 255
+      unique: true
+    body:
+      type: clob
