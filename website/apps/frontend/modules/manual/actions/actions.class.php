@@ -213,10 +213,12 @@ class manualActions extends sfActions
         $this->toc = new Sensei_Doc_Toc($manualPath.'/new/docs/en.txt');
         $cache->save($this->toc, 'toc');
     }
-
+    
+    $format = $this->getRequestParameter('format');
+    
     // Which format to output docs
-    if (isset($_GET['format'])) {
-        $format = ucfirst(strtolower($_GET['format']));
+    if ($format) {
+        $format = ucfirst(strtolower($format));
 
         switch ($format) {
             case 'Xhtml':
@@ -276,12 +278,12 @@ class manualActions extends sfActions
             
             $viewIndex = true;
 
-            if (isset($_GET['one-page'])) {
+            if ($this->getRequest()->hasParameter('one-page')) {
                 $viewIndex = false;
             }
 
-            if (isset($_GET['chapter'])) {
-                $section = $this->toc->findByPath($_GET['chapter']);
+            if ($this->getRequest()->hasParameter('chapter')) {
+                $section = $this->toc->findByPath($this->getRequestParameter('chapter'));
 
                 if ($section && $section->getLevel() === 1) {
                     $title = $this->renderer->getOption('title') . ' - Chapter '
@@ -289,7 +291,7 @@ class manualActions extends sfActions
 
                     $this->renderer->setOptions(array(
                         'section'    => $section,
-                        'url_prefix' => '?chapter=',
+                        'url_prefix' => 'manual/',
                         'title'      => $title
                     ));
 

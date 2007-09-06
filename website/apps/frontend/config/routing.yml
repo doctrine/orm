@@ -23,6 +23,10 @@ download:
   url:   /download
   param: { module: main, action: download }
 
+manual_chapter:
+  url:   /documentation/manual/:chapter
+  param: { module: manual, action: index }
+
 manual:
   url:   /documentation/manual/*
   param: { module: manual, action: index }

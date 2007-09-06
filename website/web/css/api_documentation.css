@@ -127,3 +127,8 @@ td.type,.folder-title,.method-result,.include-type{ font-style: italic; }
 .cmd-synopsis { margin: 1em 0em }
 .cmd-title { font-weight: bold }
 .toc { margin-left: 2em; padding-left: 0em }
+
+#wrapper #content
+{
+  margin-right: 250px;
+}
