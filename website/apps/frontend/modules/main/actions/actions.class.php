@@ -17,11 +17,6 @@ class mainActions extends sfActions
   public function executeIndex()
   {
   }
-
-  public function executeManual()
-  {
-    $this->redirect('http://doctrine.pengus.net/doctrine/manual/new');
-  }
   
   public function executeAbout()
   {
