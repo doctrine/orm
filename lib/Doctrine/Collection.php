@@ -300,7 +300,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function get($key)
     {
-        if ($key === null || ! isset($this->data[$key])) {
+        if ( ! isset($this->data[$key])) {
             $record = $this->_table->create();
 
             if (isset($this->referenceField)) {
@@ -312,8 +312,11 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                     $record->set($this->referenceField, $this->reference, false);
                 }
             }
-
-            $this->data[] = $record;
+            if ($key === null) {
+                $this->data[] = $record;
+            } else {
+                $this->data[$key] = $record;      	
+            }
 
             return $record;
         }
