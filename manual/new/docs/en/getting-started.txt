@@ -71,7 +71,7 @@ Doctrine::exportSchema('models');
 
 This would execute the following queries on mysql.
 
-<code>
+<code type="sql">
 CREATE TABLE user (id BIGINT AUTO_INCREMENT, name VARCHAR(20), PRIMARY KEY(id), INDEX(id));
 CREATE TABLE phonenumber (id INT AUTO_INCREMENT, phonenumber VARCHAR(20), user_id BIGINT, PRIMARY KEY(id), INDEX(user_id));
 ALTER TABLE phonenumber ADD CONSTRAINT FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE;
