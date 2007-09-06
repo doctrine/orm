@@ -1024,6 +1024,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 }
             }
 
+
             // dealing with root component
             $table = $this->_aliasMap[$rootAlias]['table'];
             $componentName = $table->getComponentName();
@@ -1032,9 +1033,10 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             $oneToOne = false;
 
             $index = $driver->search($element, $array);
-            if ($index === false) {      
-                if (isset($map['map'])) {
-                    $key = $map['map'];
+            if ($index === false) {  
+                if (isset($this->_aliasMap[$rootAlias]['map'])) {
+                    $key = $this->_aliasMap[$rootAlias]['map'];
+
                     if (isset($array[$key])) {
                         throw new Doctrine_Hydrate_Exception("Couldn't hydrate. Found non-unique key mapping.");
                     }
@@ -1042,6 +1044,7 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                     if ( ! isset($element[$key])) {
                         throw new Doctrine_Hydrate_Exception("Couldn't hydrate. Found a non-existent key.");
                     }
+
                     $array[$element[$key]] = $element;
                 } else {
                     $array[] = $element;
