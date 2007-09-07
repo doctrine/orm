@@ -442,17 +442,14 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     public function deleteComposites(Doctrine_Record $record)
     {
         foreach ($record->getTable()->getRelations() as $fk) {
-            switch ($fk->getType()) {
-                case Doctrine_Relation::ONE_COMPOSITE:
-                case Doctrine_Relation::MANY_COMPOSITE:
-                    $obj = $record->get($fk->getAlias());
-                    if ( $obj instanceof Doctrine_Record && 
-                           $obj->state() != Doctrine_Record::STATE_LOCKED)  {
-                            
-                            $obj->delete($this->conn);
-                               
-                    }
-                    break;
+            if ($fk->isComposite()) {
+                $obj = $record->get($fk->getAlias());
+                if ( $obj instanceof Doctrine_Record && 
+                     $obj->state() != Doctrine_Record::STATE_LOCKED)  {
+
+                    $obj->delete($this->conn);
+
+                }
             }
         }
     }
