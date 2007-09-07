@@ -1104,7 +1104,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             return $index;
         }
 
-        if ( ! $this->conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)
+        if (!$this->conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)
             && isset($this->columns[$field]['values'][$index])
         ) {
             return $this->columns[$field]['values'][$index];
@@ -1127,7 +1127,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if ($index === false || !$this->conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
             return $index;
         }
-        return ($index+1);
+        return $value;
     }
     /* getColumnCount
      *
