@@ -41,7 +41,7 @@ $conn->export->createTable('events', $definition);
 The keys of the definition array are the names of the fields in the table. The values are arrays containing the required key 'type' as well as other keys, depending on the value of 'type'. The values for the 'type' key are the same as the possible Doctrine datatypes. Depending on the datatype, the other options may vary.
 
 ||~ Datatype ||~ length ||~ default ||~ not null ||~ unsigned ||~ autoincrement ||
-|| strin     || x || x || x ||   ||   ||
+|| string    || x || x || x ||   ||   ||
 || boolean   ||   || x || x ||   ||   ||
 || integer   || x || x || x || x || x ||
 || decimal   ||   || x || x ||   ||   ||
