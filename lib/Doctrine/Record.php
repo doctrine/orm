@@ -184,7 +184,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 }
             }
 
-            $this->_errorStack = new Doctrine_Validator_ErrorStack();
+            $this->_errorStack = new Doctrine_Validator_ErrorStack(get_class($this));
 
             $repository = $this->_table->getRepository();
             $repository->add($this);

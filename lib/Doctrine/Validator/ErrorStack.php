@@ -39,13 +39,16 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      * @var array
      */
     protected $errors = array();
+    protected $classname = "";
 
     /**
      * Constructor
      *
      */
-    public function __construct()
-    {}
+    public function __construct($classname = "")
+    {
+        $this->classname = $classname;
+    }
 
     /**
      * Adds an error to the stack.
@@ -126,5 +129,13 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
     public function count()
     {
         return count($this->errors);
+    }
+
+    /**
+     * Get the classname where the errors occured
+     *
+     */
+    public function getClassname(){
+        return $this->classname;
     }
 }

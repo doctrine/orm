@@ -70,6 +70,9 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
         return parent::__toString();
     }
 
+    /**
+     * Generate a message with all classes that have exceptions
+     */
     private function generateMessage()
     {
         $message = "";
@@ -77,6 +80,19 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
            $message .= "Validaton error in class " . get_class($record) . " ";
         }
         return $message;
+    }
+
+    /**
+     * This method will apply the value of the $function variable as a user_func 
+     * to tall errorstack objects in the exception
+     *
+     * @param mixed Either string with function name or array with object, 
+     * functionname. See call_user_func in php manual for more inforamtion
+     */
+    public function inspect($function){
+        foreach($this->invalid as $record){
+            call_user_func($function, $record->getErrorStack());
+        }
     }
 
 }
