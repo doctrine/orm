@@ -43,7 +43,7 @@ Using the above example, we can also explore the default field operator. Default
 
 <code type="php">
 'sometext' = array(
-    'type'   => 'text',
+    'type'   => 'string',
     'length' => 12,
 ),
 </code>
