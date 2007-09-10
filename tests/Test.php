@@ -33,7 +33,7 @@ class GroupTest extends UnitTestCase
         }
         return true;
     }
-    public function run(HtmlReporter $reporter, $filter)
+    public function run(HtmlReporter $reporter = null, $filter = null)
     {
         $reporter->paintHeader();
         foreach ($this->_testCases as $k => $testCase) {
@@ -160,7 +160,7 @@ class UnitTestCase
         }
         $this->_failed++;
     }
-    public function run() 
+    public function run(HtmlReporter $reporter = null, $filter = null) 
     {
         foreach (get_class_methods($this) as $method) {
             if (substr($method, 0, 4) === 'test') {
