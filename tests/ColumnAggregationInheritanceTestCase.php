@@ -35,8 +35,8 @@ class Doctrine_ColumnAggregationInheritance_TestCase extends Doctrine_UnitTestCa
 {
     protected $otherEntity = null;
 
-    public function prepareData() 
-    { 
+    public function prepareData()
+    {
         parent::prepareData();
         //we create a test entity that is not a user and not a group
         $entity = new Entity();
@@ -66,17 +66,17 @@ class Doctrine_ColumnAggregationInheritance_TestCase extends Doctrine_UnitTestCa
     public function testStringColumnInheritance()
     {
         $q = new Doctrine_Query();
-        
-        $q->from('InheritanceChildTest');
-
-        $this->assertEqual($q->getSql(), "SELECT i.id AS i__id, i.name AS i__name, i.type AS i__type FROM inheritance_test i WHERE (i.type = 'type 1')");
+        $q->select('g.name')->from('Group g');
+        $this->assertEqual($q->getSql(), "SELECT e.id AS e__id, e.name AS e__name FROM entity e WHERE (e.type = 1)");
     }
 
     public function testSubclassFieldSetWhenCreatingNewSubclassedRecord()
     {
-        $child = new InheritanceChildTest();
+        $child = new User();
+        $child->name = 'Pedro';
         $this->assertTrue(isset($child->type));
 
-        $this->assertEqual('type 1', $child->type);
+        $child->save();
+        $this->assertEqual($child->type, '0');
     }
 }
