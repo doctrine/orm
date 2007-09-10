@@ -788,14 +788,13 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
 
         // REPLACING OLD ASSOCIATED REFERENCE
         $user->Group[1] = $group1;
-        $user->save();
-
         $user->Group[0] = $group2;
         $user->save();
 
+        $user = $this->objTable->find(5);
         $this->assertEqual($user->Group->count(), 2);
-        $this->assertEqual($user->Group[0]->identifier(), $group2->identifier());
-        $this->assertEqual($user->Group[1]->identifier(), $group1->identifier());
+        $this->assertEqual($user->Group[0]->identifier(), $group1->identifier());
+        $this->assertEqual($user->Group[1]->identifier(), $group2->identifier());
 
 
         $group3 = $gf->find(3);
