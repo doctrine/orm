@@ -767,14 +767,10 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user->Group[1]->id, 2);
         $this->assertEqual($user->Group[2]->id, 3);
 
-        unset($user->Group[1]);
-        $this->assertEqual($user->Group->count(), 2);
-
-        unset($user->Group[2]);
+        $user->unlink('Group', array($group1->id, $group2->id));
         $this->assertEqual($user->Group->count(), 1);
 
         $user->save();
-        $this->assertEqual($user->Group->count(), 1);
         unset($user);
 
 
@@ -782,11 +778,12 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->connection->clear();
         $user = $this->objTable->find(5);
         $this->assertEqual($user->Group->count(), 1);
-        $this->assertEqual($user->Group[0]->id, 1);
+        $this->assertEqual($user->Group[0]->id, 3);
         $this->assertEqual($gf->findAll()->count(), 3);
 
 
         // REPLACING OLD ASSOCIATED REFERENCE
+        $user->unlink('Group', 3);  // you MUST first unlink old relationship
         $user->Group[1] = $group1;
         $user->Group[0] = $group2;
         $user->save();
@@ -795,31 +792,6 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user->Group->count(), 2);
         $this->assertEqual($user->Group[0]->identifier(), $group1->identifier());
         $this->assertEqual($user->Group[1]->identifier(), $group2->identifier());
-
-
-        $group3 = $gf->find(3);
-        if ($group3 === false) {
-            $this->fail("Group record with id 3 couldn't be retrived");
-        } else {
-            $user->Group[1] = $group3;
-            $user->Group[0] = $group1;
-            $this->assertEqual($user->Group[0]->identifier(), $group1->identifier());
-            $this->assertEqual($user->Group[1]->identifier(), $group3->identifier());
-        }
-
-
-        $this->assertEqual($user->Group->count(), 2);
-        $user->save();
-        $user = $this->objTable->find(5);
-        $this->assertEqual($user->Group->count(), 2);
-
-
-
-        $user->Group = new Doctrine_Collection($gf);
-        $user->save();
-        $this->assertEqual($user->Group->count(), 0);
-        $user = $this->objTable->find(5);
-        $this->assertEqual($user->Group->count(), 0);
 
 
         // ACCESSING ASSOCIATION OBJECT PROPERTIES
