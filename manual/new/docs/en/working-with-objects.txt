@@ -20,18 +20,6 @@ $gu->save();
 
 +++ Deleting a link
 
-While the obvious and convinient way of deleting a link between User and Group would be the following, you still should *NOT* do this:
-
-<code type="php">
-$user = $conn->getTable('User')->find(5);
-$user->GroupUser
-     ->remove(0)
-     ->remove(1);
-$user->save();
-</code>
-
-This is due to a fact that $user->GroupUser loads all group links for given user. This can time-consuming task if user belongs to many groups. Even if the user belongs to few groups this will still execute an unnecessary SELECT statement.
-
 The right way to delete links between many-to-many associated records is by using the DQL DELETE statement. Convenient and recommended way of using DQL DELETE is trhough the Query API.
 
 <code type="php">
@@ -44,6 +32,27 @@ $deleted = Doctrine_Query::create()
 // print out the deleted links
 print $deleted;
 </code>
+
+Another way to {{unlink}} the relationships between related objects is through the {{Doctrine_Record::unlink}} method. However, you should avoid using this method unless you already have the parent model, since it involves querying the database first.
+
+<code type="php">
+$user = $conn->getTable('User')->find(5);
+$user->unlink('Group', array(0, 1));
+$user->save();
+</code>
+
+While the obvious and convinient way of deleting a link between User and Group would be the following, you still should *NOT* do this:
+
+<code type="php">
+$user = $conn->getTable('User')->find(5);
+$user->GroupUser
+     ->remove(0)
+     ->remove(1);
+$user->save();
+</code>
+
+This is due to a fact that $user->GroupUser loads all group links for given user. This can time-consuming task if user belongs to many groups. Even if the user belongs to few groups this will still execute an unnecessary SELECT statement.
+
 
 ++ Component overview
 ++ Fetching objects
