@@ -3,6 +3,70 @@
 ++ Profiler
 ++ Locking Manager
 ++ Connection Profiler
+++ Internationalization with I18n
+
+Doctrine_I18n is a plugin for Doctrine that provides internationalization support for record classes. In the following example we have a NewsItem class with two fields 'title' and 'content'. We want to have the field 'title' with different languages support. This can be achieved as follows:
+
+<code type="php">
+class NewsItem extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('title', 'string', 200);
+        $this->hasColumn('content', 'string');
+    }
+
+    public function setUp()
+    {
+        $this->actAs('I18n', array('fields' => array('title')));
+    }
+}
+</code>
++++ Creating the I18n table
+
+The I18n table can be created as follows:
+
+<code type="php">
+$conn->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);
+
+$conn->export->exportClasses(array('NewsItem'));
+</code>
+
+The following code example executes two sql statements. When using mysql those statements would look like:
+
+<code>
+CREATE TABLE news_item (id INT NOT NULL AUTO_INCREMENT, title VARCHAR(200), content TEXT)
+CREATE TABLE news_item_translation (id INT NOT NULL, title VARCHAR(200), lang VARCHAR(20))
+</code>
+
++++ Using I18n
+
+In the following example we add some data with finnish and english translations:
+
+<code type="php">
+$item = new NewsItem();
+$item->title = 'Some title';
+$item->content = 'This is some content. This field is not being translated.';
+
+$item->Translation['FI']->title = 'Joku otsikko';
+$item->Translation['FI']->lang = 'FI';
+
+$item->save();
+</code>
+
+Now lets find all items and their finnish translations:
+
+<code type="php">
+$items = Doctrine_Query::create()
+         ->from('NewsItem n')
+         ->leftJoin('n.Translation t INDEXBY t.lang')
+         ->where('t.lang = ?')
+         ->execute(array('FI'));
+
+$items[0]->Translation['FI']->title; // 'joku otsikko'
+</code>
+
+
 ++ AuditLog and versioning
 Doctrine_AuditLog provides a full versioning solution. Lets say we have a NewsItem class that we want to be versioned. This functionality can be applied by simply adding $this->actAs('Versionable') into your record setup. 
 
@@ -30,6 +94,22 @@ Now when we have defined this record to be versionable, Doctrine does internally
 * Everytime a NewsItem object is deleted / updated the previous version is stored into news_item_version
 * Everytime a NewsItem object is updated its version number is increased.
 
++++ Creating the version table
+
+As with all other plugins, the plugin-table, in this case the table that holds the different versions, can be created by enabling Doctrine::EXPORT_PLUGINS. The easiest way to set this is by setting the value of Doctrine::ATTR_EXPORT to Doctrine::EXPORT_ALL. The following example shows the usage:
+
+<code type="php">
+$conn->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);
+
+$conn->export->exportClasses(array('NewsItem'));
+</code>
+
+The following code example executes two sql statements. When using mysql those statements would look like:
+
+<code>
+CREATE TABLE news_item (id INT NOT NULL AUTO_INCREMENT, title VARCHAR(200), content TEXT, version INTEGER)
+CREATE TABLE news_item_version (id INT NOT NULL, title VARCHAR(200), content TEXT, version INTEGER)
+</code>
 
 +++ Using versioning
 
