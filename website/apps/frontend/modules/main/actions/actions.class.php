@@ -32,4 +32,9 @@ class mainActions extends sfActions
   {
     $this->redirect('http://phpdoctrine.net/trac');
   }
+  
+  public function executeTrac_register()
+  {
+    $this->redirect('http://phpdoctrine.net/trac/register');
+  }
 }

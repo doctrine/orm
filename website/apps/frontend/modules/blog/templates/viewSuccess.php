@@ -1,4 +1,7 @@
+<?php use_helper('Date'); ?>
+
 <h1><?php echo $blogPost->getName(); ?></h1>
+<h3>Posted <?php echo distance_of_time_in_words(strtotime($blogPost->getCreatedAt())); ?> ago.</h3>
 
 <p><?php echo $blogPost->getBody(); ?></p>
 

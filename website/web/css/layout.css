@@ -140,6 +140,12 @@ body
   padding-top: 8px;
 }
 
+#wrapper #footer h1 a
+{
+  text-decoration: underline;
+  color: white;
+}
+
 #right div
 {
   margin-bottom: 10px;

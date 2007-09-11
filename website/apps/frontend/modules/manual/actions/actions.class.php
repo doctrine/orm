@@ -291,7 +291,7 @@ class manualActions extends sfActions
 
                     $this->renderer->setOptions(array(
                         'section'    => $section,
-                        'url_prefix' => 'manual/',
+                        'url_prefix' => '?chapter=',
                         'title'      => $title
                     ));
 

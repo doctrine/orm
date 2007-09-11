@@ -3,6 +3,10 @@ homepage:
   url:   /
   param: { module: main, action: index }
 
+trac_register:
+  url:   /trac/register
+  param: { module: main, action: trac_register }
+
 blog:
   url:   /blog
   param: { module: blog, action: index }
