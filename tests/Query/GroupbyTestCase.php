@@ -38,6 +38,6 @@ class Doctrine_Query_Groupby_TestCase extends Doctrine_UnitTestCase
         
         $q->parseQuery('SELECT u.name, COUNT(p.id) count FROM User u LEFT JOIN u.Phonenumber p GROUP BY count');
         
-        $this->assertEqual($q->getQuery(), '');
+        $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, COUNT(p.id) AS p__0 FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0) GROUP BY p__0');
     }
 }

@@ -30,8 +30,18 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
 {
+    /**
+    public function testParseSelect()
+    {
+    	$q = new Doctrine_Query();
+
+        $q->select('TRIM(u.name) name')->from('User u');
+
+        $q->execute();
+    }
+
     public function testAggregateFunctionParsingSupportsMultipleComponentReferences()
     {
         $q = new Doctrine_Query();
@@ -70,7 +80,7 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($q->getQuery(), 'SELECT COUNT(DISTINCT e.name) AS e__0 FROM entity e WHERE (e.type = 0)');
     }
-    
+
     public function testAggregateFunction() 
     {
         $q = new Doctrine_Query();
@@ -88,7 +98,8 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($q->getQuery(), 'SELECT MAX(e.id) AS e__0, MIN(e.name) AS e__1 FROM entity e WHERE (e.type = 0)');
     }
-    public function testMultipleAggregateFunctionsWithMultipleComponents() 
+
+    public function testMultipleAggregateFunctionsWithMultipleComponents()
     {
         $q = new Doctrine_Query();
 
@@ -96,7 +107,8 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($q->getQuery(), 'SELECT MAX(e.id) AS e__0, MIN(e.name) AS e__1, COUNT(p.id) AS p__2 FROM entity e LEFT JOIN phonenumber p ON e.id = p.entity_id WHERE (e.type = 0)');
     }
-    public function testEmptySelectPart() 
+
+    public function testEmptySelectPart()
     {
         $q = new Doctrine_Query();
         
@@ -108,34 +120,35 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
             $this->pass();
         }
     }
+            */
     public function testUnknownAggregateFunction() 
     {
         $q = new Doctrine_Query();
         
         try {
-            $q->parseQuery('SELECT UNKNOWN(u.id) FROM User');
+            $q->parseQuery('SELECT UNKNOWN(u.id) FROM User u');
             
             $q->getQuery();
             $this->fail();
         } catch(Doctrine_Query_Exception $e) {
             $this->pass();
         }
-
     }
+
     public function testAggregateFunctionValueHydration()
     {
         $q = new Doctrine_Query();
 
-        $q->parseQuery('SELECT u.id, COUNT(p.id) FROM User u LEFT JOIN u.Phonenumber p GROUP BY u.id');
+        $q->parseQuery('SELECT u.id, u.name, COUNT(p.id) FROM User u LEFT JOIN u.Phonenumber p GROUP BY u.id');
 
-        $users = $q->execute();
+        $users = $q->execute(array(), Doctrine::FETCH_ARRAY);
 
-        $this->assertEqual($users[0]->Phonenumber[0]->COUNT, 1);
+        $this->assertEqual($users[0]['Phonenumber'][0]['COUNT'], 1);
 
-        $this->assertEqual($users[1]->Phonenumber[0]->COUNT, 3);
-        $this->assertEqual($users[2]->Phonenumber[0]->COUNT, 1);
-        $this->assertEqual($users[3]->Phonenumber[0]->COUNT, 1);
-        $this->assertEqual($users[4]->Phonenumber[0]->COUNT, 3);
+        $this->assertEqual($users[1]['Phonenumber'][0]['COUNT'], 3);
+        $this->assertEqual($users[2]['Phonenumber'][0]['COUNT'], 1);
+        $this->assertEqual($users[3]['Phonenumber'][0]['COUNT'], 1);
+        $this->assertEqual($users[4]['Phonenumber'][0]['COUNT'], 3);
     }
 
     public function testSingleComponentWithAsterisk()
@@ -230,4 +243,5 @@ class Doctrine_Query_Select_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($users[3]->Phonenumber[0]->max, '111 222 333');
         $this->assertEqual($users[4]->Phonenumber[0]->max, '444 555');
     }
+
 }
