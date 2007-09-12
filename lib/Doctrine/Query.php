@@ -983,7 +983,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         if ( ! empty($sql)) {
             array_unshift($this->parts['select'], implode(', ', $sql));
         }
-        
+
         $this->pendingFields = array();
 
         // build the basic query
@@ -999,7 +999,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         
         // apply inheritance to WHERE part
         if ( ! empty($string)) {
-            $this->parts['where'][] = '(' . $string . ')';
+            if (substr($string, 0, 1) === '(' && substr($string, -1) === ')') {
+                $this->parts['where'][] = $string;                                                              	
+            } else {
+                $this->parts['where'][] = '(' . $string . ')';
+            }
         }
 
 
@@ -1417,13 +1421,15 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     $asf = $relation->getAssociationTable();
   
                     $assocTableName = $asf->getTableName();
-  
+
                     if ( ! $loadFields || ! empty($map) || $joinCondition) {
                         $this->subqueryAliases[] = $assocTableName;
                     }
 
                     $assocPath = $prevPath . '.' . $asf->getComponentName();
   
+                    $this->_aliasMap[$assocPath] = array('parent' => $prevPath, 'relation' => $relation, 'table' => $asf);
+
                     $assocAlias = $this->getTableAlias($assocPath, $asf->getTableName());
 
                     $queryPart = $join . $assocTableName . ' ' . $assocAlias;
