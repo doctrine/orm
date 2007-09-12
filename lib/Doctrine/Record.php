@@ -1513,15 +1513,14 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         static $methods = array();
         if ( isset( $methods[$method])) {
-            $methodArray = $methods[$method];
-            $template = $methodArray["template"];
+            $template = $methods[$method];
             $template->setInvoker($this);
-            return call_user_func_array( array( $template, $method ), $methodArray["args"]);
+            return call_user_func_array( array($template, $method ), $args);
         }
         foreach ($this->_table->getTemplates() as $template) {
             if (method_exists($template, $method)) {
                 $template->setInvoker($this);
-                $methods[$method] = array("template" => $template, "args" => $args);
+                $methods[$method] = $template;
                 
                 return call_user_func_array(array($template, $method), $args);
             }
