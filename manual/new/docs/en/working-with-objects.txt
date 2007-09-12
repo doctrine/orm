@@ -39,6 +39,9 @@ Another way to {{unlink}} the relationships between related objects is through t
 $user = $conn->getTable('User')->find(5);
 $user->unlink('Group', array(0, 1));
 $user->save();
+
+// you can also unlink ALL relationships to Group
+$user->unlink('Group');
 </code>
 
 While the obvious and convinient way of deleting a link between User and Group would be the following, you still should *NOT* do this:
