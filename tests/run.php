@@ -334,6 +334,7 @@ $cache->addTestCase(new Doctrine_Cache_Apc_TestCase());
 //$cache->addTestCase(new Doctrine_Cache_TestCase());
 $test->addTestCase($cache);
 
+$test->addTestCase(new Doctrine_Query_ApplyInheritance_TestCase());
 
 class CliReporter extends HtmlReporter{
     public function paintHeader(){
