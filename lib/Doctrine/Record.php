@@ -120,6 +120,12 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     private $_oid;
 
     /**
+     *  @var array $_methods                array that contains methods that are already checked for 
+     */
+
+    protected $_methods;
+
+    /**
      * constructor
      * @param Doctrine_Table|null $table       a Doctrine_Table object or null,
      *                                         if null the table object is retrieved from current connection
@@ -213,7 +219,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     { }
     /**
      * construct
-     * Empty tempalte method to provide concrete Record classes with the possibility
+     * Empty template method to provide concrete Record classes with the possibility
      * to hook into the constructor procedure
      *
      * @return void
@@ -1511,9 +1517,16 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function __call($method, $args) 
     {
+        if ( isset( $this->_methods[$method])) {
+            $methodArray = $this->_methods[$method];
+            $template = $methodArray["template"];
+            $template->setInvoker($this);
+            return call_user_func_array( array( $template, $method ), $methodArray["args"]);
+        }
         foreach ($this->_table->getTemplates() as $template) {
             if (method_exists($template, $method)) {
                 $template->setInvoker($this);
+                $this->_methods[$method] = array("template" => $template, "args" => $args);
                 
                 return call_user_func_array(array($template, $method), $args);
             }

@@ -69,6 +69,13 @@ class Doctrine_Template_TestCase extends Doctrine_UnitTestCase
 
         $this->assertTrue($user->Email[0] instanceof ConcreteEmail);
     }
+
+    public function testShouldCallMethodInTemplate()
+    {
+        $user = new ConcreteUser();
+        $this->assertEqual("foo", $user->foo());
+    }
+
 }
 
 // move these to ../templates?
@@ -86,6 +93,11 @@ class UserTemplate extends Doctrine_Template
                                                        'refClass' => 'GroupUserTemplate'));
         $this->hasMany('EmailTemplate as Email', array('local' => 'id',
                                                        'foreign' => 'user_id'));
+    }
+    
+    public function foo()
+    {
+        return "foo";
     }
 }
 class EmailTemplate extends Doctrine_Template

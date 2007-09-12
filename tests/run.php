@@ -310,7 +310,7 @@ $test->addTestCase(new Doctrine_Import_Schema_Xml_TestCase());
 $test->addTestCase(new Doctrine_Export_Schema_Yml_TestCase());
 $test->addTestCase(new Doctrine_Export_Schema_Xml_TestCase());
 
-//$test->addTestCase(new Doctrine_Template_TestCase());
+$test->addTestCase(new Doctrine_Template_TestCase());
 
 //$test->addTestCase(new Doctrine_Import_Builder_TestCase());
 
