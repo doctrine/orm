@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Doctrine_Ticket_Njero_TestCase
  *
@@ -64,10 +64,10 @@ class Doctrine_Ticket_Njero_TestCase extends Doctrine_UnitTestCase
       # $p = $q->from('PolicyN p')
       # this test passes, but there is another issue just not reflected in this test yet, see "in my app" note below
 
-      $p = $q->from('PolicyN p, p.RateN r, r.PolicyCodeN y, r.CoverageCodeN c, r.LiabilityCodeN l')
-             ->where('(p.id = ?)', array('1'))
-             ->execute()
-             ->getFirst();
+      $q->from('PolicyN p, p.RateN r, r.PolicyCodeN y, r.CoverageCodeN c, r.LiabilityCodeN l')
+        ->where('(p.id = ?)', array('1'));
+
+      $p = $q->execute()->getFirst();
 
       $this->assertEqual($p->rate_id, 1);
       $this->assertEqual($p->RateN->id, 1);
