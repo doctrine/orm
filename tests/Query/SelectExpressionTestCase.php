@@ -45,9 +45,10 @@ class Doctrine_Query_SelectExpression_TestCase extends Doctrine_UnitTestCase
         $query = new Doctrine_Query();
         $query->select('u.*, (u.id + u.id) addition');
         $query->from('User u');
-        
+
         try {
             $users = $query->execute();
+            $this->pass();
         } catch(Exception $e) {
             $this->fail();
         }
@@ -61,6 +62,7 @@ class Doctrine_Query_SelectExpression_TestCase extends Doctrine_UnitTestCase
         
         try {
             $users = $query->execute();
+            $this->pass();
         } catch(Exception $e) {
             $this->fail();
         }
@@ -74,6 +76,7 @@ class Doctrine_Query_SelectExpression_TestCase extends Doctrine_UnitTestCase
         
         try {
             $users = $query->execute();
+            $this->pass();
         } catch(Exception $e) {
             $this->fail();
         } 
@@ -87,6 +90,7 @@ class Doctrine_Query_SelectExpression_TestCase extends Doctrine_UnitTestCase
         
         try {
             $users = $query->execute();
+            $this->pass();
         } catch(Exception $e) {
             $this->fail();
         } 
@@ -101,6 +105,7 @@ class Doctrine_Query_SelectExpression_TestCase extends Doctrine_UnitTestCase
         
         try {
             $users = $query->execute();
+            $this->pass();
         } catch(Exception $e) {
             $this->fail();
         }
