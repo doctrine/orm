@@ -1,0 +1,84 @@
+---
+TestClass:
+  tableName: testTable
+  columns:
+    name: string(64)
+    description: string(8)
+    active: boolean
+User: 
+  tableName: user
+  columns: 
+    name:
+Group:
+  tableName: group
+  columns:
+    name:
+User2Group:
+  tableName: user2group
+  columns:
+    user_id: {foreignClass: User, localName: Groups, counterpart: group_id, cascadeDelete: true}
+    group_id: {foreignClass: Group, localName: Users, counterpart: user_id, cascadeDelete: true}
+Parent:
+  tableName: parent_table
+  columns:
+    dummy:
+ColAggregation:
+  inheritance: {extends: Parent, keyField: class_key, keyValue: 1}
+  columns:
+    last_active: timestamp
+SeparateTable:
+  tableName: separate_table
+  inheritance: {extends: Parent}
+  columns:
+    none:
+Review: 
+  tableName: reviews
+  columns: 
+    author_id: 
+      type: integer
+      size: 11
+      foreignReference: id
+      localName: Reviews
+      foreignName: author
+      foreignClass: User
+      counterpart: book_id
+    book_id: 
+      type: integer
+      size: 11
+      foreignReference: id
+      localName: Reviews
+      foreignClass: Book
+      counterpart: author_id
+Book: 
+  tableName: book
+  i18n: {class: BookI18n, cultureField: culture}
+  columns: 
+    author_id: 
+      localName: Books
+      foreignName: author
+      foreignClass: User
+    publication_date: date
+    lastviewed: timestamp
+    price: double(10)
+    edition: integer(11)
+    type: enum(5)
+    dimensions: 
+      type: array
+      size: 100
+BookI18n: 
+  tableName: book_i18n
+  columns: 
+    title: 
+Yin: 
+  tableName: yin
+  columns:
+    name:
+    yang_id: {foreignClass: Yang, unique: true}
+Yang:
+  tableName: yang
+  columns:
+    name:
+#Tone:
+#  inheritance: {extends: Ttwo}
+#Ttwo:
+#  inheritance: {extends: Tone}

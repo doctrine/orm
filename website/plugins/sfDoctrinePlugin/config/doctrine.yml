@@ -1,0 +1,22 @@
+all:
+
+  #doctrine attributes
+  attributes:
+
+    #automatic table creation (none, tables, constraints, all)
+    export:  all
+
+    #default fetch mode (immediate, batch, lazy, offset, lazy_offset)
+#    fetchmode:      immediate
+
+    #collection limit (integer 1+)
+#    coll_limit:     5
+
+    #global event listener
+#    listener: sfDoctrineEventListener
+
+    #enable doctrine side validation (true, false)
+    validate: false
+
+    # enable quoting
+    quote_identifier: false

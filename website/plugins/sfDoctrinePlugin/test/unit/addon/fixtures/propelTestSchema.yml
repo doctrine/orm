@@ -1,0 +1,26 @@
+---
+doctrineTestSchema: 
+  testTable: 
+    _attributes: 
+      idMethod: native
+    id: 
+      type: TINYINT
+      required: true
+      autoIncrement: true
+      primaryKey: true
+    name: 
+      type: VARCHAR
+      size: 64
+      required: true
+      default: 
+    description: 
+      type: VARCHAR
+      size: 8
+      required: true
+      default: 
+    dummy_id:
+      foreignTable: dummy
+      onDelete: cascade
+  dummy:
+    _attributes: {phpName: DummyPHP}
+    foo: integer(10)
