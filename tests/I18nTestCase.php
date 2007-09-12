@@ -37,11 +37,61 @@ class Doctrine_I18n_TestCase extends Doctrine_UnitTestCase
     { }
 
     public function prepareTables()
-    { 
-    	$this->profiler = new Doctrine_Connection_Profiler();
-    	$this->conn->addListener($this->profiler);
-        $this->tables = array('I18nTest', 'I18nTestTranslation');
-        
+    {
+        $this->tables = array();
+
         parent::prepareTables();
+    }
+
+    public function testTranslationTableGetsExported()
+    {
+    	$this->conn->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);
+    	
+    	$this->assertTrue(Doctrine::EXPORT_ALL & Doctrine::EXPORT_TABLES);
+        $this->assertTrue(Doctrine::EXPORT_ALL & Doctrine::EXPORT_CONSTRAINTS);
+        $this->assertTrue(Doctrine::EXPORT_ALL & Doctrine::EXPORT_PLUGINS);
+
+        $sql = $this->conn->export->exportClassesSql(array('I18nTest'));
+
+        foreach ($sql as $query) {
+            $this->conn->exec($query);
+        }
+    }
+
+    public function testTranslationTableIsInitializedProperly()
+    {
+        $i = new I18nTest();
+
+        $i->name = 'some name';
+        $i->title = 'some title';
+        $this->assertEqual($i->Translation->getTable()->getComponentName(), 'I18nTestTranslation');
+
+
+        $i->Translation['FI']->name = 'joku nimi';
+        $i->Translation['FI']->title = 'joku otsikko';
+        $i->Translation['FI']->lang = 'FI';
+
+        $i->save();
+
+        $this->conn->clear();
+
+        $t = Doctrine_Query::create()->from('I18nTestTranslation')->fetchOne();
+
+        $this->assertEqual($t->name, 'joku nimi');
+        $this->assertEqual($t->title, 'joku otsikko');
+        $this->assertEqual($t->lang, 'FI');
+
+    }
+
+    public function testDataFetching()
+    {
+        $i = Doctrine_Query::create()->from('I18nTest i')->innerJoin('i.Translation t INDEXBY t.lang')->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
+
+        $this->assertEqual($i['name'], 'some name');
+        $this->assertEqual($i['title'], 'some title');
+
+        $this->assertEqual($i['Translation']['FI']['name'], 'joku nimi');
+        $this->assertEqual($i['Translation']['FI']['title'], 'joku otsikko');
+        $this->assertEqual($i['Translation']['FI']['lang'], 'FI');
     }
 }
