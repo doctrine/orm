@@ -793,6 +793,13 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user->Group[0]->identifier(), $group1->identifier());
         $this->assertEqual($user->Group[1]->identifier(), $group2->identifier());
 
+        $user->unlink('Group');
+        $user->save();
+        unset($user);
+
+        $user = $this->objTable->find(5);
+        $this->assertEqual($user->Group->count(), 0);
+
 
         // ACCESSING ASSOCIATION OBJECT PROPERTIES
 

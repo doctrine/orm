@@ -1456,12 +1456,13 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     /**
      * removeLinks
      * removes links from this record to given records
+     * if no ids are given, it removes all links
      *
      * @param string $alias     related component alias
      * @param array $ids        the identifiers of the related records
      * @return Doctrine_Record  this object
      */
-    public function unlink($alias, $ids)
+    public function unlink($alias, $ids = array())
     {
         $ids = (array) $ids;
         
@@ -1472,8 +1473,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         if ($rel instanceof Doctrine_Relation_Association) {
             $q->delete()
               ->from($rel->getAssociationTable()->getComponentName())
-              ->where($rel->getLocal() . ' = ?', array_values($this->identifier()))
-              ->whereIn($rel->getForeign(), $ids);
+              ->where($rel->getLocal() . ' = ?', array_values($this->identifier()));
+
+            if (count($ids) > 0) {
+                $q->whereIn($rel->getForeign(), $ids);
+            }
 
             $q->execute();
 
@@ -1481,8 +1485,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         } elseif ($rel instanceof Doctrine_Relation_ForeignKey) {
             $q->update($rel->getTable()->getComponentName())
               ->set($rel->getForeign(), '?', array(null))
-              ->addWhere($rel->getForeign() . ' = ?', array_values($this->identifier()))
-              ->whereIn($rel->getTable()->getIdentifier(), $ids);
+              ->addWhere($rel->getForeign() . ' = ?', array_values($this->identifier()));
+
+            if (count($ids) > 0) {
+                $q->whereIn($rel->getTable()->getIdentifier(), $ids);
+            }
 
             $q->execute();
         }
