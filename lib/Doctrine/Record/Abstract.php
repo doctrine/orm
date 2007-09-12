@@ -246,13 +246,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function loadTemplate($template, array $options = array())
     {
-        $tpl = new $template($options);
-        $tpl->setTable($this->_table);
-
-        $tpl->setUp();
-
-        $tpl->setTableDefinition();
-        return $this;
+        $this->actAs($template, $options);
     }
     /**
      * actAs
