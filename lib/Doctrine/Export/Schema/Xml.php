@@ -41,24 +41,7 @@ class Doctrine_Export_Schema_Xml extends Doctrine_Export_Schema
      */
     public function build($array)
     {
-        $xml = new SimpleXMLElement();
-        
-        foreach ($array as $tableName => $fields) {
-            $table = $xml->addChild('table');
-            $name = $table->addChild('name', $tableName);
-            $declaration = $table->addChild('declaration');
-            
-            foreach ($fields as $fieldName => $properties) {
-                $field = $declaration->addChild('field');
-                $field->addChild('name', $fieldName);
-                
-                foreach ($properties as $key => $value) {
-                    $field->addChild($key, $value);
-                }
-            }
-        }
-        
-        return $xml->asXml();
+        return Doctrime_Parser::dump($array, null, 'xml');
     }
     
     /**

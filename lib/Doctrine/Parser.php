@@ -54,4 +54,24 @@ abstract class Doctrine_Parser
         
         return $parser->dumpData($array, $path);
     }
+    
+    static public function loadXml($path)
+    {
+        return self::load($path, 'xml');
+    }
+    
+    static public function dumpXml($array, $path = null)
+    {
+        return self::dump($array, $path, 'xml');
+    }
+    
+    static public function loadYml($path)
+    {
+        return self::load($path, 'yml');
+    }
+    
+    static public function dumpYml($array, $path = null)
+    {
+        return self::dump($array, $path, 'yml');
+    }
 }
