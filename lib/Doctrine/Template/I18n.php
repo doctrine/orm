@@ -31,9 +31,22 @@
  */
 class Doctrine_Template_I18n extends Doctrine_Template
 {
+    protected $_translation;
+
+
     public function __construct(array $options)
     {
         $this->_plugin = new Doctrine_I18n($options);
+    }
+    /**
+     * translation
+     * sets or retrieves the current translation language
+     *
+     * @return Doctrine_Record      this object
+     */
+    public function translation($language = null)
+    {
+        $this->_translation = $language;
     }
     public function setUp()
     {
