@@ -297,20 +297,20 @@ print_r($dbs);
 +++ Listing sequences
 
 <code type="php">
-$seqs = $conn->export->listSequences('events_db');
+$seqs = $conn->import->listSequences('events_db');
 print_r($seqs);
 </code>
 
 +++ Listing constraints
 
 <code type="php">
-$cons = $conn->export->listTableConstraints('event_participants');
+$cons = $conn->import->listTableConstraints('event_participants');
 </code>
 
 +++ Listing table fields
 
 <code type="php">
-$fields = $conn->export->listTableFields('events');
+$fields = $conn->import->listTableFields('events');
 print_r($fields);
 /*
 prints:
@@ -325,7 +325,7 @@ Array
 
 +++ Listing table indices
 <code type="php">
-$idx = $conn->export->listTableIndexes('events');
+$idx = $conn->import->listTableIndexes('events');
 print_r($idx);
 /*
 prints:
@@ -339,7 +339,7 @@ Array
 +++ Listing tables
 
 <code type="php">
-$tables = $conn->export->listTables();
+$tables = $conn->import->listTables();
 print_r($tables);
 /*
 prints:
@@ -358,11 +358,11 @@ Array
 // currently there is no method to create a view,
 // so let's do it "manually"
 $sql = "CREATE VIEW names_only AS SELECT name FROM people";
-$conn->export->exec($sql);
+$conn->exec($sql);
 $sql = "CREATE VIEW last_ten_events AS SELECT * FROM events ORDER BY id DESC LIMIT 0,10";
-$conn->export->exec($sql);
+$conn->exec($sql);
 // list views
-$views = $conn->export->listViews();
+$views = $conn->import->listViews();
 print_r($views);
 /*
 prints:
