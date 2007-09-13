@@ -1,0 +1,30 @@
+---
+tables:
+  user:
+    name: user
+    class: User
+    declaration:
+      id:
+        name: id
+        type: integer
+        notnull: true
+        autoincrement: true
+      username:
+        name: username
+        type: string
+        length: 20
+        notnull: true
+  group:
+    name: group
+    class: Group
+    declaration:
+      id:
+        name: id
+        type: integer
+        notnull: true
+        autoincrement: true
+      name:
+        name: name
+        type: string
+        length: 20
+        notnull: true
