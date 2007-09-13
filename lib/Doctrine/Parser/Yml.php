@@ -1,5 +1,5 @@
 <?php
-if (!class_exists('Spyc')) {
+if (!class_exists('Spyc') AND !class_exists('YAMLNode')) {
     require_once('spyc.php');
 }
 
