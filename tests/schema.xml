@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <schema>
   <tables>
-      <table>
+      <user>
           <name>user</name>
           <class>User</class>
           <columns>
@@ -18,9 +18,9 @@
                   <notnull>true</notnull>
               </column>
           </columns>
-      </table>
+      </user>
 
-      <table>
+      <group>
           <name>group</name>
           <class>Group</class>
           <columns>
@@ -37,6 +37,6 @@
                   <notnull>true</notnull>
               </column>
           </columns>
-      </table>
+      </group>
   </tables>
 </schema>

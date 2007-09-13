@@ -124,8 +124,7 @@ abstract class Doctrine_Export_Schema
         // and currently declared classes
         foreach ($tables as $name) {
             $class = new ReflectionClass($name);
-            $conn  = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
-
+            
             // check if class is an instance of Doctrine_Record and not abstract
             // class must have method setTableDefinition (to avoid non-Record subclasses like symfony's sfDoctrineRecord)
             // we have to recursively iterate through the class parents just to be sure that the classes using for example
@@ -154,6 +153,12 @@ abstract class Doctrine_Export_Schema
             $table = array();
             $table['name'] = $data['tableName'];
             $table['class'] = get_class($record);
+            
+            foreach ($data['columns'] AS $name => $column)
+            {
+                $data['columns'][$name]['name'] = $name;
+            }
+            
             $table['columns'] = $data['columns'];
             
             $array['tables'][$data['tableName']] = $table;
