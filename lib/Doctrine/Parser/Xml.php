@@ -31,26 +31,27 @@
  */
 class Doctrine_Parser_Xml extends Doctrine_Parser
 {
-    public function arrayToXml($array)
+    public function arrayToXml($data, $rootNodeName = 'data', $xml = null)
     {
-        $this->text  = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>";
-        
-        $this->text .= $this->arrayTransform($array);
-        
-        return $this->text;
-    }
+    	if ($xml === null) {
+    		$xml = new SimpleXmlElement("<?xml version=\"1.0\" encoding=\"utf-8\"?><$rootNodeName/>");
+    	}
+    	
+    	foreach($data as $key => $value)
+    	{
+    		if (is_array($value)) {
+    			$node = $xml->addChild($key);
+    			
+    			$this->arrayToXml($value, $rootNodeName, $node);
+    		} else {
+                $value = htmlentities($value);
+                
+    			$xml->addChild($key, $value);
+    		}
 
-    public function arrayTransform($array)
-    {
-        foreach ($array as $key => $value) {
-            if (!is_array($value)) {
-                $this->text .= "<$key>$value</$key>";
-            } else {
-                $this->text.="<$key>";
-                $this->arrayTransform($value);
-                $this->text.="</$key>";
-            }
-        }
+    	}
+    	
+    	return $xml->asXML();
     }
     
     public function dumpData($array, $path = null)

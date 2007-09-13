@@ -41,22 +41,6 @@ class Doctrine_Export_Schema_Xml extends Doctrine_Export_Schema
      */
     public function build($array)
     {
-        return Doctrime_Parser::dump($array, null, 'xml');
-    }
-    
-    /**
-     * dump
-     * 
-     * Dump the array to the schema file
-     *
-     * @param string $array
-     * @param string $schema
-     * @return void
-     */
-    public function dump($array, $schema)
-    {
-        $xml = $this->build($array);
-        
-        file_put_contents($schema, $xml);
+        return Doctrine_Parser::dumpXml($array, null);
     }
 }

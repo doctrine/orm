@@ -52,26 +52,25 @@ class Doctrine_Import_Schema_Xml extends Doctrine_Import_Schema
     {        
         $xmlObj = $this->parse($schema);
         
-        // Go through all tables...
-        foreach ($xmlObj->table as $table) {
+        foreach ($xmlObj->tables->table as $table) {
             $columns = array();
             
             // Go through all columns... 
-            foreach ($table->declaration->field as $field) {
+            foreach ($table->columns as $column) {
                 $colDesc = array(
-                    'name'      => (string) $field->name,
-                    'type'      => (string) $field->type,
-                    'ptype'     => (string) $field->type,
-                    'length'    => (int) $field->length,
-                    'fixed'     => (int) $field->fixed,
-                    'unsigned'  => (bool) $field->unsigned,
-                    'primary'   => (bool) (isset($field->primary) && $field->primary),
-                    'default'   => (string) $field->default,
-                    'notnull'   => (bool) (isset($field->notnull) && $field->notnull),
-                    'autoinc'   => (bool) (isset($field->autoincrement) && $field->autoincrement),
+                    'name'      => (string) $column->name,
+                    'type'      => (string) $column->type,
+                    'ptype'     => (string) $column->type,
+                    'length'    => (int) $column->length,
+                    'fixed'     => (int) $column->fixed,
+                    'unsigned'  => (bool) $column->unsigned,
+                    'primary'   => (bool) (isset($column->primary) && $column->primary),
+                    'default'   => (string) $column->default,
+                    'notnull'   => (bool) (isset($column->notnull) && $column->notnull),
+                    'autoinc'   => (bool) (isset($column->autoincrement) && $column->autoincrement),
                 );
             
-                $columns[(string) $field->name] = $colDesc;
+                $columns[(string) $column->name] = $colDesc;
             }
             
             $class = $table->class ? (string) $table->class:(string) $table->name;

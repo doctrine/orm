@@ -41,22 +41,6 @@ class Doctrine_Export_Schema_Yml extends Doctrine_Export_Schema
      */
     public function build($array)
     {
-        return Doctrime_Parser::dump($array, null, 'yml');
-    }
-    
-    /**
-     * dump
-     * 
-     * Dump the array to the schema file
-     *
-     * @param string $arr 
-     * @param string $schema
-     * @return void
-     */
-    public function dump($arr, $schema)
-    {
-        $yml = $this->build($array);
-        
-        file_put_contents($schema, $yml);
+        return Doctrine_Parser::dumpYml($array, null);
     }
 }

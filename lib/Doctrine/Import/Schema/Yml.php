@@ -51,12 +51,12 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
     public function parseSchema($schema)
     {
         $array = $this->parse($schema);
+        $tables = $array['schema']['tables'];
         
-        // Go through all tables...
-        foreach ($array['tables'] as $table) {
+        foreach ($tables as $table) {
             $columns = array();
             
-            foreach ($table['declaration'] as $field) {
+            foreach ($table['columns'] as $field) {
                 $colDesc = array(
                     'name'      => isset($field['name']) ? (string) $field['name']:null,
                     'type'      => isset($field['type']) ? (string) $field['type']:null,

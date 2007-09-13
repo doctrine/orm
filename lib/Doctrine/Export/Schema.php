@@ -57,7 +57,49 @@ abstract class Doctrine_Export_Schema
      * @param string $schema
      * @return void
      */
-    abstract function dump($array, $schema);
+    public function dump($array, $schema)
+    {
+        $data = $this->build($array);
+        
+        file_put_contents($schema, $data);
+    }
+    
+    public function getDirectoryTables($directory)
+    {
+        $parent = new ReflectionClass('Doctrine_Record');
+        
+        $declared = get_declared_classes();
+        
+        if ($directory !== null) {
+            foreach ((array) $directory as $dir) {
+                $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
+                                                    RecursiveIteratorIterator::LEAVES_ONLY);
+                
+                foreach ($it as $file) {
+                    $e = explode('.', $file->getFileName());
+                    
+                    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
+                        require_once $file->getPathName();
+                    }
+                }
+            }
+            
+            $declared = get_declared_classes();
+            
+            $tables = array();
+            foreach($declared as $name)
+            {
+                $class = new ReflectionClass($name);
+                
+                if ($class->isSubclassOf($parent) AND !$class->isAbstract()) {
+                    $tables[$name] = $name;
+                }
+                
+            }
+            
+            return $tables;
+        }
+    }
     
     /**
      * buildSchema
@@ -69,8 +111,55 @@ abstract class Doctrine_Export_Schema
      */
     public function buildSchema($directory)
     {
-        // we need to figure out how we can build all the model information for the passed directory/directories
-        return array();
+        $array = array('tables' => array());
+        
+        $tables = $this->getDirectoryTables($directory);
+        
+        $parent = new ReflectionClass('Doctrine_Record');
+
+        $sql = array();
+        $fks = array();
+
+        // we iterate trhough the diff of previously declared classes
+        // and currently declared classes
+        foreach ($tables as $name) {
+            $class = new ReflectionClass($name);
+            $conn  = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
+
+            // check if class is an instance of Doctrine_Record and not abstract
+            // class must have method setTableDefinition (to avoid non-Record subclasses like symfony's sfDoctrineRecord)
+            // we have to recursively iterate through the class parents just to be sure that the classes using for example
+            // column aggregation inheritance are properly exported to database
+            while ($class->isAbstract() ||
+                   ! $class->isSubclassOf($parent) ||
+                   ! $class->hasMethod('setTableDefinition') ||
+                   ( $class->hasMethod('setTableDefinition') &&
+                     $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() !== $class->getName())) {
+
+                $class = $class->getParentClass();
+                if ($class === false) {
+                    break;
+                }
+            }
+
+            if ($class === false) {
+                continue;
+            }
+
+            $record = new $name();
+            $table  = $record->getTable();
+            
+            $data = $table->getExportableFormat();
+            
+            $table = array();
+            $table['name'] = $data['tableName'];
+            $table['class'] = get_class($record);
+            $table['columns'] = $data['columns'];
+            
+            $array['tables'][$data['tableName']] = $table;
+        }
+        
+        return $array;
     }
     
     /**
@@ -84,6 +173,6 @@ abstract class Doctrine_Export_Schema
     {
         $array = $this->buildSchema($directory);
         
-        $this->dump($arr, $schema);
+        return $this->dump($array, $schema);
     }
 }
