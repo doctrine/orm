@@ -38,22 +38,7 @@
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
-{
-    /**
-     * parse
-     *
-     * @param string $schema 
-     * @return void
-     */
-    public function parse($schema)
-    {
-        if ( ! is_readable($schema)) {
-            throw new Doctrine_Import_Exception('Could not read schema file '. $schema);
-        }
-
-        return array();
-    }
-    
+{    
     /**
      * parseSchema
      *
@@ -64,36 +49,37 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
      * @return array
      */
     public function parseSchema($schema)
-    { 
+    {
         $array = $this->parse($schema);
-          
-        $tables = array();
         
-        // Not working yet
-        /*
         // Go through all tables...
-        foreach ($array['table'] as $table) {
-            // Go through all columns... 
-            foreach ($table['declaration']['field'] as $field) {
+        foreach ($array['tables'] as $table) {
+            $columns = array();
+            
+            foreach ($table['declaration'] as $field) {
                 $colDesc = array(
-                    'name'      => (string) $field['name'],
-                    'type'      => (string) $field['type'],
-                    'ptype'     => (string) $field['type'],
-                    'length'    => (int) $field['length'],
-                    'fixed'     => (int) $field['fixed'],
-                    'unsigned'  => (bool) $field['unsigned'],
-                    'primary'   => (bool) (isset($field['primary']) && $field['primary']),
-                    'default'   => (string) $field['default'],
-                    'notnull'   => (bool) (isset($field['notnull']) && $field['notnull']),
-                    'autoinc'   => (bool) (isset($field['autoincrement']) && $field['autoincrement']),
+                    'name'      => isset($field['name']) ? (string) $field['name']:null,
+                    'type'      => isset($field['type']) ? (string) $field['type']:null,
+                    'ptype'     => isset($field['type']) ? (string) $field['type']:null,
+                    'length'    => isset($field['length']) ? (int) $field['length']:null,
+                    'fixed'     => isset($field['fixed']) ? (int) $field['fixed']:null,
+                    'unsigned'  => isset($field['unsigned']) ? (bool) $field['unsigned']:null,
+                    'primary'   => isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null,
+                    'default'   => isset($field['default']) ? (string) $field['default']:null,
+                    'notnull'   => isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null,
+                    'autoinc'   => isset($field['autoincrement']) ? (bool) (isset($field['autoincrement']) && $field['autoincrement']):null,
                 );
             
                 $columns[(string) $field['name']] = $colDesc;
             }
             
-            $tables[(string) $table['name']] = $columns;
+            $class = $table['class'] ? (string) $table['class']:(string) $table['name'];
+
+            $tables[(string) $table['name']]['name'] = (string) $table['name'];
+            $tables[(string) $table['name']]['class'] = (string) $class;
+
+            $tables[(string) $table['name']]['columns'] = $columns;
         }
-        */
         
         return $tables;
     }

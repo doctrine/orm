@@ -38,26 +38,7 @@
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Doctrine_Import_Schema_Xml extends Doctrine_Import_Schema
-{
-    /**
-     * parse
-     *
-     * @param string $schema 
-     * @return void
-     */
-    public function parse($schema)
-    {
-        if ( ! is_readable($schema)) {
-            throw new Doctrine_Import_Exception('Could not read schema file '. $schema);
-        }
-        
-        if ( ! ($xmlString = file_get_contents($schema))) {
-            throw new Doctrine_Import_Exception('Schema file '. $schema . ' is empty');
-        }
-        
-        return simplexml_load_string($xmlString);
-    }
-    
+{    
     /**
      * parseSchema
      *
@@ -73,6 +54,8 @@ class Doctrine_Import_Schema_Xml extends Doctrine_Import_Schema
         
         // Go through all tables...
         foreach ($xmlObj->table as $table) {
+            $columns = array();
+            
             // Go through all columns... 
             foreach ($table->declaration->field as $field) {
                 $colDesc = array(

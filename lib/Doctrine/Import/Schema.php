@@ -38,7 +38,15 @@
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 abstract class Doctrine_Import_Schema
-{
+{    
+    /**
+     * Parse the schema and return it in an array
+     *
+     * @param  string $schema
+     * @access public
+     */
+    abstract function parseSchema($schema);
+    
     /**
      * parse
      *
@@ -48,17 +56,14 @@ abstract class Doctrine_Import_Schema
      * @return void
      * @author Jonathan H. Wage
      */
-    
-    abstract function parse($schema);
-    
-    /**
-     * Parse the schema and return it in an array
-     *
-     * @param  string $schema
-     * @access public
-     */
-    abstract function parseSchema($schema);
-    
+     public function parse($schema)
+     {
+         $class = get_class($this);
+         $type = strtolower(str_replace('Doctrine_Import_Schema_', '', $class));
+         
+         return Doctrine_Parser::load($schema, $type);
+     }
+     
     /**
      * importSchema
      *
