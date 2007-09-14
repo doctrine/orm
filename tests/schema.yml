@@ -1,31 +1,48 @@
 ---
-schema:
-  tables:
-    user:
-      name: user
-      class: User
-      columns:
-        id:
-          name: id
-          type: integer
-          notnull: true
-          autoincrement: true
-        username:
-          name: username
-          type: string
-          length: 20
-          notnull: true
-    group:
-      name: group
-      class: Group
-      columns:
-        id:
-          name: id
-          type: integer
-          notnull: true
-          autoincrement: true
-        name:
-          name: name
-          type: string
-          length: 20
-          notnull: true
+user:
+  tableName: user
+  className: User
+  columns:
+    id:
+      type: integer
+      autoincrement: true
+    username:
+      type: string
+      length: 11
+
+user_group:
+  tableName: user_group
+  className: UserGroup
+  columns:
+    user_id:
+      type: int
+      length: 11
+      foreignClass: User
+      foreignReference: id
+      localClass: Group
+      localName: Groups
+      foreignName: User
+      primary: true
+      counterpart: group_id
+    group_id:
+      type: int
+      length: 11
+      foreignClass: Group
+      foreignReference: id
+      localClass: User
+      localName: Users
+      foreignName: Group
+      primary: true
+      counterpart: user_id
+      
+
+group:
+  tableName: group
+  className: Group
+  columns:
+    id:
+      type: integer
+      autoincrement: true
+    name:
+      type: string
+      length: 255
