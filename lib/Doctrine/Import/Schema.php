@@ -38,7 +38,9 @@
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 abstract class Doctrine_Import_Schema
-{    
+{
+    public $relationColumns = array();
+    
     /**
      * Parse the schema and return it in an array
      *
@@ -78,16 +80,55 @@ abstract class Doctrine_Import_Schema
     {
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
-
-        $array = $this->parseSchema($schema);
+        
+        $array = array();
+        foreach ((array) $schema AS $s) {
+            $array = array_merge($array, $this->parseSchema($s));
+        }
+        
+        $this->buildRelations($array);
         
         foreach ($array as $name => $properties) {
-            $options['className'] = $properties['class'];
-            $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['class'].'.class.php';
+            $options = array();
+            $options['className'] = $properties['className'];
+            $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['className'].'.class.php';
             
             $columns = $properties['columns'];
             
-            $builder->buildRecord($options, $columns, array());
+            $relations = isset($this->relations[$options['className']]) ? $this->relations[$options['className']]:array();
+            
+            $builder->buildRecord($options, $columns, $relations);
         }
-    }    
+    }  
+    
+    public function buildRelations($array)
+    {
+        foreach($array AS $name => $properties) {
+            $className = $properties['className'];     
+            $columns = $properties['columns'];
+                   
+            foreach ($columns as $column) {
+                if ($this->isRelation($column)) {
+                    $this->addRelationColumn($className, $column);
+                }
+            }
+        }
+        
+        $this->processRelationships();
+    }
+    
+    public function isRelation($column)
+    {
+        return isset($column['foreignClass']) && isset($column['foreignReference']);
+    }
+    
+    public function addRelationColumn($className, $column)
+    {
+        $this->relationColumns[$className][] = $column;
+    }
+    
+    public function processRelationships()
+    {
+        
+    }
 }

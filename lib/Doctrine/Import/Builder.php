@@ -167,6 +167,7 @@ END;
     {
         $ret = array();
         $i = 0;
+        
         foreach ($relations as $name => $relation) {
             $alias = (isset($relation['alias']) && $relation['alias'] !== $name) ? ' as ' . $relation['alias'] : '';
 
@@ -180,31 +181,43 @@ END;
             } else {
                 $ret[$i] = '        $this->hasMany(\'' . $name . $alias . '\'';
             }
+            
             $a = array();
 
+            if (isset($relation['refClass'])) {
+                $a[] = '\'refClass\' => ' . var_export($relation['refClass'], true);
+            }
+            
             if (isset($relation['deferred']) && $relation['deferred']) {
                 $a[] = '\'default\' => ' . var_export($relation['deferred'], true);
             }
+            
             if (isset($relation['local']) && $relation['local']) {
                 $a[] = '\'local\' => ' . var_export($relation['local'], true);
             }
+            
             if (isset($relation['foreign']) && $relation['foreign']) {
                 $a[] = '\'foreign\' => ' . var_export($relation['foreign'], true);
             }
+            
             if (isset($relation['onDelete']) && $relation['onDelete']) {
                 $a[] = '\'onDelete\' => ' . var_export($relation['onDelete'], true);
             }
+            
             if (isset($relation['onUpdate']) && $relation['onUpdate']) {
                 $a[] = '\'onUpdate\' => ' . var_export($relation['onUpdate'], true);
             }
+            
             if ( ! empty($a)) {
                 $ret[$i] .= ', ' . 'array(';
                 $length = strlen($ret[$i]);
                 $ret[$i] .= implode(',' . PHP_EOL . str_repeat(' ', $length), $a) . ')';
             }
+            
             $ret[$i] .= ');';
             $i++;
         }
+        
         return implode("\n", $ret);
     }
     

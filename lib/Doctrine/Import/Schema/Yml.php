@@ -51,34 +51,40 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
     public function parseSchema($schema)
     {
         $array = $this->parse($schema);
-        $tables = $array['schema']['tables'];
-        
-        foreach ($tables as $table) {
+        foreach ($array as $tableName => $table) {
             $columns = array();
             
-            foreach ($table['columns'] as $field) {
-                $colDesc = array(
-                    'name'      => isset($field['name']) ? (string) $field['name']:null,
-                    'type'      => isset($field['type']) ? (string) $field['type']:null,
-                    'ptype'     => isset($field['type']) ? (string) $field['type']:null,
-                    'length'    => isset($field['length']) ? (int) $field['length']:null,
-                    'fixed'     => isset($field['fixed']) ? (int) $field['fixed']:null,
-                    'unsigned'  => isset($field['unsigned']) ? (bool) $field['unsigned']:null,
-                    'primary'   => isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null,
-                    'default'   => isset($field['default']) ? (string) $field['default']:null,
-                    'notnull'   => isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null,
-                    'autoinc'   => isset($field['autoincrement']) ? (bool) (isset($field['autoincrement']) && $field['autoincrement']):null,
-                );
+            $tableName = isset($table['tableName']) ? (string) $table['tableName']:(string) $tableName;
+            $className = isset($table['className']) ? (string) $table['className']:(string) $tableName;
             
-                $columns[(string) $field['name']] = $colDesc;
+            foreach ($table['columns'] as $columnName => $field) {
+                
+                $colDesc = array();
+                $colDesc['name'] = isset($field['name']) ? (string) $field['name']:$columnName;
+                $colDesc['type'] = isset($field['type']) ? (string) $field['type']:null;
+                $colDesc['ptype'] = isset($field['ptype']) ? (string) $field['ptype']:(string) $colDesc['type'];
+                $colDesc['length'] = isset($field['length']) ? (int) $field['length']:null;
+                $colDesc['fixed'] = isset($field['fixed']) ? (int) $field['fixed']:null;
+                $colDesc['unsigned'] = isset($field['unsigned']) ? (bool) $field['unsigned']:null;
+                $colDesc['primary'] = isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null;
+                $colDesc['default'] = isset($field['default']) ? (string) $field['default']:null;
+                $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
+                $colDesc['autoinc'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):null;
+                $colDesc['foreignClass'] = isset($field['foreignClass']) ? (string) $field['foreignClass']:null;
+                $colDesc['foreignReference'] = isset($field['foreignReference']) ? (string) $field['foreignReference']:null;
+                $colDesc['localName'] = isset($field['localName']) ? (string) $field['localName']:null;
+                $colDesc['foreignName'] = isset($field['foreignName']) ? (string) $field['foreignName']:null;
+                $colDesc['counterpart'] = isset($field['counterpart']) ? (string) $field['counterpart']:null;
+                $colDesc['onDelete'] = isset($field['onDelete']) ? (string) $field['onDelete']:null;
+                $colDesc['onUpdate'] = isset($field['onUpdate']) ? (string) $field['onUpdate']:null;
+                
+                $columns[(string) $colDesc['name']] = $colDesc;
             }
-            
-            $class = $table['class'] ? (string) $table['class']:(string) $table['name'];
 
-            $tables[(string) $table['name']]['name'] = (string) $table['name'];
-            $tables[(string) $table['name']]['class'] = (string) $class;
+            $tables[$tableName]['tableName'] = $tableName;
+            $tables[$tableName]['className'] = $className;
 
-            $tables[(string) $table['name']]['columns'] = $columns;
+            $tables[$tableName]['columns'] = $columns;
         }
         
         return $tables;

@@ -304,11 +304,10 @@ $test->addTestCase(new Doctrine_RawSql_TestCase());
 
 $test->addTestCase(new Doctrine_NewCore_TestCase());
 
-
+//$test->addTestCase(new Doctrine_Import_Schema_Xml_TestCase());
+//$test->addTestCase(new Doctrine_Export_Schema_Xml_TestCase());
 $test->addTestCase(new Doctrine_Import_Schema_Yml_TestCase());
-$test->addTestCase(new Doctrine_Import_Schema_Xml_TestCase());
 $test->addTestCase(new Doctrine_Export_Schema_Yml_TestCase());
-$test->addTestCase(new Doctrine_Export_Schema_Xml_TestCase());
 
 $test->addTestCase(new Doctrine_Template_TestCase());
 

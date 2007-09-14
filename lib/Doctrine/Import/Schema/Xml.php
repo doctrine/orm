@@ -52,7 +52,7 @@ class Doctrine_Import_Schema_Xml extends Doctrine_Import_Schema
     {        
         $xmlObj = $this->parse($schema);
         
-        foreach ($xmlObj->tables->table as $table) {
+        foreach ($xmlObj->tables as $table) {
             $columns = array();
             
             // Go through all columns... 
