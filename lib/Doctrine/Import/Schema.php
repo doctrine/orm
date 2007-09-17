@@ -103,7 +103,7 @@ abstract class Doctrine_Import_Schema
     
     public function buildRelationships($array)
     {
-        foreach($array as $name => $properties) {
+        foreach ($array as $name => $properties) {
             $className = $properties['className'];     
             $relations = $properties['relations'];
             
@@ -114,6 +114,13 @@ abstract class Doctrine_Import_Schema
                 $relation['class'] = $class;
                 
                 $this->relations[$className][$class] = $relation;
+            }
+        }
+        
+        // Fix the other end of the relations
+        foreach($this->relations as $className => $relations) {
+            foreach ($relations AS $alias => $relation) {
+                
             }
         }
     }
