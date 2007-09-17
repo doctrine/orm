@@ -371,7 +371,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
             case 'varchar':
             case 'gzip':
                 // TODO: what is the maximum VARCHAR length in pgsql ?
-                $length = (isset($field['length']) && $field['length'] && ! ($field['length'] > 1000000)) ? $field['length'] : null;
+                $length = (isset($field['length']) && $field['length'] && $field['length'] < 10000) ? $field['length'] : null;
 
                 $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
 
