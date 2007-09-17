@@ -51,6 +51,7 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
     public function parseSchema($schema)
     {
         $array = $this->parse($schema);
+        
         foreach ($array as $tableName => $table) {
             $columns = array();
             
@@ -70,13 +71,6 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
                 $colDesc['default'] = isset($field['default']) ? (string) $field['default']:null;
                 $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
                 $colDesc['autoinc'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):null;
-                $colDesc['foreignClass'] = isset($field['foreignClass']) ? (string) $field['foreignClass']:null;
-                $colDesc['foreignReference'] = isset($field['foreignReference']) ? (string) $field['foreignReference']:null;
-                $colDesc['localName'] = isset($field['localName']) ? (string) $field['localName']:null;
-                $colDesc['foreignName'] = isset($field['foreignName']) ? (string) $field['foreignName']:null;
-                $colDesc['counterpart'] = isset($field['counterpart']) ? (string) $field['counterpart']:null;
-                $colDesc['onDelete'] = isset($field['onDelete']) ? (string) $field['onDelete']:null;
-                $colDesc['onUpdate'] = isset($field['onUpdate']) ? (string) $field['onUpdate']:null;
                 
                 $columns[(string) $colDesc['name']] = $colDesc;
             }
@@ -85,6 +79,7 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
             $tables[$tableName]['className'] = $className;
 
             $tables[$tableName]['columns'] = $columns;
+            $tables[$tableName]['relations'] = isset($table['relations']) ? $table['relations']:array();
         }
         
         return $tables;

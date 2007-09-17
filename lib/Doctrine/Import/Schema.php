@@ -39,7 +39,7 @@
  */
 abstract class Doctrine_Import_Schema
 {
-    public $relationColumns = array();
+    public $relations = array();
     
     /**
      * Parse the schema and return it in an array
@@ -86,7 +86,7 @@ abstract class Doctrine_Import_Schema
             $array = array_merge($array, $this->parseSchema($s));
         }
         
-        $this->buildRelations($array);
+        $this->buildRelationships($array);
         
         foreach ($array as $name => $properties) {
             $options = array();
@@ -101,34 +101,20 @@ abstract class Doctrine_Import_Schema
         }
     }  
     
-    public function buildRelations($array)
+    public function buildRelationships($array)
     {
         foreach($array AS $name => $properties) {
             $className = $properties['className'];     
-            $columns = $properties['columns'];
-                   
-            foreach ($columns as $column) {
-                if ($this->isRelation($column)) {
-                    $this->addRelationColumn($className, $column);
-                }
+            $relations = $properties['relations'];
+            
+            foreach ($relations AS $alias => $relation) {
+                $class = isset($relation['class']) ? $relation['class']:$alias;
+                
+                $relation['alias'] = $alias;
+                $relation['class'] = $class;
+                
+                $this->relations[$className][$class] = $relation;
             }
         }
-        
-        $this->processRelationships();
-    }
-    
-    public function isRelation($column)
-    {
-        return isset($column['foreignClass']) && isset($column['foreignReference']);
-    }
-    
-    public function addRelationColumn($className, $column)
-    {
-        $this->relationColumns[$className][] = $column;
-    }
-    
-    public function processRelationships()
-    {
-        
     }
 }
