@@ -103,11 +103,11 @@ abstract class Doctrine_Import_Schema
     
     public function buildRelationships($array)
     {
-        foreach($array AS $name => $properties) {
+        foreach($array as $name => $properties) {
             $className = $properties['className'];     
             $relations = $properties['relations'];
             
-            foreach ($relations AS $alias => $relation) {
+            foreach ($relations as $alias => $relation) {
                 $class = isset($relation['class']) ? $relation['class']:$alias;
                 
                 $relation['alias'] = $alias;
