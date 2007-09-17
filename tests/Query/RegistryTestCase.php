@@ -30,8 +30,14 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Query_Registry_TestCase
+class Doctrine_Query_Registry_TestCase extends Doctrine_UnitTestCase
 {
+    public function prepareTables()
+    { 
+        $this->tables = array('User');
+    }
+    public function prepareData()
+    { }
     public function testAddingQueries()
     {
         $registry = new Doctrine_Query_Registry();
@@ -39,5 +45,17 @@ class Doctrine_Query_Registry_TestCase
         $registry->add('all-users', 'SELECT u.* FROM User u');
 
         $this->assertEqual($registry->get('all-users')->getDql(), 'SELECT u.* FROM User u');
+    }
+    public function testAddingQueriesWithNamespaces()
+    {
+        $registry = new Doctrine_Query_Registry();
+
+        $registry->add('User/all', 'SELECT u.* FROM User u');
+
+        $this->assertEqual($registry->get('all', 'User')->getDql(), 'SELECT u.* FROM User u');
+        
+        $user = new User();
+        
+        $user->fetch('all');
     }
 }
