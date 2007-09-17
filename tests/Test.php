@@ -42,7 +42,7 @@ class GroupTest extends UnitTestCase
             }
             try{
                 $testCase->run();
-            }catch(Exception $e){
+            } catch(Exception $e) {
                 $this->_failed += 1;
                 $this->_messages[] = "Unexpected exception thrown with message [" . $e->getMessage() . "] in " . get_class($testCase) . " on line " . $e->getLine();
             }
