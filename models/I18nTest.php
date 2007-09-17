@@ -8,6 +8,6 @@ class I18nTest extends Doctrine_Record
     }
     public function setUp()
     {
-        $this->actAs('I18n');
+        $this->actAs('I18n', array("fields" => array("name", "title")));
     }
 }
