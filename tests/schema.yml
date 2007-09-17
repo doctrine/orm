@@ -22,13 +22,9 @@ UserGroup:
       length: 11
   relations:
     User:
-      class: User
-      alias: User
       foreign: id
       local: user_id
     Group:
-      class: Group
-      alias: Group
       foreign: id
       local: group_id
 
