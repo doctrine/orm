@@ -368,15 +368,15 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
             case 'string':
             case 'array':
             case 'object':
-            case 'varchar':   
+            case 'varchar':
             case 'gzip':
-                $length = (isset($field['length']) && $field['length']) ? $field['length'] : null;
-                        // TODO:  $this->conn->options['default_text_field_length'];
+                // TODO: what is the maximum VARCHAR length in pgsql ?
+                $length = (isset($field['length']) && $field['length'] && ! ($field['length'] > 1000000)) ? $field['length'] : null;
 
                 $fixed  = ((isset($field['fixed']) && $field['fixed']) || $field['type'] == 'char') ? true : false;
 
-                return $fixed ? ($length ? 'CHAR('.$length.')' : 'CHAR('.$this->conn->options['default_text_field_length'].')')
-                    : ($length ? 'VARCHAR('.$length.')' : 'TEXT');
+                return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR('.$this->conn->options['default_text_field_length'].')')
+                    : ($length ? 'VARCHAR(' .$length . ')' : 'TEXT');
 
             case 'clob':
                 return 'TEXT';
