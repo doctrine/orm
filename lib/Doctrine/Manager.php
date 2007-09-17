@@ -34,30 +34,29 @@
 class Doctrine_Manager extends Doctrine_Configurable implements Countable, IteratorAggregate
 {
     /**
-     * @var array $connections      an array containing all the opened connections
+     * @var array $connections          an array containing all the opened connections
      */
     protected $_connections   = array();
     /**
-     * @var array $bound            an array containing all components that have a bound connection
+     * @var array $bound                an array containing all components that have a bound connection
      */
     protected $_bound         = array();
     /**
-     * @var integer $index          the incremented index
+     * @var integer $index              the incremented index
      */
     protected $_index         = 0;
     /**
-     * @var integer $currIndex      the current connection index
+     * @var integer $currIndex          the current connection index
      */
     protected $_currIndex     = 0;
     /**
-     * @var string $root            root directory
+     * @var string $root                root directory
      */
     protected $_root;
     /**
-     * @var array $_integrityActions    an array containing all registered integrity actions
-     *                                  used when emulating these actions
+     * @var Doctrine_Query_Registry     the query registry
      */
-    protected $_integrityActions = array();
+    protected $_queryRegistry;
     
     protected static $driverMap = array('oci' => 'oracle');
     /**
@@ -70,30 +69,6 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         $this->_root = dirname(__FILE__);
 
         Doctrine_Object::initNullObject(new Doctrine_Null);
-    }
-    public function addDeleteAction($componentName, $foreignComponent, $action)
-    {
-        $this->_integrityActions[$componentName]['onDelete'][$foreignComponent] = $action;
-    }
-    public function addUpdateAction($componentName, $foreignComponent, $action)
-    {
-        $this->_integrityActions[$componentName]['onUpdate'][$foreignComponent] = $action;
-    }
-    public function getDeleteActions($componentName)
-    {
-        if ( ! isset($this->_integrityActions[$componentName]['onDelete'])) {
-            return null;
-        }
-        
-        return $this->_integrityActions[$componentName]['onDelete'];
-    }
-    public function getUpdateActions($componentName)
-    {
-        if ( ! isset($this->_integrityActions[$componentName]['onUpdate'])) {
-            return null;
-        }
-        
-        return $this->_integrityActions[$componentName]['onUpdate'];
     }
     /**
      * setDefaultAttributes
@@ -156,6 +131,21 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         return $instance;
     }
+
+    /**
+     * getQueryRegistry
+     * lazy-initializes the query registry object and returns it
+     *
+     * @return Doctrine_Query_Registry
+     */
+    public function getQueryRegistry()
+    {
+    	if ( ! isset($this->_queryRegistry)) {
+    	   $this->_queryRegistry = new Doctrine_Query_Registry;                                    	
+    	}
+        return $this->_queryRegistry;
+    }
+
     /**
      * connection
      *
