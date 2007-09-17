@@ -1,5 +1,5 @@
 ---
-user:
+User:
   tableName: user
   className: User
   columns:
@@ -10,33 +10,29 @@ user:
       type: string
       length: 11
 
-user_group:
+UserGroup:
   tableName: user_group
   className: UserGroup
   columns:
     user_id:
       type: int
       length: 11
-      foreignClass: User
-      foreignReference: id
-      localClass: Group
-      localName: Groups
-      foreignName: User
-      primary: true
-      counterpart: group_id
     group_id:
       type: int
       length: 11
-      foreignClass: Group
-      foreignReference: id
-      localClass: User
-      localName: Users
-      foreignName: Group
-      primary: true
-      counterpart: user_id
-      
+  relations:
+    User:
+      class: User
+      alias: User
+      foreign: id
+      local: user_id
+    Group:
+      class: Group
+      alias: Group
+      foreign: id
+      local: group_id
 
-group:
+Group:
   tableName: group
   className: Group
   columns:
