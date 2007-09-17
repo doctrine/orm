@@ -1401,9 +1401,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function fetch($queryKey, $params = array())
     {
-        return $this->_manager->getQueryRegistry()
-                              ->get($queryKey)
-                              ->execute($params);
+        return Doctrine_Manager::getInstance()
+                            ->getQueryRegistry()
+                            ->get($queryKey, $this->_table->getComponentName())
+                            ->execute($params);
     }
 
     /**

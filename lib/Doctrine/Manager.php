@@ -141,9 +141,22 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function getQueryRegistry()
     {
     	if ( ! isset($this->_queryRegistry)) {
-    	   $this->_queryRegistry = new Doctrine_Query_Registry;                                    	
+    	   $this->_queryRegistry = new Doctrine_Query_Registry;
     	}
         return $this->_queryRegistry;
+    }
+    
+    /**
+     * setQueryRegistry
+     * sets the query registry
+     *
+     * @return Doctrine_Manager     this object
+     */
+    public function getQueryRegistry(Doctrine_Query_Registry $registry)
+    {
+        $this->_queryRegistry = $registry;
+        
+        return $this;
     }
 
     /**
