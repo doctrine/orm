@@ -111,15 +111,16 @@ class Doctrine_Relation_Parser
         }
 
         $this->_pending[$alias] = array_merge($options, array('class' => $name, 'alias' => $alias));
-
+        /**
         $m = Doctrine_Manager::getInstance();
-        
+
         if (isset($options['onDelete'])) {
             $m->addDeleteAction($name, $this->_table->getComponentName(), $options['onDelete']);
         }
         if (isset($options['onUpdate'])) {
             $m->addUpdateAction($name, $this->_table->getComponentName(), $options['onUpdate']);
         }
+        */
 
         return $this->_pending[$alias];
     }
