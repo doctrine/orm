@@ -40,7 +40,12 @@ class GroupTest extends UnitTestCase
             if ( ! $this->shouldBeRun($testCase, $filter)) {
                 continue;
             }
-            $testCase->run();
+            try{
+                $testCase->run();
+            }catch(Exception $e){
+                $this->_failed += 1;
+                $this->_messages[] = "Unexpected exception thrown with message [" . $e->getMessage() . "] in " . get_class($testCase) . " on line " . $e->getLine();
+            }
             $this->_passed += $testCase->getPassCount();
             $this->_failed += $testCase->getFailCount();
             $this->_messages = array_merge($this->_messages, $testCase->getMessages());
