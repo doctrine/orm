@@ -39,15 +39,12 @@ $reporter = new Doctrine_Coverage_Report("coverage.txt");
 <?php
 
 if (isset($_GET["file"])){
-     if (strpos($_GET["file"], "Doctrine") === false) {
-        echo "trying something fishy?";
-        exit(0);
-    }
     echo '<h1>Coverage for ' . $_GET["file"] . '</h1>';
     echo '<a href="cc.php">Back to coverage report</a>';
+    echo "<br>detailed view down atm <br> Will be up later on<br>";
    
 
-    $reporter->showFile($_GET["file"]);
+   // $reporter->showFile($_GET["file"]);
 } else {
 ?>
     <h1>Coverage report for Doctrine</h1>
