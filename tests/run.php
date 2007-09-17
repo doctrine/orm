@@ -223,12 +223,13 @@ $data_types->addTestCase(new Doctrine_DataType_Boolean_TestCase());
 $test->addTestCase($data_types);
 
 // Utility components
-$utility = new GroupTest('Utility tests: View, Validator, Hook');
+$plugins = new GroupTest('Plugin tests: View, Validator, Hook');
 //$utility->addTestCase(new Doctrine_PessimisticLocking_TestCase());
-$utility->addTestCase(new Doctrine_View_TestCase());
-$utility->addTestCase(new Doctrine_Validator_TestCase());
-$utility->addTestCase(new Doctrine_Hook_TestCase());
-$test->addTestCase($utility);
+$plugins->addTestCase(new Doctrine_View_TestCase());
+$plugins->addTestCase(new Doctrine_Validator_TestCase());
+$plugins->addTestCase(new Doctrine_Hook_TestCase());
+$plugins->addTestCase(new Doctrine_I18n_TestCase());
+$test->addTestCase($plugins);
 
 // Db component
 $db = new GroupTest('Db tests: Db and Profiler');
@@ -274,6 +275,7 @@ $query_tests->addTestCase(new Doctrine_Query_MysqlSubquery_TestCase());
 $query_tests->addTestCase(new Doctrine_Query_PgsqlSubquery_TestCase());
 $query_tests->addTestCase(new Doctrine_Query_MysqlSubqueryHaving_TestCase());
 $query_tests->addTestCase(new Doctrine_Query_SelectExpression_TestCase());
+$query_tests->addTestCase(new Doctrine_Query_Registry_TestCase());
 $test->addTestCase($query_tests);
 
 // Record
