@@ -13,4 +13,34 @@
 ++ ORDER BY clause
 ++ LIMIT and OFFSET clauses
 ++ Examples
+++ The Query Registry
+Doctrine_Query_Registry is a class for registering and naming queries. It helps with the organization of your applications queries and along with that it offers some very nice convenience stuff.
+
+The queries are added using the add() method of the registry object. It takes two parameters, the query name and the actual DQL query.
+
+<code type="php">
+$r = Doctrine_Manager::getInstance()->getQueryRegistry();
+
+$r->add('all-users', 'FROM User u');
+</code>
+
++++ Namespaces
+
+The Query registry supports namespaces. The namespace is separated from the actual name with / -mark. If the name of the namespace is a record name the given record has all the named queries availible in its local scope.
+
+<code type="php">
+$r = Doctrine_Manager::getInstance()->getQueryRegistry();
+
+$r->add('User/all', 'FROM User u');
+$r->add('User/byName', 'FROM User u WHERE u.name = ?');
+
+$user = new User();
+
+// fetch the user named Jack Daniels
+$user = $user->fetchOne('byName', array('Jack Daniels'));
+
+// fetch all users
+$users = $user->fetch('all');
+</code>
+
 ++ BNF
