@@ -36,11 +36,11 @@ $r->add('User/byName', 'FROM User u WHERE u.name = ?');
 
 $user = new User();
 
-// fetch the user named Jack Daniels
-$user = $user->fetchOne('byName', array('Jack Daniels'));
+// find the user named Jack Daniels
+$user = $user->findOne('byName', array('Jack Daniels'));
 
-// fetch all users
-$users = $user->fetch('all');
+// find all users
+$users = $user->find('all');
 </code>
 
 ++ BNF
