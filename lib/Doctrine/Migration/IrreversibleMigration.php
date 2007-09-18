@@ -29,6 +29,6 @@
  * @since       1.0
  * @version     $Revision: 1080 $
  */
-class Doctrine_Migration_IrreversibleMigration extends Doctrine_Migration_Exception
+class Doctrine_Migration_IrreversibleMigrationException extends Doctrine_Migration_Exception
 {
 }
