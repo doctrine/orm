@@ -1399,7 +1399,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param array $params         prepared statement params (if any)
      * @return mixed                the fetched data
      */
-    public function fetch($queryKey, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
+    public function find($queryKey, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
     {
         return Doctrine_Manager::getInstance()
                             ->getQueryRegistry()
@@ -1418,7 +1418,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param array $params         prepared statement params (if any)
      * @return mixed                the fetched data
      */
-    public function fetchOne($queryKey, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
+    public function findOne($queryKey, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
     {
         return Doctrine_Manager::getInstance()
                             ->getQueryRegistry()

@@ -158,7 +158,44 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         
         return $this;
     }
-
+    /**
+     * fetch
+     * fetches data using the provided queryKey and 
+     * the associated query in the query registry
+     *
+     * if no query for given queryKey is being found a 
+     * Doctrine_Query_Registry exception is being thrown
+     *
+     * @param string $queryKey      the query key
+     * @param array $params         prepared statement params (if any)
+     * @return mixed                the fetched data
+     */
+    public function find($queryKey, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
+    {
+        return Doctrine_Manager::getInstance()
+                            ->getQueryRegistry()
+                            ->get($queryKey)
+                            ->execute($params, $hydrationMode);
+    }
+    /**
+     * fetchOne
+     * fetches data using the provided queryKey and 
+     * the associated query in the query registry
+     *
+     * if no query for given queryKey is being found a 
+     * Doctrine_Query_Registry exception is being thrown
+     *
+     * @param string $queryKey      the query key
+     * @param array $params         prepared statement params (if any)
+     * @return mixed                the fetched data
+     */
+    public function findOne($queryKey, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
+    {
+        return Doctrine_Manager::getInstance()
+                            ->getQueryRegistry()
+                            ->get($queryKey)
+                            ->fetchOne($params, $hydrationMode);
+    }
     /**
      * connection
      *
