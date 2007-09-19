@@ -493,7 +493,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         unset($vars['_table']);
         unset($vars['_errorStack']);
         unset($vars['_filter']);
-        unset($vars['_modified']);
         unset($vars['_node']);
 
         $name = $this->_table->getIdentifier();
