@@ -334,7 +334,6 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {
                 case 'add':
-                case 'remove':
                 case 'change':
                 case 'rename':
                 case 'name':
@@ -360,16 +359,6 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
                     $query.= ', ';
                 }
                 $query.= 'ADD ' . $this->getDeclaration($field['type'], $fieldName, $field);
-            }
-        }
-
-        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
-            foreach ($changes['remove'] as $fieldName => $field) {
-                if ($query) {
-                    $query .= ', ';
-                }
-                $fieldName = $this->conn->quoteIdentifier($fieldName);
-                $query .= 'DROP ' . $fieldName;
             }
         }
 
