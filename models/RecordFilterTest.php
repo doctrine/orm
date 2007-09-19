@@ -1,8 +1,8 @@
 <?php
-class RecordFilterTest extends Doctrine_Record {
-    public function setTableDefinition() {
-
-        $this->setAttribute(Doctrine::ATTR_ACCESSORS, Doctrine::ACCESSOR_BOTH);
+class RecordFilterTest extends Doctrine_Record 
+{
+	public function setTableDefinition()
+    {
 
         $this->hasColumn("name", "string", 200);
         $this->hasColumn("password", "string", 32);
