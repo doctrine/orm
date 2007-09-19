@@ -1033,37 +1033,11 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportClassesSql(array $classes)
     {
-        $parent = new ReflectionClass('Doctrine_Record');
-
+        $models = Doctrine::getLoadedModels($classes);
+        
         $sql = array();
-        $fks = array();
-
-        // we iterate trhough the diff of previously declared classes
-        // and currently declared classes
-        foreach ($classes as $name) {
-            $class = new ReflectionClass($name);
-            $conn  = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
-
-            // check if class is an instance of Doctrine_Record and not abstract
-            // class must have method setTableDefinition (to avoid non-Record subclasses like symfony's sfDoctrineRecord)
-            // we have to recursively iterate through the class parents just to be sure that the classes using for example
-            // column aggregation inheritance are properly exported to database
-            while ($class->isAbstract() ||
-                   ! $class->isSubclassOf($parent) ||
-                   ! $class->hasMethod('setTableDefinition') ||
-                   ( $class->hasMethod('setTableDefinition') &&
-                     $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() !== $class->getName())) {
-
-                $class = $class->getParentClass();
-                if ($class === false) {
-                    break;
-                }
-            }
-
-            if ($class === false) {
-                continue;
-            }
-
+        
+        foreach ($models as $name) {
             $record = new $name();
             $table  = $record->getTable();
             
@@ -1080,7 +1054,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 $sql = array_merge($sql, $this->exportPluginsSql($table));
             }
         }
+        
         $sql = array_unique($sql);
+        
         rsort($sql);
 
         return $sql;
@@ -1131,24 +1107,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportSql($directory = null)
     {
-        $declared = get_declared_classes();
+        $models = Doctrine::loadModels($directory);
 
-           if ($directory !== null) {
-               foreach ((array) $directory as $dir) {
-                $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
-                                                        RecursiveIteratorIterator::LEAVES_ONLY);
-
-                foreach ($it as $file) {
-                    $e = explode('.', $file->getFileName());
-                    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                        require_once $file->getPathName();
-                    }
-                }
-            }
-            $declared = array_diff(get_declared_classes(), $declared);
-        }
-
-        return $this->exportClassesSql($declared);
+        return $this->exportClassesSql($models);
     }
     /**
      * exportTable
