@@ -325,4 +325,96 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
 
         return 'DROP TABLE ' . $sequenceName;
     }
+    
+    public function alterTableSql($name, array $changes, $check = false)
+    {
+        if ( ! $name) {
+            throw new Doctrine_Export_Exception('no valid table name specified');
+        }
+        foreach ($changes as $changeName => $change) {
+            switch ($changeName) {
+                case 'add':
+                case 'remove':
+                case 'change':
+                case 'rename':
+                case 'name':
+                    break;
+                default:
+                    throw new Doctrine_Export_Exception('change type "' . $changeName . '" not yet supported');
+            }
+        }
+
+        if ($check) {
+            return true;
+        }
+
+        $query = '';
+        if ( ! empty($changes['name'])) {
+            $change_name = $this->conn->quoteIdentifier($changes['name']);
+            $query .= 'RENAME TO ' . $change_name;
+        }
+
+        if ( ! empty($changes['add']) && is_array($changes['add'])) {
+            foreach ($changes['add'] as $fieldName => $field) {
+                if ($query) {
+                    $query.= ', ';
+                }
+                $query.= 'ADD ' . $this->getDeclaration($field['type'], $fieldName, $field);
+            }
+        }
+
+        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
+            foreach ($changes['remove'] as $fieldName => $field) {
+                if ($query) {
+                    $query .= ', ';
+                }
+                $fieldName = $this->conn->quoteIdentifier($fieldName);
+                $query .= 'DROP ' . $fieldName;
+            }
+        }
+
+        $rename = array();
+        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
+            foreach ($changes['rename'] as $fieldName => $field) {
+                $rename[$field['name']] = $fieldName;
+            }
+        }
+
+        if ( ! empty($changes['change']) && is_array($changes['change'])) {
+            foreach ($changes['change'] as $fieldName => $field) {
+                if ($query) {
+                    $query.= ', ';
+                }
+                if (isset($rename[$fieldName])) {
+                    $oldFieldName = $rename[$fieldName];
+                    unset($rename[$fieldName]);
+                } else {
+                    $oldFieldName = $fieldName;
+                }
+                $oldFieldName = $this->conn->quoteIdentifier($oldFieldName, true);
+                $query .= 'CHANGE ' . $oldFieldName . ' ' 
+                        . $this->getDeclaration($field['definition']['type'], $fieldName, $field['definition']);
+            }
+        }
+
+        if ( ! empty($rename) && is_array($rename)) {
+            foreach ($rename as $renameName => $renamedField) {
+                if ($query) {
+                    $query.= ', ';
+                }
+                $field = $changes['rename'][$renamedField];
+                $renamedField = $this->conn->quoteIdentifier($renamedField, true);
+                $query .= 'CHANGE ' . $renamedField . ' '
+                        . $this->getDeclaration($field['definition']['type'], $field['name'], $field['definition']);
+            }
+        }
+
+        if ( ! $query) {
+            return false;
+        }
+
+        $name = $this->conn->quoteIdentifier($name, true);
+        
+        return 'ALTER TABLE ' . $name . ' ' . $query;
+    }
 }

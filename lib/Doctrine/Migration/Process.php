@@ -37,7 +37,7 @@ class Doctrine_Migration_Process
     }
     
     public function processCreatedTables($tables)
-    {   
+    {
         foreach ($tables as $table) {
             $conn = $this->getConnection($table['tableName']);
             
@@ -94,7 +94,7 @@ class Doctrine_Migration_Process
             $options = $column['options'];
             $options['type'] = $column['type'];
             
-            $conn->export->alterTable($column['tableName'], array('change' => array($column['oldColumnName'] => array('definition' => $options))), true);
+            $conn->export->alterTable($column['tableName'], array('change' => array($column['columnName'] => array('definition' => $options))), true);
         }  
     }
     

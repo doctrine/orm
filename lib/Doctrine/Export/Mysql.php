@@ -267,7 +267,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      *                           actually perform them otherwise.
      * @return boolean
      */
-    public function alterTableSql($name, array $changes, $check)
+    public function alterTableSql($name, array $changes, $check = false)
     {
         if ( ! $name) {
             throw new Doctrine_Export_Exception('no valid table name specified');
@@ -355,7 +355,8 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
 
         $name = $this->conn->quoteIdentifier($name, true);
-        return $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
+        
+        return 'ALTER TABLE ' . $name . ' ' . $query;
     }
     /**
      * create sequence

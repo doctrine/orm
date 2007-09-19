@@ -182,7 +182,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
      * @throws Doctrine_Connection_Exception
      * @return boolean
      */
-    public function alterTable($name, array $changes, $check)
+    public function alterTable($name, array $changes, $check = false)
     {
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {

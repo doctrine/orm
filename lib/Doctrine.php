@@ -465,6 +465,8 @@ final class Doctrine
     /**
      * getLoadedModels
      *
+     * Get all the loaded models, you can provide an array of classes or it will use get_declared_classes()
+     * 
      * @package default
      * @author Jonathan H. Wage
      */
@@ -507,12 +509,21 @@ final class Doctrine
         
         return $loadedModels;
     }
-    public function getConnectionByTableName($tableName)
+    /**
+     * getConnectionByTableName
+     *
+     * Get the connection object for a table by the actual table name
+     * 
+     * @param string $tableName 
+     * @return void
+     * @author Jonathan H. Wage
+     */
+    public static function getConnectionByTableName($tableName)
     {
-        $loadedModels = Doctrine::getLoadedModels();
+        $loadedModels = self::getLoadedModels();
         
         foreach ($loadedModels AS $name) {
-            $model = new $model();
+            $model = new $name();
             $table = $model->getTable();
             
             if ($table->getTableName() == $tableName) {

@@ -300,7 +300,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
      *                             actually perform them otherwise.
      * @return void
      */
-    public function alterTable($name, array $changes, $check)
+    public function alterTable($name, array $changes, $check = false)
     {
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {

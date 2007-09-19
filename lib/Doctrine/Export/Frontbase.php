@@ -157,7 +157,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
      *
      * @return boolean
      */
-    public function alterTable($name, array $changes, $check)
+    public function alterTable($name, array $changes, $check = false)
     {
         foreach ($changes as $changeName => $change) {
             switch ($changeName) {

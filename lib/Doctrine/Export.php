@@ -547,9 +547,13 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *                             actually perform them otherwise.
      * @return void
      */
-    public function alterTable($name, array $changes, $check)
+    public function alterTable($name, array $changes, $check = false)
     {
-        $this->conn->execute($this->alterTableSql($name, $changes, $check));
+        $sql = $this->alterTableSql($name, $changes, $check);
+        
+        if (is_string($sql) && $sql) {
+            $this->conn->execute($sql);
+        }
     }
     /**
      * generates the sql for altering an existing table
@@ -563,7 +567,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * @see Doctrine_Export::alterTable()
      * @return string
      */
-    public function alterTableSql($name, array $changes, $check)
+    public function alterTableSql($name, array $changes, $check = false)
     {
         throw new Doctrine_Export_Exception('Alter table not supported by this driver.');
     }
