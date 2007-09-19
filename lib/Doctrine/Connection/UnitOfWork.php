@@ -194,8 +194,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             if ($record->hasReference($alias)) {
                 $obj = $record->$alias;
                 
-                // check that the related object is either an instance of Doctrine_Record or an instance of Doctrine_Collection
-                if ($obj instanceof Doctrine_Record || $obj instanceof Doctrine_Collection) {
+                // check that the related object is not an instance of Doctrine_Null
+                if ( ! ($obj instanceof Doctrine_Null)) {
                     $obj->save($conn);
                 }
             }
