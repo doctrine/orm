@@ -36,7 +36,7 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase
     { }
     public function prepareTables() 
     { 
-        $this->tables = array('gnatUser','Email','Entity','Record_City', 'Record_Country', 'SelfRefTest');
+        $this->tables = array('gnatUser','gnatEmail','Email','Entity','Record_City', 'Record_Country', 'SelfRefTest');
         
         parent::prepareTables();
     }
@@ -90,14 +90,14 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase
     {
         $user = new gnatUser();
         $user->name = "test";
-        $email = new Email();
-        $email->address = "test@test.com";
+        $email = new gnatEmail();
+        $email->address = "test3@test.com";
         $user->Email = $email;
         $user->save();
-        $this->assertTrue($user->Email instanceOf Email);
-        $this->assertTrue($user->email_id != 0);
-        $this->assertTrue($user->email_id != null);
-        $this->assertTrue($user->email_id == $user->Email->id);
+        $this->assertTrue($user->Email instanceOf gnatEmail);
+        $this->assertTrue($user->foreign_id != 0);
+        $this->assertTrue($user->foreign_id != null);
+        $this->assertTrue($user->foreign_id == $user->Email->id);
         
     }
 }
