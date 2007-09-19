@@ -1,7 +1,7 @@
 + Getting started
 + Connection management
-+ Object relational mapping
-+ Mapping relations
++ Basic schema mapping
++ Relations
 + Working with objects
 + Hierarchical data
 + Configuration
