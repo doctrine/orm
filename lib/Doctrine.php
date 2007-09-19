@@ -432,6 +432,95 @@ final class Doctrine
         }
     }
     /**
+     * loadModels
+     *
+     * Recursively load all models from a directory or array of directories
+     * 
+     * @param string $directory Path to directory of models or array of directory paths
+     * @return void
+     * @author Jonathan H. Wage
+     */
+    public static function loadModels($directory)
+    {
+        $declared = get_declared_classes();
+
+        if ($directory !== null) {
+            foreach ((array) $directory as $dir) {
+                $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
+                                                        RecursiveIteratorIterator::LEAVES_ONLY);
+
+                foreach ($it as $file) {
+                    $e = explode('.', $file->getFileName());
+                    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
+                        require_once $file->getPathName();
+                    }
+                }
+            }
+            
+            $declared = array_diff(get_declared_classes(), $declared);
+        }
+        
+        return self::getLoadedModels($declared);
+    }
+    /**
+     * getLoadedModels
+     *
+     * @package default
+     * @author Jonathan H. Wage
+     */
+    public static function getLoadedModels($classes = null)
+    {
+        if ($classes === null) {
+            $classes = get_declared_classes();
+        }
+        
+        $parent = new ReflectionClass('Doctrine_Record');
+        $loadedModels = array();
+        
+        // we iterate trhough the diff of previously declared classes
+        // and currently declared classes
+        foreach ($classes as $name) {
+            $class = new ReflectionClass($name);
+            $conn  = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
+            // check if class is an instance of Doctrine_Record and not abstract
+            // class must have method setTableDefinition (to avoid non-Record subclasses like symfony's sfDoctrineRecord)
+            // we have to recursively iterate through the class parents just to be sure that the classes using for example
+            // column aggregation inheritance are properly exported to database
+            while ($class->isAbstract() ||
+                   ! $class->isSubclassOf($parent) ||
+                   ! $class->hasMethod('setTableDefinition') ||
+                   ( $class->hasMethod('setTableDefinition') &&
+                     $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() !== $class->getName())) {
+
+                $class = $class->getParentClass();
+                if ($class === false) {
+                    break;
+                }
+            }
+            
+            if ($class === false) {
+                continue;
+            }
+            
+            $loadedModels[] = $name;
+        }
+        
+        return $loadedModels;
+    }
+    public function getConnectionByTableName($tableName)
+    {
+        $loadedModels = Doctrine::getLoadedModels();
+        
+        foreach ($loadedModels AS $name) {
+            $model = new $model();
+            $table = $model->getTable();
+            
+            if ($table->getTableName() == $tableName) {
+               return $table->getConnection(); 
+            }
+        }
+    }
+    /**
      * importSchema
      * method for importing existing schema to Doctrine_Record classes
      *

@@ -337,6 +337,8 @@ $test->addTestCase($cache);
 
 $test->addTestCase(new Doctrine_Query_ApplyInheritance_TestCase());
 
+$test->addTestCase(new Doctrine_Migration_TestCase());
+
 class CliReporter extends HtmlReporter{
     public function paintHeader(){
         echo "Doctrine UnitTests\n";

@@ -45,14 +45,11 @@ class Doctrine_Migration
     
     static public function migration($directory, $from, $to)
     {
-        if ($from === $to OR $from === 0) {
+        if ($from === $to || $from === 0) {
             throw new Doctrine_Migration_Exception('You specified an invalid migration path. The from and to cannot be the same and from cannot be zero.');
         }
         
         $direction = $from > $to ? 'down':'up';
-        
-        $fromPath = $directory.DIRECTORY_SEPARATOR;
-        $toPath = $directory.DIRECTORY_SEPARATOR;
         
         if ($direction === 'up') {
             for ($i = $from + 1; $i <= $to; $i++) {
@@ -67,9 +64,9 @@ class Doctrine_Migration
     
     public static function doDirectionStep($directory, $direction, $num)
     {
-        $className = 'Migration'.$num;
-        $fileName = $className.'.class.php';
-        $filePath = $directory.DIRECTORY_SEPARATOR.$fileName;
+        $className = 'Migration' . $num;
+        $fileName = $className . '.class.php';
+        $filePath = $directory . DIRECTORY_SEPARATOR . $fileName;
         
         if (file_exists($filePath)) {
             require_once($filePath);
@@ -94,7 +91,7 @@ class Doctrine_Migration
     {
         foreach ($this->changes as $type => $changes) {
             $process = new Doctrine_Migration_Process();
-            $funcName = 'process'.Doctrine::classify($type);
+            $funcName = 'process' . Doctrine::classify($type);
             $process->$funcName($changes); 
         }
     }
@@ -125,7 +122,7 @@ class Doctrine_Migration
         $this->addChange('renamed_tables', $options);
     }
     
-    public function addColumn($tableName, $columnName, $type, $options = array())
+    public function addColumn($tableName, $columnName, $type, array $options = array())
     {
         $options = get_defined_vars();
         

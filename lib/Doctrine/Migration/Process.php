@@ -31,38 +31,43 @@
  */
 class Doctrine_Migration_Process
 {
-    public function processCreatedTables($tables)
+    public function getConnection($tableName)
     {
-        $conn = Doctrine_Manager::connection();
-        
+        return Doctrine::getConnectionByTableName($tableName);
+    }
+    
+    public function processCreatedTables($tables)
+    {   
         foreach ($tables as $table) {
+            $conn = $this->getConnection($table['tableName']);
+            
             $conn->export->createTable($table['tableName'], $table['fields'], $table['options']);
         }
     }
     
     public function processDroppedTables($tables)
     {
-        $conn = Doctrine_Manager::connection();
-        
         foreach ($tables as $table) {
+            $conn = $this->getConnection($table['tableName']);
+            
             $conn->export->dropTable($table['tableName']);
         }
     }
     
     public function processRenamedTables($tables)
     {
-        $conn = Doctrine_Manager::connection();
-        
         foreach ($tables as $table) {
+            $conn = $this->getConnection($table['newTableName']);
+            
             $conn->export->alterTable($table['oldTableName'], array('name' => $table['newTableName']), true);
         }
     }
     
     public function processAddedColumns($columns)
     {
-        $conn = Doctrine_Manager::connection();
-        
         foreach ($columns as $column) {
+            $conn = $this->getConnection($column['tableName']);
+            
             $options = array();
             $options = $column['options'];
             $options['type'] = $column['type'];
@@ -73,18 +78,18 @@ class Doctrine_Migration_Process
     
     public function processRenamedColumns($columns)
     {
-        $conn = Doctrine_Manager::connection();
-        
         foreach ($columns as $column) {
+            $conn = $this->getConnection($column['tableName']);
+            
             $conn->export->alterTable($column['tableName'], array('rename' => array($column['oldColumnName'] => array('name' => $column['newColumnName']))), true);
         }
     }
     
     public function processChangedColumns($columns)
     {
-        $conn = Doctrine_Manager::connection();
-        
         foreach ($columns as $column) {
+            $conn = $this->getConnection($column['tableName']);
+            
             $options = array();
             $options = $column['options'];
             $options['type'] = $column['type'];
@@ -95,27 +100,27 @@ class Doctrine_Migration_Process
     
     public function processRemovedColumns($columns)
     {
-        $conn = Doctrine_Manager::connection();
-
         foreach ($columns as $column) {
+            $conn = $this->getConnection($column['tableName']);
+            
             $conn->export->alterTable($column['tableName'], array('remove' => array($column['columnName'] => array())));
         }
     }
     
     public function processAddedIndexes($indexes)
     {
-        $conn = Doctrine_Manager::connection();
-        
         foreach ($indexes as $index) {
+            $conn = $this->getConnection($index['tableName']);
+            
             $conn->export->createIndex($index['tableName'], $index['indexName'], $index['definition']);
         }
     }
     
     public function processRemovedIndexes($indexes)
     {
-        $conn = Doctrine_Manager::connection();
-        
         foreach ($indexes as $index) {
+            $conn = $this->getConnection($index['tableName']);
+            
             $conn->export->dropIndex($index['tableName'], $index['indexName']);
         } 
     }
