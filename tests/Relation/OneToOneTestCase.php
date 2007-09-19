@@ -36,17 +36,19 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase
     { }
     public function prepareTables() 
     { 
-        $this->tables = array('Record_City', 'Record_Country', 'SelfRefTest');
+        $this->tables = array('gnatUser','Email','Entity','Record_City', 'Record_Country', 'SelfRefTest');
         
         parent::prepareTables();
     }
-    public function testOneToOneAggregateRelationWithAliasesIsSupported() 
+    
+     public function testOneToOneAggregateRelationWithAliasesIsSupported() 
     {
         $city = new Record_City();
         $country = $city->Country;
 
         $this->assertTrue($country instanceof Record_Country);  
     }
+    
     public function testSelfReferentialOneToOneRelationsAreSupported()
     {
         $ref = new SelfRefTest();
@@ -82,5 +84,20 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase
         $user->Email = Email::getNullObject();
         $user->save();
         $this->assertTrue($user->Email instanceOf Doctrine_Null);
+    }
+    
+    public function testSavingRelatedObjects()
+    {
+        $user = new gnatUser();
+        $user->name = "test";
+        $email = new Email();
+        $email->address = "test@test.com";
+        $user->Email = $email;
+        $user->save();
+        $this->assertTrue($user->Email instanceOf Email);
+        $this->assertTrue($user->email_id != 0);
+        $this->assertTrue($user->email_id != null);
+        $this->assertTrue($user->email_id == $user->Email->id);
+        
     }
 }
