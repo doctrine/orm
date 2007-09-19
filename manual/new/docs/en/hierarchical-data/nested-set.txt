@@ -216,7 +216,7 @@ $query = new Doctrine_Query();
 $query->select("base.name, hp.name, m.name")->from("Category base")
         ->leftJoin("base.hottestProduct hp")
         ->leftJoin("hp.manufacturer m")
-        ->setHydrationMode(Doctrine_Query::HYDRATE_ARRAY);
+        ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 $treeObject = $conn->getTable('Category')->getTree();
 $treeObject->setBaseQuery($query);
 $tree = $treeObject->fetchTree();
