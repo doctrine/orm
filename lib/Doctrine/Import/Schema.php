@@ -120,7 +120,13 @@ abstract class Doctrine_Import_Schema
         // Fix the other end of the relations
         foreach($this->relations as $className => $relations) {
             foreach ($relations AS $alias => $relation) {
+                $newRelation = array();
+                $newRelation['foreign'] = $relation['local'];
+                $newRelation['local'] = $relation['foreign'];
+                $newRelation['class'] = $className;
+                $newRelation['alias'] = $className;
                 
+                $this->relations[$relation['class']][$className] = $newRelation;
             }
         }
     }
