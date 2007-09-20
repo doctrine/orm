@@ -477,6 +477,7 @@ final class Doctrine
         }
         
         $parent = new ReflectionClass('Doctrine_Record');
+        
         $loadedModels = array();
         
         // we iterate trhough the diff of previously declared classes

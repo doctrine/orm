@@ -1,26 +1,27 @@
 <?php
-Doctrine::loadModels('models');
+$models = Doctrine::loadModels('models');
 
 $manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);
 
-$tables =   array('entity',
-                  'entityReference',
-                  'email',
-                  'phonenumber',
-                  'groupuser',
-                  'album',
-                  'song',
-                  'element',
-                  'error',
-                  'description',
-                  'address',
-                  'account',
-                  'task',
-                  'resource',
-                  'assignment',
-                  'resourceType',
-                  'resourceReference');
+$tables =   array('Entity',
+                  'EntityReference',
+                  'EntityAddress',
+                  'Email',
+                  'Phonenumber',
+                  'Groupuser',
+                  'Group',
+                  'User',
+                  'Album',
+                  'Song',
+                  'Element',
+                  'Error',
+                  'Description',
+                  'Address',
+                  'Account',
+                  'Task',
+                  'Resource',
+                  'Assignment',
+                  'ResourceType',
+                  'ResourceReference');
 
 $conn->export->exportClasses($tables);
-
-require_once('data.php');

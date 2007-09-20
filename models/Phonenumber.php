@@ -11,5 +11,13 @@ class Phonenumber extends Doctrine_Record
         $this->hasOne('Entity', array('local' => 'entity_id', 
                                       'foreign' => 'id', 
                                       'onDelete' => 'CASCADE'));
+        
+        $this->hasOne('Group', array('local' => 'entity_id', 
+                                      'foreign' => 'id', 
+                                      'onDelete' => 'CASCADE'));
+          
+        $this->hasOne('User', array('local' => 'entity_id', 
+                                    'foreign' => 'id', 
+                                    'onDelete' => 'CASCADE'));
     }
 }

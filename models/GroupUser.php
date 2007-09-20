@@ -7,4 +7,10 @@ class Groupuser extends Doctrine_Record
         $this->hasColumn('group_id', 'integer');
         $this->hasColumn('user_id', 'integer');
     }
+    
+    public function setUp()
+    {
+        $this->hasOne('Group', array('local' => 'group_id', 'foreign' => 'id'));
+        $this->hasOne('User', array('local' => 'user_id', 'foreign' => 'id'));
+    }
 }

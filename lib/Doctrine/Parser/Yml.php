@@ -33,6 +33,16 @@ require_once('spyc.php');
  */
 class Doctrine_Parser_Yml extends Doctrine_Parser
 {
+    /**
+     * dumpData
+     *
+     * Dump an array of data to a specified path to yml file
+     * 
+     * @param string $array 
+     * @param string $path 
+     * @return void
+     * @author Jonathan H. Wage
+     */
     public function dumpData($array, $path = null)
     {
         $spyc = new Spyc();
@@ -45,7 +55,15 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
             return $yml;
         }
     }
-    
+    /**
+     * loadData
+     *
+     * Load and parse data from a yml file
+     * 
+     * @param string $path 
+     * @return void
+     * @author Jonathan H. Wage
+     */
     public function loadData($path)
     {
         $spyc = new Spyc();

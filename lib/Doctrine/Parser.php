@@ -31,47 +31,73 @@
  */
 abstract class Doctrine_Parser
 {
+    /**
+     * loadData
+     *
+     * Override in the parser driver
+     *
+     * @param string $array 
+     * @return void
+     * @author Jonathan H. Wage
+     */
     abstract public function loadData($array);
+    /**
+     * dumpData
+     *
+     * Override in the praser driver
+     *
+     * @param string $array 
+     * @param string $path 
+     * @return void
+     * @author Jonathan H. Wage
+     */
     abstract public function dumpData($array, $path = null);
-    
+    /**
+     * getParser
+     *
+     * Get instance of the specified parser
+     *
+     * @param string $type 
+     * @return void
+     * @author Jonathan H. Wage
+     */
     static public function getParser($type)
     {
         $class = 'Doctrine_Parser_'.ucfirst($type);
         
         return new $class;
     }
-    
+    /**
+     * load
+     *
+     * Interface for loading and parsing data from a file
+     *
+     * @param string $path 
+     * @param string $type 
+     * @return void
+     * @author Jonathan H. Wage
+     */
     static public function load($path, $type = 'xml')
     {
         $parser = self::getParser($type);
         
         return $parser->loadData($path);
     }
-    
+    /**
+     * dump
+     *
+     * Interface for pulling and dumping data to a file
+     *
+     * @param string $array 
+     * @param string $path 
+     * @param string $type 
+     * @return void
+     * @author Jonathan H. Wage
+     */
     static public function dump($array, $path = null, $type = 'xml')
     {
         $parser = self::getParser($type);
         
         return $parser->dumpData($array, $path);
-    }
-    
-    static public function loadXml($path)
-    {
-        return self::load($path, 'xml');
-    }
-    
-    static public function dumpXml($array, $path = null)
-    {
-        return self::dump($array, $path, 'xml');
-    }
-    
-    static public function loadYml($path)
-    {
-        return self::load($path, 'yml');
-    }
-    
-    static public function dumpYml($array, $path = null)
-    {
-        return self::dump($array, $path, 'yml');
     }
 }
