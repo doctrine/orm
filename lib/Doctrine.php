@@ -653,7 +653,6 @@ final class Doctrine
      */
     public static function classify($tablename)
     {
-        echo "rat";
         return preg_replace_callback('~(_?)(_)([\w])~', array("Doctrine", "classifyCallback"), ucfirst($tablename));
     }
 
