@@ -34,19 +34,24 @@ class Doctrine_Query_Set extends Doctrine_Query_Part
 {
     public function parse($dql)
     {
-        preg_match_all("/[a-z0-9_]+\.[a-z0-9_]+[\.[a-z0-9]+]*/i", $dql, $m);
+    	$terms = Doctrine_Tokenizer::sqlExplode($dql, ' ');
+    	
+    	foreach ($terms as $term) {
 
-        if (isset($m[0])) {
-            foreach ($m[0] as $part) {
-                $e   = explode('.', trim($part));
-                $field = array_pop($e);
+            preg_match_all("/[a-z0-9_]+\.[a-z0-9_]+[\.[a-z0-9]+]*/i", $term, $m);
     
-                $reference = implode('.', $e);
-    
-                $alias = $this->query->getTableAlias($reference);
-                $map   = $this->query->getAliasDeclaration($reference);
-    
-                $dql = str_replace($part, $map['table']->getColumnName($field), $dql);
+            if (isset($m[0])) {
+                foreach ($m[0] as $part) {
+                    $e   = explode('.', trim($part));
+                    $field = array_pop($e);
+        
+                    $reference = implode('.', $e);
+        
+                    $alias = $this->query->getTableAlias($reference);
+                    $map   = $this->query->getAliasDeclaration($reference);
+        
+                    $dql = str_replace($part, $map['table']->getColumnName($field), $dql);
+                }
             }
         }
 

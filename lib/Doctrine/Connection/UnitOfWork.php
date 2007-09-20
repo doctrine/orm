@@ -388,6 +388,13 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 if ($obj instanceof Doctrine_Record &&
                     $obj->isModified()) {
                     $obj->save($this->conn);
+                    /**
+                    $id = array_values($obj->identifier());
+
+                    foreach ((array) $rel->getLocal() as $k => $field) {
+                        $record->set($field, $id[$k]);
+                    }
+                    */
                 }
             }
         }
@@ -538,7 +545,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     
             $sql  = 'UPDATE ' . $this->conn->quoteIdentifier($record->getTable()->getTableName())
                   . ' SET ' . implode(', ', $set)
-                  . ' WHERE ' . implode(' = ? AND ', $record->getTable()->getPrimaryKeys())
+                  . ' WHERE ' . implode(' = ? AND ', (array) $record->getTable()->getIdentifier())
                   . ' = ?';
     
             $stmt = $this->conn->prepare($sql);
@@ -575,7 +582,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 return false;
             }
             $table     = $record->getTable();
-            $keys      = $table->getPrimaryKeys();
+            $keys      = (array) $table->getIdentifier();
     
             $seq       = $record->getTable()->sequenceName;
     

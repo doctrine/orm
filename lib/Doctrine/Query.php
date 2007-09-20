@@ -375,7 +375,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 // only auto-add the primary key fields if this query object is not
                 // a subquery of another query object
                 if ( ! $this->isSubquery) {
-                    $fields = array_unique(array_merge($table->getPrimaryKeys(), $fields));
+                    $fields = array_unique(array_merge((array) $table->getIdentifier(), $fields));
                 }
             }
             $sql = array();
@@ -1243,8 +1243,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 case 'by':
                     continue;
                 default:
-                    if ( ! isset($p))
+                    if ( ! isset($p)) {
                         throw new Doctrine_Query_Exception("Couldn't parse query.");
+                    }
 
                     $parts[$p][] = $part;
             }
@@ -1267,7 +1268,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         if ($clear) {
             $this->clear();
         }
-
+        
         $query = trim($query);
         $query = str_replace("\n", ' ', $query);
         $query = str_replace("\r", ' ', $query);

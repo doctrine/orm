@@ -35,7 +35,5 @@ class Doctrine_Query_Select extends Doctrine_Query_Part
     public function parse($dql) 
     {
         $this->query->parseSelect($dql);
-        
-        return null;
     }
 }

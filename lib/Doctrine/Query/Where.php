@@ -68,7 +68,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                     $map = $this->query->getRootDeclaration();  
                     
                     $alias = $this->query->getTableAlias($this->query->getRootAlias());
-                    $table = $map['table'];                         
+                    $table = $map['table'];
                 } else {
                     $map = $this->query->load($reference, false);
     
@@ -127,6 +127,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
                         $value[] = $this->parseLiteralValue($part);
                     }
                 }
+
                 $value = '(' . implode(', ', $value) . ')';
             }
         } elseif (substr($value, 0, 1) == ':' || $value === '?') {

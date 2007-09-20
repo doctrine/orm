@@ -57,7 +57,7 @@ class Doctrine_Validator_Unique
         // as the one that is validated here.
         $state = $this->invoker->state();
         if ( ! ($state == Doctrine_Record::STATE_TDIRTY || $state == Doctrine_Record::STATE_TCLEAN)) {
-            foreach ($table->getPrimaryKeys() as $pk) {
+            foreach ((array) $table->getIdentifier() as $pk) {
                 $sql .= " AND {$pk} != ?";
                 $values[] = $this->invoker->$pk;
             }

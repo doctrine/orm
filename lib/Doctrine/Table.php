@@ -53,7 +53,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     /**
      * @var Doctrine_Connection $conn                   Doctrine_Connection object that created this table
      */
-    private $conn;
+    private $_conn;
     /**
      * @var array $identityMap                          first level cache
      */
@@ -169,9 +169,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function __construct($name, Doctrine_Connection $conn)
     {
-        $this->conn = $conn;
+        $this->_conn = $conn;
 
-        $this->setParent($this->conn);
+        $this->setParent($this->_conn);
 
         $this->options['name'] = $name;
         $this->_parser = new Doctrine_Relation_Parser($this);
@@ -271,7 +271,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                         if (($sequence = $this->getAttribute(Doctrine::ATTR_DEFAULT_SEQUENCE)) !== null) {
                                             $this->options['sequenceName'] = $sequence;
                                         } else {
-                                            $this->options['sequenceName'] = $this->conn->getSequenceName($this->options['tableName']);
+                                            $this->options['sequenceName'] = $this->_conn->getSequenceName($this->options['tableName']);
                                         }
                                     }
                                     break;
@@ -315,7 +315,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function export()
     {
-        $this->conn->export->exportTable($this);
+        $this->_conn->export->exportTable($this);
     }
     /**
      * getExportableFormat
@@ -413,14 +413,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function exportConstraints()
     {
         try {
-            $this->conn->beginTransaction();
+            $this->_conn->beginTransaction();
 
             foreach ($this->options['index'] as $index => $definition) {
-                $this->conn->export->createIndex($this->options['tableName'], $index, $definition);
+                $this->_conn->export->createIndex($this->options['tableName'], $index, $definition);
             }
-            $this->conn->commit();
+            $this->_conn->commit();
         } catch(Doctrine_Connection_Exception $e) {
-            $this->conn->rollback();
+            $this->_conn->rollback();
 
             throw $e;
         }
@@ -800,41 +800,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         return isset($this->columns[$name]);
     }
     /**
-     * @param mixed $key
-     * @return void
-     */
-    public function setPrimaryKey($key)
-    {
-        switch (gettype($key)) {
-        case "array":
-            $this->primaryKeys = array_values($key);
-            break;
-        case "string":
-            $this->primaryKeys[] = $key;
-            break;
-        };
-    }
-    /**
-     * returns all primary keys
-     * @return array
-     */
-    public function getPrimaryKeys()
-    {
-        return $this->primaryKeys;
-    }
-    /**
-     * @return boolean
-     */
-    public function hasPrimaryKey($key)
-    {
-        return in_array($key, $this->primaryKeys);
-    }
-    /**
      * @return Doctrine_Connection
      */
     public function getConnection()
     {
-        return $this->conn;
+        return $this->_conn;
     }
     /**
      * create
@@ -894,7 +864,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function findAll($hydrationMode = null)
     {
-        $graph = new Doctrine_Query($this->conn);
+        $graph = new Doctrine_Query($this->_conn);
         $users = $graph->query('FROM ' . $this->options['name'], array(), $hydrationMode);
         return $users;
     }
@@ -909,7 +879,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @return Doctrine_Collection
      */
     public function findBySql($dql, array $params = array(), $hydrationMode = null) {
-        $q = new Doctrine_Query($this->conn);
+        $q = new Doctrine_Query($this->_conn);
         $users = $q->query('FROM ' . $this->options['name'] . ' WHERE ' . $dql, $params, $hydrationMode);
         return $users;
     }
@@ -1023,7 +993,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             return $this->options['name'];
         }
         foreach ($this->options['subclasses'] as $subclass) {
-            $table = $this->conn->getTable($subclass);
+            $table = $this->_conn->getTable($subclass);
             $inheritanceMap = $table->getOption('inheritanceMap');
             $nomatch = false;
             foreach ($inheritanceMap as $key => $value) {
@@ -1053,7 +1023,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
             $params = array_merge(array($id), array_values($this->options['inheritanceMap']));
 
-            $this->data = $this->conn->execute($query, $params)->fetch(PDO::FETCH_ASSOC);
+            $this->data = $this->_conn->execute($query, $params)->fetch(PDO::FETCH_ASSOC);
 
             if ($this->data === false)
                 return false;
@@ -1067,7 +1037,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function count()
     {
-        $a = $this->conn->execute('SELECT COUNT(1) FROM ' . $this->options['tableName'])->fetch(Doctrine::FETCH_NUM);
+        $a = $this->_conn->execute('SELECT COUNT(1) FROM ' . $this->options['tableName'])->fetch(Doctrine::FETCH_NUM);
         return current($a);
     }
     /**
@@ -1104,7 +1074,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             return $index;
         }
 
-        if (!$this->conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)
+        if (!$this->_conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)
             && isset($this->columns[$field]['values'][$index])
         ) {
             return $this->columns[$field]['values'][$index];
@@ -1124,7 +1094,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $values = $this->getEnumValues($field);
 
         $index = array_search($value, $values);
-        if ($index === false || !$this->conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
+        if ($index === false || !$this->_conn->getAttribute(Doctrine::ATTR_USE_NATIVE_ENUM)) {
             return $index;
         }
         return $value;

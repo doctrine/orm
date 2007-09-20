@@ -148,7 +148,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
             self::$_index++;
 
-            $keys = $this->_table->getPrimaryKeys();
+            $keys = (array) $this->_table->getIdentifier();
 
             // get the data array
             $this->_data = $this->_table->getData();
