@@ -192,8 +192,8 @@ class Doctrine_Import extends Doctrine_Connection_Module
         foreach ($this->listTables() as $table) {
             $builder->buildRecord(array('tableName' => $table,
                                         'className' => Doctrine::classify($table)),
-                                  $this->listTableColumns($table),
-                                  array());
+                                        $this->listTableColumns($table),
+                                        array());
         
             $classes[] = Doctrine::classify($table);
         }
