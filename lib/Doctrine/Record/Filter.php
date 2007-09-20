@@ -34,28 +34,6 @@
 abstract class Doctrine_Record_Filter
 {
     /**
-     * @var Doctrine_Record $_record        the record object this filter belongs to
-     */
-    protected $_record;
-    /**
-     * constructor
-     *
-     * @param Doctrine_Record $_record      the record object this filter belongs to
-     */
-    public function __construct(Doctrine_Record $record)
-    {
-        $this->_record = $record;
-    }
-    /**
-     * getRecord
-     *
-     * @return Doctrine_Record $_record     the record object this filter belongs to
-     */
-    public function getRecord()
-    {
-        return $this->_record;
-    } 
-    /**
      * filterSet
      * defines an implementation for filtering the set() method of Doctrine_Record
      *
