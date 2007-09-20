@@ -36,7 +36,7 @@
  * @version     $Revision: 1838 $
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>
  */
-abstract class Doctrine_Export_Schema
+class Doctrine_Export_Schema
 {
     /**
      * build
@@ -46,7 +46,10 @@ abstract class Doctrine_Export_Schema
      * @param string $array 
      * @return void
      */
-    abstract function build($array);
+    public function build($array)
+    {
+        throw new Doctrine_Export_Exception('This functionality is implemented by the driver');
+    }
     
     /**
      * dump
@@ -64,43 +67,6 @@ abstract class Doctrine_Export_Schema
         file_put_contents($schema, $data);
     }
     
-    public function getDirectoryTables($directory)
-    {
-        $parent = new ReflectionClass('Doctrine_Record');
-        
-        $declared = get_declared_classes();
-        
-        if ($directory !== null) {
-            foreach ((array) $directory as $dir) {
-                $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
-                                                    RecursiveIteratorIterator::LEAVES_ONLY);
-                
-                foreach ($it as $file) {
-                    $e = explode('.', $file->getFileName());
-                    
-                    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                        require_once $file->getPathName();
-                    }
-                }
-            }
-            
-            $declared = get_declared_classes();
-            
-            $tables = array();
-            foreach($declared as $name)
-            {
-                $class = new ReflectionClass($name);
-                
-                if ($class->isSubclassOf($parent) AND !$class->isAbstract()) {
-                    $tables[$name] = $name;
-                }
-                
-            }
-            
-            return $tables;
-        }
-    }
-    
     /**
      * buildSchema
      * 
@@ -109,11 +75,11 @@ abstract class Doctrine_Export_Schema
      * @param string $directory 
      * @return void
      */
-    public function buildSchema($directory)
+    public function buildSchema($directory, $models = array())
     {
-        $array = array('tables' => array());
+        $array = array();
         
-        $tables = $this->getDirectoryTables($directory);
+        $loadedModels = Doctrine::loadModels($directory);
         
         $parent = new ReflectionClass('Doctrine_Record');
 
@@ -122,7 +88,11 @@ abstract class Doctrine_Export_Schema
 
         // we iterate trhough the diff of previously declared classes
         // and currently declared classes
-        foreach ($tables as $name) {
+        foreach ($loadedModels as $name) {
+            if (!empty($models) && !in_array($name, $models)) {
+                continue;
+            }
+            
             $class = new ReflectionClass($name);
             
             // check if class is an instance of Doctrine_Record and not abstract
@@ -146,22 +116,47 @@ abstract class Doctrine_Export_Schema
             }
 
             $record = new $name();
-            $table  = $record->getTable();
+            $recordTable  = $record->getTable();
             
-            $data = $table->getExportableFormat();
+            $data = $recordTable->getExportableFormat();
             
             $table = array();
-            $table['name'] = $data['tableName'];
-            $table['class'] = get_class($record);
+            $table['tableName'] = $data['tableName'];
+            $table['className'] = get_class($record);
             
-            foreach ($data['columns'] AS $name => $column)
-            {
+            foreach ($data['columns'] AS $name => $column) {
                 $data['columns'][$name]['name'] = $name;
             }
             
             $table['columns'] = $data['columns'];
             
-            $array['tables'][$data['tableName']] = $table;
+            $relations = $recordTable->getRelations();
+            foreach ($relations as $key => $relation) {
+                $relationData = $relation->toArray();
+                
+                $relationKey = $relationData['alias'];
+                
+                if (isset($relationData['refTable']) && $relationData['refTable']) {
+                    $table['relations'][$relationKey]['refClass'] = $relationData['refTable']->getComponentName();
+                }
+                
+                if (isset($relationData['class']) && $relationData['class'] && $relation['class'] != $relationKey) {
+                    $table['relations'][$relationKey]['class'] = $relationData['class'];
+                }
+ 
+                $table['relations'][$relationKey]['local'] = $relationData['local'];
+                $table['relations'][$relationKey]['foreign'] = $relationData['foreign'];
+                
+                if ($relationData['type'] === Doctrine_Relation::ONE) {
+                    $table['relations'][$relationKey]['type'] = 'one';
+                } else if($relationData['type'] === Doctrine_Relation::MANY) {
+                    $table['relations'][$relationKey]['type'] = 'many';
+                } else {
+                    $table['relations'][$relationKey]['type'] = 'one';
+                }
+            }
+            
+            $array[$table['className']] = $table;
         }
         
         return $array;
@@ -174,10 +169,13 @@ abstract class Doctrine_Export_Schema
      * @param string $directory 
      * @return void
      */
-    public function exportSchema($schema, $directory)
+    public function exportSchema($schema, $format, $directory, $models = array())
     {
-        $array = $this->buildSchema($directory);
+        $className = 'Doctrine_Export_Schema_'.ucwords($format);
         
-        return $this->dump($array, $schema);
+        $export = new $className();
+        $array = $export->buildSchema($directory, $models);
+        
+        return $export->dump($array, $schema);
     }
 }

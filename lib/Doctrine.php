@@ -442,7 +442,7 @@ final class Doctrine
      */
     public static function loadModels($directory)
     {
-        $declared = get_declared_classes();
+        $declared = array();
 
         if ($directory !== null) {
             foreach ((array) $directory as $dir) {
@@ -457,7 +457,7 @@ final class Doctrine
                 }
             }
             
-            $declared = array_diff(get_declared_classes(), $declared);
+            $declared = get_declared_classes();
         }
         
         return self::getLoadedModels($declared);

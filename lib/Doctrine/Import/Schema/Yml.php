@@ -52,11 +52,11 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
     {
         $array = $this->parse($schema);
         
-        foreach ($array as $tableName => $table) {
+        foreach ($array as $className => $table) {
             $columns = array();
             
-            $tableName = isset($table['tableName']) ? (string) $table['tableName']:(string) $tableName;
-            $className = isset($table['className']) ? (string) $table['className']:(string) $tableName;
+            $className = isset($table['className']) ? (string) $table['className']:(string) $className;
+            $tableName = isset($table['tableName']) ? (string) $table['tableName']:(string) $className;
             
             foreach ($table['columns'] as $columnName => $field) {
                 
@@ -75,11 +75,11 @@ class Doctrine_Import_Schema_Yml extends Doctrine_Import_Schema
                 $columns[(string) $colDesc['name']] = $colDesc;
             }
 
-            $tables[$tableName]['tableName'] = $tableName;
-            $tables[$tableName]['className'] = $className;
+            $tables[$className]['tableName'] = $tableName;
+            $tables[$className]['className'] = $className;
 
-            $tables[$tableName]['columns'] = $columns;
-            $tables[$tableName]['relations'] = isset($table['relations']) ? $table['relations']:array();
+            $tables[$className]['columns'] = $columns;
+            $tables[$className]['relations'] = isset($table['relations']) ? $table['relations']:array();
         }
         
         return $tables;

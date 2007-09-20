@@ -34,8 +34,8 @@ class Doctrine_Import_Schema_Yml_TestCase extends Doctrine_UnitTestCase
 {
     public function testYmlImport()
     {
-        $import = new Doctrine_Import_Schema_Yml();
-        $import->importSchema('schema.yml', 'classes');
+        $import = new Doctrine_Import_Schema();
+        $import->importSchema('schema.yml', 'yml', 'classes');
         
         if ( ! file_exists('classes/User.class.php')) {
             $this->fail();

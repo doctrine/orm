@@ -37,7 +37,7 @@
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-abstract class Doctrine_Import_Schema
+class Doctrine_Import_Schema
 {
     public $relations = array();
     
@@ -47,7 +47,10 @@ abstract class Doctrine_Import_Schema
      * @param  string $schema
      * @access public
      */
-    abstract function parseSchema($schema);
+    public function parseSchema($schema)
+    {
+        throw new Doctrine_Import_Exception('This functionality is implemented by the driver');
+    }
     
     /**
      * parse
@@ -72,30 +75,39 @@ abstract class Doctrine_Import_Schema
      * A method to import a Schema and translate it into a Doctrine_Record object
      *
      * @param  string $schema       The file containing the XML schema
-     * @param  string $directory    The directory where the Doctrine_Record class will
-     *                              be written
+     * @param  string $directory    The directory where the Doctrine_Record class will be written
+     * @param  array $models        Optional array of models to import
+     * 
      * @access public
      */
-    public function importSchema($schema, $directory)
+    public function importSchema($schema, $format, $directory, $models = array())
     {
+        $className = 'Doctrine_Import_Schema_'.ucwords($format);
+        
+        $import = new $className();
+        
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
         
         $array = array();
         foreach ((array) $schema AS $s) {
-            $array = array_merge($array, $this->parseSchema($s));
+            $array = array_merge($array, $import->parseSchema($s));
         }
         
-        $this->buildRelationships($array);
+        $import->buildRelationships($array);
         
         foreach ($array as $name => $properties) {
+            if (!empty($models) && !in_array($properties['className'], $models)) {
+                continue;
+            }
+            
             $options = array();
             $options['className'] = $properties['className'];
             $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['className'].'.class.php';
             
             $columns = $properties['columns'];
             
-            $relations = isset($this->relations[$options['className']]) ? $this->relations[$options['className']]:array();
+            $relations = isset($import->relations[$options['className']]) ? $import->relations[$options['className']]:array();
             
             $builder->buildRecord($options, $columns, $relations);
         }
