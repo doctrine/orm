@@ -31,7 +31,7 @@
  * @since       1.0
  * @version     $Revision: 1298 $
  */
-class Doctrine_Record_Filter
+abstract class Doctrine_Record_Filter
 {
     /**
      * @var Doctrine_Record $_record        the record object this filter belongs to
@@ -61,14 +61,12 @@ class Doctrine_Record_Filter
      *
      * @param mixed $name                       name of the property or related component
      */
-    abstract public function filterSet($key, $value)
-    { }
+    abstract public function filterSet($key, $value);
     /**
      * filterGet
      * defines an implementation for filtering the get() method of Doctrine_Record
      *
      * @param mixed $name                       name of the property or related component
      */
-    abstract public function filterGet($key)
-    { }
+    abstract public function filterGet($key);
 }

@@ -103,10 +103,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     protected $_errorStack;
     /**
-     * @var Doctrine_Record_Filter          the filter object
-     */
-    protected $_filter;
-    /**
      * @var array $_references              an array containing all the references
      */
     protected $_references     = array();
@@ -142,9 +138,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                             ->getTable($class);
             $exists = false;
         }
-
-        // initialize the filter object
-        $this->_filter = new Doctrine_Record_Filter($this);
 
         // Check if the current connection has the records table in its registry
         // If not this record is only used for creating table definition and setting up
@@ -571,7 +564,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         
         $this->_table->getRepository()->add($this);
-        $this->_filter = new Doctrine_Record_Filter($this);
 
         $this->cleanData($this->_data);
 
@@ -798,12 +790,12 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
                 $this->_references[$name] = $rel->fetchRelatedFor($this);
             }
+            return $this->_references[$name];
 
         } catch(Doctrine_Table_Exception $e) { 
+
             throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
         }
-
-        return $this->_references[$name];
     }
     /**
      * mapValue
@@ -1262,7 +1254,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         if ($id === false) {
             $this->_id       = array();
-            $this->_data     = $this->_filter->cleanData($this->_data);
+            $this->_data     = $this->cleanData($this->_data);
             $this->_state    = Doctrine_Record::STATE_TCLEAN;
             $this->_modified = array();
         } elseif ($id === true) {
