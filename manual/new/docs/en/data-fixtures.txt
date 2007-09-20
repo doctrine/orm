@@ -34,6 +34,17 @@ $models = array('User', 'Phonenumber'); // you can optionally specify an array o
 Doctrine_Data::importData($path, $format, $models);
 </code>
 
+++ Dummy Data
+
+With Doctrine Data you can import dummy data to all your Doctrine Records
+
+<code type="php">
+$numRecords = 3; // Number of dummy records to populate for each model
+$models = array('User', 'Email'); // Models to generate dummy data for. If none specified it generates dummy data for all loaded models.
+
+Doctrine_Data::importDummyData($numRecords, $models);
+</code>
+
 ++ Writing
 
 You can write your fixtures files manually and load them in to your applications. Below is a sample data.yml fixtures file

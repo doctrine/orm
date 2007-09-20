@@ -158,20 +158,96 @@ class Doctrine_Data_Import extends Doctrine_Data
             
             for ($i = 0; $i < $num; $i++) {
                 $obj = new $name();
-                $columns = array_keys($obj->toArray());
-                $pks = $obj->getTable()->getPrimaryKeys();
                 
-                foreach ($columns as $column) {
-                    
-                    if (!in_array($column, $pks)) {
-                       $obj->$column = uniqid();
-                    }
-                }
+                $this->populateDummyRecord($obj);
                 
                 $obj->save();
                 
                 $ids[get_class($obj)][] = $obj->identifier();
             }
         }
+    }
+    
+    public function populateDummyRecord(Doctrine_Record $record)
+    {
+        $lorem = explode(' ', "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
+        
+        $columns = array_keys($record->toArray());
+        $pks = $record->getTable()->getPrimaryKeys();
+        
+        foreach ($columns as $column) {
+            
+            if (!in_array($column, $pks)) {
+                if ($relation = $this->isRelation($record, $column)) {
+                    $alias = $relation['alias'];
+                    $relationObj = $record->$alias;
+                    
+                    $this->populateDummyRecord($relationObj);
+                    
+                } else {
+                    
+                    $definition = $record->getTable()->getDefinitionOf($column);
+                    
+                    switch($definition['type'])
+                    {
+                        case 'string';     
+                            shuffle($lorem);
+                    
+                            $record->$column = substr(implode(' ', $lorem), 0, $definition['length']);
+                        break;
+                        
+                        case 'integer':
+                            $record->$column = rand();
+                        break;
+                        
+                        case 'boolean':
+                            $record->$column = true;
+                        break;
+                        
+                        case 'float':
+                            $record->$column = number_format(rand($definition['length'], $definition['length']), 2, '.', null);
+                        break;
+                        
+                        case 'array':
+                            $record->$column = array('test' => 'test');
+                        break;
+                        
+                        case 'object':
+                            $record->$column = new stdObject();
+                        break;
+                        
+                        case 'blob':
+                            $record->$column = '';
+                        break;
+                        
+                        case 'clob':
+                            $record->$column = '';
+                        break;
+                        
+                        case 'timestamp':
+                            $record->$column = date('Y-m-d h:i:s', time());
+                        break;
+                        
+                        case 'time':
+                            $record->$column = date('h:i:s', time());
+                        break;
+                        
+                        case 'date':
+                            $record->$column = date('Y-m-d', time());
+                        break;
+                        
+                        case 'enum':
+                            $record->$column = 'test';
+                        break;
+                        
+                        case 'gzip':
+                            $record->$column = 'test';
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return $record;
     }
 }
