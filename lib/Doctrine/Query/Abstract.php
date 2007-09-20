@@ -86,7 +86,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
         foreach ($params as $k => $value) {
             if ($value instanceof Doctrine_Expression) {
                 $value = $value->getSql();
-                unset($values[$k]);
+                unset($params[$k]);
             } else {
                 $value = '?';          
             }
