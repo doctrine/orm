@@ -1,0 +1,69 @@
+Doctrine Data uses the Doctrine Parser for the dumping and loading of fixtures data so it is possible to use any of the formats available in the Parser. Currently yml is the only fully supported format but xml and others are next.
+
+++ Exporting
+
+You can export data to fixtures file in many different formats
+
+<code type="php">
+// A few ways exist for specifying where you export the data
+
+// Dump to one large fixture file
+Doctrine_Data::exportData('data.yml', 'yml');
+
+// Dump to individual files. One file per model. 3rd argument true specifies to dump to individual files
+Doctrine_Data::exportData('path/to/directory', 'yml', true);
+</code>
+
+++ Importing
+
+You can import data from fixtures files in many different formats
+
+<code type="php">
+// Path can be in a few different formats
+$path = 'path/to/data.yml'; // Path directly to one yml file
+$path = array('data.yml', 'data2.yml', 'more.yml'); // Array of yml file paths
+$path = array('directory1', 'directory2', 'directory3'); // Array of directories which contain yml files. It will find all files with an extension of .yml
+
+// Specify the format of the data you are importing
+$format = 'yml';
+$format = 'xml';
+$format = 'csv';
+
+$models = array('User', 'Phonenumber'); // you can optionally specify an array of the models you wish to import the data for, by default it loads data for all the available loaded models and the data that exists
+
+Doctrine_Data::importData($path, $format, $models);
+</code>
+
+++ Writing
+
+You can write your fixtures files manually and load them in to your applications. Below is a sample data.yml fixtures file
+
+<code type="yml">
+---
+Email: 
+  Email_1: 
+    address: jwage@mac.com
+Group: 
+  Group_1: 
+    name: Drama Actors
+User: 
+  User_1: 
+    Phonenumber: Phonenumber_1
+    name: Jonathan H. Wage
+    loginname: jwage
+    Email: Email_1
+Groupuser: 
+  Groupuser_1: 
+    Group: Group_1
+    User: User_1
+Phonenumber: 
+  Phonenumber_1: 
+    phonenumber: 555-555-5555
+    Group: Group_1
+</code>
+
+Here is how you would write code to load the data from that data.yml file
+
+<code type="php">
+Doctrine_Data::importData('data.yml', 'yml');
+</code>

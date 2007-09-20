@@ -12,6 +12,9 @@
 + Event listeners
 + Class templates
 + Plugins
++ File Parser
++ Migration
++ Data Fixtures
 + Searching
 + Database abstraction
 + Improving Performance

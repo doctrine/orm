@@ -1,0 +1,112 @@
+The Doctrine Migration tools allow you to migrate databases and it issues alter table statements directly to your databases when you need to deploy database changes.
+
+++ Writing Migration Classes
+
+Migration classes consist of a simple class that extends from Doctrine_Migration. You can define a public up() and down() method that is meant for doing and undoing changes to a database for that migration step.
+
+<code type="php">
+class MigrationTestTable extends Doctrine_Record
+{
+    public function setTableDefinition() 
+    {
+        $this->hasColumn('field1', 'string');
+    }
+}
+
+class Migration2 extends Doctrine_Migration
+{
+    public function up()
+    {
+        $this->createTable('migration_test_table', array('field1' => array('type' => 'string')));
+    }
+    
+    public function down()
+    {
+        $this->dropTable('migration_test_table');
+    }
+}
+
+class Migration3 extends Doctrine_Migration
+{
+    public function up()
+    {
+        $this->addColumn('migration_test_table', 'field1', 'string');
+    }
+    
+    public function down()
+    {
+        $this->renameColumn('migration_test_table', 'field1', 'field2');
+    }
+}
+
+class Migration4 extends Doctrine_Migration
+{
+    public function up()
+    {
+        $this->changeColumn('migration_test_table', 'field1', 'integer');
+    }
+    
+    public function down()
+    {
+        $this->changeColumn('migration_test_table', 'field1', 'string');
+    }  
+}
+</code>
+
++++ Methods
+
+Here is a list of the available methods you can use to alter your database in your migration classes
+
+<code type="php">
+public function createTable($tableName, array $fields = array(), array $options = array())
+public function dropTable($tableName)
+public function renameTable($oldTableName, $newTableName)
+public function addColumn($tableName, $columnName, $type, array $options = array())
+public function renameColumn($tableName, $oldColumnName, $newColumnName)
+public function changeColumn($tableName, $columnName, $type, array $options = array())
+public function removeColumn($tableName, $columnName)
+public function addIndex($tableName, $indexName, array $options = array())
+public function removeIndex($tableName, $indexName)
+</code>
+
++++ Altering Data
+
+You can alter table directly in your up() and down() methods like you normally would by creating new model instances and calling save() or creating queries and deleting data.
+
+<code type="php">
+class Migration1 extends Doctrine_Migration
+{
+    public function up()
+    {
+        // Add new user
+        $user = new User();
+        $user->loginname = 'jwage';
+        $user->save();
+    }
+    
+    public function down()
+    {
+        // Delete the user we added in the up
+        $query = new Doctrine_Query();
+        $query->delete('User')->from('User u')->where('u.loginname = ?', 'jwage')->execute();
+        
+    }
+}
+</code>
+
+++ Performing Migrations
+
+<code type="php">
+// Upgrade one at a time
+Doctrine_Migration::migration(1, 2);
+Doctrine_Migration::migration(2, 3);
+Doctrine_Migration::migration(3, 4);
+
+// Then revert back to version 1
+Doctrine_Migration::migration(4, 1);
+
+// One big upgrade
+Doctrine_Migration::migration(1, 4);
+
+echo Doctrine_Migration::getCurrentVersion(); // should echo 4
+</code>
