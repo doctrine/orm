@@ -8,10 +8,12 @@ You can export data to fixtures file in many different formats
 // A few ways exist for specifying where you export the data
 
 // Dump to one large fixture file
-Doctrine_Data::exportData('data.yml', 'yml');
+$data = new Doctrine_Data();
+$data->exportData('data.yml', 'yml');
 
 // Dump to individual files. One file per model. 3rd argument true specifies to dump to individual files
-Doctrine_Data::exportData('path/to/directory', 'yml', true);
+$data = new Doctrine_Data();
+$data->exportData('path/to/directory', 'yml', true);
 </code>
 
 ++ Importing
@@ -31,7 +33,8 @@ $format = 'csv';
 
 $models = array('User', 'Phonenumber'); // you can optionally specify an array of the models you wish to import the data for, by default it loads data for all the available loaded models and the data that exists
 
-Doctrine_Data::importData($path, $format, $models);
+$data = new Doctrine_Data();
+$data->importData($path, $format, $models);
 </code>
 
 ++ Dummy Data
@@ -42,7 +45,8 @@ With Doctrine Data you can import dummy data to all your Doctrine Records
 $numRecords = 3; // Number of dummy records to populate for each model
 $models = array('User', 'Email'); // Models to generate dummy data for. If none specified it generates dummy data for all loaded models.
 
-Doctrine_Data::importDummyData($numRecords, $models);
+$data = new Doctrine_Data();
+$data->importDummyData($numRecords, $models);
 </code>
 
 ++ Writing
@@ -76,5 +80,6 @@ Phonenumber:
 Here is how you would write code to load the data from that data.yml file
 
 <code type="php">
-Doctrine_Data::importData('data.yml', 'yml');
+$data = new Doctrine_Data();
+$data->importData('data.yml', 'yml');
 </code>

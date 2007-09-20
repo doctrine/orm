@@ -185,7 +185,7 @@ class Doctrine_Data
      * @return void
      * @author Jonathan H. Wage
      */
-    public static function exportData($directory, $format = 'yml', $models = array(), $exportIndividualFiles = false)
+    public function exportData($directory, $format = 'yml', $models = array(), $exportIndividualFiles = false)
     {
         $export = new Doctrine_Data_Export($directory);
         $export->setFormat($format);
@@ -205,7 +205,7 @@ class Doctrine_Data
      * @return void
      * @author Jonathan H. Wage
      */
-    public static function importData($directory, $format = 'yml', $models = array())
+    public function importData($directory, $format = 'yml', $models = array())
     {
         $import = new Doctrine_Data_Import($directory);
         $import->setFormat($format);
@@ -223,7 +223,7 @@ class Doctrine_Data
      * @return void
      * @author Jonathan H. Wage
      */
-    public static function importDummyData($num = 3, $models = array())
+    public function importDummyData($num = 3, $models = array())
     {
         $import = new Doctrine_Data_Import();
         $import->setModels($models);
