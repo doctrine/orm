@@ -98,14 +98,14 @@ class Doctrine_Data_Export extends Doctrine_Data
             }
             
             foreach ($data as $className => $classData) {
-                Doctrine_Parser::dump($classData->toArray(), $directory.DIRECTORY_SEPARATOR.$className.'.'.$format, $format);
+                Doctrine_Parser::dump($classData->toArray(), $format, $directory.DIRECTORY_SEPARATOR.$className.'.'.$format);
             }
         } else {
             if (is_dir($directory)) {
                 throw new Doctrine_Data_Exception('You must specify the path to a '.$format.' file to export. You specified a directory.');
             }
             
-            return Doctrine_Parser::dump($data, $directory, $format);
+            return Doctrine_Parser::dump($data, $format, $directory);
         }
     }
     /**

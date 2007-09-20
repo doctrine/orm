@@ -8,7 +8,7 @@ Dumping array to yml variable
 $array = array('test' => array('key' => 'value'), 'test2' => 'test');
 
 // Dump the array to yml and return, set to $yml(does not write to file). Replace null with a path to a yml file if you wish to write to disk
-$yml = Doctrine_Parser::dump($array, null, 'yml');
+$yml = Doctrine_Parser::dump($array, 'yml');
 </code>
 
 $yml would contain the following
@@ -26,7 +26,7 @@ Dumping array to yml file
 $array = array('test' => array('key' => 'value'), 'test2' => 'test');
 
 // Dump the above array to test.yml using yml parser
-Doctrine_Parser::dump($array, 'test.yml', 'yml');
+Doctrine_Parser::dump($array, 'yml', 'test.yml');
 </code>
 
 A file named test.yml would be created and would contain the following
@@ -45,7 +45,7 @@ Loading and parsing data from a yml file to a php array
 $array = array('test' => array('key' => 'value'), 'test2' => 'test');
 
 // We dump the above array to test.yml using the yml parser dumper
-Doctrine_Parser::dump($array, 'test.yml', 'yml');
+Doctrine_Parser::dump($array, 'yml', 'test.yml');
 
 // Now we reload that dumped yaml file back to the original array format using the yml parser loder
 $array = Doctrine_Parser::load('test.yml', 'yml');

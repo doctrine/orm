@@ -41,6 +41,6 @@ class Doctrine_Export_Schema_Xml extends Doctrine_Export_Schema
      */
     public function build($array)
     {
-        return Doctrine_Parser::dumpXml($array, null);
+        return Doctrine_Parser::dump($array, 'yml');
     }
 }

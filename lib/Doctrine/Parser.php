@@ -94,7 +94,7 @@ abstract class Doctrine_Parser
      * @return void
      * @author Jonathan H. Wage
      */
-    static public function dump($array, $path = null, $type = 'xml')
+    static public function dump($array, $type = 'xml', $path = null)
     {
         $parser = self::getParser($type);
         

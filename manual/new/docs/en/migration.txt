@@ -5,7 +5,7 @@ The Doctrine Migration tools allow you to migrate databases and it issues alter 
 Migration classes consist of a simple class that extends from Doctrine_Migration. You can define a public up() and down() method that is meant for doing and undoing changes to a database for that migration step.
 
 <code type="php">
-class MigrationTestTable extends Doctrine_Record
+class MigrationTest extends Doctrine_Record
 {
     public function setTableDefinition() 
     {
@@ -17,12 +17,12 @@ class Migration2 extends Doctrine_Migration
 {
     public function up()
     {
-        $this->createTable('migration_test_table', array('field1' => array('type' => 'string')));
+        $this->createTable('migration_test', array('field1' => array('type' => 'string')));
     }
     
     public function down()
     {
-        $this->dropTable('migration_test_table');
+        $this->dropTable('migration_test');
     }
 }
 
@@ -30,12 +30,12 @@ class Migration3 extends Doctrine_Migration
 {
     public function up()
     {
-        $this->addColumn('migration_test_table', 'field1', 'string');
+        $this->addColumn('migration_test', 'field1', 'string');
     }
     
     public function down()
     {
-        $this->renameColumn('migration_test_table', 'field1', 'field2');
+        $this->renameColumn('migration_test', 'field1', 'field2');
     }
 }
 
@@ -43,12 +43,12 @@ class Migration4 extends Doctrine_Migration
 {
     public function up()
     {
-        $this->changeColumn('migration_test_table', 'field1', 'integer');
+        $this->changeColumn('migration_test', 'field1', 'integer');
     }
     
     public function down()
     {
-        $this->changeColumn('migration_test_table', 'field1', 'string');
+        $this->changeColumn('migration_test', 'field1', 'string');
     }  
 }
 </code>

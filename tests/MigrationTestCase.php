@@ -47,7 +47,7 @@ class Doctrine_Migration_TestCase extends Doctrine_UnitTestCase
     }
 }
 
-class MigrationTestTable extends Doctrine_Record
+class MigrationTest extends Doctrine_Record
 {
     public function setTableDefinition() 
     {
@@ -59,12 +59,12 @@ class Migration2 extends Doctrine_Migration
 {
     public function up()
     {
-        $this->createTable('migration_test_table', array('field1' => array('type' => 'string')));
+        $this->createTable('migration_test', array('field1' => array('type' => 'string')));
     }
     
     public function down()
     {
-        $this->dropTable('migration_test_table');
+        $this->dropTable('migration_test');
     }
 }
 
@@ -72,12 +72,12 @@ class Migration3 extends Doctrine_Migration
 {
     public function up()
     {
-        $this->addColumn('migration_test_table', 'field1', 'string');
+        $this->addColumn('migration_test', 'field1', 'string');
     }
     
     public function down()
     {
-        $this->renameColumn('migration_test_table', 'field1', 'field2');
+        $this->renameColumn('migration_test', 'field1', 'field2');
     }
 }
 
@@ -85,11 +85,11 @@ class Migration4 extends Doctrine_Migration
 {
     public function up()
     {
-        $this->changeColumn('migration_test_table', 'field1', 'integer');
+        $this->changeColumn('migration_test', 'field1', 'integer');
     }
     
     public function down()
     {
-        $this->changeColumn('migration_test_table', 'field1', 'string');
+        $this->changeColumn('migration_test', 'field1', 'string');
     }  
 }
