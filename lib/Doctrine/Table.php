@@ -44,12 +44,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     /**
      * @var mixed $identifier
      */
-    private $identifier;
+    private $_identifier;
     /**
      * @see Doctrine_Identifier constants
      * @var integer $identifierType                     the type of identifier this table uses
      */
-    private $identifierType;
+    private $_identifierType;
     /**
      * @var Doctrine_Connection $conn                   Doctrine_Connection object that created this table
      */
@@ -57,11 +57,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     /**
      * @var array $identityMap                          first level cache
      */
-    private $identityMap        = array();
+    private $_identityMap        = array();
     /**
      * @var Doctrine_Table_Repository $repository       record repository
      */
-    private $repository;
+    private $_repository;
     /**
      * @var array $columns                  an array of column definitions,
      *                                      keys as column names and values as column definitions
@@ -233,14 +233,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                                     'primary'       => true)), $this->columns);
 
                 $this->primaryKeys[] = 'id';
-                $this->identifier = 'id';
-                $this->identifierType = Doctrine::IDENTIFIER_AUTOINC;
+                $this->_identifier = 'id';
+                $this->_identifierType = Doctrine::IDENTIFIER_AUTOINC;
                 $this->columnCount++;
                 break;
             default:
                 if (count($this->primaryKeys) > 1) {
-                    $this->identifier = $this->primaryKeys;
-                    $this->identifierType = Doctrine::IDENTIFIER_COMPOSITE;
+                    $this->_identifier = $this->primaryKeys;
+                    $this->_identifierType = Doctrine::IDENTIFIER_COMPOSITE;
 
                 } else {
                     foreach ($this->primaryKeys as $pk) {
@@ -257,12 +257,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                             switch (strtolower($e2[0])) {
                                 case 'autoincrement':
                                 case 'autoinc':
-                                    $this->identifierType = Doctrine::IDENTIFIER_AUTOINC;
+                                    $this->_identifierType = Doctrine::IDENTIFIER_AUTOINC;
                                     $found = true;
                                     break;
                                 case 'seq':
                                 case 'sequence':
-                                    $this->identifierType = Doctrine::IDENTIFIER_SEQUENCE;
+                                    $this->_identifierType = Doctrine::IDENTIFIER_SEQUENCE;
                                     $found = true;
 
                                     if ($value) {
@@ -277,10 +277,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                     break;
                             }
                         }
-                        if ( ! isset($this->identifierType)) {
-                            $this->identifierType = Doctrine::IDENTIFIER_NATURAL;
+                        if ( ! isset($this->_identifierType)) {
+                            $this->_identifierType = Doctrine::IDENTIFIER_NATURAL;
                         }
-                        $this->identifier = $pk;
+                        $this->_identifier = $pk;
                     }
             }
         }
@@ -292,7 +292,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if ($this->isTree()) {
             $this->getTree()->setUp();
         }
-        $this->repository = new Doctrine_Table_Repository($this);
+        $this->_repository = new Doctrine_Table_Repository($this);
     }
     /**
      * getTemplates
@@ -612,7 +612,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function getRepository()
     {
-        return $this->repository;
+        return $this->_repository;
     }
     /**
      * setOption
@@ -782,14 +782,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function getIdentifier()
     {
-        return $this->identifier;
+        return $this->_identifier;
     }
     /**
      * @return integer
      */
     public function getIdentifierType()
     {
-        return $this->identifierType;
+        return $this->_identifierType;
     }
     /**
      * hasColumn
@@ -895,7 +895,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function clear()
     {
-        $this->identityMap = array();
+        $this->_identityMap = array();
     }
     /**
      * addRecord
@@ -908,11 +908,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         $id = implode(' ', $record->identifier());
 
-        if (isset($this->identityMap[$id])) {
+        if (isset($this->_identityMap[$id])) {
             return false;
         }
 
-        $this->identityMap[$id] = $record;
+        $this->_identityMap[$id] = $record;
 
         return true;
     }
@@ -955,13 +955,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
             $id = implode(' ', $id);
 
-            if (isset($this->identityMap[$id])) {
-                $record = $this->identityMap[$id];
+            if (isset($this->_identityMap[$id])) {
+                $record = $this->_identityMap[$id];
                 $record->hydrate($this->data);
             } else {
                 $recordName = $this->getClassnameToReturn();
                 $record = new $recordName($this);
-                $this->identityMap[$id] = $record;
+                $this->_identityMap[$id] = $record;
             }
             $this->data = array();
         } else {
