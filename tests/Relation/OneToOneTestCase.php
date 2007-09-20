@@ -40,8 +40,8 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase
         
         parent::prepareTables();
     }
-    
-     public function testOneToOneAggregateRelationWithAliasesIsSupported() 
+
+    public function testOneToOneAggregateRelationWithAliasesIsSupported()
     {
         $city = new Record_City();
         $country = $city->Country;
@@ -75,9 +75,9 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase
     public function testUnsetRelation()
     {
         $user = new User();
-        $user->name = "test";
+        $user->name = 'test';
         $email = new Email();
-        $email->address = "test@test.com";
+        $email->address = 'test@test.com';
         $user->Email = $email;
         $user->save();
         $this->assertTrue($user->Email instanceOf Email);
@@ -85,19 +85,17 @@ class Doctrine_Relation_OneToOne_TestCase extends Doctrine_UnitTestCase
         $user->save();
         $this->assertTrue($user->Email instanceOf Doctrine_Null);
     }
-    
+
     public function testSavingRelatedObjects()
     {
         $user = new gnatUser();
-        $user->name = "test";
+        $user->name = 'test';
         $email = new gnatEmail();
-        $email->address = "test3@test.com";
+        $email->address = 'test3@test.com';
         $user->Email = $email;
         $user->save();
         $this->assertTrue($user->Email instanceOf gnatEmail);
-        $this->assertTrue($user->foreign_id != 0);
-        $this->assertTrue($user->foreign_id != null);
-        $this->assertTrue($user->foreign_id == $user->Email->id);
+        $this->assertEqual($user->foreign_id, $user->Email->id);
         
     }
 }
