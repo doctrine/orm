@@ -39,7 +39,7 @@ class Doctrine_Record_Filter_Standard extends Doctrine_Record_Filter
      *
      * @param mixed $name                       name of the property or related component
      */
-    abstract public function filterSet($key, $value)
+    public function filterSet($key, $value)
     { 
         throw new Doctrine_Record_Exception('Unknown record property / related component \'' . $key . '\'.');
     }
@@ -49,7 +49,7 @@ class Doctrine_Record_Filter_Standard extends Doctrine_Record_Filter
      *
      * @param mixed $name                       name of the property or related component
      */
-    abstract public function filterGet($key)
+    public function filterGet($key)
     {
         throw new Doctrine_Record_Exception('Unknown record property / related component \'' . $key . '\'.');
     }
