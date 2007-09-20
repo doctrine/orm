@@ -228,7 +228,7 @@ class Doctrine_Data
         $import = new Doctrine_Data_Import();
         $import->setModels($models);
         
-        $import->doImportDummyData($num);
+        return $import->doImportDummyData($num);
     }
     /**
      * isRelation
