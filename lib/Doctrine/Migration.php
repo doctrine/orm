@@ -43,7 +43,72 @@ class Doctrine_Migration
                             'added_indexes'     =>  array(),
                             'removed_indexes'   =>  array());
     
-    static public function setCurrentVersion($number)
+    public $migrationTableName = 'migration_version';
+    public $migrationClassesDirectory = array();
+    public $migrationClasses = array();
+    
+    public function __construct($directory = null)
+    {
+        if ($directory != null) {
+            $this->migrationClassesDirectory = $directory;
+            
+            $this->loadMigrationClasses();
+        }
+    }
+    
+    protected function loadMigrationClasses()
+    {
+        $directory = $this->migrationClassesDirectory;
+        
+        $classes = get_declared_classes();
+
+        if ($directory !== null) {
+            foreach ((array) $directory as $dir) {
+                $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
+                                                        RecursiveIteratorIterator::LEAVES_ONLY);
+
+                foreach ($it as $file) {
+                    $e = explode('.', $file->getFileName());
+                    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
+                        require_once $file->getPathName();
+                        $requiredClass = array_diff(get_declared_classes(), $classes);
+                        $requiredClass = end($requiredClass);
+                        
+                        $loadedClasses[$requiredClass] = $file->getFileName();
+                        
+                    }
+                }
+            }
+        }
+        
+        $classes = $loadedClasses;
+        $parent = new ReflectionClass('Doctrine_Migration');
+        $loadedClasses = array();
+        
+        foreach ($classes as $name => $fileName) {
+            $class = new ReflectionClass($name);
+            
+            while ($class->isSubclassOf($parent)) {
+
+                $class = $class->getParentClass();
+                if ($class === false) {
+                    break;
+                }
+            }
+            
+            if ($class === false) {
+                continue;
+            }
+            
+            $loadedClasses[$name] = $fileName;
+        }
+        
+        $this->migrationClasses = $loadedClasses;
+        
+        return $loadedClasses;
+    }
+    
+    public function setCurrentVersion($number)
     {
         $conn = Doctrine_Manager::connection();
         
@@ -62,7 +127,7 @@ class Doctrine_Migration
         }
     }
     
-    static public function getCurrentVersion()
+    public function getCurrentVersion()
     {
         $conn = Doctrine_Manager::connection();
         
@@ -71,93 +136,50 @@ class Doctrine_Migration
         return isset($result[0]) ? $result[0]:false;
     }
     
-    static public function migration($from, $to)
+    public function migrate($from, $to)
     {
-        if ($from === $to || $from === 0) {
-            throw new Doctrine_Migration_Exception('You specified an invalid migration path. The from and to cannot be the same and from cannot be zero.');
+        if ($from === $to) {
+            throw new Doctrine_Migration_Exception('You specified an invalid migration path. The from and to cannot be the same.');
         }
         
         $direction = $from > $to ? 'down':'up';
         
         if ($direction === 'up') {
             for ($i = $from + 1; $i <= $to; $i++) {
-                self::doDirectionStep($direction, $i);
+                $this->doMigrateStep($direction, $i);
             }
         } else {
             for ($i = $from; $i > $to; $i--) {
-                self::doDirectionStep($direction, $i);
+                $this->doMigrateStep($direction, $i);
             }
         }
         
-        self::setCurrentVersion($to);
+        $this->setCurrentVersion($to);
     }
     
-    public static function doDirectionStep($direction, $num)
+    protected function getMigrationClass($num)
     {
-        $className = 'Migration' . $num;
+        $classes = $this->migrationClasses;
         
-        if (class_exists($className)) {
-            $migrate = new $className();
-            $migrate->migrate($direction);
-        } else {
-            throw new Doctrine_Migration_Exception('Could not find migration class: ' . $className);
+        foreach ($classes as $className => $fileName) {
+            $e = explode('_', $fileName);
+            $classMigrationNum = (int) $e[0];
+            
+            if ($classMigrationNum === $num) {
+                return new $className();
+            }
         }
+        
+        throw new Doctrine_Migration_Exception('Could not find migration class for migration step: '.$num);
     }
     
-    public static function loadMigrationClasses($directory)
+    public function doMigrateStep($direction, $num)
     {
-        $classes = get_declared_classes();
-
-        if ($directory !== null) {
-            foreach ((array) $directory as $dir) {
-                $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
-                                                        RecursiveIteratorIterator::LEAVES_ONLY);
-
-                foreach ($it as $file) {
-                    $e = explode('.', $file->getFileName());
-                    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                        require_once $file->getPathName();
-                    }
-                }
-            }
-            
-            $classes = array_diff(get_declared_classes(), $classes);
-        }
-        
-        return self::getLoadedMigrationClasses($classes);
+        $migrate = $this->getMigrationClass($num);
+        $migrate->doMigrate($direction);
     }
     
-    public static function getLoadedMigrationClasses($classes = null)
-    {
-        if ($classes === null) {
-            $classes = get_declared_classes();
-        }
-        
-        $parent = new ReflectionClass('Doctrine_Migration');
-        $loadedClasses = array();
-        
-        foreach ($classes as $name) {
-            $class = new ReflectionClass($name);
-            
-            while ($class->isSubclassOf($parent)) {
-
-                $class = $class->getParentClass();
-                if ($class === false) {
-                    break;
-                }
-            }
-            
-            if ($class === false) {
-                continue;
-            }
-            
-            $loadedClasses[] = $name;
-        }
-        
-        return $loadedClasses;
-    }
-    
-    public function migrate($direction)
+    public function doMigrate($direction)
     {
         if (method_exists($this, $direction)) {
             $this->$direction();

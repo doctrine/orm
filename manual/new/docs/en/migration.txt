@@ -2,18 +2,11 @@ The Doctrine Migration tools allow you to migrate databases and it issues alter 
 
 ++ Writing Migration Classes
 
-Migration classes consist of a simple class that extends from Doctrine_Migration. You can define a public up() and down() method that is meant for doing and undoing changes to a database for that migration step.
+Migration classes consist of a simple class that extends from Doctrine_Migration. You can define a public up() and down() method that is meant for doing and undoing changes to a database for that migration step. The class name is completely arbitrary, but the name of the file which contains the class must have a prefix containing the number it represents in the migration process. Example: XXX_representative_name.class.php
 
 <code type="php">
-class MigrationTest extends Doctrine_Record
-{
-    public function setTableDefinition() 
-    {
-        $this->hasColumn('field1', 'string');
-    }
-}
-
-class Migration2 extends Doctrine_Migration
+// 001_add_table.class.php
+class AddTable extends Doctrine_Migration
 {
     public function up()
     {
@@ -26,7 +19,8 @@ class Migration2 extends Doctrine_Migration
     }
 }
 
-class Migration3 extends Doctrine_Migration
+// 002_add_column.class.php
+class AddColumn extends Doctrine_Migration
 {
     public function up()
     {
@@ -39,7 +33,8 @@ class Migration3 extends Doctrine_Migration
     }
 }
 
-class Migration4 extends Doctrine_Migration
+// 003_change_column.class.php
+class ChangeColumn extends Doctrine_Migration
 {
     public function up()
     {
@@ -74,7 +69,8 @@ public function removeIndex($tableName, $indexName)
 You can alter table directly in your up() and down() methods like you normally would by creating new model instances and calling save() or creating queries and deleting data.
 
 <code type="php">
-class Migration1 extends Doctrine_Migration
+// XXX_add_user.class.php
+class AddUser extends Doctrine_Migration
 {
     public function up()
     {
@@ -97,16 +93,15 @@ class Migration1 extends Doctrine_Migration
 ++ Performing Migrations
 
 <code type="php">
-// Upgrade one at a time
-Doctrine_Migration::migration(1, 2);
-Doctrine_Migration::migration(2, 3);
-Doctrine_Migration::migration(3, 4);
+$migration = new Doctrine_Migration('migration_classes');
+$migration->migrate(0, 1);
+$migration->migrate(1, 2);
+$migration->migrate(2, 3);
 
 // Then revert back to version 1
-Doctrine_Migration::migration(4, 1);
+$migration->migrate(3, 2);
+$migration->migrate(2, 1);
+$migration->migrate(1, 0);
 
-// One big upgrade
-Doctrine_Migration::migration(1, 4);
-
-echo Doctrine_Migration::getCurrentVersion(); // should echo 4
+echo $migration->getCurrentVersion(); // should echo 0
 </code>

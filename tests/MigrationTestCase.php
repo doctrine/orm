@@ -33,63 +33,17 @@
 class Doctrine_Migration_TestCase extends Doctrine_UnitTestCase 
 {
     public function testMigration()
-    {
+    {        
         // Upgrade one at a time
-        Doctrine_Migration::migration(1, 2);
-        Doctrine_Migration::migration(2, 3);
-        Doctrine_Migration::migration(3, 4);
+        $migration = new Doctrine_Migration('migration_classes');
+        $migration->migrate(0, 1);
+        $migration->migrate(1, 2);
         
         // Then revert back to version 1
-        Doctrine_Migration::migration(4, 1);
+        $migration->migrate(2, 1);
+        $migration->migrate(1, 0);
         
-        // Check to make sure the current version is 1
-        $this->assertEqual(Doctrine_Migration::getCurrentVersion(), 1);
+        // Check to make sure the current version is 0
+        $this->assertEqual($migration->getCurrentVersion(), 0);
     }
-}
-
-class MigrationTest extends Doctrine_Record
-{
-    public function setTableDefinition() 
-    {
-        $this->hasColumn('field1', 'string');
-    }
-}
-
-class Migration2 extends Doctrine_Migration
-{
-    public function up()
-    {
-        $this->createTable('migration_test', array('field1' => array('type' => 'string')));
-    }
-    
-    public function down()
-    {
-        $this->dropTable('migration_test');
-    }
-}
-
-class Migration3 extends Doctrine_Migration
-{
-    public function up()
-    {
-        $this->addColumn('migration_test', 'field1', 'string');
-    }
-    
-    public function down()
-    {
-        $this->renameColumn('migration_test', 'field1', 'field2');
-    }
-}
-
-class Migration4 extends Doctrine_Migration
-{
-    public function up()
-    {
-        $this->changeColumn('migration_test', 'field1', 'integer');
-    }
-    
-    public function down()
-    {
-        $this->changeColumn('migration_test', 'field1', 'string');
-    }  
 }
