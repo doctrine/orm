@@ -1,10 +1,13 @@
 <?php 
 class BlogTag extends Doctrine_Record
 {
-    public function setUp() {
-        $this->hasMany('Photo', 'Phototag.photo_id');
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string', 100);
+        $this->hasColumn('description', 'string');
     }
-    public function setTableDefinition() {
-        $this->hasColumn('tag', 'string', 100);
+    public function setUp()
+    {
+        $this->hasOne('Blog', array('onDelete' => 'CASCADE'));
     }
 }
