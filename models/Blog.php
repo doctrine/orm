@@ -14,7 +14,7 @@ class Taggable extends Doctrine_Template
 {
     public function setUp()
     {
-        $this->hasMany('[Component]TagTemplate as Tag');
+        //$this->hasMany('[Component]TagTemplate as Tag');
     }
 }
 class TagTemplate extends Doctrine_Record
@@ -27,6 +27,6 @@ class TagTemplate extends Doctrine_Record
 
     public function setUp()
     {
-        $this->hasOne('[Component]', array('onDelete' => 'CASCADE'));
+        //$this->hasOne('[Component]', array('onDelete' => 'CASCADE'));
     }
 }
