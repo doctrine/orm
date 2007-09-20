@@ -148,6 +148,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
             case 'double':
             case 'float':
             case 'bool':
+            case 'decimal':
             case 'int':
                 return $input;
             case 'array':
