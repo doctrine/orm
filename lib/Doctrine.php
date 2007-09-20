@@ -391,7 +391,7 @@ final class Doctrine
     /**
      * @var string $path            doctrine root directory
      */
-    private static $path;
+    private static $_path;
     /**
      * @var boolean $_debug
      */
@@ -412,10 +412,10 @@ final class Doctrine
      */
     public static function getPath()
     {
-        if ( ! self::$path) {
-            self::$path = dirname(__FILE__);
+        if ( ! self::$_path) {
+            self::$_path = dirname(__FILE__);
         }
-        return self::$path;
+        return self::$_path;
     }
     /**
      * loadAll
@@ -591,10 +591,10 @@ final class Doctrine
         if (class_exists($classname, false)) {
             return false;
         }
-        if ( ! self::$path) {
-            self::$path = dirname(__FILE__);
+        if ( ! self::$_path) {
+            self::$_path = dirname(__FILE__);
         }
-        $class = self::$path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR,$classname) . '.php';
+        $class = self::$_path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR,$classname) . '.php';
 
         if ( ! file_exists($class)) {
             return false;
@@ -653,7 +653,19 @@ final class Doctrine
      */
     public static function classify($tablename)
     {
-        return preg_replace('~(_?)(_)([\w])~e', '"$1".strtoupper("$3")', ucfirst($tablename));
+        echo "rat";
+        return preg_replace_callback('~(_?)(_)([\w])~', array("Doctrine", "classifyCallback"), ucfirst($tablename));
+    }
+
+    /**
+     * Callback function to classify a classname propperly. 
+     *
+     * @param array $matches An array of matches from a pcre_replace call
+     * @return string A string with matches 1 and mathces 3 in upper case. 
+     */
+    public static function classifyCallback($matches)
+    {
+        return $matches[1] . strtoupper($matches[3]);
     }
     /**
      * checks for valid class name (uses camel case and underscores)
