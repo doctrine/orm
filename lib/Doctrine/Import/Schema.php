@@ -106,6 +106,7 @@ abstract class Doctrine_Import_Schema
         foreach ($array as $name => $properties) {
             $className = $properties['className'];     
             $relations = $properties['relations'];
+            $columns = $properties['columns'];
             
             foreach ($relations as $alias => $relation) {
                 $class = isset($relation['class']) ? $relation['class']:$alias;
@@ -113,10 +114,17 @@ abstract class Doctrine_Import_Schema
                 $relation['alias'] = $alias;
                 $relation['class'] = $class;
                 
+                if (isset($relation['type']) && $relation['type']) {
+                    $relation['type'] = $relation['type'] === 'one' ? Doctrine_Relation::ONE:Doctrine_Relation::MANY;
+                } else {
+                    $relation['type'] = Doctrine_Relation::ONE;
+                }
+                
                 $this->relations[$className][$class] = $relation;
             }
         }
         
+        /*
         // Fix the other end of the relations
         foreach($this->relations as $className => $relations) {
             foreach ($relations AS $alias => $relation) {
@@ -125,9 +133,11 @@ abstract class Doctrine_Import_Schema
                 $newRelation['local'] = $relation['foreign'];
                 $newRelation['class'] = $className;
                 $newRelation['alias'] = $className;
+                $newRelation['type'] = $relation['type'] === Doctrine_Relation::ONE ? Doctrine_Relation::MANY:Doctrine_Relation::ONE;
                 
                 $this->relations[$relation['class']][$className] = $newRelation;
             }
         }
+        */
     }
 }

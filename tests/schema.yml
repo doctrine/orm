@@ -9,6 +9,13 @@ User:
     username:
       type: string
       length: 11
+  relations:
+    Groups:
+      class: Group
+      refClass: UserGroup
+      local: user_id
+      foreign: group_id
+      type: many
 
 UserGroup:
   tableName: user_group
@@ -17,16 +24,20 @@ UserGroup:
     user_id:
       type: int
       length: 11
+      primary: true
     group_id:
       type: int
       length: 11
+      primary: true
   relations:
     User:
       foreign: id
       local: user_id
+      type: one
     Group:
       foreign: id
       local: group_id
+      type: one
 
 Group:
   tableName: group
@@ -38,3 +49,10 @@ Group:
     name:
       type: string
       length: 255
+  relations:
+    Users:
+      class: User
+      refClass: UserGroup
+      local: group_id
+      foreign: user_id
+      type: many
