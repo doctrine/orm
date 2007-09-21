@@ -32,4 +32,28 @@
  */
 class Doctrine_Record_Filter_TestCase extends Doctrine_UnitTestCase 
 {
+    public function testStandardFiltersThrowsExceptionWhenGettingUnknownProperties()
+    {
+        $u = new User();
+        
+        try {
+            $u->unknown;
+        
+            $this->fail();
+        } catch (Doctrine_Record_Exception $e) {
+            $this->pass();
+        }
+    }
+    public function testStandardFiltersThrowsExceptionWhenSettingUnknownProperties()
+    {
+        $u = new User();
+        
+        try {
+            $u->unknown = 'something';
+        
+            $this->fail();
+        } catch (Doctrine_Record_Exception $e) {
+            $this->pass();
+        }
+    }
 }
