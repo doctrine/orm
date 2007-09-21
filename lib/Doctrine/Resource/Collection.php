@@ -22,13 +22,6 @@ class Doctrine_Resource_Collection extends Doctrine_Access implements Countable,
         return new ArrayIterator($data);
     }
     
-    public function save()
-    {
-        foreach ($data as $record) {
-            $record->save();
-        }
-    }
-    
     public function getFirst()
     {
         return $this->data[0];
@@ -37,10 +30,17 @@ class Doctrine_Resource_Collection extends Doctrine_Access implements Countable,
     public function toArray()
     {
         $array = array();
-        foreach($this->data as $key => $record) {
+        foreach ($this->data as $key => $record) {
             $array[$key] = $record->toArray();
         }
         
         return $array;
+    }
+    
+    public function save()
+    {
+        foreach ($this->data as $record) {
+            $record->save();
+        }
     }
 }
