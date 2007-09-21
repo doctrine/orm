@@ -24,7 +24,7 @@ class Doctrine_Resource_Collection extends Doctrine_Access implements Countable,
     
     public function getFirst()
     {
-        return $this->data[0];
+        return isset($this->data[0]) ? $this->data[0]:null;
     }
     
     public function toArray()

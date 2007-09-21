@@ -15,8 +15,6 @@ class Doctrine_Resource_Client extends Doctrine_Resource
     
     public function newRecord($model)
     {
-        $record = new Doctrine_Resource_Record($model, $this->config);
-        
-        return $record;
+        return new Doctrine_Resource_Record($model, $this->config);
     }
 }
