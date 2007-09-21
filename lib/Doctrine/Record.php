@@ -772,12 +772,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             return $value;
         }
 
-        if (isset($this->_id[$lower])) {
-            return $this->_id[$lower];
-        }
-        if ($name === $this->_table->getIdentifier()) {
-            return null;
-        }
         if (isset($this->_values[$lower])) {
             return $this->_values[$lower];
         }
@@ -793,8 +787,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             return $this->_references[$name];
 
         } catch(Doctrine_Table_Exception $e) { 
-
-            throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
+            foreach ($this->_table->getFilters() as $filter) {
+                if (($value = $filter->filterGet($this, $name, $value)) !== null) {
+                    return $value;
+                }
+            }
         }
     }
     /**

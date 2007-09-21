@@ -39,12 +39,12 @@ abstract class Doctrine_Record_Filter
      *
      * @param mixed $name                       name of the property or related component
      */
-    abstract public function filterSet($key, $value);
+    abstract public function filterSet(Doctrine_Record $record, $name, $value);
     /**
      * filterGet
      * defines an implementation for filtering the get() method of Doctrine_Record
      *
      * @param mixed $name                       name of the property or related component
      */
-    abstract public function filterGet($key);
+    abstract public function filterGet(Doctrine_Record $record, $name);
 }

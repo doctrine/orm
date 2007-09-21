@@ -39,9 +39,9 @@ class Doctrine_Record_Filter_Standard extends Doctrine_Record_Filter
      *
      * @param mixed $name                       name of the property or related component
      */
-    public function filterSet($key, $value)
-    { 
-        throw new Doctrine_Record_Exception('Unknown record property / related component \'' . $key . '\'.');
+    public function filterSet(Doctrine_Record $record, $name, $value)
+    {
+        throw new Doctrine_Record_Exception('Unknown record property / related component \'' . $name . '\'.');
     }
     /**
      * filterGet
@@ -49,8 +49,8 @@ class Doctrine_Record_Filter_Standard extends Doctrine_Record_Filter
      *
      * @param mixed $name                       name of the property or related component
      */
-    public function filterGet($key)
+    public function filterGet(Doctrine_Record $record, $name)
     {
-        throw new Doctrine_Record_Exception('Unknown record property / related component \'' . $key . '\'.');
+        throw new Doctrine_Record_Exception('Unknown record property / related component \'' . $name . '\'.');
     }
 }
