@@ -1,6 +1,9 @@
 ---
 Test:
-  inheritance: { extends: User, keyField: otype, keyValue: 1 }
+  inheritance:
+    extends: User
+    keyField: otype
+    keyValue: 1
 Account: 
   tableName: account
   className: Account
