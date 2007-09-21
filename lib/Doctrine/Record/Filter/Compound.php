@@ -20,8 +20,7 @@
  */
 
 /**
- * Doctrine_Record_Filter
- * Filters the record getters and setters
+ * Doctrine_Record_Filter_Compound
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -31,30 +30,38 @@
  * @since       1.0
  * @version     $Revision: 1298 $
  */
-abstract class Doctrine_Record_Filter
+class Doctrine_Record_Filter_Compound extends Doctrine_Record_Filter
 {
-    protected $_table;
+    protected $_aliases = array();
 
-    public function setTable(Doctrine_Table $table)
+    public function __construct(array $aliases)
     {
-        $this->_table = $table;
+    	// check that all aliases exist
+    	foreach ($aliases as $alias) {
+            $this->_table->getRelation($alias);
+    	}
+
+        $this->_aliases = $aliases;
     }
-    public function getTable()
-    {
-        return $this->_table;
-    }
+
     /**
      * filterSet
      * defines an implementation for filtering the set() method of Doctrine_Record
      *
      * @param mixed $name                       name of the property or related component
      */
-    abstract public function filterSet(Doctrine_Record $record, $name, $value);
+    public function filterSet(Doctrine_Record $record, $name, $value)
+    {
+
+    }
     /**
      * filterGet
      * defines an implementation for filtering the get() method of Doctrine_Record
      *
      * @param mixed $name                       name of the property or related component
      */
-    abstract public function filterGet(Doctrine_Record $record, $name);
+    public function filterGet(Doctrine_Record $record, $name)
+    {
+
+    }
 }
