@@ -142,7 +142,7 @@ class Doctrine_Import_Schema
                 $class = isset($relation['class']) ? $relation['class']:$alias;
                 
                 $relation['foreign'] = isset($relation['foreign'])?$relation['foreign']:'id';                
-                $relation['foreign_alias'] = isset($relation['alias'])?$relation['alias']:null;
+                $relation['foreignAlias'] = isset($relation['alias'])?$relation['alias']:null;
                 $relation['alias'] = $alias;
                 $relation['class'] = $class;
                 
@@ -164,7 +164,7 @@ class Doctrine_Import_Schema
                 $newRelation['foreign'] = $relation['local'];
                 $newRelation['local'] = $relation['foreign'];
                 $newRelation['class'] = $className;
-                $newRelation['alias'] = isset($relation['foreign_alias'])?$relation['foreign_alias']:$className;
+                $newRelation['alias'] = isset($relation['foreignAlias'])?$relation['foreignAlias']:$className;
                 $newRelation['type'] = $relation['type'] === Doctrine_Relation::ONE ? Doctrine_Relation::MANY:Doctrine_Relation::ONE;
                 
                 $this->relations[$relation['class']][$className] = $newRelation;
