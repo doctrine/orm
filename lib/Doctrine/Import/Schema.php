@@ -73,7 +73,7 @@ class Doctrine_Import_Schema
             $options = array();
             $options['className'] = $properties['className'];
             $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['className'].'.class.php';
-            
+            $options['tableName'] = isset($properties['tableName'])?$properties['tableName']:null;
             $columns = $properties['columns'];
             
             $relations = isset($this->relations[$options['className']]) ? $this->relations[$options['className']]:array();
@@ -116,6 +116,7 @@ class Doctrine_Import_Schema
                 $colDesc['default'] = isset($field['default']) ? (string) $field['default']:null;
                 $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
                 $colDesc['autoinc'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):null;
+                $colDesc['values'] = isset($field['values']) ? (array) $field['values']: null;
                 
                 $columns[(string) $colDesc['name']] = $colDesc;
             }

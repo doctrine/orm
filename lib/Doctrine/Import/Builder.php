@@ -95,6 +95,7 @@ class %s extends Doctrine_Record
     public function setTableDefinition()
     {
 %s
+%s
     }
     public function setUp()
     {
@@ -144,8 +145,8 @@ END;
             if (isset($column['unsigned']) && $column['unsigned']) {
                 $a[] = '\'unsigned\' => true';
             }
-            if ($column['type'] == 'enum' && isset($column['values']) && $column['values']) {
-                $a[] = '\'values\' => array(' . implode(',', $column['values']) . ')';
+            if ($column['type'] == 'enum' && isset($column['values']) ) {
+                $a[] = '\'values\' => array(\'' . implode('\',\'', $column['values']) . '\')';
             }
 
             if ( ! empty($a)) {
@@ -228,9 +229,10 @@ END;
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
         }
 
-        //$opt     = array(0 => str_repeat(' ', 8) . '$this->setTableName(\''. $table .'\');');
+        
+        $opt  = isset($options['tableName']) && !empty($options['tableName']) ? str_repeat(' ', 8) . '$this->setTableName(\''. $options['tableName'].'\');':'';
 
-        $content = sprintf(self::$tpl, $options['className'],
+        $content = sprintf(self::$tpl, $options['className'],$opt,
                           $this->buildColumnDefinition($columns),
                           $this->buildRelationDefinition($relations));
                           
