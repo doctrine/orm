@@ -6,6 +6,12 @@ class Doctrine_Resource_Record extends Doctrine_Record_Abstract implements Count
     public $model = null;
     public $changes = array();
     
+    public function __construct($model, $config)
+    {
+        $this->model = $model;
+        $this->config = $config;
+    }
+    
     public function get($get)
     {
         if (!isset($this->data[$get])) {
@@ -46,6 +52,10 @@ class Doctrine_Resource_Record extends Doctrine_Record_Abstract implements Count
         $response = Doctrine_Resource::request($this->config['url'], $request);
         
         $array = Doctrine_Parser::load($response, $request['format']);
+        
+        $this->data = array_merge($this->data, $array);
+        
+        return $array;
     }
     
     public function toArray()

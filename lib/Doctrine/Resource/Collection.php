@@ -5,6 +5,11 @@ class Doctrine_Resource_Collection extends Doctrine_Access implements Countable,
     public $config = array();
     public $model = null;
     
+    public function __construct($model)
+    {
+        $this->model = $model;
+    }
+    
     public function count()
     {
         return count($data);

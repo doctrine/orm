@@ -78,14 +78,10 @@ class Doctrine_Resource_Query extends Doctrine_Resource
     {
         $model = $passedKey ? $passedKey:$this->getModel();
         
-        $collection = new Doctrine_Resource_Collection();
-        $collection->model = $model;
-        $collection->config = $this->config;
+        $collection = new Doctrine_Resource_Collection($model, $this->config);
         
         foreach ($array as $record) {
-            $r = new Doctrine_Resource_Record();
-            $r->config = $this->config;
-            $r->model = $model;
+            $r = new Doctrine_Resource_Record($model, $this->config);
             
             foreach ($record as $key => $value) {
                 if (is_array($value)) {

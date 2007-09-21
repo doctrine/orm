@@ -27,25 +27,37 @@ class Doctrine_Resource_Server extends Doctrine_Resource
                 throw new Doctrine_Resource_Exception('You must specify a dql query');
             }
         } else if ($request['type'] == 'save') {
-            $table = Doctrine_Manager::getInstance()->getTable($request['model']);
+            $model = $request['model'];
+            $table = Doctrine_Manager::getInstance()->getTable($model);
             $pks = (array) $table->getIdentifier();
             $pks = array_flip($pks);
             
+            $hasPk = false;
             foreach (array_keys($pks) as $key) {
-                $pks[$key] = $request['data'][$key];
+                if (isset($request['data'][$key]) && $request['data'][$key]) {
+                    $pks[$key] = $request['data'][$key];
+                    
+                    $hasPk = true;
+                }
             }
             
-            $record = $table->find($pks);
+            if ($hasPk) {
+                $record = $table->find($pks);
+            } else {
+                $record = new $model();
+            }
             
-            $changes = $request['changes'];
-            
-            foreach ($changes as $key => $value) {
-                $record->$key = $value;
+            if (isset($request['changes']) && !empty($request['changes'])) {
+                $changes = $request['changes'];
+                
+                foreach ($changes as $key => $value) {
+                    $record->$key = $value;
+                }
             }
             
             $record->save();
             
-            $result = array('success' => true);
+            $result = $record->toArray();
         }
         
         return Doctrine_Parser::dump($result, $format);
