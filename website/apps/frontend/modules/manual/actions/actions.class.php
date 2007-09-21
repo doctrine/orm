@@ -1,36 +1,5 @@
 <?php
 /**
- * A generic autoload function
- * 
- * Filename is generated from class name by replacing underscores with
- * directory separators and by adding a '.php' extension.
- * 
- * Then the filename is searched from include paths, and if found it is
- * included with require_once().
- *
- * @param $class string  class name to be loaded
- * @return bool  true if a class was loaded, false otherwise
- */
-function autoload($class)
-{
-    if (class_exists($class, false)) {
-        return false;
-    }
-    
-    $paths = explode(PATH_SEPARATOR, get_include_path());
-    $filename = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
-   
-    foreach($paths as $path) {
-        if (file_exists($path . DIRECTORY_SEPARATOR . $filename)) {
-            require_once($filename);
-            return true;
-        }
-    }
-    
-    return false;
-}
-
-/**
  * Returns the revision of a SVN controlled file.
  *
  * The revision is acquired by executing the 'svn info' command for the file and
@@ -180,10 +149,10 @@ class manualActions extends sfActions
     set_include_path($includePath);
     
     require_once('Sensei/Sensei.php');
+    require_once('Text/Wiki.php');
 
     spl_autoload_register(array('Doctrine', 'autoload'));
     spl_autoload_register(array('Sensei', 'autoload'));
-    spl_autoload_register('autoload');
     
     // Temporary directory used by cache and LaTeX to Pdf conversion
     $tempDir = $manualPath.DIRECTORY_SEPARATOR.'new'.DIRECTORY_SEPARATOR.'tmp';
