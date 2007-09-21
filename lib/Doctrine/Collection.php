@@ -603,6 +603,18 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             return $this->data;
         }
     }
+    public function fromArray($array)
+    {
+        $data = array();
+        foreach ($array as $key => $row) {
+            $record = $this->_table->getRecord();
+            $record->fromArray($row);
+            
+            $data[$key] = $record;
+        }
+        
+        $this->data = $data;
+    }
     public function getDeleteDiff()
     {
         return array_udiff($this->_snapshot, $this->data, array($this, "compareRecords"));

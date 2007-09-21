@@ -1139,6 +1139,16 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         return array_merge($a, $this->_values);
     }
+    public function fromArray($array)
+    {
+        foreach ($array as $key => $value) {
+            if (!$this->getTable()->hasRelation($key) && $this->getTable()->hasColumn($key)) {
+                $this->$key = $value;
+            } else {
+                $this->$key->fromArray($value);
+            }
+        }
+    }
     /**
      * exists
      * returns true if this record is persistent, otherwise false
