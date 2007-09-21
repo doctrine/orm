@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Export_Schema_Xml_TestCase
+ * Doctrine_Export_Schema_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -30,6 +30,38 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Export_Schema_Xml_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Export_Schema_TestCase extends Doctrine_UnitTestCase 
 {
+    public $tables =   array('Entity',
+                      'EntityReference',
+                      'EntityAddress',
+                      'Email',
+                      'Phonenumber',
+                      'Groupuser',
+                      'Group',
+                      'User',
+                      'Album',
+                      'Song',
+                      'Element',
+                      'Error',
+                      'Description',
+                      'Address',
+                      'Account',
+                      'Task',
+                      'Resource',
+                      'Assignment',
+                      'ResourceType',
+                      'ResourceReference');
+    
+    public function testYmlExport()
+    {
+        $export = new Doctrine_Export_Schema();
+        $export->exportSchema('schema.yml', 'yml', dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'models', $this->tables);
+    }
+    
+    public function testXmlExport()
+    {
+        $export = new Doctrine_Export_Schema();
+        $export->exportSchema('schema.xml', 'xml', dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'models', $this->tables);
+    }
 }

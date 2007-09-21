@@ -67,18 +67,48 @@ class Doctrine_Parser_Xml extends Doctrine_Parser
     
     public function loadData($path)
     {
-        if ( !file_exists($path) OR !is_writeable($path) ) {
-            throw new Doctrine_Parser_Exception('Xml file '. $path .' could not be read');
-        }
-        
-        if ( ! ($xmlString = file_get_contents($path))) {
-            throw new Doctrine_Parser_Exception('Xml file '. $path . ' is empty');
-        }
-        
-        if (!file_exists($path) OR !is_readable($path) OR !($xmlString = file_get_contents($path))) {
+        if (file_exists($path) && is_readable($path)) {
+            $xmlString = file_get_contents($path);
+        } else {
             $xmlString = $path;
         }
         
-        return simplexml_load_string($xmlString);
+        $simpleXml = simplexml_load_string($xmlString);
+        
+        return $this->prepareData($simpleXml);
+    }
+    
+    public function prepareData($simpleXml)
+    {
+        if ($simpleXml instanceof SimpleXMLElement) {
+            $children = $simpleXml->children();
+            $return = null;
+        }
+
+        foreach ($children as $element => $value) {
+            if ($value instanceof SimpleXMLElement) {
+                $values = (array)$value->children();
+
+                if (count($values) > 0) {
+                    $return[$element] = $this->prepareData($value);
+                } else {
+                    if (!isset($return[$element])) {
+                        $return[$element] = (string)$value;
+                    } else {
+                        if (!is_array($return[$element])) {
+                            $return[$element] = array($return[$element], (string)$value);
+                        } else {
+                            $return[$element][] = (string)$value;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (is_array($return)) {
+            return $return;
+        } else {
+            return $false;
+        }
     }
 }

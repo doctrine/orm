@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Import_Schema_Xml_TestCase
+ * Doctrine_Import_Schema_TestCase
  *
  * @package     Doctrine
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
@@ -30,12 +30,30 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Import_Schema_Xml_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Import_Schema_TestCase extends Doctrine_UnitTestCase 
 {
+    public function testYmlImport()
+    {
+        $import = new Doctrine_Import_Schema();
+        $import->importSchema('schema.yml', 'yml', 'classes');
+        
+        if ( ! file_exists('classes/User.class.php')) {
+            $this->fail();
+        } else {
+            unlink('classes/User.class.php');
+        }
+        
+        if ( ! file_exists('classes/Group.class.php')) {
+            $this->fail();
+        } else {
+            unlink('classes/Group.class.php');
+        }
+    }
+    
     public function testXmlImport()
     {
-        $import = new Doctrine_Import_Schema_Xml();
-        $import->importSchema('schema.xml', 'classes');
+        $import = new Doctrine_Import_Schema();
+        $import->importSchema('schema.xml', 'xml', 'classes');
         
         if ( ! file_exists('classes/User.class.php')) {
             $this->fail();

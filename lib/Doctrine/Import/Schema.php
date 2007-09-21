@@ -41,34 +41,7 @@ class Doctrine_Import_Schema
 {
     public $relations = array();
     
-    /**
-     * Parse the schema and return it in an array
-     *
-     * @param  string $schema
-     * @access public
-     */
-    public function parseSchema($schema)
-    {
-        throw new Doctrine_Import_Exception('This functionality is implemented by the driver');
-    }
     
-    /**
-     * parse
-     *
-     * Function to do the actual parsing of the file
-     *
-     * @param string $schema 
-     * @return void
-     * @author Jonathan H. Wage
-     */
-     public function parse($schema)
-     {
-         $class = get_class($this);
-         $type = strtolower(str_replace('Doctrine_Import_Schema_', '', $class));
-         
-         return Doctrine_Parser::load($schema, $type);
-     }
-     
     /**
      * importSchema
      *
@@ -82,19 +55,15 @@ class Doctrine_Import_Schema
      */
     public function importSchema($schema, $format, $directory, $models = array())
     {
-        $className = 'Doctrine_Import_Schema_'.ucwords($format);
-        
-        $import = new $className();
-        
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
         
         $array = array();
         foreach ((array) $schema AS $s) {
-            $array = array_merge($array, $import->parseSchema($s));
+            $array = array_merge($array, $this->parseSchema($s, $format));
         }
         
-        $import->buildRelationships($array);
+        $this->buildRelationships($array);
         
         foreach ($array as $name => $properties) {
             if (!empty($models) && !in_array($properties['className'], $models)) {
@@ -107,11 +76,59 @@ class Doctrine_Import_Schema
             
             $columns = $properties['columns'];
             
-            $relations = isset($import->relations[$options['className']]) ? $import->relations[$options['className']]:array();
+            $relations = isset($this->relations[$options['className']]) ? $this->relations[$options['className']]:array();
             
             $builder->buildRecord($options, $columns, $relations);
         }
-    }  
+    }
+    
+    /**
+     * parseSchema
+     *
+     * A method to parse a Yml Schema and translate it into a property array. 
+     * The function returns that property array.
+     *
+     * @param  string $schema   Path to the file containing the XML schema
+     * @return array
+     */
+    public function parseSchema($schema, $type)
+    {
+        $array = Doctrine_Parser::load($schema, $type);
+        
+        $build = array();
+        
+        foreach ($array as $className => $table) {
+            $columns = array();
+            
+            $className = isset($table['className']) ? (string) $table['className']:(string) $className;
+            $tableName = isset($table['tableName']) ? (string) $table['tableName']:(string) $className;
+            
+            foreach ($table['columns'] as $columnName => $field) {
+                
+                $colDesc = array();
+                $colDesc['name'] = isset($field['name']) ? (string) $field['name']:$columnName;
+                $colDesc['type'] = isset($field['type']) ? (string) $field['type']:null;
+                $colDesc['ptype'] = isset($field['ptype']) ? (string) $field['ptype']:(string) $colDesc['type'];
+                $colDesc['length'] = isset($field['length']) ? (int) $field['length']:null;
+                $colDesc['fixed'] = isset($field['fixed']) ? (int) $field['fixed']:null;
+                $colDesc['unsigned'] = isset($field['unsigned']) ? (bool) $field['unsigned']:null;
+                $colDesc['primary'] = isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null;
+                $colDesc['default'] = isset($field['default']) ? (string) $field['default']:null;
+                $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
+                $colDesc['autoinc'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):null;
+                
+                $columns[(string) $colDesc['name']] = $colDesc;
+            }
+
+            $build[$className]['tableName'] = $tableName;
+            $build[$className]['className'] = $className;
+
+            $build[$className]['columns'] = $columns;
+            $build[$className]['relations'] = isset($table['relations']) ? $table['relations']:array();
+        }
+        
+        return $build;
+    }
     
     public function buildRelationships($array)
     {

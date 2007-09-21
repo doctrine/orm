@@ -37,36 +37,7 @@
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>
  */
 class Doctrine_Export_Schema
-{
-    /**
-     * build
-     * 
-     * Build the schema string to be dumped to file
-     *
-     * @param string $array 
-     * @return void
-     */
-    public function build($array)
-    {
-        throw new Doctrine_Export_Exception('This functionality is implemented by the driver');
-    }
-    
-    /**
-     * dump
-     * 
-     * Dump the array to the schema file
-     *
-     * @param string $array
-     * @param string $schema
-     * @return void
-     */
-    public function dump($array, $schema)
-    {
-        $data = $this->build($array);
-        
-        file_put_contents($schema, $data);
-    }
-    
+{    
     /**
      * buildSchema
      * 
@@ -171,11 +142,8 @@ class Doctrine_Export_Schema
      */
     public function exportSchema($schema, $format, $directory, $models = array())
     {
-        $className = 'Doctrine_Export_Schema_'.ucwords($format);
+        $array = $this->buildSchema($directory, $models);
         
-        $export = new $className();
-        $array = $export->buildSchema($directory, $models);
-        
-        return $export->dump($array, $schema);
+        Doctrine_Parser::dump($array, $format, $schema);
     }
 }

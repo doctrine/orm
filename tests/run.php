@@ -79,9 +79,6 @@ foreach($models as $key => $file) {
         }
     }
 }
-//require_once dirname(__FILE__) . '/../models/location.php';
-//require_once dirname(__FILE__) . '/../models/Blog.php';
-//require_once dirname(__FILE__) . '/classes.php';
 
 require_once dirname(__FILE__) . '/Test.php';
 require_once dirname(__FILE__) . '/UnitTestCase.php';
@@ -89,7 +86,6 @@ require_once dirname(__FILE__) . '/UnitTestCase.php';
 error_reporting(E_ALL | E_STRICT);
 
 $test = new GroupTest('Doctrine Framework Unit Tests');
-
 
 //TICKET test cases
 $tickets = new GroupTest('Tickets tests');
@@ -306,11 +302,6 @@ $test->addTestCase(new Doctrine_RawSql_TestCase());
 
 $test->addTestCase(new Doctrine_NewCore_TestCase());
 
-//$test->addTestCase(new Doctrine_Import_Schema_Xml_TestCase());
-//$test->addTestCase(new Doctrine_Export_Schema_Xml_TestCase());
-$test->addTestCase(new Doctrine_Import_Schema_Yml_TestCase());
-$test->addTestCase(new Doctrine_Export_Schema_Yml_TestCase());
-
 $test->addTestCase(new Doctrine_Template_TestCase());
 
 //$test->addTestCase(new Doctrine_Import_Builder_TestCase());
@@ -338,6 +329,10 @@ $test->addTestCase($cache);
 $test->addTestCase(new Doctrine_Query_ApplyInheritance_TestCase());
 
 $test->addTestCase(new Doctrine_Migration_TestCase());
+
+$test->addTestCase(new Doctrine_Import_Schema_TestCase());
+
+$test->addTestCase(new Doctrine_Export_Schema_TestCase());
 
 class CliReporter extends HtmlReporter{
     public function paintHeader(){
