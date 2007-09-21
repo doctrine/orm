@@ -36,14 +36,15 @@ class Doctrine_Record_Filter_Compound extends Doctrine_Record_Filter
 
     public function __construct(array $aliases)
     {
-    	// check that all aliases exist
-    	foreach ($aliases as $alias) {
-            $this->_table->getRelation($alias);
-    	}
-
         $this->_aliases = $aliases;
     }
-
+    public function init()
+    {
+    	// check that all aliases exist
+    	foreach ($this->_aliases as $alias) {
+            $this->_table->getRelation($alias);
+    	}
+    }
     /**
      * filterSet
      * defines an implementation for filtering the set() method of Doctrine_Record
@@ -52,8 +53,26 @@ class Doctrine_Record_Filter_Compound extends Doctrine_Record_Filter
      */
     public function filterSet(Doctrine_Record $record, $name, $value)
     {
-
+        foreach ($this->_aliases as $alias) {
+            if ( ! $record->exists()) {
+                if (isset($record[$alias][$name])) {
+                    $record[$alias][$name] = $value;
+                    
+                    return $record;
+                }
+            } else {
+                // we do not want to execute N + 1 queries here, hence we cannot use get()
+                if (($ref = $record->reference($alias)) !== null) {
+                    if (isset($ref[$name])) {
+                        $ref[$name] = $value;
+                    }
+                    
+                    return $record;
+                }
+            }
+        }
     }
+
     /**
      * filterGet
      * defines an implementation for filtering the get() method of Doctrine_Record
@@ -62,6 +81,19 @@ class Doctrine_Record_Filter_Compound extends Doctrine_Record_Filter
      */
     public function filterGet(Doctrine_Record $record, $name)
     {
-
+        foreach ($this->_aliases as $alias) {
+            if ( ! $record->exists()) {
+                if (isset($record[$alias][$name])) {
+                    return $record[$alias][$name];
+                }
+            } else {
+                // we do not want to execute N + 1 queries here, hence we cannot use get()
+                if (($ref = $record->reference($alias)) !== null) {
+                    if (isset($ref[$name])) {
+                        return $ref[$name];
+                    }
+                }
+            }
+        }
     }
 }

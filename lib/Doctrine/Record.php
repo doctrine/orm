@@ -866,7 +866,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             try {
                 $this->coreSetRelated($name, $value);
             } catch(Doctrine_Table_Exception $e) {
-                throw new Doctrine_Record_Exception("Unknown property / related component '$name'.");
+                foreach ($this->_table->getFilters() as $filter) {
+                    if (($value = $filter->filterSet($this, $name, $value)) !== null) {
+                        return $value;
+                    }
+                }
             }
         }
     }
@@ -1311,6 +1315,17 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         return isset($this->_references[$name]);
     }
     /**
+     * reference
+     *
+     * @param string $name
+     */
+    public function reference($name)
+    {
+        if (isset($this->_references[$name])) {
+            return $this->_references[$name];
+        }
+    }
+    /**
      * obtainReference
      *
      * @param string $name
@@ -1457,6 +1472,11 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         
         return $this->_node;
     }
+
+    public function unshiftFilter(Doctrine_Record_Filter $filter)
+    {
+        return $this->_table->unshiftFilter($filter);
+    }
     /**
      * revert
      * reverts this record to given version, this method only works if versioning plugin
@@ -1482,7 +1502,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         return $this;
     }
     /**
-     * removeLinks
+     * unlink
      * removes links from this record to given records
      * if no ids are given, it removes all links
      *

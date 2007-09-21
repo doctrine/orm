@@ -129,20 +129,20 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *
      *      -- versioning
      */
-    protected $options          = array('name'           => null,
-                                        'tableName'      => null,
-                                        'sequenceName'   => null,
-                                        'inheritanceMap' => array(),
-                                        'enumMap'        => array(),
-                                        'engine'         => null,
-                                        'charset'        => null,
-                                        'collation'      => null,
-                                        'treeImpl'       => null,
-                                        'treeOptions'    => null,
-                                        'indexes'        => array(),
-                                        'parents'        => array(),
-                                        'versioning'     => null,
-                                        );
+    protected $options      = array('name'           => null,
+                                    'tableName'      => null,
+                                    'sequenceName'   => null,
+                                    'inheritanceMap' => array(),
+                                    'enumMap'        => array(),
+                                    'engine'         => null,
+                                    'charset'        => null,
+                                    'collation'      => null,
+                                    'treeImpl'       => null,
+                                    'treeOptions'    => null,
+                                    'indexes'        => array(),
+                                    'parents'        => array(),
+                                    'versioning'     => null,
+                                    );
     /**
      * @var Doctrine_Tree $tree                 tree object associated with this table
      */
@@ -154,7 +154,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     /**
      * @var array $_templates                   an array containing all templates attached to this table
      */
-    protected $_templates = array();
+    protected $_templates   = array();
+    /**
+     * @var array $_filters                     an array containing all record filters attached to this table
+     */
+    protected $_filters     = array();
+
 
 
     /**
@@ -284,6 +289,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         if ($this->isTree()) {
             $this->getTree()->setUp();
         }
+        $this->_filters[]  = new Doctrine_Record_Filter_Standard();
         $this->_repository = new Doctrine_Table_Repository($this);
     }
     /**
@@ -1280,6 +1286,22 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function addTemplate($template, Doctrine_Template $impl)
     {
         $this->_templates[$template] = $impl;
+
+        return $this;
+    }
+    public function unshiftFilter(Doctrine_Record_Filter $filter)
+    {
+    	$filter->setTable($this);
+    	
+    	$filter->init();
+
+        array_unshift($this->_filters, $filter);
+
+        return $this;
+    }
+    public function getFilters()
+    {
+        return $this->_filters;
     }
     /**
      * returns a string representation of this object
