@@ -73,8 +73,13 @@ class Doctrine_Import_Schema
             $options = array();
             $options['className'] = $properties['className'];
             $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['className'].'.class.php';
-            $options['tableName'] = isset($properties['tableName'])?$properties['tableName']:null;
-            $columns = $properties['columns'];
+            $options['tableName'] = isset($properties['tableName']) ? $properties['tableName']:null;
+            
+            if (isset($properties['inheritance'])) {
+                $options['inheritance'] = $properties['inheritance'];
+            }
+        
+            $columns = isset($properties['columns']) ? $properties['columns']:array();
             
             $relations = isset($this->relations[$options['className']]) ? $this->relations[$options['className']]:array();
             
@@ -103,29 +108,35 @@ class Doctrine_Import_Schema
             $className = isset($table['className']) ? (string) $table['className']:(string) $className;
             $tableName = isset($table['tableName']) ? (string) $table['tableName']:(string) $className;
             
-            foreach ($table['columns'] as $columnName => $field) {
-                
-                $colDesc = array();
-                $colDesc['name'] = isset($field['name']) ? (string) $field['name']:$columnName;
-                $colDesc['type'] = isset($field['type']) ? (string) $field['type']:null;
-                $colDesc['ptype'] = isset($field['ptype']) ? (string) $field['ptype']:(string) $colDesc['type'];
-                $colDesc['length'] = isset($field['length']) ? (int) $field['length']:null;
-                $colDesc['fixed'] = isset($field['fixed']) ? (int) $field['fixed']:null;
-                $colDesc['unsigned'] = isset($field['unsigned']) ? (bool) $field['unsigned']:null;
-                $colDesc['primary'] = isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null;
-                $colDesc['default'] = isset($field['default']) ? (string) $field['default']:null;
-                $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
-                $colDesc['autoinc'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):null;
-                $colDesc['values'] = isset($field['values']) ? (array) $field['values']: null;
-                
-                $columns[(string) $colDesc['name']] = $colDesc;
-            }
-
-            $build[$className]['tableName'] = $tableName;
             $build[$className]['className'] = $className;
+            
+            if (isset($table['columns'])) {
+                foreach ($table['columns'] as $columnName => $field) {
 
-            $build[$className]['columns'] = $columns;
-            $build[$className]['relations'] = isset($table['relations']) ? $table['relations']:array();
+                    $colDesc = array();
+                    $colDesc['name'] = isset($field['name']) ? (string) $field['name']:$columnName;
+                    $colDesc['type'] = isset($field['type']) ? (string) $field['type']:null;
+                    $colDesc['ptype'] = isset($field['ptype']) ? (string) $field['ptype']:(string) $colDesc['type'];
+                    $colDesc['length'] = isset($field['length']) ? (int) $field['length']:null;
+                    $colDesc['fixed'] = isset($field['fixed']) ? (int) $field['fixed']:null;
+                    $colDesc['unsigned'] = isset($field['unsigned']) ? (bool) $field['unsigned']:null;
+                    $colDesc['primary'] = isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null;
+                    $colDesc['default'] = isset($field['default']) ? (string) $field['default']:null;
+                    $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
+                    $colDesc['autoinc'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):null;
+                    $colDesc['values'] = isset($field['values']) ? (array) $field['values']: null;
+
+                    $columns[(string) $colDesc['name']] = $colDesc;
+                }
+                
+                $build[$className]['tableName'] = $tableName;
+                $build[$className]['columns'] = $columns;
+                $build[$className]['relations'] = isset($table['relations']) ? $table['relations']:array();
+            }
+            
+            if (isset($table['inheritance'])) {
+                $build[$className]['inheritance'] = $table['inheritance'];
+            }
         }
         
         return $build;
@@ -134,9 +145,12 @@ class Doctrine_Import_Schema
     public function buildRelationships($array)
     {
         foreach ($array as $name => $properties) {
+            if (!isset($properties['relations'])) {
+                continue;
+            }
+            
             $className = $properties['className'];     
             $relations = $properties['relations'];
-            $columns = $properties['columns'];
             
             foreach ($relations as $alias => $relation) {
  
