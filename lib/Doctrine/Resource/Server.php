@@ -2,10 +2,33 @@
 class Doctrine_Resource_Server extends Doctrine_Resource
 {
     public $config = array();
+    public $format = 'xml';
     
     public function __construct($config)
     {
         $this->config = array_merge($config, $this->config);
+    }
+    
+    public function executeSave($request)
+    {
+        $model = $request['model'];
+        $data = $request['data'];
+        
+        $record = new $model();
+        $record->fromArray($data);
+        $record->save();
+        
+        return $record->toArray(true, true);
+    }
+    
+    public function executeQuery($request)
+    {
+        $dql = $request['dql'];
+        $params = isset($request['params']) ? $request['params']:array();
+        
+        $conn = Doctrine_Manager::connection();
+        
+        return $conn->query($dql, $params)->toArray(true, true);
     }
     
     public function execute($request)
@@ -15,50 +38,10 @@ class Doctrine_Resource_Server extends Doctrine_Resource
         }
         
         $format = isset($request['format']) ? $request['format']:'xml';
+        $type = $request['type'];
+        $funcName = 'execute' . Doctrine::classify($type);
         
-        if ($request['type'] == 'query') {
-            if (isset($request['dql']) && $request['dql']) {
-                $dql = $request['dql'];
-                $params = isset($request['params']) ? $request['params']:array();
-                
-                $conn = Doctrine_Manager::connection();
-                $result = $conn->query($dql, $params, Doctrine::FETCH_ARRAY);
-            } else {
-                throw new Doctrine_Resource_Exception('You must specify a dql query');
-            }
-        } else if ($request['type'] == 'save') {
-            $model = $request['model'];
-            $table = Doctrine_Manager::getInstance()->getTable($model);
-            $pks = (array) $table->getIdentifier();
-            $pks = array_flip($pks);
-            
-            $hasPk = false;
-            foreach (array_keys($pks) as $key) {
-                if (isset($request['data'][$key]) && $request['data'][$key]) {
-                    $pks[$key] = $request['data'][$key];
-                    
-                    $hasPk = true;
-                }
-            }
-            
-            if ($hasPk) {
-                $record = $table->find($pks);
-            } else {
-                $record = new $model();
-            }
-            
-            if (isset($request['changes']) && !empty($request['changes'])) {
-                $changes = $request['changes'];
-                
-                foreach ($changes as $key => $value) {
-                    $record->$key = $value;
-                }
-            }
-            
-            $record->save();
-            
-            $result = $record->toArray();
-        }
+        $result = $this->$funcName($request);
         
         return Doctrine_Parser::dump($result, $format);
     }

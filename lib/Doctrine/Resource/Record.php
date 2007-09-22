@@ -4,7 +4,6 @@ class Doctrine_Resource_Record extends Doctrine_Record_Abstract implements Count
     public $data = array();
     public $config = array();
     public $model = null;
-    public $changes = array();
     
     public function __construct($model, $config)
     {
@@ -24,8 +23,6 @@ class Doctrine_Resource_Record extends Doctrine_Record_Abstract implements Count
     public function set($set, $value)
     {
         $this->data[$set] = $value;
-        
-        $this->changes[$set] = $value;
     }
     
     public function count()
@@ -40,22 +37,27 @@ class Doctrine_Resource_Record extends Doctrine_Record_Abstract implements Count
         return new ArrayIterator($data);
     }
     
-    public function save()
+    public function newRequest($type)
     {
         $request = array();
-        $request['format'] = $this->config['format'];
-        $request['type'] = 'save';
+        $request['format'] = isset($this->config['format']) ? $this->config['format']:'xml';
+        $request['type'] = $type;
         $request['model'] = $this->model;
-        $request['data'] = $this->data;
-        $request['changes'] = $this->changes;
+        
+        return $request;
+    }
+    
+    public function save()
+    {
+        $request = $this->newRequest('save');
+        $request['data'] = $this->toArray();
         
         $response = Doctrine_Resource::request($this->config['url'], $request);
         
         $array = Doctrine_Parser::load($response, $request['format']);
         
-        $this->data = array_merge($this->data, $array);
-        
-        return $array;
+        $resource = new Doctrine_Resource();
+        $this->data = $resource->hydrate(array($array), $this->model, $this->config)->getFirst()->data;
     }
     
     public function toArray()
@@ -63,7 +65,7 @@ class Doctrine_Resource_Record extends Doctrine_Record_Abstract implements Count
         $array = array();
         
         foreach ($this->data as $key => $value) {
-            if ($value instanceof Doctrine_Resource_Collection) {
+            if ($value instanceof Doctrine_Resource_Collection OR $value instanceof Doctrine_Resource_Record) {
                 $array[$key] = $value->toArray();
             } else {
                 $array[$key] = $value;

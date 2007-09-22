@@ -17,4 +17,9 @@ class Doctrine_Resource_Client extends Doctrine_Resource
     {
         return new Doctrine_Resource_Record($model, $this->config);
     }
+    
+    public function newCollection($model)
+    {
+        return new Doctrine_Resource_Collection($model, $this->config);
+    }
 }

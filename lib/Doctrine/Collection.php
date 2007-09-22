@@ -589,12 +589,15 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @param boolean $deep
      */
-    public function toArray($deep = false)
+    public function toArray($deep = false, $prefixKey = false)
     {
         if ($deep) {
             $data = array();
             foreach ($this->data as $key => $record) {
-                $data[$key] = $record->toArray($deep);
+                
+                $key = $prefixKey ? get_class($record) . '_' .$key:$key;
+                
+                $data[$key] = $record->toArray($deep, $prefixKey);
             }
             return $data;
         } else {

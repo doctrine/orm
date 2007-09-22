@@ -54,8 +54,8 @@ class Doctrine_Resource_Query extends Doctrine_Resource
     {
         $array = Doctrine_Parser::load($response, $this->getFormat());
         
-        $hydrated = $this->hydrate($array);
-        
+        $hydrated = $this->hydrate($array, $this->getModel(), $this->config);
+
         return $hydrated;    
     }
     
@@ -72,29 +72,6 @@ class Doctrine_Resource_Query extends Doctrine_Resource
         }
         
         return $url;
-    }
-    
-    public function hydrate(array $array, $passedKey = null)
-    {
-        $model = $passedKey ? $passedKey:$this->getModel();
-        
-        $collection = new Doctrine_Resource_Collection($model, $this->config);
-        
-        foreach ($array as $record) {
-            $r = new Doctrine_Resource_Record($model, $this->config);
-            
-            foreach ($record as $key => $value) {
-                if (is_array($value)) {
-                    $r->data[$key] = $this->hydrate($value, $key);
-                } else {
-                    $r->data[$key] = $value;
-                }
-            }
-        
-            $collection->data[] = $r;
-        }
-        
-        return $collection;
     }
     
     public function getModel()

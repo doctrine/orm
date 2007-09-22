@@ -5,14 +5,27 @@ class Doctrine_Resource_Collection extends Doctrine_Access implements Countable,
     public $config = array();
     public $model = null;
     
-    public function __construct($model)
+    public function __construct($model, $config)
     {
         $this->model = $model;
+        $this->config = $config;
     }
     
     public function count()
     {
         return count($data);
+    }
+    
+    public function get($get)
+    {
+        if (isset($this->data[$get])) {
+            return $this->data[$get];
+        }
+    }
+
+    public function set($set, $value)
+    {
+        $this->data[$set] = $value;
     }
     
     public function getIterator()
@@ -30,6 +43,7 @@ class Doctrine_Resource_Collection extends Doctrine_Access implements Countable,
     public function toArray()
     {
         $array = array();
+        
         foreach ($this->data as $key => $record) {
             $array[$key] = $record->toArray();
         }

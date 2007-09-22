@@ -1118,7 +1118,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param boolean $deep - Return also the relations
      * @return array
      */
-    public function toArray($deep = false)
+    public function toArray($deep = false, $prefixKey = false)
     {
         $a = array();
 
@@ -1134,18 +1134,20 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         if ($deep) {
             foreach ($this->_references as $key => $relation) {
-                $a[$key] = $relation->toArray($deep);
+                $a[$key] = $relation->toArray($deep, $prefixKey);
             }
         }
         return array_merge($a, $this->_values);
     }
     public function fromArray($array)
     {
-        foreach ($array as $key => $value) {
-            if (!$this->getTable()->hasRelation($key) && $this->getTable()->hasColumn($key)) {
-                $this->$key = $value;
-            } else {
-                $this->$key->fromArray($value);
+        if (is_array($array)) {
+            foreach ($array as $key => $value) {
+                if (is_array($value)) {
+                    $this->$key->fromArray($value);
+                } else {
+                    $this->$key = $value;
+                }
             }
         }
     }
