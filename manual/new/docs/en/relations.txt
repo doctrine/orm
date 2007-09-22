@@ -1,33 +1,47 @@
 ++ Introduction
 
-In Doctrine all record relations are being set with {{hasMany}}, {{hasOne}} methods. Doctrine supports almost any kind of database relation from simple one-to-one foreign key relations to join table self-referencing relations.
+In Doctrine all record relations are being set with {{hasMany}}, {{hasOne}} methods. Doctrine supports almost all kinds of database relations from simple one-to-one foreign key relations to join table self-referencing relations.
 
+Unlike the column definitions the {{hasMany}} and {{hasOne}} methods are placed within a method called setUp(). Both methods take two arguments: the first argument is a string containing the name of the class and optional alias, the second argument is an array consisting of relation options. The option array contains the following keys:
 
-++ Relation aliases
+* **local**, the local field of the relation. Local field is the linked field or fields in the defining class.
+* **foreign**, the foreign field of the relation. Foreign field is the linked field or fields in the linked class.
+* **refClass**, the name of the reference / join class. This is needed for many-to-many associations.
+* **onDelete**, the onDelete integrity action.
+* **onUpdate**, the onUpdate integrity action.
 
-Doctrine supports relation aliases through {{as}} keyword.
+So lets take our first example, say we have two classes Forum_Board and Forum_Thread. Here Forum_Board has many Forum_Threads, hence their relation is one-to-many. We don't want to write Forum_ when accessing relations, so we use relation aliases.
+
+First lets take a look at the Forum_Board class. It has three columns: name, description and since we didn't specify any primary key, Doctrine auto-creates an id column for it.
+
+We define the relation to the Forum_Thread class by using the hasMany() method. Here the local field is the primary key of the board class whereas the foreign field is the board_id field of the Forum_Thread class.
 
 <code type="php">
-class Forum_Board extends Doctrine_Record 
-{ 
+class Forum_Board extends Doctrine_Record
+{
     public function setTableDefinition()
     {
         $this->hasColumn('name', 'string', 100);
         $this->hasColumn('description', 'string', 5000);
     }
-    public function setUp() 
+    public function setUp()
     {
         // notice the 'as' keyword here
         $this->hasMany('Forum_Thread as Threads', array('local' => 'id',
                                                         'foreign' => 'board_id');
     }
 }
+</code>
 
-class Forum_Thread extends Doctrine_Record 
+Then lets have a peek at the Forum_Thread class. The columns here are irrelevant, but pay attention to how we define the relation. Since each Thread can have only one Board we are using the hasOne() method. Also notice how we once again use aliases and how the local column here is board_id while the foreign column is the id column.
+
+<code type="php">
+class Forum_Thread extends Doctrine_Record
 {
     public function setTableDefinition() 
     {
         $this->hasColumn('board_id', 'integer', 10);
+        $this->hasColumn('title', 'string', 200);
         $this->hasColumn('updated', 'integer', 10);
         $this->hasColumn('closed', 'integer', 1);
     }
@@ -38,10 +52,21 @@ class Forum_Thread extends Doctrine_Record
                                                     'foreign' => 'id');
     }
 }
-$board = new Board();
-$board->Threads[0]->updated = time();
 </code>
 
+Now we can start using these classes. The same accessors that you've already used for properties are all availible for relations.
+
+<code type="php">
+// first create a board
+$board = new Forum_Board();
+$board->name = 'Some board';
+
+// lets create a new thread
+$board->Thread[0]->title = 'new thread';
+
+// save the changes 
+$board->save();
+</code>
 
 ++ Foreign key associations
 +++ One-To-One
