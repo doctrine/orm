@@ -257,7 +257,7 @@ class Test extends Doctrine_Record {
 Consider the following definition:
 
 
-<?php
+<code type="php">
 class Example extends Doctrine_Record
 {
     public function setTableDefinition() 
@@ -307,41 +307,38 @@ class Example extends Doctrine_Record
                             'type' => 'blob',
                         ));
 }
-?>
-
-
- 
+</code>
  
 
 
 The above example will create a database table as such in Pgsql:
 
 
-|| Column || Type || Not Null Default comment
-|| id || character(32)
-|| somename || character || varying(12)
-|| somedate || date
-|| sometimestamp || timestamp without time zone
-|| someboolean || boolean
-|| somedecimal || numeric(18,2)
-|| somefloat || double precision
-|| sometime || time without time zone NOT NULL '12:34:05'::time without time zone
-|| someclob || text
-|| someblob || bytea
+|| Column        || Type                         || Not Null ||Default || comment ||
+|| id            || character(32)                ||          || || ||
+|| somename      || character || varying(12)     ||          || || ||
+|| somedate      || date                         ||          || || ||
+|| sometimestamp || timestamp without time zone  ||          || || ||
+|| someboolean   || boolean                      ||          || || ||
+|| somedecimal   || numeric(18,2)                ||          || || ||
+|| somefloat     || double precision             ||          || || ||
+|| sometime      || time without time zone       || NOT NULL || '12:34:05' || ||
+|| someclob      || text                         ||          || || ||
+|| someblob      || bytea                        ||          || || ||
 
 And the following table in Mysql:
 
-|| Field Type Collation Attributes Null Default comment 
-id char(32)     YES     
-somename varchar(12) latin1_swedish_ci   YES     
-somedate date     YES     
-sometimestamp timestamp without time zone     YES     
-someboolean tinyint(1)     YES     
-somedecimal decimal(18,2)     YES     
-somefloat double     YES     
-sometime time     NO 12:34:05   
-someclob longtext latin1_swedish_ci   YES     
-someblob longblob   binary YES     
+|| Field            || Type                         || Collation         || Attributes || Null || Default  || comment ||
+|| id               || char(32)                     ||                   ||            || YES  ||          ||         ||
+|| somename         || varchar(12)                  || latin1_swedish_ci ||            || YES  ||          ||         ||
+|| somedate         || date                         ||                   ||            || YES  ||          ||         ||
+|| sometimestamp    || timestamp without time zone  ||                   ||            || YES  ||          ||         ||
+|| someboolean      || tinyint(1)                   ||                   ||            || YES  ||          ||         ||
+|| somedecimal      || decimal(18,2)                ||                   ||            || YES  ||          ||         ||
+|| somefloat        || double                       ||                   ||            || YES  ||          ||         ||
+|| sometime         || time                         ||                   ||            || NO   || 12:34:05 ||         ||
+|| someclob         || longtext                     || latin1_swedish_ci ||            || YES  ||          ||         ||
+|| someblob         || longblob                     ||                   || binary     || YES  ||          ||         ||
 
 
 
