@@ -38,7 +38,9 @@ class Text_Wiki_Render_Latex_Table extends Text_Wiki_Render {
                 $max_width = 60;
                 
                 $available_width = $max_width;
-                $avg_width = $available_width / (float) count($col_widths);
+                if (count($col_widths) > 0) {
+                    $avg_width = $available_width / (float) count($col_widths);
+                }
                 $calc_col_widths = array();
                 
                 while (count($col_widths) > 0) {
