@@ -1,8 +1,6 @@
 +++ Introduction
 
-Nested Set is a solution for storing hierarchical data that provides very fast read access. However, updating nested set trees is more costly.
-Therefore this solution is best suited for hierarchies that are much more frequently read than written to. And because of the nature of the web,
-this is the case for most web applications.
+Nested Set is a solution for storing hierarchical data that provides very fast read access. However, updating nested set trees is more costly. Therefore this solution is best suited for hierarchies that are much more frequently read than written to. And because of the nature of the web, this is the case for most web applications.
 
 For more detailed information on the Nested Set, read here:
 
@@ -26,8 +24,7 @@ To set up your model as Nested Set, you must add the following code to your mode
 ...
 </code>
 
-"actAs" is a convenience method that loads templates that are shipped with Doctrine (Doctrine_Template_* classes).
-The more general alternative would look like this:
+"actAs" is a convenience method that loads templates that are shipped with Doctrine(Doctrine_Template_* classes). The more general alternative would look like this:
 
 <code type="php">
 ...
@@ -87,7 +84,7 @@ In the following sub-chapters you'll see code snippets that demonstrate the most
 ...
 $root = new MyNestedSetModel();
 $root->name = 'root';
-$treeObject = $conn->getTable('MyNestedSetModel)->getTree();
+$treeObject = $conn->getTable('MyNestedSetModel')->getTree();
 $treeObject->createRoot($root); // calls $root->save() internally
 ...
 </code>
@@ -223,6 +220,5 @@ $tree = $treeObject->fetchTree();
 $treeObject->resetBaseQuery();
 </code>
 
-Now you got a nicely structured array in $tree and if you use array access on your records anyway, such a change will not even effect any other part of your code.
-This method of modifying the query can be used for all node and tree methods (getAncestors(), getDescendants(), getChildren(), getParent(), ...). Simply create your query, set it as the base query on the tree object and then invoke the appropriate method.
+Now you got a nicely structured array in $tree and if you use array access on your records anyway, such a change will not even effect any other part of your code. This method of modifying the query can be used for all node and tree methods (getAncestors(), getDescendants(), getChildren(), getParent(), ...). Simply create your query, set it as the base query on the tree object and then invoke the appropriate method.
 
