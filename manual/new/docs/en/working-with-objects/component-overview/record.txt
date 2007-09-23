@@ -63,7 +63,7 @@ $users = $conn->query("FROM User WHERE User.name LIKE '%John%'");
 
 ++++ Accessing properties
 
-You can retrieve existing objects (database rows) with {{Doctrine_Table}} or {{Doctrine_Connection}}. {{Doctrine_Table}} provides simple methods like {{findBySql}}, {{findAll}} and find for finding objects whereas {{Doctrine_Connection}} provides complete OQL API for retrieving objects (see chapter 9). 
+You can retrieve existing objects (database rows) with {{Doctrine_Table}} or {{Doctrine_Connection}}. {{Doctrine_Table}} provides simple methods like {{findBySql}}, {{findAll}} and find for finding objects whereas {{Doctrine_Connection}} provides complete OQL API for retrieving objects (see chapter [doc dql-doctrine-query-language). 
 
 <code type="php">
 $user = $table->find(3);

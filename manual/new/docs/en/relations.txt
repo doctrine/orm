@@ -146,7 +146,7 @@ class Phonenumber extends Doctrine_Record
 
 A tree structure is a self-referencing foreign key relation. The following definition is also called Adjacency List implementation in terms of hierarchical data concepts. 
 
-However this mainly just serves as an example how the self-referencing can be done. The definition above is rarely a good way of expressing hierarchical data, hence you should take a look at the Hierachical data chapter for how to set up efficient parent/child relations.
+However this mainly just serves as an example how the self-referencing can be done. The definition above is rarely a good way of expressing hierarchical data, hence you should take a look at chapter [doc hierarchical-data :index :name] for how to set up efficient parent/child relations.
 
 <code type="php">
 class Task extends Doctrine_Record 

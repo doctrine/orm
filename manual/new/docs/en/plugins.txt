@@ -165,7 +165,7 @@ You can also control the name of the versioning record and the name of the versi
 
 Soft-delete is a very simple plugin for achieving the following behaviour: when a record is deleted its not removed from database. Usually the record contains some special field like 'deleted' which tells the state of the record (deleted or alive).
 
-The following code snippet shows what you need in order to achieve this kind of behaviour. Notice how we define two event hooks: preDelete and postDelete. Also notice how the preDelete hook skips the actual delete-operation with skipOperation() call. For more info about the event hooks see the Event listener section.
+The following code snippet shows what you need in order to achieve this kind of behaviour. Notice how we define two event hooks: preDelete and postDelete. Also notice how the preDelete hook skips the actual delete-operation with skipOperation() call. For more info about the event hooks see chapter [doc event-listeners :index :name].
 
 <code type="php">
 class SoftDeleteTest extends Doctrine_Record

@@ -38,7 +38,7 @@ To set up your model as Nested Set, you must add the following code to your mode
 ...
 </code>
 
-Detailed information on Doctrine's templating model can be found in chapter 12: Class templates. These templates add some functionality to your model. In the example of the nested set, your model gets 3 additional fields: "lft", "rgt", "level". You never need to care about "lft" and "rgt". These are used internally to manage the tree structure. The "level" field however, is of interest for you because it's an integer value that represents the depth of a node within it's tree. A level of 0 means it's a root node. 1 means it's a direct child of a root node and so on. By reading the "level" field from your nodes you can easily display your tree with proper indendation. 
+Detailed information on Doctrine's templating model can be found in chapter [doc class-templates :index :name]. These templates add some functionality to your model. In the example of the nested set, your model gets 3 additional fields: "lft", "rgt", "level". You never need to care about "lft" and "rgt". These are used internally to manage the tree structure. The "level" field however, is of interest for you because it's an integer value that represents the depth of a node within it's tree. A level of 0 means it's a root node. 1 means it's a direct child of a root node and so on. By reading the "level" field from your nodes you can easily display your tree with proper indendation. 
 
 **You must never assign values to lft, rgt, level. These are managed transparently by the nested set implementation.**
 
