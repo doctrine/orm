@@ -162,7 +162,7 @@ class Foo
 threeArguments(1, 2, 3);
 </code>
 
-* Call-time pass by-reference is prohibited. See section above for the proper way to pass function arguments by-reference.
+* Call-time pass by-reference is prohibited. See above for the proper way to pass function arguments by-reference.
 * For functions whose arguments permitted arrays, the function call may include the {{array}} construct and can be split into multiple lines to improve readability. In these cases, the standards for writing arrays still apply:
 
 <code type="php">
