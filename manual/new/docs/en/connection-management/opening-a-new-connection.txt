@@ -12,7 +12,7 @@ try {
 }
 </code>
 
-If your database extension isn't supported by PDO you can use special {{Doctrine_Adapter}} class (if availible). The following example uses db2 adapter:
+If your database extension isn't supported by PDO you can use special {{Doctrine_Adapter}} class (if available). The following example uses db2 adapter:
 
 <code type="php">
 $dsn = 'db2:dbname=testdb;host=127.0.0.1';
