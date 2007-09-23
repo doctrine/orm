@@ -32,8 +32,11 @@ class Text_Wiki_Parse_Doclink extends Text_Wiki_Parse {
             
             if (isset($matches[2])) { 
                 $options['text'] = $matches[2];
+                $options['text'] = str_replace(':index', $section->getIndex(), $options['text']);
+                $options['text'] = str_replace(':name', $section->getName(), $options['text']);
+                $options['text'] = str_replace(':fullname', $section->getName(true), $options['text']);
             } else {
-                $options['text'] = $section->getIndex() . ' ' . $section->getName(true);
+                $options['text'] = $section->getIndex();
             }
             
             return $this->wiki->addToken($this->rule, $options);

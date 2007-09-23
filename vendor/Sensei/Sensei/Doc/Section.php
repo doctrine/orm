@@ -114,9 +114,9 @@ class Sensei_Doc_Section implements Countable
     public function getIndex($separator = '.')
     {
         if ($this->_parent->_name !== null) {
-            return $this->_parent->getIndex($separator) . ($this->_index + 1) . $separator;
+            return $this->_parent->getIndex($separator) . $separator . ($this->_index + 1);
         } else {
-            return ($this->_index + 1) . $separator;
+            return ($this->_index + 1);
         }
     }
     
@@ -136,7 +136,7 @@ class Sensei_Doc_Section implements Countable
             
             $path = preg_replace($patterns, $replacements, strtolower($this->_name)); 
             
-            return $path;
+            return self::convertNameToPath($this->_name);
         }
     }
     
@@ -384,5 +384,23 @@ class Sensei_Doc_Section implements Countable
 	            $current->parse($path, $otherFilename);
 	        }
 	    }
+    }
+
+    /**
+     * Converts section name to section path.
+     *
+     * Section path is generated from section name by making section name
+     * lowercase, replacing all whitespace with a dash and removing all
+     * characters that are not a letter, a number or a dash.
+     *
+     * @param $name string  section name
+     * @return section path
+     */
+    public static function convertNameToPath($name)
+    {
+        $patterns = array('/\s/', '/[^a-z0-9-]/');
+        $replacements = array('-', '');
+            
+        return preg_replace($patterns, $replacements, strtolower($name)); 
     }
 }

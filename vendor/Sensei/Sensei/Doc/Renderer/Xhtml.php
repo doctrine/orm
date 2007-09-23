@@ -187,12 +187,17 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
         return $output;       
     }
     
-    public function makeUrl(Sensei_Doc_Section $section)
+    public function makeUrl($section)
     {
+        if ($section instanceof Sensei_Doc_Section) {
+            $path = $section->getPath();
+        } else {
+            $path = $section;
+        }
+        
         $url = $this->_options['url_prefix'];
         
         if ($this->_options['section'] instanceof Sensei_Doc_Section) {
-            $path = $section->getPath();
             $level = $this->_options['section']->getLevel();
             $url .= implode(':', array_slice(explode(':', $path), 0, $level));
         }
@@ -205,9 +210,13 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
         return $url;
     }
     
-    public function makeAnchor(Sensei_Doc_Section $section)
+    public function makeAnchor($section)
     {
-        $path = $section->getPath();
+        if ($section instanceof Sensei_Doc_Section) {
+            $path = $section->getPath();
+        } else {
+            $path = $section;
+        }
         
         if ($this->_options['section'] instanceof Sensei_Doc_Section) {
             $level = $this->_options['section']->getLevel();

@@ -4,12 +4,19 @@ class Text_Wiki_Render_Latex_Heading extends Text_Wiki_Render {
 
     function token($options)
     {
+        static $label = array();
+
         // get nice variable names (type, level)
         extract($options);
 
         if ($type == 'start') {
-            switch ($level)
-                {
+
+            while (count($label) >= $level) {
+                array_pop($label);
+            }
+            $label[] = Sensei_Doc_Section::convertNameToPath($text);
+
+            switch ($level) {
                 case '1':
                     return '\chapter{';
                 case '2':
@@ -22,11 +29,12 @@ class Text_Wiki_Render_Latex_Heading extends Text_Wiki_Render {
                     return '\paragraph{';
                 case '6':
                     return '\subparagraph{';
-                }
+            }
         }
         
+        
         if ($type == 'end') {
-            return "}\n";
+            return "}\n\label{" . implode(':', $label) . "}\n";
         }
     }
 }
