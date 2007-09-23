@@ -69,8 +69,3 @@ function initializeTocToggles()
 window.addEvent('domready', function() {
     initializeTocToggles();
 });
-
-window.addEvent('domready', function() {
-    new SmoothScroll();
-});
-
