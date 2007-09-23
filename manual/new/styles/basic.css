@@ -154,8 +154,8 @@ pre .comment {
 
 #sidebar {
     float: right;
-    margin: 0;
-    padding: 1em;
+    margin: 1em;
+    padding: 0;
 }
 
 #wrap {
