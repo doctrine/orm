@@ -131,11 +131,6 @@ class Sensei_Doc_Section implements Countable
         if ( ! $short && ! $this->_parent->isRoot()) {
             return $this->_parent->getPath($short, $separator) . $separator . $this->getPath(true);
         } else {
-            $patterns = array('/\s/', '/[^a-z0-9-]/');
-            $replacements = array('-', '');
-            
-            $path = preg_replace($patterns, $replacements, strtolower($this->_name)); 
-            
             return self::convertNameToPath($this->_name);
         }
     }
