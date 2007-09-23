@@ -278,6 +278,12 @@ class UserReference extends Doctrine_Record
 </code>
 ++++ Equal nest relations
 
+Equal nest relations are perfectly suitable for expressing relations where a class references to itself and the columns within the reference class are equal.
+
+This means that when fetching related records it doesn't matter which column in the reference class has the primary key value of the main class.
+
+The previous clause maybe hard to understand so lets take an example. We define a class called user which can have many friends. Notice here how we use the 'equal' option.
+
 <code type="php">
 class User extends Doctrine_Record 
 {
@@ -302,6 +308,33 @@ class UserReference extends Doctrine_Record
     }
 }
 </code>
+
+Now lets define 4 users: Jack Daniels, John Brandy, Mikko Koskenkorva and Stefan Beer with Jack Daniels and John Brandy being buddies and Mikko Koskenkorva being the friend of all of them.
+
+<code type="php">
+$daniels = new User();
+$daniels->name = 'Jack Daniels';
+
+$brandy = new User();
+$brandy->name = 'John Brandy';
+
+$koskenkorva = new User();
+$koskenkorva->name = 'Mikko Koskenkorva';
+
+$beer = new Stefan();
+$beer->name = 'Stefan Beer';
+
+$daniels->Friend[0] = $brandy;
+
+$koskenkorva->Friend[0] = $daniels;
+$koskenkorva->Friend[1] = $brandy;
+$koskenkorva->Friend[2] = $beer;
+
+$conn->flush();
+</code>
+
+Now if we access for example the friends of John Beer it would return one user 'Mikko Koskenkorva'.
+
 
 ++ Inheritance
 +++ One table, many classes
