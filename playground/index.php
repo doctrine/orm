@@ -18,12 +18,12 @@ if ($action == 'server') {
     $config = array('url' => 'http://localhost/~jwage/doctrine_trunk/playground/index.php?action=server');
     
     $client = Doctrine_Resource_Client::getInstance($config);
-    $table = $client->getTable('User');
     
-    $user = $table->find(4);
-    $user->Phonenumber->add()->phonenumber = '555-5555';
-    $user->name = 'jonnwage';
-    $user->save();
+    //$table = $client->getTable('User');
     
-    print_r($user->toArray());
+    $query = new Doctrine_Resource_Query();
+    
+    $users = $query->from('User u, u.Phonenumber p, u.Address a, u.Book b, b.Author a')->execute();
+    
+    print_r($users);
 }

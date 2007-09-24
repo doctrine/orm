@@ -71,18 +71,18 @@ class Doctrine_Resource_Request extends Doctrine_Resource_Params
         $collection = new Doctrine_Resource_Collection($model);
         
         foreach ($array as $record) {
-            $r = new Doctrine_Resource_Record($model);
+            $r = new $model();
             
             foreach ($record as $key => $value) {
-                if ($r->hasRelation($key) && !empty($value)) {
-                    $relation = $r->getRelation($key);
+                if ($r->getTable()->hasRelation($key) && !empty($value)) {
+                    $relation = $r->getTable()->getRelation($key);
                     
                     if ($relation['type'] === Doctrine_Relation::MANY) {
                         $r->set($key, $this->hydrate($value, $relation['class'], $key));
                     } else {
                         $r->set($key, $this->hydrate(array($value), $relation['class'], $key)->getFirst());
                     }
-                } else if($r->hasColumn($key)) {
+                } else if($r->getTable()->hasColumn($key)) {
                     $r->set($key, $value);
                 }
                 

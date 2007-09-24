@@ -34,10 +34,36 @@
 class Doctrine_Resource_Table
 {
     protected $_model = null;
+    protected $_schema = null;
     
     public function __construct($model)
     {
         $this->_model = $model;
+        
+        $schema = $this->getConfig('schema');
+        
+        if (isset($schema['schema'][$model]) && $schema['schema'][$model]) {
+            $this->_schema = $schema['schema'][$model];
+        }
+        
+        if (isset($schema['relations'][$model]) && $schema['relations'][$model]) {
+            $this->_schema['relations'] = $schema['relations'][$model];
+        }
+    }
+    
+    public function getSchema()
+    {
+        return $this->_schema;
+    }
+    
+    public function getRelations()
+    {
+        return $this->_schema['relations'];
+    }
+    
+    public function getConfig($key = null)
+    {
+        return Doctrine_Resource_Client::getInstance()->getConfig($key);
     }
     
     public function find($pk)
@@ -60,5 +86,29 @@ class Doctrine_Resource_Table
         $query->from($model)->where($where)->limit(1);
         
         return $query->execute()->getFirst();
+    }
+    
+    public function hasColumn($name)
+    {
+        return isset($this->_schema['columns'][$name]) ? true:false;
+    }
+    
+    public function getColumn($name)
+    {
+        if ($this->hasColumn($name)) {
+            return $this->_columns[$name];
+        }
+    }
+    
+    public function hasRelation($name)
+    {
+        return isset($this->_schema['relations'][$name]) ? true:false;
+    }
+    
+    public function getRelation($name)
+    {
+        if ($this->hasRelation($name)) {
+            return $this->_schema['relations'][$name];
+        }
     }
 }

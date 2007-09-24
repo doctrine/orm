@@ -35,22 +35,13 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
 {
     protected $_data = array();
     protected $_model = null;
-    protected $_schema = null;
+    protected $_table = null;
     protected $_changes = array();
     
     public function __construct($model, $loadRelations = true)
     {
         $this->_model = $model;
-        
-        $schema = $this->getConfig('schema');
-        
-        if (isset($schema['schema'][$model]) && $schema['schema'][$model]) {
-            $this->_schema = $schema['schema'][$model];
-        }
-        
-        if (isset($schema['relations'][$model]) && $schema['relations'][$model]) {
-            $this->_schema['relations'] = $schema['relations'][$model];
-        }
+        $this->_table = Doctrine_Resource_Client::getInstance()->getTable($model);
         
         $this->initialize($loadRelations);
     }
@@ -62,12 +53,8 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     
     public function initialize($loadRelations = true)
     {
-        if (!$this->_schema) {
-            return false;
-        }
-        
-        $schema = $this->_schema;
-        $relations = $this->_schema['relations'];
+        $schema = $this->getTable()->getSchema();
+        $relations = $schema['relations'];
         
         if (isset($schema['columns'])) {
             $columns = $schema['columns'];
@@ -126,9 +113,9 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
         $array = array();
         
         foreach ($this->_data as $key => $value) {
-            if ($this->hasRelation($key)) {
+            if ($this->getTable()->hasRelation($key)) {
                 
-                $relation = $this->getRelation($key);
+                $relation = $this->getTable()->getRelation($key);
                 
                 if ($relation['type'] === Doctrine_Relation::ONE) {
                     if ($this->_data[$key]->hasChanges()) {
@@ -141,7 +128,7 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
                         }
                     }
                 }
-            } else if ($this->hasColumn($key)) {
+            } else if ($this->getTable()->hasColumn($key)) {
                 if (isset($this->_changes[$key])) {
                     $array[$key] = $value;
                 }
@@ -191,6 +178,11 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
         $response = $request->execute();
     }
     
+    public function getTable()
+    {
+        return $this->_table;
+    }
+    
     public function getModel()
     {
         return $this->_model;
@@ -200,8 +192,11 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     {
         $identifier = array();
         
-        if (isset($this->_schema['columns']) && is_array($this->_schema['columns'])) {
-            foreach ($this->_schema['columns'] as $name => $column) {
+        $schema = $this->getTable()->getSchema();
+        $columns = $schema['columns'];
+        
+        if (isset($columns) && is_array($columns)) {
+            foreach ($columns as $name => $column) {
                 if ($column['primary'] == true) {
                     $identifier[$name] = $this->_data[$name];
                 }
@@ -223,30 +218,6 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
         
         return true;
     }
-        
-    public function hasColumn($name)
-    {
-        return isset($this->_schema['columns'][$name]) ? true:false;
-    }
-    
-    public function getColumn($name)
-    {
-        if ($this->hasColumn($name)) {
-            return $this->_columns[$name];
-        }
-    }
-    
-    public function hasRelation($name)
-    {
-        return isset($this->_schema['relations'][$name]) ? true:false;
-    }
-    
-    public function getRelation($name)
-    {
-        if ($this->hasRelation($name)) {
-            return $this->_schema['relations'][$name];
-        }
-    }
     
     public function toArray()
     {
@@ -254,15 +225,15 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
         
         foreach ($this->_data as $key => $value) {
             
-            if ($this->hasRelation($key) && $value instanceof Doctrine_Resource_Collection) {
+            if ($this->getTable()->hasRelation($key) && $value instanceof Doctrine_Resource_Collection) {
                 if ($value->count() > 0) {
                     $array[$key] = $value->toArray();
                 }
-            } else if ($this->hasRelation($key) && $value instanceof Doctrine_Resource_Record) {
+            } else if ($this->getTable()->hasRelation($key) && $value instanceof Doctrine_Resource_Record) {
                 if ($value->exists() || $value->hasChanges()) {
                     $array[$key] = $value->toArray();
                 }
-            } else if (!$this->hasRelation($key) && $this->hasColumn($key)) {
+            } else if (!$this->getTable()->hasRelation($key) && $this->getTable()->hasColumn($key)) {
                 $array[$key] = $value;
             }
         }
