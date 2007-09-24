@@ -14,14 +14,15 @@ if ($action == 'server') {
     $server->run($_REQUEST);
     
 } else {
-    $config = array('url' => 'http://localhost/~jwage/doctrine_trunk/playground/index.php?action=server');
+    //$config = array('url' => 'http://localhost/~jwage/doctrine_trunk/playground/index.php?action=server');
+    $config = array('url' => 'http://dev.centresource.com/jwage/hca/web/frontend_dev.php/main');
     
     $client = Doctrine_Resource_Client::getInstance($config);
     
-    $query = new Doctrine_Resource_Query();
-    $query->from('User u, u.Email e, u.Phonenumber p');
+    $user = $client->newRecord('sfGuardUser');
     
-    $users = $query->execute();
+    $user->name = 'jonnnywage';
+    $user->save();
     
-    print_r($users->toArray());
+    print_r($user->toArray());
 }

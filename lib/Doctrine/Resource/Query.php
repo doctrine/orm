@@ -35,7 +35,6 @@ class Doctrine_Resource_Query
 {
     protected $_parts = array();
     protected $_dql = null;
-    protected $_params = array();
     
     public function getConfig($key = null)
     {
@@ -51,6 +50,8 @@ class Doctrine_Resource_Query
     
     public function execute($params = array())
     {
+        $params = is_array($params) ? $params:array($params);
+        
         $request = new Doctrine_Resource_Request();
         $request->set('dql', $this->getDql());
         $request->set('params', $params);
@@ -59,9 +60,15 @@ class Doctrine_Resource_Query
         
         $response = $request->execute();
         
-        $array = Doctrine_Parser::load($response, $this->getConfig()->get('format'));
-        
-        return $request->hydrate($array, $this->getModel());
+        // If we have a response then lets parse it and hydrate it
+        if ($response) {
+            $array = Doctrine_Parser::load($response, $this->getConfig()->get('format'));
+            
+            return $request->hydrate($array, $this->getModel());
+        // Otherwise lets return an empty collection for the queried for model
+        } else {
+            return new Doctrine_Resource_Collection($this->getModel());
+        }
     }
     
     public function getDql()
@@ -138,41 +145,8 @@ class Doctrine_Resource_Query
      * @param mixed $params         an array of parameters or a simple scalar
      * @return Doctrine_Query
      */
-    public function addWhere($where, $params = array())
+    public function addWhere($where)
     {
-        if (is_array($params)) {
-            $this->_params['where'] = array_merge($this->_params['where'], $params);
-        } else {
-            $this->_params['where'][] = $params;
-        }
-        return $this->parseQueryPart('where', $where, true);
-    }
-    /**
-     * whereIn
-     * adds IN condition to the query WHERE part
-     *
-     * @param string $expr
-     * @param mixed $params         an array of parameters or a simple scalar
-     * @return Doctrine_Query
-     */
-    public function whereIn($expr, $params = array())
-    {
-        $params = (array) $params;
-        $a = array();
-        foreach ($params as $k => $value) {
-            if ($value instanceof Doctrine_Expression) {
-                $value = $value->getSql();
-                unset($params[$k]);
-            } else {
-                $value = '?';          
-            }
-            $a[] = $value;
-        }
-
-        $this->_params['where'] = array_merge($this->_params['where'], $params);
-
-        $where = $expr . ' IN (' . implode(', ', $a) . ')';
-
         return $this->parseQueryPart('where', $where, true);
     }
     /**
@@ -194,13 +168,8 @@ class Doctrine_Resource_Query
      * @param mixed $params         an array of parameters or a simple scalar
      * @return Doctrine_Query
      */
-    public function addHaving($having, $params = array())
+    public function addHaving($having)
     {
-        if (is_array($params)) {
-            $this->_params['having'] = array_merge($this->_params['having'], $params);
-        } else {
-            $this->_params['having'][] = $params;
-        }
         return $this->parseQueryPart('having', $having, true);
     }
     /**
@@ -234,72 +203,7 @@ class Doctrine_Resource_Query
      */
     public function distinct($flag = true)
     {   
-        $this->_parts['distinct'] = (bool) $flag;
-
-        return $this;
-    }
-
-    /**
-     * forUpdate
-     * Makes the query SELECT FOR UPDATE.
-     *
-     * @param bool $flag            Whether or not the SELECT is FOR UPDATE (default true).
-     * @return Doctrine_Query
-     */
-    public function forUpdate($flag = true)
-    {
-        $this->_parts[self::FOR_UPDATE] = (bool) $flag;
-
-        return $this;
-    }
-    /**
-     * delete
-     * sets the query type to DELETE
-     *
-     * @return Doctrine_Query
-     */
-    public function delete()
-    {
-        $this->type = self::DELETE;
-
-        return $this;
-    }
-    /**
-     * update
-     * sets the UPDATE part of the query
-     *
-     * @param string $update        Query UPDATE part
-     * @return Doctrine_Query
-     */
-    public function update($update)
-    {
-        $this->type = self::UPDATE;
-
-        return $this->parseQueryPart('from', $update);
-    }
-    /**
-     * set
-     * sets the SET part of the query
-     *
-     * @param string $update        Query UPDATE part
-     * @return Doctrine_Query
-     */
-    public function set($key, $value, $params = null)
-    {
-        if (is_array($key)) {
-            foreach ($key as $k => $v) {
-                $this->set($k, '?', array($v));                               
-            }
-        } else {
-            if ($params !== null) {
-                if (is_array($params)) {
-                    $this->_params['set'] = array_merge($this->_params['set'], $params);
-                } else {
-                    $this->_params['set'][] = $params;
-                }
-            }
-            return $this->parseQueryPart('set', $key . ' = ' . $value, true);
-        }
+        $this->parseQueryPart('distinct', (bool) $flag);
     }
     /**
      * from
@@ -353,15 +257,8 @@ class Doctrine_Resource_Query
      * @param mixed $params        an array of parameters or a simple scalar
      * @return Doctrine_Query
      */
-    public function where($where, $params = array())
+    public function where($where)
     {
-        $this->_params['where'] = array();
-        if (is_array($params)) {
-            $this->_params['where'] = $params;
-        } else {
-            $this->_params['where'][] = $params;
-        }
-
         return $this->parseQueryPart('where', $where);
     }
     /**
@@ -372,15 +269,8 @@ class Doctrine_Resource_Query
      * @param mixed $params        an array of parameters or a simple scalar
      * @return Doctrine_Query
      */
-    public function having($having, $params = array())
+    public function having($having)
     {
-        $this->_params['having'] = array();
-        if (is_array($params)) {
-            $this->_params['having'] = $params;
-        } else {
-            $this->_params['having'][] = $params;
-        }
-        
         return $this->parseQueryPart('having', $having);
     }
     /**

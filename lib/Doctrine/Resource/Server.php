@@ -59,7 +59,7 @@ class Doctrine_Resource_Server extends Doctrine_Resource
         $existing = true;
         $pks = array();
         foreach ($identifier as $name) {
-            if (isset($data[$name])) {
+            if (isset($data[$name]) && $data[$name]) {
                 $pks[$name] = $data[$name];
             } else {
                 $existing = false;

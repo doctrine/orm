@@ -63,13 +63,17 @@ class Doctrine_Resource_Client extends Doctrine_Resource
             
             $schema = $request->execute();
             
-            file_put_contents($path, $schema);
+            if ($schema) {
+                file_put_contents($path, $schema);
+            }
         }
         
-        $import = new Doctrine_Import_Schema();
-        $schema = $import->buildSchema($path, $this->getConfig()->get('format'));
-        
-        $this->getConfig()->set('schema', $schema);
+        if (file_exists($path) && $schema) {
+            $import = new Doctrine_Import_Schema();
+            $schema = $import->buildSchema($path, $this->getConfig()->get('format'));
+            
+            $this->getConfig()->set('schema', $schema);
+        }
     }
     
     public function newQuery()
