@@ -88,24 +88,9 @@ class Doctrine_Resource_Client extends Doctrine_Resource
         }
     }
     
-    public function find($model, $pk)
+    public function getTable($table)
     {
-        $record = $this->newRecord($model);
-        
-        $pk = is_array($pk) ? $pk:array($pk);
-        $identifier = $record->identifier();
-        $identifier = is_array($identifier) ? $identifier:array($identifier);
-        
-        $where = '';
-        foreach (array_keys($identifier) as $key => $name) {
-            $value = $pk[$key];
-            $where .= $model.'.' . $name . ' = '.$value;
-        }
-        
-        $query = new Doctrine_Resource_Query();
-        $query->from($model)->where($where)->limit(1);
-        
-        return $query->execute()->getFirst();
+        return new Doctrine_Resource_Table($table);
     }
     
     public function newQuery()
