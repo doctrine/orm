@@ -104,4 +104,11 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
             $record->save();
         }
     }
+    
+    public function delete()
+    {
+        foreach ($this as $record) {
+            $record->delete();
+        }
+    }
 }

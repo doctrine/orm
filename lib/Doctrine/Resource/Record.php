@@ -169,12 +169,26 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
         $request->set('type', 'save');
         $request->set('model', $this->getModel());
         $request->set('data', $this->getChanges());
+        $request->set('identifier', $this->identifier());
         
         $response = $request->execute();
         
         $array = Doctrine_Parser::load($response, $format);
         
         $this->_data = $request->hydrate(array($array), $this->_model)->getFirst()->_data;
+    }
+    
+    public function delete()
+    {
+        $format = $this->getConfig('format');
+        
+        $request = new Doctrine_Resource_Request();
+        $request->set('format', $format);
+        $request->set('type', 'delete');
+        $request->set('model', $this->getModel());
+        $request->set('identifier', $this->identifier());
+        
+        $response = $request->execute();
     }
     
     public function getModel()

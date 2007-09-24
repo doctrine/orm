@@ -19,7 +19,10 @@ if ($action == 'server') {
     
     $client = Doctrine_Resource_Client::getInstance($config);
     
-    $user = new User();
+    $user = $client->find('User', 4);
+    $user->Phonenumber->add()->phonenumber = '555-5555';
     $user->name = 'jonnwage';
     $user->save();
+    
+    print_r($user->toArray());
 }

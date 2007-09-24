@@ -48,26 +48,19 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     {
         $model = $request->get('model');
         $data = $request->get('data');
+        $identifier = $request->get('identifier');
         
         $table = Doctrine_Manager::getInstance()->getTable($model);
-        $identifier = $table->getIdentifier();
-        
-        if (!is_array($identifier)) {
-            $identifier = array($identifier);
-        }
         
         $existing = true;
-        $pks = array();
-        foreach ($identifier as $name) {
-            if (isset($data[$name]) && $data[$name]) {
-                $pks[$name] = $data[$name];
-            } else {
+        foreach ($identifier as $key => $value) {
+            if (!$value) {
                 $existing = false;
             }
         }
         
         if ($existing) {
-            $record = $table->find($pks);
+            $record = $table->find($identifier);
         } else {
             $record = new $model();
         }
@@ -76,6 +69,18 @@ class Doctrine_Resource_Server extends Doctrine_Resource
         $record->save();
         
         return $record->toArray(true, true);
+    }
+    
+    public function executeDelete($request)
+    {
+        $model = $request->get('model');
+        $identifier = $request->get('identifier');
+        
+        $table = Doctrine_Manager::getInstance()->getTable($model);
+        
+        $record = $table->find($identifier);
+        
+        $record->delete();
     }
     
     public function executeQuery($request)
