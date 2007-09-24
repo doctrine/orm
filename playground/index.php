@@ -24,6 +24,4 @@ if ($action == 'server') {
     $query = new Doctrine_Resource_Query();
     
     $users = $query->from('User u, u.Phonenumber p, u.Address a, u.Book b, b.Author a')->execute();
-    
-    print_r($users);
 }

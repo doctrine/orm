@@ -1080,12 +1080,15 @@ class Doctrine_Export extends Doctrine_Connection_Module
             }
 
             $table = $plugin->getOption('pluginTable');
+            
+            // Make sure plugin has a valid table
+            if ($table instanceof Doctrine_Table) {
+                $data = $table->getExportableFormat();
 
-            $data = $table->getExportableFormat();
+                $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
 
-            $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
-
-            $sql = array_merge($sql, (array) $query);
+                $sql = array_merge($sql, (array) $query);
+            }
         }
 
         return $sql;
