@@ -12,7 +12,6 @@ $groups->save();
 
 $users = new Doctrine_Collection('User');
 
-
 $users[0]->name = 'zYne';
 $users[0]['Email']->address = 'zYne@example.com';
 $users[0]['Phonenumber'][0]->phonenumber = '123 123';

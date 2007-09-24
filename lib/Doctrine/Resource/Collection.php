@@ -64,9 +64,15 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
         $this->_data[$set] = $value;
     }
     
-    public function add($value)
+    public function add($value = null)
     {
+        if (!$value) {
+            $value = Doctrine_Resource_Client::getInstance()->newRecord($this->_model);
+        }
+        
         $this->_data[] = $value;
+        
+        return $value;
     }
     
     public function getIterator()
@@ -84,7 +90,7 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
         $array = array();
         
         foreach ($this->_data as $key => $record) {
-            if ($record->exists()) {
+            if ($record->exists() || $record->hasChanges()) {
                 $array[$this->_model . '_' .$key] = $record->toArray();
             }
         }

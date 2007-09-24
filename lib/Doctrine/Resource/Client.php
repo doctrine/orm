@@ -53,6 +53,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
     public function loadDoctrine()
     {
         $path = '/tmp/' . md5(serialize($this->getConfig()));
+        $classesPath = $path.'.classes.php';
         
         if (!file_exists($path)) {
             $schema = file_get_contents($path);
@@ -72,8 +73,39 @@ class Doctrine_Resource_Client extends Doctrine_Resource
             $import = new Doctrine_Import_Schema();
             $schema = $import->buildSchema($path, $this->getConfig()->get('format'));
             
+            if (file_exists($classesPath)) {
+                $build = "<?php\n";
+                foreach ($schema['schema'] as $className => $details) {
+                    $build .= "class " . $className . " extends Doctrine_Resource_Record { protected \$_model = '".$className."'; public function __construct(\$loadRelations = true) { parent::__construct(\$this->_model, \$loadRelations); } }\n";
+                }
+            
+                file_put_contents($classesPath, $build);
+            }
+            
+            require_once($classesPath);
+            
             $this->getConfig()->set('schema', $schema);
         }
+    }
+    
+    public function find($model, $pk)
+    {
+        $record = $this->newRecord($model);
+        
+        $pk = is_array($pk) ? $pk:array($pk);
+        $identifier = $record->identifier();
+        $identifier = is_array($identifier) ? $identifier:array($identifier);
+        
+        $where = '';
+        foreach (array_keys($identifier) as $key => $name) {
+            $value = $pk[$key];
+            $where .= $model.'.' . $name . ' = '.$value;
+        }
+        
+        $query = new Doctrine_Resource_Query();
+        $query->from($model)->where($where)->limit(1);
+        
+        return $query->execute()->getFirst();
     }
     
     public function newQuery()

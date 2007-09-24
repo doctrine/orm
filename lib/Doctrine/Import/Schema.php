@@ -173,7 +173,7 @@ class Doctrine_Import_Schema
                     $relation['type'] = Doctrine_Relation::ONE;
                 }
                 
-                $this->relations[$className][$class] = $relation;
+                $this->relations[$className][$alias] = $relation;
             }
         }
     }

@@ -85,6 +85,8 @@ class Doctrine_Resource_Request extends Doctrine_Resource_Params
                 } else if($r->hasColumn($key)) {
                     $r->set($key, $value);
                 }
+                
+                $r->clearChanges();
             }
         
             $collection[] = $r;
