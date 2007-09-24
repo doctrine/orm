@@ -54,7 +54,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
     {
         $path = '/tmp/' . md5(serialize($this->getConfig()));
         
-        if (file_exists($path)) {
+        if (!file_exists($path)) {
             $schema = file_get_contents($path);
         } else {
             $request = new Doctrine_Resource_Request();
