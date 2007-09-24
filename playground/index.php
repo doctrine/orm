@@ -18,9 +18,10 @@ if ($action == 'server') {
     
     $client = Doctrine_Resource_Client::getInstance($config);
     
-    $user = $client->newRecord('User');
-    $user->name = 'jonathan h. wage';
-    $user->save();
+    $query = new Doctrine_Resource_Query();
+    $query->from('User u, u.Email e, u.Phonenumber p');
     
-    print_r($user->toArray());
+    $users = $query->execute();
+    
+    print_r($users->toArray());
 }

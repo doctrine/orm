@@ -40,49 +40,49 @@ class Doctrine_Resource_Request extends Doctrine_Resource_Params
         return Doctrine_Resource_Client::getInstance()->getConfig($key);
     }
     
-    public function getParams()
-    {
-        if ($this->_params === null) {
-            $this->_params = new Doctrine_Resource_Params();
-        }
-        
-        return $this->_params;
-    }
-    
-    public function get($key)
-    {
-        return $this->getParams()->get($key);
-    }
-    
-    public function set($key, $value)
-    {
-        return $this->getParams()->set($key, $value);
-    }
-    
     public function execute()
     {
         $url  = $this->getConfig()->get('url');
-        $url .= strstr($this->getConfig()->get('url'), '?') ? '&':'?';
-        $url .= http_build_query($this->getParams()->getAll());
+        $data = array('type' => $this->get('type'), 'format' => $this->getConfig()->get('format'), 'data' => Doctrine_Parser::dump($this->getAll(), $this->getConfig()->get('format')));
         
-        $response = file_get_contents($url);
+        $ch = curl_init(); 
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $response = curl_exec($ch);
+        
+        if (curl_errno($ch)) {
+            throw new Doctrine_Resource_Exception('Request failed');
+        }
+        
+        curl_close($ch);
         
         return $response;
     }
     
     public function hydrate(array $array, $model, $passedKey = null)
     {
-        $config = $this->getConfig();
+        if (empty($array)) {
+            return false;
+        }
         
-        $collection = new Doctrine_Resource_Collection($model, $config);
+        $collection = new Doctrine_Resource_Collection($model);
         
         foreach ($array as $record) {
-            $r = new Doctrine_Resource_Record($model, $config);
+            $r = new Doctrine_Resource_Record($model);
             
             foreach ($record as $key => $value) {
-                if (is_array($value)) {
-                    $r->set($key, $this->hydrate($value, $model, $config, $key));
-                } else {
+                if ($r->hasRelation($key) && !empty($value)) {
+                    $relation = $r->getRelation($key);
+                    
+                    if ($relation['type'] === Doctrine_Relation::MANY) {
+                        $r->set($key, $this->hydrate($value, $relation['class'], $key));
+                    } else {
+                        $r->set($key, $this->hydrate(array($value), $relation['class'], $key)->getFirst());
+                    }
+                } else if($r->hasColumn($key)) {
                     $r->set($key, $value);
                 }
             }

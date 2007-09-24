@@ -31,7 +31,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Resource_Server extends Doctrine_resource
+class Doctrine_Resource_Server extends Doctrine_Resource
 {
     static public function getInstance($config = null)
     {
@@ -49,7 +49,29 @@ class Doctrine_Resource_Server extends Doctrine_resource
         $model = $request->get('model');
         $data = $request->get('data');
         
-        $record = new $model();
+        $table = Doctrine_Manager::getInstance()->getTable($model);
+        $identifier = $table->getIdentifier();
+        
+        if (!is_array($identifier)) {
+            $identifier = array($identifier);
+        }
+        
+        $existing = true;
+        $pks = array();
+        foreach ($identifier as $name) {
+            if (isset($data[$name])) {
+                $pks[$name] = $data[$name];
+            } else {
+                $existing = false;
+            }
+        }
+        
+        if ($existing) {
+            $record = $table->find($pks);
+        } else {
+            $record = new $model();
+        }
+        
         $record->fromArray($data);
         $record->save();
         
@@ -82,20 +104,22 @@ class Doctrine_Resource_Server extends Doctrine_resource
         return $schema;
     }
     
-    public function execute($request)
+    public function execute(array $r)
     {
-        if (!isset($request['type'])) {
-            throw new Doctrine_Resource_Exception('You must specify a request type');
-        }
+        if (!isset($r['data'])) {
+            throw new Doctrine_Resource_Exception('You must specify a data xml string in your request');
+        }                        
         
-        $format = isset($request['format']) ? $request['format']:'xml';
-        $type = $request['type'];
+        $type = $r['type'];
+        $format = isset($r['format']) ? $r['format']:'xml';
+        $data = Doctrine_Parser::load($r['data'], $format);
+        
         $funcName = 'execute' . Doctrine::classify($type);
         
-        $request = new Doctrine_Resource_Request($request);
+        $requestObj = new Doctrine_Resource_Request($data);
         
         if (method_exists($this, $funcName)) {
-            $result = $this->$funcName($request);
+            $result = $this->$funcName($requestObj);
         } else {
             throw new Doctrine_Resource_Exception('Unknown Doctrine Resource Server function');
         }

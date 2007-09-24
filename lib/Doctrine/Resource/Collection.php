@@ -31,7 +31,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Resource_Collection extends Doctrine_Access implements Countable, IteratorAggregate
+class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements Countable, IteratorAggregate
 {
     protected $_data = array();
     protected $_config = array();
@@ -84,7 +84,9 @@ class Doctrine_Resource_Collection extends Doctrine_Access implements Countable,
         $array = array();
         
         foreach ($this->_data as $key => $record) {
-            $array[$key] = $record->toArray();
+            if ($record->exists()) {
+                $array[$this->_model . '_' .$key] = $record->toArray();
+            }
         }
         
         return $array;

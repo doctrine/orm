@@ -1143,9 +1143,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         if (is_array($array)) {
             foreach ($array as $key => $value) {
-                if (is_array($value)) {
+                if ($this->getTable()->hasRelation($key) && $value) {
                     $this->$key->fromArray($value);
-                } else {
+                } else if($this->getTable()->hasColumn($key) && $value) {
                     $this->$key = $value;
                 }
             }

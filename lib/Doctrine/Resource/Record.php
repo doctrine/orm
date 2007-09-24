@@ -31,7 +31,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Resource_Record extends Doctrine_Record_Abstract implements Countable, IteratorAggregate
+class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Countable, IteratorAggregate
 {
     protected $_data = array();
     protected $_model = null;
@@ -119,7 +119,7 @@ class Doctrine_Resource_Record extends Doctrine_Record_Abstract implements Count
     
     public function save()
     {
-        $format = $this->getConfig('format') ? $this->getConfig('format'):'xml';
+        $format = $this->getConfig('format');
         
         $request = new Doctrine_Resource_Request();
         $request->set('format', $format);
@@ -139,14 +139,73 @@ class Doctrine_Resource_Record extends Doctrine_Record_Abstract implements Count
         return $this->_model;
     }
     
+    public function identifier()
+    {
+        $identifier = array();
+        
+        if (isset($this->_schema['columns']) && is_array($this->_schema['columns'])) {
+            foreach ($this->_schema['columns'] as $name => $column) {
+                if ($column['primary'] == true) {
+                    $identifier[$name] = $this->_data[$name];
+                }
+            }
+        }
+        
+        return $identifier;
+    }
+    
+    public function exists()
+    {
+        $identifier = $this->identifier();
+        
+        foreach ($identifier as $key => $value) {
+            if (!$value) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+        
+    public function hasColumn($name)
+    {
+        return isset($this->_schema['columns'][$name]) ? true:false;
+    }
+    
+    public function getColumn($name)
+    {
+        if ($this->hasColumn($name)) {
+            return $this->_columns[$name];
+        }
+    }
+    
+    public function hasRelation($name)
+    {
+        return isset($this->_schema['relations'][$name]) ? true:false;
+    }
+    
+    public function getRelation($name)
+    {
+        if ($this->hasRelation($name)) {
+            return $this->_schema['relations'][$name];
+        }
+    }
+    
     public function toArray()
     {
         $array = array();
         
         foreach ($this->_data as $key => $value) {
-            if ($value instanceof Doctrine_Resource_Collection OR $value instanceof Doctrine_Resource_Record) {
-                $array[$key] = $value->toArray();
-            } else {
+            
+            if ($this->hasRelation($key) && $value instanceof Doctrine_Resource_Collection) {
+                if ($value->count() > 0) {
+                    $array[$key] = $value->toArray();
+                }
+            } else if ($this->hasRelation($key) && $value instanceof Doctrine_Resource_Record) {
+                if ($value->exists()) {
+                    $array[$key] = $value->toArray();
+                }
+            } else if (!$this->hasRelation($key) && $this->hasColumn($key)) {
                 $array[$key] = $value;
             }
         }

@@ -59,7 +59,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
         } else {
             $request = new Doctrine_Resource_Request();
             $request->set('type', 'load');
-            $request->set('format', 'xml');
+            $request->set('format', $this->getConfig()->get('format'));
             
             $schema = $request->execute();
             
@@ -67,7 +67,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
         }
         
         $import = new Doctrine_Import_Schema();
-        $schema = $import->buildSchema($path, 'xml');
+        $schema = $import->buildSchema($path, $this->getConfig()->get('format'));
         
         $this->getConfig()->set('schema', $schema);
     }
