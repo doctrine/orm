@@ -23,6 +23,7 @@
  * Doctrine_Resource_Collection
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jonathan H. Wage <jwage@mac.com>
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
@@ -32,50 +33,57 @@
  */
 class Doctrine_Resource_Collection extends Doctrine_Access implements Countable, IteratorAggregate
 {
-    public $data = array();
-    public $config = array();
-    public $model = null;
+    protected $_data = array();
+    protected $_config = array();
+    protected $_model = null;
     
-    public function __construct($model, $config)
+    public function __construct($model)
     {
-        $this->model = $model;
-        $this->config = $config;
+        $this->_model = $model;
+    }
+    
+    public function getConfig($key = null)
+    {
+        return Doctrine_Resource_Client::getInstance()->getConfig($key);
     }
     
     public function count()
     {
-        return count($data);
+        return count($this->_data);
     }
     
     public function get($get)
     {
-        if (isset($this->data[$get])) {
-            return $this->data[$get];
+        if (isset($this->_data[$get])) {
+            return $this->_data[$get];
         }
     }
 
     public function set($set, $value)
     {
-        $this->data[$set] = $value;
+        $this->_data[$set] = $value;
+    }
+    
+    public function add($value)
+    {
+        $this->_data[] = $value;
     }
     
     public function getIterator()
     {
-        $data = $this->data;
-        
-        return new ArrayIterator($data);
+        return new ArrayIterator($this->_data);
     }
     
     public function getFirst()
     {
-        return isset($this->data[0]) ? $this->data[0]:null;
+        return isset($this->_data[0]) ? $this->_data[0]:null;
     }
     
     public function toArray()
     {
         $array = array();
         
-        foreach ($this->data as $key => $record) {
+        foreach ($this->_data as $key => $record) {
             $array[$key] = $record->toArray();
         }
         
@@ -84,7 +92,7 @@ class Doctrine_Resource_Collection extends Doctrine_Access implements Countable,
     
     public function save()
     {
-        foreach ($this->data as $record) {
+        foreach ($this as $record) {
             $record->save();
         }
     }

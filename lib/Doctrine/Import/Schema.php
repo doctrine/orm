@@ -41,7 +41,17 @@ class Doctrine_Import_Schema
 {
     public $relations = array();
     
-    
+    public function buildSchema($schema, $format)
+    {
+        $array = array();
+        foreach ((array) $schema AS $s) {
+            $array = array_merge($array, $this->parseSchema($s, $format));
+        }
+
+        $this->buildRelationships($array);
+        
+        return array('schema' => $array, 'relations' => $this->relations);
+    }
     /**
      * importSchema
      *
@@ -58,12 +68,9 @@ class Doctrine_Import_Schema
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
         
-        $array = array();
-        foreach ((array) $schema AS $s) {
-            $array = array_merge($array, $this->parseSchema($s, $format));
-        }
+        $schema = $this->buildSchema($schema, $format);
         
-        $this->buildRelationships($array);
+        $array = $schema['schema'];
         
         foreach ($array as $name => $properties) {
             if (!empty($models) && !in_array($properties['className'], $models)) {

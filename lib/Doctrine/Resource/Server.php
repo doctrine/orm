@@ -23,6 +23,7 @@
  * Doctrine_Resource_Server
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jonathan H. Wage <jwage@mac.com>
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
@@ -30,20 +31,23 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Resource_Server extends Doctrine_Resource
+class Doctrine_Resource_Server extends Doctrine_resource
 {
-    public $config = array();
-    public $format = 'xml';
-    
-    public function __construct($config)
+    static public function getInstance($config = null)
     {
-        $this->config = array_merge($config, $this->config);
+        static $instance;
+        
+        if (!$instance) {
+            $instance = new Doctrine_Resource_Server($config);
+        }
+        
+        return $instance;
     }
     
     public function executeSave($request)
     {
-        $model = $request['model'];
-        $data = $request['data'];
+        $model = $request->get('model');
+        $data = $request->get('data');
         
         $record = new $model();
         $record->fromArray($data);
@@ -54,27 +58,53 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     
     public function executeQuery($request)
     {
-        $dql = $request['dql'];
-        $params = isset($request['params']) ? $request['params']:array();
+        $dql = $request->get('dql');
+        $params = $request->get('params') ? $request->get('params'):array();
         
         $conn = Doctrine_Manager::connection();
         
         return $conn->query($dql, $params)->toArray(true, true);
     }
     
+    public function executeLoad($request)
+    {
+        $path = '/tmp/' . rand() . '.' . $request->get('format');
+        
+        $models = $this->getConfig('models') ? $this->getConfig('models'):array();
+        
+        $export = new Doctrine_Export_Schema();
+        $export->exportSchema($path, $request->get('format'), null, $models);
+        
+        $schema = Doctrine_Parser::load($path, $request->get('format'));
+        
+        unlink($path);
+        
+        return $schema;
+    }
+    
     public function execute($request)
     {
         if (!isset($request['type'])) {
-            throw new Doctrine_Resource_Exception('You must specify a request type: query or save');
+            throw new Doctrine_Resource_Exception('You must specify a request type');
         }
         
         $format = isset($request['format']) ? $request['format']:'xml';
         $type = $request['type'];
         $funcName = 'execute' . Doctrine::classify($type);
         
-        $result = $this->$funcName($request);
+        $request = new Doctrine_Resource_Request($request);
         
-        return Doctrine_Parser::dump($result, $format);
+        if (method_exists($this, $funcName)) {
+            $result = $this->$funcName($request);
+        } else {
+            throw new Doctrine_Resource_Exception('Unknown Doctrine Resource Server function');
+        }
+        
+        if ($result) {
+            return Doctrine_Parser::dump($result, $format);
+        } else {
+            return false;
+        }
     }
     
     public function run($request)

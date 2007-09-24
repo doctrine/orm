@@ -23,6 +23,7 @@
  * Doctrine_Resource_Client
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jonathan H. Wage <jwage@mac.com>
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
@@ -32,25 +33,57 @@
  */
 class Doctrine_Resource_Client extends Doctrine_Resource
 {
-    public $config = array();
+    public $loadDoctrine = false;
     
-    public function __construct($config)
+    static public function getInstance($config = null)
     {
-        $this->config = $config;
+        static $instance;
+        
+        if (!$instance) {
+            $instance = new Doctrine_Resource_Client($config);
+            
+            if ($instance->loadDoctrine === true) {
+                $instance->loadDoctrine();
+            }
+        }
+        
+        return $instance;
+    }
+    
+    public function loadDoctrine()
+    {
+        $path = '/tmp/' . md5(serialize($this->getConfig()));
+        
+        if (file_exists($path)) {
+            $schema = file_get_contents($path);
+        } else {
+            $request = new Doctrine_Resource_Request();
+            $request->set('type', 'load');
+            $request->set('format', 'xml');
+            
+            $schema = $request->execute();
+            
+            file_put_contents($path, $schema);
+        }
+        
+        $import = new Doctrine_Import_Schema();
+        $schema = $import->buildSchema($path, 'xml');
+        
+        $this->getConfig()->set('schema', $schema);
     }
     
     public function newQuery()
     {
-        return new Doctrine_Resource_Query($this->config);
+        return new Doctrine_Resource_Query();
     }
     
-    public function newRecord($model)
+    public function newRecord($model, $loadRelations = true)
     {
-        return new Doctrine_Resource_Record($model, $this->config);
+        return new Doctrine_Resource_Record($model, $loadRelations);
     }
     
     public function newCollection($model)
     {
-        return new Doctrine_Resource_Collection($model, $this->config);
+        return new Doctrine_Resource_Collection($model);
     }
 }

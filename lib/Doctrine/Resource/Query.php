@@ -23,6 +23,7 @@
  * Doctrine_Resource_Query
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jonathan H. Wage <jwage@mac.com>
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
@@ -30,64 +31,56 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Resource_Query extends Doctrine_Resource
+class Doctrine_Resource_Query
 {
-    public $config = array();
-    public $parts = array();
-    public $dql = null;
-    public $defaultFormat = 'xml';
+    protected $_parts = array();
+    protected $_dql = null;
+    protected $_params = array();
     
-    public function __construct($config)
+    public function getConfig($key = null)
     {
-        $this->config = $config;
+        return Doctrine_Resource_Client::getInstance()->getConfig($key);
     }
     
     public function query($dql, $params = array())
     {
-        $this->dql = $dql;
+        $this->_dql = $dql;
         
         return $this->execute($params);
     }
     
     public function execute($params = array())
     {
-        $request = array();
-        $request['dql'] = $this->getDql();
-        $request['params'] = $params;
-        $request['format'] = $this->getFormat();
-        $request['type'] = 'query';
+        $request = new Doctrine_Resource_Request();
+        $request->set('dql', $this->getDql());
+        $request->set('params', $params);
+        $request->set('format', $this->getConfig()->get('format'));
+        $request->set('type', 'query');
         
-        $response = self::request($this->config['url'], $request);
+        $response = $request->execute();
         
-        return $this->parseResponse($response);
+        $array = Doctrine_Parser::load($response, $this->getConfig()->get('format'));
+        
+        return $request->hydrate($array, $this->getModel());
     }
     
     public function getDql()
     {
-        if (!$this->dql && !empty($this->parts)) {
+        if (!$this->_dql && !empty($this->_parts)) {
             $q = '';
-            $q .= ( ! empty($this->parts['select']))?  'SELECT '    . implode(', ', $this->parts['select']) : '';
-            $q .= ( ! empty($this->parts['from']))?    ' FROM '     . implode(' ', $this->parts['from']) : '';
-            $q .= ( ! empty($this->parts['where']))?   ' WHERE '    . implode(' AND ', $this->parts['where']) : '';
-            $q .= ( ! empty($this->parts['groupby']))? ' GROUP BY ' . implode(', ', $this->parts['groupby']) : '';
-            $q .= ( ! empty($this->parts['having']))?  ' HAVING '   . implode(' AND ', $this->parts['having']) : '';
-            $q .= ( ! empty($this->parts['orderby']))? ' ORDER BY ' . implode(', ', $this->parts['orderby']) : '';
-            $q .= ( ! empty($this->parts['limit']))?   ' LIMIT '    . implode(' ', $this->parts['limit']) : '';
-            $q .= ( ! empty($this->parts['offset']))?  ' OFFSET '   . implode(' ', $this->parts['offset']) : '';
+            $q .= ( ! empty($this->_parts['select']))?  'SELECT '    . implode(', ', $this->_parts['select']) : '';
+            $q .= ( ! empty($this->_parts['from']))?    ' FROM '     . implode(' ', $this->_parts['from']) : '';
+            $q .= ( ! empty($this->_parts['where']))?   ' WHERE '    . implode(' AND ', $this->_parts['where']) : '';
+            $q .= ( ! empty($this->_parts['groupby']))? ' GROUP BY ' . implode(', ', $this->_parts['groupby']) : '';
+            $q .= ( ! empty($this->_parts['having']))?  ' HAVING '   . implode(' AND ', $this->_parts['having']) : '';
+            $q .= ( ! empty($this->_parts['orderby']))? ' ORDER BY ' . implode(', ', $this->_parts['orderby']) : '';
+            $q .= ( ! empty($this->_parts['limit']))?   ' LIMIT '    . implode(' ', $this->_parts['limit']) : '';
+            $q .= ( ! empty($this->_parts['offset']))?  ' OFFSET '   . implode(' ', $this->_parts['offset']) : '';
             
             return $q;
         } else {
-            return $this->dql;
+            return $this->_dql;
         }
-    }
-    
-    public function parseResponse($response)
-    {
-        $array = Doctrine_Parser::load($response, $this->getFormat());
-        
-        $hydrated = $this->hydrate($array, $this->getModel(), $this->config);
-
-        return $hydrated;    
     }
     
     public function buildUrl($array)
@@ -113,18 +106,6 @@ class Doctrine_Resource_Query extends Doctrine_Resource
         $e = explode(' ', $e[1]);
         
         return $e[0];
-    }
-    
-    public function setFormat($format)
-    {
-        $this->config['format'] = $format;
-        
-        return $this;
-    }
-    
-    public function getFormat()
-    {
-        return isset($this->config['format']) ? $this->config['format']:$this->defaultFormat;
     }
     
     /**
@@ -253,7 +234,7 @@ class Doctrine_Resource_Query extends Doctrine_Resource
      */
     public function distinct($flag = true)
     {   
-        $this->parts['distinct'] = (bool) $flag;
+        $this->_parts['distinct'] = (bool) $flag;
 
         return $this;
     }
@@ -267,7 +248,7 @@ class Doctrine_Resource_Query extends Doctrine_Resource
      */
     public function forUpdate($flag = true)
     {
-        $this->parts[self::FOR_UPDATE] = (bool) $flag;
+        $this->_parts[self::FOR_UPDATE] = (bool) $flag;
 
         return $this;
     }
@@ -446,7 +427,7 @@ class Doctrine_Resource_Query extends Doctrine_Resource
       */
       public function parseQueryPart($queryPartName, $queryPart)
       {
-          $this->parts[$queryPartName][] = $queryPart;
+          $this->_parts[$queryPartName][] = $queryPart;
           
           return $this;
       }

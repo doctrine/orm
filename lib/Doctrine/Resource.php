@@ -23,6 +23,7 @@
  * Doctrine_Resource
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jonathan H. Wage <jwage@mac.com>
  * @package     Doctrine
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
@@ -32,34 +33,37 @@
  */
 class Doctrine_Resource
 {
-    public static function request($url, $request)
-    {   
-        $url .= strstr($url, '?') ? '&':'?';
-        $url .= http_build_query($request);
-        
-        $response = file_get_contents($url);
-        
-        return $response;
-    }
+    protected $_config = null;
+    protected $_defaultFormat = 'xml';
     
-    public function hydrate(array $array, $model, $config, $passedKey = null)
+    public function __construct($config)
     {
-        $collection = new Doctrine_Resource_Collection($model, $config);
-        
-        foreach ($array as $record) {
-            $r = new Doctrine_Resource_Record($model, $config);
-            
-            foreach ($record as $key => $value) {
-                if (is_array($value)) {
-                    $r->data[$key] = $this->hydrate($value, $model, $config, $key);
-                } else {
-                    $r->data[$key] = $value;
-                }
-            }
-        
-            $collection->data[] = $r;
+        foreach ($config as $key => $value) {
+            $this->getConfig()->set($key, $value);
         }
         
-        return $collection;
+        $loadDoctrine = false;
+        foreach ($this->getConfig()->getAll() as $key => $value) {
+            if ($key == 'url') {
+                $this->loadDoctrine = true;
+            }
+        }
+        
+        if (!$this->getConfig()->has('format') OR !$this->getConfig()->get('format')) {
+            $this->getConfig()->set('format', $this->_defaultFormat);
+        }
+    }
+    
+    public function getConfig($key = null)
+    {
+        if ($this->_config === null) {
+            $this->_config = new Doctrine_Resource_Config();
+        }
+        
+        if ($key === null) {
+            return $this->_config;
+        } else {
+            return $this->_config->get($key);
+        }
     }
 }

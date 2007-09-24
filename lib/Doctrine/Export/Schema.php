@@ -46,11 +46,15 @@ class Doctrine_Export_Schema
      * @param string $directory 
      * @return void
      */
-    public function buildSchema($directory, $models = array())
+    public function buildSchema($directory = null, $models = array())
     {
         $array = array();
         
-        $loadedModels = Doctrine::loadModels($directory);
+        if ($directory) {
+            $loadedModels = Doctrine::loadModels($directory);
+        } else {
+            $loadedModels = Doctrine::getLoadedModels();
+        }
         
         $parent = new ReflectionClass('Doctrine_Record');
 
@@ -140,7 +144,7 @@ class Doctrine_Export_Schema
      * @param string $directory 
      * @return void
      */
-    public function exportSchema($schema, $format, $directory, $models = array())
+    public function exportSchema($schema, $format, $directory = null, $models = array())
     {
         $array = $this->buildSchema($directory, $models);
         
