@@ -16,15 +16,17 @@ if ($action == 'server') {
     
 } else {
     $url = 'http://localhost/~jwage/doctrine_trunk/playground/index.php?action=server';
-    $config = array();
+    $config = array('format' => 'yml');
     
     // Instantiate a new client
     $client = Doctrine_Resource_Client::getInstance($url, $config);
     
+    /*
     $query = new Doctrine_Resource_Query();
     $users = $query->from('User u, u.Group g')->execute();
     
     print_r($users->toArray(true));
+    */
     
     /*
     $group = new Group();

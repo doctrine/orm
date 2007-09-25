@@ -48,7 +48,6 @@ class Doctrine_Resource_Table
         
         if (isset($schema['relations'][$model]) && $schema['relations'][$model]) {
             $this->_schema['relations'] = $schema['relations'][$model];
-            $this->_schema['schema']['relations'] = $this->_schema['relations'];
         }
     }
     

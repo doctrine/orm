@@ -82,7 +82,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
             $import = new Doctrine_Import_Schema();
             $schema = $import->buildSchema($path, $this->getConfig()->get('format'));
             
-            if (file_exists($classesPath)) {
+            if (!file_exists($classesPath)) {
                 $build = "<?php\n";
                 foreach ($schema['schema'] as $className => $details) {
                     $build .= "class " . $className . " extends Doctrine_Resource_Record { protected \$_model = '".$className."'; public function __construct(\$loadRelations = true) { parent::__construct(\$this->_model, \$loadRelations); } }\n";

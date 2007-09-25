@@ -603,6 +603,12 @@ User:
       local: user_id
       foreign: address_id
       type: many
+    Addresses: 
+      refClass: EntityAddress
+      class: Address
+      local: user_id
+      foreign: address_id
+      type: many
     Album: 
       local: id
       foreign: user_id
