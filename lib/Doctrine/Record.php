@@ -1134,7 +1134,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         if ($deep) {
             foreach ($this->_references as $key => $relation) {
-                $a[$key] = $relation->toArray($deep, $prefixKey);
+                if (!$relation instanceof Doctrine_Null) {
+                    $a[$key] = $relation->toArray($deep, $prefixKey);
+                }
             }
         }
         return array_merge($a, $this->_values);

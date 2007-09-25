@@ -57,17 +57,22 @@ class Doctrine_Resource_Query
         $request->set('params', $params);
         $request->set('format', $this->getConfig()->get('format'));
         $request->set('type', 'query');
+        $request->set('model', $this->getModel());
         
         $response = $request->execute();
         
         // If we have a response then lets parse it and hydrate it
-        if ($response) {
-            $array = Doctrine_Parser::load($response, $this->getConfig()->get('format'));
-            
-            return $request->hydrate($array, $this->getModel());
+        if (!empty($response)) {
+            return $request->hydrate($response, $this->getModel());
         // Otherwise lets return an empty collection for the queried for model
         } else {
-            return new Doctrine_Resource_Collection($this->getModel());
+            $model = $this->getModel();
+            
+            $collection = new Doctrine_Resource_Collection($this->getModel());
+            
+            $collection[] = new $model(false);
+            
+            return $collection;
         }
     }
     

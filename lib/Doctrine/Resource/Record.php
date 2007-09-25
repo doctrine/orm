@@ -35,13 +35,11 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
 {
     protected $_data = array();
     protected $_model = null;
-    protected $_table = null;
     protected $_changes = array();
     
     public function __construct($model, $loadRelations = true)
     {
         $this->_model = $model;
-        $this->_table = Doctrine_Resource_Client::getInstance()->getTable($model);
         
         $this->initialize($loadRelations);
     }
@@ -74,6 +72,7 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
                     $this->_data[$relation['alias']] = new $relation['class'](false); 
                 } else {
                     $this->_data[$relation['alias']] = new Doctrine_Resource_Collection($relation['class']);
+                    $this->_data[$relation['alias']]->setParent($this);
                 }
             }
         }
@@ -86,16 +85,63 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     
     public function get($key)
     {
+        if (!$key) {
+            return;
+        }
+        
+        if (!isset($this->_data[$key]) && $this->getTable()->hasRelation($key)) {
+            $this->_data[$key] = $this->createRelation($key);
+        }
+        
+        if (!array_key_exists($key, $this->_data)) {
+            throw new Doctrine_Resource_Exception('Unknown property / related component: '.$key);
+        }
+        
         return $this->_data[$key];
     }
 
     public function set($key, $value)
     {
-        if ($this->_data[$key] != $value) {
+        if (!$key) {
+            return;
+        }
+        
+        if (!isset($this->_data[$key]) && $this->getTable()->hasRelation($key)) {
+            $this->_data[$key] = $this->createRelation($key);
+        }
+        
+        if (!array_key_exists($key, $this->_data)) {
+            throw new Doctrine_Resource_Exception('Unknown property / related component: '.$key);
+        }
+        
+        if ($this->_data[$key] != $value && !$value instanceof Doctrine_Resource_Record && !$value instanceof Doctrine_Resource_Collection) {
             $this->_changes[$key] = $value;
         }
         
         $this->_data[$key] = $value;
+    }
+    
+    public function createRelation($key)
+    {
+        $relation = $this->getTable()->getRelation($key);
+        $class = $relation['class'];
+        
+        if ($relation['type'] === Doctrine_Relation::ONE) {
+            $return = new $class(false);
+            $table = $return->getTable();
+            $returnRelation = $table->getRelationByClassName(get_class($this));
+            
+            if ($returnRelation) {
+                $returnClass = new $returnRelation['class'](false);
+                
+                $return->set($returnRelation['alias'], $returnClass);
+            }
+        } else {
+            $return = new Doctrine_Resource_Collection($class);
+            $return->setParent($this);
+        }
+        
+        return $return;
     }
     
     public function count()
@@ -108,8 +154,45 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
         return new ArrayIterator($this->_data);
     }
     
+    public function sameAs(Doctrine_Resource_Record $record)
+    {
+        // If we have same class name
+        if (get_class($this) == get_class($record)) {
+            
+            // If we have 2 records that exist and are persistant
+            if ($record->exists() && $this->exists()) {
+                if ($record->identifier() === $this->identifier()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            // If we have unsaved records then lets compare the data
+            } else {
+                if ($record->toArray(false) === $this->toArray(false)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+    
     public function getChanges()
     {
+        global $gotten;
+        
+        if (!$gotten) {
+            $gotten = array();
+        }
+        
+        $md5Hash = $this->getMd5Hash();
+        
+        if (!in_array($md5Hash, $gotten)) {
+            $gotten[] = $md5Hash;
+        }
+        
         $array = array();
         
         foreach ($this->_data as $key => $value) {
@@ -117,13 +200,13 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
                 
                 $relation = $this->getTable()->getRelation($key);
                 
-                if ($relation['type'] === Doctrine_Relation::ONE) {
-                    if ($this->_data[$key]->hasChanges()) {
-                        $array[$key] = $this->_data[$key]->getChanges();
+                if ($value instanceof Doctrine_Resource_Record) {
+                    if ($value->hasChanges() && !in_array($value->getMd5Hash(), $gotten)) {
+                        $array[$key] = $value->getChanges();
                     }
-                } else {
-                    foreach ($this->_data[$key] as $key2 => $record) {
-                        if ($record->hasChanges()) {
+                } else if($value instanceof Doctrine_Resource_Collection) {
+                    foreach ($value as $key2 => $record) {
+                        if ($record->hasChanges() && !in_array($record->getMd5Hash(), $gotten)) {
                             $array[$key][$record->getModel() . '_' .$key2] = $record->getChanges();
                         }
                     }
@@ -160,9 +243,9 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
         
         $response = $request->execute();
         
-        $array = Doctrine_Parser::load($response, $format);
+        $this->_data = $request->hydrate(array($response), $this->_model, array($this))->getFirst()->_data;
         
-        $this->_data = $request->hydrate(array($array), $this->_model)->getFirst()->_data;
+        $this->clearChanges();
     }
     
     public function delete()
@@ -180,7 +263,9 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     
     public function getTable()
     {
-        return $this->_table;
+        $model = $this->_model;
+        
+        return Doctrine_Resource_Client::getInstance()->getTable($model);
     }
     
     public function getModel()
@@ -219,25 +304,48 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
         return true;
     }
     
-    public function toArray()
+    public function toArray($deep = false)
     {
+        global $gotten;
+        
+        if (!$gotten) {
+            $gotten = array();
+        }
+        
+        $md5Hash = $this->getMd5Hash();
+        
+        if (!in_array($md5Hash, $gotten)) {
+            $gotten[] = $md5Hash;
+        }
+        
         $array = array();
         
         foreach ($this->_data as $key => $value) {
             
-            if ($this->getTable()->hasRelation($key) && $value instanceof Doctrine_Resource_Collection) {
-                if ($value->count() > 0) {
-                    $array[$key] = $value->toArray();
-                }
-            } else if ($this->getTable()->hasRelation($key) && $value instanceof Doctrine_Resource_Record) {
-                if ($value->exists() || $value->hasChanges()) {
-                    $array[$key] = $value->toArray();
-                }
+            if ($deep && $this->getTable()->hasRelation($key)) {
+                if ($value instanceof Doctrine_Resource_Collection) {
+                    if ($value->count() > 0) {
+                        foreach ($value as $key2 => $record) {
+                            if (($record->exists() || $record->hasChanges()) && !in_array($record->getMd5Hash(), $gotten)) {
+                                $array[$key][get_class($record) . '_' . $key2] = $record->toArray($deep);
+                            }
+                        }
+                    }
+                } else if ($value instanceof Doctrine_Resource_Record) {
+                    if (($value->exists() || $value->hasChanges()) && !in_array($value->getMd5Hash(), $gotten)) {
+                        $array[$key] = $value->toArray($deep);
+                    }
+                }   
             } else if (!$this->getTable()->hasRelation($key) && $this->getTable()->hasColumn($key)) {
                 $array[$key] = $value;
             }
         }
         
         return $array;
+    }
+    
+    public function getMd5Hash()
+    {
+        return md5(serialize($this->_data));
     }
 }

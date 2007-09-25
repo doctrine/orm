@@ -48,6 +48,7 @@ class Doctrine_Resource_Table
         
         if (isset($schema['relations'][$model]) && $schema['relations'][$model]) {
             $this->_schema['relations'] = $schema['relations'][$model];
+            $this->_schema['schema']['relations'] = $this->_schema['relations'];
         }
     }
     
@@ -59,6 +60,11 @@ class Doctrine_Resource_Table
     public function getRelations()
     {
         return $this->_schema['relations'];
+    }
+    
+    public function getColumns()
+    {
+        return $this->_schema['columns'];
     }
     
     public function getConfig($key = null)
@@ -85,7 +91,9 @@ class Doctrine_Resource_Table
         $query = new Doctrine_Resource_Query();
         $query->from($model)->where($where)->limit(1);
         
-        return $query->execute()->getFirst();
+        $result = $query->execute();
+        
+        return $result->getFirst();
     }
     
     public function hasColumn($name)
@@ -110,5 +118,36 @@ class Doctrine_Resource_Table
         if ($this->hasRelation($name)) {
             return $this->_schema['relations'][$name];
         }
+    }
+    
+    public function getRelationByClassName($name)
+    {
+        $relations = $this->getRelations();
+        
+        foreach ($relations as $relation) {
+            if ($relation['class'] === $name) {
+                return $relation;
+            }
+        }
+        
+        return false;
+    }
+    
+    public function getIdentifier()
+    {
+        $identifier = array();
+        
+        $schema = $this->getSchema();
+        $columns = $schema['columns'];
+        
+        if (isset($columns) && is_array($columns)) {
+            foreach ($columns as $name => $column) {
+                if ($column['primary'] == true) {
+                    $identifier[$name] = $name;
+                }
+            }
+        }
+        
+        return $identifier;
     }
 }

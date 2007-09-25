@@ -141,12 +141,25 @@ class Doctrine_Resource_Server extends Doctrine_Resource
         if ($result) {
             return Doctrine_Parser::dump($result, $format);
         } else {
-            return false;
+            return null;
         }
     }
     
     public function run($request)
     {
-        echo $this->execute($request);
+        try {
+            $result = $this->execute($request);
+            
+            echo $result;
+        } catch(Exception $e) {
+            echo $this->exception($e);
+        }
+    }
+    
+    public function exception($e)
+    {
+        $error = array('error' => $e->getMessage());
+        
+        return Doctrine_Parser::dump($error);
     }
 }

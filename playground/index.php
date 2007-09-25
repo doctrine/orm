@@ -21,104 +21,54 @@ if ($action == 'server') {
     // Instantiate a new client
     $client = Doctrine_Resource_Client::getInstance($url, $config);
     
+    $query = new Doctrine_Resource_Query();
+    $users = $query->from('User u, u.Group g')->execute();
+    
+    print_r($users->toArray(true));
+    
+    /*
+    $group = new Group();
+    $group->name = 'Jon';
+    $group->save();
+    
+    print_r($group->toArray());
+    */
+    
+    //$client->printSchema();
+    
+    /*
     // Retrieve a models table object
     $table = $client->getTable('User');
     
-    // Find record by identifier
-    $user = $table->find(4);
-    
-    // 2 ways to create queries
-    $query = new Doctrine_Resource_Query();
-    $query->from('User u, u.Phonenumber p')->limit(2);
-    
-    // returns users
-    $users = $query->execute();
-    
-    print_r($users->toArray());
-    
-    /*
-        Array
-        (
-            [User_0] => Array
-                (
-                    [id] => 4
-                    [name] => zYne
-                    [loginname] => 
-                    [password] => 
-                    [type] => 0
-                    [created] => 
-                    [updated] => 
-                    [email_id] => 1
-                    [Phonenumber] => Array
-                        (
-                            [Phonenumber_0] => Array
-                                (
-                                    [id] => 2
-                                    [phonenumber] => 123 123
-                                    [entity_id] => 4
-                                )
-
-                        )
-
-                )
-
-            [User_1] => Array
-                (
-                    [id] => 5
-                    [name] => Arnold Schwarzenegger
-                    [loginname] => 
-                    [password] => 
-                    [type] => 0
-                    [created] => 
-                    [updated] => 
-                    [email_id] => 2
-                    [Phonenumber] => Array
-                        (
-                            [Phonenumber_0] => Array
-                                (
-                                    [id] => 3
-                                    [phonenumber] => 123 123
-                                    [entity_id] => 5
-                                )
-
-                            [Phonenumber_1] => Array
-                                (
-                                    [id] => 4
-                                    [phonenumber] => 456 456
-                                    [entity_id] => 5
-                                )
-
-                            [Phonenumber_2] => Array
-                                (
-                                    [id] => 5
-                                    [phonenumber] => 789 789
-                                    [entity_id] => 5
-                                )
-
-                        )
-
-                )
-
-        )
-        */
-    
     $user = new User();
-    $user->name = 'Jonathan H. Wage';
+    $user->name = 'Jon Wage';
+    
+    $user->Email->address = 'jonwage@gmail.com';
+    
+    $phone = $user->Phonenumber[0];
+    $phone->phonenumber = '555-5555';
+    
+    $phone = $user->Phonenumber[1];
+    $phone->phonenumber = '555-55555';
+    
+    $user->Phonenumber[2]->phonenumber = '555';
+    
+    $user->Account->amount = 50.00;
+    
+    $user->Account->amount = 25.25;
+    
+    $address = $user->Address[0];
+    
+    $address->address = '112 2nd Ave North';
+    
+    $album = $user->Album[0];
+    $album->name = 'test album';
+    
+    $song = $album->Song[0];
+    $song->title = 'test author';
+    
     $user->save();
     
-    print_r($user->toArray());
-    
-    /*
-        Array
-        (
-            [id] => 12
-            [name] => Jonathan H. Wage
-            [loginname] => 
-            [password] => 
-            [type] => 0
-            [created] => 
-            [updated] => 
-            [email_id] => 
-        )
+    print_r($user->toArray(true));
     */
 }

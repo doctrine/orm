@@ -16,6 +16,11 @@ class User extends Entity
             'foreign' => 'address_id',
             'refClass' => 'EntityAddress',
         ));
+        $this->hasMany('Address as Addresses', array(
+            'local' => 'user_id', 
+            'foreign' => 'address_id',
+            'refClass' => 'EntityAddress',
+        ));
         $this->hasMany('Album', array('local' => 'id', 'foreign' => 'user_id'));
         $this->hasMany('Book', array('local' => 'id', 'foreign' => 'user_id'));
         $this->hasMany('Group', array(

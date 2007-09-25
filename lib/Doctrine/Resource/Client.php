@@ -64,7 +64,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
         $path = '/tmp/' . md5(serialize($this->getConfig()));
         $classesPath = $path.'.classes.php';
         
-        if (!file_exists($path)) {
+        if (file_exists($path)) {
             $schema = file_get_contents($path);
         } else {
             $request = new Doctrine_Resource_Request();
@@ -74,7 +74,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
             $schema = $request->execute();
             
             if ($schema) {
-                file_put_contents($path, $schema);
+                file_put_contents($path, Doctrine_Parser::dump($schema, $this->getConfig()->get('format')));
             }
         }
         
@@ -86,6 +86,8 @@ class Doctrine_Resource_Client extends Doctrine_Resource
                 $build = "<?php\n";
                 foreach ($schema['schema'] as $className => $details) {
                     $build .= "class " . $className . " extends Doctrine_Resource_Record { protected \$_model = '".$className."'; public function __construct(\$loadRelations = true) { parent::__construct(\$this->_model, \$loadRelations); } }\n";
+                    
+                    $schema['schema'][$className]['relations'] = isset($schema['relations'][$className]) ? $schema['relations'][$className]:array();
                 }
             
                 file_put_contents($classesPath, $build);
@@ -99,6 +101,64 @@ class Doctrine_Resource_Client extends Doctrine_Resource
     
     public function getTable($table)
     {
-        return new Doctrine_Resource_Table($table);
+        static $instance;
+        
+        if(!isset($instance[$table])) {
+            $instance[$table] = new Doctrine_Resource_Table($table);
+        }
+        
+        return $instance[$table];
+    }
+    
+    public function printSchema()
+    {
+        $schema = $this->getConfig('schema');
+        
+        echo '<h2>Schema</h2>';
+        
+        echo '<ul>';
+        
+        foreach ($schema['schema'] as $className => $info) {
+            echo '<a name="'.$className.'"></a>';
+            echo '<li><h3>'.$className.'</h3></li>';
+            
+            echo '<ul>';
+            echo '<li>Columns';
+            echo '<ul>';
+            foreach ($info['columns'] as $columnName => $column)
+            {
+                echo '<li>' . $columnName;
+                
+                echo '<ul>';
+                foreach ($column as $key => $value) {
+                    if ($value) {
+                        echo '<li>'.$key.': '.$value.'</li>';
+                    }
+                }
+                echo '</ul>';
+                
+                echo '</li>';
+            }
+            echo '</ul>';
+            echo '</li>';
+            echo '</ul>';
+            
+            if (isset($info['relations']) && !empty($info['relations'])) {
+                echo '<ul>';
+                echo '<li>Relations';
+                echo '<ul>';
+                foreach ($info['relations'] as $relationName => $relation)
+                {
+                    echo '<li><a href="#'.$relation['class'].'">' . $relationName . '</a></li>';
+                }
+                echo '</ul>';
+                echo '</li>';
+                echo '</ul>';
+            }
+        }
+        
+        echo '</ul>';
+        
+        exit;
     }
 }

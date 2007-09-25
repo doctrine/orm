@@ -16,6 +16,8 @@ $users[0]->name = 'zYne';
 $users[0]['Email']->address = 'zYne@example.com';
 $users[0]['Phonenumber'][0]->phonenumber = '123 123';
 
+$users[0]['Address'][0]->address = '112 2nd ave';
+
 $users[1]->name = 'Arnold Schwarzenegger';
 $users[1]->Email->address = 'arnold@example.com';
 $users[1]['Phonenumber'][0]->phonenumber = '123 123';
