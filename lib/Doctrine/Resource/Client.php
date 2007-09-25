@@ -35,12 +35,12 @@ class Doctrine_Resource_Client extends Doctrine_Resource
 {
     public $loadDoctrine = false;
     
-    static public function getInstance($config = null)
+    static public function getInstance($url = null, $config = null)
     {
         static $instance;
         
         if (!$instance) {
-            $instance = new Doctrine_Resource_Client($config);
+            $instance = new Doctrine_Resource_Client($url, $config);
             
             if ($instance->loadDoctrine === true) {
                 $instance->loadDoctrine();
@@ -48,6 +48,15 @@ class Doctrine_Resource_Client extends Doctrine_Resource
         }
         
         return $instance;
+    }
+    
+    public function __construct($url, $config)
+    {
+        if ($url) {
+            $config['url'] = $url;
+        }
+        
+        parent::__construct($config);
     }
     
     public function loadDoctrine()
@@ -91,20 +100,5 @@ class Doctrine_Resource_Client extends Doctrine_Resource
     public function getTable($table)
     {
         return new Doctrine_Resource_Table($table);
-    }
-    
-    public function newQuery()
-    {
-        return new Doctrine_Resource_Query();
-    }
-    
-    public function newRecord($model, $loadRelations = true)
-    {
-        return new Doctrine_Resource_Record($model, $loadRelations);
-    }
-    
-    public function newCollection($model)
-    {
-        return new Doctrine_Resource_Collection($model);
     }
 }

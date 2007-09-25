@@ -32,18 +32,27 @@
  * @since       1.0
  */
 class Doctrine_Resource_Server extends Doctrine_Resource
-{
-    static public function getInstance($config = null)
+{   
+    public function __construct($name = null, $config = null)
+    {
+        if ($name) {
+            $config['name'] = $name;
+        }
+        
+        parent::__construct($config);
+    }
+
+    static public function getInstance($name, $config = null)
     {
         static $instance;
         
         if (!$instance) {
-            $instance = new Doctrine_Resource_Server($config);
+            $instance = new Doctrine_Resource_Server($name, $config);
         }
         
         return $instance;
     }
-    
+        
     public function executeSave($request)
     {
         $model = $request->get('model');

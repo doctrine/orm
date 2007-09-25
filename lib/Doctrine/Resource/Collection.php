@@ -67,7 +67,9 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
     public function add($value = null)
     {
         if (!$value) {
-            $value = Doctrine_Resource_Client::getInstance()->newRecord($this->_model);
+            $model = $this->_model;
+            
+            $value = new $model();
         }
         
         $this->_data[] = $value;

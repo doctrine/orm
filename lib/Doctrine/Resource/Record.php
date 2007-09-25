@@ -71,9 +71,9 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
             
             foreach ($relations as $relation) {
                 if ($relation['type'] === Doctrine_Relation::ONE) {
-                    $this->_data[$relation['alias']] = Doctrine_Resource_Client::getInstance()->newRecord($relation['class'], false); 
+                    $this->_data[$relation['alias']] = new $relation['class'](false); 
                 } else {
-                    $this->_data[$relation['alias']] = Doctrine_Resource_Client::getInstance()->newCollection($relation['class']);
+                    $this->_data[$relation['alias']] = new Doctrine_Resource_Collection($relation['class']);
                 }
             }
         }
