@@ -21,7 +21,9 @@ if (isset($_REQUEST['server'])) {
     
     $query = new Doctrine_Resource_Query();
     
-    $users = $query->from('User u')->execute();
+    $users = $query->from('User u, u.Phonenumber p, u.Email e, u.Address a')->execute();
     
-    print_r($users->toArray());
+    $json = Doctrine_Parser::load(Doctrine_Parser::dump($users->getFirst()->toArray(true, true), 'json'), 'json');
+    
+    print_r($json);
 }

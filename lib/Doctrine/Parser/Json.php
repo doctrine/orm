@@ -1,8 +1,6 @@
 <?php
-require_once('spyc.php');
-
 /*
- *  $Id: Yml.php 1080 2007-02-10 18:17:08Z jwage $
+ *  $Id: Json.php 1080 2007-02-10 18:17:08Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,7 +19,7 @@ require_once('spyc.php');
  * <http://www.phpdoctrine.com>.
  */
 /**
- * Doctrine_Parser_Yml
+ * Doctrine_Parser_Json
  *
  * @author      Jonathan H. Wage <jwage@mac.com>
  * @package     Doctrine
@@ -31,7 +29,7 @@ require_once('spyc.php');
  * @since       1.0
  * @version     $Revision: 1080 $
  */
-class Doctrine_Parser_Yml extends Doctrine_Parser
+class Doctrine_Parser_Json extends Doctrine_Parser
 {
     /**
      * dumpData
@@ -45,20 +43,18 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
      */
     public function dumpData($array, $path = null)
     {
-        $spyc = new Spyc();
-        
-        $yml = $spyc->dump($array, false, false);
+        $data = json_encode($array);
         
         if ($path) {
-            return file_put_contents($path, $yml);
+            return file_put_contents($path, $data);
         } else {
-            return $yml;
+            return $data;
         }
     }
     /**
      * loadData
      *
-     * Load and parse data from a yml file
+     * Load and unserialize data from a file or from passed data
      * 
      * @param string $path 
      * @return void
@@ -66,9 +62,28 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
      */
     public function loadData($path)
     {
-        $spyc = new Spyc();
+        if (file_exists($path) && is_readable($path)) {
+            $data = file_get_contents($path);
+        } else {
+            $data = $path;
+        }
         
-        $array = $spyc->load($path);
+        $json = json_decode($data);
+        
+        return $this->prepareData($json);
+    }
+    
+    public function prepareData($json)
+    {
+        $array = array();
+        
+        foreach ($json as $key => $value) {
+            if (is_object($value) || is_array($value)) {
+                $array[$key] = $this->prepareData($value);
+            } else {
+                $array[$key] = $value;
+            }
+        }
         
         return $array;
     }
