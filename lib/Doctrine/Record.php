@@ -1153,6 +1153,22 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         }
     }
+    public function exportTo($type, $deep = false)
+    {
+        if ($type == 'array') {
+            return $this->toArray($deep);
+        } else {
+            return Doctrine_Parser::dump($this->toArray($deep, true), $type);
+        }
+    }
+    public function importFrom($type, $data)
+    {
+        if ($type == 'array') {
+            return $this->fromArray($data);
+        } else {
+            return $this->fromArray(Doctrine_Parser::load($data, $type));
+        }
+    }
     /**
      * exists
      * returns true if this record is persistent, otherwise false

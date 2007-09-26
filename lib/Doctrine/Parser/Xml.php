@@ -87,18 +87,18 @@ class Doctrine_Parser_Xml extends Doctrine_Parser
 
         foreach ($children as $element => $value) {
             if ($value instanceof SimpleXMLElement) {
-                $values = (array)$value->children();
+                $values = (array) $value->children();
 
                 if (count($values) > 0) {
                     $return[$element] = $this->prepareData($value);
                 } else {
                     if (!isset($return[$element])) {
-                        $return[$element] = (string)$value;
+                        $return[$element] = (string) $value;
                     } else {
                         if (!is_array($return[$element])) {
-                            $return[$element] = array($return[$element], (string)$value);
+                            $return[$element] = array($return[$element], (string) $value);
                         } else {
-                            $return[$element][] = (string)$value;
+                            $return[$element][] = (string) $value;
                         }
                     }
                 }

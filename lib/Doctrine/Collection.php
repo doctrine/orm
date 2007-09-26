@@ -591,32 +591,43 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     public function toArray($deep = false, $prefixKey = false)
     {
-        if ($deep) {
-            $data = array();
-            foreach ($this->data as $key => $record) {
-                
-                $key = $prefixKey ? get_class($record) . '_' .$key:$key;
-                
-                $data[$key] = $record->toArray($deep, $prefixKey);
-            }
-            return $data;
-        } else {
-            // this is preserved for backwards compatibility
-            // but could be replaced with above code
-            return $this->data;
+        $data = array();
+        foreach ($this->data as $key => $record) {
+            
+            $key = $prefixKey ? get_class($record) . '_' .$key:$key;
+            
+            $data[$key] = $record->toArray($deep, $prefixKey);
         }
+        
+        return $data;
     }
     public function fromArray($array)
     {
         $data = array();
-        foreach ($array as $key => $row) {
+        foreach ($array as $row) {
             $record = $this->_table->getRecord();
             $record->fromArray($row);
             
-            $data[$key] = $record;
+            $data[] = $record;
         }
         
         $this->data = $data;
+    }
+    public function exportTo($type, $deep = false)
+    {
+        if ($type == 'array') {
+            return $this->toArray($deep);
+        } else {
+            return Doctrine_Parser::dump($this->toArray($deep, true), $type);
+        }
+    }
+    public function importFrom($type, $data)
+    {
+        if ($type == 'array') {
+            return $this->fromArray($data);
+        } else {
+            return $this->fromArray(Doctrine_Parser::load($data, $type));
+        }
     }
     public function getDeleteDiff()
     {
