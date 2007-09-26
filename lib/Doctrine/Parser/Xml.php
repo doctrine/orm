@@ -33,25 +33,25 @@ class Doctrine_Parser_Xml extends Doctrine_Parser
 {
     public function arrayToXml($data, $rootNodeName = 'data', $xml = null)
     {
-    	if ($xml === null) {
-    		$xml = new SimpleXmlElement("<?xml version=\"1.0\" encoding=\"utf-8\"?><$rootNodeName/>");
-    	}
-    	
-    	foreach($data as $key => $value)
-    	{
-    		if (is_array($value)) {
-    			$node = $xml->addChild($key);
-    			
-    			$this->arrayToXml($value, $rootNodeName, $node);
-    		} else {
+      if ($xml === null) {
+        $xml = new SimpleXmlElement("<?xml version=\"1.0\" encoding=\"utf-8\"?><$rootNodeName/>");
+      }
+      
+      foreach($data as $key => $value)
+      {
+        if (is_array($value)) {
+          $node = $xml->addChild($key);
+          
+          $this->arrayToXml($value, $rootNodeName, $node);
+        } else {
                 $value = htmlentities($value);
                 
-    			$xml->addChild($key, $value);
-    		}
+          $xml->addChild($key, $value);
+        }
 
-    	}
-    	
-    	return $xml->asXML();
+      }
+      
+      return $xml->asXML();
     }
     
     public function dumpData($array, $path = null)
