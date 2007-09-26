@@ -52,7 +52,42 @@ class Doctrine_Resource_Server extends Doctrine_Resource
         
         return $instance;
     }
+    
+    public function validate($errors)
+    {
+        if (!empty($errors)) {
+            throw new Doctrine_Resource_Exception(count($errors) . ' error(s) occurred: ' . implode('. ', $errors));
+        } else {
+            return true;
+        }
+    }
+    
+    public function validateOpenRecord($request)
+    {
+        $errors = array();
         
+        if (!$request->has('model') || !$request->get('model')) {
+            $errors[] = 'You must specify the model/class name you are deleting';
+        }
+        
+        if (!$request->has('identifier') || !is_array($request->get('identifier'))) {
+            $errors[] = 'You must specify an array containing the identifiers for the model you wish to delete';
+        }
+        
+        return $errors;
+    }
+    
+    public function validateSave($request)
+    {
+        $errors = $this->validateOpenRecord($request);
+        
+        if (!$request->has('data') || !$request->get('data')) {
+            $errors[] = 'You must specify an containing the changed data to save to the model';
+        }
+        
+        return $errors;
+    }
+    
     public function executeSave($request)
     {
         $model = $request->get('model');
@@ -80,6 +115,11 @@ class Doctrine_Resource_Server extends Doctrine_Resource
         return $record->toArray(true, true);
     }
     
+    public function validateDelete($request)
+    {
+        return $this->validateOpenRecord($request);
+    }
+    
     public function executeDelete($request)
     {
         $model = $request->get('model');
@@ -89,7 +129,22 @@ class Doctrine_Resource_Server extends Doctrine_Resource
         
         $record = $table->find($identifier);
         
-        $record->delete();
+        if ($record) {
+            $record->delete();
+        } else {
+            throw new Doctrine_Resource_Exception('Record could not be deleted because it is not a valid record');
+        }
+    }
+    
+    public function validateQuery($request)
+    {
+        $errors = array();
+        
+        if (!$request->has('dql') || !$request->get('dql')) {
+            $errors[] = 'You must specify a dql string in order to execute a query';
+        }
+        
+        return $errors;
     }
     
     public function executeQuery($request)
@@ -102,16 +157,23 @@ class Doctrine_Resource_Server extends Doctrine_Resource
         return $conn->query($dql, $params)->toArray(true, true);
     }
     
+    public function validateLoad($request)
+    {
+        $errors = array();
+        
+        return $errors;
+    }
+    
     public function executeLoad($request)
     {
-        $path = '/tmp/' . rand() . '.' . $request->get('format');
+        $path = '/tmp/' . rand();
         
         $models = $this->getConfig('models') ? $this->getConfig('models'):array();
         
         $export = new Doctrine_Export_Schema();
-        $export->exportSchema($path, $request->get('format'), null, $models);
+        $export->exportSchema($path, 'xml', null, $models);
         
-        $schema = Doctrine_Parser::load($path, $request->get('format'));
+        $schema = Doctrine_Parser::load($path, 'xml');
         
         unlink($path);
         
@@ -120,28 +182,28 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     
     public function execute(array $r)
     {
-        if (!isset($r['data'])) {
-            throw new Doctrine_Resource_Exception('You must specify a data xml string in your request');
-        }                        
-        
-        $type = $r['type'];
-        $format = isset($r['format']) ? $r['format']:'xml';
-        $data = Doctrine_Parser::load($r['data'], $format);
-        
-        $funcName = 'execute' . Doctrine::classify($type);
-        
-        $requestObj = new Doctrine_Resource_Request($data);
-        
-        if (method_exists($this, $funcName)) {
-            $result = $this->$funcName($requestObj);
-        } else {
-            throw new Doctrine_Resource_Exception('Unknown Doctrine Resource Server function');
+        if (!isset($r['xml'])) {
+            throw new Doctrine_Resource_Exception('You must specify an xml string in your request');
         }
         
-        if ($result) {
-            return Doctrine_Parser::dump($result, $format);
+        $requestArray = Doctrine_Parser::load($r['xml']);
+        
+        $request = new Doctrine_Resource_Request($requestArray);
+        
+        $funcName = 'execute' . Doctrine::classify($request->get('action'));
+        
+        if (method_exists($this, $funcName)) {
+            $validateFuncName = 'validate' . Doctrine::classify($request->get('action'));
+            
+            $errors = $this->$validateFuncName($request);
+            
+            if ($this->validate($errors)) {
+                $result = $this->$funcName($request);
+                
+                return Doctrine_Parser::dump($result, 'xml');
+            }
         } else {
-            return null;
+            throw new Doctrine_Resource_Exception('Unknown Doctrine Resource Server function');
         }
     }
     

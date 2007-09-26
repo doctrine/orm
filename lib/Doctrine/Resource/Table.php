@@ -119,19 +119,6 @@ class Doctrine_Resource_Table
         }
     }
     
-    public function getRelationByClassName($name)
-    {
-        $relations = $this->getRelations();
-        
-        foreach ($relations as $relation) {
-            if ($relation['class'] === $name) {
-                return $relation;
-            }
-        }
-        
-        return false;
-    }
-    
     public function getIdentifier()
     {
         $identifier = array();

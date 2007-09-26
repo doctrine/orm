@@ -36,16 +36,10 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
     protected $_data = array();
     protected $_config = array();
     protected $_model = null;
-    protected $_parent = null;
     
     public function __construct($model)
     {
         $this->_model = $model;
-    }
-    
-    public function setParent($parent)
-    {
-        $this->_parent = $parent;
     }
     
     public function getConfig($key = null)
@@ -60,7 +54,7 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
     
     public function get($key)
     {
-        if (!$key || !isset($this->_data[$key])) {
+        if (!isset($key) || !isset($this->_data[$key])) {
             return $this->add();
         } else {
             return $this->_data[$key];
@@ -69,7 +63,7 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
 
     public function set($key, $value)
     {
-        if (!$key || !isset($this->_data[$key])) {
+        if (!isset($key) || !isset($this->_data[$key])) {
             $this->_data[$key] = $value;
         } else {
             $val = $this->add();
@@ -78,29 +72,17 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
         }
     }
     
-    public function add($value = null)
+    public function add(Doctrine_Resource_Record $value = null)
     {
         if (!$value) {
-            $model = $this->_model;
-            
-            $value = new $model(false);
-            $table = $value->getTable();
-            $relation = $table->getRelationByClassName(get_class($this->_parent));
-            $alias = $relation['alias'];
-            
-            if ($relation['type'] === Doctrine_Relation::ONE) {
-                $value->set($alias, $this->_parent);
-            } else {
-                $collection = new Doctrine_Resource_Collection($relation['class']);
-                $collection[] = $this->_parent;
-                
-                $value->set($alias, $collection);
-            }
+            $value = new $this->_model;
         }
         
-        $this->_data[] = $value;
-        
-        return $value;
+        if ($value) {
+            $this->_data[] = $value;
+            
+            return $value;
+        }
     }
     
     public function getIterator()
@@ -115,15 +97,20 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
     
     public function toArray($deep = false)
     {
-        $array = array();
+        $data = array();
         
         foreach ($this->_data as $key => $record) {
-            if ($record->exists() || $record->hasChanges()) {
-                $array[$this->_model . '_' .$key] = $record->toArray($deep);
-            }
+            $data[$key] = $record->toArray($deep);
         }
         
-        return $array;
+        return $data;
+    }
+    
+    public function fromArray(array $array)
+    {
+        foreach ($array as $key => $record) {
+            $this->add()->fromArray($record);
+        }
     }
     
     public function save()

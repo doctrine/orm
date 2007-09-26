@@ -68,24 +68,23 @@ class Doctrine_Resource_Client extends Doctrine_Resource
             $schema = file_get_contents($path);
         } else {
             $request = new Doctrine_Resource_Request();
-            $request->set('type', 'load');
-            $request->set('format', $this->getConfig()->get('format'));
+            $request->set('action', 'load');
             
             $schema = $request->execute();
             
             if ($schema) {
-                file_put_contents($path, Doctrine_Parser::dump($schema, $this->getConfig()->get('format')));
+                file_put_contents($path, Doctrine_Parser::dump($schema, 'xml'));
             }
         }
         
         if (file_exists($path) && $schema) {
             $import = new Doctrine_Import_Schema();
-            $schema = $import->buildSchema($path, $this->getConfig()->get('format'));
+            $schema = $import->buildSchema($path, 'xml');
             
             if (!file_exists($classesPath)) {
                 $build = "<?php\n";
                 foreach ($schema['schema'] as $className => $details) {
-                    $build .= "class " . $className . " extends Doctrine_Resource_Record { protected \$_model = '".$className."'; public function __construct(\$loadRelations = true) { parent::__construct(\$this->_model, \$loadRelations); } }\n";
+                    $build .= "class " . $className . " extends Doctrine_Resource_Record { protected \$_model = '".$className."'; public function __construct() { parent::__construct(\$this->_model); } }\n";
                     
                     $schema['schema'][$className]['relations'] = isset($schema['relations'][$className]) ? $schema['relations'][$className]:array();
                 }

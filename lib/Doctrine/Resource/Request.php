@@ -43,14 +43,15 @@ class Doctrine_Resource_Request extends Doctrine_Resource_Params
     public function execute()
     {
         $url  = $this->getConfig()->get('url');
-        $data = array('type' => $this->get('type'), 'format' => $this->getConfig()->get('format'), 'data' => Doctrine_Parser::dump($this->getAll(), $this->getConfig()->get('format')));
+        
+        $request = array('xml' => Doctrine_Parser::dump($this->getAll(), 'xml'));
         
         $ch = curl_init(); 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         $response = curl_exec($ch);
         
         if (curl_errno($ch)) {
@@ -70,67 +71,5 @@ class Doctrine_Resource_Request extends Doctrine_Resource_Params
         }
         
         return $array;
-    }
-    
-    public function hydrate(array $array, $model, $records = array())
-    {
-        $collection = new Doctrine_Resource_Collection($model);
-        
-        foreach ($array as $recordKey => $record) {
-            if (isset($records[$recordKey])) {
-                $r = $records[$recordKey];
-            } else {
-                $r = new $model(false);
-            }
-        
-            foreach ($record as $key => $value) {
-                if ($r->getTable()->hasRelation($key) && !empty($value)) {
-                    $relation = $r->getTable()->getRelation($key);
-                    
-                    if ($relation['type'] === Doctrine_Relation::MANY) {
-                        $relationCollection = $this->hydrate($value, $relation['class']);
-                        $relationCollection->setParent($r);
-                        
-                        foreach ($relationCollection as $relationRecord) {
-                            $relationTable = $relationRecord->getTable();
-                            
-                            if ($relation = $relationTable->getRelationByClassName($model)) {
-                                if ($relation['type'] === Doctrine_Relation::ONE) {
-                                    $relationRecord->set($relation['alias'], $r);
-                                    $relationRecord->clearChanges();
-                                } else {
-                                    $coll = new Doctrine_Resource_Collection($relation['class']);
-                                    $coll[] = $r;
-                                    
-                                    $relationRecord->set($relation['alias'], $coll);
-                                }
-                                
-                                $relationRecord->clearChanges();
-                            }
-                        }
-                        
-                        $r->set($key, $relationCollection);
-                    } else {
-                        $relationRecord = $this->hydrate(array($value), $relation['class'])->getFirst();
-                        $relationTable = $relationRecord->getTable();
-                        
-                        if ($relation = $relationTable->getRelationByClassName($model)) {
-                            $relationRecord->set($relation['alias'], $r);
-                            $relationRecord->clearChanges();
-                        }
-                        
-                        $r->set($key, $relationRecord);
-                    }
-                } else if($r->getTable()->hasColumn($key)) {
-                    $r->set($key, $value);
-                }
-                
-                $r->clearChanges();
-            }
-        
-            $collection[] = $r;
-        }
-        
-        return $collection;
     }
 }

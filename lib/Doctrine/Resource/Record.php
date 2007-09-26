@@ -37,11 +37,11 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     protected $_model = null;
     protected $_changes = array();
     
-    public function __construct($model, $loadRelations = true)
+    public function __construct($model)
     {
         $this->_model = $model;
         
-        $this->initialize($loadRelations);
+        $this->initialize();
     }
     
     public function clearChanges()
@@ -63,19 +63,6 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
                 }
             }
         }
-        
-        if (isset($schema['relations']) && $loadRelations) {
-            $relations = $schema['relations'];
-            
-            foreach ($relations as $relation) {
-                if ($relation['type'] === Doctrine_Relation::ONE) {
-                    $this->_data[$relation['alias']] = new $relation['class'](false); 
-                } else {
-                    $this->_data[$relation['alias']] = new Doctrine_Resource_Collection($relation['class']);
-                    $this->_data[$relation['alias']]->setParent($this);
-                }
-            }
-        }
     }
     
     public function getConfig($key = null)
@@ -85,7 +72,7 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     
     public function get($key)
     {
-        if (!$key) {
+        if (!isset($key)) {
             return;
         }
         
@@ -102,7 +89,7 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
 
     public function set($key, $value)
     {
-        if (!$key) {
+        if (!isset($key)) {
             return;
         }
         
@@ -127,18 +114,9 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
         $class = $relation['class'];
         
         if ($relation['type'] === Doctrine_Relation::ONE) {
-            $return = new $class(false);
-            $table = $return->getTable();
-            $returnRelation = $table->getRelationByClassName(get_class($this));
-            
-            if ($returnRelation) {
-                $returnClass = new $returnRelation['class'](false);
-                
-                $return->set($returnRelation['alias'], $returnClass);
-            }
+            $return = new $class();
         } else {
             $return = new Doctrine_Resource_Collection($class);
-            $return->setParent($this);
         }
         
         return $return;
@@ -152,31 +130,6 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     public function getIterator()
     {
         return new ArrayIterator($this->_data);
-    }
-    
-    public function sameAs(Doctrine_Resource_Record $record)
-    {
-        // If we have same class name
-        if (get_class($this) == get_class($record)) {
-            
-            // If we have 2 records that exist and are persistant
-            if ($record->exists() && $this->exists()) {
-                if ($record->identifier() === $this->identifier()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            // If we have unsaved records then lets compare the data
-            } else {
-                if ($record->toArray(false) === $this->toArray(false)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        } else {
-            return false;
-        }
     }
     
     public function getChanges()
@@ -232,29 +185,21 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     
     public function save()
     {
-        $format = $this->getConfig('format');
-        
         $request = new Doctrine_Resource_Request();
-        $request->set('format', $format);
-        $request->set('type', 'save');
+        $request->set('action', 'save');
         $request->set('model', $this->getModel());
-        $request->set('data', $this->getChanges());
         $request->set('identifier', $this->identifier());
+        $request->set('data', $this->getChanges());
         
         $response = $request->execute();
         
-        $this->_data = $request->hydrate(array($response), $this->_model, array($this))->getFirst()->_data;
-        
-        $this->clearChanges();
+        $this->fromArray($response);
     }
     
     public function delete()
     {
-        $format = $this->getConfig('format');
-        
         $request = new Doctrine_Resource_Request();
-        $request->set('format', $format);
-        $request->set('type', 'delete');
+        $request->set('action', 'delete');
         $request->set('model', $this->getModel());
         $request->set('identifier', $this->identifier());
         
@@ -306,42 +251,28 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     
     public function toArray($deep = false)
     {
-        global $gotten;
-        
-        if (!$gotten) {
-            $gotten = array();
-        }
-        
-        $md5Hash = $this->getMd5Hash();
-        
-        if (!in_array($md5Hash, $gotten)) {
-            $gotten[] = $md5Hash;
-        }
-        
-        $array = array();
+        $data = array();
         
         foreach ($this->_data as $key => $value) {
-            
             if ($deep && $this->getTable()->hasRelation($key)) {
-                if ($value instanceof Doctrine_Resource_Collection) {
-                    if ($value->count() > 0) {
-                        foreach ($value as $key2 => $record) {
-                            if (($record->exists() || $record->hasChanges()) && !in_array($record->getMd5Hash(), $gotten)) {
-                                $array[$key][get_class($record) . '_' . $key2] = $record->toArray($deep);
-                            }
-                        }
-                    }
-                } else if ($value instanceof Doctrine_Resource_Record) {
-                    if (($value->exists() || $value->hasChanges()) && !in_array($value->getMd5Hash(), $gotten)) {
-                        $array[$key] = $value->toArray($deep);
-                    }
-                }   
-            } else if (!$this->getTable()->hasRelation($key) && $this->getTable()->hasColumn($key)) {
-                $array[$key] = $value;
+                $data[$key] = $this->$key->toArray($deep);
+            } else if ($this->getTable()->hasColumn($key)) {
+                $data[$key]  = $value;
             }
         }
         
-        return $array;
+        return $data;
+    }
+    
+    public function fromArray(array $array)
+    {
+        foreach ($array as $key => $value) {
+            if ($this->getTable()->hasRelation($key) && is_array($value)) {
+                $this->$key->fromArray($value);
+            } else if ($this->getTable()->hasColumn($key)) {
+                $this->$key = $value;
+            }
+        }
     }
     
     public function getMd5Hash()

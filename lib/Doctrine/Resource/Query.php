@@ -55,25 +55,23 @@ class Doctrine_Resource_Query
         $request = new Doctrine_Resource_Request();
         $request->set('dql', $this->getDql());
         $request->set('params', $params);
-        $request->set('format', $this->getConfig()->get('format'));
-        $request->set('type', 'query');
+        $request->set('action', 'query');
         $request->set('model', $this->getModel());
         
         $response = $request->execute();
         
-        // If we have a response then lets parse it and hydrate it
         if (!empty($response)) {
-            return $request->hydrate($response, $this->getModel());
-        // Otherwise lets return an empty collection for the queried for model
+            
+            $collection = new Doctrine_Resource_Collection($this->getModel());
+            $collection->fromArray($response);
         } else {
             $model = $this->getModel();
             
-            $collection = new Doctrine_Resource_Collection($this->getModel());
-            
-            $collection[] = new $model(false);
-            
-            return $collection;
+            $collection = new Doctrine_Resource_Collection($model);
+            $collection[] = new $model();
         }
+        
+        return $collection;
     }
     
     public function getDql()
