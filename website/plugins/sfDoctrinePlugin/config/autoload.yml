@@ -2,7 +2,7 @@ autoload:
   Doctrine:
     name: Doctrine classes
     ext: .php
-    path: %SF_PLUGINS_DIR%/sfDoctrine/doctrine
+    path: %SF_PLUGINS_DIR%/sfDoctrinePlugin/lib/doctrine
     recursive: on
   doctrine_model_classes:
     name: Doctrine model classes
