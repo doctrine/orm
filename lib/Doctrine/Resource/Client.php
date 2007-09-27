@@ -61,7 +61,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
     
     public function loadDoctrine()
     {
-        $path = '/tmp/' . md5(serialize($this->getConfig()));
+        $path = '/tmp/' . $this->getClientKey();
         $classesPath = $path.'.classes.php';
         
         if (file_exists($path)) {
@@ -73,13 +73,13 @@ class Doctrine_Resource_Client extends Doctrine_Resource
             $schema = $request->execute();
             
             if ($schema) {
-                file_put_contents($path, Doctrine_Parser::dump($schema, 'xml'));
+                file_put_contents($path, Doctrine_Parser::dump($schema, Doctrine_Resource::FORMAT));
             }
         }
         
         if (file_exists($path) && $schema) {
             $import = new Doctrine_Import_Schema();
-            $schema = $import->buildSchema($path, 'xml');
+            $schema = $import->buildSchema($path, Doctrine_Resource::FORMAT);
             
             if (!file_exists($classesPath)) {
                 $build = "<?php\n";
@@ -96,6 +96,11 @@ class Doctrine_Resource_Client extends Doctrine_Resource
             
             $this->getConfig()->set('schema', $schema);
         }
+    }
+    
+    public function getClientKey()
+    {
+        return md5(Doctrine_Resource::FORMAT.serialize($this->getConfig()));
     }
     
     public function getTable($table)

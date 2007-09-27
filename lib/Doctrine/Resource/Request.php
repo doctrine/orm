@@ -44,13 +44,15 @@ class Doctrine_Resource_Request extends Doctrine_Resource_Params
     {
         $url  = $this->getConfig()->get('url');
         
-        $request = array('xml' => Doctrine_Parser::dump($this->getAll(), 'xml'));
+        $request = array('request' => Doctrine_Parser::dump($this->getAll(), $this->getFormat()));
+        
+        $header[0] = 'Accept: ' . $this->getFormat();
         
         $ch = curl_init(); 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         $response = curl_exec($ch);
         
@@ -63,7 +65,7 @@ class Doctrine_Resource_Request extends Doctrine_Resource_Params
         $array = array();
         
         if ($response) {
-            $array = Doctrine_Parser::load($response, $this->getConfig()->get('format'));
+            $array = Doctrine_Parser::load($response, $this->getFormat());
         }
         
         if (isset($array['error'])) {
@@ -71,5 +73,10 @@ class Doctrine_Resource_Request extends Doctrine_Resource_Params
         }
         
         return $array;
+    }
+    
+    public function getFormat()
+    {
+        return ($this->getConfig()->has('format') && $this->getConfig()->get('format')) ? $this->getConfig()->get('format'):Doctrine_Resource::FORMAT;
     }
 }

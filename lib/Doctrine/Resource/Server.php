@@ -171,9 +171,9 @@ class Doctrine_Resource_Server extends Doctrine_Resource
         $models = $this->getConfig('models') ? $this->getConfig('models'):array();
         
         $export = new Doctrine_Export_Schema();
-        $export->exportSchema($path, 'xml', null, $models);
+        $export->exportSchema($path, $this->getFormat(), null, $models);
         
-        $schema = Doctrine_Parser::load($path, 'xml');
+        $schema = Doctrine_Parser::load($path, $this->getFormat());
         
         unlink($path);
         
@@ -182,11 +182,11 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     
     public function execute(array $r)
     {
-        if (!isset($r['xml'])) {
-            throw new Doctrine_Resource_Exception('You must specify an xml string in your request');
+        if (!isset($r['request'])) {
+            throw new Doctrine_Resource_Exception('You must specify a request '.$this->getFormat().' string in your request');
         }
         
-        $requestArray = Doctrine_Parser::load($r['xml']);
+        $requestArray = Doctrine_Parser::load($r['request'], $this->getFormat());
         
         $request = new Doctrine_Resource_Request($requestArray);
         
@@ -200,7 +200,7 @@ class Doctrine_Resource_Server extends Doctrine_Resource
             if ($this->validate($errors)) {
                 $result = $this->$funcName($request);
                 
-                return Doctrine_Parser::dump($result, 'xml');
+                return Doctrine_Parser::dump($result, $this->getFormat());
             }
         } else {
             throw new Doctrine_Resource_Exception('Unknown Doctrine Resource Server function');
@@ -222,6 +222,13 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     {
         $error = array('error' => $e->getMessage());
         
-        return Doctrine_Parser::dump($error);
+        return Doctrine_Parser::dump($error, $this->getFormat());
+    }
+    
+    public function getFormat()
+    {
+        $headers = getallheaders();
+        
+        return isset($headers['Accept']) ? $headers['Accept']:Doctrine_Resource::FORMAT;
     }
 }

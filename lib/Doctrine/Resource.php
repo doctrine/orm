@@ -34,7 +34,7 @@
 class Doctrine_Resource
 {
     protected $_config = null;
-    protected $_defaultFormat = 'xml';
+    const FORMAT = 'json';
     
     public function __construct($config)
     {
@@ -47,10 +47,6 @@ class Doctrine_Resource
             if ($key == 'url') {
                 $this->loadDoctrine = true;
             }
-        }
-        
-        if (!$this->getConfig()->has('format') OR !$this->getConfig()->get('format')) {
-            $this->getConfig()->set('format', $this->_defaultFormat);
         }
     }
     
