@@ -9,6 +9,14 @@
 
 <link rel="shortcut icon" href="/favicon.ico" />
 
+<?php include_stylesheets() ?>
+
+<!--[if gte IE 5.5]>
+<![if lt IE 7]>
+<?php echo stylesheet_tag('manual_iefix') ?>
+<![endif]>
+<![endif]-->
+
 </head>
 <body>
 
