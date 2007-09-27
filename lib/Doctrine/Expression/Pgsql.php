@@ -120,6 +120,23 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
     }
 
 
+    /**
+     * PostgreSQLs TO_CHAR( <time>, <text> ) function.
+     *
+     * @param string $time timestamp or interval
+     * @param string $text how to the format the output
+     * @return string
+     */
+    public function to_char($time, $text) {
+        return 'TO_CHAR(' . $time . ', ' . $text . ')';
+    }
+
+    /**
+     * PostgreSQLs CONCAT() function
+     *
+     * @param  an array of values
+     * @return string
+     */
     public function concat()
     {
         $args = func_get_args();
@@ -135,6 +152,7 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
     {
         return 'LOCALTIMESTAMP(0)';
     }
+
     /**
      * regexp
      *
@@ -144,6 +162,7 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
     {
         return 'SIMILAR TO';
     }
+
     /**
      * return string to call a function to get random value inside an SQL statement
      *
