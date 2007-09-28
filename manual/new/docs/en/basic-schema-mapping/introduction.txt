@@ -37,7 +37,7 @@ class Email extends Doctrine_Record {
 
 Now lets create an export script for this class:
 
-<code>
+<code type="php">
 require_once('Email.php');
 require_once('path-to-Doctrine/Doctrine.php');
 
