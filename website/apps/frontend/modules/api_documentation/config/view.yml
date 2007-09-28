@@ -1,3 +1,0 @@
-default:
-  stylesheets:    [main, layout, api_documentation]
-  layout:         api_documentation_layout

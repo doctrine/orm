@@ -1,3 +1,0 @@
-all:
-  orm: doctrine
-#  default_database: <your default connection here>

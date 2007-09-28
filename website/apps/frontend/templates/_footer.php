@@ -1,1 +1,0 @@
-<h1>Copyright Doctrine 2006-2007 - Powered by <?php echo link_to('symfony', 'http://www.symfony-project.com', 'target=_BLANK'); ?> and sponsored by <?php echo link_to('CentreSource', 'http://www.centresource.com', 'target=_BLANK'); ?></h1>

@@ -1,5 +1,0 @@
-#all:
-#  doctrine:
-#    class:          sfDoctrineDatabase
-#    param:
-#      dsn:          mysql://user:pass@localhost/doctrine
