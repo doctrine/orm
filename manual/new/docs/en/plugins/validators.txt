@@ -31,19 +31,23 @@ The first two options are advisable if it is likely that the validation is of ge
 If you need a special validation in your active record you can simply override one of these methods in your active record class (a descendant of {{Doctrine_Record}}). Within thess methods you can use all the power of PHP to validate your fields. When a field doesnt pass your validation you can then add errors to the record's error stack. The following code snippet shows an example of how to define validators together with custom validation:
 
 <code type="php">
-class User extends Doctrine_Record {
-    public function setUp() {
-        $this->ownsOne("Email","User.email_id");
+class User extends Doctrine_Record 
+{
+    public function setUp() 
+    {
+        $this->ownsOne('Email', array('local' => 'email_id'));
     }
-    public function setTableDefinition() {
+    public function setTableDefinition() 
+    {
         // no special validators used only types 
         // and lengths will be validated
-        $this->hasColumn("name","string",15);
-        $this->hasColumn("email_id","integer");
-        $this->hasColumn("created","integer",11);
+        $this->hasColumn('name', 'string', 15);
+        $this->hasColumn('email_id', 'integer');
+        $this->hasColumn('created', 'integer', 11);
     }
     // Our own validation
-    protected function validate() {
+    protected function validate() 
+    {
         if ($this->name == 'God') {
             // Blasphemy! Stop that! ;-)
             // syntax: add(<fieldName>, <error code/identifier>)
@@ -104,22 +108,5 @@ try {
     }
 }
 </code>
-
-
-+++ List of predefined validators
-
-Here is a list of predefined validators. You cannot use these names for your custom validators.
-
-||~ name     ||~ arguments   ||~ task   ||
-|| email     ||              || Check if value is valid email. || 
-|| notblank  ||              || Check if value is not blank. ||
-|| notnull   ||              || Check if value is not null. ||
-|| country   ||              || Check if valid is valid country code. ||
-|| ip        ||              || Checks if value is valid IP (internet protocol) address. ||
-|| htmlcolor ||              || Checks if value is valid html color. ||
-|| nospace   ||              || Check if value has no space chars. ||
-|| range     || [min,max]    || Checks if value is in range specified by arguments. ||
-|| unique    ||              || Checks if value is unique in its database table. ||
-|| regexp    || [expression] || Check if valie matches a given regexp. ||
 
 
