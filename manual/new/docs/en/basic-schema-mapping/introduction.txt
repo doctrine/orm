@@ -1,8 +1,9 @@
 This chapter and its subchapters tell you how to do basic schema mappings with Doctrine. After you've come in terms with the concepts of this chapter you'll know how to:
 
 1. Define columns for your record classes
-2. Define indexes
-3. Define basic constraints and validators for columns
+2. Define table options
+3. Define indexes
+4. Define basic constraints and validators for columns
 
 All column mappings within Doctrine are being done via the hasColumn() method of the Doctrine_Record. The hasColumn takes 4 arguments:
 
@@ -54,7 +55,7 @@ $conn->export->exportClasses(array('Email'));
 The script would execute the following sql (we are using Mysql here as the database backend):
 
 <code>
-CREATE TABLE emails (id INT NOT NULL AUTO_INCREMENT, address VARCHAR(200) NOT NULL) 
+CREATE TABLE emails (id INT NOT NULL AUTO_INCREMENT, address VARCHAR(200) NOT NULL)
 </code>
 
 

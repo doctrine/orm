@@ -8,6 +8,25 @@ Doctrine allows you to define *portable* constraints on columns and tables. Cons
 
 Doctrine constraints act as database level constraints as well as application level validators. This means double security: the database doesn't allow wrong kind of values and neither does the application.
 
+Here is a full list of available validators within Doctrine:
+
+|| validator(arguments) || constraints           || description ||
+|| notnull              || NOT NULL              || Ensures the 'not null' constraint in both application and database level ||
+|| email                ||                       || Checks if value is valid email. ||
+|| notblank             || NOT NULL              || Checks if value is not blank. ||
+|| notnull              ||                       || Checks if value is not null. ||
+|| nospace              ||                       || Checks if value has no space chars. ||
+|| past                 || CHECK constraint      || Checks if value is a date in the past. ||
+|| future               ||                       || Checks if value is a date in the future. ||
+|| minlength(length)    ||                       || Checks if value satisfies the minimum length. ||
+|| country              ||                       || Checks if value is a valid country code. ||
+|| ip                   ||                       || Checks if value is valid IP (internet protocol) address. ||
+|| htmlcolor            ||                       || Checks if value is valid html color. ||
+|| range(min, max)      || CHECK constraint      || Checks if value is in range specified by arguments. ||
+|| unique               || UNIQUE constraint     || Checks if value is unique in its database table. ||
+|| regexp(expression)   ||                       || Checks if value matches a given regexp. ||
+|| creditcard           ||                       || Checks whether the string is a well formated credit card number ||
+|| digits(int, frac)    || Precision and scale   || Checks if given value has //int// number of integer digits and //frac// number of fractional digits ||
 
 +++ Notnull
 
