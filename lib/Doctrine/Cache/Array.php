@@ -52,7 +52,7 @@ class Doctrine_Cache_Array implements Countable, Doctrine_Cache_Interface
         if (isset($this->data[$id])) {
             return $this->data[$id];
         }
-        return null;
+        return false;
     }
     /**
      * Test if a cache is available or not (for the given id)

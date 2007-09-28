@@ -786,10 +786,10 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             // calculate hash for dql query
             $hash = md5($dql . var_export($params, true));
 
-            $cached = ($this->_expireCache) ? null : $cacheDriver->fetch($hash);
+            $cached = ($this->_expireCache) ? false : $cacheDriver->fetch($hash);
 
 
-            if ($cached === null) {
+            if ($cached === false) {
                 // cache miss
                 $stmt = $this->_execute($params);
                 $array = $this->parseData2($stmt, Doctrine::HYDRATE_ARRAY);
