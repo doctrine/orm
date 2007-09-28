@@ -170,7 +170,7 @@ The validation modes are bitwised, so they can be combined using {{|}} and remov
 
 : {Doctrine::VALIDATE_TYPES} : Makes Doctrine validate all field types. Doctrine does loose type validation. This means that for example string with value '13.3' will not pass as an integer but '13' will.
 
-: {Doctrine::VALIDATE_CONSTRANTS} : Makes Doctrine validate all field constraints such as notnull, email etc.
+: {Doctrine::VALIDATE_CONSTRAINTS} : Makes Doctrine validate all field constraints such as notnull, email etc.
 
 : {Doctrine::VALIDATE_ALL} : Turns on all validations.
 
