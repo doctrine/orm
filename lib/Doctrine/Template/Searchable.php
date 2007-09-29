@@ -51,7 +51,7 @@ class Doctrine_Template_Searchable extends Doctrine_Template
         $this->_search->buildDefinition($this->_table);
 
         foreach ((array) $id as $column) {
-            $foreign[] = strtolower($this->_table->getComponentName() . '_' . $column);
+            $foreign[] = strtolower(Doctrine::tableize($this->_table->getComponentName()) . '_' . $column);
         }
 
         $foreign = (count($foreign) > 1) ? $foreign : current($foreign);
