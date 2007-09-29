@@ -95,6 +95,20 @@ class Doctrine_Search
             }
         }
     }
+    /**
+     * savePending
+     *
+     * @param Doctrine_Record $record
+     * @return integer
+     */
+    public function savePending($tableName, $id, $conn = null)
+    {
+        if ( ! ($conn instanceof Doctrine_Connection)) {
+            $conn = Doctrine_Manager::connection();
+        }
+
+        $conn->insert($tableName, array('foreign_id' => $id));
+    }
     public function buildDefinition(Doctrine_Table $table)
     {
         $name = $table->getComponentName();
