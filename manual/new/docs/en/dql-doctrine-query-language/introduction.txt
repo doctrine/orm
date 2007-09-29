@@ -10,32 +10,36 @@ When compared to using raw SQL, DQL has several benefits:
 
 If the power of DQL isn't enough, you should consider using the rawSql API for object population.
 
+You may already be familiar with the following syntax:
 <code type="php">
-// DO NOT USE THE FOLLOWING CODE 
-// (using many sql queries for object population):
+// DO NOT USE THE FOLLOWING CODE
+// (uses many sql queries for object population)
 
 $users = $conn->getTable('User')->findAll();
 
 foreach($users as $user) {
-    print $user->name."
-";
+    print $user->name . ' has phonenumbers: ';
+
     foreach($user->Phonenumber as $phonenumber) {
-        print $phonenumber."
-";
+        print $phonenumber . ' ';
     }
 }
+<code>
 
-// same thing implemented much more efficiently: 
+However you should not use it. Above is the same behaviour implemented much more efficiently:
+
+<code type="php">
+// same thing implemented much more efficiently:
 // (using only one sql query for object population)
 
-$users = $conn->query("FROM User.Phonenumber");
+$users = $conn->query('FROM User u LEFT JOIN u.Phonenumber p');
 
 foreach($users as $user) {
-    print $user->name."
-";
+    print $user->name . ' has phonenumbers: ';
+
     foreach($user->Phonenumber as $phonenumber) {
-        print $phonenumber."
-";
+        print $phonenumber . ' ';
     }
 }
 </code>
+
