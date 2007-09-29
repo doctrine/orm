@@ -20,16 +20,16 @@ class GroupTest extends UnitTestCase
     }
 
     public function shouldBeRun($testCase, $filter){
-        if( ! is_array($filter)) {
+        if ( ! is_array($filter)) {
             return true;
-         }
+        }
         foreach($filter as $subFilter) {
             $name = strtolower(get_class($testCase));
             $pos = strpos($name, strtolower($subFilter));
             //it can be 0 so we have to use === to see if false
             if ($pos === false) {
                 return false;
-             }
+            }
         }
         return true;
     }
@@ -44,15 +44,15 @@ class GroupTest extends UnitTestCase
                 $testCase->run();
             } catch(Exception $e) {
                 $this->_failed += 1;
-                $this->_messages[] = "Unexpected exception thrown with message [" . $e->getMessage() . "] in " . get_class($testCase) . " on line " . $e->getLine();
+                $this->_messages[] = 'Unexpected exception thrown with message [' . $e->getMessage() . '] in ' . $e->getFile() . ' on line ' . $e->getLine();
             }
             $this->_passed += $testCase->getPassCount();
             $this->_failed += $testCase->getFailCount();
             $this->_messages = array_merge($this->_messages, $testCase->getMessages());
 
             $this->_testCases[$k] = null;
-            if(PHP_SAPI === "cli"){
-                echo ".";
+            if(PHP_SAPI === 'cli'){
+                echo '.';
             }
             set_time_limit(900);
         }
