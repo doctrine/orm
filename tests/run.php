@@ -1,6 +1,7 @@
 <?php
 
 ini_set('max_execution_time', 900);
+ini_set("date.timezone", "GMT+0");
 
 function parseOptions($array) {
     $currentName='';
@@ -223,6 +224,8 @@ $plugins = new GroupTest('Plugin tests: View, Validator, Hook');
 //$utility->addTestCase(new Doctrine_PessimisticLocking_TestCase());
 $plugins->addTestCase(new Doctrine_View_TestCase());
 $plugins->addTestCase(new Doctrine_Validator_TestCase());
+$plugins->addTestCase(new Doctrine_Validator_Future_TestCase());
+$plugins->addTestCase(new Doctrine_Validator_Past_TestCase());
 $plugins->addTestCase(new Doctrine_Hook_TestCase());
 $plugins->addTestCase(new Doctrine_I18n_TestCase());
 $test->addTestCase($plugins);

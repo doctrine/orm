@@ -41,7 +41,7 @@ class Doctrine_Validator_Email
      */
     public function validate($value)
     {
-        if (empty($value)) {
+        if ($value === null) {
             return true;
         }
         if (isset($this->args)) {

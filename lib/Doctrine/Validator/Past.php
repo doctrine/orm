@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Date.php 2367 2007-09-02 20:00:27Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Validator_Date
+ * Doctrine_Validator_Past
  *
  * @package     Doctrine
  * @category    Object Relational Mapping
@@ -28,12 +28,12 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class Doctrine_Validator_Date
+class Doctrine_Validator_Past
 {
     /**
-     * checks if given value is a valid date
+     * checks if the given value is a valid date in the past.
      *
      * @param mixed $value
      * @return boolean
@@ -48,6 +48,32 @@ class Doctrine_Validator_Date
         if (count($e) !== 3) {
             return false;
         }
-        return checkdate($e[1], $e[2], $e[0]);
+        
+        if (is_array($this->args) && isset($this->args['timezone'])) {
+            switch (strtolower($this->args['timezone'])) {
+                case 'gmt':
+                    $now = gmdate("U") - date("Z");
+                    break;
+                default:
+                    $now = getdate();
+                    break;
+            }
+        } else {
+            $now = getdate();
+        }
+        
+        if ($now['year'] < $e[0]) {
+            return false;
+        } else if ($now['year'] == $e[0]) {
+            if ($now['mon'] < $e[1]) {
+                return false;
+            } else if ($now['mon'] == $e[1]) {
+                return $now['mday'] > $e[2];
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
     }
 }

@@ -77,7 +77,7 @@ class Doctrine_Validator extends Doctrine_Object
         foreach ($data as $key => $value) {
             if ($value === self::$_null) {
                 $value = null;
-            } elseif ($value instanceof Doctrine_Record) {
+            } else if ($value instanceof Doctrine_Record) {
                 $value = $value->getIncremented();
             }
 
@@ -191,7 +191,7 @@ class Doctrine_Validator extends Doctrine_Object
      *
      * @param $portableType     portable doctrine type
      * @return string
-     */
+     *//*
     public static function phpType($portableType)
     {
         switch ($portableType) {
@@ -208,7 +208,7 @@ class Doctrine_Validator extends Doctrine_Object
             default:
                 return $portableType;
         }
-    }
+    }*/
     /**
      * returns whether or not the given variable is
      * valid type
@@ -217,6 +217,7 @@ class Doctrine_Validator extends Doctrine_Object
      * @param string $type
      * @return boolean
      */
+     /*
     public static function isValidType($var, $type)
     {
         if ($type == 'boolean') {
@@ -242,13 +243,57 @@ class Doctrine_Validator extends Doctrine_Object
                 return true;
                 break;
         }
+    }*/
+    
+    
+    /**
+     * returns whether or not the given variable is
+     * valid type
+     *
+     * @param mixed $var
+     * @param string $type
+     * @return boolean
+     */
+    public static function isValidType($var, $type)
+    {
+        if ($var === null) {
+            return true;
+        } else if (is_object($var)) {
+            return $type == 'object';
+        }
+        
+        switch ($type) {
+            case 'float':
+            case 'double':
+                return (String)$var == strval(floatval($var));
+            case 'integer':
+                return (String)$var == strval(intval($var));
+            case 'string':
+                return is_string($var) || is_int($var) || is_float($var);
+            case 'array':
+                return is_array($var);
+            case 'object':
+                return is_object($var);
+            case 'boolean':
+                return is_bool($var);
+            case 'timestamp':
+                // todo: validate the timestamp is in YYYY-MM-DD HH:MM:SS format
+                return true;
+            case 'date':
+                $validator = self::getValidator('date');
+                return $validator->validate($var);
+            default:
+                return false;
+        }
     }
+    
+    
     /**
      * returns the type of loosely typed variable
      *
      * @param mixed $var
      * @return string
-     */
+     *//*
     public static function gettype($var)
     {
         $type = gettype($var);
@@ -265,5 +310,5 @@ class Doctrine_Validator extends Doctrine_Object
             default:
                 return $type;
         }
-    }
+    }*/
 }
