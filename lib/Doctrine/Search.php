@@ -95,19 +95,49 @@ class Doctrine_Search
             }
         }
     }
+    
+    public function processPendingTable($tableName, $indexTableName, array $fields, $id, $conn = null)
+    {
+        if ( ! ($conn instanceof Doctrine_Connection)) {
+            $conn = Doctrine_Manager::connection();
+        }
+        $fields = array_merge($fields, array($id));
+        $query = 'SELECT ' . implode(', ', $fields) . ' FROM ' . $tableName . ' WHERE '
+               . $id . ' IN (SELECT foreign_id FROM ' 
+               . $indexTableName 
+               . ') ORDER BY ' . $id;
+
+        $data = $conn->fetchAll($query);
+
+        foreach ($data as $row) {
+            $identifier = $row[$id];
+
+            unset($row[$id]);
+
+            foreach ($row as $field => $data) {
+                $terms = $this->analyze($data);
+
+                foreach ($terms as $pos => $term) {
+                    $conn->insert($indexTableName, array('keyword'    => $field,
+                                                         'position'   => $pos,
+                                                         'field'      => $field,
+                                                         'foreign_id' => $identifier);
+                }
+            }
+        }
+    }
     /**
-     * savePending
+     * insertPending
      *
-     * @param Doctrine_Record $record
      * @return integer
      */
-    public function savePending($tableName, $id, $conn = null)
+    public function insertPending($indexTableName, $id, $conn = null)
     {
         if ( ! ($conn instanceof Doctrine_Connection)) {
             $conn = Doctrine_Manager::connection();
         }
 
-        $conn->insert($tableName, array('foreign_id' => $id));
+        $conn->insert($indexTableName, array('foreign_id' => $id));
     }
     public function buildDefinition(Doctrine_Table $table)
     {
