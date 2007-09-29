@@ -1,5 +1,5 @@
 * GROUP BY and HAVING clauses can be used for dealing with aggregate functions
-* Following aggregate functions are availible on DQL: COUNT, MAX, MIN, AVG, SUM
+* Following aggregate functions are available on DQL: COUNT, MAX, MIN, AVG, SUM
 
 Selecting alphabetically first user by name.
 
