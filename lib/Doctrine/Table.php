@@ -134,7 +134,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                     'sequenceName'   => null,
                                     'inheritanceMap' => array(),
                                     'enumMap'        => array(),
-                                    'engine'         => null,
+                                    'type'           => null,
                                     'charset'        => null,
                                     'collation'      => null,
                                     'treeImpl'       => null,
