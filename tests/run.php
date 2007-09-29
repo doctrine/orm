@@ -309,13 +309,19 @@ $test->addTestCase(new Doctrine_Template_TestCase());
 
 //$test->addTestCase(new Doctrine_Import_Builder_TestCase());
 
-//$test->addTestCase(new Doctrine_Search_TestCase());
 
 //$test->addTestCase(new Doctrine_IntegrityAction_TestCase());
 
 //$test->addTestCase(new Doctrine_AuditLog_TestCase());
 
 $test->addTestCase(new Doctrine_NestedSet_SingleRoot_TestCase());
+
+// Search tests
+$search = new GroupTest('Search tests');
+$search->addTestCase(new Doctrine_Search_TestCase());
+$search->addTestCase(new Doctrine_Search_Query_TestCase());
+
+$test->addTestCase($search);
 
 // Cache tests
 $cache = new GroupTest('Cache tests');
