@@ -26,7 +26,7 @@ $r->add('all-users', 'FROM User u');
 
 +++ Namespaces
 
-The Query registry supports namespaces. The namespace is separated from the actual name with / -mark. If the name of the namespace is a record name the given record has all the named queries availible in its local scope.
+The Query registry supports namespaces. The namespace is separated from the actual name with / -mark. If the name of the namespace is a record name the given record has all the named queries available in its local scope.
 
 <code type="php">
 $r = Doctrine_Manager::getInstance()->getQueryRegistry();
