@@ -87,8 +87,8 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      */
     public function createIndexSql($table, $name, array $definition)
     {
-        $table = $this->conn->quoteIdentifier($table, true);
         $name  = $this->conn->formatter->getIndexName($name);
+        $name  = $this->conn->quoteIdentifier($name);
         $query = 'CREATE INDEX ' . $name . ' ON ' . $table;
         $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
 
@@ -106,7 +106,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         $declFields = array();
 
         foreach ($fields as $fieldName => $field) {
-            $fieldString = $fieldName;
+            $fieldString = $this->conn->quoteIdentifier($fieldName);
 
             if (is_array($field)) {
                 if (isset($field['sorting'])) {
@@ -121,7 +121,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
                     }
                 }
             } else {
-                $fieldString = $field;
+                $fieldString = $this->conn->quoteIdentifier($field);
             }
             $declFields[] = $fieldString;
         }
@@ -176,7 +176,9 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         }
 
         if ( ! $autoinc && isset($options['primary']) && ! empty($options['primary'])) {
-            $queryFields.= ', PRIMARY KEY('.implode(', ', array_values($options['primary'])).')';
+            $keyColumns = array_values($options['primary']);
+            $keyColumns = array_map(array($this->conn, 'quoteIdentifier'), $keyColumns);
+            $queryFields.= ', PRIMARY KEY('.implode(', ', $keyColumns).')';
         }
 
         $name  = $this->conn->quoteIdentifier($name, true);

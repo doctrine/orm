@@ -103,6 +103,45 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4))');
     }
+    public function testIdentifierQuoting()
+    {
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
+
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
+                         'name' => array('type' => 'string', 'length' => 4),
+                         );
+
+        $options = array('primary' => array('id'),
+                         'indexes' => array('myindex' => array('fields' => array('id', 'name')))
+                         );
+
+        $this->export->createTable('sometable', $fields, $options);
+
+        //this was the old line, but it looks like the table is created first 
+        //and then the index so i replaced it with the ones below
+        //$this->assertEqual($var, 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id, name))');
+
+        $this->assertEqual($this->adapter->pop(),'CREATE INDEX "myindex_idx" ON "sometable" ("id", "name")');
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE "sometable" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" VARCHAR(4))');
+
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
+    }
+    public function testQuoteMultiplePks() 
+    {
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
+
+        $name = 'mytable';
+        $fields  = array('name' => array('type' => 'char', 'length' => 10),
+                         'type' => array('type' => 'integer', 'length' => 3));
+                         
+        $options = array('primary' => array('name', 'type'));
+        $this->export->createTable($name, $fields, $options);
+        
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE "mytable" ("name" CHAR(10), "type" INTEGER, PRIMARY KEY("name", "type"))');
+
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
+    }
     public function testUnknownIndexSortingAttributeThrowsException()
     {
         $fields = array('id' => array('sorting' => 'ASC'),

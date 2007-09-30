@@ -189,6 +189,51 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($sql[0], 'CREATE TABLE mytable (id TINYINT(1), foreignKey INT, INDEX foreignKey_idx (foreignKey)) ENGINE = INNODB');
         $this->assertEqual($sql[1], 'ALTER TABLE mytable ADD CONSTRAINT FOREIGN KEY (foreignKey) REFERENCES sometable(id)');
     }
+    public function testForeignKeyIdentifierQuoting()
+    {
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
+
+        $name = 'mytable';
+
+        $fields = array('id' => array('type' => 'boolean', 'primary' => true),
+                        'foreignKey' => array('type' => 'integer')
+                        );
+        $options = array('type' => 'INNODB',
+                         'foreignKeys' => array(array('local' => 'foreignKey',
+                                                      'foreign' => 'id',
+                                                      'foreignTable' => 'sometable'))
+                         );
+
+
+        $sql = $this->export->createTableSql($name, $fields, $options);
+
+        $this->assertEqual($sql[0], 'CREATE TABLE `mytable` (`id` TINYINT(1), `foreignKey` INT, INDEX `foreignKey_idx` (`foreignKey`)) ENGINE = INNODB');
+        $this->assertEqual($sql[1], 'ALTER TABLE `mytable` ADD CONSTRAINT FOREIGN KEY (`foreignKey`) REFERENCES `sometable`(`id`)');
+
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
+    }
+    public function testIndexIdentifierQuoting()
+    {
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
+
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true, 'unique' => true),
+                         'name' => array('type' => 'string', 'length' => 4),
+                         );
+
+        $options = array('primary' => array('id'),
+                         'indexes' => array('myindex' => array('fields' => array('id', 'name')))
+                         );
+
+        $this->export->createTable('sometable', $fields, $options);
+
+        //this was the old line, but it looks like the table is created first 
+        //and then the index so i replaced it with the ones below
+        //$this->assertEqual($var, 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4), INDEX myindex (id, name))');
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE `sometable` (`id` INT UNSIGNED AUTO_INCREMENT, `name` VARCHAR(4), INDEX `myindex_idx` (`id`, `name`), PRIMARY KEY(`id`)) ENGINE = INNODB');
+
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
+    }
     public function testCreateTableDoesNotAutoAddIndexesWhenIndexForFkFieldAlreadyExists()
     {
         $name = 'mytable';

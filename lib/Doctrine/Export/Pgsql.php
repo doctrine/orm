@@ -305,7 +305,9 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
 
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
-            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
+            $keyColumns = array_values($options['primary']);
+            $keyColumns = array_map(array($this->conn, 'quoteIdentifier'), $keyColumns);
+            $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
         }
 
         $query = 'CREATE TABLE ' . $this->conn->quoteIdentifier($name, true) . ' (' . $queryFields . ')';

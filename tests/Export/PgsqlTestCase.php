@@ -54,6 +54,52 @@ class Doctrine_Export_Pgsql_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE mytable (id SERIAL, PRIMARY KEY(id))');
     }
+    public function testQuoteAutoincPks() 
+    {
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
+
+        $name = 'mytable';
+
+        $fields  = array('id' => array('type' => 'integer', 'unsigned' => 1, 'autoincrement' => true));
+        $options = array('primary' => array('id'));
+
+        $this->export->createTable($name, $fields, $options);
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE "mytable" ("id" SERIAL, PRIMARY KEY("id"))');
+
+        $name = 'mytable';
+        $fields  = array('name' => array('type' => 'char', 'length' => 10),
+                         'type' => array('type' => 'integer', 'length' => 3));
+
+        $options = array('primary' => array('name', 'type'));
+        $this->export->createTable($name, $fields, $options);
+
+        $this->assertEqual($this->adapter->pop(), 'CREATE TABLE "mytable" ("name" CHAR(10), "type" INT, PRIMARY KEY("name", "type"))');
+
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
+    }
+    public function testForeignKeyIdentifierQuoting()
+    {
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
+
+        $name = 'mytable';
+
+        $fields = array('id' => array('type' => 'boolean', 'primary' => true),
+                        'foreignKey' => array('type' => 'integer')
+                        );
+        $options = array('foreignKeys' => array(array('local' => 'foreignKey',
+                                                      'foreign' => 'id',
+                                                      'foreignTable' => 'sometable'))
+                         );
+
+
+        $sql = $this->export->createTableSql($name, $fields, $options);
+
+        $this->assertEqual($sql[0], 'CREATE TABLE "mytable" ("id" BOOLEAN, "foreignKey" INT)');
+        $this->assertEqual($sql[1], 'ALTER TABLE "mytable" ADD FOREIGN KEY ("foreignKey") REFERENCES "sometable"("id") NOT DEFERRABLE INITIALLY IMMEDIATE');
+
+        $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
+    }
     public function testCreateTableSupportsDefaultAttribute() 
     {
         $name = 'mytable';

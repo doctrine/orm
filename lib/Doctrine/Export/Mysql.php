@@ -134,7 +134,9 @@ class Doctrine_Export_Mysql extends Doctrine_Export
 
         // attach all primary keys
         if (isset($options['primary']) && ! empty($options['primary'])) {
-            $queryFields .= ', PRIMARY KEY(' . implode(', ', array_values($options['primary'])) . ')';
+            $keyColumns = array_values($options['primary']);
+            $keyColumns = array_map(array($this->conn, 'quoteIdentifier'), $keyColumns);
+            $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
         }
 
         $query = 'CREATE TABLE ' . $this->conn->quoteIdentifier($name, true) . ' (' . $queryFields . ')';
@@ -470,6 +472,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     {
         $table  = $table;
         $name   = $this->conn->getIndexName($name);
+        $name   = $this->conn->quoteIdentifier($name);
         $type   = '';
         if (isset($definition['type'])) {
             switch (strtolower($definition['type'])) {
@@ -523,7 +526,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
      */
     public function getIndexDeclaration($name, array $definition)
     {
-        $name   = $this->conn->quoteIdentifier($name);
+        $name   = $this->conn->formatter->getIndexName($name);
         $type   = '';
         if (isset($definition['type'])) {
             switch (strtolower($definition['type'])) {
@@ -543,7 +546,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             $definition['fields'] = array($definition['fields']);
         }
 
-        $query = $type . 'INDEX ' . $this->conn->formatter->getIndexName($name);
+        $query = $type . 'INDEX ' . $this->conn->quoteIdentifier($name);
 
         $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
         
@@ -561,7 +564,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         $declFields = array();
 
         foreach ($fields as $fieldName => $field) {
-            $fieldString = $fieldName;
+            $fieldString = $this->conn->quoteIdentifier($fieldName);
 
             if (is_array($field)) {
                 if (isset($field['length'])) {
@@ -580,7 +583,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                     }
                 }
             } else {
-                $fieldString = $field;
+                $fieldString = $this->conn->quoteIdentifier($field);
             }
             $declFields[] = $fieldString;
         }

@@ -920,7 +920,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         $sql .= implode(', ', array_map(array($this->conn, 'quoteIdentifier'), $definition['local']))
               . ') REFERENCES '
-              . $definition['foreignTable'] . '('
+              . $this->conn->quoteIdentifier($definition['foreignTable']) . '('
               . implode(', ', array_map(array($this->conn, 'quoteIdentifier'), $definition['foreign'])) . ')';
 
         return $sql;
