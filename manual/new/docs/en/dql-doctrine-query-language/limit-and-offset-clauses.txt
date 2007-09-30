@@ -43,7 +43,7 @@ In the following example we have users and phonenumbers with their relation bein
 
 Now one might consider that adding a simple driver specific LIMIT 20 at the end of query would return the correct results. Thats wrong, since we you might get anything between 1-20 users as the first user might have 20 phonenumbers and then record set would consist of 20 rows.
 
-DQL overcomes this problem with subqueries and with complex but efficient subquery analysis. In the next example we are going to fetch first 20 users and all their phonenumbers with single efficient query. Notice how the DQL parser is smart enough to use column aggregation inheritance even in the subquery and how its smart enough to use different aliases for the tables in the subquery to avoid alias collisions.
+DQL overcomes this problem with subqueries and with complex but efficient subquery analysis. In the next example we are going to fetch first 20 users and all their phonenumbers with single efficient query. Notice how the DQL parser is smart enough to use column aggregation inheritance even in the subquery and how it's smart enough to use different aliases for the tables in the subquery to avoid alias collisions.
 
 DQL QUERY:
 
