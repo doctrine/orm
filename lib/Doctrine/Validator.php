@@ -254,38 +254,40 @@ class Doctrine_Validator extends Doctrine_Object
      * @param string $type
      * @return boolean
      */
-    public static function isValidType($var, $type)
-    {
-        if ($var === null) {
-            return true;
-        } else if (is_object($var)) {
-            return $type == 'object';
-        }
-        
-        switch ($type) {
-            case 'float':
-            case 'double':
-                return (String)$var == strval(floatval($var));
-            case 'integer':
-                return (String)$var == strval(intval($var));
-            case 'string':
-                return is_string($var) || is_int($var) || is_float($var);
-            case 'array':
-                return is_array($var);
-            case 'object':
-                return is_object($var);
-            case 'boolean':
-                return is_bool($var);
-            case 'timestamp':
-                // todo: validate the timestamp is in YYYY-MM-DD HH:MM:SS format
-                return true;
-            case 'date':
-                $validator = self::getValidator('date');
-                return $validator->validate($var);
-            default:
-                return false;
-        }
-    }
+     public static function isValidType($var, $type)
+     {
+         if ($var === null) {
+             return true;
+         } else if (is_object($var)) {
+             return $type == 'object';
+         }
+     
+         switch ($type) {
+             case 'float':
+             case 'double':
+                 return (String)$var == strval(floatval($var));
+             case 'integer':
+                 return (String)$var == strval(intval($var));
+             case 'string':
+                 return is_string($var) || is_int($var) || is_float($var);
+             case 'array':
+                 return is_array($var);
+             case 'object':
+                 return is_object($var);
+             case 'boolean':
+                 return is_bool($var);
+             case 'timestamp':
+                 // todo: validate the timestamp is in YYYY-MM-DD HH:MM:SS format
+                 return true;
+             case 'date':
+                 $validator = self::getValidator('date');
+                 return $validator->validate($var);
+             case 'enum':
+                 return is_string($var) || is_int($var);
+             default:
+                 return false;
+         }
+     }
     
     
     /**
