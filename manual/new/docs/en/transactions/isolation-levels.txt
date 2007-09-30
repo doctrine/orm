@@ -1,4 +1,4 @@
-A transaction isolation level sets the default transactional behaviour. As the name 'isolation level' suggests, the setting determines how isolated each transation is, or what kind of locks are associated with queries inside a transaction. The four availible levels are (in ascending order of strictness):
+A transaction isolation level sets the default transactional behaviour. As the name 'isolation level' suggests, the setting determines how isolated each transation is, or what kind of locks are associated with queries inside a transaction. The four available levels are (in ascending order of strictness):
 
 : {{READ UNCOMMITTED}} :  Barely transactional, this setting allows for so-called 'dirty reads', where queries inside one transaction are affected by uncommitted changes in another transaction.
 
