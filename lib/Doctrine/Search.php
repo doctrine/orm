@@ -121,7 +121,7 @@ class Doctrine_Search
                     $conn->insert($indexTableName, array('keyword'    => $field,
                                                          'position'   => $pos,
                                                          'field'      => $field,
-                                                         'foreign_id' => $identifier);
+                                                         'foreign_id' => $identifier));
                 }
             }
         }

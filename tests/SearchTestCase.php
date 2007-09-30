@@ -70,7 +70,7 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
           ->innerJoin('t.SearchTestIndex i')
           ->where('i.keyword = ?');
 
-        $array = $q->execute(array('orm'), Doctrine_Hydrate::HYDRATE_ARRAY);
+        $array = $q->execute(array('orm'), Doctrine::HYDRATE_ARRAY);
 
         $this->assertEqual($array[0]['title'], 'Once there was an ORM framework');
     }
@@ -84,7 +84,7 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
           ->innerJoin('t.SearchTestIndex i')
           ->where('i.keyword = ? OR i.keyword = ?');
 
-        $array = $q->execute(array('orm', 'framework'), Doctrine_Hydrate::HYDRATE_ARRAY);
+        $array = $q->execute(array('orm', 'framework'), Doctrine::HYDRATE_ARRAY);
 
         $this->assertEqual($array[0]['title'], 'Once there was an ORM framework');
     }
@@ -98,7 +98,7 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
           ->innerJoin('t.SearchTestIndex i')
           ->where('i.keyword = ?');
 
-        $array = $q->execute(array('was'), Doctrine_Hydrate::HYDRATE_ARRAY);
+        $array = $q->execute(array('was'), Doctrine::HYDRATE_ARRAY);
 
         $this->assertEqual(count($array), 0);
     }
@@ -112,7 +112,7 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
           ->innerJoin('t.SearchTestIndex i')
           ->where('i.keyword = ?');
 
-        $array = $q->execute(array('someunknownword'), Doctrine_Hydrate::HYDRATE_ARRAY);
+        $array = $q->execute(array('someunknownword'), Doctrine::HYDRATE_ARRAY);
 
         $this->assertEqual(count($array), 0);
     }
