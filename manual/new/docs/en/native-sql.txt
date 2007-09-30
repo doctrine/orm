@@ -93,5 +93,5 @@ $q->select('{u.*}, {p.*}')
 
 
 $users = $q->execute();
-$user[0]; // User object
+$users[0]; // User object
 </code>
