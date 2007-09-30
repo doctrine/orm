@@ -270,6 +270,10 @@ class Doctrine_Validator extends Doctrine_Object
                  return (String)$var == strval(intval($var));
              case 'string':
                  return is_string($var) || is_int($var) || is_float($var);
+             case 'blob':
+             case 'clob':
+             case 'gzip':
+                 return is_string($var);
              case 'array':
                  return is_array($var);
              case 'object':
