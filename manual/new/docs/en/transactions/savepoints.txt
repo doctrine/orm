@@ -30,7 +30,7 @@ Savepoints that were set at a later time than the named savepoint are deleted.
 
 The {{Doctrine_Transaction::commit($savepoint)}} removes the named savepoint from the set of savepoints of the current transaction. 
 
-All savepoints of the current transaction are deleted if you execute a commit or rollback is being called without savepoint name parameter.
+All savepoints of the current transaction are deleted if you execute a commit or if a rollback is being called without savepoint name parameter.
 
 <code type="php">
 try {
