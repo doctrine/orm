@@ -138,7 +138,7 @@ $conn->addListener(new MyLogger());
 
 Doctrine_Record provides listeners very similar to Doctrine_Connection. You can set the listeners at global, connection and record(=table) level.
 
-Here is a list of all availible listener methods:
+Here is a list of all available listener methods:
 
 ||~ Methods     ||~ Listens ||
 || preSave() || Doctrine_Record::save() ||
@@ -285,7 +285,7 @@ class MyListener extends Doctrine_EventListener
 </code>
 +++ Event codes
 
-Doctrine_Event uses constants as event codes. Above is the list of all availible event constants:
+Doctrine_Event uses constants as event codes. Above is the list of all available event constants:
 
 * Doctrine_Event::CONN_QUERY 
 * Doctrine_Event::CONN_EXEC
