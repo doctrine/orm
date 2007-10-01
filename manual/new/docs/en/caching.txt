@@ -24,7 +24,7 @@ $cache = new Doctrine_Cache_Memcache(array('servers' => $servers,
                                            'compression' => false));
 </code>
 
-Availible options for Memcache driver:
+Available options for Memcache driver:
 
 ||~ Option ||~ Data Type ||~ Default Value ||~ Description  ||
 || servers || array  || array(array('host' => 'localhost','port' => 11211, 'persistent' => true)) || An array of memcached servers ; each memcached server is described by an associative array : 'host' => (string) : the name of the memcached server, 'port' => (int) : the port of the memcached server, 'persistent' => (bool) : use or not persistent connections to this memcached server  ||
