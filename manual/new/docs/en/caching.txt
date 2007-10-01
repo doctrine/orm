@@ -7,7 +7,7 @@
 Initializing a new cache driver instance:
 
 <code type="php">
-$cache = new Doctrine_Cache_Memcache($options);
+$cacheDriver = new Doctrine_Cache_Memcache($options);
 </code>
 
 ++ Drivers
@@ -20,7 +20,7 @@ $servers = array('host' => 'localhost',
                  'port' => 11211,
                  'persistent' => true);
 
-$cache = new Doctrine_Cache_Memcache(array('servers' => $servers,
+$cacheDriver = new Doctrine_Cache_Memcache(array('servers' => $servers,
                                            'compression' => false));
 </code>
 
@@ -36,7 +36,7 @@ The Alternative PHP Cache (APC) is a free and open opcode cache for PHP. It was 
 The APC cache driver of Doctrine stores cache records in shared memory.
 
 <code type="php">
-$cache = new Doctrine_Cache_Apc();
+$cacheDriver = new Doctrine_Cache_Apc();
 </code>
 
 
@@ -49,7 +49,7 @@ Initializing sqlite cache driver can be done as above:
 <code type="php">
 $conn  = Doctrine_Manager::connection(new PDO('sqlite::memory:'));
 
-$cache = new Doctrine_Cache_Sqlite(array('connection' => $conn));
+$cacheDriver = new Doctrine_Cache_Sqlite(array('connection' => $conn));
 </code>
 
 ++ Caching queries
