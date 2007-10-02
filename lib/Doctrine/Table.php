@@ -597,11 +597,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * creates a new Doctrine_Query object and adds the component name
      * of this table as the query 'from' part
      *
+     * @param string Optional alias name for component aliasing.
+     *
      * @return Doctrine_Query
      */
-    public function createQuery()
+    public function createQuery($alias = '')
     {
-        return Doctrine_Query::create()->from($this->getComponentName());
+        if (!empty($alias)) {
+            $alias = ' ' . trim($alias);
+        }
+        return Doctrine_Query::create($this->_conn)->from($this->getComponentName() . $alias);
     }
     /**
      * getRepository
@@ -837,23 +842,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             ->fetchOne($id, $hydrationMode);
     }
     /**
-     * applyInheritance
-     * @param $where                    query where part to be modified
-     * @return string                   query where part with column aggregation inheritance added
-     */
-    final public function applyInheritance($where)
-    {
-        if ( ! empty($this->options['inheritanceMap'])) {
-            $a = array();
-            foreach ($this->options['inheritanceMap'] as $field => $value) {
-                $a[] = $field . ' = ?';
-            }
-            $i = implode(' AND ', $a);
-            $where .= ' AND ' . $i;
-        }
-        return $where;
-    }
-    /**
      * findAll
      * returns a collection of records
      *
@@ -862,9 +850,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function findAll($hydrationMode = null)
     {
-        $graph = new Doctrine_Query($this->_conn);
-        $users = $graph->query('FROM ' . $this->options['name'], array(), $hydrationMode);
-        return $users;
+        return $this->createQuery()->execute(array(), $hydrationMode);
     }
     /**
      * findByDql
@@ -876,13 +862,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @param int $hydrationMode        Doctrine::FETCH_ARRAY or Doctrine::FETCH_RECORD
      * @return Doctrine_Collection
      */
-    public function findBySql($dql, array $params = array(), $hydrationMode = null) {
-        $q = new Doctrine_Query($this->_conn);
-        $users = $q->query('FROM ' . $this->options['name'] . ' WHERE ' . $dql, $params, $hydrationMode);
-        return $users;
+    public function findBySql($dql, array $params = array(), $hydrationMode = null)
+    {
+        return $this->createQuery()->where($dql)->execute($params, $hydrationMode);
     }
 
-    public function findByDql($dql, array $params = array(), $hydrationMode = null) {
+    public function findByDql($dql, array $params = array(), $hydrationMode = null)
+    {
         return $this->findBySql($dql, $params, $hydrationMode);
     }
     /**
@@ -1027,6 +1013,23 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 return false;
         }
         return $this->getRecord();
+    }
+    /**
+     * applyInheritance
+     * @param $where                    query where part to be modified
+     * @return string                   query where part with column aggregation inheritance added
+     */
+    final public function applyInheritance($where)
+    {
+        if ( ! empty($this->options['inheritanceMap'])) {
+            $a = array();
+            foreach ($this->options['inheritanceMap'] as $field => $value) {
+                $a[] = $field . ' = ?';
+            }
+            $i = implode(' AND ', $a);
+            $where .= ' AND ' . $i;
+        }
+        return $where;
     }
     /**
      * count
@@ -1291,9 +1294,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     }
     public function unshiftFilter(Doctrine_Record_Filter $filter)
     {
-    	$filter->setTable($this);
-    	
-    	$filter->init();
+        $filter->setTable($this);
+
+        $filter->init();
 
         array_unshift($this->_filters, $filter);
 
