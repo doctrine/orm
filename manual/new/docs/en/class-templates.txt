@@ -86,7 +86,7 @@ class Email extends Doctrine_Record
 }
 </code>
 
-Now if we extend the User and Email classes and create, for example, classes ExtendedUser and ExtendedEmail, the ExtendedUser will still have a relation to the Email class - not the ExtendedEmail class. We could ofcourse override the setUp() method of the User class and define relation to the ExtendedEmail class, but then we lose the whole point of inheritance. Doctrine_Template can solve this problem elegantly with its dependency injection solution.
+Now if we extend the User and Email classes and create, for example, classes ExtendedUser and ExtendedEmail, the ExtendedUser will still have a relation to the Email class - not the ExtendedEmail class. We could of course override the setUp() method of the User class and define relation to the ExtendedEmail class, but then we lose the whole point of inheritance. Doctrine_Template can solve this problem elegantly with its dependency injection solution.
 
 In the following example we'll define two templates, UserTemplate and EmailTemplate, with almost identical definitions as the User and Email class had.
 
@@ -116,7 +116,7 @@ class EmailTemplate extends Doctrine_Template
 }
 </code>
 
-Notice how we set the relations. We are not pointing to concrete Record classes, rather we are setting the relations to templates. This tells Doctrine that it should try to find concrete Record classes for those templates. If Doctrine can't find these concrete implementations the relation parser will throw an exception, but before we go ahead of things here are the actual record classes:
+Notice how we set the relations. We are not pointing to concrete Record classes, rather we are setting the relations to templates. This tells Doctrine that it should try to find concrete Record classes for those templates. If Doctrine can't find these concrete implementations the relation parser will throw an exception, but before we go ahead of things, here are the actual record classes:
 
 <code type="php">
 class User extends Doctrine_Record
@@ -157,7 +157,7 @@ The implementations for the templates can be set at manager, connection and even
 
 ++ Delegate methods
 
-Besides from acting as a full table definition delegate system, Doctrine_Template allows the delegation of method calls. This means that every method within the loaded templates is availible in the record that loaded the templates. Internally the implementation uses magic method called __call() to achieve this functionality.
+Besides from acting as a full table definition delegate system, Doctrine_Template allows the delegation of method calls. This means that every method within the loaded templates is available in the record that loaded the templates. Internally the implementation uses magic method called __call() to achieve this functionality.
 
 Lets take an example: we have a User class that loads authentication functionality through a template.
 
@@ -195,7 +195,7 @@ $user = new User();
 $user->login($username, $password);
 </code>
 
-You can get the record that invoked the delegate method by using the getInvoker() method of Doctrine_Template. Consider the AuthTemplate example. If we want to have access to User object we just need to do the following:
+You can get the record that invoked the delegate method by using the getInvoker() method of Doctrine_Template. Consider the AuthTemplate example. If we want to have access to the User object we just need to do the following:
 
 <code type="php">
 class AuthTemplate extends Doctrine_Record
