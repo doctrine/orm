@@ -28,7 +28,6 @@ Doctrine::autoload('Doctrine_Exception');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @since       1.0
  * @version     $Revision$
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  */
 class Doctrine_Transaction_Exception extends Doctrine_Exception
