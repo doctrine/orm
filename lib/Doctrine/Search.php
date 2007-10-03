@@ -32,7 +32,7 @@
  */
 class Doctrine_Search
 {
-    protected $_options = array('generateFiles' => true,
+    protected $_options = array('generateFiles' => false,
                                 'className'     => '%CLASS%Index');
 
     
@@ -193,12 +193,21 @@ class Doctrine_Search
         $columns += $fk;
 
         $builder = new Doctrine_Import_Builder();
-
-        $def = $builder->buildDefinition($options, $columns, $relations);
     
-        if ( ! $this->_options['generateFiles']) {
-            eval($def);
+        if ($this->_options['generateFiles']) {
+          if (isset($this->_options['generatePath']) && $this->_options['generatePath']) {
+            $builder->setTargetPath($this->_options['generatePath']);
+            
+            $builder->buildRecord($options, $columns, $relations);
+          } else {
+            throw new Doctrine_Search_Exception('If you wish to generate files then you must specify the path to generate the files in.');
+          }
+        } else {
+          $def = $builder->buildDefinition($options, $columns, $relations);
+          
+          eval($def);
         }
+        
         return true;
     }
 }
