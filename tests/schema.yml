@@ -1,4 +1,154 @@
 ---
+Account: 
+  tableName: account
+  className: Account
+  columns: 
+    id: 
+      type: integer
+      length: 20
+      autoincrement: true
+      primary: true
+      name: id
+    entity_id: 
+      type: integer
+      length: 2147483647
+      name: entity_id
+    amount: 
+      type: integer
+      length: 2147483647
+      name: amount
+Address: 
+  tableName: address
+  className: Address
+  columns: 
+    id: 
+      type: integer
+      length: 20
+      autoincrement: true
+      primary: true
+      name: id
+    address: 
+      type: string
+      length: 200
+      name: address
+  relations: 
+    User: 
+      refClass: EntityAddress
+      local: address_id
+      foreign: user_id
+      type: many
+    EntityAddress: 
+      local: id
+      foreign: address_id
+      type: many
+Album: 
+  tableName: album
+  className: Album
+  columns: 
+    id: 
+      type: integer
+      length: 20
+      autoincrement: true
+      primary: true
+      name: id
+    user_id: 
+      type: integer
+      length: 2147483647
+      name: user_id
+    name: 
+      type: string
+      length: 20
+      name: name
+  relations: 
+    Song: 
+      local: id
+      foreign: album_id
+      type: many
+    User: 
+      local: user_id
+      foreign: id
+      type: one
+Assignment: 
+  tableName: assignment
+  className: Assignment
+  columns: 
+    id: 
+      type: integer
+      length: 20
+      autoincrement: true
+      primary: true
+      name: id
+    task_id: 
+      type: integer
+      length: 2147483647
+      name: task_id
+    resource_id: 
+      type: integer
+      length: 2147483647
+      name: resource_id
+Description: 
+  tableName: description
+  className: Description
+  columns: 
+    id: 
+      type: integer
+      length: 20
+      autoincrement: true
+      primary: true
+      name: id
+    description: 
+      type: string
+      length: 3000
+      name: description
+    file_md5: 
+      type: string
+      length: 32
+      name: file_md5
+Element: 
+  tableName: element
+  className: Element
+  columns: 
+    id: 
+      type: integer
+      length: 20
+      autoincrement: true
+      primary: true
+      name: id
+    name: 
+      type: string
+      length: 100
+      name: name
+    parent_id: 
+      type: integer
+      length: 2147483647
+      name: parent_id
+  relations: 
+    Child: 
+      class: Element
+      local: id
+      foreign: parent_id
+      type: many
+    Parent: 
+      class: Element
+      local: parent_id
+      foreign: id
+      type: one
+Email: 
+  tableName: email
+  className: Email
+  columns: 
+    id: 
+      type: integer
+      length: 20
+      autoincrement: true
+      primary: true
+      name: id
+    address: 
+      email: true
+      unique: true
+      type: string
+      length: 150
+      name: address
 Entity: 
   tableName: entity
   className: Entity
@@ -60,30 +210,6 @@ Entity:
       local: id
       foreign: entity1
       type: many
-Address: 
-  tableName: address
-  className: Address
-  columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
-      primary: true
-      name: id
-    address: 
-      type: string
-      length: 200
-      name: address
-  relations: 
-    User: 
-      refClass: EntityAddress
-      local: address_id
-      foreign: user_id
-      type: many
-    EntityAddress: 
-      local: id
-      foreign: address_id
-      type: many
 EntityAddress: 
   tableName: entity_address
   className: EntityAddress
@@ -103,31 +229,47 @@ EntityAddress:
       local: address_id
       foreign: id
       type: one
-ResourceType: 
-  tableName: resource_type
-  className: ResourceType
+EntityReference: 
+  tableName: entity_reference
+  className: EntityReference
   columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
+    entity1: 
       primary: true
-      name: id
-    type: 
-      type: string
-      length: 100
-      name: type
+      type: integer
+      length: 2147483647
+      name: entity1
+    entity2: 
+      primary: true
+      type: integer
+      length: 2147483647
+      name: entity2
   relations: 
-    ResourceAlias: 
-      refClass: ResourceReference
-      class: Resource
-      local: resourcetype_id
-      foreign: resource_id
-      type: many
-    ResourceReference: 
-      local: id
-      foreign: resourcetype_id
-      type: many
+    Entity: 
+      local: entity1
+      foreign: id
+      type: one
+Error: 
+  tableName: error
+  className: Error
+  columns: 
+    message: 
+      type: string
+      length: 200
+      name: message
+    code: 
+      type: integer
+      length: 11
+      name: code
+    file_md5: 
+      primary: true
+      type: string
+      length: 32
+      name: file_md5
+  relations: 
+    Description: 
+      local: file_md5
+      foreign: file_md5
+      type: one
 Group: 
   tableName: entity
   className: Group
@@ -198,27 +340,67 @@ Group:
       local: id
       foreign: group_id
       type: many
-Error: 
-  tableName: error
-  className: Error
+Groupuser: 
+  tableName: groupuser
+  className: Groupuser
   columns: 
-    message: 
-      type: string
-      length: 200
-      name: message
-    code: 
+    id: 
       type: integer
-      length: 11
-      name: code
-    file_md5: 
+      length: 20
+      autoincrement: true
       primary: true
-      type: string
-      length: 32
-      name: file_md5
+      name: id
+    added: 
+      type: integer
+      length: 2147483647
+      name: added
+    group_id: 
+      type: integer
+      length: 2147483647
+      name: group_id
+    user_id: 
+      type: integer
+      length: 2147483647
+      name: user_id
   relations: 
-    Description: 
-      local: file_md5
-      foreign: file_md5
+    Group: 
+      local: group_id
+      foreign: id
+      type: one
+    User: 
+      local: user_id
+      foreign: id
+      type: one
+Phonenumber: 
+  tableName: phonenumber
+  className: Phonenumber
+  columns: 
+    id: 
+      type: integer
+      length: 20
+      autoincrement: true
+      primary: true
+      name: id
+    phonenumber: 
+      type: string
+      length: 20
+      name: phonenumber
+    entity_id: 
+      type: integer
+      length: 2147483647
+      name: entity_id
+  relations: 
+    Entity: 
+      local: entity_id
+      foreign: id
+      type: one
+    Group: 
+      local: entity_id
+      foreign: id
+      type: one
+    User: 
+      local: entity_id
+      foreign: id
       type: one
 ResourceReference: 
   tableName: resource_reference
@@ -238,11 +420,66 @@ ResourceReference:
       type: integer
       length: 2147483647
       name: resource_id
+Resource: 
+  tableName: resource
+  className: Resource
+  columns: 
+    id: 
+      type: integer
+      length: 20
+      autoincrement: true
+      primary: true
+      name: id
+    name: 
+      type: string
+      length: 100
+      name: name
   relations: 
-    ResourceType: 
+    TaskAlias: 
+      refClass: Assignment
+      class: Task
+      local: resource_id
+      foreign: task_id
+      type: many
+    Type: 
+      refClass: ResourceReference
+      class: ResourceType
+      local: resource_id
+      foreign: type_id
+      type: many
+    Assignment: 
+      local: id
+      foreign: resource_id
+      type: many
+    ResourceReference: 
+      local: id
+      foreign: resource_id
+      type: many
+ResourceType: 
+  tableName: resource_type
+  className: ResourceType
+  columns: 
+    id: 
+      type: integer
+      length: 20
+      autoincrement: true
+      primary: true
+      name: id
+    type: 
+      type: string
+      length: 100
+      name: type
+  relations: 
+    ResourceAlias: 
+      refClass: ResourceReference
+      class: Resource
       local: resourcetype_id
-      foreign: id
-      type: one
+      foreign: resource_id
+      type: many
+    ResourceReference: 
+      local: id
+      foreign: resourcetype_id
+      type: many
 Song: 
   tableName: song
   className: Song
@@ -304,40 +541,6 @@ Task:
       local: id
       foreign: task_id
       type: many
-Description: 
-  tableName: description
-  className: Description
-  columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
-      primary: true
-      name: id
-    description: 
-      type: string
-      length: 3000
-      name: description
-    file_md5: 
-      type: string
-      length: 32
-      name: file_md5
-Email: 
-  tableName: email
-  className: Email
-  columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
-      primary: true
-      name: id
-    address: 
-      email: true
-      unique: true
-      type: string
-      length: 150
-      name: address
 User: 
   tableName: entity
   className: User
@@ -431,224 +634,3 @@ User:
       local: id
       foreign: user_id
       type: many
-Assignment: 
-  tableName: assignment
-  className: Assignment
-  columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
-      primary: true
-      name: id
-    task_id: 
-      type: integer
-      length: 2147483647
-      name: task_id
-    resource_id: 
-      type: integer
-      length: 2147483647
-      name: resource_id
-  relations: 
-    Task: 
-      local: task_id
-      foreign: id
-      type: one
-Resource: 
-  tableName: resource
-  className: Resource
-  columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
-      primary: true
-      name: id
-    name: 
-      type: string
-      length: 100
-      name: name
-  relations: 
-    TaskAlias: 
-      refClass: Assignment
-      class: Task
-      local: resource_id
-      foreign: task_id
-      type: many
-    Type: 
-      refClass: ResourceReference
-      class: ResourceType
-      local: resource_id
-      foreign: type_id
-      type: many
-    Assignment: 
-      local: id
-      foreign: resource_id
-      type: many
-    ResourceReference: 
-      local: id
-      foreign: resource_id
-      type: many
-EntityReference: 
-  tableName: entity_reference
-  className: EntityReference
-  columns: 
-    entity1: 
-      primary: true
-      type: integer
-      length: 2147483647
-      name: entity1
-    entity2: 
-      primary: true
-      type: integer
-      length: 2147483647
-      name: entity2
-  relations: 
-    Entity: 
-      local: entity1
-      foreign: id
-      type: one
-    Group: 
-      local: entity1
-      foreign: id
-      type: one
-    User: 
-      local: entity1
-      foreign: id
-      type: one
-Element: 
-  tableName: element
-  className: Element
-  columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
-      primary: true
-      name: id
-    name: 
-      type: string
-      length: 100
-      name: name
-    parent_id: 
-      type: integer
-      length: 2147483647
-      name: parent_id
-  relations: 
-    Child: 
-      class: Element
-      local: id
-      foreign: parent_id
-      type: many
-    Parent: 
-      class: Element
-      local: parent_id
-      foreign: id
-      type: one
-Phonenumber: 
-  tableName: phonenumber
-  className: Phonenumber
-  columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
-      primary: true
-      name: id
-    phonenumber: 
-      type: string
-      length: 20
-      name: phonenumber
-    entity_id: 
-      type: integer
-      length: 2147483647
-      name: entity_id
-  relations: 
-    Entity: 
-      local: entity_id
-      foreign: id
-      type: one
-    Group: 
-      local: entity_id
-      foreign: id
-      type: one
-    User: 
-      local: entity_id
-      foreign: id
-      type: one
-Groupuser: 
-  tableName: groupuser
-  className: Groupuser
-  columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
-      primary: true
-      name: id
-    added: 
-      type: integer
-      length: 2147483647
-      name: added
-    group_id: 
-      type: integer
-      length: 2147483647
-      name: group_id
-    user_id: 
-      type: integer
-      length: 2147483647
-      name: user_id
-  relations: 
-    Group: 
-      local: group_id
-      foreign: id
-      type: one
-    User: 
-      local: user_id
-      foreign: id
-      type: one
-Album: 
-  tableName: album
-  className: Album
-  columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
-      primary: true
-      name: id
-    user_id: 
-      type: integer
-      length: 2147483647
-      name: user_id
-    name: 
-      type: string
-      length: 20
-      name: name
-  relations: 
-    Song: 
-      local: id
-      foreign: album_id
-      type: many
-    User: 
-      local: user_id
-      foreign: id
-      type: one
-Account: 
-  tableName: account
-  className: Account
-  columns: 
-    id: 
-      type: integer
-      length: 20
-      autoincrement: true
-      primary: true
-      name: id
-    entity_id: 
-      type: integer
-      length: 2147483647
-      name: entity_id
-    amount: 
-      type: integer
-      length: 2147483647
-      name: amount
