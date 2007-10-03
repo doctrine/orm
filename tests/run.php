@@ -227,7 +227,7 @@ $plugins->addTestCase(new Doctrine_Validator_TestCase());
 $plugins->addTestCase(new Doctrine_Validator_Future_TestCase());
 $plugins->addTestCase(new Doctrine_Validator_Past_TestCase());
 $plugins->addTestCase(new Doctrine_Hook_TestCase());
-$plugins->addTestCase(new Doctrine_I18n_TestCase());
+//$plugins->addTestCase(new Doctrine_I18n_TestCase());
 $test->addTestCase($plugins);
 
 // Db component
