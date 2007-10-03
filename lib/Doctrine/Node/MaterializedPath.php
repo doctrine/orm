@@ -22,13 +22,12 @@
  * Doctrine_Node_MaterializedPath
  *
  * @package     Doctrine
+ * @subpackage  Node
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
  * @author      Joe Simms <joe.simms@websites4.com>
  */
 abstract class Doctrine_Node_MaterializedPath extends Doctrine_Node implements Doctrine_Node_Interface
-{}
-
+{ }

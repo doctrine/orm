@@ -22,10 +22,10 @@ Doctrine::autoload('Doctrine_View_Exception');
 /**
  * Doctrine_Validator_Exception
  *
+ * @package     Doctrine
+ * @subpackage  View
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @package     Doctrine
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

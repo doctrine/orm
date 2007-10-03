@@ -23,8 +23,8 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * Doctrine_Expression_Driver
  *
  * @package     Doctrine
+ * @subpackage  Expression
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

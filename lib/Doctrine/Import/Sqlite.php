@@ -21,11 +21,11 @@
 Doctrine::autoload('Doctrine_Import');
 /**
  * @package     Doctrine
+ * @subpackage  Import
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @version     $Revision$
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
@@ -228,4 +228,3 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
         return $this->conn->fetchColumn($query);
     }
 }
-

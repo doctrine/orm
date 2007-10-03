@@ -23,6 +23,7 @@ Doctrine::autoload('Doctrine_Hydrate');
  * Doctrine_Query_Abstract
  *
  * @package     Doctrine
+ * @subpackage  Query
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com

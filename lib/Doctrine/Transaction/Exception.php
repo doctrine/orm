@@ -23,6 +23,7 @@ Doctrine::autoload('Doctrine_Exception');
  * Doctrine_Transaction_Exception
  *
  * @package     Doctrine
+ * @subpackage  Transaction
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @since       1.0

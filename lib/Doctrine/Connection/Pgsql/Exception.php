@@ -23,7 +23,7 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  * Doctrine_Connection_Pgsql_Exception
  *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Connection
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>

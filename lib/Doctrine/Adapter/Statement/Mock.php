@@ -23,10 +23,9 @@
  * This class is used for special testing purposes.
  *
  * @package     Doctrine
- * @subpackage  Doctrine_Adapter
+ * @subpackage  Adapter
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

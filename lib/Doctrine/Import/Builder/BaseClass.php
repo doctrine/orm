@@ -29,8 +29,9 @@ Doctrine::autoload('Doctrine_Import_Builder');
 /**
  * class Doctrine_Import_Builder_BaseClass
  * Builds a Doctrine_Record base class definition based on a schema.
+ *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Import
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

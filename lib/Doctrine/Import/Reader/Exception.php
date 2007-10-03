@@ -18,17 +18,11 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
-/**
- * @package     Doctrine
- * @url         http://www.phpdoctrine.com
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
- * @version     $Id$
 /**
  * class Doctrine_Import_Reader_Exception
+ *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Import
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
@@ -44,4 +38,4 @@ class Doctrine_Import_Reader_Exception
 
      /*** Attributes: ***/
 
-} // end of Doctrine_Import_Reader_Exception
+}

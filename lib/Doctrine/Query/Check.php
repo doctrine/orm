@@ -23,8 +23,8 @@
  * Doctrine_Query_Check
  *
  * @package     Doctrine
+ * @subpackage  Query
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 1080 $

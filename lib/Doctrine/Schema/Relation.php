@@ -20,22 +20,17 @@
  */
 Doctrine::autoload('Doctrine_Schema_Object');
 /**
- * @package     Doctrine
- * @url         http://www.phpdoctrine.com
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
- * @version     $Id$
- */
-/**
  * class Doctrine_Schema_Relation
  * Holds information on a foreign key relation.
+ *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Schema
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  */
 class Doctrine_Schema_Relation extends Doctrine_Schema_Object
 {

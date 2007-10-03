@@ -23,14 +23,12 @@
  * Doctrine_Sequence_Informix
  *
  * @package     Doctrine
+ * @subpackage  Sequence
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
  */
 class Doctrine_Sequence_Informix extends Doctrine_Sequence
-{
-
-}
+{ }

@@ -24,6 +24,7 @@
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
+ * @subpackage  Plugin
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
  * @category    Object Relational Mapping

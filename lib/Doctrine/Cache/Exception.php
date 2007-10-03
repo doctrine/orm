@@ -23,9 +23,8 @@ Doctrine::autoload('Doctrine_Exception');
  * Doctrine_Cache_Exception
  *
  * @package     Doctrine
- * @subpackage  Doctrine_Cache
+ * @subpackage  Cache
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

@@ -22,10 +22,10 @@ Doctrine::autoload('Doctrine_Exception');
 /**
  * Doctrine_Validator_Exception
  *
+ * @package     Doctrine
+ * @subpackage  Validator
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @package     Doctrine
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
@@ -89,10 +89,10 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
      * @param mixed Either string with function name or array with object, 
      * functionname. See call_user_func in php manual for more inforamtion
      */
-    public function inspect($function){
+    public function inspect($function)
+    {
         foreach ($this->invalid as $record) {
             call_user_func($function, $record->getErrorStack());
         }
     }
-
 }

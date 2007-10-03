@@ -23,7 +23,7 @@ Doctrine::autoload('Doctrine_Exception');
  * class Doctrine_Import_Exception
  *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Import
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

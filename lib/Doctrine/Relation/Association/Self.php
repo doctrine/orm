@@ -23,8 +23,8 @@ Doctrine::autoload('Doctrine_Relation_Association');
  * Doctrine_Relation_Association_Self
  *
  * @package     Doctrine
+ * @subpackage  Relation
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
@@ -106,4 +106,3 @@ class Doctrine_Relation_Association_Self extends Doctrine_Relation_Association
         return $q->execute(array($id, $id));
     }
 }
-

@@ -25,9 +25,9 @@
  * Base Doctrine_Data class
  *
  * @package     Doctrine
+ * @subpackage  Data
  * @author      Jonathan H. Wage <jwage@mac.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 2552 $

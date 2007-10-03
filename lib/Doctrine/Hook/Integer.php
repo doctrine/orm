@@ -23,8 +23,8 @@ Doctrine::autoload('Doctrine_Hook_Parser_Complex');
  * Doctrine_Hook_Integer
  *
  * @package     Doctrine
+ * @subpackage  Hook
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

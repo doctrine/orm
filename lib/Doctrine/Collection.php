@@ -24,8 +24,8 @@ Doctrine::autoload('Doctrine_Access');
  * Collection of Doctrine_Record objects.
  *
  * @package     Doctrine
+ * @subpackage  Collection
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

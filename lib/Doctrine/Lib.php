@@ -22,8 +22,8 @@
  * Doctrine_Lib has not commonly used static functions, mostly for debugging purposes
  *
  * @package     Doctrine
+ * @subpackage  Lib
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

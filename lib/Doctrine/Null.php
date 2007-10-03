@@ -25,8 +25,8 @@
  * used for extra fast null value testing with isset() rather than array_key_exists()
  *
  * @package     Doctrine
+ * @subpackage  Null
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

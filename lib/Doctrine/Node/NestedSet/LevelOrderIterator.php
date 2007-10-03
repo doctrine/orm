@@ -22,12 +22,12 @@
  * Doctrine_Node_NestedSet_LevelOrderIterator
  *
  * @package     Doctrine
+ * @subpackage  Node
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
  * @author      Joe Simms <joe.simms@websites4.com>
  */
 class Doctrine_Node_NestedSet_LevelOrderIterator
-{}
+{ }

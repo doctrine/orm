@@ -21,6 +21,7 @@
 Doctrine::autoload('Doctrine_Import_Exception');
 /**
  * @package     Doctrine
+ * @subpackage  Import
  * @url         http://www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
@@ -29,7 +30,7 @@ Doctrine::autoload('Doctrine_Import_Exception');
 /**
  * class Doctrine_Import_Builder_Exception
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Import
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

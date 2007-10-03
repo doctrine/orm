@@ -22,12 +22,12 @@
  * Doctrine_Tree_MaterializedPath
  *
  * @package     Doctrine
+ * @subpackage  Tree
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
  * @author      Joe Simms <joe.simms@websites4.com>
  */
 abstract class Doctrine_Tree_MaterializedPath extends Doctrine_Tree implements Doctrine_Tree_Interface
-{}
+{ }

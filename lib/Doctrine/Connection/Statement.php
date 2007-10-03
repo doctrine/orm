@@ -22,10 +22,10 @@ Doctrine::autoload('Doctrine_Adapter_Statement_Interface');
 /**
  * Doctrine_Connection_Statement
  *
+ * @package     Doctrine
+ * @subpackage  Connection
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @package     Doctrine
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 1532 $

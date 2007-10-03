@@ -24,9 +24,9 @@
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
+ * @subpackage  Column
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
@@ -144,5 +144,4 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
     {
         return new ArrayIterator($this->_definition);
     }
-
 }

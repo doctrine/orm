@@ -23,7 +23,7 @@ Doctrine::autoload('Doctrine_Connection');
  * standard connection, the parent of pgsql, mysql and sqlite
  *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Connection
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

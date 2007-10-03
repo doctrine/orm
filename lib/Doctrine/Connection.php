@@ -45,8 +45,8 @@ Doctrine::autoload('Doctrine_Configurable');
  *    Doctrine_Connection::$_modules
  *
  * @package     Doctrine
+ * @subpackage  Connection
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
@@ -1133,4 +1133,3 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return Doctrine_Lib::getConnectionAsString($this);
     }
 }
-

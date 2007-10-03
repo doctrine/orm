@@ -23,10 +23,10 @@ Doctrine::autoload('Doctrine_Export');
  * Doctrine_Export_Oracle
  *
  * @package     Doctrine
+ * @subpackage  Export
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

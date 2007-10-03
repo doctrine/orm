@@ -21,12 +21,11 @@
 Doctrine::autoload('Doctrine_DataDict');
 /**
  * @package     Doctrine
- * @subpackage  Doctrine_DataDict
+ * @subpackage  DataDict
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @version     $Revision$
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  */

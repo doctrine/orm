@@ -23,6 +23,7 @@
  * Doctrine_Data_Export
  *
  * @package     Doctrine
+ * @subpackage  Data
  * @author      Jonathan H. Wage <jwage@mac.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping

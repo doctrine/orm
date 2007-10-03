@@ -23,6 +23,7 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * Doctrine_Util
  *
  * @package     Doctrine
+ * @subpackage  Util
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
@@ -31,6 +32,4 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Util extends Doctrine_Connection_Module
-{
-    
-}
+{ }

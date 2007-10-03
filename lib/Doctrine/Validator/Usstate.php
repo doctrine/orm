@@ -23,7 +23,7 @@
  * Doctrine_Validator_Usstate
  *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Validator
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
@@ -32,8 +32,8 @@
  */
 class Doctrine_Validator_Usstate
 {
-    private static $states = array (
-                'AK' =>    true,
+    private static $states = array(
+                'AK' => true,
                 'AL' => true,
                 'AR' => true,
                 'AZ' => true,
@@ -84,8 +84,8 @@ class Doctrine_Validator_Usstate
                 'VT' => true,
                 'WA' => true,
                 'WI' => true,
-                'WV' =>    true,
-                'WY' =>    true
+                'WV' => true,
+                'WY' => true
             );
     public function getStates()
     {

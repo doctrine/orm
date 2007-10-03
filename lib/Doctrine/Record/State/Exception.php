@@ -23,6 +23,7 @@ Doctrine::autoload('Doctrine_Record_Exception');
  * Doctrine_Exception
  *
  * @package     Doctrine
+ * @subpackage  Record
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com

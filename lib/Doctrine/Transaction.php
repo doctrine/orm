@@ -27,7 +27,7 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Transaction
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

@@ -25,7 +25,7 @@
  * based on a database schema.
  *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Import
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

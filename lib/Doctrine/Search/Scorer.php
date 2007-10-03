@@ -22,17 +22,16 @@
 /**
  * Doctrine_Search_Scorer
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
+ * @subpackage  Search
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
 class Doctrine_Search_Scorer
 {
-
     protected $_resultSet;
     
     protected $_components = array();
@@ -61,6 +60,4 @@ class Doctrine_Search_Scorer
             }
         }
     }
-    
-
 }

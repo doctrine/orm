@@ -23,12 +23,12 @@ Doctrine::autoload('Doctrine_Exception');
  * Doctrine_Parser_Exception
  *
  * @package     Doctrine
+ * @subpackage  Parser
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 1080 $
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jonathan H. Wage <jwage@mac.com>
  */
 class Doctrine_Parser_Exception extends Doctrine_Exception
 { }

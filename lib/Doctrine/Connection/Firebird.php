@@ -23,12 +23,12 @@ Doctrine::autoload('Doctrine_Connection');
  * Doctrine_Connection_Firebird
  *
  * @package     Doctrine
+ * @subpackage  Connection
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @author      Lorenzo Alberton <l.alberton@quipo.it> (PEAR MDB2 Interbase driver)
  * @version     $Revision$
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  */

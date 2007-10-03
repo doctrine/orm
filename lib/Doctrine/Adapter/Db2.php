@@ -24,7 +24,7 @@ Doctrine::autoload('Doctrine_Adapter');
  * IBM DB2 Adapter  [BORROWED FROM ZEND FRAMEWORK]
  *
  * @package     Doctrine
- * @subpackage  Doctrine_Adapter
+ * @subpackage  Adapter
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping

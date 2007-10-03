@@ -23,10 +23,10 @@ Doctrine::autoload('Doctrine_Relation');
  * Doctrine_Relation_ForeignKey
  * This class represents a foreign key relation
  *
+ * @package     Doctrine
+ * @subpackage  Relation
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @package     Doctrine
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

@@ -22,8 +22,9 @@
 /**
  * Doctrine_Resource_Exception
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
+ * @subpackage  Resource
+ * @author      Jonathan H. Wage <jwage@mac.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
  * @category    Object Relational Mapping

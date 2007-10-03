@@ -18,18 +18,12 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
-/**
- * @package     Doctrine
- * @url         http://www.phpdoctrine.com
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
- * @version     $Id$
 /**
  * class Doctrine_Schema
  * Holds information on one to many databases
+ *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Schema
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

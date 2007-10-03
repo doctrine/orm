@@ -23,13 +23,12 @@
  * Doctrine_EventListener_Exception
  *
  * @package     Doctrine
+ * @subpackage  EventListener
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 1344 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_EventListener_Exception extends Doctrine_Exception
-{  
-}
+{ }

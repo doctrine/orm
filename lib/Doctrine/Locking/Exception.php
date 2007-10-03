@@ -4,8 +4,9 @@
  *
  * A loking exception represents an error that occured during a locking process
  * (obtain/release locks).
+ *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Locking
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

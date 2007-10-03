@@ -23,12 +23,12 @@
  * Doctrine_Search_Query
  *
  * @package     Doctrine
+ * @subpackage  Search
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
+ * @version     $Revision$
  * @link        www.phpdoctrine.com
  * @since       1.0
- * @version     $Revision: 1939 $
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 class Doctrine_Search_Query
 {

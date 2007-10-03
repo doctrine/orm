@@ -21,13 +21,13 @@
 /**
  * Doctrine_Parser_Serialize
  *
- * @author      Jonathan H. Wage <jwage@mac.com>
  * @package     Doctrine
+ * @subpackage  Parser
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 1080 $
+ * @author      Jonathan H. Wage <jwage@mac.com>
  */
 class Doctrine_Parser_Serialize extends Doctrine_Parser
 {

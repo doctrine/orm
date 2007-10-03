@@ -23,7 +23,7 @@
  * Doctrine_Validator_Unsigned
  *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Validator
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0

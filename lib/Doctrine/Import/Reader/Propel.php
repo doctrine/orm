@@ -20,16 +20,10 @@
  */
 Doctrine::autoload('Doctrine_Import_Reader');
 /**
- * @package     Doctrine
- * @url         http://www.phpdoctrine.com
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
- * @version     $Id$
- */
-/**
  * class Doctrine_Import_Reader_Xml_Propel
+ *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Import
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
@@ -62,5 +56,4 @@ class Doctrine_Import_Reader_Xml_Propel extends Doctrine_Import_Reader
 
     public function read()
     { }
-
-} // end of Doctrine_Import_Reader_Xml_Propel
+}

@@ -24,13 +24,11 @@
  *
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
+ * @subpackage  Template
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
 class Doctrine_Template_Taggable extends Doctrine_Template
-{
-
-}
+{ }

@@ -23,10 +23,10 @@ Doctrine::autoload('Doctrine_Record_Abstract');
  * Doctrine_Record
  * All record classes should inherit this super class
  *
+ * @package     Doctrine
+ * @subpackage  Record
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @package     Doctrine
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

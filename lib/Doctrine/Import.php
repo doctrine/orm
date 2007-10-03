@@ -26,7 +26,7 @@ Doctrine::autoload('Doctrine_Connection_Module');
  * builds a Doctrine data model.
  *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Import
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

@@ -30,7 +30,7 @@
  * independantly from the object itself.
  *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Import
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision: 1838 $

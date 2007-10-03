@@ -23,8 +23,8 @@ Doctrine::autoload('Doctrine_Query_Part');
  * Doctrine_Query
  *
  * @package     Doctrine
+ * @subpackage  Query
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
@@ -58,4 +58,3 @@ class Doctrine_Query_Set extends Doctrine_Query_Part
         return $dql;
     }
 }
-

@@ -1,27 +1,20 @@
 <?php
 require_once('playground.php');
 
-if (isset($_REQUEST['server'])) {
-    require_once('connection.php');
-    require_once('models.php');
-    require_once('data.php');
-    
-    $name = 'Doctrine_Resource_Playground';
-    $config = array('models'    =>  $tables);
-                    
-    $server = Doctrine_Resource_Server::getInstance($name, $config);
-    $server->run($_REQUEST);
-    
-} else {
-    $url = 'http://localhost/~jwage/doctrine_trunk/playground/index.php?server';
-    $config = array('format' => 'json');
-    
-    // Instantiate a new client
-    $client = Doctrine_Resource_Client::getInstance($url, $config);
-    
-    $query = new Doctrine_Resource_Query();
-    
-    $users = $query->from('User u, u.Phonenumber p, u.Email e, u.Address a')->execute();
-    
-    print_r($users->toArray(true));
-}
+$dsn = 'mysql://jwage:elite1baller@localhost/doctrine_playground';
+$conn = Doctrine_Manager::connection($dsn);
+$manager = Doctrine_Manager::getInstance();
+
+$models = Doctrine::loadModels('test_models');
+
+$manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_ALL);
+
+$conn->export->exportClasses($models);
+
+$query = new Doctrine_Search_Query('Article');
+
+$query->search('test');
+
+$results = $query->execute();
+
+print_r($results);

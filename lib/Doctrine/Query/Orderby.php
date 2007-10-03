@@ -23,8 +23,8 @@ Doctrine::autoload('Doctrine_Query_Part');
  * Doctrine_Query_Orderby
  *
  * @package     Doctrine
+ * @subpackage  Query
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

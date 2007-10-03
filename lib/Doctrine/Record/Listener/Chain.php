@@ -25,8 +25,9 @@ Doctrine::autoload('Doctrine_Access');
  * this class represents a chain of different listeners,
  * useful for having multiple listeners listening the events at the same time
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @package     Doctrine
+ * @subpackage  Record
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com

@@ -18,19 +18,13 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
-
-/**
- * @package     Doctrine
- * @url         http://www.phpdoctrine.com
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
- * @version     $Id$
 /**
  * class Doctrine_Import_Reader
  * Is responsible of reading a database definitions from a source and costructing a
  * database schema
+ *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Import
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
@@ -54,4 +48,4 @@ abstract class Doctrine_Import_Reader
      */
     abstract public function read( );
 
-} // end of Doctrine_Import_Reader
+}

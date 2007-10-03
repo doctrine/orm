@@ -20,18 +20,12 @@
  */
 Doctrine::autoload('Doctrine_Import_Reader');
 /**
- * @package     Doctrine
- * @url         http://www.phpdoctrine.com
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
- * @version     $Id$
- */
-/**
  * class Doctrine_Import_Reader_Db
  * Reads a database using the given PDO connection and constructs a database
  * schema
+ *
  * @package     Doctrine
- * @category    Object Relational Mapping
+ * @subpackage  Import
  * @link        www.phpdoctrine.com
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
@@ -40,7 +34,6 @@ Doctrine::autoload('Doctrine_Import_Reader');
  */
 class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
 {
-
     /** Aggregations: */
 
     /** Compositions: */
@@ -67,7 +60,7 @@ class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
      * @return Doctrine_Schema
      * @access public
      */
-    public function read( )
+    public function read()
     {
         $dataDict = Doctrine_Manager::getInstance()->getCurrentConnection()->getDataDict();
 
@@ -98,5 +91,4 @@ class Doctrine_Import_Reader_Db extends Doctrine_Import_Reader
 
         return $schema;
     }
-
-} // end of Doctrine_Import_Reader_Db
+}

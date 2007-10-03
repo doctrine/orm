@@ -23,12 +23,12 @@ Doctrine::autoload('Doctrine_Connection_Exception');
  * Doctrine_Connection_Oracle_Exception
  *
  * @package     Doctrine
+ * @subpackage  Connection
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @since       1.0
  * @version     $Revision$
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  */
 class Doctrine_Connection_Oracle_Exception extends Doctrine_Connection_Exception

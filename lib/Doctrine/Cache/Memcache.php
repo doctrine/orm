@@ -23,9 +23,8 @@ Doctrine::autoload('Doctrine_Cache_Driver');
  * Doctrine_Cache_Memcache
  *
  * @package     Doctrine
- * @subpackage  Doctrine_Cache
+ * @subpackage  Cache
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$

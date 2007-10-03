@@ -22,9 +22,9 @@
 /**
  * Doctrine_Resource_Collection
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author      Jonathan H. Wage <jwage@mac.com>
  * @package     Doctrine
+ * @subpackage  Resource
+ * @author      Jonathan H. Wage <jwage@mac.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision$
  * @category    Object Relational Mapping

@@ -21,11 +21,11 @@
 /**
  * Doctrine_Validator_ErrorStack
  *
+ * @package     Doctrine
+ * @subpackage  Validator
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @package     Doctrine
- * @category    Object Relational Mapping
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision$
