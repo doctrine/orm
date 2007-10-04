@@ -67,6 +67,7 @@ class Doctrine_Import_Schema
     {
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
+        $builder->generateBaseClasses(true);
         
         $schema = $this->buildSchema($schema, $format);
         
@@ -77,21 +78,36 @@ class Doctrine_Import_Schema
                 continue;
             }
             
-            $options = array();
-            $options['className'] = $properties['className'];
-            $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['className'].'.class.php';
-            $options['tableName'] = isset($properties['tableName']) ? $properties['tableName']:null;
-            
-            if (isset($properties['inheritance'])) {
-                $options['inheritance'] = $properties['inheritance'];
-            }
-        
-            $columns = isset($properties['columns']) ? $properties['columns']:array();
-            
-            $relations = isset($this->relations[$options['className']]) ? $this->relations[$options['className']]:array();
+            $options = $this->getOptions($properties, $directory);
+            $columns = $this->getColumns($properties);
+            $relations = $this->getRelations($properties);            
             
             $builder->buildRecord($options, $columns, $relations);
         }
+    }
+    
+    public function getOptions($properties, $directory)
+    {
+      $options = array();
+      $options['className'] = $properties['className'];
+      $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['className'].'.class.php';
+      $options['tableName'] = isset($properties['tableName']) ? $properties['tableName']:null;
+      
+      if (isset($properties['inheritance'])) {
+          $options['inheritance'] = $properties['inheritance'];
+      }
+      
+      return $options;
+    }
+    
+    public function getColumns($properties)
+    {
+      return isset($properties['columns']) ? $properties['columns']:array();
+    }
+    
+    public function getRelations($properties)
+    {
+      return isset($this->relations[$properties['className']]) ? $this->relations[$properties['className']]:array();
     }
     
     /**
@@ -130,7 +146,7 @@ class Doctrine_Import_Schema
                     $colDesc['primary'] = isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null;
                     $colDesc['default'] = isset($field['default']) ? (string) $field['default']:null;
                     $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
-                    $colDesc['autoinc'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):null;
+                    $colDesc['autoincrement'] = isset($field['autoincrement']) ? (bool) (isset($field['autoincrement']) && $field['autoincrement']):null;
                     $colDesc['values'] = isset($field['values']) ? (array) $field['values']: null;
 
                     $columns[(string) $colDesc['name']] = $colDesc;

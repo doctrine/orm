@@ -1,5 +1,5 @@
 <?php
-require_once('spyc.php');
+//require_once('spyc.php');
 
 /*
  *  $Id: Yml.php 1080 2007-02-10 18:17:08Z jwage $

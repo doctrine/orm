@@ -42,9 +42,13 @@ class Doctrine_Import_Builder
     private $path = '';
 
     private $suffix = '.php';
-
+    
+    private $generateBaseClasses = false;
+    
+    private $baseClassesDirectory = 'generated';
+    
     private static $tpl;
-
+    
     public function __construct()
     {
         $this->loadTemplate();
@@ -64,6 +68,25 @@ class Doctrine_Import_Builder
 
         $this->path = $path;
     }
+    
+    /**
+     * generateBaseClasses
+     *
+     * Specify whether or not to generate classes which extend from generated base classes
+     *
+     * @param string $bool 
+     * @return void
+     * @author Jonathan H. Wage
+     */
+    public function generateBaseClasses($bool = null)
+    {
+      if ($bool !== null) {
+        $this->generateBaseClasses = $bool;
+      }
+      
+      return $this->generateBaseClasses;
+    }
+    
     /**
      * getTargetPath
      *
@@ -92,14 +115,8 @@ class Doctrine_Import_Builder
  */
 class %s extends %s
 {
-    public function setTableDefinition()
-    {
 %s
-    }
-    public function setUp()
-    {
 %s
-    }
 }
 END;
 
@@ -116,6 +133,9 @@ END;
         $ret = array();
         
         $i = 0;
+        
+        $ret[$i] = "\t\tpublic function setTableDefinition()\n\t\t{";
+        $i++;
         
         if (isset($options['inheritance']) && isset($options['inheritance']['extends'])) {
             $ret[$i] = "\t\tparent::setTableDefinition();";
@@ -149,7 +169,7 @@ END;
             if (isset($column['primary']) && $column['primary']) {
                 $a[] = '\'primary\' => true';
             }
-            if (isset($column['autoinc']) && $column['autoinc']) {
+            if ((isset($column['autoinc']) && $column['autoinc']) || isset($column['autoincrement']) && $column['autoincrement']) {
                 $a[] = '\'autoincrement\' => true';
             }
             if (isset($column['unique']) && $column['unique']) {
@@ -176,18 +196,20 @@ END;
             $i++;
         }
         
-        return implode("\n", $ret);
+        return implode("\n", $ret)."\n\t\t}";
     }
     public function buildSetUp(array $options, array $columns, array $relations)
     {
         $ret = array();
         
-        if (isset($options['inheritance']) && isset($options['inheritance']['extends'])) {
-            $ret[1] = "\t\tparent::setUp();";
+        $i = 0;
         
-            $i = 1;
-        } else {
-            $i = 0;
+        $ret[$i] = "\t\tpublic function setUp()\n\t\t{";
+        $i++;
+        
+        if (isset($options['inheritance']) && isset($options['inheritance']['extends'])) {
+            $ret[$i] = "\t\tparent::setUp();";
+            $i++;
         }
         
         foreach ($relations as $name => $relation) {
@@ -245,7 +267,7 @@ END;
             $ret[$i] = "\t\t".'$this->setInheritanceMap(array(\''.$options['inheritance']['keyField'].'\' => '.$options['inheritance']['keyValue'].'));';
         }
         
-        return implode("\n", $ret);
+        return implode("\n", $ret)."\n\t\t}";
     }
     
     public function buildDefinition(array $options, array $columns, array $relations = array())
@@ -257,41 +279,74 @@ END;
         $className = $options['className'];
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:'Doctrine_Record';
         
+        if (!isset($options['inheritance']['extends'])) {
+          $definition = $this->buildTableDefinition($options, $columns, $relations);
+          $setUp = $this->buildSetUp($options, $columns, $relations);
+        } else {
+          $definition = null;
+          $setUp = null;
+        }
+        
         $content = sprintf(self::$tpl, $className,
                                        $extends,
-                                       $this->buildTableDefinition($options, $columns, $relations),
-                                       $this->buildSetUp($options, $columns, $relations));
-                          
+                                       $definition,
+                                       $setUp);
+        
         return $content;
     }
 
     public function buildRecord(array $options, array $columns, array $relations = array())
     {
-        if ( ! isset($options['className'])) {
+        if ( !isset($options['className'])) {
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
         }
 
-        if ( ! isset($options['fileName'])) {
+        if ( !isset($options['fileName'])) {
             if (empty($this->path)) {
-                $errMsg = 'No build target directory set.';
-                throw new Doctrine_Import_Builder_Exception($errMsg);
+                throw new Doctrine_Import_Builder_Exception('No build target directory set.');
             }
             
 
             if (is_writable($this->path) === false) {
-                $errMsg = 'Build target directory ' . $this->path . ' is not writable.';
-                throw new Doctrine_Import_Builder_Exception($errMsg);
+                throw new Doctrine_Import_Builder_Exception('Build target directory ' . $this->path . ' is not writable.');
             }
 
             $options['fileName']  = $this->path . DIRECTORY_SEPARATOR . $options['className'] . $this->suffix;
         }
-
-        $content = $this->buildDefinition($options, $columns, $relations);
-
-        $bytes = file_put_contents($options['fileName'], '<?php' . PHP_EOL . $content);
-
-        if ($bytes === false) {
-            throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $options['fileName']);
+        
+        if ($this->generateBaseClasses()) {
+          
+          $optionsBak = $options;
+          
+          unset($options['tableName']);
+          $options['inheritance']['extends'] = 'Base' . $options['className'];
+          $this->writeDefinition($options, array(), array());
+          
+          $options = $optionsBak;
+          
+          $generatedPath = $this->path . DIRECTORY_SEPARATOR . $this->baseClassesDirectory;
+          
+          if (!file_exists($generatedPath)) {
+            mkdir($generatedPath);
+          }
+          
+          $options['className'] = 'Base' . $options['className'];
+          $options['fileName']  = $generatedPath . DIRECTORY_SEPARATOR . $options['className'] . $this->suffix;
+          
+          $this->writeDefinition($options, $columns, $relations);
+        } else {
+          $this->writeDefinition($options, $columns, $relations);
         }
+    }
+    
+    public function writeDefinition(array $options, array $columns, array $relations = array())
+    {
+      $content = $this->buildDefinition($options, $columns, $relations);
+      
+      $bytes = file_put_contents($options['fileName'], '<?php' . PHP_EOL . $content);
+
+      if ($bytes === false) {
+          throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $options['fileName']);
+      }
     }
 }
