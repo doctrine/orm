@@ -214,6 +214,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
             foreach ($key as $k => $v) {
                 $this->set($k, '?', array($v));                               
             }
+            return $this;
         } else {
             if ($params !== null) {
                 if (is_array($params)) {
