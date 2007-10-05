@@ -208,7 +208,8 @@ END;
         }
         
         foreach ($relations as $name => $relation) {
-            $alias = (isset($relation['alias']) && $relation['alias'] !== $name) ? ' as ' . $relation['alias'] : '';
+            $class = isset($relation['class']) ? $relation['class']:$name;
+            $alias = (isset($relation['alias']) && $relation['alias'] !== $relation['class']) ? ' as ' . $relation['alias'] : '';
 
             if ( ! isset($relation['type'])) {
                 $relation['type'] = Doctrine_Relation::ONE;
@@ -216,9 +217,9 @@ END;
 
             if ($relation['type'] === Doctrine_Relation::ONE || 
                 $relation['type'] === Doctrine_Relation::ONE_COMPOSITE) {
-                $ret[$i] = '        $this->hasOne(\'' . $name . $alias . '\'';
+                $ret[$i] = '        $this->hasOne(\'' . $class . $alias . '\'';
             } else {
-                $ret[$i] = '        $this->hasMany(\'' . $name . $alias . '\'';
+                $ret[$i] = '        $this->hasMany(\'' . $class . $alias . '\'';
             }
             
             $a = array();
