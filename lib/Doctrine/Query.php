@@ -1503,15 +1503,27 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
             $parent = $prevPath;
         }
+        
+        $table = $this->_aliasMap[$componentAlias]['table'];
+
+        $indexBy = null;
+
         if (isset($mapWith)) {
             $e = explode('.', $mapWith);
-            $table = $this->_aliasMap[$componentAlias]['table'];
 
-            if ( ! $table->hasColumn($e[1])) {
-                throw new Doctrine_Query_Exception("Couldn't use key mapping. Column " . $e[1] . " does not exist.");
+            if (isset($e[1])) {
+                $indexBy = $e[1];
             }
+        } elseif ($table->getBoundQueryPart('indexBy') !== null) {
+            $indexBy = $table->getBoundQueryPart('indexBy');
+        }
 
-            $this->_aliasMap[$componentAlias]['map'] = $table->getColumnName($e[1]);
+        if ($indexBy !== null) {
+            if ( ! $table->hasColumn($indexBy)) {
+                throw new Doctrine_Query_Exception("Couldn't use key mapping. Column " . $indexBy . " does not exist.");
+            }
+    
+            $this->_aliasMap[$componentAlias]['map'] = $table->getColumnName($indexBy);
         }
         return $this->_aliasMap[$componentAlias];
     }

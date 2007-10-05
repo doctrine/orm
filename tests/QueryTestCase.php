@@ -32,18 +32,75 @@
  */
 class Doctrine_Query_TestCase extends Doctrine_UnitTestCase 
 {
+
     public function testGetQueryHookResetsTheManuallyAddedDqlParts()
     {
         $q = new MyQuery();
-        
+
         $q->from('User u');
 
         $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e WHERE e.id = 4 AND (e.type = 0)');
-    
+
         // test consequent calls
         $this->assertEqual($q->getQuery(), 'SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e WHERE e.id = 4 AND (e.type = 0)');
     }
 
+
+    public function testParseClauseSupportsArithmeticOperators()
+    {
+    	$q = new Doctrine_Query();
+
+        $str = $q->parseClause('2 + 3');
+
+        $this->assertEqual($str, '2 + 3');
+
+        $str = $q->parseClause('2 + 3 - 5 * 6');
+
+        $this->assertEqual($str, '2 + 3 - 5 * 6');
+    }
+    public function testParseClauseSupportsArithmeticOperatorsWithFunctions()
+    {
+    	$q = new Doctrine_Query();
+
+        $str = $q->parseClause('ACOS(2) + 3');
+
+        $this->assertEqual($str, 'ACOS(2) + 3');
+    }
+
+    public function testParseClauseSupportsArithmeticOperatorsWithParenthesis()
+    {
+    	$q = new Doctrine_Query();
+
+        $str = $q->parseClause('(3 + 3)*3');
+
+        $this->assertEqual($str, '(3 + 3)*3');
+
+        $str = $q->parseClause('((3 + 3)*3 - 123) * 12 * (13 + 31)');
+
+        $this->assertEqual($str, '((3 + 3)*3 - 123) * 12 * (13 + 31)');
+    }
+
+    public function testParseClauseSupportsArithmeticOperatorsWithParenthesisAndFunctions()
+    {
+    	$q = new Doctrine_Query();
+
+        $str = $q->parseClause('(3 + 3)*ACOS(3)');
+
+        $this->assertEqual($str, '(3 + 3)*ACOS(3)');
+
+        $str = $q->parseClause('((3 + 3)*3 - 123) * ACOS(12) * (13 + 31)');
+
+        $this->assertEqual($str, '((3 + 3)*3 - 123) * ACOS(12) * (13 + 31)');
+    }
+
+    public function testParseClauseSupportsComponentReferences()
+    {
+    	$q = new Doctrine_Query();
+        $q->from('User u')->leftJoin('u.Phonenumber p');
+        $q->getQuery();
+
+        $this->assertEqual($q->parseClause("CONCAT('u.name', u.name)"), "CONCAT('u.name', e.name)");
+    }
 }
 class MyQuery extends Doctrine_Query
 {

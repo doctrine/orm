@@ -83,6 +83,7 @@ class Doctrine_I18n extends Doctrine_Plugin
         foreach ($cols as $column => $definition) {
             if (in_array($column, $this->_options['fields'])) {
                 $columns[$column] = $definition;
+                $table->removeColumn($column);
             }
         }
         
@@ -101,7 +102,8 @@ class Doctrine_I18n extends Doctrine_Plugin
 
         $columns += $fk;
 
-        $options = array('className' => $this->_options['className']);
+        $options = array('className' => $this->_options['className'],
+                         'queryParts' => array('indexBy' => 'lang'));
 
         $builder = new Doctrine_Import_Builder();
 
@@ -111,6 +113,8 @@ class Doctrine_I18n extends Doctrine_Plugin
             eval($def);
         }
         $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
+        
+        $this->_options['pluginTable']->bindQueryPart('indexBy', 'lang');
 
         return true;
     }

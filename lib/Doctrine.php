@@ -169,27 +169,10 @@ final class Doctrine
     const ATTR_USE_NATIVE_ENUM      = 117;
     const ATTR_DEFAULT_SEQUENCE     = 133;
 
-    /** TODO: REMOVE THE FOLLOWING CONSTANTS AND UPDATE THE DOCS ! */
-
-    const ATTR_VLD                  = -1;
-    const ATTR_AUTO_LENGTH_VLD      = -2;
-    const ATTR_AUTO_TYPE_VLD        = -3;
     const ATTR_FETCHMODE            = 118;
-    const ATTR_BATCH_SIZE           = 119;
-    const ATTR_LOCKMODE             = 120;
     const ATTR_NAME_PREFIX          = 121;
     const ATTR_CREATE_TABLES        = 122;
     const ATTR_COLL_LIMIT           = 123;
-    const ATTR_ACCESSORS            = 124;
-    const ATTR_ACCESSOR_PREFIX_GET  = 125;
-    const ATTR_ACCESSOR_PREFIX_SET  = 126;
-
-    /**
-     * NESTED SET CONSTANTS
-     */
-    const ATTR_NS_ROOT_COLUMN_NAME  = 130;
-    const ATTR_NS_GAP_SIZE          = 131;
-    const ATTR_NS_GAP_DECREASE_EXP  = 132;
 
     const ATTR_CACHE                = 150;
     const ATTR_CACHE_LIFESPAN       = 151;
@@ -512,7 +495,7 @@ final class Doctrine
     {
         $loadedModels = self::getLoadedModels();
         
-        foreach ($loadedModels AS $name) {
+        foreach ($loadedModels as $name) {
             $model = new $name();
             $table = $model->getTable();
             

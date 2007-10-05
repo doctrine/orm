@@ -80,9 +80,6 @@ abstract class Doctrine_Configurable extends Doctrine_Object
         }
         switch ($attribute) {
             case Doctrine::ATTR_FETCHMODE:
-            case Doctrine::ATTR_COLL_LIMIT:
-            case Doctrine::ATTR_ACCESSOR_PREFIX_GET:
-            case Doctrine::ATTR_ACCESSOR_PREFIX_SET:
                 throw new Doctrine_Exception('Deprecated attribute. See http://doctrine.pengus.net/doctrine/manual/new/?chapter=configuration');
             case Doctrine::ATTR_LISTENER:
                 $this->setEventListener($value);
@@ -102,10 +99,6 @@ abstract class Doctrine_Configurable extends Doctrine_Object
                     }
                 }
                 break;
-            case Doctrine::ATTR_VLD:
-            case Doctrine::ATTR_AUTO_LENGTH_VLD:
-            case Doctrine::ATTR_AUTO_TYPE_VLD:
-                throw new Doctrine_Exception('Deprecated attribute. See http://doctrine.pengus.net/doctrine/manual/new/?chapter=configuration#validation-attributes');
             case Doctrine::ATTR_VALIDATE:
             case Doctrine::ATTR_QUERY_LIMIT:
             case Doctrine::ATTR_QUOTE_IDENTIFIER:

@@ -72,7 +72,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @param Doctrine_Table|string $table
      */
-    public function __construct($table)
+    public function __construct($table, $keyColumn = null)
     {
         if ( ! ($table instanceof Doctrine_Table)) {
             $table = Doctrine_Manager::getInstance()
@@ -80,9 +80,12 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
         $this->_table = $table;
 
-        $name = $table->getAttribute(Doctrine::ATTR_COLL_KEY);
-        if ($name !== null) {
-            $this->keyColumn = $name;
+        if ($keyColumn === null) {
+            $keyColumn = $table->getBoundQueryPart('indexBy');
+        }
+
+        if ($keyColumn !== null) {
+            $this->keyColumn = $keyColumn;
         }
     }
     /**
@@ -152,12 +155,14 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $this->$name = $values;
         }
 
-        $this->_table        = $connection->getTable($this->_table);
+        $this->_table = $connection->getTable($this->_table);
 
+        if ($keyColumn === null) {
+            $keyColumn = $table->getBoundQueryPart('indexBy');
+        }
 
-        $name = $this->_table->getAttribute(Doctrine::ATTR_COLL_KEY);
-        if ($name !== null) {
-            $this->keyColumn = $name;
+        if ($keyColumn !== null) {
+            $this->keyColumn = $keyColumn;
         }
     }
     /**
@@ -224,9 +229,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $this->reference       = $record;
         $this->relation        = $relation;
 
-        if ($relation instanceof Doctrine_Relation_ForeignKey
-           || $relation instanceof Doctrine_Relation_LocalKey
-        ) {
+        if ($relation instanceof Doctrine_Relation_ForeignKey || 
+            $relation instanceof Doctrine_Relation_LocalKey) {
 
             $this->referenceField = $relation->getForeign();
 
@@ -316,6 +320,11 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
                 $this->data[] = $record;
             } else {
                 $this->data[$key] = $record;      	
+            }
+
+            if (isset($this->keyColumn)) {
+
+                $record->set($this->keyColumn, $key);
             }
 
             return $record;

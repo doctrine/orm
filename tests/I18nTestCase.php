@@ -71,6 +71,7 @@ class Doctrine_I18n_TestCase extends Doctrine_UnitTestCase
     public function testTranslationTableIsInitializedProperly()
     {
         $i = new I18nTest();
+        $i->id = 1;
 
         $i->Translation['EN']->name = 'some name';
         $i->Translation['EN']->title = 'some title';
@@ -96,7 +97,7 @@ class Doctrine_I18n_TestCase extends Doctrine_UnitTestCase
     public function testDataFetching()
     {
         $i = Doctrine_Query::create()->from('I18nTest i')->innerJoin('i.Translation t INDEXBY t.lang')->orderby('t.lang')->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
-        print_r($i);
+
         $this->assertEqual($i['Translation']['EN']['name'], 'some name');
         $this->assertEqual($i['Translation']['EN']['title'], 'some title');
         $this->assertEqual($i['Translation']['EN']['lang'], 'EN');
