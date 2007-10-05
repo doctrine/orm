@@ -257,7 +257,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function bindQueryParts(array $queryParts)
     {
-    	$this->_table->bindQueryParts(array $queryParts);
+    	$this->_table->bindQueryParts($queryParts);
 
         return $this;
     }

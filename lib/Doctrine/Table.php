@@ -159,6 +159,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @var array $_filters                     an array containing all record filters attached to this table
      */
     protected $_filters     = array();
+    
+    protected $_queryParts  = array();
 
 
 
@@ -1289,6 +1291,19 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function addTemplate($template, Doctrine_Template $impl)
     {
         $this->_templates[$template] = $impl;
+
+        return $this;
+    }
+    /**
+     * bindQueryParts
+     * binds query parts to given component
+     *
+     * @param array $queryParts         an array of pre-bound query parts
+     * @return Doctrine_Record          this object
+     */
+    public function bindQueryParts(array $queryParts)
+    {
+    	$this->_queryParts = $queryParts;
 
         return $this;
     }
