@@ -58,12 +58,22 @@ class Doctrine_I18n_TestCase extends Doctrine_UnitTestCase
         }
     }
 
+    public function testTranslatedColumnsAreRemovedFromMainComponent()
+    {
+        $i = new I18nTest();
+        
+        $columns = $i->getTable()->getColumns();
+
+        $this->assertFalse(isset($columns['title']));
+        $this->assertFalse(isset($columns['name']));
+    }
+
     public function testTranslationTableIsInitializedProperly()
     {
         $i = new I18nTest();
 
-        $i->name = 'some name';
-        $i->title = 'some title';
+        $i->Translation['EN']->name = 'some name';
+        $i->Translation['EN']->title = 'some title';
         $this->assertEqual($i->Translation->getTable()->getComponentName(), 'I18nTestTranslation');
 
 
@@ -77,21 +87,38 @@ class Doctrine_I18n_TestCase extends Doctrine_UnitTestCase
 
         $t = Doctrine_Query::create()->from('I18nTestTranslation')->fetchOne();
 
-        $this->assertEqual($t->name, 'joku nimi');
-        $this->assertEqual($t->title, 'joku otsikko');
-        $this->assertEqual($t->lang, 'FI');
+        $this->assertEqual($t->name, 'some name');
+        $this->assertEqual($t->title, 'some title');
+        $this->assertEqual($t->lang, 'EN');
 
     }
 
     public function testDataFetching()
     {
-        $i = Doctrine_Query::create()->from('I18nTest i')->innerJoin('i.Translation t INDEXBY t.lang')->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
-
-        $this->assertEqual($i['name'], 'some name');
-        $this->assertEqual($i['title'], 'some title');
+        $i = Doctrine_Query::create()->from('I18nTest i')->innerJoin('i.Translation t INDEXBY t.lang')->orderby('t.lang')->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
+        print_r($i);
+        $this->assertEqual($i['Translation']['EN']['name'], 'some name');
+        $this->assertEqual($i['Translation']['EN']['title'], 'some title');
+        $this->assertEqual($i['Translation']['EN']['lang'], 'EN');
 
         $this->assertEqual($i['Translation']['FI']['name'], 'joku nimi');
         $this->assertEqual($i['Translation']['FI']['title'], 'joku otsikko');
         $this->assertEqual($i['Translation']['FI']['lang'], 'FI');
+    }
+    
+    public function testIndexByLangIsAttachedToNewlyCreatedCollections()
+    {
+    	$coll = new Doctrine_Collection('I18nTestTranslation');
+
+        $coll['EN']['name'] = 'some name';
+        
+        $this->assertEqual($coll['EN']->lang, 'EN');
+    }
+
+    public function testIndexByLangIsAttachedToFetchedCollections()
+    {
+        $coll = Doctrine_Query::create()->from('I18nTestTranslation')->execute();
+
+        $this->assertTrue($coll['FI']->exists());
     }
 }
