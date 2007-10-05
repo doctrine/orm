@@ -185,17 +185,21 @@ class Doctrine_Import extends Doctrine_Connection_Module
      */
     public function importSchema($directory, array $databases = array())
     {
-        $builder = new Doctrine_Import_Builder();
-        $builder->setTargetPath($directory);
-
-        $classes = array();
-        foreach ($this->listTables() as $table) {
-            $builder->buildRecord(array('tableName' => $table,
-                                        'className' => Doctrine::classify($table)),
-                                        $this->listTableColumns($table),
-                                        array());
+        $connections = Doctrine_Manager::getInstance()->getConnections();
         
-            $classes[] = Doctrine::classify($table);
+        foreach ($connections as $connection) {
+          $builder = new Doctrine_Import_Builder();
+          $builder->setTargetPath($directory);
+
+          $classes = array();
+          foreach ($connection->import->listTables() as $table) {
+              $builder->buildRecord(array('tableName' => $table,
+                                          'className' => Doctrine::classify($table)),
+                                          $connection->import->listTableColumns($table),
+                                          array());
+        
+              $classes[] = Doctrine::classify($table);
+          }
         }
         
         return $classes;
