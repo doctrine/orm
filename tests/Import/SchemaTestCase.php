@@ -49,22 +49,4 @@ class Doctrine_Import_Schema_TestCase extends Doctrine_UnitTestCase
             unlink('classes/Group.class.php');
         }
     }
-    
-    public function testXmlImport()
-    {
-        $import = new Doctrine_Import_Schema();
-        $import->importSchema('schema.xml', 'xml', 'classes');
-        
-        if ( ! file_exists('classes/User.class.php')) {
-            $this->fail();
-        } else {
-            unlink('classes/User.class.php');
-        }
-        
-        if ( ! file_exists('classes/Group.class.php')) {
-            $this->fail();
-        } else {
-            unlink('classes/Group.class.php');
-        }
-    }
 }
