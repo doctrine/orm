@@ -67,7 +67,7 @@ class Doctrine_Import_Schema
     {
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
-        $builder->generateBaseClasses(true);
+        $builder->generateBaseClasses(false);
         
         $schema = $this->buildSchema($schema, $format);
         
@@ -165,13 +165,13 @@ class Doctrine_Import_Schema
         return $build;
     }
     
-    public function buildRelationships($array)
+    public function buildRelationships(&$array)
     {
         foreach ($array as $name => $properties) {
             if (!isset($properties['relations'])) {
                 continue;
             }
-            
+            echo "name: $name\n";
             $className = $properties['className'];     
             $relations = $properties['relations'];
             
@@ -180,7 +180,7 @@ class Doctrine_Import_Schema
                 $class = isset($relation['class']) ? $relation['class']:$alias;
                 
                 $relation['foreign'] = isset($relation['foreign'])?$relation['foreign']:'id';                
-                $relation['alias'] = $alias;
+                $relation['alias'] = isset($relation['alias']) ? $relation['alias'] : $alias;
                 $relation['class'] = $class;
                 
                 if (isset($relation['type']) && $relation['type']) {
@@ -188,8 +188,45 @@ class Doctrine_Import_Schema
                 } else {
                     $relation['type'] = Doctrine_Relation::ONE;
                 }
+
+                if (isset($relation['ftype']) && $relation['ftype']) {
+                    $relation['ftype'] = $relation['ftype'] === 'one' ? Doctrine_Relation::ONE:Doctrine_Relation::MANY;
+                }
+                
+                if(isset($relation['refClass']) && !empty($relation['refClass'])  && (!isset($array[$relation['refClass']]['relations']) || empty($array[$relation['refClass']]['relations']))) {
+                    $array[$relation['refClass']]['relations'][$className] = array('local'=>$relation['local'],'foreign'=>$relation['foreign'],'ignore'=>true);
+                    $array[$relation['refClass']]['relations'][$relation['class']] = array('local'=>$relation['local'],'foreign'=>$relation['foreign'],'ignore'=>true);
+                    
+                    if(isset($relation['foreignAlias']))
+                        $array[$relation['class']]['relations'][$relation['foreignAlias']]=array('type'=>$relation['type'],'local'=>$relation['foreign'],'foreign'=>$relation['local'],'refClass'=>$relation['refClass'],'class'=>$className);
+                }
                 
                 $this->relations[$className][$alias] = $relation;
+            }
+        }
+        $this->fixRelationships();
+    }
+    
+    public function fixRelationships()
+    {
+        // define both sides of the relationship
+        foreach($this->relations as $className => $relations) {
+            foreach ($relations AS $alias => $relation) {
+                if(isset($relation['ignore']) && $relation['ignore'] || isset($relation['refClass']))
+                    continue;
+                    
+                $newRelation = array();
+                $newRelation['foreign'] = $relation['local'];
+                $newRelation['local'] = $relation['foreign'];
+                $newRelation['class'] = $className;
+                $newRelation['alias'] = isset($relation['foreignAlias'])?$relation['foreignAlias']:$className;
+                if(isset($relation['ftype'])) {
+                    $newRelation['type']=$relation['ftype'];
+                } else {
+                    $newRelation['type'] = $relation['type'] === Doctrine_Relation::ONE ? Doctrine_Relation::MANY:Doctrine_Relation::ONE; 
+                }
+                
+                $this->relations[$relation['class']][$className] = $newRelation;
             }
         }
     }
