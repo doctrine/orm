@@ -197,7 +197,7 @@ $core->addTestCase(new Doctrine_Hydrate_FetchMode_TestCase());
 $core->addTestCase(new Doctrine_Tokenizer_TestCase());
 //$core->addTestCase(new Doctrine_Collection_Offset_TestCase());
 //$core->addTestCase(new Doctrine_BatchIterator_TestCase());
-//$core->addTestCase(new Doctrine_Hydrate_TestCase());
+$core->addTestCase(new Doctrine_Hydrate_TestCase());
 $test->addTestCase($core);
 
 // Relation handling

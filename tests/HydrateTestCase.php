@@ -54,54 +54,40 @@ class Doctrine_Hydrate_TestCase extends Doctrine_UnitTestCase
                                   'p' => array('id' => null, 'phonenumber' => null, 'user_id' => null)
                                   )
                               );
+    public function prepareData()
+    { }
 
-    public function testExecuteForEmptyAliasMapThrowsException()
+    public function testHydrateHooks()
     {
-        $h = new Doctrine_Hydrate_Mock();
+        $user = new User();
+        $user->getTable()->addListener(new HydrationListener);
+
+        $user->name = 'zYne';
+        $user->save();
+
+        $this->conn->clear();
+
+        $user = Doctrine_Query::create()->from('User u')->fetchOne();
+
+        $this->assertEqual($user->name, 'ZYNE');
+        $this->assertEqual($user->password, 'DEFAULT PASS');
+    }
+}
+class HydrationListener extends Doctrine_EventListener
+{
+    public function preHydrate(Doctrine_Event $event) 
+    {
+        $data = $event->data;
+        $data['password'] = 'default pass';
         
-        try {
-            $h->execute();
-            $this->fail('Should throw exception');
-        } catch(Doctrine_Hydrate_Exception $e) {
-            $this->pass();
+        $event->data = $data;
+    }
+    public function postHydrate(Doctrine_Event $event)
+    {
+    	foreach ($event->data as $key => $value) {
+            $event->data[$key] = strtoupper($value);
         }
     }
-    public function testExecuteForEmptyTableAliasMapThrowsException()
-    {
-        $h = new Doctrine_Hydrate_Mock();
-        $h->setData($this->testData1);
-        $h->setAliasMap(array('u' => array('table' => $this->conn->getTable('User'))));
-        try {
-            $h->execute();
-            $this->fail('Should throw exception');
-        } catch(Doctrine_Hydrate_Exception $e) {
-            $this->pass();
-        }
-    }
-    /**
-    public function testHydrate() 
-    {
-        $h = new Doctrine_Hydrate_Mock();
-        $h->setData($this->testData1);
-        $h->setAliasMap(array('u' => array('table' => $this->conn->getTable('User')),
-                              'p' => array('table' => $this->conn->getTable('Phonenumber'),
-                                           'parent' => 'u',
-                                           'relation' => $this->conn->getTable('User')->getRelation('Phonenumber')))
-                        );
-        $h->setTableAliases(array('e' => 'u', 'p' => 'p'));
-        $coll = $h->execute();
-        
-        $this->assertTrue($coll instanceof Doctrine_Collection2, 'instance of Doctrine_Collection expected');
-        $this->assertEqual($coll->count(), 4);
-        $count = count($this->dbh);
-
-        $this->assertEqual($coll[0]->Phonenumber->count(), 1);
-        $this->assertEqual($coll[1]->Phonenumber->count(), 2);
-        $this->assertEqual($coll[2]->Phonenumber->count(), 1);
-        $this->assertEqual($coll[3]->Phonenumber->count(), 0);
-        $this->assertEqual(count($this->dbh), $count);
-    }
-    */
 }
 class Doctrine_Hydrate_Mock extends Doctrine_Hydrate
 {
@@ -111,8 +97,11 @@ class Doctrine_Hydrate_Mock extends Doctrine_Hydrate
     {
         $this->data = $data;
     }
-
-    public function _fetch($params = array(), $return = Doctrine::FETCH_RECORD)
+    public function getQuery()
+    {
+    	
+    }
+    public function execute($params = array(), $hydrationMode = null)
     {
         return $this->data;
     }

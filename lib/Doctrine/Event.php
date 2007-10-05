@@ -52,6 +52,8 @@ class Doctrine_Event
     const SAVEPOINT_ROLLBACK = 35;
     const SAVEPOINT_COMMIT   = 36;
 
+    const HYDRATE            = 40;
+
     /*
      * RECORD EVENT CODES
      */
@@ -155,7 +157,7 @@ class Doctrine_Event
             case self::SAVEPOINT_ROLLBACK:
                 return 'rollback savepoint';
             case self::SAVEPOINT_COMMIT:
-                return 'commit Ssavepoint';
+                return 'commit savepoint';
  
             case self::RECORD_DELETE:
                 return 'delete record';
@@ -219,6 +221,20 @@ class Doctrine_Event
     public function __set($option, $value)
     {
         $this->_options[$option] = $value;
+
+        return $this;
+    }
+    /**
+     * setOption
+     * sets the value of an option by reference
+     *
+     * @param string $option    the name of the option
+     * @param mixed $value      the value of the given option
+     * @return Doctrine_Event   this object
+     */
+    public function set($option, &$value)
+    {
+        $this->_options[$option] =& $value;
 
         return $this;
     }

@@ -777,8 +777,10 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
      */
     public function execute($params = array(), $hydrationMode = null)
     {
-        $params = array_merge($this->_params['set'], $this->_params['where'],
-                $this->_params['having'], $params);
+        $params = array_merge($this->_params['set'], 
+                              $this->_params['where'],
+                              $this->_params['having'], 
+                              $params);
         if ($this->_cache) {
             $cacheDriver = $this->getCacheDriver();
 
@@ -984,6 +986,8 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             return $array;
         }
 
+        $event = new Doctrine_Event(Doctrine_Event::HYDRATE, null);
+
         while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {
             $currData  = array();
             $identifiable = array();
@@ -1028,12 +1032,17 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
             // dealing with root component
             $table = $this->_aliasMap[$rootAlias]['table'];
             $componentName = $table->getComponentName();
+            $event->set('data', $currData[$rootAlias]);
+            $table->getListener()->preHydrate($event);
             $element = $driver->getElement($currData[$rootAlias], $componentName);
 
             $oneToOne = false;
 
             $index = $driver->search($element, $array);
-            if ($index === false) {  
+            if ($index === false) {
+                $event->set('data', $element);
+                $table->getListener()->postHydrate($event);
+
                 if (isset($this->_aliasMap[$rootAlias]['map'])) {
                     $key = $this->_aliasMap[$rootAlias]['map'];
 
@@ -1058,6 +1067,9 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                 $map   = $this->_aliasMap[$alias];
                 $table = $this->_aliasMap[$alias]['table'];
                 $componentName = $table->getComponentName();
+                $event->set('data', $data);
+                $table->getListener()->preHydrate($event);
+
                 $element = $driver->getElement($data, $componentName);
 
                 $parent   = $map['parent'];
@@ -1079,6 +1091,9 @@ class Doctrine_Hydrate extends Doctrine_Object implements Serializable
                             $index = $driver->search($element, $prev[$parent][$componentAlias]);
 
                             if ($index === false) {
+                                $event->set('data', $element);
+                                $table->getListener()->postHydrate($event);
+
                                 if (isset($map['map'])) {
                                     $key = $map['map'];
                                     if (isset($prev[$parent][$componentAlias][$key])) {
