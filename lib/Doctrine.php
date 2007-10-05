@@ -442,7 +442,7 @@ final class Doctrine
     public static function loadModels($directory)
     {
         $declared = get_declared_classes();
-
+        
         if ($directory !== null) {
             foreach ((array) $directory as $dir) {
                 $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
@@ -483,24 +483,14 @@ final class Doctrine
         // and currently declared classes
         foreach ($classes as $name) {
             $class = new ReflectionClass($name);
-            $conn  = Doctrine_Manager::getInstance()->getConnectionForComponent($name);
-            // check if class is an instance of Doctrine_Record and not abstract
-            // class must have method setTableDefinition (to avoid non-Record subclasses like symfony's sfDoctrineRecord)
-            // we have to recursively iterate through the class parents just to be sure that the classes using for example
-            // column aggregation inheritance are properly exported to database
-            while ($class->isAbstract() ||
-                   ! $class->isSubclassOf($parent) ||
-                   ! $class->hasMethod('setTableDefinition') ||
-                   ( $class->hasMethod('setTableDefinition') &&
-                     $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() !== $class->getName())) {
-
-                $class = $class->getParentClass();
-                if ($class === false) {
-                    break;
-                }
-            }
             
-            if ($class === false) {
+            // Skip the following classes
+            // - abstract classes
+            // - not a subclass of Doctrine_Record 
+            // - don't have a setTableDefinition method
+            if ($class->isAbstract() || 
+                !$class->isSubClassOf($parent) || 
+                !$class->hasMethod('setTableDefinition')) {
                 continue;
             }
             
