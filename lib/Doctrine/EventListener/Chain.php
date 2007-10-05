@@ -38,7 +38,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
     /**
      * @var array $listeners        an array containing all listeners
      */
-    private $listeners = array();
+    protected $_listeners = array();
     /**
      * add
      * adds a listener to the chain of listeners
@@ -55,9 +55,9 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             throw new Doctrine_EventListener_Exception("Couldn't add eventlistener. EventListeners should implement either Doctrine_EventListener_Interface or Doctrine_Overloadable");
         }
         if ($name === null) {
-            $this->listeners[] = $listener;
+            $this->_listeners[] = $listener;
         } else {
-            $this->listeners[$name] = $listener;
+            $this->_listeners[$name] = $listener;
         }
     }
     /**
@@ -69,10 +69,10 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function get($key)
     {
-        if ( ! isset($this->listeners[$key])) {
+        if ( ! isset($this->_listeners[$key])) {
             return null;
         }
-        return $this->listeners[$key];
+        return $this->_listeners[$key];
     }
     /**
      * set
@@ -83,7 +83,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function set($key, Doctrine_EventListener $listener)
     {
-        $this->listeners[$key] = $listener;
+        $this->_listeners[$key] = $listener;
     }
     /**
      * onLoad
@@ -94,7 +94,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function onLoad(Doctrine_Record $record)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->onLoad($record);
         }
     }
@@ -108,7 +108,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function onPreLoad(Doctrine_Record $record)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->onPreLoad($record);
         }
     }
@@ -121,7 +121,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function onSleep(Doctrine_Record $record)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->onSleep($record);
         }
     }
@@ -134,7 +134,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function onWakeUp(Doctrine_Record $record)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->onWakeUp($record);
         }
     }
@@ -147,7 +147,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function postClose(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postClose($event);
         }
     }
@@ -160,7 +160,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function preClose(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preClose($event);
         }
     }
@@ -173,7 +173,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function onOpen(Doctrine_Connection $connection)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->onOpen($connection);
         }
     }
@@ -186,7 +186,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function postTransactionCommit(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postTransactionCommit($event);
         }
     }
@@ -199,7 +199,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function preTransactionCommit(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preTransactionCommit($event);
         }
     }
@@ -212,7 +212,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function postTransactionRollback(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postTransactionRollback($event);
         }
     }
@@ -225,7 +225,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function preTransactionRollback(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preTransactionRollback($event);
         }
     }
@@ -238,7 +238,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function postTransactionBegin(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postTransactionBegin($event);
         }
     }
@@ -251,7 +251,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function preTransactionBegin(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preTransactionBegin($event);
         }
     }
@@ -264,7 +264,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function onCollectionDelete(Doctrine_Collection $collection)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->onCollectionDelete($collection);
         }
     }
@@ -277,111 +277,124 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      */
     public function onPreCollectionDelete(Doctrine_Collection $collection)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->onPreCollectionDelete($collection);
         }
     }
     public function postConnect(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postConnect($event);
         }
     }
     public function preConnect(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preConnect($event);
         }
     }
     public function preQuery(Doctrine_Event $event)
     { 
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preQuery($event);
         }
     }
     public function postQuery(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postQuery($event);
         }
     }
 
     public function prePrepare(Doctrine_Event $event)
     { 
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->prePrepare($event);
         }
     }
     public function postPrepare(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postPrepare($event);
         }
     }
 
     public function preExec(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preExec($event);
         }
     }
     public function postExec(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postExec($event);
         }
     }
 
     public function preError(Doctrine_Event $event)
     { 
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preError($event);
         }
     }
     public function postError(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postError($event);
+        }
+    }
+
+    public function preHydrate(Doctrine_Event $event)
+    { 
+        foreach ($this->_listeners as $listener) {
+            $listener->preHydrate($event);
+        }
+    }
+    public function postHydrate(Doctrine_Event $event)
+    {
+        foreach ($this->_listeners as $listener) {
+            $listener->postHydrate($event);
         }
     }
 
     public function preFetch(Doctrine_Event $event)
     { 
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preFetch($event);
         }
     }
     public function postFetch(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postFetch($event);
         }
     }
 
     public function preFetchAll(Doctrine_Event $event)
     { 
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preFetchAll($event);
         }
     }
 
     public function postFetchAll(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postFetchAll($event);
         }
     }
 
     public function preStmtExecute(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->preStmtExecute($event);
         }
     }
 
     public function postStmtExecute(Doctrine_Event $event)
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->_listeners as $listener) {
             $listener->postStmtExecute($event);
         }
     }
