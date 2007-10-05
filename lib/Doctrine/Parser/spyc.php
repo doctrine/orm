@@ -1,20 +1,20 @@
 <?php
   /**
-   * Spyc -- A Simple PHP YAML Class
+   * DoctrineSpyc -- A Simple PHP YAML Class
    * @version 0.2.(5) -- 2006-12-31
    * @author Chris Wanstrath <chris@ozmm.org>
    * @author Vlad Andersen <vlad@oneiros.ru>
    * @link http://spyc.sourceforge.net/
    * @copyright Copyright 2005-2006 Chris Wanstrath
    * @license http://www.opensource.org/licenses/mit-license.php MIT License
-   * @package Spyc
+   * @package DoctrineSpyc
    */
 
   /**
-   * A node, used by Spyc for parsing YAML.
-   * @package Spyc
+   * A node, used by DoctrineSpyc for parsing YAML.
+   * @package DoctrineSpyc
    */
-  class YAMLNode {
+  class DoctrineYAMLNode {
     /**#@+
      * @access public
      * @var string
@@ -43,7 +43,7 @@
      * @access public
      * @return void
      */
-    function YAMLNode($nodeId) {
+    function DoctrineYAMLNode($nodeId) {
       $this->id = $nodeId;
     }
   }
@@ -57,12 +57,12 @@
    *
    * Usage:
    * <code>
-   *   $parser = new Spyc;
+   *   $parser = new DoctrineSpyc;
    *   $array  = $parser->load($file);
    * </code>
-   * @package Spyc
+   * @package DoctrineSpyc
    */
-  class Spyc {
+  class DoctrineSpyc {
 
     /**
      * Load YAML into a PHP array statically
@@ -72,7 +72,7 @@
      * simple.
      *  Usage:
      *  <code>
-     *   $array = Spyc::YAMLLoad('lucky.yaml');
+     *   $array = DoctrineSpyc::YAMLLoad('lucky.yaml');
      *   print_r($array);
      *  </code>
      * @access public
@@ -80,7 +80,7 @@
      * @param string $input Path of YAML file or string containing YAML
      */
     function YAMLLoad($input) {
-      $spyc = new Spyc;
+      $spyc = new DoctrineSpyc;
       return $spyc->load($input);
     }
 
@@ -105,7 +105,7 @@
      * @param int $wordwrap Pass in 0 for no wordwrap, false for default (40)
      */
     function YAMLDump($array,$indent = false,$wordwrap = false) {
-      $spyc = new Spyc;
+      $spyc = new DoctrineSpyc;
       return $spyc->dump($array,$indent,$wordwrap);
     }
 
@@ -116,7 +116,7 @@
      * will do its best to convert the YAML into a PHP array.  Pretty simple.
      *  Usage:
      *  <code>
-     *   $parser = new Spyc;
+     *   $parser = new DoctrineSpyc;
      *   $array  = $parser->load('lucky.yaml');
      *   print_r($array);
      *  </code>
@@ -134,7 +134,7 @@
         $yaml = explode("\n",$input);
       }
       // Initiate some objects and values
-      $base              = new YAMLNode (1);
+      $base              = new DoctrineYAMLNode (1);
       $base->indent      = 0;
       $this->_lastIndent = 0;
       $this->_lastNode   = $base->id;
@@ -159,7 +159,7 @@
           $last->data[key($last->data)] .= "\n";
         } elseif ($ifchk{0} != '#' && substr($ifchk,0,3) != '---') {
           // Create a new node and get its indent
-          $node         = new YAMLNode ($this->_nodeId);
+          $node         = new DoctrineYAMLNode ($this->_nodeId);
 		  $this->_nodeId++;
 
           $node->indent = $this->_getIndent($line);

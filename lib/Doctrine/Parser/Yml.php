@@ -45,7 +45,7 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
      */
     public function dumpData($array, $path = null)
     {
-        $spyc = new Spyc();
+        $spyc = new DoctrineSpyc();
         
         $yml = $spyc->dump($array, false, false);
         
@@ -66,7 +66,7 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
      */
     public function loadData($path)
     {
-        $spyc = new Spyc();
+        $spyc = new DoctrineSpyc();
         
         $array = $spyc->load($path);
         
