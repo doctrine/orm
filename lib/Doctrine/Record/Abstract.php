@@ -249,6 +249,19 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         $this->actAs($template, $options);
     }
     /**
+     * bindQueryParts
+     * binds query parts to given component
+     *
+     * @param array $queryParts         an array of pre-bound query parts
+     * @return Doctrine_Record          this object
+     */
+    public function bindQueryParts(array $queryParts)
+    {
+    	$this->_table->bindQueryParts(array $queryParts);
+
+        return $this;
+    }
+    /**
      * actAs
      * loads a given plugin 
      *
