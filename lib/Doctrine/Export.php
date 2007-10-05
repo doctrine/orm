@@ -976,23 +976,10 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * @return void
      */
     public function exportSchema($directory = null)
-    {
-        $sql = $this->exportSql($directory);
-
-        $this->conn->beginTransaction();
-
-        foreach ($sql as $query) {
-            try {
-                $this->conn->exec($query);
-            } catch (Doctrine_Connection_Exception $e) {
-                // we only want to silence table already exists errors
-                if ($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
-                    $this->conn->rollback();
-                    throw $e;
-                }
-            }
-        }
-        $this->conn->commit();
+    {        
+        $models = Doctrine::loadModels($directory);
+        
+        $this->exportClasses($models);
     }
     /**
      * exportClasses
@@ -1005,22 +992,38 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportClasses(array $classes)
     {
-        $sql = $this->exportClassesSql($classes);
-
-        $this->conn->beginTransaction();
-
-        foreach ($sql as $query) {
-            try {
-                $this->conn->exec($query);
-            } catch (Doctrine_Connection_Exception $e) {
-                // we only want to silence table already exists errors
-                if ($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
-                    $this->conn->rollback();
-                    throw $e;
+        $connections = array();
+        foreach ($classes as $class) {
+            $record = new $class();
+            $connection = $record->getTable()->getConnection();
+            $connectionName = Doctrine_Manager::getInstance()->getConnectionName($connection);
+            
+            if (!isset($connections[$connectionName])) {
+                $connections[$connectionName] = array();
+            }
+            
+            $connections[$connectionName] = array_merge($connections[$connectionName], $this->exportClassesSql(array($class)));
+        }
+        
+        foreach ($connections as $connectionName => $sql) {
+            $connection = Doctrine_Manager::getInstance()->getConnection($connectionName);
+            
+            $connection->beginTransaction();
+            
+            foreach ($sql as $query) {
+                try {
+                    $connection->exec($query);
+                } catch (Doctrine_Connection_Exception $e) {
+                    // we only want to silence table already exists errors
+                    if ($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
+                        $connection->rollback();
+                        throw $e;
+                    }
                 }
             }
+            
+            $connection->commit();
         }
-        $this->conn->commit();
     }
     /**
      * exportClassesSql
@@ -1050,6 +1053,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             } else {
                 $sql[] = $query;
             }
+            
             if ($table->getAttribute(Doctrine::ATTR_EXPORT) & Doctrine::EXPORT_PLUGINS) {
                 $sql = array_merge($sql, $this->exportPluginsSql($table));
             }

@@ -134,6 +134,11 @@ END;
         
         $i = 0;
         
+        if (isset($options['inheritance']['extends']) && !isset($options['override_parent'])) {
+            $ret[$i] = "\t\t\t\tparent::setTableDefinition();";
+            $i++;
+        }
+        
         if (isset($options['tableName']) && !empty($options['tableName'])) {
             $ret[$i] = str_repeat(' ', 8) . '$this->setTableName(\''. $options['tableName'].'\');';
             
@@ -188,7 +193,7 @@ END;
         }
         
         if (!empty($ret)) {
-          return "\n\t\tpublic function setTableDefinition()"."\n\t\t{\n\t\t\t\tparent::setTableDefinition();\n".implode("\n", $ret)."\n\t\t}";
+          return "\n\t\tpublic function setTableDefinition()"."\n\t\t{\n".implode("\n", $ret)."\n\t\t}";
         }
     }
     public function buildSetUp(array $options, array $columns, array $relations)
@@ -196,6 +201,11 @@ END;
         $ret = array();
         
         $i = 0;
+        
+        if (isset($options['inheritance']['extends']) && !isset($options['override_parent'])) {
+            $ret[$i] = "\t\t\t\tparent::setUp();";
+            $i++;
+        }
         
         foreach ($relations as $name => $relation) {
             $alias = (isset($relation['alias']) && $relation['alias'] !== $name) ? ' as ' . $relation['alias'] : '';
@@ -253,7 +263,7 @@ END;
         }
         
         if (!empty($ret)) {
-          return "\n\t\tpublic function setUp()\n\t\t{\n\t\t\t\tparent::setUp();\n\t\t\t\t".implode("\n", $ret)."\n\t\t}";
+          return "\n\t\tpublic function setUp()\n\t\t{\n".implode("\n", $ret)."\n\t\t}";
         }
     }
     
@@ -266,8 +276,13 @@ END;
         $className = $options['className'];
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:'Doctrine_Record';
         
-        $definition = $this->buildTableDefinition($options, $columns, $relations);
-        $setUp = $this->buildSetUp($options, $columns, $relations);
+        if (!isset($options['no_definition'])) {
+            $definition = $this->buildTableDefinition($options, $columns, $relations);
+            $setUp = $this->buildSetUp($options, $columns, $relations);
+        } else {
+            $definition = null;
+            $setUp = null;
+        }
         
         $content = sprintf(self::$tpl, $className,
                                        $extends,
@@ -298,7 +313,7 @@ END;
         
         if ($this->generateBaseClasses()) {
           
-          if (!file_exists($options['fileName'])) {
+          //if (!file_exists($options['fileName'])) {
             $optionsBak = $options;
             
             unset($options['tableName']);
@@ -306,7 +321,7 @@ END;
             $this->writeDefinition($options, array(), array());
             
             $options = $optionsBak;
-          }
+          //}
           
           $generatedPath = $this->path . DIRECTORY_SEPARATOR . $this->baseClassesDirectory;
           
