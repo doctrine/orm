@@ -35,9 +35,11 @@ $conn->export->exportClasses(array('NewsItem'));
 The following code example executes two sql statements. When using mysql those statements would look like:
 
 <code>
-CREATE TABLE news_item (id INT NOT NULL AUTO_INCREMENT, title VARCHAR(200), content TEXT)
+CREATE TABLE news_item (id INT NOT NULL AUTO_INCREMENT, content TEXT)
 CREATE TABLE news_item_translation (id INT NOT NULL, title VARCHAR(200), lang VARCHAR(20))
 </code>
+
+Notice how the field 'title' is not present in the news_item table. Since its present in the translation table it would be a waste of resources to have that same field in the main table. Basically Doctrine always automatically removes all translated fields from the main table.
 
 +++ Using I18n
 
@@ -49,7 +51,6 @@ $item->title = 'Some title';
 $item->content = 'This is some content. This field is not being translated.';
 
 $item->Translation['FI']->title = 'Joku otsikko';
-$item->Translation['FI']->lang = 'FI';
 
 $item->save();
 </code>
