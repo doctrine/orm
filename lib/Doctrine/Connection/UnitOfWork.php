@@ -606,7 +606,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
                 $id = $this->conn->sequence->lastInsertId($seq);
     
                 if ( ! $id) {
-                    $id = $table->getMaxIdentifier();
+                    throw new Doctrine_Connection_Exception("Couldn't get last insert identifier.");
                 }
     
                 $record->assignIdentifier($id);
