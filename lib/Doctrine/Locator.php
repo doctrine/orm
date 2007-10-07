@@ -42,7 +42,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
     /**
      * @var string $_classPrefix    the default class prefix
      */
-    protected $_classPrefix = 'Sensei_';
+    protected $_classPrefix = 'Doctrine_';
     /** 
      * @var array $_instances       a pool of this object's instances
      */
