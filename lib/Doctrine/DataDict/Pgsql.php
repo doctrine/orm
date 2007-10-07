@@ -516,6 +516,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
                 $length = null;
                 break;
             case 'float':
+            case 'float4':
             case 'double':
             case 'real':
                 $type[] = 'float';
