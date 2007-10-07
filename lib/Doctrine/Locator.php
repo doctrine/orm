@@ -135,8 +135,14 @@ class Doctrine_Locator implements Countable, IteratorAggregate
             $className = $name;
 
             if ( ! class_exists($className)) {
-                $className = $this->_classPrefix . str_replace('.', '_', $name);
-
+                $name = explode('.', $name);
+                foreach ($name as $k => $value) {
+                    $name[$k] = ucfirst(strtolower($value));
+                }
+                $name = implode('_', $name);
+                
+                $className = $this->_classPrefix . $name;
+                
                 if ( ! class_exists($className)) {
                     throw new Doctrine_Locator_Exception("Couldn't locate resource " . $className);
                 }
