@@ -1597,16 +1597,14 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function __call($method, $args) 
     {
-        static $methods = array();
-        if ( isset( $methods[$method])) {
-            $template = $methods[$method];
+        if (($template = $this->_table->getMethodOwner($method)) !== false) {
             $template->setInvoker($this);
-            return call_user_func_array( array($template, $method ), $args);
+            return call_user_func_array(array($template, $method), $args);
         }
         foreach ($this->_table->getTemplates() as $template) {
             if (method_exists($template, $method)) {
                 $template->setInvoker($this);
-                $methods[$method] = $template;
+                $this->_table->setMethodOwner($method, $template);
                 
                 return call_user_func_array(array($template, $method), $args);
             }

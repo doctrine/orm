@@ -162,6 +162,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @var array $_filters                     an array containing all record filters attached to this table
      */
     protected $_filters     = array();
+    
+    protected $_invokedMethods = array();
 
 
 
@@ -294,6 +296,16 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         $this->_filters[]  = new Doctrine_Record_Filter_Standard();
         $this->_repository = new Doctrine_Table_Repository($this);
+    }
+    public function getMethodOwner($method) 
+    {
+        return (isset($this->_invokedMethods[$method])) ?
+                      $this->_invokedMethods[$method] : false;
+    }
+    
+    public function setMethodOwner($method, $class)
+    {
+        $this->_invokedMethods[$method] = $class;
     }
     /**
      * getTemplates
