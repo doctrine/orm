@@ -153,7 +153,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                                         'Sqlite',
                                         'Firebird'
                                         );
-    protected $_count;
+    protected $_count = 0;
 
     /**
      * the constructor
