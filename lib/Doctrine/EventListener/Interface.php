@@ -58,9 +58,6 @@ interface Doctrine_EventListener_Interface
     public function preError(Doctrine_Event $event);
     public function postError(Doctrine_Event $event);
 
-    public function preHydrate(Doctrine_Event $event);
-    public function postHydrate(Doctrine_Event $event);
-
     public function preFetch(Doctrine_Event $event);
     public function postFetch(Doctrine_Event $event);
 

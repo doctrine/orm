@@ -55,4 +55,8 @@ interface Doctrine_Record_Listener_Interface
     public function preInsert(Doctrine_Event $event);
 
     public function postInsert(Doctrine_Event $event);
+    
+    public function preHydrate(Doctrine_Event $event);
+    
+    public function postHydrate(Doctrine_Event $event);
 }

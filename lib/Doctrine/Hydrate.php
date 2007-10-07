@@ -1033,7 +1033,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
             $table = $this->_aliasMap[$rootAlias]['table'];
             $componentName = $table->getComponentName();
             $event->set('data', $currData[$rootAlias]);
-            $table->getListener()->preHydrate($event);
+            $table->getRecordListener()->preHydrate($event);
             $element = $driver->getElement($currData[$rootAlias], $componentName);
 
             $oneToOne = false;
@@ -1041,7 +1041,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
             $index = $driver->search($element, $array);
             if ($index === false) {
                 $event->set('data', $element);
-                $table->getListener()->postHydrate($event);
+                $table->getRecordListener()->postHydrate($event);
 
                 if (isset($this->_aliasMap[$rootAlias]['map'])) {
                     $key = $this->_aliasMap[$rootAlias]['map'];
@@ -1068,7 +1068,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                 $table = $this->_aliasMap[$alias]['table'];
                 $componentName = $table->getComponentName();
                 $event->set('data', $data);
-                $table->getListener()->preHydrate($event);
+                $table->getRecordListener()->preHydrate($event);
 
                 $element = $driver->getElement($data, $componentName);
 
@@ -1092,7 +1092,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
                             if ($index === false) {
                                 $event->set('data', $element);
-                                $table->getListener()->postHydrate($event);
+                                $table->getRecordListener()->postHydrate($event);
 
                                 if (isset($map['map'])) {
                                     $key = $map['map'];

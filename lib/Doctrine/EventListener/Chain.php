@@ -345,19 +345,6 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
         }
     }
 
-    public function preHydrate(Doctrine_Event $event)
-    { 
-        foreach ($this->_listeners as $listener) {
-            $listener->preHydrate($event);
-        }
-    }
-    public function postHydrate(Doctrine_Event $event)
-    {
-        foreach ($this->_listeners as $listener) {
-            $listener->postHydrate($event);
-        }
-    }
-
     public function preFetch(Doctrine_Event $event)
     { 
         foreach ($this->_listeners as $listener) {

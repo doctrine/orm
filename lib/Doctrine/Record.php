@@ -787,6 +787,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             return $this->_references[$name];
 
         } catch(Doctrine_Table_Exception $e) { 
+
             foreach ($this->_table->getFilters() as $filter) {
                 if (($value = $filter->filterGet($this, $name, $value)) !== null) {
                     return $value;
