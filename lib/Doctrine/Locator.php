@@ -73,7 +73,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
     public static function instance()
     {
         if (empty(self::$_instances)) {
-            $obj = new Sensei_Locator();
+            $obj = new Doctrine_Locator();
         }
         return current(self::$_instances);
     }
