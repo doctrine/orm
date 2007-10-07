@@ -68,7 +68,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         $this->_root = dirname(__FILE__);
 
-        Doctrine_Object::initNullObject(new Doctrine_Null);
+        Doctrine_Locator_Injectable::initNullObject(new Doctrine_Null);
     }
     /**
      * setDefaultAttributes

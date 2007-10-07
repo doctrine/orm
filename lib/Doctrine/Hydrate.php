@@ -32,7 +32,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrate extends Doctrine_Object implements Serializable
+class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializable
 {
     /**
      * QUERY TYPE CONSTANTS

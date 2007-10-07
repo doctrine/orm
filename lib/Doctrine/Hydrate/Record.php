@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Hydrate_Record extends Doctrine_Object
+class Doctrine_Hydrate_Record extends Doctrine_Locator_Injectable
 {
     protected $_collections = array();
     

@@ -31,7 +31,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class Doctrine_Configurable extends Doctrine_Object
+abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
 {
     /**
      * @var array $attributes               an array of containing all attributes

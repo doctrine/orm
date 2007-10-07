@@ -43,7 +43,10 @@ class Doctrine_Locator_Injectable
      * @var array               an array of bound resources
      */
     protected $_resources = array();
-
+    /**
+     * @var Doctrine_Null $null     Doctrine_Null object, used for extremely fast null value checking
+     */
+    protected static $_null;
     /**
      * setLocator
      * this method can be used for setting the locator object locally
@@ -115,4 +118,25 @@ class Doctrine_Locator_Injectable
         return $this;    
     }
 
+    /**
+     * initNullObject
+     * initializes the null object
+     *
+     * @param Doctrine_Null $null
+     * @return void
+     */
+    public static function initNullObject(Doctrine_Null $null)
+    {
+        self::$_null = $null;
+    }
+    /**
+     * getNullObject
+     * returns the null object associated with this object
+     *
+     * @return Doctrine_Null
+     */
+    public static function getNullObject()
+    {
+        return self::$_null;
+    }
 }

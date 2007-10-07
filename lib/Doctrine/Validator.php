@@ -30,7 +30,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Validator extends Doctrine_Object
+class Doctrine_Validator extends Doctrine_Locator_Injectable
 {
     /**
      * @var array $validators           an array of validator objects
