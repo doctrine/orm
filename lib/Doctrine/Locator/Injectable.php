@@ -97,10 +97,10 @@ class Doctrine_Locator_Injectable
                 // get the name of the concrete implementation
                 $concreteImpl = $this->_resources[$name];
                 
-                return $this->getLocator()->get($concreteImpl);
+                return $this->getLocator()->locate($concreteImpl);
             }
         } else {
-            return $this->getLocator()->get($name);
+            return $this->getLocator()->locate($name);
         }
     }
     /**
