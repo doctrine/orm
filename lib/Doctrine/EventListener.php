@@ -102,11 +102,6 @@ class Doctrine_EventListener implements Doctrine_EventListener_Interface
     { }
     public function postError(Doctrine_Event $event)
     { }
-    
-    public function preHydrate(Doctrine_Event $event)
-    { }
-    public function postHydrate(Doctrine_Event $event)
-    { }
 
     public function preFetch(Doctrine_Event $event)
     { }
