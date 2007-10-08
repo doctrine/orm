@@ -1357,6 +1357,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $this->_templates[$template];
     }
+    
+    public function hasTemplate($template)
+    {
+        return isset($this->_templates[$template]);
+    }
 
     public function addTemplate($template, Doctrine_Template $impl)
     {
