@@ -284,7 +284,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                          'dblib'    => 'Doctrine_Connection_Mssql',
                          'firebird' => 'Doctrine_Connection_Firebird',
                          'informix' => 'Doctrine_Connection_Informix',
-                         'mock'     => 'Doctrine_Connection_Mock');
+                         'mock'     => 'Doctrine_Connection_Mock',
+                         'resource' => 'Doctrine_Connection_Resource');
         if ( ! isset($drivers[$driverName])) {
             throw new Doctrine_Manager_Exception('Unknown driver ' . $driverName);
         }
@@ -308,7 +309,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         // silence any warnings
         $parts = @parse_url($dsn);
-
+        
         $names = array('dsn', 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
 
         foreach ($names as $name) {
@@ -322,6 +323,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
 
         switch ($parts['scheme']) {
+            case 'resource':
             case 'sqlite':
             case 'sqlite2':
             case 'sqlite3':
