@@ -193,7 +193,7 @@ END;
         }
         
         if (!empty($ret)) {
-          return "\n\t\tpublic function setTableDefinition()"."\n\t\t{\n".implode("\n", $ret)."\n\t\t}";
+          return "\n\tpublic function setTableDefinition()"."\n\t{\n".implode("\n", $ret)."\n\t}";
         }
     }
     public function buildSetUp(array $options, array $columns, array $relations)
@@ -264,7 +264,7 @@ END;
         }
         
         if (!empty($ret)) {
-          return "\n\t\tpublic function setUp()\n\t\t{\n".implode("\n", $ret)."\n\t\t}";
+          return "\n\tpublic function setUp()\n\t{\n".implode("\n", $ret)."\n\t}";
         }
     }
     
@@ -311,11 +311,14 @@ END;
         if ($this->generateBaseClasses()) {
           
           // We only want to generate this one if it doesn't already exist
-          if (!file_exists($options['fileName'])) {
+          if (file_exists($options['fileName'])) {
             $optionsBak = $options;
             
             unset($options['tableName']);
             $options['inheritance']['extends'] = 'Base' . $options['className'];
+            $options['requires'] = array($this->baseClassesDirectory . DIRECTORY_SEPARATOR  . $options['inheritance']['extends'] . $this->suffix);
+            $options['no_definition'] = true;
+            
             $this->writeDefinition($options, array(), array());
             
             $options = $optionsBak;
@@ -341,7 +344,21 @@ END;
     {
       $content = $this->buildDefinition($options, $columns, $relations);
       
-      $bytes = file_put_contents($options['fileName'], '<?php' . PHP_EOL . $content);
+      $code = "<?php\n";
+      
+      if (isset($options['requires'])) {
+          if (!is_array($options['requires'])) {
+              $options['requires'] = array($options['requires']);
+          }
+          
+          foreach ($options['requires'] as $require) {
+              $code .= "require_once('".$require."');";
+          }
+      }
+      
+      $code .= PHP_EOL . $content;
+      
+      $bytes = file_put_contents($options['fileName'], $code);
 
       if ($bytes === false) {
           throw new Doctrine_Import_Builder_Exception("Couldn't write file " . $options['fileName']);
