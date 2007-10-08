@@ -82,10 +82,11 @@ class Doctrine_AuditLog extends Doctrine_Plugin
 
         $columns = $table->getColumns();
 
-        // remove all sequential and autoincrement definitions
+        // remove all sequence, autoincrement and unique constraint definitions
         foreach ($columns as $column => $definition) {
             unset($columns[$column]['autoincrement']);
             unset($columns[$column]['sequence']);
+            unset($columns[$column]['unique']);
         }
 
         // the version column should be part of the primary key definition
