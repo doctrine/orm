@@ -138,7 +138,7 @@ class Doctrine_Import_Schema
             $columns = array();
             
             $className = isset($table['className']) ? (string) $table['className']:(string) $className;
-            $tableName = isset($table['tableName']) ? (string) $table['tableName']:(string) $className;
+            $tableName = isset($table['tableName']) ? (string) $table['tableName']:(string) Doctrine::tableize($className);
             
             $build[$className]['className'] = $className;
             

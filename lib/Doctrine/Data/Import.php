@@ -127,6 +127,7 @@ class Doctrine_Data_Import extends Doctrine_Data
             }
         }
         
+        // Satisfy all relationships
         foreach ($pendingRelations as $rowKey => $pending) {
             $obj = $pending['obj'];
             $key = $pending['key'];
@@ -134,7 +135,11 @@ class Doctrine_Data_Import extends Doctrine_Data
             $foreign = $pending['foreign'];
             $pks = $primaryKeys[$key];
             $obj->$local = $pks['id'];
-            
+        }
+        
+        // Loop over all again to save them since we satisfied all pending relationships above
+        foreach ($pendingRelations as $rowKey => $pending) {
+            $obj = $pending['obj'];
             $obj->save();
         }
     }

@@ -1000,12 +1000,30 @@ class Doctrine_Export extends Doctrine_Connection_Module
             
             if (!isset($connections[$connectionName])) {
                 $connections[$connectionName] = array();
+                $connections[$connectionName]['creates'] = array();
+                $connections[$connectionName]['alters'] = array();
             }
             
-            $connections[$connectionName] = array_merge($connections[$connectionName], $this->exportClassesSql(array($class)));
+            $sql = $this->exportClassesSql(array($class));
+            // The create sql query is the first one, and everything else is the alters
+            $create = $sql[0];
+            
+            // Remove create from the main array
+            unset($sql[0]);
+            
+            // Store the creates and alters individually so we can merge them back together later
+            // We need the creates to happen first, then the alters
+            $connections[$connectionName]['creates'][] = $create;
+            $connections[$connectionName]['alters'] = array_merge($connections[$connectionName]['alters'], $sql);
         }
         
+        // Loop over all the sql again to merge the creates and alters in to the same array, but so that the alters are at the bottom
+        $build = array();
         foreach ($connections as $connectionName => $sql) {
+            $build[$connectionName] = array_merge($sql['creates'], $sql['alters']);
+        }
+        
+        foreach ($build as $connectionName => $sql) {
             $connection = Doctrine_Manager::getInstance()->getConnection($connectionName);
             
             $connection->beginTransaction();
@@ -1016,6 +1034,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 } catch (Doctrine_Connection_Exception $e) {
                     // we only want to silence table already exists errors
                     if ($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
+                        echo $query."\n";
                         $connection->rollback();
                         throw $e;
                     }
