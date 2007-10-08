@@ -241,12 +241,14 @@ class Doctrine_Import_Schema
                 
                 if( isset($this->relations[$relation['class']]) && is_array($this->relations[$relation['class']]) ) {
                     foreach($this->relations[$relation['class']] as $otherRelation) {
-                        if(isset($otherRelation['refClass']) && $otherRelation['refClass']==$className) // skip fully defined m2m relationships
-                            return;
+                        // skip fully defined m2m relationships
+                        if(isset($otherRelation['refClass']) && $otherRelation['refClass'] == $className) {
+                            continue(2);
+                        }
                     }
-                } else {
-                    $this->relations[$relation['class']][$className] = $newRelation;
                 }
+                
+                $this->relations[$relation['class']][$className] = $newRelation;
             }
         }
     }
