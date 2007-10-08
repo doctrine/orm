@@ -189,8 +189,8 @@ class Doctrine_Import_Schema
                     $relation['type'] = Doctrine_Relation::ONE;
                 }
 
-                if (isset($relation['ftype']) && $relation['ftype']) {
-                    $relation['ftype'] = $relation['ftype'] === 'one' ? Doctrine_Relation::ONE:Doctrine_Relation::MANY;
+                if (isset($relation['foreignType']) && $relation['foreignType']) {
+                    $relation['foreignType'] = $relation['foreignType'] === 'one' ? Doctrine_Relation::ONE:Doctrine_Relation::MANY;
                 }
                 
                 if(isset($relation['refClass']) && !empty($relation['refClass'])  && (!isset($array[$relation['refClass']]['relations']) || empty($array[$relation['refClass']]['relations']))) {
@@ -212,21 +212,29 @@ class Doctrine_Import_Schema
         // define both sides of the relationship
         foreach($this->relations as $className => $relations) {
             foreach ($relations AS $alias => $relation) {
-                if(isset($relation['ignore']) && $relation['ignore'] || isset($relation['refClass']))
+                if(isset($relation['ignore']) && $relation['ignore'] || isset($relation['refClass']) || isset($this->relations[$relation['class']]['relations'][$className])) {
                     continue;
+                }
                     
                 $newRelation = array();
                 $newRelation['foreign'] = $relation['local'];
                 $newRelation['local'] = $relation['foreign'];
                 $newRelation['class'] = $className;
                 $newRelation['alias'] = isset($relation['foreignAlias'])?$relation['foreignAlias']:$className;
-                if(isset($relation['ftype'])) {
-                    $newRelation['type']=$relation['ftype'];
+                if(isset($relation['foreignType'])) {
+                    $newRelation['type']=$relation['foreignType'];
                 } else {
                     $newRelation['type'] = $relation['type'] === Doctrine_Relation::ONE ? Doctrine_Relation::MANY:Doctrine_Relation::ONE; 
                 }
                 
-                $this->relations[$relation['class']][$className] = $newRelation;
+                if( isset($this->relations[$relation['class']]) && is_array($this->relations[$relation['class']]) ) {
+                    foreach($this->relations[$relation['class']] as $otherRelation) {
+                        if(isset($otherRelation['refClass']) && $otherRelation['refClass']==$className) // skip fully defined m2m relationships
+                            return;
+                    }
+                }
+                else
+                    $this->relations[$relation['class']][$className] = $newRelation;
             }
         }
     }
