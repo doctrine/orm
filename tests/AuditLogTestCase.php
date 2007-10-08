@@ -55,7 +55,13 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
 
         $entity->name = 'zYne 2';
         $entity->save();
+        $this->assertEqual($entity->name, 'zYne 2');
+        
+        $this->conn->clear();
 
+        $entity = $this->conn->getTable('VersioningTest')->find(1);
+
+        $this->assertEqual($entity->name, 'zYne 2');
         $this->assertEqual($entity->version, 2);
 
         $entity->delete();
@@ -65,6 +71,12 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($entity->name, 'zYne 2');
         $this->assertEqual($entity->version, 2);
+
+        $entity->revert(1);
+
+        $this->assertEqual($entity->name, 'zYne');
+        $this->assertEqual($entity->version, 1);
+
     }
     
     public function testRevertThrowsExceptionForTransientRecords()
