@@ -176,7 +176,7 @@ class Doctrine_Migration
      *
      * @return void
      */
-    protected function getCurrentVersion()
+    public function getCurrentVersion()
     {
         $conn = Doctrine_Manager::connection();
         
@@ -192,7 +192,7 @@ class Doctrine_Migration
      *
      * @return void
      */
-    protected function hasMigrated()
+    public function hasMigrated()
     {
         $conn = Doctrine_Manager::connection();
         
@@ -208,7 +208,7 @@ class Doctrine_Migration
      *
      * @return void
      */
-    protected function getLatestVersion()
+    public function getLatestVersion()
     {
         $this->loadMigrationClasses();
         
