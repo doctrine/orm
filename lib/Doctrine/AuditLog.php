@@ -63,7 +63,7 @@ class Doctrine_AuditLog extends Doctrine_Plugin
         $q->from($className)
           ->where($where);
 
-        return $q->execute($values, Doctrine_HYDRATE::HYDRATE_ARRAY);
+        return $q->execute($values, Doctrine::HYDRATE_ARRAY);
     }
     public function buildDefinition(Doctrine_Table $table)
     {
