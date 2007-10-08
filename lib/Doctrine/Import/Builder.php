@@ -311,7 +311,7 @@ END;
         if ($this->generateBaseClasses()) {
           
           // We only want to generate this one if it doesn't already exist
-          if (file_exists($options['fileName'])) {
+          if (!file_exists($options['fileName'])) {
             $optionsBak = $options;
             
             unset($options['tableName']);
