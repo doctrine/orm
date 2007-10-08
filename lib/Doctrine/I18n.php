@@ -74,6 +74,7 @@ class Doctrine_I18n extends Doctrine_Plugin
 
             unset($def['autoincrement']);
             unset($def['sequence']);
+            unset($def['unique']);
 
             $fk[$column] = $def;
         }
