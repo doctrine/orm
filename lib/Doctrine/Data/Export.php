@@ -58,6 +58,12 @@ class Doctrine_Data_Export extends Doctrine_Data
         
         $outputAll = true;
         
+		// for situation when the $models array is empty, but the $specifiedModels array isn't
+        if (empty($models))
+        {
+          $models = $specifiedModels;
+        }
+        
         foreach ($models AS $name) {
             
             if (!empty($specifiedModels) AND !in_array($name, $specifiedModels)) {
