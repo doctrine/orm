@@ -144,7 +144,7 @@ class Doctrine_Export_Schema
      * @param string $directory 
      * @return void
      */
-    public function exportSchema($schema, $format, $directory = null, $models = array())
+    public function exportSchema($schema, $format = 'yml', $directory = null, $models = array())
     {
         $array = $this->buildSchema($directory, $models);
         

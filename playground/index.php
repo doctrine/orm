@@ -1,14 +1,12 @@
 <?php
 require_once('playground.php');
-require_once('connection.php');
 
-class MigrationTest extends Doctrine_Record
-{
-    public function setTableDefinition()
-    {
-        
-    }
-}
+$dbh = new PDO('mysql:host=localhost;dbname=test', 'jwage', 'elite1baller');
+$conn = Doctrine_Manager::connection($dbh);
+$manager = Doctrine_Manager::getInstance();
 
-$migrate = new Doctrine_Migration('/Users/jwage/Sites/doctrine_trunk/playground/migration_classes');
-$migrate->migrate();
+//Doctrine::loadModels('test_models');
+
+$import = new Doctrine_Import_Schema();
+$import->generateBaseClasses(true);
+$import->importSchema('schema.yml', 'yml', 'test_models');
