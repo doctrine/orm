@@ -61,6 +61,7 @@ class Doctrine_Migration
         $directory = $this->migrationClassesDirectory;
         
         $classes = get_declared_classes();
+        $loadedClasses = array();
 
         if ($directory !== null) {
             foreach ((array) $directory as $dir) {
