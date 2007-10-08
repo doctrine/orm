@@ -886,6 +886,47 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->findBySql($dql, $params, $hydrationMode);
     }
+    
+    /**
+     * execute
+     * fetches data using the provided queryKey and 
+     * the associated query in the query registry
+     *
+     * if no query for given queryKey is being found a 
+     * Doctrine_Query_Registry exception is being thrown
+     *
+     * @param string $queryKey      the query key
+     * @param array $params         prepared statement params (if any)
+     * @return mixed                the fetched data
+     */
+    public function execute($queryKey, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
+    {
+        return Doctrine_Manager::getInstance()
+                            ->getQueryRegistry()
+                            ->get($queryKey, $this->getComponentName())
+                            ->execute($params, $hydrationMode);
+    }
+    
+    /**
+     * executeOne
+     * fetches data using the provided queryKey and 
+     * the associated query in the query registry
+     *
+     * if no query for given queryKey is being found a 
+     * Doctrine_Query_Registry exception is being thrown
+     *
+     * @param string $queryKey      the query key
+     * @param array $params         prepared statement params (if any)
+     * @return mixed                the fetched data
+     */
+    public function executeOne($queryKey, $params = array(), $hydrationMode = Doctrine::HYDRATE_RECORD)
+    {
+        return Doctrine_Manager::getInstance()
+                            ->getQueryRegistry()
+                            ->get($queryKey, $this->getComponentName())
+                            ->fetchOne($params, $hydrationMode);
+    }
+
     /**
      * clear
      * clears the first level cache (identityMap)
