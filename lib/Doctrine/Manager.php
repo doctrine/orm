@@ -231,8 +231,13 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function openConnection($adapter, $name = null, $setCurrent = true)
     {
         if (is_object($adapter)) {
-            if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
-                throw new Doctrine_Manager_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
+            if ( ! ($adapter instanceof PDO) && 
+                 ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
+
+                $msg = 'First argument should be an instance of PDO or ' 
+                     . 'implement Doctrine_Adapter_Interface';
+
+                throw new Doctrine_Manager_Exception($msg);
             }
 
             $driverName = $adapter->getAttribute(Doctrine::ATTR_DRIVER_NAME);
@@ -369,6 +374,19 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                     // append port to dsn if supplied
                     $parts['dsn'] .= ';port=' . $parts['port'];
                 }
+                
+                $options = array();
+
+                if (isset($parts['query']) && $parts['query'] != null ) {
+                    // parse options
+                    parse_str($parts['query'], $options);
+                }
+
+                if (isset($options['persistent'])) {
+                    // set persistent
+                    $parts['persistent'] = (bool) $options['persistent'];
+                }
+
                 break;
             default:
                 throw new Doctrine_Manager_Exception('Unknown driver '.$parts['scheme']);

@@ -177,6 +177,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             $this->options['dsn']      = $adapter['dsn'];
             $this->options['username'] = $adapter['user'];
             $this->options['password'] = $adapter['pass'];
+            
+            $this->options['other'] = array();  
+            if (isset($adapter['other'])) {
+                $this->options['other'] = array(Doctrine::ATTR_PERSISTENT => $adapter['persistent']);
+            }
+
         }
 
         $this->setParent($manager);
@@ -336,7 +342,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         
         if (extension_loaded('pdo')) {
             if (in_array($e[0], PDO::getAvailableDrivers())) {
-                $this->dbh = new PDO($this->options['dsn'], $this->options['username'], $this->options['password']);
+                $this->dbh = new PDO($this->options['dsn'], $this->options['username'], 
+                                     $this->options['password'], $this->options['other']);
+                                     
                 $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $found = true;
             }
