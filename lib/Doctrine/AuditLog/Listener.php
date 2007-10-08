@@ -44,7 +44,7 @@ class Doctrine_AuditLog_Listener extends Doctrine_Record_Listener
 
         $event->getInvoker()->set($versionColumn, 1);
     }
-    public function preDelete(Doctrine_Event $event)
+    public function postInsert(Doctrine_Event $event) 
     {
         $class = $this->_auditLog->getOption('className');
 
@@ -53,25 +53,35 @@ class Doctrine_AuditLog_Listener extends Doctrine_Record_Listener
         $version = new $class();
         $version->merge($record->toArray());
         $version->save();
+    }
+    public function preDelete(Doctrine_Event $event)
+    {
+        $class = $this->_auditLog->getOption('className');
+
+        $record  = $event->getInvoker();
 
         $versionColumn = $this->_auditLog->getOption('versionColumn');
         $version = $record->get($versionColumn);
 
         $record->set($versionColumn, ++$version);
+
+        $version = new $class();
+        $version->merge($record->toArray());
+        $version->save();
     }
     public function preUpdate(Doctrine_Event $event)
     {
-        $class = $this->_auditLog->getOption('className');
-        $record  = $event->getInvoker();
-        
-        $version = new $class();
-        $version->merge($record->toArray());
-        $version->save();        
+        $class  = $this->_auditLog->getOption('className');
+        $record = $event->getInvoker(); 
 
         $versionColumn = $this->_auditLog->getOption('versionColumn');
 
         $version = $record->get($versionColumn);
 
         $record->set($versionColumn, ++$version);
+        
+        $version = new $class();
+        $version->merge($record->toArray());
+        $version->save();
     }
 }

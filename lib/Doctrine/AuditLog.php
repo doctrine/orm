@@ -74,13 +74,20 @@ class Doctrine_AuditLog extends Doctrine_Plugin
         $name = $table->getComponentName();
 
         $className = $name . 'Version';
-        
+
+        // check that class doesn't exist (otherwise we cannot create it)
         if (class_exists($className)) {
             return false;
         }
 
         $columns = $table->getColumns();
-        
+
+        // remove all sequential and autoincrement definitions
+        foreach ($columns as $column => $definition) {
+            unset($columns[$column]['autoincrement']);
+            unset($columns[$column]['sequence']);
+        }
+
         // the version column should be part of the primary key definition
         $columns[$this->_options['versionColumn']]['primary'] = true;
 
