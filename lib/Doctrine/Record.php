@@ -1558,16 +1558,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function __call($method, $args) 
     {
-        // To support propel style getters/setters
-        $verb = substr($method, 0, 3);
-        $field = Doctrine::tableize(substr($method, 3, strlen($method)));
-        
-        if ($verb === 'get') {
-            return $this->$verb($field);
-        } else if ($verb === 'set') {
-            return $this->$verb($field, $args[0]);
-        }
-        
         if (($template = $this->_table->getMethodOwner($method)) !== false) {
             $template->setInvoker($this);
             return call_user_func_array(array($template, $method), $args);
