@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Task.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: Exception.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Cli_Task
+ * Doctrine_Cli_Exception
  *
  * @package     Doctrine
  * @subpackage  Cli
@@ -30,7 +30,5 @@
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-abstract class Doctrine_Cli_Task
-{
-    abstract function execute($args);
-}
+class Doctrine_Cli_Exception extends Doctrine_Exception
+{ }

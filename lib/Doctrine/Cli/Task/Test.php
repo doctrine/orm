@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Cli_Task
+ * Doctrine_Cli_Test_Task
  *
  * @package     Doctrine
  * @subpackage  Cli
@@ -30,7 +30,15 @@
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-abstract class Doctrine_Cli_Task
+class Doctrine_Cli_Task_Test
 {
-    abstract function execute($args);
+    public function execute($args)
+    {
+        $count = 0;
+        foreach ($args as $arg) {
+            $count++;
+            
+            echo $count.".) ".$arg."\n";
+        }
+    }
 }

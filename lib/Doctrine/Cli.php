@@ -31,4 +31,24 @@
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
 class Doctrine_Cli
-{ }
+{
+    public function run($args)
+    {
+        if (!isset($args[1])) {
+            throw new Doctrine_Cli_Exception('You must specify the task to execute');
+        }
+        
+        unset($args[0]);
+        $taskName = $args[1];
+        unset($args[1]);
+        
+        $taskClass = 'Doctrine_Cli_Task_' . Doctrine::classify($taskName);
+        
+        if (class_exists($taskClass)) {
+            $taskInstance = new $taskClass();
+            $taskInstance->execute($args);
+        } else {
+            throw new Doctrine_Cli_Exception('Cli task could not be found: '.$taskClass);
+        }
+    }
+}
