@@ -121,7 +121,14 @@ class Doctrine_Data_Import extends Doctrine_Data
                     }
                 }
                 
-                $obj->save();
+                $identifier = is_array($obj->getTable()->getIdentifier()) ? $obj->getTable()->getIdentifier():array($obj->getTable()->getIdentifier());
+                
+                // We only want to save the record if it is a single primary key.
+                // We can't save the composite primary key because neither of the foreign keys have been created yet
+                // We will satisfy these relationships later and save the record.
+                if (count($identifier) === 1) {
+                    $obj->save();
+                }
                 
                 $primaryKeys[$rowKey] = $obj->identifier();
             }
