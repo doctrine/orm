@@ -144,7 +144,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      * @param mixed $driverOptions
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
-    public function bindParam($column, $variable, $type = null, $length = null, $driverOptions = array())
+    public function bindParam($column, &$variable, $type = null, $length = null, $driverOptions = array())
     {
         if ($type === null) {
             return $this->_stmt->bindParam($column, $variable);
