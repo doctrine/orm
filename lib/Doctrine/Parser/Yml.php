@@ -66,9 +66,7 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
      */
     public function loadData($path)
     {
-        ob_start();
-        $retval = include($path);
-        $contents = ob_get_clean();
+        $contents = $this->getContents($path);
 
         $spyc = new DoctrineSpyc();
         

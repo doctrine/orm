@@ -1034,7 +1034,6 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 } catch (Doctrine_Connection_Exception $e) {
                     // we only want to silence table already exists errors
                     if ($e->getPortableCode() !== Doctrine::ERR_ALREADY_EXISTS) {
-                        echo $query."\n";
                         $connection->rollback();
                         throw $e;
                     }

@@ -62,12 +62,8 @@ class Doctrine_Parser_Serialize extends Doctrine_Parser
      */
     public function loadData($path)
     {
-        if (file_exists($path) && is_readable($path)) {
-            $data = file_get_contents($path);
-        } else {
-            $data = $path;
-        }
+        $contents = $this->getContents($path);
         
-        return unserialize($data);
+        return unserialize($contents);
     }
 }

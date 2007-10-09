@@ -100,4 +100,30 @@ abstract class Doctrine_Parser
         
         return $parser->dumpData($array, $path);
     }
+    
+    /**
+     * getContents
+     *
+     * Get contents whether it is the path to a file file or a string of txt.
+     * Either should allow php code in it.
+     *
+     * @param string $path 
+     * @return void
+     * @author Jonathan H. Wage
+     */
+    public function getContents($path)
+    {
+        ob_start();
+        if (!file_exists($path)) {
+            $contents = $path;
+            $path = '/tmp/dparser_' . microtime();
+            
+            file_put_contents($path, $contents);
+        }
+        
+        include($path);
+        $contents = ob_get_clean();
+        
+        return $contents;
+    }
 }

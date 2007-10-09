@@ -66,13 +66,9 @@ class Doctrine_Parser_Xml extends Doctrine_Parser
     
     public function loadData($path)
     {
-        if (file_exists($path) && is_readable($path)) {
-            $xmlString = file_get_contents($path);
-        } else {
-            $xmlString = $path;
-        }
+        $contents = $this->getContents($path);
         
-        $simpleXml = simplexml_load_string($xmlString);
+        $simpleXml = simplexml_load_string($contents);
         
         return $this->prepareData($simpleXml);
     }

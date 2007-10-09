@@ -139,7 +139,6 @@ class Doctrine_Data_Import extends Doctrine_Data
             $obj = $pending['obj'];
             $key = $pending['key'];
             $local = $pending['local'];
-            $foreign = $pending['foreign'];
             $pks = $primaryKeys[$key];
             $obj->$local = $pks['id'];
         }
