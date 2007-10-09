@@ -32,10 +32,18 @@
  */
 class Doctrine_Adapter_Resource implements Doctrine_Adapter_Interface 
 {
+    protected $resourceUrl;
+    
+    public function __construct($resourceUrl)
+    {
+        $this->resourceUrl = $resourceUrl;
+    }
+    
     public function prepare($sql)
     {
     
     }
+    
     public function query($sql)
     {
     
@@ -50,14 +58,17 @@ class Doctrine_Adapter_Resource implements Doctrine_Adapter_Interface
     {
 
     }
+    
     public function lastInsertId()
     {
     
     }
+    
     public function beginTransaction()
     {
     
     }
+    
     public function commit()
     {
     
@@ -67,6 +78,7 @@ class Doctrine_Adapter_Resource implements Doctrine_Adapter_Interface
     {
     
     }
+    
     public function errorCode()
     {
     
@@ -75,5 +87,20 @@ class Doctrine_Adapter_Resource implements Doctrine_Adapter_Interface
     public function errorInfo()
     {
     
+    }
+    
+    public function getAttribute()
+    {
+        return 'sqlite';
+    }
+    
+    public function setAttribute()
+    {
+        
+    }
+    
+    public function sqliteCreateFunction()
+    {
+        
     }
 }
