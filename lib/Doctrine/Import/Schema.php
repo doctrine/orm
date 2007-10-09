@@ -144,7 +144,6 @@ class Doctrine_Import_Schema
             
             if (isset($table['columns'])) {
                 foreach ($table['columns'] as $columnName => $field) {
-
                     $colDesc = array();
                     $colDesc['name'] = isset($field['name']) ? (string) $field['name']:$columnName;
                     $colDesc['type'] = isset($field['type']) ? (string) $field['type']:null;
@@ -156,6 +155,7 @@ class Doctrine_Import_Schema
                     $colDesc['default'] = isset($field['default']) ? (string) $field['default']:null;
                     $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
                     $colDesc['autoincrement'] = isset($field['autoincrement']) ? (bool) (isset($field['autoincrement']) && $field['autoincrement']):null;
+                    $colDesc['unique'] = isset($field['unique']) ? (bool) (isset($field['unique']) && $field['unique']):null;
                     $colDesc['values'] = isset($field['values']) ? (array) $field['values']: null;
 
                     $columns[(string) $colDesc['name']] = $colDesc;
