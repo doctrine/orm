@@ -32,5 +32,97 @@
  */
 abstract class Doctrine_Cli_Task
 {
+    public $name                 =   null,
+           $taskName             =   null,
+           $description          =   null,
+           $requiredArguments    =   array(),
+           $optionalArguments    =   array();
+    
     abstract function execute($args);
+    
+    public function validate($args)
+    {
+        $requiredArguments = $this->getRequiredArguments();
+        
+        foreach ($requiredArguments as $arg) {
+            if (!isset($args[$arg])) {
+                throw new Doctrine_Cli_Exception('Required arguments missing. The follow arguments are required: ' . implode(', ', $requiredArguments));
+            }
+        }
+        
+        return true;
+    }
+    
+    public function prepareArgs($args)
+    {
+        $args = array_values($args);
+        
+        $prepared = array();
+        $requiredArguments = $this->getRequiredArguments();
+        
+        $count = 0;
+        foreach ($requiredArguments as $key => $arg) {
+            if (isset($args[$count])) {
+                $prepared[$arg] = $args[$count];
+            }
+            
+            $count++;
+        }
+        
+        $optionalArguments = $this->getOptionalArguments();
+        
+        foreach ($optionalArguments as $key => $arg) {
+            if (isset($args[$count])) {
+                $prepared[$arg] = $args[$count];
+            } else {
+                $prepared[$arg] = null;
+            }
+            
+            $count++;
+        }
+        
+        return $prepared;
+    }
+    
+    public function getName()
+    {
+        return $this->name;
+    }
+    
+    public function getTaskName()
+    {
+        return $this->taskName;
+    }
+    
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    
+    public function getRequiredArguments()
+    {
+        return $this->requiredArguments;
+    }
+    
+    public function getOptionalArguments()
+    {
+        return $this->optionalArguments;
+    }
+    
+    public function getSyntax()
+    {
+        $taskName = $this->getTaskName();
+        $requiredArguments = null;
+        $optionalArguments = null;
+        
+        if ($required = $this->getRequiredArguments()) {
+            $requiredArguments = '<' . implode('> <', $required) . '>';
+        }
+        
+        if ($optional = $this->getOptionalArguments()) {
+            $optionalArguments = '<' . implode('> <', $optional) . '>';
+        }
+        
+        return './cli ' . $taskName . ' ' . $requiredArguments . ' ' . $optionalArguments;
+    }
 }

@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Cli_Test_Task
+ * Doctrine_Cli_Task_TestTask
  *
  * @package     Doctrine
  * @subpackage  Cli
@@ -30,15 +30,20 @@
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Cli_Task_Test
+class Doctrine_Cli_Task_TestTask extends Doctrine_Cli_Task
 {
+    public $name                 =   'Test Task',
+           $description          =   'This is a sample task which prints the arguments you enter.',
+           $requiredArguments    =   array('name', 'title'),
+           $optionalArguments    =   array('description');
+    
     public function execute($args)
     {
         $count = 0;
-        foreach ($args as $arg) {
+        foreach ($args as $name => $value) {
             $count++;
             
-            echo $count.".) ".$arg."\n";
+            echo $count . ".) " . $name . " => " . $value . "\n";
         }
     }
 }

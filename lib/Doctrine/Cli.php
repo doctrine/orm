@@ -35,20 +35,86 @@ class Doctrine_Cli
     public function run($args)
     {
         if (!isset($args[1])) {
-            throw new Doctrine_Cli_Exception('You must specify the task to execute');
+            echo $this->printTasks();
+            return;
         }
         
         unset($args[0]);
-        $taskName = $args[1];
+        $taskName = str_replace('-', '_', $args[1]);
         unset($args[1]);
         
         $taskClass = 'Doctrine_Cli_Task_' . Doctrine::classify($taskName);
         
         if (class_exists($taskClass)) {
             $taskInstance = new $taskClass();
+            $taskInstance->taskName = str_replace('_', '-', Doctrine::tableize(str_replace('Doctrine_Cli_Task_', '', $taskName)));
+            
+            $args = $taskInstance->prepareArgs($args);
+            
+            $taskInstance->validate($args);
             $taskInstance->execute($args);
         } else {
             throw new Doctrine_Cli_Exception('Cli task could not be found: '.$taskClass);
         }
+    }
+    
+    public function printTasks()
+    {
+        $tasks = $this->loadTasks();
+        
+        echo "\nAvailable Doctrine Command Line Interface Tasks\n";
+        echo str_repeat('-', 40)."\n\n";
+        foreach ($tasks as $taskName)
+        {
+            $className = 'Doctrine_Cli_Task_' . $taskName;
+            $taskInstance = new $className();
+            $taskInstance->taskName = str_replace('_', '-', Doctrine::tableize($taskName));
+            
+            echo "Name: " . $taskInstance->getName() . "\n";
+            echo "Description: " . $taskInstance->getDescription() . "\n";
+            
+            if ($requiredArguments = $taskInstance->getRequiredArguments()) {
+                echo "Required Arguments: " . implode(', ', $requiredArguments) . "\n";
+            }
+            
+            if ($optionalArguments = $taskInstance->getOptionalArguments()) {
+                echo "Optional Arguments: " . implode(', ', $taskInstance->getOptionalArguments()) . "\n";
+            }
+            
+            echo "Syntax: " . $taskInstance->getSyntax() . "\n";
+            echo str_repeat('-', 40) . "\n\n";
+        }
+    }
+    
+    public function loadTasks($directory = null)
+    {
+        if ($directory === null) {
+            $directory = dirname(__FILE__). DIRECTORY_SEPARATOR . 'Cli' . DIRECTORY_SEPARATOR . 'Task';
+        }
+        
+        $parent = new ReflectionClass('Doctrine_Cli_Task');
+        
+        $tasks = array();
+        
+        foreach ((array) $directory as $dir) {
+            $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
+                                                    RecursiveIteratorIterator::LEAVES_ONLY);
+
+            foreach ($it as $file) {
+                $e = explode('.', $file->getFileName());
+                if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
+                    require_once($file->getPathName());
+                    
+                    $className = 'Doctrine_Cli_Task_' . $e[0];
+                    $class = new ReflectionClass($className);
+                    
+                    if ($class->isSubClassOf($parent)) {
+                        $tasks[] = $e[0];
+                    }
+                }
+            }
+        }
+        
+        return $tasks;
     }
 }
