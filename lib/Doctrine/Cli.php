@@ -100,13 +100,13 @@ class Doctrine_Cli
             }
             
             if ($optionalArguments = $taskInstance->getOptionalArgumentsDescriptions()) {
-                foreach ($requiredArguments as $name => $description) {
+                foreach ($optionalArguments as $name => $description) {
                     $args .= $name . ' - ' . $description."\n";
                 }
             }
             
             if ($args) {
-                echo "\nArguments:\n";
+                echo "\nArguments (* = required):\n";
                 echo $args;
             }
             
