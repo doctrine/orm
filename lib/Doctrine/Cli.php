@@ -32,8 +32,13 @@
  */
 class Doctrine_Cli
 {
+    protected $tasks = array();
+    protected $scriptName = null;
+    
     public function run($args)
     {
+        $this->scriptName = $args[0];
+        
         if (!isset($args[1])) {
             echo $this->printTasks();
             return;
@@ -64,25 +69,48 @@ class Doctrine_Cli
         
         echo "\nAvailable Doctrine Command Line Interface Tasks\n";
         echo str_repeat('-', 40)."\n\n";
+        
         foreach ($tasks as $taskName)
         {
             $className = 'Doctrine_Cli_Task_' . $taskName;
             $taskInstance = new $className();
             $taskInstance->taskName = str_replace('_', '-', Doctrine::tableize($taskName));
             
-            echo "Name: " . $taskInstance->getName() . "\n";
-            echo "Description: " . $taskInstance->getDescription() . "\n";
+            echo $taskInstance->getDescription() . "\n";            
             
-            if ($requiredArguments = $taskInstance->getRequiredArguments()) {
-                echo "Required Arguments: " . implode(', ', $requiredArguments) . "\n";
+            $syntax  = "Syntax: ";
+            
+            $syntax .= $this->scriptName . ' ' . $taskInstance->getTaskName();
+            
+            if ($required = $taskInstance->getRequiredArguments()) {
+                $syntax .= ' <' . implode('> <', $required) . '>';
+            }
+
+            if ($optional = $taskInstance->getOptionalArguments()) {
+                 $syntax .= ' <' . implode('> <', $optional) . '>';
             }
             
-            if ($optionalArguments = $taskInstance->getOptionalArguments()) {
-                echo "Optional Arguments: " . implode(', ', $taskInstance->getOptionalArguments()) . "\n";
+            echo $syntax."\n";
+            
+            $args = null;
+            if ($requiredArguments = $taskInstance->getRequiredArgumentsDescriptions()) {
+                foreach ($requiredArguments as $name => $description) {
+                    $args .= '*' . $name . ' - ' . $description."\n";
+                }
             }
             
-            echo "Syntax: " . $taskInstance->getSyntax() . "\n";
-            echo str_repeat('-', 40) . "\n\n";
+            if ($optionalArguments = $taskInstance->getOptionalArgumentsDescriptions()) {
+                foreach ($requiredArguments as $name => $description) {
+                    $args .= $name . ' - ' . $description."\n";
+                }
+            }
+            
+            if ($args) {
+                echo "\nArguments:\n";
+                echo $args;
+            }
+            
+            echo "\n".str_repeat("-", 40)."\n";
         }
     }
     
@@ -115,6 +143,8 @@ class Doctrine_Cli
             }
         }
         
-        return $tasks;
+        $this->tasks = array_merge($this->tasks, $tasks);
+        
+        return $this->tasks;
     }
 }

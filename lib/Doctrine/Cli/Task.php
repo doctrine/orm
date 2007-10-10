@@ -32,13 +32,13 @@
  */
 abstract class Doctrine_Cli_Task
 {
-    public $name                 =   null,
-           $taskName             =   null,
+    public $taskName             =   null,
            $description          =   null,
+           $arguments            =   array(),
            $requiredArguments    =   array(),
            $optionalArguments    =   array();
     
-    abstract function execute($args);
+    abstract function execute();
     
     public function validate($args)
     {
@@ -81,12 +81,19 @@ abstract class Doctrine_Cli_Task
             $count++;
         }
         
+        $this->arguments = $prepared;
+        
         return $prepared;
     }
     
-    public function getName()
+    public function getArgument($name)
     {
-        return $this->name;
+        return $this->arguments[$name];
+    }
+    
+    public function getArguments()
+    {
+        return $this->arguments;
     }
     
     public function getTaskName()
@@ -101,28 +108,36 @@ abstract class Doctrine_Cli_Task
     
     public function getRequiredArguments()
     {
-        return $this->requiredArguments;
+        return array_keys($this->requiredArguments);
     }
     
     public function getOptionalArguments()
+    {
+        return array_keys($this->optionalArguments);
+    }
+    
+    public function getRequiredArgumentsDescriptions()
+    {
+        return $this->requiredArguments;
+    }
+    
+    public function getOptionalArgumentsDescriptions()
     {
         return $this->optionalArguments;
     }
     
     public function getSyntax()
-    {
-        $taskName = $this->getTaskName();
-        $requiredArguments = null;
-        $optionalArguments = null;
+    {    
+        $syntax = './cli ' . $this->getTaskName();
         
         if ($required = $this->getRequiredArguments()) {
-            $requiredArguments = '<' . implode('> <', $required) . '>';
+            $syntax .= ' <' . implode('> <', $required) . '>';
         }
         
         if ($optional = $this->getOptionalArguments()) {
-            $optionalArguments = '<' . implode('> <', $optional) . '>';
+             $syntax .= ' <' . implode('> <', $optional) . '>';
         }
         
-        return './cli ' . $taskName . ' ' . $requiredArguments . ' ' . $optionalArguments;
+        return $syntax;
     }
 }
