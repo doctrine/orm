@@ -55,41 +55,6 @@ abstract class Doctrine_Cli_Task
         return true;
     }
     
-    public function prepareArgs($args)
-    {
-        $args = array_values($args);
-        
-        $prepared = array();
-        $requiredArguments = $this->getRequiredArguments();
-        
-        $count = 0;
-        foreach ($requiredArguments as $key => $arg) {
-            if (isset($args[$count])) {
-                $prepared[$arg] = $args[$count];
-            } else {
-                $prepared[$arg] = null;
-            }
-            
-            $count++;
-        }
-        
-        $optionalArguments = $this->getOptionalArguments();
-        
-        foreach ($optionalArguments as $key => $arg) {
-            if (isset($args[$count])) {
-                $prepared[$arg] = $args[$count];
-            } else {
-                $prepared[$arg] = null;
-            }
-            
-            $count++;
-        }
-        
-        $this->arguments = $prepared;
-        
-        return $prepared;
-    }
-    
     public function getArgument($name)
     {
         return $this->arguments[$name];

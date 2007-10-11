@@ -60,8 +60,7 @@ class Doctrine_Cli
             $taskInstance = new $taskClass();
             $taskInstance->taskName = str_replace('_', '-', Doctrine::tableize(str_replace('Doctrine_Cli_Task_', '', $taskName)));
             
-            $args = $taskInstance->prepareArgs($args);
-            $args = $this->prepareArgs($args);
+            $args = $this->prepareArgs($taskInstance, $args);
             
             $taskInstance->validate($args);
             
@@ -72,17 +71,40 @@ class Doctrine_Cli
         }
     }
     
-    protected function prepareArgs($args)
+    protected function prepareArgs($taskInstance, $args)
     {
+        $args = array_values($args);
+        
+        $prepared = array();
+        
+        $requiredArguments = $taskInstance->getRequiredArguments();
+        foreach ($requiredArguments as $key => $arg) {
+            $prepared[$arg] = null;
+        }
+        
+        $optionalArguments = $taskInstance->getOptionalArguments();
+        foreach ($optionalArguments as $key => $arg) {
+            $prepared[$arg] = null;
+        }
+        
         if (is_array($this->config) && !empty($this->config)) {
             foreach ($this->config as $key => $value) {
-                if (array_key_exists($key, $args)) {
-                    $args[$key] = $value;
+                if (array_key_exists($key, $prepared)) {
+                    $prepared[$key] = $value;
                 }
             }
         }
         
-        return $args;
+        $copy = $args;
+        foreach ($prepared as $key => $value) {
+            if (!$value && !empty($copy)) {
+                $prepared[$key] = $copy[0];
+                unset($copy[0]);
+                $copy = array_values($copy);
+            }
+        }
+        
+        return $prepared;
     }
     
     public function printTasks()
