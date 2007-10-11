@@ -763,7 +763,6 @@ final class Doctrine
         
         file_put_contents($path, $code);
     }
-    
     /**
      * exportSql
      * method for exporting Doctrine_Record classes to a schema
@@ -774,6 +773,14 @@ final class Doctrine
     {
         return Doctrine_Manager::connection()->export->exportSql($directory);
     }
+    /**
+     * generateSqlFromModels
+     *
+     * Generate sql for directory of models
+     *
+     * @param string $directory Directory where your models exist
+     * @return void
+     */
     public static function generateSqlFromModels($directory)
     {
         return self::exportSql($directory);
