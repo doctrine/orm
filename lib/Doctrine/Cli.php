@@ -75,6 +75,7 @@ class Doctrine_Cli
     {
         $args = array_values($args);
         
+        // First lets load populate an array with all the possible arguments. required and optional
         $prepared = array();
         
         $requiredArguments = $taskInstance->getRequiredArguments();
@@ -87,6 +88,7 @@ class Doctrine_Cli
             $prepared[$arg] = null;
         }
         
+        // If we have a config array then lets try and fill some of the arguments with the config values
         if (is_array($this->config) && !empty($this->config)) {
             foreach ($this->config as $key => $value) {
                 if (array_key_exists($key, $prepared)) {
@@ -95,6 +97,7 @@ class Doctrine_Cli
             }
         }
         
+        // Now lets fill in the entered arguments to the prepared array
         $copy = $args;
         foreach ($prepared as $key => $value) {
             if (!$value && !empty($copy)) {
