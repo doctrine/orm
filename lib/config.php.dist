@@ -18,8 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
- * Config
+ * Doctrine Configuration File
  *
  * This is a sample implementation of Doctrine
  * You can use the Doctrine_Config interface below to setup the basics.
