@@ -33,9 +33,11 @@
 class Doctrine_Cli_Task_GenerateModelsFromDb extends Doctrine_Cli_Task
 {
     public $description          =   'Generates your Doctrine_Record definitions from your existing database connections.',
-           $requiredArguments    =   array(),
-           $optionalArguments    =   array();
+           $requiredArguments    =   array('models_path'    =>  'Specify path to your Doctrine_Record definitions.'),
+           $optionalArguments    =   array('connection'     =>  'Optionally specify a single connection to generate the models for.');
     
     public function execute()
-    { }
+    {
+        Doctrine::generateModelsFromDb($this->getArgument('models_path'), (array) $this->getArgument('connection'));
+    }
 }

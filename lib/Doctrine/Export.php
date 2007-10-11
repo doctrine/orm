@@ -976,8 +976,12 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * @return void
      */
     public function exportSchema($directory = null)
-    {        
-        $models = Doctrine::loadModels($directory);
+    {
+        if ($directory !== null) {
+            $models = Doctrine::loadModels($directory);
+        } else {
+            $models = Doctrine::getLoadedModels();
+        }
         
         $this->exportClasses($models);
     }

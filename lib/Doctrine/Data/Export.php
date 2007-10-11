@@ -104,7 +104,7 @@ class Doctrine_Data_Export extends Doctrine_Data
             }
             
             foreach ($data as $className => $classData) {
-                Doctrine_Parser::dump($classData->toArray(), $format, $directory.DIRECTORY_SEPARATOR.$className.'.'.$format);
+                Doctrine_Parser::dump(array($className => $classData), $format, $directory.DIRECTORY_SEPARATOR.$className.'.'.$format);
             }
         } else {
             if (is_dir($directory)) {

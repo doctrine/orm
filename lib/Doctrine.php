@@ -517,6 +517,53 @@ final class Doctrine
         return Doctrine_Manager::connection()->import->importSchema($directory, $databases);
     }
     /**
+     * generateModelsFromDb
+     *
+     * Generate your model definitions from an existing database
+     *
+     * @param string $directory 
+     * @param string $array 
+     * @return void
+     */
+    public static function generateModelsFromDb($directory, array $databases = array())
+    {
+        return self::importSchema($directory, $databases);
+    }
+    /**
+     * generateYamlFromDb
+     *
+     * Generates models from database to temporary location then uses those models to generate a yaml schema file.
+     * This should probably be fixed. We should write something to generate a yaml schema file directly from the database.
+     *
+     * @param string $yamlPath 
+     * @return void
+     */
+    public static function generateYamlFromDb($yamlPath)
+    {
+        $directory = '/tmp/tmp_doctrine_models';
+
+        Doctrine::generateModelsFromDb($directory);
+
+        $export = new Doctrine_Export_Schema();
+        
+        return $export->exportSchema($yamlPath, 'yml', $directory);
+    }
+    /**
+     * generateModelsFromYaml
+     *
+     * Generate a yaml schema file from an existing directory of models
+     *
+     * @param string $yamlPath 
+     * @param string $directory 
+     * @return void
+     */
+    public static function generateModelsFromYaml($yamlPath, $directory)
+    {
+        $import = new Doctrine_Import_Schema();
+        
+        return $import->importSchema($yamlPath, 'yml', $directory);
+    }
+    /**
      * exportSchema
      * method for exporting Doctrine_Record classes to a schema
      *
@@ -527,6 +574,182 @@ final class Doctrine
         return Doctrine_Manager::connection()->export->exportSchema($directory);
     }
     /**
+     * createTablesFromModels
+     *
+     * Creates database tables for the models in the specified directory
+     *
+     * @param string $directory 
+     * @return void
+     */
+    public static function createTablesFromModels($directory = null)
+    {
+        return self::exportSchema($directory);
+    }
+    /**
+     * generateYamlFromModels
+     *
+     * Generate yaml schema file for the models in the specified directory
+     *
+     * @param string $yamlPath 
+     * @param string $directory 
+     * @return void
+     */
+    public static function generateYamlFromModels($yamlPath, $directory)
+    {
+        $export = new Doctrine_Export_Schema();
+        
+        return $export->exportSchema($yamlPath, 'yml', $directory);
+    }
+    /**
+     * createDatabases
+     *
+     * Creates databases for connections
+     *
+     * @param string $specifiedConnections 
+     * @return void
+     */
+    public static function createDatabases($specifiedConnections)
+    {
+        if (!is_array($specifiedConnections)) {
+            $specifiedConnections = (array) $specifiedConnections;
+        }
+        
+        $connections = Doctrine_Manager::getInstance()->getConnections();
+        
+        foreach ($connections as $name => $connection) {
+            if (!empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
+                continue;
+            }
+            
+            $connection->export->createDatabase($name);
+        }
+    }
+    /**
+     * dropDatabases
+     *
+     * Drops databases for connections
+     *
+     * @param string $specifiedConnections 
+     * @return void
+     */
+    public static function dropDatabases($specifiedConnections = array())
+    {
+        if (!is_array($specifiedConnections)) {
+            $specifiedConnections = (array) $specifiedConnections;
+        }
+        
+        $connections = Doctrine_Manager::getInstance()->getConnections();
+        
+        foreach ($connections as $name => $connection) {
+            if (!empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
+                continue;
+            }
+            
+            $connection->export->dropDatabase($name);
+        }
+    }
+    /**
+     * dumpData
+     *
+     * Dump data to a yaml fixtures file
+     *
+     * @param string $yamlPath 
+     * @param string $individualFiles 
+     * @return void
+     */
+    public static function dumpData($yamlPath, $individualFiles = false)
+    {
+        $data = new Doctrine_Data();
+        
+        return $data->exportData($yamlPath, 'yml', array(), $individualFiles);
+    }
+    /**
+     * loadData
+     *
+     * Load data from a yaml fixtures file.
+     * The output of dumpData can be fed to loadData
+     *
+     * @param string $yamlPath 
+     * @param string $append 
+     * @return void
+     */
+    public static function loadData($yamlPath, $append = false)
+    {
+        $delete = isset($append) ? ($append ? false : true) : true;
+
+        if ($delete)
+        {
+          $models = Doctrine::getLoadedModels();
+
+          foreach ($models as $model)
+          {
+            $model = new $model();
+
+            $model->getTable()->createQuery()->delete($model)->execute();
+          }
+        }
+
+        $data = new Doctrine_Data();
+        
+        return $data->importData($yamlPath, 'yml');
+    }
+    /**
+     * loadDummyData
+     *
+     * Populdate your models with dummy data
+     *
+     * @param string $append 
+     * @param string $num 
+     * @return void
+     */
+    public static function loadDummyData($append, $num = 5)
+    {
+        $delete = isset($append) ? ($append ? false : true) : true;
+
+        if ($delete)
+        {
+          $models = Doctrine::getLoadedModels();
+
+          foreach ($models as $model)
+          {
+            $model = new $model();
+
+            $model->getTable()->createQuery()->delete($model)->execute();
+          }
+        }
+        
+        $data = new Doctrine_Data();
+        
+        return $data->importDummyData($num);
+    }
+    
+    public static function migrate($directory, $to = null)
+    {
+        $migration = new Doctrine_Migration($directory);
+        
+        return $migration->migrate($to);
+    }
+    
+    public static function generateMigrationClass($className, $directory)
+    {
+        $migration = new Doctrine_Migration($directory);
+        $next = (string) $migration->getNextVersion();
+        
+        $fileName = str_repeat('0', (3 - strlen($next))) . $next . '_' . Doctrine::tableize($className) . '.class.php';
+        $path = $directory . DIRECTORY_SEPARATOR . $fileName;
+        
+        $code  = '<?php' . PHP_EOL;
+        $code .= "// Automatically generated by Doctrine\n";
+        $code .= "class " . $className . " extends Doctrine_Migration\n";
+        $code .= "{\n";
+        $code .= "\tpublic function up()\n\t{ }\n\n";
+        $code .= "\tpublic function down()\n\t{ }\n";
+        $code .= "}";
+        
+        file_put_contents($path, $code);
+    }
+    
+    /**
      * exportSql
      * method for exporting Doctrine_Record classes to a schema
      *
@@ -535,6 +758,10 @@ final class Doctrine
     public static function exportSql($directory = null)
     {
         return Doctrine_Manager::connection()->export->exportSql($directory);
+    }
+    public static function generateSqlFromModels($directory)
+    {
+        return self::exportSql($directory);
     }
     /**
      * compile

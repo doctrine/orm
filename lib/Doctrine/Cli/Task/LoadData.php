@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: GenerateSql.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: LoadData.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -33,9 +33,13 @@
 class Doctrine_Cli_Task_LoadData extends Doctrine_Cli_Task
 {
     public $description          =   'Load data from a yaml data fixture file.',
-           $requiredArguments    =   array('path' => 'Specify the complete path to load the yaml data fixtures files from.'),
+           $requiredArguments    =   array('data_fixtures_path' =>  'Specify the complete path to load the yaml data fixtures files from.',
+                                           'models_path'        =>  'Specify path to your Doctrine_Record definitions.'),
            $optionalArguments    =   array();
     
     public function execute()
-    { }
+    {
+        Doctrine::loadModels($this->getArgument('models_path'));
+        Doctrine::loadData($this->getArgument('data_fixtures_path'));
+    }
 }

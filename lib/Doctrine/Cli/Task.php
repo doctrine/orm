@@ -42,6 +42,8 @@ abstract class Doctrine_Cli_Task
     
     public function validate($args)
     {
+        $this->arguments = $args;
+        
         $requiredArguments = $this->getRequiredArguments();
         
         foreach ($requiredArguments as $arg) {
@@ -64,6 +66,8 @@ abstract class Doctrine_Cli_Task
         foreach ($requiredArguments as $key => $arg) {
             if (isset($args[$count])) {
                 $prepared[$arg] = $args[$count];
+            } else {
+                $prepared[$arg] = null;
             }
             
             $count++;

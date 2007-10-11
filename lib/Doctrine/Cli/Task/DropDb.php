@@ -37,5 +37,7 @@ class Doctrine_Cli_Task_DropDb extends Doctrine_Cli_Task
            $optionalArguments    =   array('connection' => 'Optionally specify a single connection to drop the database for.');
     
     public function execute()
-    { }
+    {
+        Doctrine::dropDatabases($this->getArgument('connection'));
+    }
 }

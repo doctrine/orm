@@ -93,15 +93,11 @@ class AddUser extends Doctrine_Migration
 ++ Performing Migrations
 
 <code type="php">
-$migration = new Doctrine_Migration('migration_classes');
-$migration->migrate(0, 1);
-$migration->migrate(1, 2);
-$migration->migrate(2, 3);
+$migration = new Doctrine_Migration('/path/to/migration_classes');
 
-// Then revert back to version 1
-$migration->migrate(3, 2);
-$migration->migrate(2, 1);
-$migration->migrate(1, 0);
+// Assume current version is 0
+$migration->migrate(3); // takes you from 0 to 3
+$migration->migrate(0); // takes you from 3 to 0
 
-echo $migration->getCurrentVersion(); // should echo 0
+echo $migration->getCurrentVersion(); // 0
 </code>

@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: CreateTables.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: LoadDummyData.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Cli_Task_CreateTables
+ * Doctrine_Cli_Task_LoadDummyData
  *
  * @package     Doctrine
  * @subpackage  Cli
@@ -30,14 +30,16 @@
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Cli_Task_CreateTables extends Doctrine_Cli_Task
+class Doctrine_Cli_Task_LoadDummyData extends Doctrine_Cli_Task
 {
-    public $description          =   'Create tables for all existing database connections',
-           $requiredArguments    =   array('models_path' => 'Specify path to your models directory.'),
-           $optionalArguments    =   array();
+    public $description          =   'Load data from a yaml data fixture file.',
+           $requiredArguments    =   array('models_path'    =>  'Specify path to your Doctrine_Record definitions.'),
+           $optionalArguments    =   array('append'         =>  'Whether or not to append the data or to delete all data before loading.',
+                                           'num'            =>  'Number of records to populate for each model.');
     
     public function execute()
     {
-        Doctrine::createTablesFromModels($this->getArgument('models_path'));
+        Doctrine::loadModels($this->getArgument('models_path'));
+        Doctrine::loadDummyData($this->getArgument('append') ? true:false, $this->getArgument('num') ? $this->getArgument('num'):5);
     }
 }

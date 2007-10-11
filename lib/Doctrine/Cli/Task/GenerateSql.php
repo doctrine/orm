@@ -33,9 +33,14 @@
 class Doctrine_Cli_Task_GenerateSql extends Doctrine_Cli_Task
 {
     public $description          =   'Generate sql for all existing database connections.',
-           $requiredArguments    =   array(),
+           $requiredArguments    =   array('models_path'    =>  'Specify complete path to your Doctrine_Record definitions.',
+                                           'sql_path'       =>  'Path to write the generated sql.'),
            $optionalArguments    =   array();
     
     public function execute()
-    { }
+    {
+        $sql = Doctrine::generateSqlFromModels($this->getArgument('models_path'));
+        
+        file_put_contents($this->getArgument('sql_path'), implode("\n", $sql));
+    }
 }

@@ -36,5 +36,7 @@ class Doctrine_Cli_Task_CreateDb extends Doctrine_Cli_Task
            $optionalArguments    =   array('connection' => 'Optionally specify a single connection to create the database for.');
     
     public function execute()
-    { }
+    {
+        Doctrine::createDatabases($this->getArgument('connection'));
+    }
 }

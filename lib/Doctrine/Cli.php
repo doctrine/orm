@@ -34,6 +34,12 @@ class Doctrine_Cli
 {
     protected $tasks = array();
     protected $scriptName = null;
+    protected $config = array();
+    
+    public function __construct($config = array())
+    {
+        $this->config = $config;
+    }
     
     public function run($args)
     {
@@ -55,12 +61,28 @@ class Doctrine_Cli
             $taskInstance->taskName = str_replace('_', '-', Doctrine::tableize(str_replace('Doctrine_Cli_Task_', '', $taskName)));
             
             $args = $taskInstance->prepareArgs($args);
+            $args = $this->prepareArgs($args);
             
             $taskInstance->validate($args);
-            $taskInstance->execute($args);
+            
+            
+            $taskInstance->execute();
         } else {
             throw new Doctrine_Cli_Exception('Cli task could not be found: '.$taskClass);
         }
+    }
+    
+    protected function prepareArgs($args)
+    {
+        if (is_array($this->config) && !empty($this->config)) {
+            foreach ($this->config as $key => $value) {
+                if (array_key_exists($key, $args)) {
+                    $args[$key] = $value;
+                }
+            }
+        }
+        
+        return $args;
     }
     
     public function printTasks()

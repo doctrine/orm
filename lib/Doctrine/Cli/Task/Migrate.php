@@ -37,5 +37,7 @@ class Doctrine_Cli_Task_Migrate extends Doctrine_Cli_Task
            $optionalArguments    =   array('version' => 'Version to migrate to. If you do not specify, the db will be migrated from the current version to the latest.');
     
     public function execute()
-    { }
+    {
+        Doctrine::migrate($this->getArgument('version'));
+    }
 }

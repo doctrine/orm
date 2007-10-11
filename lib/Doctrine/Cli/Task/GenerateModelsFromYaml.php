@@ -33,9 +33,12 @@
 class Doctrine_Cli_Task_GenerateModelsFromYaml extends Doctrine_Cli_Task
 {
     public $description          =   'Generates your Doctrine_Record definitions from a Yaml schema file',
-           $requiredArguments    =   array('path' => 'Specify the complete directory path to write the models to.'),
+           $requiredArguments    =   array('yaml_schema_path'   =>  'Specify the complete directory path to your yaml schema files.',
+                                           'models_path'        =>  'Specify complete path to your Doctrine_Record definitions.'),
            $optionalArguments    =   array();
     
     public function execute()
-    { }
+    {
+        Doctrine::generateModelsFromYaml($this->getArgument('yaml_schema_path'), $this->getArgument('models_path'));
+    }
 }

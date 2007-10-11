@@ -33,9 +33,26 @@
 class Doctrine_Cli_Task_DumpData extends Doctrine_Cli_Task
 {
     public $description          =   'Dump data to a yaml data fixture file.',
-           $requiredArguments    =   array('path' => 'Specify the full path to write the yaml data fixtures file to.'),
-           $optionalArguments    =   array();
+           $requiredArguments    =   array('data_fixtures_path' =>  'Specify path to write the yaml data fixtures file to.',
+                                           'models_path'        =>  'Specify path to your Doctrine_Record definitions.'),
+           $optionalArguments    =   array('individual_files'   =>  'Specify whether or not you want to dump to individual files. One file per model.');
     
     public function execute()
-    { }
+    {
+        Doctrine::loadModels($this->getArgument('models_path'));
+        
+        $individualFiles = $this->getArgument('individual_files') ? true:false;
+        
+        $path = $this->getArgument('data_fixtures_path');
+        
+        if (!$individualFiles) {
+            $e = explode('.', $this->getArgument('data_fixtures_path'));
+        
+            if (end($e) !== 'yml') {
+                $path = $this->getArgument('data_fixtures_path'). DIRECTORY_SEPARATOR . 'data.yml';
+            }
+        }
+        
+        Doctrine::dumpData($path, $individualFiles);
+    }
 }

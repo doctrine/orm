@@ -142,12 +142,27 @@ class Doctrine_Migration
                 continue;
             }
             
-            $loadedClasses[$name] = $fileName;
+            $e = explode('_', $fileName);
+            $classMigrationNum = (int) $e[0];
+            
+            $loadedClasses[$classMigrationNum] = $fileName;
         }
         
         $this->migrationClasses = $loadedClasses;
         
-        return $loadedClasses;
+        return $this->migrationClasses;
+    }
+    
+    /**
+     * getMigrationClasses
+     *
+     * @return void
+     * @author Jonathan H. Wage
+     */
+    
+    public function getMigrationClasses()
+    {
+        return $this->migrationClasses;
     }
     
     /**
@@ -213,15 +228,18 @@ class Doctrine_Migration
         $this->loadMigrationClasses();
         
         $versions = array();
-        foreach ($this->migrationClasses as $name => $fileName) {
-            $e = explode('_', $fileName);
-            $version = (int) $e[0];
-            $versions[$version] = $version;
+        foreach ($this->migrationClasses as $classMigrationNum => $fileName) {
+            $versions[$classMigrationNum] = $classMigrationNum;
         }
         
         rsort($versions);
         
-        return $versions[0];
+        return isset($versions[0]) ? $versions[0]:0;
+    }
+    
+    public function getNextVersion()
+    {
+        return $this->getLatestVersion() + 1;
     }
     
     /**
@@ -234,12 +252,7 @@ class Doctrine_Migration
      */
     protected function getMigrationClass($num)
     {
-        $classes = $this->migrationClasses;
-        
-        foreach ($classes as $className => $fileName) {
-            $e = explode('_', $fileName);
-            $classMigrationNum = (int) $e[0];
-            
+        foreach ($this->migrationClasses as $classMigrationNum => $fileName) {
             if ($classMigrationNum === $num) {
                 return new $className();
             }
@@ -297,16 +310,17 @@ class Doctrine_Migration
      * @param string $to 
      * @return void
      */
-    public function migrate($from = null, $to = null)
+    public function migrate($to = null)
     {
+        $from = $this->getCurrentVersion();
+        
         // If nothing specified then lets assume we are migrating from the current version to the latest version
-        if ($from === null && $to === null) {
-            $from = $this->getCurrentVersion();
+        if ($to === null) {
             $to = $this->getLatestVersion();
         }
         
         if ($from === $to) {
-            throw new Doctrine_Migration_Exception('You specified an invalid migration path. The from and to cannot be the same. You specified from: ' . $from . ' and to: ' . $to);
+            throw new Doctrine_Migration_Exception('Already up-to-date');
         }
         
         $direction = $from > $to ? 'down':'up';
