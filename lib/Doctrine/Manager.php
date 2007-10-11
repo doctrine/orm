@@ -231,13 +231,8 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function openConnection($adapter, $name = null, $setCurrent = true)
     {
         if (is_object($adapter)) {
-            if ( ! ($adapter instanceof PDO) && 
-                 ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
-
-                $msg = 'First argument should be an instance of PDO or ' 
-                     . 'implement Doctrine_Adapter_Interface';
-
-                throw new Doctrine_Manager_Exception($msg);
+            if ( ! ($adapter instanceof PDO) && ! in_array('Doctrine_Adapter_Interface', class_implements($adapter))) {
+                throw new Doctrine_Manager_Exception("First argument should be an instance of PDO or implement Doctrine_Adapter_Interface");
             }
 
             $driverName = $adapter->getAttribute(Doctrine::ATTR_DRIVER_NAME);
@@ -279,6 +274,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             $this->_index++;
         }
 
+
         $drivers = array('mysql'    => 'Doctrine_Connection_Mysql',
                          'sqlite'   => 'Doctrine_Connection_Sqlite',
                          'pgsql'    => 'Doctrine_Connection_Pgsql',
@@ -293,6 +289,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         if ( ! isset($drivers[$driverName])) {
             throw new Doctrine_Manager_Exception('Unknown driver ' . $driverName);
         }
+        
         $className = $drivers[$driverName];
         $conn = new $className($this, $adapter);
 
@@ -313,7 +310,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         // silence any warnings
         $parts = @parse_url($dsn);
-        
+
         $names = array('dsn', 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
 
         foreach ($names as $name) {
@@ -365,26 +362,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 }
 
                 $parts['dsn'] = $parts['scheme'] . ':host='
-                              . $parts['host'] . ';dbname='
+                              . $parts['host'] . (isset($parts['port']) ? ':' . $parts['port']:null) . ';dbname='
                               . $parts['database'];
                 
-                if (isset($parts['port'])) {
-                    // append port to dsn if supplied
-                    $parts['dsn'] .= ';port=' . $parts['port'];
-                }
-                
-                $options = array();
-
-                if (isset($parts['query']) && $parts['query'] != null ) {
-                    // parse options
-                    parse_str($parts['query'], $options);
-                }
-
-                if (isset($options['persistent'])) {
-                    // set persistent
-                    $parts['persistent'] = (bool) $options['persistent'];
-                }
-
                 break;
             default:
                 throw new Doctrine_Manager_Exception('Unknown driver '.$parts['scheme']);
