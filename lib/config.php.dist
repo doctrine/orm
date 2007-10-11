@@ -1,0 +1,57 @@
+<?php
+/*
+ *  $Id: Config.php 2753 2007-10-07 20:58:08Z Jonathan.Wage $
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.com>.
+ */
+/**
+ * Config
+ *
+ * This is a sample implementation of Doctrine
+ * You can use the Doctrine_Config interface below to setup the basics.
+ * Or if you prefer you can setup your Doctrine configuration manually.
+ * 
+ * @package     Doctrine
+ * @subpackage  Config
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.phpdoctrine.com
+ * @since       1.0
+ * @version     $Revision: 2753 $
+ * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author      Jonathan H. Wage <jwage@mac.com>
+ */
+
+// Load Doctrine
+require_once('Doctrine.php');
+spl_autoload_register(array('Doctrine', 'autoload'));
+
+// New Doctrine Config
+$config = new Doctrine_Config();
+
+// Setup Connections
+//$config->addConnection('mysql://user:pass@localhost/db_name', 'connection_1');
+//$config->addConnection(new PDO('dsn', 'username', 'password'), 'connection_2);
+
+// Bind components/models to connections
+//$config->bindComponent('User', 'connection_1');
+
+// Configure Doctrine Cli
+// Normally these are arguments to the cli tasks but if they are set here the arguments will be auto-filled
+//$config->addCliConfig('data_fixtures_path', '/path/to/your/data_fixtures');
+//$config->addCliConfig('models_path', '/path/to/your/models');
+//$config->addCliConfig('migrations_path', '/peth/to/your/migration/classes');
+//$config->addCliConfig('sql_path', '/path/to/your/exported/sql');
