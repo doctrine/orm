@@ -362,7 +362,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 }
 
                 $parts['dsn'] = $parts['scheme'] . ':host='
-                              . $parts['host'] . (isset($parts['port']) ? ':' . $parts['port']:null) . ';dbname='
+                              . $parts['host'] . (isset($parts['port']) ? ';port=' . $parts['port']:null) . ';dbname='
                               . $parts['database'];
                 
                 break;
