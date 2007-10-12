@@ -336,13 +336,34 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 }
 
                 break;
+            
+            case 'mssql':
+            case 'dblib':
+                if ( ! isset($parts['path']) || $parts['path'] == '/') {
+                    throw new Doctrine_Manager_Exception('No database available in data source name');
+                }
+                if (isset($parts['path'])) {
+                    $parts['database'] = substr($parts['path'], 1);
+                }
+                if ( ! isset($parts['host'])) {
+                    throw new Doctrine_Manager_Exception('No hostname set in data source name');
+                }
+                
+                if (isset(self::$driverMap[$parts['scheme']])) {
+                    $parts['scheme'] = self::$driverMap[$parts['scheme']];
+                }
+
+                $parts['dsn'] = $parts['scheme'] . ':host='
+                              . $parts['host'] . (isset($parts['port']) ? ':' . $parts['port']:null) . ';dbname='
+                              . $parts['database'];
+                
+                break;
+
             case 'mysql':
             case 'informix':
             case 'oci8':
             case 'oci':
-            case 'mssql':
             case 'firebird':
-            case 'dblib':
             case 'pgsql':
             case 'odbc':
             case 'mock':
