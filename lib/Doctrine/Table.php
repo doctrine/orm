@@ -198,9 +198,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                 break;
             }
 
-            $name  = $class;
+            $name = $class;
             $names[] = $name;
         } while ($class = get_parent_class($class));
+
+        if ($class === false) {
+            throw new Doctrine_Table_Exception('Unknown component.');
+        }
 
         // reverse names
         $names = array_reverse($names);
