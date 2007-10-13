@@ -34,12 +34,13 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
 {
     public function prepareTables()
     {
-        $this->tables = array('SearchTest', 'SearchTestIndex');
+        $this->tables = array('SearchTest');
         
         parent::prepareTables();
     }
     public function prepareData()
     { }
+
     public function testBuildingOfSearchRecordDefinition()
     {
         $e = new SearchTest();
@@ -49,7 +50,7 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
         $rel = $e->getTable()->getRelation('SearchTestIndex');
 
         $this->assertIdentical($rel->getLocal(), 'id');
-        $this->assertIdentical($rel->getForeign(), 'searchtest_id');
+        $this->assertIdentical($rel->getForeign(), 'id');
     }
     public function testSavingEntriesUpdatesIndex()
     {
@@ -115,5 +116,46 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
         $array = $q->execute(array('someunknownword'), Doctrine::HYDRATE_ARRAY);
 
         $this->assertEqual(count($array), 0);
+    }
+
+    public function testUpdateIndexInsertsNullValuesForBatchUpdatedEntries()
+    {
+        $e = new SearchTest();
+        $tpl = $e->getTable()->getTemplate('Doctrine_Template_Searchable');
+        $tpl->getPlugin()->setOption('batchUpdates', true);
+
+        $e->title = 'Some searchable title';
+        $e->content = 'Some searchable content';
+
+        $e->save();
+        
+        $coll = Doctrine_Query::create()
+                ->from('SearchTestIndex s')
+                ->orderby('s.id DESC')
+                ->limit(1)
+                ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                ->fetchOne();
+
+        $this->assertEqual($coll['id'], 2);
+        $this->assertEqual($coll['keyword'], null);
+        $this->assertEqual($coll['field'], null);
+        $this->assertEqual($coll['position'], null);
+    }
+
+    public function testBatchUpdatesUpdateAllPendingEntries()
+    {
+        $e = new SearchTest();
+        $tpl = $e->getTable()->getTemplate('Doctrine_Template_Searchable');
+
+        $tpl->getPlugin()->processPending();
+        
+        $coll = Doctrine_Query::create()
+                ->from('SearchTestIndex s')
+                ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                ->execute();
+
+        $coll = $this->conn->fetchAll('SELECT * FROM search_test_index');
+        
+
     }
 }

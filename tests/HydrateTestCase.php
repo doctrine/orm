@@ -60,7 +60,7 @@ class Doctrine_Hydrate_TestCase extends Doctrine_UnitTestCase
     public function testHydrateHooks()
     {
         $user = new User();
-        $user->getTable()->addListener(new HydrationListener);
+        $user->getTable()->addRecordListener(new HydrationListener);
 
         $user->name = 'zYne';
         $user->save();
@@ -73,7 +73,7 @@ class Doctrine_Hydrate_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($user->password, 'DEFAULT PASS');
     }
 }
-class HydrationListener extends Doctrine_EventListener
+class HydrationListener extends Doctrine_Record_Listener
 {
     public function preHydrate(Doctrine_Event $event) 
     {

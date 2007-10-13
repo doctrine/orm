@@ -63,8 +63,8 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('doctrine AND orm');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+        $sql = 'id IN (SELECT id FROM search_test_index WHERE keyword = ?) '
+             . 'AND id IN (SELECT id FROM search_test_index WHERE keyword = ?)';
 
         $this->assertEqual($ret, $sql);
     }
@@ -74,7 +74,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('((doctrine OR orm) AND dbal) OR database');
 
-        $sql = '(search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)) OR keyword = ?';
+        $sql = '(id IN (SELECT id FROM search_test_index WHERE keyword = ? OR keyword = ?) AND id IN (SELECT id FROM search_test_index WHERE keyword = ?)) OR keyword = ?';
 
         $this->assertEqual($ret, $sql);
     }
@@ -84,7 +84,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('doctrine OR orm AND dbal');
 
-        $sql = 'keyword = ? OR search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+        $sql = 'keyword = ? OR id IN (SELECT id FROM search_test_index WHERE keyword = ?) AND id IN (SELECT id FROM search_test_index WHERE keyword = ?)';
 
         $this->assertEqual($ret, $sql);
     }
@@ -94,7 +94,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('(doctrine OR orm) AND dbal');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+        $sql = 'id IN (SELECT id FROM search_test_index WHERE keyword = ? OR keyword = ?) AND id IN (SELECT id FROM search_test_index WHERE keyword = ?)';
 
         $this->assertEqual($ret, $sql);
     }
@@ -104,7 +104,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('(doctrine OR orm) dbal');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+        $sql = 'id IN (SELECT id FROM search_test_index WHERE keyword = ? OR keyword = ?) AND id IN (SELECT id FROM search_test_index WHERE keyword = ?)';
 
         $this->assertEqual($ret, $sql);
     }
@@ -114,7 +114,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('(((doctrine OR orm) AND dbal) OR database) AND rdbms');
 
-        $sql = '((search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)) OR keyword = ?) AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+        $sql = '((id IN (SELECT id FROM search_test_index WHERE keyword = ? OR keyword = ?) AND id IN (SELECT id FROM search_test_index WHERE keyword = ?)) OR keyword = ?) AND id IN (SELECT id FROM search_test_index WHERE keyword = ?)';
 
         $this->assertEqual($ret, $sql);
     }
@@ -124,7 +124,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('rdbms (dbal OR database)');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?)';
+        $sql = 'id IN (SELECT id FROM search_test_index WHERE keyword = ?) AND id IN (SELECT id FROM search_test_index WHERE keyword = ? OR keyword = ?)';
 
         $this->assertEqual($ret, $sql);
     }
@@ -134,7 +134,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('rdbms (((doctrine OR orm) AND dbal) OR database)');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) AND ((search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)) OR keyword = ?)';
+        $sql = 'id IN (SELECT id FROM search_test_index WHERE keyword = ?) AND ((id IN (SELECT id FROM search_test_index WHERE keyword = ? OR keyword = ?) AND id IN (SELECT id FROM search_test_index WHERE keyword = ?)) OR keyword = ?)';
 
         $this->assertEqual($ret, $sql);
     }
@@ -144,8 +144,8 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('rdbms -doctrine');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) AND '
-             . 'search_test_id NOT IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?)';
+        $sql = 'id IN (SELECT id FROM search_test_index WHERE keyword = ?) AND '
+             . 'id NOT IN (SELECT id FROM search_test_index WHERE keyword = ?)';
 
         $this->assertEqual($ret, $sql);
     }
@@ -155,8 +155,8 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('rdbms doctrine OR database');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) AND '
-             . 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+        $sql = 'id IN (SELECT id FROM search_test_index WHERE keyword = ?) AND '
+             . 'id IN (SELECT id FROM search_test_index WHERE keyword = ?) '
              . 'OR keyword = ?';
 
         $this->assertEqual($ret, $sql);
@@ -167,8 +167,8 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $ret = $q->parseClause('rdbms -doctrine OR database');
 
-        $sql = 'search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) AND '
-             . 'search_test_id NOT IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
+        $sql = 'id IN (SELECT id FROM search_test_index WHERE keyword = ?) AND '
+             . 'id NOT IN (SELECT id FROM search_test_index WHERE keyword = ?) '
              . 'OR keyword = ?';
 
         $this->assertEqual($ret, $sql);
@@ -179,11 +179,11 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $q->search('doctrine AND orm');
 
-        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+        $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
-             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
-             . 'GROUP BY search_test_id ORDER BY relevance';
+             . 'WHERE id IN (SELECT id FROM search_test_index WHERE keyword = ?) '
+             . 'AND id IN (SELECT id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY id ORDER BY relevance';
 
         $this->assertEqual($q->getSql(), $sql);
     }
@@ -194,10 +194,10 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $q->search('doctrine OR orm');
 
-        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+        $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
              . 'WHERE keyword = ? OR keyword = ? '
-             . 'GROUP BY search_test_id ORDER BY relevance';
+             . 'GROUP BY id ORDER BY relevance';
 
         $this->assertEqual($q->getSql(), $sql);
     }
@@ -208,8 +208,8 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $q->search('doctrine');
 
-        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
-             . 'FROM search_test_index WHERE keyword = ? GROUP BY search_test_id ORDER BY relevance';
+        $sql = 'SELECT COUNT(keyword) AS relevance, id '
+             . 'FROM search_test_index WHERE keyword = ? GROUP BY id ORDER BY relevance';
         
         $this->assertEqual($q->getParams(), array('doctrine'));  
         $this->assertEqual($q->getSql(), $sql);
@@ -220,11 +220,11 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $q->search('(doctrine OR orm) AND dbal');
 
-        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+        $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
-             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? OR keyword = ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
-             . 'GROUP BY search_test_id ORDER BY relevance';
+             . 'WHERE id IN (SELECT id FROM search_test_index WHERE keyword = ? OR keyword = ?) '
+             . 'AND id IN (SELECT id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY id ORDER BY relevance';
 
         $this->assertEqual($q->getParams(), array('doctrine', 'orm', 'dbal'));
         $this->assertEqual($q->getSql(), $sql);
@@ -235,10 +235,10 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $q->search("'doctrine orm'");
 
-        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+        $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index WHERE keyword = ? '
              . 'AND (position + 1) = (SELECT position FROM search_test_index WHERE keyword = ?) '
-             . 'GROUP BY search_test_id ORDER BY relevance';
+             . 'GROUP BY id ORDER BY relevance';
 
         $this->assertEqual($q->getParams(), array('doctrine', 'orm'));
         $this->assertEqual($q->getSql(), $sql);
@@ -249,11 +249,11 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $q->search("'doctrine orm dbal'");
 
-        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+        $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index WHERE keyword = ? '
              . 'AND (position + 1) = (SELECT position FROM search_test_index WHERE keyword = ?) '
              . 'AND (position + 2) = (SELECT position FROM search_test_index WHERE keyword = ?) '
-             . 'GROUP BY search_test_id ORDER BY relevance';
+             . 'GROUP BY id ORDER BY relevance';
 
         $this->assertEqual($q->getParams(), array('doctrine', 'orm', 'dbal'));
         $this->assertEqual($q->getSql(), $sql);
@@ -264,11 +264,11 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $q->search('doctrine orm');
 
-        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+        $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
-             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
-             . 'GROUP BY search_test_id ORDER BY relevance';
+             . 'WHERE id IN (SELECT id FROM search_test_index WHERE keyword = ?) '
+             . 'AND id IN (SELECT id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY id ORDER BY relevance';
 
         $this->assertEqual($q->getSql(), $sql);
     }
@@ -278,11 +278,11 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $q->search('doct?ine orm');
 
-        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+        $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
-             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword LIKE ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
-             . 'GROUP BY search_test_id ORDER BY relevance';
+             . 'WHERE id IN (SELECT id FROM search_test_index WHERE keyword LIKE ?) '
+             . 'AND id IN (SELECT id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY id ORDER BY relevance';
 
         $this->assertEqual($q->getParams(), array('doct?ine', 'orm'));
         $this->assertEqual($q->getSql(), $sql);
@@ -292,11 +292,11 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $q->search('doc* orm');
 
-        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+        $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
-             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword LIKE ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
-             . 'GROUP BY search_test_id ORDER BY relevance';
+             . 'WHERE id IN (SELECT id FROM search_test_index WHERE keyword LIKE ?) '
+             . 'AND id IN (SELECT id FROM search_test_index WHERE keyword = ?) '
+             . 'GROUP BY id ORDER BY relevance';
 
         $this->assertEqual($q->getParams(), array('doc%', 'orm'));
         $this->assertEqual($q->getSql(), $sql);
@@ -306,12 +306,12 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Search_Query('SearchTestIndex');
         $q->search("doctrine 'orm database'");
 
-        $sql = 'SELECT COUNT(keyword) AS relevance, search_test_id '
+        $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
-             . 'WHERE search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ?) '
-             . 'AND search_test_id IN (SELECT search_test_id FROM search_test_index WHERE keyword = ? '
+             . 'WHERE id IN (SELECT id FROM search_test_index WHERE keyword = ?) '
+             . 'AND id IN (SELECT id FROM search_test_index WHERE keyword = ? '
              . 'AND (position + 1) = (SELECT position FROM search_test_index WHERE keyword = ?)) '
-             . 'GROUP BY search_test_id ORDER BY relevance';
+             . 'GROUP BY id ORDER BY relevance';
 
         $this->assertEqual($q->getParams(), array('doctrine', 'orm', 'database'));
         $this->assertEqual($q->getSql(), $sql);
