@@ -754,19 +754,19 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
     /**
      * queries the database with limit and offset
-     * added to the query and returns a PDOStatement object
+     * added to the query and returns a Doctrine_Connection_Statement object
      *
      * @param string $query
      * @param integer $limit
      * @param integer $offset
-     * @return PDOStatement
+     * @return Doctrine_Connection_Statement
      */
     public function select($query, $limit = 0, $offset = 0)
     {
         if ($limit > 0 || $offset > 0) {
             $query = $this->modifyLimitQuery($query, $limit, $offset);
         }
-        return $this->dbh->query($query);
+        return $this->execute($query);
     }
     /**
      * standaloneQuery
