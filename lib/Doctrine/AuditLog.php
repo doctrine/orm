@@ -36,6 +36,7 @@ class Doctrine_AuditLog extends Doctrine_Plugin
                             'versionColumn' => 'version',
                             'generateFiles' => false,
                             'table'         => false,
+                            'pluginTable'   => false,
                             );
 
     protected $_auditTable;
@@ -96,13 +97,10 @@ class Doctrine_AuditLog extends Doctrine_Plugin
 
         $options = array('className' => $className);
 
-        $builder = new Doctrine_Import_Builder();
+        $this->generateDefinition($options, $columns, array());
+        
+        $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
 
-        $def = $builder->buildDefinition($options, $columns);
-
-        if ( ! $this->_options['generateFiles']) {
-            eval($def);
-        }
         return true;
     }
 }

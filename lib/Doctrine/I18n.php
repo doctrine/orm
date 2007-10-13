@@ -106,13 +106,8 @@ class Doctrine_I18n extends Doctrine_Plugin
         $options = array('className' => $this->_options['className'],
                          'queryParts' => array('indexBy' => 'lang'));
 
-        $builder = new Doctrine_Import_Builder();
+        $this->generateClass($options, $columns, $relations);
 
-        $def = $builder->buildDefinition($options, $columns, $relations);
-
-        if ( ! $this->_options['generateFiles']) {
-            eval($def);
-        }
         $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
         
         $this->_options['pluginTable']->bindQueryPart('indexBy', 'lang');

@@ -35,7 +35,7 @@ class Doctrine_Plugin
     /**
      * @var array $_options     an array of plugin specific options
      */
-    protected $_options = array();
+    protected $_options = array('generateFiles' => false);
     /**
      * __get
      * an alias for getOption
@@ -97,5 +97,24 @@ class Doctrine_Plugin
     public function getOptions()
     {
         return $this->_options;
+    }
+    
+    public function generateClass($options, $columns, $relations)
+    {
+        $builder = new Doctrine_Import_Builder();
+
+        if ($this->_options['generateFiles']) {
+            if (isset($this->_options['generatePath']) && $this->_options['generatePath']) {
+                $builder->setTargetPath($this->_options['generatePath']);
+            
+                $builder->buildRecord($options, $columns, $relations);
+            } else {
+                throw new Doctrine_Plugin_Exception('If you wish to generate files then you must specify the path to generate the files in.');
+            }
+        } else {
+            $def = $builder->buildDefinition($options, $columns, $relations);
+          
+            eval($def);
+        }
     }
 }

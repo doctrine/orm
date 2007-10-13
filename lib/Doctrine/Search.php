@@ -30,7 +30,7 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Search
+class Doctrine_Search extends Doctrine_Plugin
 {
     protected $_options = array('generateFiles' => false,
                                 'className'     => '%CLASS%Index',
@@ -48,26 +48,12 @@ class Doctrine_Search
         }
     }
 
-    public function getOption($option)
-    {
-        if (isset($this->_options[$option])) {
-            return $this->_options[$option];
-        }
-
-        throw new Doctrine_Search_Exception('Unknown option ' . $option);
-    }
     
     public function analyze($text)
     {
         return $this->_options['analyzer']->analyze($text);
     }
 
-    public function setOption($option, $value)
-    {
-        $this->_options[$option] = $value;
-
-        return $this;
-    }
     /**
      * updateIndex
      * updates the index
@@ -198,22 +184,8 @@ class Doctrine_Search
 
 
         $columns += $fk;
-
-        $builder = new Doctrine_Import_Builder();
-    
-        if ($this->_options['generateFiles']) {
-            if (isset($this->_options['generatePath']) && $this->_options['generatePath']) {
-                $builder->setTargetPath($this->_options['generatePath']);
-            
-                $builder->buildRecord($options, $columns, $relations);
-            } else {
-                throw new Doctrine_Search_Exception('If you wish to generate files then you must specify the path to generate the files in.');
-            }
-        } else {
-            $def = $builder->buildDefinition($options, $columns, $relations);
-          
-            eval($def);
-        }
+        
+        $this->generateClass($options, $columns, $relations);
         
         $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
 
