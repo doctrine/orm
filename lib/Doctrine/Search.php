@@ -96,35 +96,53 @@ class Doctrine_Search extends Doctrine_Plugin
             }
         }
     }
-    
-    public function processPendingTable($tableName, $indexTableName, array $fields, $id, $conn = null)
+
+    public function processPending($limit = null, $offset = null)
     {
-        if ( ! ($conn instanceof Doctrine_Connection)) {
-            $conn = Doctrine_Manager::connection();
-        }
-        $fields = array_merge($fields, array($id));
-        $query = 'SELECT ' . implode(', ', $fields) . ' FROM ' . $tableName . ' WHERE '
-               . $id . ' IN (SELECT foreign_id FROM ' 
-               . $indexTableName 
-               . ') ORDER BY ' . $id;
+    	$conn      = $this->_options['ownerTable']->getConnection();
+        $tableName = $this->_options['ownerTable']->getTableName();
+        $component = $this->_options['ownerTable']->getComponentName();
+        $id        = $this->_options['ownerTable']->getIdentifier();
+        $class     = $this->getOption('className');
+        $fields    = $this->getOption('fields');
 
-        $data = $conn->fetchAll($query);
+        try {
 
-        foreach ($data as $row) {
-            $identifier = $row[$id];
-
-            unset($row[$id]);
-
-            foreach ($row as $field => $data) {
-                $terms = $this->analyze($data);
-
-                foreach ($terms as $pos => $term) {
-                    $conn->insert($indexTableName, array('keyword'    => $field,
-                                                         'position'   => $pos,
-                                                         'field'      => $field,
-                                                         'foreign_id' => $identifier));
+            $conn->beginTransaction();
+    
+            $query = 'SELECT * FROM ' . $conn->quoteIdentifier($tableName)
+                   . ' WHERE ' . $conn->quoteIdentifier($id)
+                   . ' IN (SELECT ' . $conn->quoteIdentifier($id)
+                   . ' FROM ' . $conn->quoteIdentifier($this->_options['pluginTable']->getTableName())
+                   . ' WHERE keyword IS NULL)';
+    
+            $rows = $conn->fetchAll($query);
+    
+            foreach ($rows as $row) {
+                foreach ($fields as $field) {
+                    $data  = $row[$field];
+        
+                    $terms = $this->analyze($data);
+        
+                    foreach ($terms as $pos => $term) {
+                        $index = new $class();
+        
+                        $index->keyword = $term;
+                        $index->position = $pos;
+                        $index->field = $field;
+                        
+                        foreach ((array) $this->_options['ownerTable']->getIdentifier() as $id) {
+                            $index->$id = $row[$id];
+                        }
+    
+                        $index->save();
+                    }
                 }
             }
+
+            $conn->commit();
+        } catch (Doctrine_Exception $e) {
+            $conn->rollback();
         }
     }
     /**
@@ -146,6 +164,8 @@ class Doctrine_Search extends Doctrine_Plugin
 
         $className = $this->getOption('className');
         
+        $this->_options['ownerTable'] = $table;
+
         if (class_exists($className)) {
             return false;
         }
@@ -165,7 +185,7 @@ class Doctrine_Search extends Doctrine_Plugin
         $id = $table->getIdentifier();
 
         $options = array('className' => $className);
-        
+
         $fk = $this->generateForeignKeys($table);
         $columns += $fk;
 
