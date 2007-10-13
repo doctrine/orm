@@ -118,7 +118,7 @@ class Doctrine_Plugin
             unset($def['sequence']);
             unset($def['primary']);
 
-            $col = strtolower(Doctrine::tableize($table->getComponentName()) . '_' . $column);
+            $col = $column;
 
             $def['primary'] = true;
             $fk[$col] = $def;

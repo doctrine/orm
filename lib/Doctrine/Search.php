@@ -68,13 +68,21 @@ class Doctrine_Search extends Doctrine_Plugin
         $name   = $record->getTable()->getComponentName();
 
         if ($this->_options['batchUpdates'] === true) {
-            $conn->insert(Doctrine::tableize($class), array('foreign_id' => $id));
+
+            $conn = $record->getTable()->getConnection();
+            
+            $index = new $class(); 
+            foreach ($record->identifier() as $id => $value) {
+                $index->$id = $value;
+            }
+            
+            $index->save();
         } else {
             foreach ($fields as $field) {
                 $data  = $record->get($field);
     
                 $terms = $this->analyze($data);
-    
+
                 foreach ($terms as $pos => $term) {
                     $index = new $class();
     
@@ -82,7 +90,7 @@ class Doctrine_Search extends Doctrine_Plugin
                     $index->position = $pos;
                     $index->field = $field;
                     $index->$name = $record;
-                    
+
                     $index->save();
                 }
             }
@@ -144,12 +152,10 @@ class Doctrine_Search extends Doctrine_Plugin
 
         $columns = array('keyword'  => array('type'    => 'string',
                                              'length'  => 200,
-                                             'notnull' => true,
                                              'primary' => true,
                                              ),
                          'field'    => array('type'    => 'string',
                                              'length'  => 50,
-                                             'notnull' => true,
                                              'primary' => true),
                          'position' => array('type'    => 'integer',
                                              'length'  => 8,
@@ -159,34 +165,14 @@ class Doctrine_Search extends Doctrine_Plugin
         $id = $table->getIdentifier();
 
         $options = array('className' => $className);
-
-
-        $fk = array();
-        foreach ((array) $id as $column) {
-            $def = $table->getDefinitionOf($column);
-
-            unset($def['autoincrement']);
-            unset($def['sequence']);
-            unset($def['primary']);
-
-            $col = strtolower(Doctrine::tableize($name) . '_' . $column);
-
-            $def['primary'] = true;
-            $fk[$col] = $def;
-        }
         
-        $local = (count($fk) > 1) ? array_keys($fk) : key($fk);
-        
-        $relations = array($name => array('local' => $local,
-                                          'foreign' => $id, 
-                                          'onDelete' => 'CASCADE',
-                                          'onUpdate' => 'CASCADE'));
-
-
+        $fk = $this->generateForeignKeys($table);
         $columns += $fk;
-        
+
+        $relations = $this->generateRelation($table, $fk);
+
         $this->generateClass($options, $columns, $relations);
-        
+
         $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
 
         return true;
