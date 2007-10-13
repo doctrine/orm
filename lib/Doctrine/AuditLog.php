@@ -97,10 +97,10 @@ class Doctrine_AuditLog extends Doctrine_Plugin
 
         $options = array('className' => $className);
         
-        $relations = array($name => array('local' => $local,
+        $relations = array($name => array('local' => $id,
                                           'foreign' => $id, 
                                           'onDelete' => 'CASCADE',
-                                          'onUpdate' => 'CASCADE'));                                           
+                                          'onUpdate' => 'CASCADE'));
 
         $this->generateClass($options, $columns, array());
         
