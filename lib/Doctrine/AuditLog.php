@@ -97,7 +97,7 @@ class Doctrine_AuditLog extends Doctrine_Plugin
 
         $options = array('className' => $className);
 
-        $this->generateDefinition($options, $columns, array());
+        $this->generateClass($options, $columns, array());
         
         $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
 
