@@ -34,7 +34,9 @@ class Doctrine_Search
 {
     protected $_options = array('generateFiles' => false,
                                 'className'     => '%CLASS%Index',
-                                'generatePath'  => false);
+                                'generatePath'  => false,
+                                'batchUpdates'  => false,
+                                'pluginTable'   => false);
 
     
     public function __construct(array $options)
@@ -51,7 +53,7 @@ class Doctrine_Search
         if (isset($this->_options[$option])) {
             return $this->_options[$option];
         }
-        
+
         throw new Doctrine_Search_Exception('Unknown option ' . $option);
     }
     
@@ -79,20 +81,24 @@ class Doctrine_Search
         $class  = $this->getOption('className');
         $name   = $record->getTable()->getComponentName();
 
-        foreach ($fields as $field) {
-            $data  = $record->get($field);
-
-            $terms = $this->analyze($data);
-
-            foreach ($terms as $pos => $term) {
-                $index = new $class();
-
-                $index->keyword = $term;
-                $index->position = $pos;
-                $index->field = $field;
-                $index->$name = $record;
-                
-                $index->save();
+        if ($this->_options['batchUpdates'] === true) {
+            $conn->insert(Doctrine::tableize($class), array('foreign_id' => $id));
+        } else {
+            foreach ($fields as $field) {
+                $data  = $record->get($field);
+    
+                $terms = $this->analyze($data);
+    
+                foreach ($terms as $pos => $term) {
+                    $index = new $class();
+    
+                    $index->keyword = $term;
+                    $index->position = $pos;
+                    $index->field = $field;
+                    $index->$name = $record;
+                    
+                    $index->save();
+                }
             }
         }
     }
@@ -209,6 +215,8 @@ class Doctrine_Search
             eval($def);
         }
         
+        $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
+
         return true;
     }
 }
