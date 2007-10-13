@@ -80,13 +80,19 @@ class Doctrine_Template extends Doctrine_Record_Abstract
     {
         return $this->_invoker;
     }
-    public function get()
-    {
-        throw new Exception();	
-    }
+
     public function getPlugin()
     {
         return $this->_plugin;
+    }
+
+    public function get($name) 
+    {
+        throw new Doctrine_Exception("Templates doesn't support accessors.");
+    }
+    public function set($name, $value)
+    {
+        throw new Doctrine_Exception("Templates doesn't support accessors.");
     }
     public function setUp()
     {
