@@ -102,7 +102,7 @@ class DoctrineTest_Coverage
             if ( $info['type'] == "covered") {
                 echo '<td><a href="' , $class , '.html">', $class , '</a></td>';
             } else {
-                echo '<td> not covered</td>';
+                echo '<td>not tested</td>';
             }
             echo '</tr>';
         }
