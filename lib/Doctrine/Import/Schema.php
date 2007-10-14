@@ -26,7 +26,7 @@
  * methods is simple. Some people will like the idea of producing Doctrine_Record
  * objects directly, which is totally fine. But in fast and growing application,
  * table definitions tend to be a little bit more volatile. importArr() can be used
- * to output a table definition in a PHP file. This file can then be stored 
+ * to output a table definition in a PHP file. This file can then be stored
  * independantly from the object itself.
  *
  * @package     Doctrine
@@ -40,6 +40,7 @@
 class Doctrine_Import_Schema
 {
     public $relations = array();
+    public $indexes = array();
     public $generateBaseClasses = false;
     
     public function generateBaseClasses($bool = null)
@@ -59,7 +60,7 @@ class Doctrine_Import_Schema
 
         $this->buildRelationships($array);
         
-        return array('schema' => $array, 'relations' => $this->relations);
+        return array('schema' => $array, 'relations' => $this->relations, 'indexes' => $this->indexes);
     }
     /**
      * importSchema
@@ -69,7 +70,7 @@ class Doctrine_Import_Schema
      * @param  string $schema       The file containing the XML schema
      * @param  string $directory    The directory where the Doctrine_Record class will be written
      * @param  array $models        Optional array of models to import
-     * 
+     *
      * @access public
      */
     public function importSchema($schema, $format = 'yml', $directory = null, $models = array())
@@ -89,7 +90,7 @@ class Doctrine_Import_Schema
             
             $options = $this->getOptions($properties, $directory);
             $columns = $this->getColumns($properties);
-            $relations = $this->getRelations($properties);            
+            $relations = $this->getRelations($properties);
             
             $builder->buildRecord($options, $columns, $relations);
         }
@@ -118,11 +119,16 @@ class Doctrine_Import_Schema
     {
       return isset($this->relations[$properties['className']]) ? $this->relations[$properties['className']]:array();
     }
+
+    public function getIndexes($properties)
+    {
+      return isset($properties['indexes']) ? $properties['indexes']:array();;
+    }
     
     /**
      * parseSchema
      *
-     * A method to parse a Yml Schema and translate it into a property array. 
+     * A method to parse a Yml Schema and translate it into a property array.
      * The function returns that property array.
      *
      * @param  string $schema   Path to the file containing the XML schema
@@ -164,6 +170,7 @@ class Doctrine_Import_Schema
                 $build[$className]['tableName'] = $tableName;
                 $build[$className]['columns'] = $columns;
                 $build[$className]['relations'] = isset($table['relations']) ? $table['relations']:array();
+                $build[$className]['indexes'] = isset($table['indexes']) ? $table['indexes']:array();
             }
             
             if (isset($table['inheritance'])) {
@@ -181,14 +188,14 @@ class Doctrine_Import_Schema
                 continue;
             }
             
-            $className = $properties['className'];     
+            $className = $properties['className'];
             $relations = $properties['relations'];
             
             foreach ($relations as $alias => $relation) {
  
                 $class = isset($relation['class']) ? $relation['class']:$alias;
                 
-                $relation['foreign'] = isset($relation['foreign'])?$relation['foreign']:'id';                
+                $relation['foreign'] = isset($relation['foreign'])?$relation['foreign']:'id';
                 $relation['alias'] = isset($relation['alias']) ? $relation['alias'] : $alias;
                 $relation['class'] = $class;
                 
@@ -236,7 +243,7 @@ class Doctrine_Import_Schema
                 if(isset($relation['foreignType'])) {
                     $newRelation['type'] = $relation['foreignType'];
                 } else {
-                    $newRelation['type'] = $relation['type'] === Doctrine_Relation::ONE ? Doctrine_Relation::MANY:Doctrine_Relation::ONE; 
+                    $newRelation['type'] = $relation['type'] === Doctrine_Relation::ONE ? Doctrine_Relation::MANY:Doctrine_Relation::ONE;
                 }
                 
                 if( isset($this->relations[$relation['class']]) && is_array($this->relations[$relation['class']]) ) {

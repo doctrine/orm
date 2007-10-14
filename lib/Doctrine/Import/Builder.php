@@ -74,7 +74,7 @@ class Doctrine_Import_Builder
      *
      * Specify whether or not to generate classes which extend from generated base classes
      *
-     * @param string $bool 
+     * @param string $bool
      * @return void
      * @author Jonathan H. Wage
      */
@@ -128,7 +128,7 @@ END;
      * @param  string $table
      * @param  array  $tableColumns
      */
-    public function buildTableDefinition(array $options, array $columns, array $relations)
+    public function buildTableDefinition(array $options, array $columns, array $relations, array $indexes)
     {
         $ret = array();
         
@@ -189,6 +189,60 @@ END;
             if ($i < (count($columns) - 1)) {
                 $ret[$i] .= PHP_EOL;
             }
+            $i++;
+        }
+        
+        foreach ($indexes as $indexName => $definitions) {
+            $ret[$i] = "\n".'        $this->index(\'' . $indexName . '\', array(';
+            
+            foreach ($definitions as $name => $value) {
+              
+              // parse fields
+              if ($name === 'fields') {
+                $ret[$i] .= '\'fields\' => array(';
+                
+                foreach ($value as $fieldName => $fieldValue) {
+                  $ret[$i] .= '\'' . $fieldName . '\' => array( ';
+                  
+                  // parse options { sorting, length, primary }
+                  if (isset($fieldValue) && $fieldValue) {
+                    foreach ($fieldValue as $optionName => $optionValue) {
+                      
+                      $ret[$i] .= '\'' . $optionName . '\' => ';
+                      
+                      // check primary option, mark either as true or false
+                      if ($optionName === 'primary') {
+                      	$ret[$i] .= (($optionValue == 'true') ? 'true' : 'false') . ', ';
+                      	continue;
+                      }
+                      
+                      // convert sorting option to uppercase, for instance, asc -> ASC
+                      if ($optionName === 'sorting') {
+                      	$ret[$i] .= '\'' . strtoupper($optionValue) . '\', ';
+                      	continue;
+                      }
+                      
+                      // check the rest of the options
+                      $ret[$i] .= '\'' . $optionValue . '\', ';
+                    }
+                  }
+                                    
+                  $ret[$i] .= '), ';
+                }
+              }
+              
+              // parse index type option, 4 choices { unique, fulltext, gist, gin }
+              if ($name === 'type') {
+              	$ret[$i] .= '), \'type\' => \'' . $value . '\'';
+              }
+              
+              // add extra ) if type definition is not declared
+              if (!isset($definitions['type'])) {
+              	$ret[$i] .= ')';
+              }
+            }
+            
+            $ret[$i] .= '));';
             $i++;
         }
         
@@ -258,7 +312,7 @@ END;
             $i++;
         }
         
-        if (isset($options['inheritance']['keyField']) && isset($options['inheritance']['keyValue'])) {        
+        if (isset($options['inheritance']['keyField']) && isset($options['inheritance']['keyValue'])) {
             $i++;
             $ret[$i] = "\t\t".'$this->setInheritanceMap(array(\''.$options['inheritance']['keyField'].'\' => '.$options['inheritance']['keyValue'].'));';
         }
@@ -268,16 +322,16 @@ END;
         }
     }
     
-    public function buildDefinition(array $options, array $columns, array $relations = array())
+    public function buildDefinition(array $options, array $columns, array $relations = array(), array $indexes = array())
     {
         if ( ! isset($options['className'])) {
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
         }
         
-        $abstract = isset($options['abstract']) ? 'abstract ':null;        
+        $abstract = isset($options['abstract']) ? 'abstract ':null;
         $className = $options['className'];
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:'Doctrine_Record';
-        $definition = !isset($options['no_definition']) ? $this->buildTableDefinition($options, $columns, $relations):null;
+        $definition = !isset($options['no_definition']) ? $this->buildTableDefinition($options, $columns, $relations, $indexes):null;
         $setUp = !isset($options['no_definition']) ? $this->buildSetUp($options, $columns, $relations):null;
         
         $content = sprintf(self::$tpl, $abstract,
@@ -289,7 +343,7 @@ END;
         return $content;
     }
 
-    public function buildRecord(array $options, array $columns, array $relations = array())
+    public function buildRecord(array $options, array $columns, array $relations = array(), array $indexes = array())
     {
         if ( !isset($options['className'])) {
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
@@ -334,15 +388,15 @@ END;
           $options['abstract'] = true;
           $options['fileName']  = $generatedPath . DIRECTORY_SEPARATOR . $options['className'] . $this->suffix;
           
-          $this->writeDefinition($options, $columns, $relations);
+          $this->writeDefinition($options, $columns, $relations, $indexes);
         } else {
-          $this->writeDefinition($options, $columns, $relations);
+          $this->writeDefinition($options, $columns, $relations, $indexes);
         }
     }
     
-    public function writeDefinition(array $options, array $columns, array $relations = array())
+    public function writeDefinition(array $options, array $columns, array $relations = array(), array $indexes = array())
     {
-      $content = $this->buildDefinition($options, $columns, $relations);
+      $content = $this->buildDefinition($options, $columns, $relations, $indexes);
       
       $code = "<?php\n";
       
