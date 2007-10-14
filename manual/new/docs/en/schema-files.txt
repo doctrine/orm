@@ -192,6 +192,51 @@ abstract class BaseUserGroup extends sfDoctrineRecord
 }
 </code>
 
+++ Indexes
+
+Please see chapter [doc basic-schema-mapping :index :name] for more information about indexes and their options.
+
+schema.yml
+<code type="yml">
+---
+UserProfile:
+  tableName: user_profile
+  columns:
+    user_id: { type: integer, length: 4, primary: true, autoincrement: true }
+    first_name: { type: string, length: 20 }
+    last_name: { type: string, length: 20 }
+  indexes:
+    name_index:
+      fields:
+        first_name:
+          sorting: ASC
+          length: 10
+          primary: true
+        last_name: ~
+      type: unique
+</code>
+
+This is the PHP line of code that is auto-generated inside setTableDefinition() inside your base model class.
+
+Note: Don't mind the extra trailing commas. This is normal and they should not affect anything negatively.
+
+<code type="php">
+<?php
+
+class BaseUserProfile extends Doctrine_Record
+{
+
+	public function setTableDefinition()
+	{
+        // code
+
+		$this->index('name_index', array('fields' => array('first_name' => array( 'sorting' => 'ASC', 'length' => '10', 'primary' => true, ), 'last_name' => array( ), ), 'type' => 'unique'));
+	}
+}
+
+?>
+</code>
+
 ++ Additional Schema Options
 
 It isn't necessary to define both sides of a relationship in the schema.yml file as doctrine will attempt to autocomplete the relationships for you. If you choose to define only one side of the relationship, there are two yaml options you can pass to help doctrine decide how to complete the opposite end of the relationship. For example.
