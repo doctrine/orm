@@ -32,11 +32,16 @@
  */
 class Doctrine_Search extends Doctrine_Plugin
 {
+    const INDEX_FILES = 0;
+
+    const INDEX_TABLE = 1;
+
     protected $_options = array('generateFiles' => false,
                                 'className'     => '%CLASS%Index',
                                 'generatePath'  => false,
                                 'batchUpdates'  => false,
-                                'pluginTable'   => false);
+                                'pluginTable'   => false,
+                                'fields'        => array());
 
     
     public function __construct(array $options)
@@ -97,6 +102,12 @@ class Doctrine_Search extends Doctrine_Plugin
         }
     }
 
+    public function readTableData($limit = null, $offset = null)
+    {
+    	
+    	
+    }
+
     public function processPending($limit = null, $offset = null)
     {
     	$conn      = $this->_options['ownerTable']->getConnection();
@@ -115,9 +126,19 @@ class Doctrine_Search extends Doctrine_Plugin
                    . ' IN (SELECT ' . $conn->quoteIdentifier($id)
                    . ' FROM ' . $conn->quoteIdentifier($this->_options['pluginTable']->getTableName())
                    . ' WHERE keyword IS NULL)';
+                   
+            $query = $conn->modifyLimitQuery($query, $limit, $offset);
     
             $rows = $conn->fetchAll($query);
     
+            foreach ($rows as $row) {
+                $ids[] = $row[$id];
+            }
+
+            $conn->exec('DELETE FROM ' 
+                        . $conn->quoteIdentifier($this->_options['pluginTable']->getTableName())
+                        . ' WHERE ' . $conn->quoteIdentifier($id) . ' IN (' . implode(', ', $ids) . ')');
+                        
             foreach ($rows as $row) {
                 foreach ($fields as $field) {
                     $data  = $row[$field];
@@ -131,8 +152,8 @@ class Doctrine_Search extends Doctrine_Plugin
                         $index->position = $pos;
                         $index->field = $field;
                         
-                        foreach ((array) $this->_options['ownerTable']->getIdentifier() as $id) {
-                            $index->$id = $row[$id];
+                        foreach ((array) $id as $identifier) {
+                            $index->$identifier = $row[$identifier];
                         }
     
                         $index->save();
