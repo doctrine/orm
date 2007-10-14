@@ -40,6 +40,7 @@ $revision = $svn_info[1];
     <h1>Coverage report for Doctrine</h1>
     <p>Report generated against revision <?php echo $reporter->getRevision(); ?> current HEAD revision is <?php echo $revision ?>.</p>
     <p>Default mode shows results sorted by percentage with highest first. Customize the ordering with the following GET parameters:<br /> <ul><li>order = covered|total|maybe|notcovered|percentage</li><li>flip=true</li></ul></p>
+<p>Files that are not linked in the below table are not tested at all.</p>
     <table>
         <tr>
             <th></th>

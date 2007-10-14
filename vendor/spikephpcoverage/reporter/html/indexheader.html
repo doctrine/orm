@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>%%heading%%</title>
+    <link href="css/%%style%%" rel="stylesheet" type="text/css"/>
+    <script  language="JavaScript" type="text/javascript" src="js/sort_spikesource.js"> </script> 
+    <script language="JavaScript" type="text/javascript">
+
+      var tableSorter = null;
+
+      function initSorting() {
+        if (document.getElementById("table2sort")) {
+          tableSorter = new TableSorter(document.getElementById("table2sort"));
+          // initialize table
+          tableSorter.initTable();
+          // collapse all
+          collapseAll();
+        }
+      }
+
+function sort(col, type) {
+  if (tableSorter != null) {
+    tableSorter.sort(col, type);
+  }
+}
+
+function toggleShowChildren(id) { tableSorter.togglechildren(id); }
+function collapseAll() { tableSorter.collapseAllChildren(); }
+function expandAll() { tableSorter.expandAllChildren(); }
+
+</script>
+  </head>
+  <body onload="initSorting(); sort(5, 'percentage'); sort(5,'percentage');">
+    <div id="pageBox" >
+      <table id="navBox" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style=""><img align="bottom" name="logo" src="images/spikesource/phpcoverage.gif" alt="home" border="0" height="82" width="800"/></td>
+        </td>
+      </tr>
+    </table>
+

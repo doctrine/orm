@@ -118,6 +118,29 @@ class DoctrineTest
 
         //generate coverage report
         if (isset($options['coverage'])) {
+
+            /*
+             * The below code will not work for me (meus). It would be nice if 
+             * somebody could give it a try. Just replace this block of code 
+             * with the one below
+             *
+            define('PHPCOVERAGE_HOME', dirname(dirname(__FILE__)) . '/vendor/spikephpcoverage');
+            require_once PHPCOVERAGE_HOME . '/CoverageRecorder.php';
+            require_once PHPCOVERAGE_HOME . '/reporter/HtmlCoverageReporter.php';
+
+            $covReporter = new HtmlCoverageReporter('Doctrine Code Coverage Report', '', 'coverage2');
+
+            $includePaths = array('../lib');
+            $excludePaths = array();
+            $cov = new CoverageRecorder($includePaths, $excludePaths, $covReporter);
+
+            $cov->startInstrumentation();
+            $testGroup->run($reporter, $filter);
+            $cov->stopInstrumentation();
+
+            $cov->generateReport();
+            $covReporter->printTextSummary();
+             */
             xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
             $testGroup->run($reporter, $filter);
             $result['coverage'] = xdebug_get_code_coverage();
@@ -126,6 +149,7 @@ class DoctrineTest
             require_once dirname(__FILE__) . '/DoctrineTest/Coverage.php';
             $coverageGeneration = new DoctrineTest_Coverage();
             $coverageGeneration->generateReport();
+            // */
         } else {
             $testGroup->run($reporter, $filter);
         }

@@ -98,13 +98,14 @@ class DoctrineTest_Coverage
             $totals['notcovered'] , '</td><td></tr>';
 
         foreach($coveredArray as $class => $info){
-            echo '<tr><td>' . $class . '</td><td>' . $info['percentage'] . ' % </td><td>' . $info['total'] . '</td><td>' . $info['covered'] . '</td><td>' . $info['maybe'] . '</td><td>' . $info['notcovered']. '</td>';
+
+            echo '<tr><td>';
             if ( $info['type'] == "covered") {
-                echo '<td><a href="' , $class , '.html">', $class , '</a></td>';
-            } else {
-                echo '<td>not tested</td>';
+                echo '<a href="' , $class , '.html">', $class , '</a>';
+            }else{
+                echo $class;
             }
-            echo '</tr>';
+            echo '<td>' . $info['percentage'] . ' % </td><td>' . $info['total'] . '</td><td>' . $info['covered'] . '</td><td>' . $info['maybe'] . '</td><td>' . $info['notcovered']. '</td></tr>';
         }
     }
 
