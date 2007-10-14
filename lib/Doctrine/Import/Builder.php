@@ -117,9 +117,27 @@ class Doctrine_Import_Builder
 {
 %s
 %s
+%s
 }
 END;
 
+    }
+
+    /*
+     * Build the accessors
+     *
+     * @param  string $table
+     * @param  array  $tableColumns
+     */
+    public function buildAccessors(array $options, array $columns)
+    {
+      $ret = '';
+      foreach ($columns as $name => $column) {
+        $ret .= "\tpublic function get{$name}() {\n";
+        $ret .= "\t\treturn \$this->{$name};\n";
+        $ret .= "\t}\n";
+      }
+      return $ret;
     }
 
     /*
@@ -253,10 +271,9 @@ END;
     public function buildSetUp(array $options, array $columns, array $relations)
     {
         $ret = array();
-        
         $i = 0;
         
-        if (isset($options['inheritance']['extends']) && !isset($options['override_parent'])) {
+        if (! (isset($options['override_parent']) && $options['override_parent'] == true)) {
             $ret[$i] = "\t\t\t\tparent::setUp();";
             $i++;
         }
@@ -327,18 +344,27 @@ END;
         if ( ! isset($options['className'])) {
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
         }
-        
-        $abstract = isset($options['abstract']) ? 'abstract ':null;
+
+        $abstract = isset($options['abstract']) && $options['abstract'] == true ? 'abstract ':null;
         $className = $options['className'];
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:'Doctrine_Record';
-        $definition = !isset($options['no_definition']) ? $this->buildTableDefinition($options, $columns, $relations, $indexes):null;
-        $setUp = !isset($options['no_definition']) ? $this->buildSetUp($options, $columns, $relations):null;
+
+        if (isset($options['no_definition']) && $options['no_definition'] == false) {
+            $definition = null;
+            $setUp = null;
+        } else {
+            $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes);
+            $setUp = $this->buildSetUp($options, $columns, $relations);
+        }
+        
+        $accessors = isset($options['generate_accessors']) && $options['generate_accessors'] == true ? $this->buildAccessors($options, $columns):null;
         
         $content = sprintf(self::$tpl, $abstract,
                                        $className,
                                        $extends,
                                        $definition,
-                                       $setUp);
+                                       $setUp,
+                                       $accessors);
         
         return $content;
     }
@@ -397,7 +423,6 @@ END;
     public function writeDefinition(array $options, array $columns, array $relations = array(), array $indexes = array())
     {
       $content = $this->buildDefinition($options, $columns, $relations, $indexes);
-      
       $code = "<?php\n";
       
       if (isset($options['requires'])) {
@@ -409,7 +434,6 @@ END;
               $code .= "require_once('".$require."');";
           }
       }
-      
       $code .= PHP_EOL . $content;
       
       $bytes = file_put_contents($options['fileName'], $code);
