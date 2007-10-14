@@ -35,7 +35,8 @@ class Doctrine_Plugin
     /**
      * @var array $_options     an array of plugin specific options
      */
-    protected $_options = array('generateFiles' => false);
+    protected $_options = array('generateFiles' => false,
+                                'identifier'    => false);
     /**
      * __get
      * an alias for getOption
@@ -81,10 +82,6 @@ class Doctrine_Plugin
      */
     public function setOption($name, $value)
     {
-        if ( ! isset($this->_options[$name])) {
-            throw new Doctrine_Plugin_Exception('Unknown option ' . $name);
-        }
-
         $this->_options[$name] = $value;
         
         return $this;

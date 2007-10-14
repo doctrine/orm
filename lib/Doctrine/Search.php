@@ -34,14 +34,18 @@ class Doctrine_Search extends Doctrine_Plugin
 {
     const INDEX_FILES = 0;
 
-    const INDEX_TABLE = 1;
+    const INDEX_TABLES = 1;
 
     protected $_options = array('generateFiles' => false,
+                                'type'          => self::INDEX_TABLES,
                                 'className'     => '%CLASS%Index',
                                 'generatePath'  => false,
+                                'resource'      => null,
                                 'batchUpdates'  => false,
                                 'pluginTable'   => false,
-                                'fields'        => array());
+                                'fields'        => array(),
+                                'identifier'    => null,
+                                'connection'    => null);
 
     
     public function __construct(array $options)
@@ -50,6 +54,9 @@ class Doctrine_Search extends Doctrine_Plugin
         
         if ( ! isset($this->_options['analyzer'])) {
             $this->_options['analyzer'] = new Doctrine_Search_Analyzer_Standard();
+        }
+        if ( ! isset($this->_options['connection'])) {
+            $this->_options['connection'] = Doctrine_Manager::connection();
         }
     }
 
@@ -104,33 +111,34 @@ class Doctrine_Search extends Doctrine_Plugin
 
     public function readTableData($limit = null, $offset = null)
     {
-    	
+        $conn      = $this->_options['resource']->getConnection();
+        $tableName = $this->_options['resource']->getTableName();
+        $id        = $this->_options['identifier'];
+
+        $query = 'SELECT * FROM ' . $conn->quoteIdentifier($tableName)
+               . ' WHERE ' . $conn->quoteIdentifier($id)
+               . ' IN (SELECT ' . $conn->quoteIdentifier($id)
+               . ' FROM ' . $conn->quoteIdentifier($this->_options['pluginTable']->getTableName())
+               . ' WHERE keyword IS NULL)';
+
+        $query = $conn->modifyLimitQuery($query, $limit, $offset);
+
+        return $conn->fetchAll($query);
     	
     }
 
     public function processPending($limit = null, $offset = null)
     {
-    	$conn      = $this->_options['ownerTable']->getConnection();
-        $tableName = $this->_options['ownerTable']->getTableName();
-        $component = $this->_options['ownerTable']->getComponentName();
-        $id        = $this->_options['ownerTable']->getIdentifier();
-        $class     = $this->getOption('className');
-        $fields    = $this->getOption('fields');
-
+        $id        = $this->_options['identifier'];
+        $class     = $this->_options['className'];
+        $fields    = $this->_options['fields'];
+        $conn      = $this->_options['connection'];
         try {
 
             $conn->beginTransaction();
-    
-            $query = 'SELECT * FROM ' . $conn->quoteIdentifier($tableName)
-                   . ' WHERE ' . $conn->quoteIdentifier($id)
-                   . ' IN (SELECT ' . $conn->quoteIdentifier($id)
-                   . ' FROM ' . $conn->quoteIdentifier($this->_options['pluginTable']->getTableName())
-                   . ' WHERE keyword IS NULL)';
-                   
-            $query = $conn->modifyLimitQuery($query, $limit, $offset);
-    
-            $rows = $conn->fetchAll($query);
-    
+
+            $rows = $this->readTableData($limit, $offset);
+
             foreach ($rows as $row) {
                 $ids[] = $row[$id];
             }
@@ -179,13 +187,9 @@ class Doctrine_Search extends Doctrine_Plugin
 
         $conn->insert($indexTableName, array('foreign_id' => $id));
     }
-    public function buildDefinition(Doctrine_Table $table)
+    public function buildDefinition()
     {
-        $name = $table->getComponentName();
-
         $className = $this->getOption('className');
-        
-        $this->_options['ownerTable'] = $table;
 
         if (class_exists($className)) {
             return false;
@@ -203,18 +207,18 @@ class Doctrine_Search extends Doctrine_Plugin
                                              'primary' => true,
                                              ));
 
-        $id = $table->getIdentifier();
+        $id = $this->_options['identifier'];
 
         $options = array('className' => $className);
 
-        $fk = $this->generateForeignKeys($table);
+        $fk = $this->generateForeignKeys($this->_options['resource']);
         $columns += $fk;
 
-        $relations = $this->generateRelation($table, $fk);
+        $relations = $this->generateRelation($this->_options['resource'], $fk);
 
         $this->generateClass($options, $columns, $relations);
 
-        $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
+        $this->_options['pluginTable'] = $this->_options['connection']->getTable($this->_options['className']);
 
         return true;
     }
