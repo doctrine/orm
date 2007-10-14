@@ -373,7 +373,7 @@ END;
             $options['requires'] = array($this->baseClassesDirectory . DIRECTORY_SEPARATOR  . $options['inheritance']['extends'] . $this->suffix);
             $options['no_definition'] = true;
             
-            $this->writeDefinition($options, array(), array());
+            $this->writeDefinition($options, array(), array(), array());
             
             $options = $optionsBak;
           }
