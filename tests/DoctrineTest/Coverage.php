@@ -84,7 +84,7 @@ class DoctrineTest_Coverage
         uasort($coveredArray, array($this,"sortArray"));
 
         //and flip if it perhaps?
-        if (isset($_GET["desc"]) && $_GET["desc"] == "true"){
+        if (isset($_GET["flip"]) && $_GET["flip"] == "true"){
             $coveredArray = array_reverse($coveredArray, true);
         }
 
@@ -332,6 +332,6 @@ class DoctrineTest_Coverage
         if ($a[$this->sortBy] == $b[$this->sortBy]) {
             return 0;
         }
-        return ( $a[$this->sortBy] < $b[$this->sortBy]) ? -1 : 1;
+        return ( $a[$this->sortBy] < $b[$this->sortBy]) ? 1 : -1;
     }
 }
