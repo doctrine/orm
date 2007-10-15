@@ -145,7 +145,7 @@ class Doctrine_Migration
             $e = explode('_', $fileName);
             $classMigrationNum = (int) $e[0];
             
-            $loadedClasses[$classMigrationNum] = $fileName;
+            $loadedClasses[$classMigrationNum] = array('className' => $name, 'fileName' => $fileName);
         }
         
         $this->migrationClasses = $loadedClasses;
@@ -228,7 +228,7 @@ class Doctrine_Migration
         $this->loadMigrationClasses();
         
         $versions = array();
-        foreach ($this->migrationClasses as $classMigrationNum => $fileName) {
+        foreach (array_keys($this->migrationClasses) as $classMigrationNum) {
             $versions[$classMigrationNum] = $classMigrationNum;
         }
         
@@ -252,8 +252,10 @@ class Doctrine_Migration
      */
     protected function getMigrationClass($num)
     {
-        foreach ($this->migrationClasses as $classMigrationNum => $fileName) {
-            if ($classMigrationNum === $num) {
+        foreach ($this->migrationClasses as $classMigrationNum => $info) {
+            $className = $info['className'];
+            
+            if ($classMigrationNum == $num) {
                 return new $className();
             }
         }
