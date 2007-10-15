@@ -39,21 +39,16 @@ class Doctrine_Task_GenerateSql extends Doctrine_Task
     
     public function execute()
     {
-        $sql = Doctrine::generateSqlFromModels($this->getArgument('models_path'));
-        
         if (is_dir($this->getArgument('sql_path'))) {
             $path = $this->getArgument('sql_path') . DIRECTORY_SEPARATOR . 'schema.sql';
         } else if (is_file($this->getArgument('sql_path'))) {
             $path = $this->getArgument('sql_path');
         } else {
-            throw new Doctrine_Cli_Exception('Invalid sql path.');
+            throw new Doctrine_Task_Exception('Invalid sql path.');
         }
         
-        $build = '';
-        foreach ($sql as $query) {
-            $build .= $query.";\n";
-        }
+        $sql = Doctrine_Facade::generateSqlFromModels($this->getArgument('models_path'));
         
-        file_put_contents($path, $build);
+        file_put_contents($path, $sql);
     }
 }

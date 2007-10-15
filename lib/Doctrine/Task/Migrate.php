@@ -38,6 +38,6 @@ class Doctrine_Task_Migrate extends Doctrine_Task
     
     public function execute()
     {
-        Doctrine::migrate($this->getArgument('version'));
+        Doctrine_Facade::migrate($this->getArgument('version'));
     }
 }

@@ -189,6 +189,7 @@ final class Doctrine
      * constant for row limiting
      */
     const LIMIT_ROWS       = 1;
+    
     /**
      * constant for record limiting
      */
@@ -203,16 +204,19 @@ final class Doctrine
      * mode for immediate fetching
      */
     const FETCH_IMMEDIATE       = 0;
+    
     /**
      * BATCH FETCHING
      * mode for batch fetching
      */
     const FETCH_BATCH           = 1;
+    
     /**
      * LAZY FETCHING
      * mode for offset fetching
      */
     const FETCH_OFFSET          = 3;
+    
     /**
      * LAZY OFFSET FETCHING
      * mode for lazy offset fetching
@@ -228,6 +232,7 @@ final class Doctrine
      * FETCH VALUEHOLDER
      */
     const FETCH_VHOLDER         = 1;
+    
     /**
      * FETCH RECORD
      *
@@ -237,11 +242,12 @@ final class Doctrine
      * This is the default fetchmode.
      */
     const FETCH_RECORD          = 2;
+    
     /**
      * FETCH ARRAY
      */
-
     const FETCH_ARRAY           = 3;
+    
     /**
      * PORTABILITY CONSTANTS
      */
@@ -251,6 +257,7 @@ final class Doctrine
      * @see Doctrine::ATTR_PORTABILITY
      */
     const PORTABILITY_NONE          = 0;
+    
     /**
      * Portability: convert names of tables and fields to case defined in the
      * "field_case" option when using the query*(), fetch*() methods.
@@ -263,27 +270,32 @@ final class Doctrine
      * @see Doctrine::ATTR_PORTABILITY
      */
     const PORTABILITY_RTRIM         = 2;
+    
     /**
      * Portability: force reporting the number of rows deleted.
      * @see Doctrine::ATTR_PORTABILITY
      */
     const PORTABILITY_DELETE_COUNT  = 4;
+    
     /**
      * Portability: convert empty values to null strings in data output by
      * query*() and fetch*().
      * @see Doctrine::ATTR_PORTABILITY
      */
     const PORTABILITY_EMPTY_TO_NULL = 8;
+    
     /**
      * Portability: removes database/table qualifiers from associative indexes
      * @see Doctrine::ATTR_PORTABILITY
      */
     const PORTABILITY_FIX_ASSOC_FIELD_NAMES = 16;
+    
     /**
      * Portability: makes Doctrine_Expression throw exception for unportable RDBMS expressions
      * @see Doctrine::ATTR_PORTABILITY
      */
     const PORTABILITY_EXPR          = 32;
+    
     /**
      * Portability: turn on all portability features.
      * @see Doctrine::ATTR_PORTABILITY
@@ -298,10 +310,12 @@ final class Doctrine
      * mode for optimistic locking
      */
     const LOCK_OPTIMISTIC       = 0;
+    
     /**
      * mode for pessimistic locking
      */
     const LOCK_PESSIMISTIC      = 1;
+    
     /**
      * EXPORT CONSTANTS
      */
@@ -310,18 +324,22 @@ final class Doctrine
      * turns of exporting
      */
     const EXPORT_NONE               = 0;
+    
     /**
      * export tables
      */
     const EXPORT_TABLES             = 1;
+    
     /**
      * export constraints
      */
     const EXPORT_CONSTRAINTS        = 2;
+    
     /**
      * export plugins
      */
     const EXPORT_PLUGINS            = 4;
+    
     /**
      * export all
      */
@@ -351,41 +369,58 @@ final class Doctrine
      * constant for auto_increment identifier
      */
     const IDENTIFIER_AUTOINC        = 1;
+    
     /**
      * constant for sequence identifier
      */
     const IDENTIFIER_SEQUENCE       = 2;
+    
     /**
      * constant for normal identifier
      */
     const IDENTIFIER_NATURAL        = 3;
+    
     /**
      * constant for composite identifier
      */
     const IDENTIFIER_COMPOSITE      = 4;
+    
     /**
-     * constructor
+     * @var string $path            doctrine root directory
+     */
+    private static $_path;
+    
+    /**
+     * @var boolean $_debug
+     */
+    private static $_debug = false;
+    
+    /**
+     * __construct
+     *
+     * @return void
+     * @throws Doctrine_Exception
      */
     public function __construct()
     {
         throw new Doctrine_Exception('Doctrine is static class. No instances can be created.');
     }
+    
     /**
-     * @var string $path            doctrine root directory
+     * debug
+     *
+     * @param string $bool 
+     * @return void
      */
-    private static $_path;
-    /**
-     * @var boolean $_debug
-     */
-    private static $_debug = false;
-
     public static function debug($bool = null)
     {
         if ($bool !== null) {
             self::$_debug = (bool) $bool;
         }
+        
         return self::$_debug;
     }
+    
     /**
      * getPath
      * returns the doctrine root
@@ -397,8 +432,10 @@ final class Doctrine
         if ( ! self::$_path) {
             self::$_path = dirname(__FILE__);
         }
+        
         return self::$_path;
     }
+    
     /**
      * loadAll
      * loads all runtime classes
@@ -407,12 +444,9 @@ final class Doctrine
      */
     public static function loadAll()
     {
-        $classes = Doctrine_Compiler::getRuntimeClasses();
-
-        foreach ($classes as $class) {
-            Doctrine::autoload($class);
-        }
+        return Doctrine_Facade::loadAllRuntimeClasses();
     }
+    
     /**
      * loadModels
      *
@@ -423,26 +457,9 @@ final class Doctrine
      */
     public static function loadModels($directory)
     {
-        $declared = get_declared_classes();
-        
-        if ($directory !== null) {
-            foreach ((array) $directory as $dir) {
-                $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
-                                                        RecursiveIteratorIterator::LEAVES_ONLY);
-
-                foreach ($it as $file) {
-                    $e = explode('.', $file->getFileName());
-                    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                        require_once $file->getPathName();
-                    }
-                }
-            }
-            
-            $declared = array_diff(get_declared_classes(), $declared);
-        }
-        
-        return self::getLoadedModels($declared);
+        return Doctrine_Facade::loadModels($directory);
     }
+    
     /**
      * getLoadedModels
      *
@@ -453,34 +470,9 @@ final class Doctrine
      */
     public static function getLoadedModels($classes = null)
     {
-        if ($classes === null) {
-            $classes = get_declared_classes();
-        }
-        
-        $parent = new ReflectionClass('Doctrine_Record');
-        
-        $loadedModels = array();
-        
-        // we iterate trhough the diff of previously declared classes
-        // and currently declared classes
-        foreach ($classes as $name) {
-            $class = new ReflectionClass($name);
-            
-            // Skip the following classes
-            // - abstract classes
-            // - not a subclass of Doctrine_Record 
-            // - don't have a setTableDefinition method
-            if ($class->isAbstract() || 
-                !$class->isSubClassOf($parent) || 
-                !$class->hasMethod('setTableDefinition')) {
-                continue;
-            }
-            
-            $loadedModels[] = $name;
-        }
-        
-        return $loadedModels;
+        return Doctrine_Facade::getLoadedModels($classes);
     }
+    
     /**
      * getConnectionByTableName
      *
@@ -491,18 +483,9 @@ final class Doctrine
      */
     public static function getConnectionByTableName($tableName)
     {
-        $loadedModels = self::getLoadedModels();
-        
-        foreach ($loadedModels as $name) {
-            $model = new $name();
-            $table = $model->getTable();
-            
-            if ($table->getTableName() == $tableName) {
-               return $table->getConnection(); 
-            }
-        }
-        return Doctrine_Manager::connection();
+        return Doctrine_Facade::getConnectionByTableName($tableName);
     }
+    
     /**
      * importSchema
      * method for importing existing schema to Doctrine_Record classes
@@ -513,56 +496,9 @@ final class Doctrine
      */
     public static function importSchema($directory, array $databases = array())
     {
-        return Doctrine_Manager::connection()->import->importSchema($directory, $databases);
+        return Doctrine_Facade::generateModelsFromDb($directory, $databases);
     }
-    /**
-     * generateModelsFromDb
-     *
-     * Generate your model definitions from an existing database
-     *
-     * @param string $directory Directory to write your models to
-     * @param string $databases Array of databases to generate models for
-     * @return void
-     */
-    public static function generateModelsFromDb($directory, array $databases = array())
-    {
-        return self::importSchema($directory, $databases);
-    }
-    /**
-     * generateYamlFromDb
-     *
-     * Generates models from database to temporary location then uses those models to generate a yaml schema file.
-     * This should probably be fixed. We should write something to generate a yaml schema file directly from the database.
-     *
-     * @param string $yamlPath Path to write oyur yaml schema file to
-     * @return void
-     */
-    public static function generateYamlFromDb($yamlPath)
-    {
-        $directory = '/tmp/tmp_doctrine_models';
-
-        Doctrine::generateModelsFromDb($directory);
-
-        $export = new Doctrine_Export_Schema();
-        
-        return $export->exportSchema($yamlPath, 'yml', $directory);
-    }
-    /**
-     * generateModelsFromYaml
-     *
-     * Generate a yaml schema file from an existing directory of models
-     *
-     * @param string $yamlPath Path to your yaml schema files
-     * @param string $directory Directory to generate your models in
-     * @return void
-     */
-    public static function generateModelsFromYaml($yamlPath, $directory)
-    {
-        $import = new Doctrine_Import_Schema();
-        $import->generateBaseClasses(true);
-        
-        return $import->importSchema($yamlPath, 'yml', $directory);
-    }
+    
     /**
      * exportSchema
      * method for exporting Doctrine_Record classes to a schema
@@ -572,199 +508,9 @@ final class Doctrine
      */
     public static function exportSchema($directory = null)
     {
-        return Doctrine_Manager::connection()->export->exportSchema($directory);
+        return Doctrine_Facade::createTablesFromModels($directory);
     }
-    /**
-     * createTablesFromModels
-     *
-     * Creates database tables for the models in the specified directory
-     *
-     * @param string $directory Directory containing your models
-     * @return void
-     */
-    public static function createTablesFromModels($directory = null)
-    {
-        return self::exportSchema($directory);
-    }
-    /**
-     * generateYamlFromModels
-     *
-     * Generate yaml schema file for the models in the specified directory
-     *
-     * @param string $yamlPath Path to your yaml schema files
-     * @param string $directory Directory to generate your models in
-     * @return void
-     */
-    public static function generateYamlFromModels($yamlPath, $directory)
-    {
-        $export = new Doctrine_Export_Schema();
-        
-        return $export->exportSchema($yamlPath, 'yml', $directory);
-    }
-    /**
-     * createDatabases
-     *
-     * Creates databases for connections
-     *
-     * @param string $specifiedConnections Array of connections you wish to create the database for
-     * @return void
-     */
-    public static function createDatabases($specifiedConnections)
-    {
-        if (!is_array($specifiedConnections)) {
-            $specifiedConnections = (array) $specifiedConnections;
-        }
-        
-        $connections = Doctrine_Manager::getInstance()->getConnections();
-        
-        foreach ($connections as $name => $connection) {
-            if (!empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
-                continue;
-            }
-            
-            $connection->export->createDatabase($name);
-        }
-    }
-    /**
-     * dropDatabases
-     *
-     * Drops databases for connections
-     *
-     * @param string $specifiedConnections Array of connections you wish to drop the database for
-     * @return void
-     */
-    public static function dropDatabases($specifiedConnections = array())
-    {
-        if (!is_array($specifiedConnections)) {
-            $specifiedConnections = (array) $specifiedConnections;
-        }
-        
-        $connections = Doctrine_Manager::getInstance()->getConnections();
-        
-        foreach ($connections as $name => $connection) {
-            if (!empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
-                continue;
-            }
-            
-            $connection->export->dropDatabase($name);
-        }
-    }
-    /**
-     * dumpData
-     *
-     * Dump data to a yaml fixtures file
-     *
-     * @param string $yamlPath Path to write the yaml data fixtures to
-     * @param string $individualFiles Whether or not to dump data to individual fixtures files
-     * @return void
-     */
-    public static function dumpData($yamlPath, $individualFiles = false)
-    {
-        $data = new Doctrine_Data();
-        
-        return $data->exportData($yamlPath, 'yml', array(), $individualFiles);
-    }
-    /**
-     * loadData
-     *
-     * Load data from a yaml fixtures file.
-     * The output of dumpData can be fed to loadData
-     *
-     * @param string $yamlPath Path to your yaml data fixtures
-     * @param string $append Whether or not to append the data
-     * @return void
-     */
-    public static function loadData($yamlPath, $append = false)
-    {
-        $delete = isset($append) ? ($append ? false : true) : true;
-
-        if ($delete)
-        {
-          $models = Doctrine::getLoadedModels();
-
-          foreach ($models as $model)
-          {
-            $model = new $model();
-
-            $model->getTable()->createQuery()->delete($model)->execute();
-          }
-        }
-
-        $data = new Doctrine_Data();
-        
-        return $data->importData($yamlPath, 'yml');
-    }
-    /**
-     * loadDummyData
-     *
-     * Populdate your models with dummy data
-     *
-     * @param string $append Whether or not to append the data
-     * @param string $num Number of records to populate
-     * @return void
-     */
-    public static function loadDummyData($append, $num = 5)
-    {
-        $delete = isset($append) ? ($append ? false : true) : true;
-
-        if ($delete)
-        {
-          $models = Doctrine::getLoadedModels();
-
-          foreach ($models as $model)
-          {
-            $model = new $model();
-
-            $model->getTable()->createQuery()->delete($model)->execute();
-          }
-        }
-        
-        $data = new Doctrine_Data();
-        
-        return $data->importDummyData($num);
-    }
-    /**
-     * migrate
-     * 
-     * Migrate database to specified $to version. Migrates from current to latest if you do not specify.
-     *
-     * @param string $directory Directory which contains your migration classes
-     * @param string $to Version you wish to migrate to.
-     * @return void
-     */
-    public static function migrate($directory, $to = null)
-    {
-        $migration = new Doctrine_Migration($directory);
-        
-        return $migration->migrate($to);
-    }
-    /**
-     * generateMigrationClass
-     *
-     * Generate new migration class skeleton
-     *
-     * @param string $className Name of the Migration class to generate
-     * @param string $directory Directory which contains your migration classes
-     * @package default
-     */
-    public static function generateMigrationClass($className, $directory)
-    {
-        $migration = new Doctrine_Migration($directory);
-        $next = (string) $migration->getNextVersion();
-        
-        $fileName = str_repeat('0', (3 - strlen($next))) . $next . '_' . Doctrine::tableize($className) . '.class.php';
-        $path = $directory . DIRECTORY_SEPARATOR . $fileName;
-        
-        $code  = '<?php' . PHP_EOL;
-        $code .= "// Automatically generated by the Doctrine ORM Framework\n";
-        $code .= "class " . Doctrine::classify($className) . " extends Doctrine_Migration\n";
-        $code .= "{\n";
-        $code .= "\tpublic function up()\n\t{ }\n\n";
-        $code .= "\tpublic function down()\n\t{ }\n";
-        $code .= "}";
-        
-        file_put_contents($path, $code);
-    }
+    
     /**
      * exportSql
      * method for exporting Doctrine_Record classes to a schema
@@ -773,20 +519,9 @@ final class Doctrine
      */
     public static function exportSql($directory = null)
     {
-        return Doctrine_Manager::connection()->export->exportSql($directory);
+        return Doctrine_Facade::generateSqlFromModels($directory);
     }
-    /**
-     * generateSqlFromModels
-     *
-     * Generate sql for directory of models
-     *
-     * @param string $directory Directory where your models exist
-     * @return void
-     */
-    public static function generateSqlFromModels($directory)
-    {
-        return self::exportSql($directory);
-    }
+    
     /**
      * compile
      * method for making a single file of most used doctrine runtime components
@@ -800,8 +535,9 @@ final class Doctrine
      */
     public static function compile($target = null)
     {
-        Doctrine_Compiler::compile($target);
+        return Doctrine_Facade::compile($target);
     }
+    
     /**
      * simple autoload function
      * returns true if the class was loaded, otherwise false
@@ -814,10 +550,12 @@ final class Doctrine
         if (class_exists($classname, false)) {
             return false;
         }
+        
         if ( ! self::$_path) {
             self::$_path = dirname(__FILE__);
         }
-        $class = self::$_path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR,$classname) . '.php';
+        
+        $class = self::$_path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $classname) . '.php';
 
         if ( ! file_exists($class)) {
             return false;
@@ -827,6 +565,7 @@ final class Doctrine
 
         return true;
     }
+    
     /**
      * dump
      *
@@ -858,6 +597,7 @@ final class Doctrine
         }
         return implode("\n", $ret);
     }
+    
     /**
      * returns table name from class name
      *
@@ -868,6 +608,7 @@ final class Doctrine
     {
          return strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $classname));
     }
+    
     /**
      * returns class name from table name
      *
@@ -878,7 +619,7 @@ final class Doctrine
     {
         return preg_replace_callback('~(_?)(_)([\w])~', array("Doctrine", "classifyCallback"), ucfirst($tablename));
     }
-
+    
     /**
      * Callback function to classify a classname propperly. 
      *
@@ -889,6 +630,7 @@ final class Doctrine
     {
         return $matches[1] . strtoupper($matches[3]);
     }
+    
     /**
      * checks for valid class name (uses camel case and underscores)
      *

@@ -39,7 +39,7 @@ class Doctrine_Task_DumpData extends Doctrine_Task
     
     public function execute()
     {
-        Doctrine::loadModels($this->getArgument('models_path'));
+        Doctrine_Facade::loadModels($this->getArgument('models_path'));
         
         $individualFiles = $this->getArgument('individual_files') ? true:false;
         
@@ -53,6 +53,6 @@ class Doctrine_Task_DumpData extends Doctrine_Task
             }
         }
         
-        Doctrine::dumpData($path, $individualFiles);
+        Doctrine_Facade::dumpData($path, $individualFiles);
     }
 }
