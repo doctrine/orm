@@ -234,6 +234,20 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $this->_options['tableName'] = Doctrine::tableize($class->getName());
         }
 
+        $this->initIdentifier();
+        
+        $record->setUp();
+
+        // if tree, set up tree
+        if ($this->isTree()) {
+            $this->getTree()->setUp();
+        }
+        $this->_filters[]  = new Doctrine_Record_Filter_Standard();
+        $this->_repository = new Doctrine_Table_Repository($this);
+    }
+    
+    public function initIdentifier()
+    {
         switch (count($this->_identifier)) {
             case 0:
                 $this->_columns = array_merge(array('id' =>
@@ -252,8 +266,9 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                     $found = false;
 
                     foreach ($e as $option => $value) {
-                        if ($found)
-                                break;
+                        if ($found) {
+                            break;
+                        }
 
                         $e2 = explode(':', $option);
 
@@ -291,16 +306,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             default:
                 $this->_identifierType = Doctrine::IDENTIFIER_COMPOSITE;
         }
-
-        $record->setUp();
-
-        // if tree, set up tree
-        if ($this->isTree()) {
-            $this->getTree()->setUp();
-        }
-        $this->_filters[]  = new Doctrine_Record_Filter_Standard();
-        $this->_repository = new Doctrine_Table_Repository($this);
     }
+
     public function getMethodOwner($method) 
     {
         return (isset($this->_invokedMethods[$method])) ?
