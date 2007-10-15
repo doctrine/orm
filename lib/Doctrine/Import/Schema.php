@@ -119,8 +119,9 @@ class Doctrine_Import_Schema
             $options = $this->getOptions($properties, $directory);
             $columns = $this->getColumns($properties);
             $relations = $this->getRelations($properties);
+            $indexes = $this->getIndexes($properties);
             
-            $builder->buildRecord($options, $columns, $relations);
+            $builder->buildRecord($options, $columns, $relations, $indexes);
         }
     }
     
