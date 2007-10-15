@@ -36,11 +36,23 @@ class Doctrine_Cli
     protected $scriptName = null;
     protected $config = array();
     
+    /**
+     * __construct
+     *
+     * @param string $config 
+     * @return void
+     */
     public function __construct($config = array())
     {
         $this->config = $config;
     }
     
+    /**
+     * run
+     *
+     * @param string $args 
+     * @return void
+     */
     public function run($args)
     {
         $this->scriptName = $args[0];
@@ -71,6 +83,13 @@ class Doctrine_Cli
         }
     }
     
+    /**
+     * prepareArgs
+     *
+     * @param string $taskInstance 
+     * @param string $args 
+     * @return void
+     */
     protected function prepareArgs($taskInstance, $args)
     {
         $args = array_values($args);
@@ -110,6 +129,11 @@ class Doctrine_Cli
         return $prepared;
     }
     
+    /**
+     * printTasks
+     *
+     * @return void
+     */
     public function printTasks()
     {
         $tasks = $this->loadTasks();
@@ -161,6 +185,12 @@ class Doctrine_Cli
         }
     }
     
+    /**
+     * loadTasks
+     *
+     * @param string $directory 
+     * @return void
+     */
     public function loadTasks($directory = null)
     {
         if ($directory === null) {
