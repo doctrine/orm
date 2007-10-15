@@ -178,9 +178,9 @@ END;
             $ret .= "\t}\n";
 
             // setters
-            $ret .= "\n\tpublic function set".Doctrine::classify($name)."()\n";
+            $ret .= "\n\tpublic function set".Doctrine::classify($name)."(\${$name})\n";
             $ret .= "\t{\n";
-            $ret .= "\t\treturn \$this->set('{$name}');\n";
+            $ret .= "\t\treturn \$this->set('{$name}', \${$name});\n";
             $ret .= "\t}\n";
         }
 
