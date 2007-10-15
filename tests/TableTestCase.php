@@ -39,7 +39,14 @@ class Doctrine_Table_TestCase extends Doctrine_UnitTestCase
         parent::prepareTables();
     }
 
-    public function testFieldConversion() 
+    public function testInitializingNewTableWorksWithoutConnection()
+    {
+        $table = new Doctrine_Table('Test', $this->conn);
+        
+        $this->assertEqual($table->getComponentName(), 'Test');
+    }
+
+    public function testFieldConversion()
     {
         $this->dbh->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
