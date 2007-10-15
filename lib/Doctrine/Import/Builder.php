@@ -221,7 +221,7 @@ END;
 
             $a = array();
 
-            if (isset($column['default']) && $column['default']) {
+            if (isset($column['default'])) {
                 $a[] = '\'default\' => ' . var_export($column['default'], true);
             }
             if (isset($column['notnull']) && $column['notnull']) {
