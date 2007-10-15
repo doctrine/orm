@@ -59,7 +59,7 @@ class Doctrine_Migration_Process
         foreach ($tables as $table) {
             $conn = $this->getConnection($table['newTableName']);
             
-            $conn->export->alterTable($table['oldTableName'], array('name' => $table['newTableName']), true);
+            $conn->export->alterTable($table['oldTableName'], array('name' => $table['newTableName']));
         }
     }
     
@@ -72,7 +72,7 @@ class Doctrine_Migration_Process
             $options = $column['options'];
             $options['type'] = $column['type'];
             
-            $conn->export->alterTable($column['tableName'], array('add' => array($column['columnName'] => $options)), true);
+            $conn->export->alterTable($column['tableName'], array('add' => array($column['columnName'] => $options)));
         }
     }
     
@@ -81,7 +81,7 @@ class Doctrine_Migration_Process
         foreach ($columns as $column) {
             $conn = $this->getConnection($column['tableName']);
             
-            $conn->export->alterTable($column['tableName'], array('rename' => array($column['oldColumnName'] => array('name' => $column['newColumnName']))), true);
+            $conn->export->alterTable($column['tableName'], array('rename' => array($column['oldColumnName'] => array('name' => $column['newColumnName']))));
         }
     }
     
@@ -94,7 +94,7 @@ class Doctrine_Migration_Process
             $options = $column['options'];
             $options['type'] = $column['type'];
             
-            $conn->export->alterTable($column['tableName'], array('change' => array($column['columnName'] => array('definition' => $options))), true);
+            $conn->export->alterTable($column['tableName'], array('change' => array($column['columnName'] => array('definition' => $options))));
         }  
     }
     
