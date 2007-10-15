@@ -892,7 +892,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param string $name              component name
      * @return object Doctrine_Table
      */
-    public function getTable($name, $allowExport = true)
+    public function getTable($name)
     {
         if (isset($this->tables[$name])) {
             return $this->tables[$name];
@@ -905,8 +905,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             $table = new Doctrine_Table($name, $this);
         }
 
-        $this->tables[$name] = $table;
-
+        $this->tables[$name] = $table; 
 
         return $table;
     }
