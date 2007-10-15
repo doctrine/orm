@@ -501,6 +501,7 @@ final class Doctrine
                return $table->getConnection(); 
             }
         }
+        return Doctrine_Manager::connection();
     }
     /**
      * importSchema
