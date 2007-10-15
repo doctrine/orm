@@ -36,28 +36,28 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     /**
      * @var array $data                                 temporary data which is then loaded into Doctrine_Record::$data
      */
-    private $_data             = array();
+    protected $_data             = array();
     /**
      * @var mixed $identifier
      */
-    private $_identifier;
+    protected $_identifier;
     /**
      * @see Doctrine_Identifier constants
      * @var integer $identifierType                     the type of identifier this table uses
      */
-    private $_identifierType;
+    protected $_identifierType;
     /**
      * @var Doctrine_Connection $conn                   Doctrine_Connection object that created this table
      */
-    private $_conn;
+    protected $_conn;
     /**
      * @var array $identityMap                          first level cache
      */
-    private $_identityMap        = array();
+    protected $_identityMap        = array();
     /**
      * @var Doctrine_Table_Repository $repository       record repository
      */
-    private $_repository;
+    protected $_repository;
     /**
      * @var array $columns                  an array of column definitions,
      *                                      keys as column names and values as column definitions
@@ -83,11 +83,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @var integer $columnCount            cached column count, Doctrine_Record uses this column count in when
      *                                      determining its state
      */
-    private $columnCount;
+    protected $columnCount;
     /**
      * @var boolean $hasDefaultValues       whether or not this table has default values
      */
-    private $hasDefaultValues;
+    protected $hasDefaultValues;
     /**
      * @var array $options                  an array containing all options
      *
@@ -162,16 +162,19 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @var array $_filters                     an array containing all record filters attached to this table
      */
     protected $_filters     = array();
-    
+    /**
+     * @var array $_invokedMethods              method invoker cache
+     */
     protected $_invokedMethods = array();
 
 
 
     /**
      * the constructor
+     *
      * @throws Doctrine_Connection_Exception    if there are no opened connections
-     * @throws Doctrine_Table_Exception         if there is already an instance of this table
-     * @return void
+     * @param string $name                      the name of the component
+     * @param Doctrine_Connection $conn         the connection associated with this table
      */
     public function __construct($name, Doctrine_Connection $conn)
     {
@@ -182,6 +185,21 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $this->_options['name'] = $name;
         $this->_parser = new Doctrine_Relation_Parser($this);
 
+        $record = $this->initDefinition($name);
+
+        $this->initIdentifier();
+
+        $record->setUp();
+
+        // if tree, set up tree
+        if ($this->isTree()) {
+            $this->getTree()->setUp();
+        }
+        $this->_filters[]  = new Doctrine_Record_Filter_Standard();
+        $this->_repository = new Doctrine_Table_Repository($this);
+    }
+    public function initDefinition($name)
+    {
         if ( ! class_exists($name) || empty($name)) {
             throw new Doctrine_Exception("Couldn't find class " . $name);
         }
@@ -229,23 +247,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
 
         $this->columnCount = count($this->_columns);
-
+        
         if ( ! isset($this->_options['tableName'])) {
             $this->_options['tableName'] = Doctrine::tableize($class->getName());
         }
-
-        $this->initIdentifier();
         
-        $record->setUp();
-
-        // if tree, set up tree
-        if ($this->isTree()) {
-            $this->getTree()->setUp();
-        }
-        $this->_filters[]  = new Doctrine_Record_Filter_Standard();
-        $this->_repository = new Doctrine_Table_Repository($this);
+        return $record;
     }
-    
     public function initIdentifier()
     {
         switch (count($this->_identifier)) {
@@ -828,24 +836,44 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return isset($this->_columns[$name]);
     }
+
     /**
-     * @return Doctrine_Connection
+     * sets the connection for this class
+     *
+     * @params Doctrine_Connection      a connection object 
+     * @return Doctrine_Table           this object
+     */
+    public function setConnection(Doctrine_Connection $conn)
+    {
+        $this->_conn = $conn;
+
+        $this->setParent($this->_conn);
+        
+        return $this;
+    }
+
+    /**
+     * returns the connection associated with this table (if any)
+     *
+     * @return Doctrine_Connection|null     the connection object
      */
     public function getConnection()
     {
         return $this->_conn;
     }
     /**
-     * create
      * creates a new record
      *
-     * @param $array                    an array where keys are field names and values representing field values
-     * @return Doctrine_Record
+     * @param $array             an array where keys are field names and
+     *                           values representing field values
+     * @return Doctrine_Record   the created record object
      */
-    public function create(array $array = array()) {
-        $this->_data         = $array;
-        $record = new $this->_options['name']($this, true);
-        $this->_data         = array();
+    public function create(array $array = array()) 
+    {
+        $this->_data = $array;
+        $record      = new $this->_options['name']($this, true);
+        $this->_data = array();
+
         return $record;
     }
     /**
