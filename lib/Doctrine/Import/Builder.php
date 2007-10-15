@@ -37,18 +37,55 @@
 class Doctrine_Import_Builder
 {
     /**
-     * @var string $path    the path where imported files are being generated
+     * Path
+     * 
+     * the path where imported files are being generated
+     *
+     * @var string $path
      */
     private $path = '';
 
+    /**
+     * suffix
+     * 
+     * File suffix to use when writing class definitions
+     *
+     * @var string $suffix
+     */
     private $suffix = '.class.php';
     
+    /**
+     * generateBaseClasses
+     * 
+     * Bool true/false for whether or not to generate base classes
+     *
+     * @var string $suffix
+     */
     private $generateBaseClasses = false;
     
+    /**
+     * baseClassesDirectory
+     * 
+     * Directory to put the generate base classes in
+     *
+     * @var string $suffix
+     */
     private $baseClassesDirectory = 'generated';
     
+    /**
+     * tpl
+     *
+     * Class template used for writing classes
+     *
+     * @var $tpl
+     */
     private static $tpl;
     
+    /**
+     * __construct
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->loadTemplate();
@@ -98,8 +135,9 @@ class Doctrine_Import_Builder
     }
 
     /**
-     * This is a template that was previously in Builder/Record.tpl. Due to the fact
-     * that it was not bundled when compiling, it had to be moved here.
+     * loadTemplate
+     * 
+     * Loads the class template used for generating classes
      *
      * @return void
      */
@@ -127,17 +165,26 @@ END;
      * Build the accessors
      *
      * @param  string $table
-     * @param  array  $tableColumns
+     * @param  array  $columns
      */
     public function buildAccessors(array $options, array $columns)
     {
-      $ret = '';
-      foreach ($columns as $name => $column) {
-        $ret .= "\tpublic function get{$name}() {\n";
-        $ret .= "\t\treturn \$this->{$name};\n";
-        $ret .= "\t}\n";
-      }
-      return $ret;
+        $ret = '';
+        foreach ($columns as $name => $column) {
+            // getters
+            $ret .= "\n\tpublic function get".Doctrine::classify($name)."()\n";
+            $ret .= "\t{\n";
+            $ret .= "\t\treturn \$this->get('{$name}');\n";
+            $ret .= "\t}\n";
+
+            // setters
+            $ret .= "\n\tpublic function set".Doctrine::classify($name)."()\n";
+            $ret .= "\t{\n";
+            $ret .= "\t\treturn \$this->set('{$name}');\n";
+            $ret .= "\t}\n";
+        }
+
+        return $ret;
     }
 
     /*
@@ -274,7 +321,7 @@ END;
         $ret = array();
         $i = 0;
         
-        if (! (isset($options['override_parent']) && $options['override_parent'] == true)) {
+        if (! (isset($options['override_parent']) && $options['override_parent'] === true)) {
             $ret[$i] = "\t\t\t\tparent::setUp();";
             $i++;
         }
@@ -346,11 +393,11 @@ END;
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
         }
 
-        $abstract = isset($options['abstract']) && $options['abstract'] == true ? 'abstract ':null;
+        $abstract = isset($options['abstract']) && $options['abstract'] === true ? 'abstract ':null;
         $className = $options['className'];
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:'Doctrine_Record';
 
-        if (isset($options['no_definition']) && $options['no_definition'] == false) {
+        if (isset($options['no_definition']) && $options['no_definition'] === false) {
             $definition = null;
             $setUp = null;
         } else {
@@ -358,7 +405,7 @@ END;
             $setUp = $this->buildSetUp($options, $columns, $relations);
         }
         
-        $accessors = isset($options['generate_accessors']) && $options['generate_accessors'] == true ? $this->buildAccessors($options, $columns):null;
+        $accessors = true === true ? $this->buildAccessors($options, $columns):null;
         
         $content = sprintf(self::$tpl, $abstract,
                                        $className,
@@ -433,7 +480,7 @@ END;
             }
 
             foreach ($options['requires'] as $require) {
-                $code .= "require_once('".$require."');";
+                $code .= "require_once('".$require."');\n";
             }
         }
         
