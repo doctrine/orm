@@ -8,11 +8,13 @@
  */
 ?>
 <?php
+    global $spc_config;
+    
     // Set to 'LOG_DEBUG' for maximum log output
     // Note that the log file size will grow rapidly
     //   with LOG_DEBUG
-    //$spc_config['log_level']        = 'LOG_NOTICE';
-    $spc_config['log_level']        = 'LOG_DEBUG';
+    $spc_config['log_level']        = 'LOG_NOTICE';
+    //$spc_config['log_level']        = 'LOG_DEBUG';
 
     // file extension to be treated as php files
     // comma-separated list, no space

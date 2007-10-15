@@ -219,6 +219,6 @@
 
         /*}}}*/
     }
-    $util = new Utility();
     global $util;
+    $util = new Utility();
 ?>
