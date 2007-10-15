@@ -172,15 +172,15 @@ END;
         $ret = '';
         foreach ($columns as $name => $column) {
             // getters
-            $ret .= "\n\tpublic function get".Doctrine::classify($name)."()\n";
+            $ret .= "\n\tpublic function get".Doctrine::classify($name)."(\$load = true)\n";
             $ret .= "\t{\n";
-            $ret .= "\t\treturn \$this->get('{$name}');\n";
+            $ret .= "\t\treturn \$this->get('{$name}', \$load);\n";
             $ret .= "\t}\n";
 
             // setters
-            $ret .= "\n\tpublic function set".Doctrine::classify($name)."(\${$name})\n";
+            $ret .= "\n\tpublic function set".Doctrine::classify($name)."(\${$name}, \$load = true)\n";
             $ret .= "\t{\n";
-            $ret .= "\t\treturn \$this->set('{$name}', \${$name});\n";
+            $ret .= "\t\treturn \$this->set('{$name}', \${$name}, \$load);\n";
             $ret .= "\t}\n";
         }
 
