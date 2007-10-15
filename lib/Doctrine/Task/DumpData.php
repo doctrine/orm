@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Task.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: GenerateSql.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,23 +20,39 @@
  */
 
 /**
- * Doctrine_Cli_Task_BuildDb
+ * Doctrine_Task_DumpData
  *
  * @package     Doctrine
- * @subpackage  Cli
+ * @subpackage  Task
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Cli_Task_CreateDb extends Doctrine_Cli_Task
+class Doctrine_Task_DumpData extends Doctrine_Task
 {
-    public $description          =   'Create database for each of your connections',
-           $optionalArguments    =   array('connection' => 'Optionally specify a single connection to create the database for.');
+    public $description          =   'Dump data to a yaml data fixture file.',
+           $requiredArguments    =   array('data_fixtures_path' =>  'Specify path to write the yaml data fixtures file to.',
+                                           'models_path'        =>  'Specify path to your Doctrine_Record definitions.'),
+           $optionalArguments    =   array('individual_files'   =>  'Specify whether or not you want to dump to individual files. One file per model.');
     
     public function execute()
     {
-        Doctrine::createDatabases($this->getArgument('connection'));
+        Doctrine::loadModels($this->getArgument('models_path'));
+        
+        $individualFiles = $this->getArgument('individual_files') ? true:false;
+        
+        $path = $this->getArgument('data_fixtures_path');
+        
+        if (!$individualFiles) {
+            $e = explode('.', $this->getArgument('data_fixtures_path'));
+        
+            if (end($e) !== 'yml') {
+                $path = $this->getArgument('data_fixtures_path'). DIRECTORY_SEPARATOR . 'data.yml';
+            }
+        }
+        
+        Doctrine::dumpData($path, $individualFiles);
     }
 }

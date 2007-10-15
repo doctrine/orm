@@ -20,17 +20,17 @@
  */
 
 /**
- * Doctrine_Cli_Task_Migrate
+ * Doctrine_Task_Migrate
  *
  * @package     Doctrine
- * @subpackage  Cli
+ * @subpackage  Task
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Cli_Task_Migrate extends Doctrine_Cli_Task
+class Doctrine_Task_Migrate extends Doctrine_Task
 {
     public $description          =   'Migrate database to latest version or the specified version',
            $requiredArguments    =   array(),

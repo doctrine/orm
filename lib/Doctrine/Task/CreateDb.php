@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: GenerateSql.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: Task.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,40 +20,23 @@
  */
 
 /**
- * Doctrine_Cli_Task_GenerateSql
+ * Doctrine_Task_BuildDb
  *
  * @package     Doctrine
- * @subpackage  Cli
+ * @subpackage  Task
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Cli_Task_GenerateSql extends Doctrine_Cli_Task
+class Doctrine_Task_CreateDb extends Doctrine_Task
 {
-    public $description          =   'Generate sql for all existing database connections.',
-           $requiredArguments    =   array('models_path'    =>  'Specify complete path to your Doctrine_Record definitions.',
-                                           'sql_path'       =>  'Path to write the generated sql.'),
-           $optionalArguments    =   array();
+    public $description          =   'Create database for each of your connections',
+           $optionalArguments    =   array('connection' => 'Optionally specify a single connection to create the database for.');
     
     public function execute()
     {
-        $sql = Doctrine::generateSqlFromModels($this->getArgument('models_path'));
-        
-        if (is_dir($this->getArgument('sql_path'))) {
-            $path = $this->getArgument('sql_path') . DIRECTORY_SEPARATOR . 'schema.sql';
-        } else if (is_file($this->getArgument('sql_path'))) {
-            $path = $this->getArgument('sql_path');
-        } else {
-            throw new Doctrine_Cli_Exception('Invalid sql path.');
-        }
-        
-        $build = '';
-        foreach ($sql as $query) {
-            $build .= $query.";\n";
-        }
-        
-        file_put_contents($path, $build);
+        Doctrine::createDatabases($this->getArgument('connection'));
     }
 }

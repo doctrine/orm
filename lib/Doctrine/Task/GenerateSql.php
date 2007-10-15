@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: GenerateYamlFromDb.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: GenerateSql.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,24 +20,40 @@
  */
 
 /**
- * Doctrine_Cli_Task_GenerateYamlFromDb
+ * Doctrine_Task_GenerateSql
  *
  * @package     Doctrine
- * @subpackage  Cli
+ * @subpackage  Task
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Cli_Task_GenerateYamlFromDb extends Doctrine_Cli_Task
+class Doctrine_Task_GenerateSql extends Doctrine_Task
 {
-    public $description          =   'Generates a Yaml schema file from an existing database',
-           $requiredArguments    =   array('yaml_schema_path'   =>  'Specify the path to your yaml schema files.'),
+    public $description          =   'Generate sql for all existing database connections.',
+           $requiredArguments    =   array('models_path'    =>  'Specify complete path to your Doctrine_Record definitions.',
+                                           'sql_path'       =>  'Path to write the generated sql.'),
            $optionalArguments    =   array();
     
     public function execute()
     {
-        Doctrine::generateYamlFromDb($this->getArgument('yaml_schema_path'));
+        $sql = Doctrine::generateSqlFromModels($this->getArgument('models_path'));
+        
+        if (is_dir($this->getArgument('sql_path'))) {
+            $path = $this->getArgument('sql_path') . DIRECTORY_SEPARATOR . 'schema.sql';
+        } else if (is_file($this->getArgument('sql_path'))) {
+            $path = $this->getArgument('sql_path');
+        } else {
+            throw new Doctrine_Cli_Exception('Invalid sql path.');
+        }
+        
+        $build = '';
+        foreach ($sql as $query) {
+            $build .= $query.";\n";
+        }
+        
+        file_put_contents($path, $build);
     }
 }

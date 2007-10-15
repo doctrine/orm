@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: CreateTables.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: GenerateYamlFromModels.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,24 +20,25 @@
  */
 
 /**
- * Doctrine_Cli_Task_CreateTables
+ * Doctrine_Task_GenerateYamlFromModels
  *
  * @package     Doctrine
- * @subpackage  Cli
+ * @subpackage  Task
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Cli_Task_CreateTables extends Doctrine_Cli_Task
+class Doctrine_Task_GenerateYamlFromModels extends Doctrine_Task
 {
-    public $description          =   'Create tables for all existing database connections',
-           $requiredArguments    =   array('models_path' => 'Specify path to your models directory.'),
+    public $description          =   'Generates a Yaml schema file from existing Doctrine_Record definitions',
+           $requiredArguments    =   array('yaml_schema_path'   =>  'Specify the complete directory path to your yaml schema files.',
+                                           'models_path'        =>  'Specify complete path to your Doctrine_Record definitions.'),
            $optionalArguments    =   array();
     
     public function execute()
     {
-        Doctrine::createTablesFromModels($this->getArgument('models_path'));
+        Doctrine::generateYamlFromModels($this->getArgument('yaml_schema_path'), $this->getArgument('models_path'));
     }
 }

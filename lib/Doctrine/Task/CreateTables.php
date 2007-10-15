@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: GenerateModelsFromDb.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: CreateTables.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,24 +20,24 @@
  */
 
 /**
- * Doctrine_Cli_Task_GenerateModelsFromDb
+ * Doctrine_Task_CreateTables
  *
  * @package     Doctrine
- * @subpackage  Cli
+ * @subpackage  Task
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Cli_Task_GenerateModelsFromDb extends Doctrine_Cli_Task
+class Doctrine_Task_CreateTables extends Doctrine_Task
 {
-    public $description          =   'Generates your Doctrine_Record definitions from your existing database connections.',
-           $requiredArguments    =   array('models_path'    =>  'Specify path to your Doctrine_Record definitions.'),
-           $optionalArguments    =   array('connection'     =>  'Optionally specify a single connection to generate the models for.');
+    public $description          =   'Create tables for all existing database connections',
+           $requiredArguments    =   array('models_path' => 'Specify path to your models directory.'),
+           $optionalArguments    =   array();
     
     public function execute()
     {
-        Doctrine::generateModelsFromDb($this->getArgument('models_path'), (array) $this->getArgument('connection'));
+        Doctrine::createTablesFromModels($this->getArgument('models_path'));
     }
 }

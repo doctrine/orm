@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: GenerateMigration.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: LoadDummyData.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,25 +20,26 @@
  */
 
 /**
- * Doctrine_Cli_Task_GenerateMigration
+ * Doctrine_Task_LoadDummyData
  *
  * @package     Doctrine
- * @subpackage  Cli
+ * @subpackage  Task
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Cli_Task_GenerateMigration extends Doctrine_Cli_Task
+class Doctrine_Task_LoadDummyData extends Doctrine_Task
 {
-    public $description          =   'Generate new migration class definition',
-           $requiredArguments    =   array('class_name'      => 'Name of the migration class to generate',
-                                           'migrations_path' => 'Specify the complete path to your migration classes folder.'),
-           $optionalArguments    =   array();
+    public $description          =   'Load data from a yaml data fixture file.',
+           $requiredArguments    =   array('models_path'    =>  'Specify path to your Doctrine_Record definitions.'),
+           $optionalArguments    =   array('append'         =>  'Whether or not to append the data or to delete all data before loading.',
+                                           'num'            =>  'Number of records to populate for each model.');
     
     public function execute()
     {
-        Doctrine::generateMigrationClass($this->getArgument('class_name'), $this->getArgument('migrations_path'));
+        Doctrine::loadModels($this->getArgument('models_path'));
+        Doctrine::loadDummyData($this->getArgument('append') ? true:false, $this->getArgument('num') ? $this->getArgument('num'):5);
     }
 }

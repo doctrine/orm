@@ -23,14 +23,14 @@
  * Doctrine_Cli_Task
  *
  * @package     Doctrine
- * @subpackage  Cli
+ * @subpackage  Task
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-abstract class Doctrine_Cli_Task
+abstract class Doctrine_Task
 {
     public $taskName             =   null,
            $description          =   null,
@@ -38,16 +38,39 @@ abstract class Doctrine_Cli_Task
            $requiredArguments    =   array(),
            $optionalArguments    =   array();
     
+    /**
+     * __construct
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->taskName = str_replace('_', '-', Doctrine::tableize(str_replace('Doctrine_Task_', '', get_class($this))));
+    }
+    
+    /**
+     * execute
+     *
+     * Override with each task class
+     *
+     * @return void
+     * @author Jonathan H. Wage
+     */
     abstract function execute();
     
-    public function validate($args)
+    /**
+     * validate
+     *
+     * Validates that all required fields are present
+     *
+     * @return void
+     */
+    public function validate()
     {
-        $this->arguments = $args;
-        
         $requiredArguments = $this->getRequiredArguments();
         
         foreach ($requiredArguments as $arg) {
-            if (!isset($args[$arg])) {
+            if (!isset($this->arguments[$arg])) {
                 throw new Doctrine_Cli_Exception('Required arguments missing. The follow arguments are required: ' . implode(', ', $requiredArguments));
             }
         }
@@ -55,6 +78,25 @@ abstract class Doctrine_Cli_Task
         return true;
     }
     
+    /**
+     * addArgument
+     *
+     * @param string $name 
+     * @param string $value 
+     * @return void
+     */
+    public function addArgument($name, $value)
+    {
+        $this->arguments[$name] = $value;
+    }
+    
+    /**
+     * getArgument
+     *
+     * @param string $name 
+     * @param string $default 
+     * @return void
+     */
     public function getArgument($name, $default = null)
     {
         if (isset($this->arguments[$name])) {
@@ -64,53 +106,85 @@ abstract class Doctrine_Cli_Task
         }
     }
     
+    /**
+     * getArguments
+     *
+     * @return void
+     */
     public function getArguments()
     {
         return $this->arguments;
     }
     
+    /**
+     * setArguments
+     *
+     * @param string $args 
+     * @return void
+     */
+    public function setArguments($args)
+    {
+        $this->arguments = $args;
+    }
+    
+    /**
+     * getTaskName
+     *
+     * @return void
+     */
     public function getTaskName()
     {
         return $this->taskName;
     }
     
+    /**
+     * getDescription
+     *
+     * @return void
+     */
     public function getDescription()
     {
         return $this->description;
     }
     
+    /**
+     * getRequiredArguments
+     *
+     * @return void
+     */
     public function getRequiredArguments()
     {
         return array_keys($this->requiredArguments);
     }
     
+    /**
+     * getOptionalArguments
+     *
+     * @return void
+     */
     public function getOptionalArguments()
     {
         return array_keys($this->optionalArguments);
     }
     
+    /**
+     * getRequiredArgumentsDescriptions
+     *
+     * @return void
+     */
     public function getRequiredArgumentsDescriptions()
     {
         return $this->requiredArguments;
     }
     
+    /**
+     * getOptionalArgumentsDescriptions
+     *
+     * @return void
+     * @author Jonathan H. Wage
+     */
     public function getOptionalArgumentsDescriptions()
     {
         return $this->optionalArguments;
-    }
-    
-    public function getSyntax()
-    {    
-        $syntax = './cli ' . $this->getTaskName();
-        
-        if ($required = $this->getRequiredArguments()) {
-            $syntax .= ' <' . implode('> <', $required) . '>';
-        }
-        
-        if ($optional = $this->getOptionalArguments()) {
-             $syntax .= ' <' . implode('> <', $optional) . '>';
-        }
-        
-        return $syntax;
     }
 }

@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Cli_Task
+ * Doctrine_Cli
  *
  * @package     Doctrine
  * @subpackage  Cli
@@ -54,18 +54,18 @@ class Doctrine_Cli
         $taskName = str_replace('-', '_', $args[1]);
         unset($args[1]);
         
-        $taskClass = 'Doctrine_Cli_Task_' . Doctrine::classify($taskName);
+        $taskClass = 'Doctrine_Task_' . Doctrine::classify($taskName);
         
         if (class_exists($taskClass)) {
             $taskInstance = new $taskClass();
-            $taskInstance->taskName = str_replace('_', '-', Doctrine::tableize(str_replace('Doctrine_Cli_Task_', '', $taskName)));
             
             $args = $this->prepareArgs($taskInstance, $args);
             
-            $taskInstance->validate($args);
+            $taskInstance->setArguments($args);
             
-            
-            $taskInstance->execute();
+            if ($taskInstance->validate()) {
+                $taskInstance->execute();
+            }
         } else {
             throw new Doctrine_Cli_Exception('Cli task could not be found: '.$taskClass);
         }
@@ -119,7 +119,7 @@ class Doctrine_Cli
         
         foreach ($tasks as $taskName)
         {
-            $className = 'Doctrine_Cli_Task_' . $taskName;
+            $className = 'Doctrine_Task_' . $taskName;
             $taskInstance = new $className();
             $taskInstance->taskName = str_replace('_', '-', Doctrine::tableize($taskName));
             
@@ -164,10 +164,10 @@ class Doctrine_Cli
     public function loadTasks($directory = null)
     {
         if ($directory === null) {
-            $directory = dirname(__FILE__). DIRECTORY_SEPARATOR . 'Cli' . DIRECTORY_SEPARATOR . 'Task';
+            $directory = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Task';
         }
         
-        $parent = new ReflectionClass('Doctrine_Cli_Task');
+        $parent = new ReflectionClass('Doctrine_Task');
         
         $tasks = array();
         
@@ -180,7 +180,7 @@ class Doctrine_Cli
                 if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
                     require_once($file->getPathName());
                     
-                    $className = 'Doctrine_Cli_Task_' . $e[0];
+                    $className = 'Doctrine_Task_' . $e[0];
                     $class = new ReflectionClass($className);
                     
                     if ($class->isSubClassOf($parent)) {

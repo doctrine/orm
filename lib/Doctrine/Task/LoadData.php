@@ -20,17 +20,17 @@
  */
 
 /**
- * Doctrine_Cli_Task_LoadData
+ * Doctrine_Task_LoadData
  *
  * @package     Doctrine
- * @subpackage  Cli
+ * @subpackage  Task
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.phpdoctrine.com
  * @since       1.0
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Cli_Task_LoadData extends Doctrine_Cli_Task
+class Doctrine_Task_LoadData extends Doctrine_Task
 {
     public $description          =   'Load data from a yaml data fixture file.',
            $requiredArguments    =   array('data_fixtures_path' =>  'Specify the complete path to load the yaml data fixtures files from.',
