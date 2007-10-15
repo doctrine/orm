@@ -176,7 +176,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @param string $name                      the name of the component
      * @param Doctrine_Connection $conn         the connection associated with this table
      */
-    public function __construct($name, Doctrine_Connection $conn)
+    public function __construct($name, Doctrine_Connection $conn, $initDefinition = false)
     {
         $this->_conn = $conn;
 
@@ -185,15 +185,17 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $this->_options['name'] = $name;
         $this->_parser = new Doctrine_Relation_Parser($this);
 
-        $record = $this->initDefinition($name);
-
-        $this->initIdentifier();
-
-        $record->setUp();
-
-        // if tree, set up tree
-        if ($this->isTree()) {
-            $this->getTree()->setUp();
+        if ($initDefinition) {
+            $record = $this->initDefinition($name);
+    
+            $this->initIdentifier();
+    
+            $record->setUp();
+    
+            // if tree, set up tree
+            if ($this->isTree()) {
+                $this->getTree()->setUp();
+            }
         }
         $this->_filters[]  = new Doctrine_Record_Filter_Standard();
         $this->_repository = new Doctrine_Table_Repository($this);
