@@ -43,6 +43,12 @@ class Doctrine_Import_Schema
     public $indexes = array();
     public $generateBaseClasses = false;
     
+    /**
+     * generateBaseClasses
+     *
+     * @param string $bool 
+     * @return void
+     */
     public function generateBaseClasses($bool = null)
     {
         if ($bool !== null) {
@@ -51,17 +57,39 @@ class Doctrine_Import_Schema
         
         return $this->generateBaseClasses;
     }
+    
+    /**
+     * buildSchema
+     *
+     * @param string $schema 
+     * @param string $format 
+     * @return void
+     */
     public function buildSchema($schema, $format)
     {
         $array = array();
+        
         foreach ((array) $schema AS $s) {
-            $array = array_merge($array, $this->parseSchema($s, $format));
+            if (is_file($s)) {
+                $array = array_merge($array, $this->parseSchema($s, $format));
+            } else if (is_dir($s)) {
+                $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($s),
+                                                      RecursiveIteratorIterator::LEAVES_ONLY);
+            
+                foreach ($it as $file) {
+                    $e = explode('.', $file->getFileName());
+                    if (end($e) === $format) {
+                        $array = array_merge($array, $this->parseSchema($file->getPathName(), $format));
+                    }
+                }
+            }
         }
-
+        
         $this->buildRelationships($array);
         
         return array('schema' => $array, 'relations' => $this->relations, 'indexes' => $this->indexes);
     }
+    
     /**
      * importSchema
      *
@@ -96,6 +124,13 @@ class Doctrine_Import_Schema
         }
     }
     
+    /**
+     * getOptions
+     *
+     * @param string $properties 
+     * @param string $directory 
+     * @return void
+     */
     public function getOptions($properties, $directory)
     {
       $options = array();
@@ -110,11 +145,23 @@ class Doctrine_Import_Schema
       return $options;
     }
     
+    /**
+     * getColumns
+     *
+     * @param string $properties 
+     * @return void
+     */
     public function getColumns($properties)
     {
       return isset($properties['columns']) ? $properties['columns']:array();
     }
     
+    /**
+     * getRelations
+     *
+     * @param string $properties 
+     * @return void
+     */
     public function getRelations($properties)
     {
       return isset($this->relations[$properties['className']]) ? $this->relations[$properties['className']]:array();
@@ -181,6 +228,12 @@ class Doctrine_Import_Schema
         return $build;
     }
     
+    /**
+     * buildRelationships
+     *
+     * @param string $array 
+     * @return void
+     */
     public function buildRelationships(&$array)
     {
         foreach ($array as $name => $properties) {
@@ -225,6 +278,11 @@ class Doctrine_Import_Schema
         $this->fixRelationships();
     }
     
+    /**
+     * fixRelationships
+     *
+     * @return void
+     */
     public function fixRelationships()
     {
         // define both sides of the relationship

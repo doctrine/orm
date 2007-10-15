@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Config.php 2753 2007-10-07 20:58:08Z Jonathan.Wage $
+ *  $Id: config.php 2753 2007-10-07 20:58:08Z Jonathan.Wage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,8 +23,6 @@
  * Doctrine Configuration File
  *
  * This is a sample implementation of Doctrine
- * You can use the Doctrine_Config interface below to setup the basics.
- * Or if you prefer you can setup your Doctrine configuration manually.
  * 
  * @package     Doctrine
  * @subpackage  Config
@@ -36,23 +34,17 @@
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
 
-// Load Doctrine
-require_once('Doctrine.php');
+define('SANDBOX_PATH', dirname(__FILE__));
+define('DOCTRINE_PATH', dirname(SANDBOX_PATH) . DIRECTORY_SEPARATOR . 'lib');
+define('DATA_FIXTURES_PATH', SANDBOX_PATH . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'fixtures');
+define('MODELS_PATH', SANDBOX_PATH . DIRECTORY_SEPARATOR . 'models');
+define('MIGRATIONS_PATH', SANDBOX_PATH . DIRECTORY_SEPARATOR . 'models');
+define('SQL_PATH', SANDBOX_PATH . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'sql');
+define('YAML_SCHEMA_PATH', SANDBOX_PATH . DIRECTORY_SEPARATOR . 'schema');
+define('DSN', 'sqlite:/' . SANDBOX_PATH . DIRECTORY_SEPARATOR . 'sandbox.db');
+
+require_once(DOCTRINE_PATH . DIRECTORY_SEPARATOR . 'Doctrine.php');
+
 spl_autoload_register(array('Doctrine', 'autoload'));
 
-// New Doctrine Config
-$config = new Doctrine_Config();
-
-// Setup Connections
-//$config->addConnection('mysql://user:pass@localhost/db_name', 'connection_1');
-//$config->addConnection(new PDO('dsn', 'username', 'password'), 'connection_2);
-
-// Bind components/models to connections
-//$config->bindComponent('User', 'connection_1');
-
-// Configure Doctrine Cli
-// Normally these are arguments to the cli tasks but if they are set here the arguments will be auto-filled
-//$config->addCliConfig('data_fixtures_path', '/path/to/your/data_fixtures');
-//$config->addCliConfig('models_path', '/path/to/your/models');
-//$config->addCliConfig('migrations_path', '/peth/to/your/migration/classes');
-//$config->addCliConfig('sql_path', '/path/to/your/exported/sql');
+Doctrine_Manager::connection(DSN, 'sandbox');

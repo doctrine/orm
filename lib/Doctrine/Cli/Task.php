@@ -55,9 +55,13 @@ abstract class Doctrine_Cli_Task
         return true;
     }
     
-    public function getArgument($name)
+    public function getArgument($name, $default = null)
     {
-        return $this->arguments[$name];
+        if (isset($this->arguments[$name])) {
+            return $this->arguments[$name];
+        } else if ($default) {
+            return $default;
+        }
     }
     
     public function getArguments()

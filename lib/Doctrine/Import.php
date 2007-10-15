@@ -189,6 +189,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
         
         foreach ($connections as $connection) {
           $builder = new Doctrine_Import_Builder();
+          $builder->generateBaseClasses(true);
           $builder->setTargetPath($directory);
 
           $classes = array();

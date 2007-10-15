@@ -41,6 +41,14 @@ class Doctrine_Cli_Task_GenerateSql extends Doctrine_Cli_Task
     {
         $sql = Doctrine::generateSqlFromModels($this->getArgument('models_path'));
         
-        file_put_contents($this->getArgument('sql_path'), implode("\n", $sql));
+        if (is_dir($this->getArgument('sql_path'))) {
+            $path = $this->getArgument('sql_path') . DIRECTORY_SEPARATOR . 'schema.sql';
+        } else if (is_file($this->getArgument('sql_path'))) {
+            $path = $this->getArgument('sql_path');
+        } else {
+            throw new Doctrine_Cli_Exception('Invalid sql path.');
+        }
+        
+        file_put_contents($path, implode("\n", $sql));
     }
 }
