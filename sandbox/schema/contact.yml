@@ -1,0 +1,6 @@
+---
+Contact:
+  columns:
+    name:
+      type: string
+      length: 255

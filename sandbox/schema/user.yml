@@ -1,0 +1,13 @@
+---
+User:
+  columns:
+    username:
+      type: string
+      length: 255
+    contact_id:
+      type: integer
+      size: 11
+  relations:
+    Contact:
+      local: contact_id
+      foreign: id
