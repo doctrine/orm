@@ -405,7 +405,7 @@ END;
             $setUp = $this->buildSetUp($options, $columns, $relations);
         }
         
-        $accessors = true === true ? $this->buildAccessors($options, $columns):null;
+        $accessors = (isset($options['generate_accessors']) && $options['generate_accessors'] === true) ? $this->buildAccessors($options, $columns):null;
         
         $content = sprintf(self::$tpl, $abstract,
                                        $className,
