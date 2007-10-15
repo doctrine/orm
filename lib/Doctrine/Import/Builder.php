@@ -397,12 +397,12 @@ END;
         $className = $options['className'];
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:'Doctrine_Record';
 
-        if (isset($options['no_definition']) && $options['no_definition'] === false) {
-            $definition = null;
-            $setUp = null;
-        } else {
+        if (!(isset($options['no_definition']) && $options['no_definition'] === true)) {
             $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes);
             $setUp = $this->buildSetUp($options, $columns, $relations);
+        } else {
+            $definition = null;
+            $setUp = null;
         }
         
         $accessors = (isset($options['generate_accessors']) && $options['generate_accessors'] === true) ? $this->buildAccessors($options, $columns):null;

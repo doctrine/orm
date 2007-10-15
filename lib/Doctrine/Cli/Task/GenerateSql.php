@@ -49,6 +49,11 @@ class Doctrine_Cli_Task_GenerateSql extends Doctrine_Cli_Task
             throw new Doctrine_Cli_Exception('Invalid sql path.');
         }
         
-        file_put_contents($path, implode("\n", $sql));
+        $build = '';
+        foreach ($sql as $query) {
+            $build .= $query.";\n";
+        }
+        
+        file_put_contents($path, $build);
     }
 }
