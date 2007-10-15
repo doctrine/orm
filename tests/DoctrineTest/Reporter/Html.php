@@ -1,5 +1,5 @@
 <?php
-    class DoctrineHtmlReporter extends HtmlReporter {
+class DoctrineTest_Reporter_Html extends DoctrineTest_Reporter{
         public function paintHeader($name) {
 ?>
 <html>
