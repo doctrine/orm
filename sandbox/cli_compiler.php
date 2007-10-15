@@ -1,9 +1,13 @@
-#!/usr/bin/php
+#!/usr/bin/env php
+<?php
+chdir(dirname(__FILE__));
+?>
 
-Welcome to the interactive Doctrine Compiler 0.0.1 (Beta).
+Welcome to the interactive Doctrine Compiler 0.0.2 (Beta).
 
-WARNING: You're on your own - this script modifies your
-filesystem and has not been tested on Windows (yet).
+To see the available command-line options, run:
+<?php echo $argv[0]; ?> --help
+
 <?php
 if (in_array($argv[1], array('--help', '-help', '-h', '-?'))) {
 ?>
@@ -25,21 +29,6 @@ While the program is running:
 <?php
     exit;
 }
-
-if ($argc > 1) {
-    $doctrinePath = $argv[1];
-}
-
-$drivers = array(
-    'Db2',
-    'Firebird',
-    'Informix',
-    'Mssql',
-    'Mysql',
-    'Oracle',
-    'Pgsql',
-    'Sqlite'
-);
 
 function addIncludePath($path) {
     set_include_path(
@@ -110,20 +99,30 @@ function ask(
     }
 }
 
+
 // Enable error reporting
+
 if (($answer = ask("Would you like to turn on error reporting?", 'n')) == 'y') {
     error_reporting(E_ALL);
+    $showErrors = true;
 } else {
     error_reporting(0);
+    $showErrors = false;
 }
 autoQuit($answer);
 
+// Process library path command line argument
+
+if ($argc > 1) {
+    $doctrinePath = $argv[1];
+} else {
+    $doctrinePath = dirname(__FILE__);
+}
+
 // Get Doctrine's library path
+
 $usablePath = false;
 while (!$usablePath) {
-    if (!isset($doctrinePath)) {
-        $doctrinePath = dirname(__FILE__);
-    }
     $path = ask("Please enter the path to Doctrine's lib directory:", $doctrinePath, array($doctrinePath), false);
     autoQuit($path);
     try {
@@ -139,10 +138,58 @@ while (!$usablePath) {
     }
 }
 
+// Process target filename command line argument
+
+if ($argc > 2) {
+    $targetFile = $argv[2];
+} else {
+    $targetFile = $path.DIRECTORY_SEPARATOR.'Doctrine.compiled.php';
+}
+
+clearstatcache();
+$usableFilename = false;
+while (!$usableFilename) {
+    $target = ask("Please enter the target filename for the 'compiled' Doctrine file that will be created:", $targetFile, array($targetFile), false);
+    autoQuit($target);
+    if (file_exists($target)) {
+        if (is_writable($target) && (!is_dir($target))) {
+            $usableFilename = true;
+        } else {
+            $msg = "The target filename '$target' cannot be used (it is not writable, or it is a directory).";
+        }
+    } else {
+        if (is_writable(dirname($target))) {
+            $usableFilename = true;
+        } else {
+            $msg = "The directory in which the target file will be created is not writable.";
+        }
+    }
+    if (!$usableFilename) {
+        showMessage($msg);
+        if (($answer = ask("Would you like to specify a different target filename?")) != 'y') {
+            quit();
+        }
+    }
+}
+
+// Define the default drivers - unfortunately, this is hard-coded for now
+
+$drivers = array(
+    'Db2',
+    'Firebird',
+    'Informix',
+    'Mssql',
+    'Mysql',
+    'Oracle',
+    'Pgsql',
+    'Sqlite'
+);
+
 $includeDrivers = array();
 $excludeDrivers = array();
 
 // Determine driver support
+
 foreach ($drivers as $driver) {
     if (($answer = ask("Would you like to enable support for $driver?")) == 'y') {
         $includeDrivers[] = $driver;
@@ -153,19 +200,22 @@ foreach ($drivers as $driver) {
 }
 
 // Verify driver support
+
 if (!count($includeDrivers)) {
-    showMessage("You have not selected any drivers. Normally this is not a good idea, unless you know what you're doing.");
+    showMessage("You have not selected any drivers. Usually this is not a good idea, unless you know what you're doing.");
     if (($answer = ask("Are you sure you want to compile without any drivers?")) != 'y') {
         quit();
     }
     autoQuit($answer);
 }
 
-// 'Compile' Doctrine...
-showMessage("Trying to set the PHP memory limit to 18MB...");
-ini_set('memory_limit', '18M');
-if (ini_get('memory_limit') != '18M') {
-    showMessage("WARNING: The program could not set the PHP memory limit to 18MB. The compilation might fail.");
+// Try to prevent errors related to memory allocation
+
+$requiredMemory = '32M';
+showMessage("Trying to set the PHP memory limit to $requiredMemory...");
+ini_set('memory_limit', $requiredMemory);
+if (ini_get('memory_limit') != $requiredMemory) {
+    showMessage("WARNING: The program could not set the PHP memory limit to $requiredMemory. The compilation might fail.");
     if (($answer = ask("Do you still want to continue?")) != 'y') {
         quit;
     }
@@ -173,80 +223,96 @@ if (ini_get('memory_limit') != '18M') {
     showMessage("PHP memory limit adjusted successfully.");
 }
 
+// Build / 'Compile' Doctrine...
 
-$target = './Doctrine.compiled.php';
 
-$it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::LEAVES_ONLY);
+try {
 
-foreach ($it as $file) {
-    $e = explode('.', $file->getFileName());
+    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::LEAVES_ONLY);
 
-    // we don't want to require versioning files
-    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-        require_once $file->getPathName();
-    }
-}
+    foreach ($it as $file) {
+        $e = explode('.', $file->getFileName());
 
-$classes = array_merge(get_declared_classes(), get_declared_interfaces());
+        // We don't want to require versioning files, or cli files
 
-$ret     = array();
-
-foreach ($classes as $class) {
-    $e = explode('_', $class);
-
-    if ($e[0] !== 'Doctrine') {
-        continue;
-    }
-
-    // Skip excluded drivers
-    $skipClass = false;
-    foreach ($excludeDrivers as $excludeDriver) {
-        if (in_array($excludeDriver, $e)) {
-            $skipClass = true;
-            break;
+        if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false && strpos($file->getFileName(), 'cli') !== 0) {
+            require_once $file->getPathName();
         }
     }
-    if ($skipClass) {
-        echo "\nExcluding -> $class";
-        continue;
+
+    $classes = array_merge(get_declared_classes(), get_declared_interfaces());
+
+    $ret     = array();
+
+    foreach ($classes as $class) {
+        $e = explode('_', $class);
+
+        if ($e[0] !== 'Doctrine') {
+            continue;
+        }
+
+        // Skip excluded drivers
+
+        $skipClass = false;
+        foreach ($excludeDrivers as $excludeDriver) {
+            if (in_array($excludeDriver, $e)) {
+                $skipClass = true;
+                break;
+            }
+        }
+        if ($skipClass) {
+            echo "\nExcluding -> $class";
+            continue;
+        }
+
+        $refl  = new ReflectionClass($class);
+        $file  = $refl->getFileName();
+
+        echo "\nIncluding -> $file";
+
+        $lines = file($file);
+
+        $start = $refl->getStartLine() - 1;
+        $end   = $refl->getEndLine();
+
+        $ret = array_merge($ret, array_slice($lines, $start, ($end - $start)));
     }
 
-    $refl  = new ReflectionClass($class);
-    $file  = $refl->getFileName();
+    // first write the 'compiled' data to a text file, so
+    // that we can use php_strip_whitespace (which only works on files)
 
-    echo "\nIncluding -> $file";
+    $fp = @fopen($target, 'w');
 
-    $lines = file($file);
+    if ($fp === false) {
+        throw new Exception("Couldn't write compiled data. Failed to open $target");
+    }
+    fwrite($fp, "<?php ". implode('', $ret));
+    fclose($fp);
 
-    $start = $refl->getStartLine() - 1;
-    $end   = $refl->getEndLine();
+    $stripped = php_strip_whitespace($target);
+    $fp = @fopen($target, 'w');
+    if ($fp === false) {
+        throw new Exception("Couldn't write compiled data. Failed to open $file");
+    }
+    fwrite($fp, $stripped);
+    fclose($fp);
 
-    $ret = array_merge($ret, array_slice($lines, $start, ($end - $start)));
+} catch (Exception $e) {
+
+    if (!$showErrors) {
+        if (($answer = ask("Sorry, an error occurred during the build. Would you like to see the error?")) == 'y') {
+            showMessage("\n$e");
+        } else {
+            quit();
+        }
+    }
+    showMessage("\nBuild Aborted.");
+    exit;
+
 }
-
-if ($target == null) {
-    $target = $path . DIRECTORY_SEPARATOR . 'Doctrine.compiled.php';
-}
-
-// first write the 'compiled' data to a text file, so
-// that we can use php_strip_whitespace (which only works on files)
-$fp = @fopen($target, 'w');
-
-if ($fp === false) {
-    throw new Exception("Couldn't write compiled data. Failed to open $target");
-}
-fwrite($fp, "<?php ". implode('', $ret));
-fclose($fp);
-
-$stripped = php_strip_whitespace($target);
-$fp = @fopen($target, 'w');
-if ($fp === false) {
-    throw new Exception("Couldn't write compiled data. Failed to open $file");
-}
-fwrite($fp, $stripped);
-fclose($fp);
 
 // Say bye...
+
 showMessage("\nCompilation Finished.");
 showMessage("Thank you for using the interactive Doctrine Compiler. Have fun following the Doctrine :)\n");
 
