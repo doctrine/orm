@@ -40,8 +40,28 @@ class Doctrine_Compiler
      * @throws Doctrine_Compiler_Exception      if something went wrong during the compile operation
      * @return void
      */
-    public static function compile($target = null)
+    public static function compile($target = null, $includedDrivers = array())
     {
+        if (!is_array($includedDrivers)) {
+            $includedDrivers = array($includedDrivers);
+        }
+        
+        $excludedDrivers = array();
+        
+        // If we have an array of specified drivers then lets determine which drivers we should exclude
+        if (!empty($includedDrivers)) {
+            $drivers = array('db2',
+                             'firebird',
+                             'informix',
+                             'mssql',
+                             'mysql',
+                             'oracle',
+                             'pgsql',
+                             'sqlite');
+            
+            $excludedDrivers = array_diff($drivers, $includedDrivers);
+        }
+        
         $path = Doctrine::getPath();
         $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::LEAVES_ONLY);
 
@@ -64,11 +84,21 @@ class Doctrine_Compiler
             if ($e[0] !== 'Doctrine') {
                 continue;
             }
+            
+            // Exclude drivers
+            if (!empty($excludedDrivers)) {
+                foreach ($excludedDrivers as $excludedDriver) {
+                    $excludedDriver = ucfirst($excludedDriver);
+                    
+                    if (in_array($excludedDriver, $e)) {
+                        continue(2);
+                    }
+                }
+            }
+            
             $refl  = new ReflectionClass($class);
             $file  = $refl->getFileName();
             
-            print 'Adding ' . $file . PHP_EOL;
-
             $lines = file($file);
 
             $start = $refl->getStartLine() - 1;
@@ -88,6 +118,7 @@ class Doctrine_Compiler
         if ($fp === false) {
             throw new Doctrine_Compiler_Exception("Couldn't write compiled data. Failed to open $target");
         }
+        
         fwrite($fp, "<?php ". implode('', $ret));
         fclose($fp);
 
@@ -96,6 +127,7 @@ class Doctrine_Compiler
         if ($fp === false) {
             throw new Doctrine_Compiler_Exception("Couldn't write compiled data. Failed to open $file");
         }
+        
         fwrite($fp, $stripped);
         fclose($fp);
     }

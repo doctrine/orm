@@ -533,9 +533,9 @@ final class Doctrine
      * @throws Doctrine_Exception
      * @return void
      */
-    public static function compile($target = null)
+    public static function compile($target = null, $includedDrivers = array())
     {
-        return Doctrine_Facade::compile($target);
+        return Doctrine_Facade::compile($target, $includedDrivers);
     }
     
     /**

@@ -416,8 +416,8 @@ class Doctrine_Facade
      * @param string $target 
      * @return void
      */
-    public static function compile($target = null)
+    public static function compile($target = null, $includedDrivers = array())
     {
-        return Doctrine_Compiler::compile($target);
+        return Doctrine_Compiler::compile($target, $includedDrivers);
     }
 }
