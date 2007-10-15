@@ -71,7 +71,7 @@ abstract class Doctrine_Task
         
         foreach ($requiredArguments as $arg) {
             if (!isset($this->arguments[$arg])) {
-                throw new Doctrine_Cli_Exception('Required arguments missing. The follow arguments are required: ' . implode(', ', $requiredArguments));
+                throw new Doctrine_Task_Exception('Required arguments missing. The follow arguments are required: ' . implode(', ', $requiredArguments));
             }
         }
         
