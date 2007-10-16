@@ -57,6 +57,10 @@ class Doctrine_Search_File extends Doctrine_Search
                                                 RecursiveIteratorIterator::LEAVES_ONLY);
                                                 
         foreach ($it as $file) {
+            if (strpos($file, DIRECTORY_SEPARATOR . '.svn') !== false) {
+                continue;                                                          	
+            }
+
             $this->updateIndex(array('url' => $file->getPathName(),
                                      'content' => file_get_contents($file)));
         }

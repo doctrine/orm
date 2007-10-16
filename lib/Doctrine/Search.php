@@ -61,6 +61,15 @@ class Doctrine_Search extends Doctrine_Plugin
         }
     }
 
+
+    public function search($query)
+    {
+        $q = new Doctrine_Search_Query($this->_options['pluginTable']);
+        
+        $q->search($query);
+        
+        return $q->execute();
+    }
     
     public function analyze($text)
     {
@@ -93,7 +102,6 @@ class Doctrine_Search extends Doctrine_Plugin
 
             $index->save();
         } else {
-            print 'joo';
             foreach ($fields as $field) {
 
                 $value = $data[$field];

@@ -59,6 +59,7 @@ class Doctrine_Search_Analyzer_Standard implements Doctrine_Search_Analyzer_Inte
                             'any',
                             'are',
                             'area',
+                            'arent',
                             'around',
                             'as',
                             'at',
@@ -263,12 +264,15 @@ class Doctrine_Search_Analyzer_Standard implements Doctrine_Search_Analyzer_Inte
                             'will',
                             'with',
                             'would',
+                            'yet',
                             'you',
                             'your',
+                            'yours'
                             );
 
     public function analyze($text)
     {
+    	$text = preg_replace('/[\'`´"]/', '', $text);
         $text = preg_replace('/[^A-Za-z0-9]/', ' ', $text);
         $text = str_replace('  ', ' ', $text);
 
