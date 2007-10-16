@@ -51,6 +51,7 @@ class Doctrine_Search_Analyzer_Standard implements Doctrine_Search_Analyzer_Inte
                             'almost',
                             'along',
                             'also',
+                            'although',
                             'amp',
                             'an',
                             'and',
@@ -66,6 +67,7 @@ class Doctrine_Search_Analyzer_Standard implements Doctrine_Search_Analyzer_Inte
                             'be',
                             'because',
                             'been',
+                            'before',
                             'being',
                             'best',
                             'better',
@@ -99,6 +101,7 @@ class Doctrine_Search_Analyzer_Standard implements Doctrine_Search_Analyzer_Inte
                             'easily',
                             'easy',
                             'edition',
+                            'either',
                             'end',
                             'enough',
                             'even',
@@ -266,7 +269,7 @@ class Doctrine_Search_Analyzer_Standard implements Doctrine_Search_Analyzer_Inte
 
     public function analyze($text)
     {
-        $text = preg_replace('/[.()&#!,?^£@%&{}+]/', ' ', $text);
+        $text = preg_replace('/[^A-Za-z0-9]/', ' ', $text);
         $text = str_replace('  ', ' ', $text);
 
         $terms = explode(' ', $text);
