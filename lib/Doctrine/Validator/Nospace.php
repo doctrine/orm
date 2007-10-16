@@ -40,6 +40,6 @@ class Doctrine_Validator_Nospace extends Doctrine_Validator_Driver
      */
     public function validate($value)
     {
-        return ($value === null || ! preg_match('/\s\t\r\n/', $value));
+        return ($value === null || ! preg_match('/[\s\t\r\n]/', $value));
     }
 }
