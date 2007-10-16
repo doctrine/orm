@@ -326,7 +326,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                 if ($query) {
                     $query.= ', ';
                 }
-                $query.= 'ADD ' . $this->getDeclaration($field['type'], $fieldName, $field, $name);
+                $query.= 'ADD ' . $this->getDeclaration($fieldName, $field);
             }
         }
 

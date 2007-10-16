@@ -187,7 +187,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
                 if ($query) {
                     $query.= ', ';
                 }
-                $query.= 'ADD ' . $this->conn->getDeclaration($field['type'], $fieldName, $field);
+                $query.= 'ADD ' . $this->conn->getDeclaration($fieldName, $field);
             }
         }
 
@@ -220,7 +220,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
                     $oldFieldName = $fieldName;
                 }
                 $oldFieldName = $this->conn->quoteIdentifier($oldFieldName, true);
-                $query.= 'CHANGE ' . $oldFieldName . ' ' . $this->conn->getDeclaration($field['definition']['type'], $oldFieldName, $field['definition']);
+                $query.= 'CHANGE ' . $oldFieldName . ' ' . $this->conn->getDeclaration($oldFieldName, $field['definition']);
             }
         }
 
@@ -231,7 +231,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
                 }
                 $oldFieldName = $rename[$renamedFieldName];
                 $field = $changes['rename'][$oldFieldName];
-                $query.= 'CHANGE ' . $this->conn->getDeclaration($field['definition']['type'], $oldFieldName, $field['definition']);
+                $query.= 'CHANGE ' . $this->conn->getDeclaration($oldFieldName, $field['definition']);
             }
         }
 

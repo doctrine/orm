@@ -423,7 +423,7 @@ END;
         if ( ! empty($changes['add']) && is_array($changes['add'])) {
             $fields = array();
             foreach ($changes['add'] as $fieldName => $field) {
-                $fields[] = $this->conn->getDeclaration($field['type'], $fieldName, $field);
+                $fields[] = $this->conn->getDeclaration($fieldName, $field);
             }
             $result = $this->conn->exec('ALTER TABLE ' . $name . ' ADD (' . implode(', ', $fields) . ')');
         }
@@ -431,7 +431,7 @@ END;
         if ( ! empty($changes['change']) && is_array($changes['change'])) {
             $fields = array();
             foreach ($changes['change'] as $fieldName => $field) {
-                $fields[] = $fieldName. ' ' . $this->conn->getDeclaration($field['definition']['type'], '', $field['definition']);
+                $fields[] = $fieldName. ' ' . $this->conn->getDeclaration('', $field['definition']);
             }
             $result = $this->conn->exec('ALTER TABLE ' . $name . ' MODIFY (' . implode(', ', $fields) . ')');
         }

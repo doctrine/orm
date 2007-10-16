@@ -360,7 +360,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
                 if ($query) {
                     $query.= ', ';
                 }
-                $query.= 'ADD ' . $this->getDeclaration($field['type'], $fieldName, $field);
+                $query.= 'ADD ' . $this->getDeclaration($fieldName, $field);
             }
         }
 
@@ -384,7 +384,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
                 }
                 $oldFieldName = $this->conn->quoteIdentifier($oldFieldName, true);
                 $query .= 'CHANGE ' . $oldFieldName . ' ' 
-                        . $this->getDeclaration($field['definition']['type'], $fieldName, $field['definition']);
+                        . $this->getDeclaration($fieldName, $field['definition']);
             }
         }
 
@@ -396,7 +396,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
                 $field = $changes['rename'][$renamedField];
                 $renamedField = $this->conn->quoteIdentifier($renamedField, true);
                 $query .= 'CHANGE ' . $renamedField . ' '
-                        . $this->getDeclaration($field['definition']['type'], $field['name'], $field['definition']);
+                        . $this->getDeclaration($field['name'], $field['definition']);
             }
         }
 
