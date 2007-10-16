@@ -48,13 +48,13 @@ class Doctrine_Export_Schema
      */
     public function buildSchema($directory = null, $models = array())
     {
-        $array = array();
-        
         if ($directory) {
             $loadedModels = Doctrine::loadModels($directory);
         } else {
             $loadedModels = Doctrine::getLoadedModels();
         }
+
+        $array = array();
         
         $parent = new ReflectionClass('Doctrine_Record');
 
@@ -65,28 +65,6 @@ class Doctrine_Export_Schema
         // and currently declared classes
         foreach ($loadedModels as $name) {
             if (!empty($models) && !in_array($name, $models)) {
-                continue;
-            }
-            
-            $class = new ReflectionClass($name);
-            
-            // check if class is an instance of Doctrine_Record and not abstract
-            // class must have method setTableDefinition (to avoid non-Record subclasses like symfony's sfDoctrineRecord)
-            // we have to recursively iterate through the class parents just to be sure that the classes using for example
-            // column aggregation inheritance are properly exported to database
-            while ($class->isAbstract() ||
-                   ! $class->isSubclassOf($parent) ||
-                   ! $class->hasMethod('setTableDefinition') ||
-                   ( $class->hasMethod('setTableDefinition') &&
-                     $class->getMethod('setTableDefinition')->getDeclaringClass()->getName() !== $class->getName())) {
-
-                $class = $class->getParentClass();
-                if ($class === false) {
-                    break;
-                }
-            }
-
-            if ($class === false) {
                 continue;
             }
 

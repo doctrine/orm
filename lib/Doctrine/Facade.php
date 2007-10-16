@@ -173,7 +173,11 @@ class Doctrine_Facade
 
         $export = new Doctrine_Export_Schema();
         
-        return $export->exportSchema($yamlPath, 'yml', $directory);
+        $result = $export->exportSchema($yamlPath, 'yml', $directory);
+        
+        exec('rm -rf ' . $directory);
+        
+        return $result;
     }
     /**
      * generateModelsFromYaml
