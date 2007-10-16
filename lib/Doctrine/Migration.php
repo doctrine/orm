@@ -33,15 +33,17 @@
  */
 class Doctrine_Migration
 {
-    protected $changes = array('created_tables'    =>  array(),
-                               'dropped_tables'    =>  array(),
-                               'renamed_tables'    =>  array(),
-                               'added_columns'     =>  array(),
-                               'renamed_columns'   =>  array(),
-                               'changed_columns'   =>  array(),
-                               'removed_columns'   =>  array(),
-                               'added_indexes'     =>  array(),
-                               'removed_indexes'   =>  array()),
+    protected $changes = array('created_tables'      =>  array(),
+                               'dropped_tables'      =>  array(),
+                               'renamed_tables'      =>  array(),
+                               'added_columns'       =>  array(),
+                               'renamed_columns'     =>  array(),
+                               'changed_columns'     =>  array(),
+                               'removed_columns'     =>  array(),
+                               'added_indexes'       =>  array(),
+                               'removed_indexes'     =>  array(),
+                               'created_constraints' =>  array(),
+                               'dropped_constraints' =>  array()),
               $migrationTableName = 'migration_version',
               $migrationClassesDirectory = array(),
               $migrationClasses = array();
@@ -392,6 +394,34 @@ class Doctrine_Migration
         $options = get_defined_vars();
         
         $this->addChange('renamed_tables', $options);
+    }
+    
+    /**
+     * createConstraint
+     *
+     * @param string $tableName
+     * @param string $constraintName
+     * @return void
+     */
+    public function createConstraint($tableName, $constraintName, array $definition)
+    {
+        $options = get_defined_vars();
+        
+        $this->addChange('created_constraints', $options);
+    }
+    
+    /**
+     * createConstraint
+     *
+     * @param string $tableName
+     * @param string $constraintName
+     * @return void
+     */
+    public function dropConstraint($tableName, $constraintName, $primary)
+    {
+        $options = get_defined_vars();
+        
+        $this->addChange('dropped_constraints', $options);
     }
     
     /**

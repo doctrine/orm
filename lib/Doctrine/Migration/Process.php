@@ -124,4 +124,22 @@ class Doctrine_Migration_Process
             $conn->export->dropIndex($index['tableName'], $index['indexName']);
         } 
     }
+    
+    public function processCreatedConstraints($constraints)
+    {
+        foreach ($constraints as $constraint) {
+            $conn = $this->getConnection($constraint['tableName']);
+            $conn->export->createConstraint($constraint['tableName'], $constraint['constraintName'],
+                    $constraint['definition']);
+        }
+    }
+    
+    public function processDroppedConstraints($constraints)
+    {
+        foreach ($constraints as $constraint) {
+            $conn = $this->getConnection($constraint['tableName']);
+            $conn->export->dropConstraint($constraint['tableName'], $constraint['constraintName'],
+                    $constraint['primary']);
+        }
+    }
 }
