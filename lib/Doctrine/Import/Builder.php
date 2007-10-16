@@ -193,7 +193,7 @@ END;
      * @param  string $table
      * @param  array  $tableColumns
      */
-    public function buildTableDefinition(array $options, array $columns, array $relations, array $indexes)
+    public function buildTableDefinition(array $options, array $columns, array $relations, array $indexes, array $attributes)
     {
         $ret = array();
         
@@ -257,63 +257,97 @@ END;
             $i++;
         }
         
-        foreach ($indexes as $indexName => $definitions) {
-            $ret[$i] = "\n".'        $this->index(\'' . $indexName . '\', array(';
-            
-            foreach ($definitions as $name => $value) {
-              
-              // parse fields
-              if ($name === 'fields') {
-                $ret[$i] .= '\'fields\' => array(';
-                
-                foreach ($value as $fieldName => $fieldValue) {
-                  $ret[$i] .= '\'' . $fieldName . '\' => array( ';
-                  
-                  // parse options { sorting, length, primary }
-                  if (isset($fieldValue) && $fieldValue) {
-                    foreach ($fieldValue as $optionName => $optionValue) {
-                      
-                      $ret[$i] .= '\'' . $optionName . '\' => ';
-                      
-                      // check primary option, mark either as true or false
-                      if ($optionName === 'primary') {
-                      	$ret[$i] .= (($optionValue == 'true') ? 'true' : 'false') . ', ';
-                      	continue;
-                      }
-                      
-                      // convert sorting option to uppercase, for instance, asc -> ASC
-                      if ($optionName === 'sorting') {
-                      	$ret[$i] .= '\'' . strtoupper($optionValue) . '\', ';
-                      	continue;
-                      }
-                      
-                      // check the rest of the options
-                      $ret[$i] .= '\'' . $optionValue . '\', ';
-                    }
-                  }
-                                    
-                  $ret[$i] .= '), ';
-                }
-              }
-              
-              // parse index type option, 4 choices { unique, fulltext, gist, gin }
-              if ($name === 'type') {
-              	$ret[$i] .= '), \'type\' => \'' . $value . '\'';
-              }
-              
-              // add extra ) if type definition is not declared
-              if (!isset($definitions['type'])) {
-              	$ret[$i] .= ')';
-              }
-            }
-            
-            $ret[$i] .= '));';
-            $i++;
-        }
+        $ret[$i] = $this->buildIndexes($indexes);
+        $i++;
+        
+        $ret[$i] = $this->buildAttributes($attributes);
+        $i++;
         
         if (!empty($ret)) {
           return "\n\tpublic function setTableDefinition()"."\n\t{\n".implode("\n", $ret)."\n\t}";
         }
+    }
+    
+    public function buildAttributes(array $attributes)
+    {
+        $build = "\n";
+        foreach ($attributes as $key => $value) {
+            if (!is_array($value)) {
+                $value = array($value);
+            }
+            
+            $values = '';
+            foreach ($value as $attr) {
+                $values .= "Doctrine::" . strtoupper($key) . "_" . strtoupper($attr) . ' ^ ';
+            }
+            
+            // Trim last ^
+            $values = substr($values, 0, strlen($values) - 3);
+            
+            $build .= "\t\t\$this->setAttribute(Doctrine::ATTR_" . strtoupper($key) . ", " . $values . ");\n";
+        }
+        
+        return $build;
+    }
+    
+    public function buildIndexes(array $indexes)
+    {
+      $build = '';
+
+      foreach ($indexes as $indexName => $definitions) {
+          $build = "\n".'        $this->index(\'' . $indexName . '\', array(';
+
+          foreach ($definitions as $name => $value) {
+
+            // parse fields
+            if ($name === 'fields' || $name === 'columns') {
+              $build .= '\'fields\' => array(';
+
+              foreach ($value as $fieldName => $fieldValue) {
+                $build .= '\'' . $fieldName . '\' => array( ';
+
+                // parse options { sorting, length, primary }
+                if (isset($fieldValue) && $fieldValue) {
+                  foreach ($fieldValue as $optionName => $optionValue) {
+
+                    $build .= '\'' . $optionName . '\' => ';
+
+                    // check primary option, mark either as true or false
+                    if ($optionName === 'primary') {
+                    	$build .= (($optionValue == 'true') ? 'true' : 'false') . ', ';
+                    	continue;
+                    }
+
+                    // convert sorting option to uppercase, for instance, asc -> ASC
+                    if ($optionName === 'sorting') {
+                    	$build .= '\'' . strtoupper($optionValue) . '\', ';
+                    	continue;
+                    }
+
+                    // check the rest of the options
+                    $build .= '\'' . $optionValue . '\', ';
+                  }
+                }
+
+                $build .= '), ';
+              }
+            }
+
+            // parse index type option, 4 choices { unique, fulltext, gist, gin }
+            if ($name === 'type') {
+            	$build .= '), \'type\' => \'' . $value . '\'';
+            }
+
+            // add extra ) if type definition is not declared
+            if (!isset($definitions['type'])) {
+            	$build .= ')';
+            }
+          }
+
+          $build .= '));';
+      }
+
+      return $build;
     }
     
     public function buildSetUp(array $options, array $columns, array $relations)
@@ -387,7 +421,7 @@ END;
         }
     }
     
-    public function buildDefinition(array $options, array $columns, array $relations = array(), array $indexes = array())
+    public function buildDefinition(array $options, array $columns, array $relations = array(), array $indexes = array(), $attributes = array())
     {
         if ( ! isset($options['className'])) {
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
@@ -398,7 +432,7 @@ END;
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:'Doctrine_Record';
 
         if (!(isset($options['no_definition']) && $options['no_definition'] === true)) {
-            $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes);
+            $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes, $attributes);
             $setUp = $this->buildSetUp($options, $columns, $relations);
         } else {
             $definition = null;
@@ -417,7 +451,7 @@ END;
         return $content;
     }
 
-    public function buildRecord(array $options, array $columns, array $relations = array(), array $indexes = array())
+    public function buildRecord(array $options, array $columns, array $relations = array(), array $indexes = array(), array $attributes = array())
     {
         if ( !isset($options['className'])) {
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
@@ -447,7 +481,7 @@ END;
             $options['requires'] = array($this->baseClassesDirectory . DIRECTORY_SEPARATOR  . $options['inheritance']['extends'] . $this->suffix);
             $options['no_definition'] = true;
             
-            $this->writeDefinition($options, array(), array(), array());
+            $this->writeDefinition($options);
             
             $options = $optionsBak;
           }
@@ -463,15 +497,15 @@ END;
           $options['fileName']  = $generatedPath . DIRECTORY_SEPARATOR . $options['className'] . $this->suffix;
           $options['override_parent'] = true;
           
-          $this->writeDefinition($options, $columns, $relations, $indexes);
+          $this->writeDefinition($options, $columns, $relations, $indexes, $attributes);
         } else {
-          $this->writeDefinition($options, $columns, $relations, $indexes);
+          $this->writeDefinition($options, $columns, $relations, $indexes, $attributes);
         }
     }
     
-    public function writeDefinition(array $options, array $columns, array $relations = array(), array $indexes = array())
+    public function writeDefinition(array $options, array $columns = array(), array $relations = array(), array $indexes = array(), array $attributes = array())
     {
-        $content = $this->buildDefinition($options, $columns, $relations, $indexes);
+        $content = $this->buildDefinition($options, $columns, $relations, $indexes, $attributes);
         $code = "<?php\n";
 
         if (isset($options['requires'])) {
