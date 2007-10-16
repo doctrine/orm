@@ -35,6 +35,8 @@ class Doctrine_Template_Searchable extends Doctrine_Template
     public function __construct(array $options)
     {
         $this->_plugin = new Doctrine_Search($options);
+        
+
     }
     
     public function getPlugin()
@@ -53,7 +55,6 @@ class Doctrine_Template_Searchable extends Doctrine_Template
             $className = $this->_plugin->getOption('className');
         }
         $this->_plugin->setOption('resource', $this->_table);
-        $this->_plugin->setOption('identifier', $this->_table->getIdentifier());
         $this->_plugin->buildDefinition();
 
         $this->hasMany($className, array('local' => $id, 'foreign' => $id));

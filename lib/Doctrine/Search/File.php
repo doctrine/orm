@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Search_Listener
+ * Doctrine_Search
  *
  * @package     Doctrine
  * @subpackage  Search
@@ -30,27 +30,35 @@
  * @link        www.phpdoctrine.com
  * @since       1.0
  */
-class Doctrine_Search_Listener extends Doctrine_Record_Listener 
+class Doctrine_Search_File extends Doctrine_Search
 {
-    protected $_search;
-
-    public function __construct(Doctrine_Search $search)
+    public function __construct(array $options = array())
     {
-        $this->_search = $search;
-    }
+        parent::__construct($options);
 
-    public function preUpdate(Doctrine_Event $event)
-    {
-    }
+        if ( ! isset($this->_options['resource'])) {
+            $table = new Doctrine_Table('File', Doctrine_Manager::connection());
+            
+            $table->setColumn('url', 'string', 255, array('primary' => true));
 
-    public function postUpdate(Doctrine_Event $event)
-    {
-
-    }
-    public function postInsert(Doctrine_Event $event)
-    {
-        $record = $event->getInvoker();
+            $this->_options['resource'] = $table;
+        }
         
-        $this->_search->updateIndex($record->toArray());
+        if (empty($this->_options['fields'])) {
+            $this->_options['fields'] = array('url', 'content');
+        }
+        
+        $this->buildDefinition();
+    }
+    
+    public function indexDirectory($dir)
+    {
+        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
+                                                RecursiveIteratorIterator::LEAVES_ONLY);
+                                                
+        foreach ($it as $file) {
+            $this->updateIndex(array('url' => $file->getPathName(),
+                                     'content' => file_get_contents($file)));
+        }
     }
 }
