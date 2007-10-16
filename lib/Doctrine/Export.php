@@ -978,9 +978,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function exportSchema($directory = null)
     {
         if ($directory !== null) {
-            $models = Doctrine::loadModels($directory);
+            $models = Doctrine_Facade::loadModels($directory);
         } else {
-            $models = Doctrine::getLoadedModels();
+            $models = Doctrine_Facade::getLoadedModels();
         }
         
         $this->exportClasses($models);
@@ -1058,7 +1058,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportClassesSql(array $classes)
     {
-        $models = Doctrine::getLoadedModels($classes);
+        $models = Doctrine_Facade::getLoadedModels($classes);
         
         $sql = array();
         
@@ -1136,8 +1136,12 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportSql($directory = null)
     {
-        $models = Doctrine::loadModels($directory);
-
+        if ($directory !== null) {
+            $models = Doctrine_Facade::loadModels($directory);
+        } else {
+            $models = Doctrine_Facade::getLoadedModels();
+        }
+        
         return $this->exportClassesSql($models);
     }
     /**
