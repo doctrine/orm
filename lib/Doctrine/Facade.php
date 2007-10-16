@@ -169,7 +169,7 @@ class Doctrine_Facade
     {
         $directory = '/tmp/tmp_doctrine_models';
 
-        Doctrine::generateModelsFromDb($directory);
+        Doctrine_Facade::generateModelsFromDb($directory);
 
         $export = new Doctrine_Export_Schema();
         
@@ -321,7 +321,7 @@ class Doctrine_Facade
 
         if ($delete)
         {
-          $models = Doctrine::getLoadedModels();
+          $models = Doctrine_Facade::getLoadedModels();
 
           foreach ($models as $model)
           {
@@ -351,7 +351,7 @@ class Doctrine_Facade
 
         if ($delete)
         {
-          $models = Doctrine::getLoadedModels();
+          $models = Doctrine_Facade::getLoadedModels();
 
           foreach ($models as $model)
           {

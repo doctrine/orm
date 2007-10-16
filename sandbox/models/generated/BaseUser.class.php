@@ -10,7 +10,7 @@ abstract class BaseUser extends Doctrine_Record
 	{
         $this->setTableName('user');
         $this->hasColumn('username', 'string', 255);
-        $this->hasColumn('contact_id', 'integer', null);
+        $this->hasColumn('contact_id', 'integer', 11);
 	}
 
 	public function setUp()

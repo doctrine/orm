@@ -6,7 +6,7 @@ User:
       length: 255
     contact_id:
       type: integer
-      size: 11
+      length: 11
   relations:
     Contact:
       local: contact_id
