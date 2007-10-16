@@ -43,7 +43,8 @@ class Doctrine_Migration
                                'added_indexes'       =>  array(),
                                'removed_indexes'     =>  array(),
                                'created_constraints' =>  array(),
-                               'dropped_constraints' =>  array()),
+                               'dropped_constraints' =>  array(),
+                               'created_fks'         =>  array()),
               $migrationTableName = 'migration_version',
               $migrationClassesDirectory = array(),
               $migrationClasses = array();
@@ -411,7 +412,7 @@ class Doctrine_Migration
     }
     
     /**
-     * createConstraint
+     * dropConstraint
      *
      * @param string $tableName
      * @param string $constraintName
@@ -422,6 +423,20 @@ class Doctrine_Migration
         $options = get_defined_vars();
         
         $this->addChange('dropped_constraints', $options);
+    }
+    
+    /**
+     * createForeignKey
+     *
+     * @param string $tableName
+     * @param string $constraintName
+     * @return void
+     */
+    public function createForeignKey($tableName, array $definition)
+    {
+        $options = get_defined_vars();
+        
+        $this->addChange('created_fks', $options);
     }
     
     /**

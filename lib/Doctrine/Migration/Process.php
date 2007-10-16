@@ -142,4 +142,12 @@ class Doctrine_Migration_Process
                     $constraint['primary']);
         }
     }
+    
+    public function processCreatedFks($foreignKeys)
+    {
+        foreach ($foreignKeys as $fk) {
+            $conn = $this->getConnection($fk['tableName']);
+            $conn->export->createForeignKey($fk['tableName'], $fk['definition']);
+        }
+    }
 }

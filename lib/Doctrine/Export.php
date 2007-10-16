@@ -442,7 +442,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $query .= ' (' . implode(', ', $fields) . ')';
 
         return $query;
-    }
+    }    
     /**
      * createForeignKeySql
      *
@@ -457,6 +457,17 @@ class Doctrine_Export extends Doctrine_Connection_Module
         $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $this->getForeignKeyDeclaration($definition);
 
         return $query;
+    }
+    /**
+     * createForeignKey
+     *
+     * @param string    $table         name of the table on which the foreign key is to be created
+     * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     * @return string
+     */
+    public function createForeignKey($table, array $definition)
+    {
+        return $this->conn->execute($this->createForeignKeySql($table, $definition));
     }
     /**
      * alter an existing table
