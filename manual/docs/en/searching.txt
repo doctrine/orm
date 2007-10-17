@@ -45,7 +45,15 @@ class NewsItem extends Doctrine_Record
 Here we tell Doctrine that NewsItem class acts as searchable (internally Doctrine loads Doctrine_Template_Searchable) and fields title and content are marked as fulltext indexed fields. This means that everytime a NewsItem is added or updated Doctrine will:
 
 1. Update the inverse search index or
-2. Add new pending entry to the inverse search index (its efficient to update the inverse search index in batches)
+2. Add new pending entry to the inverse search index (sometimes it can be efficient to update the inverse search index in batches)
+
+Sometimes you may want to alter the search object options afterwards. The search object can be accessed as follows:
+
+<code type="php">
+$search = $conn->getTable('NewsItem')
+               ->getTemplate('Searchable')
+               ->getPlugin();
+</code>
 
 ++ Index structure
 
@@ -69,10 +77,25 @@ In this example the word database is the third word of the title field of NewsIt
 
 ++ Index building
 
-Whenever a searchable record is being inserted into database Doctrine executes the index building procedure. The phases of this operation are:
+Whenever a searchable record is being inserted into database Doctrine executes the index building procedure. This happens in the background as the procedure is being invoked by the search listener. The phases of this procedure are:
 
 1. Analyze the text using a Doctrine_Search_Analyzer based class
 2. Insert new rows into index table for all analyzed keywords
+
+Sometimes you may not want to update the index table directly when new searchable entries are added. Rather you may want to batch update the index table in certain intervals. For disabling the direct update functionality you'll need to set the batchUpdates option to true.
+
+<code type="php">
+$search->setOption('batchUpdates', true);
+</code>
+
+The actual batch updating procedure can be invoked with the batchUpdateIndex() method. It takes two optional arguments: limit and offset. Limit can be used for limiting the number of batch indexed entries while the offset can be used for setting the first entry to start the indexing from.
+
+<code type="php">
+$newsItem = new NewsItem();
+
+$newsItem->batchUpdateIndex();
+</code>
+
 
 ++ Text analyzers
 
