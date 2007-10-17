@@ -401,6 +401,10 @@ END;
                 $a[] = '\'onUpdate\' => ' . var_export($relation['onUpdate'], true);
             }
             
+            if (isset($relation['equal']) && $relation['equal']) {
+                $a[] = '\'equal\' => ' . var_export($relation['equal'], true);
+            }
+            
             if ( ! empty($a)) {
                 $ret[$i] .= ', ' . 'array(';
                 $length = strlen($ret[$i]);
