@@ -60,20 +60,30 @@ The structure of the inverse index Doctrine uses is the following:
 
 In the NewsItem example the [foreign_keys] would simply contain one field id with foreign key references to NewsItem(id) and with onDelete => CASCADE constraint.
 
+An example row in this table might look something like:
+
+|| keyword     || field       || position    ||    id  ||
+|| database    || title       || 3           ||    1   ||
+
+In this example the word database is the third word of the title field of NewsItem 1.
+
 ++ Index building
 
 Whenever a searchable record is being inserted into database Doctrine executes the index building procedure. The phases of this operation are:
 
 1. Analyze the text using a Doctrine_Search_Analyzer based class
-2. Insert new rows into index table for all analyzed keywords      
+2. Insert new rows into index table for all analyzed keywords
 
 ++ Text analyzers
 
 By default Doctrine uses Doctrine_Search_Analyzer_Standard for analyzing the text. This class performs the following things:
 
 1. Strips out stop-keywords (such as 'and', 'if' etc.)
+    As many commonly used words such as 'and', 'if' etc. have no relevance for the search, they are being stripped out in order to keep the index size reasonable.
 2. Makes all keywords lowercased
-3. Replaces all non alpha-numeric marks with whitespace so that 'database' matches 'database.'
+    When searching words 'database' and 'DataBase' are considered equal by the standard analyzer, hence the standard analyzer lowercases all keywords.
+3. Replaces all non alpha-numeric marks with whitespace
+    In normal text many keywords might contain non alpha-numeric chars after them, for example 'database.'. The standard analyzer strips these out so that 'database' matches 'database.'.
 4. Replaces all quotation marks with empty strings so that "O'Connor" matches "oconnor"
 
 You can write your own analyzer class by making a class that implements Doctrine_Search_Analyzer_Interface. This analyzer can then be applied to the search object as follows:
@@ -83,3 +93,6 @@ $search->setOption('analyzer', new MyAnalyzer());
 </code>
 
 ++ Query language
+
+Doctrine_Search provides a query language similar to Apache Lucene. The parsed behind Doctrine_Search_Query converts human readable, easy-to-construct search queries to their complex sql equivalents.
+
