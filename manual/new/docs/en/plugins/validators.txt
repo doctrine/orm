@@ -13,7 +13,7 @@ Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine:
 </code>
 
 You can combine the following constants by using bitwise operations: VALIDATE_ALL, VALIDATE_TYPES, VALIDATE_LENGTHS, 
-VALIDATE_CONSTRAINTS, VALIDATE_NONE. For example to enbale all validations except length validations you would use:
+VALIDATE_CONSTRAINTS, VALIDATE_NONE. For example to enable all validations except length validations you would use:
 <code>
 VALIDATE_ALL & ~VALIDATE_LENGTHS
 </code>
