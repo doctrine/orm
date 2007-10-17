@@ -272,7 +272,8 @@ class Doctrine_Import_Schema
  
                 $class = isset($relation['class']) ? $relation['class']:$alias;
                 
-                $relation['foreign'] = isset($relation['foreign'])?$relation['foreign']:'id';
+                $relation['local'] = isset($relation['local']) ? $relation['local']:Doctrine::tableize($class) . '_id';
+                $relation['foreign'] = isset($relation['foreign']) ? $relation['foreign']:'id';
                 $relation['alias'] = isset($relation['alias']) ? $relation['alias'] : $alias;
                 $relation['class'] = $class;
                 
@@ -287,8 +288,8 @@ class Doctrine_Import_Schema
                 }
                 
                 if(isset($relation['refClass']) && !empty($relation['refClass'])  && (!isset($array[$relation['refClass']]['relations']) || empty($array[$relation['refClass']]['relations']))) {
-                    $array[$relation['refClass']]['relations'][$className] = array('local'=>$relation['local'],'foreign'=>$relation['foreign'],'ignore'=>true);
-                    $array[$relation['refClass']]['relations'][$relation['class']] = array('local'=>$relation['local'],'foreign'=>$relation['foreign'],'ignore'=>true);
+                    $array[$relation['refClass']]['relations'][$className] = array('local' => $relation['local'], 'foreign' => $relation['foreign'], 'ignore' => true);
+                    $array[$relation['refClass']]['relations'][$relation['class']] = array('local' => $relation['local'], 'foreign' => $relation['foreign'], 'ignore' => true);
                     
                     if(isset($relation['foreignAlias'])) {
                         $array[$relation['class']]['relations'][$relation['foreignAlias']] = array('type'=>$relation['type'],'local'=>$relation['foreign'],'foreign'=>$relation['local'],'refClass'=>$relation['refClass'],'class'=>$className);
@@ -337,7 +338,7 @@ class Doctrine_Import_Schema
                     }
                 }
                 
-                $this->relations[$relation['class']][$className] = $newRelation;
+                $this->relations[$relation['class']][$newRelation['alias']] = $newRelation;
             }
         }
     }
