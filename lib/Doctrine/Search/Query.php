@@ -32,10 +32,7 @@
  */
 class Doctrine_Search_Query
 {
-    /**
-     * @var Doctrine_Query $query           the base query
-     */
-    protected $_query;
+
     /**
      * @var Doctrine_Table $_table          the index table
      */
@@ -48,35 +45,30 @@ class Doctrine_Search_Query
 
     protected $_condition;
     /**
-     * @param octrine_Table $_table         the index table
+     * @param Doctrine_Table $_table        the index table
      */
     public function __construct($table)
     {
         if (is_string($table)) {
            $table = Doctrine_Manager::table($table);
+        } else {
+            if ( ! $table instanceof Doctrine_Table) {
+                throw new Doctrine_Search_Exception('Invalid argument type. Expected instance of Doctrine_Table.');
+            }
         }
 
         $this->_table = $table;
 
-        $this->_query = new Doctrine_Query();
         $foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
 
         $this->_condition = $foreignId . ' %s (SELECT ' . $foreignId . ' FROM ' . $this->_table->getTableName() . ' WHERE ';
     }
-    /**
-     * getQuery
-     *
-     * @return Doctrine_Query       returns the query object associated with this object
-     */
-    public function getQuery()
-    {
-        return $this->_query;
-    }
 
-    public function search($text)
+
+    public function query($text)
     {
         $text = trim($text);
-        
+
         $foreignId = current(array_diff($this->_table->getColumnNames(), array('keyword', 'field', 'position')));
 
         $weighted = false;
@@ -227,11 +219,5 @@ class Doctrine_Search_Query
     public function getSql()
     {
         return $this->_sql;
-    }
-    public function execute()
-    {
-        $resultSet = $this->_query->execute(); 
-        
-        return $resultSet;
     }
 }

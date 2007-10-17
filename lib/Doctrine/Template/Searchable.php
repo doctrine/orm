@@ -61,9 +61,9 @@ class Doctrine_Template_Searchable extends Doctrine_Template
 
         $this->addListener(new Doctrine_Search_Listener($this->_plugin));
     }
-    
-    public function processPending($limit = null, $offset = null)
+
+    public function batchUpdateIndex($limit = null, $offset = null)
     {
-        $this->_plugin->processPending($limit, $offset);
+        $this->_plugin->batchUpdateIndex($limit, $offset);
     }
 }

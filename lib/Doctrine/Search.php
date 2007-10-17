@@ -66,9 +66,9 @@ class Doctrine_Search extends Doctrine_Plugin
     {
         $q = new Doctrine_Search_Query($this->_options['pluginTable']);
         
-        $q->search($query);
+        $q->query($query);
         
-        return $q->execute();
+        return $this->_options['connection']->fetchAll($q->getSql(), $q->getParams());;
     }
     
     public function analyze($text)
@@ -145,7 +145,7 @@ class Doctrine_Search extends Doctrine_Plugin
     
 
 
-    public function processPending($limit = null, $offset = null)
+    public function batchUpdateIndex($limit = null, $offset = null)
     {
         $this->buildDefinition();
 
@@ -214,8 +214,6 @@ class Doctrine_Search extends Doctrine_Plugin
         if (class_exists($className)) {
             return false;
         }
-
-
 
         $columns = array('keyword'  => array('type'    => 'string',
                                              'length'  => 200,
