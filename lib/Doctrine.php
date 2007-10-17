@@ -363,7 +363,7 @@ final class Doctrine
     
     const VALIDATE_CONSTRAINTS      = 4;
     
-    const VALIDATE_ALL              = 5;
+    const VALIDATE_ALL              = 7;
 
     /**
      * constant for auto_increment identifier
