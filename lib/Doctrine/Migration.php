@@ -418,7 +418,7 @@ class Doctrine_Migration
      * @param string $constraintName
      * @return void
      */
-    public function dropConstraint($tableName, $constraintName, $primary)
+    public function dropConstraint($tableName, $constraintName, $primary = false)
     {
         $options = get_defined_vars();
         
