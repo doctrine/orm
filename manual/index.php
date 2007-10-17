@@ -1,9 +1,9 @@
 <?php
 error_reporting(E_ALL);
 
-$includePath = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'lib' . PATH_SEPARATOR
+$includePath = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'lib' . PATH_SEPARATOR
              . dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . PATH_SEPARATOR
-             . dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'vendor';
+             . dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'vendor';
 
 set_include_path($includePath);
 
