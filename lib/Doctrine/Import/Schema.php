@@ -121,8 +121,10 @@ class Doctrine_Import_Schema
             $relations = $this->getRelations($properties);
             $indexes = $this->getIndexes($properties);
             $attributes = $this->getAttributes($properties);
+            $templates = $this->getTemplates($properties);
+            $actAs = $this->getActAs($properties);
             
-            $builder->buildRecord($options, $columns, $relations, $indexes, $attributes);
+            $builder->buildRecord($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
         }
     }
     
@@ -139,8 +141,9 @@ class Doctrine_Import_Schema
         $options['className'] = $properties['className'];
         $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['className'].'.class.php';
         $options['tableName'] = isset($properties['tableName']) ? $properties['tableName']:null;
-        $options['templates'] = isset($properties['templates']) ? $properties['templates']:null;
-
+        $options['connection'] = isset($properties['connection']) ? $properties['connection']:null;
+        $options['connectionClassName'] = isset($properties['connection']) ? $properties['className']:null;
+        
         if (isset($properties['inheritance'])) {
             $options['inheritance'] = $properties['inheritance'];
         }
@@ -193,6 +196,28 @@ class Doctrine_Import_Schema
     }
     
     /**
+     * getTemplates
+     *
+     * @param string $properties 
+     * @return void
+     */
+    public function getTemplates($properties)
+    {
+        return isset($properties['templates']) ? $properties['templates']:array();
+    }
+    
+    /**
+     * getActAs
+     *
+     * @param string $properties 
+     * @return void
+     */
+    public function getActAs($properties)
+    {
+        return isset($properties['actAs']) ? $properties['actAs']:array();
+    }
+    
+    /**
      * parseSchema
      *
      * A method to parse a Yml Schema and translate it into a property array.
@@ -213,8 +238,6 @@ class Doctrine_Import_Schema
             $className = isset($table['className']) ? (string) $table['className']:(string) $className;
             $tableName = isset($table['tableName']) ? (string) $table['tableName']:(string) Doctrine::tableize($className);
             
-            $build[$className]['className'] = $className;
-            
             $columns = isset($table['columns']) ? $table['columns']:array();
             $columns = isset($table['fields']) ? $table['fields']:$columns;
             
@@ -232,18 +255,22 @@ class Doctrine_Import_Schema
                     $colDesc['default'] = isset($field['default']) ? (string) $field['default']:null;
                     $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
                     $colDesc['autoincrement'] = isset($field['autoincrement']) ? (bool) (isset($field['autoincrement']) && $field['autoincrement']):null;
+                    $colDesc['autoincrement'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):$colDesc['autoincrement'];
                     $colDesc['unique'] = isset($field['unique']) ? (bool) (isset($field['unique']) && $field['unique']):null;
                     $colDesc['values'] = isset($field['values']) ? (array) $field['values']: null;
 
                     $columns[(string) $colDesc['name']] = $colDesc;
                 }
                 
+                $build[$className]['connection'] = isset($table['connection']) ? $table['connection']:null;
+                $build[$className]['className'] = $className;
                 $build[$className]['tableName'] = $tableName;
                 $build[$className]['columns'] = $columns;
-                $build[$className]['templates'] = isset($table['templates']) ? $table['templates']:array();
                 $build[$className]['relations'] = isset($table['relations']) ? $table['relations']:array();
                 $build[$className]['indexes'] = isset($table['indexes']) ? $table['indexes']:array();
                 $build[$className]['attributes'] = isset($table['attributes']) ? $table['attributes']:array();
+                $build[$className]['templates'] = isset($table['templates']) ? $table['templates']:array();
+                $build[$className]['actAs'] = isset($table['actAs']) ? $table['actAs']:array();
             }
             
             if (isset($table['inheritance'])) {

@@ -193,45 +193,25 @@ END;
      * @param  string $table
      * @param  array  $tableColumns
      */
-    public function buildTableDefinition(array $options, array $columns, array $relations, array $indexes, array $attributes)
+    public function buildTableDefinition(array $options, array $columns, array $relations, array $indexes, array $attributes, array $templates, array $actAs)
     {
         $ret = array();
         
         $i = 0;
         
         if (isset($options['inheritance']['extends']) && !isset($options['override_parent'])) {
-            $ret[$i] = "\t\t\t\tparent::setTableDefinition();";
+            $ret[$i] = "\t\tparent::setTableDefinition();";
             $i++;
         }
         
         if (isset($options['tableName']) && !empty($options['tableName'])) {
-            $ret[$i] = str_repeat(' ', 8) . '$this->setTableName(\''. $options['tableName'].'\');';
+            $ret[$i] = "\t\t".'$this->setTableName(\''. $options['tableName'].'\');';
             
-            $i++;
-        }
-        
-        if (isset($options['templates']) && !empty($options['templates'])) {
-            $ret[$i] = PHP_EOL .str_repeat(' ', 8) . '// Load Class Template(s)';
-            $i++;
-            
-            if (!is_array($options['templates'])) {
-              // explode to extract each template separated by commas
-              $templatesArray = explode(',', $options['templates']);
-            } else {
-              // set the existing array to templatesArray to be traversed through
-              $templatesArray = $options['templates'];
-            }
-            
-            foreach ($templatesArray as $templateName) {
-              $ret[$i] = str_repeat(' ', 8) . '$this->loadTemplate(\''. trim($templateName) .'\');';
-              $i++;
-            }
-            $ret[$i] = '';
             $i++;
         }
         
         foreach ($columns as $name => $column) {
-            $ret[$i] = '        $this->hasColumn(\'' . $name . '\', \'' . $column['type'] . '\'';
+            $ret[$i] = "\t\t".'$this->hasColumn(\'' . $name . '\', \'' . $column['type'] . '\'';
             
             if ($column['length']) {
                 $ret[$i] .= ', ' . $column['length'];
@@ -283,9 +263,71 @@ END;
         $ret[$i] = $this->buildAttributes($attributes);
         $i++;
         
+        $ret[$i] = $this->buildTemplates($templates);
+        $i++;
+        
+        $ret[$i] = $this->buildActAs($actAs);
+        
         if (!empty($ret)) {
           return "\n\tpublic function setTableDefinition()"."\n\t{\n".implode("\n", $ret)."\n\t}";
         }
+    }
+    
+    public function buildTemplates(array $templates)
+    {
+        $build = '';
+        foreach ($templates as $name => $options) {
+            
+            if (is_array($options)) {
+                $optionsPhp = $this->arrayToPhpArrayCode($options);
+            
+                $build .= "\t\t\$this->loadTemplate('" . $name . "', " . $optionsPhp . ");\n";
+            } else {
+                $build .= "\t\t\$this->loadTemplate('" . $options . "');\n";
+            }
+        }
+        
+        return $build;
+    }
+    
+    public function buildActAs(array $actAs)
+    {
+        $build = '';
+        foreach ($actAs as $name => $options) {
+            $optionsPhp = $this->arrayToPhpArrayCode($options);
+            
+            $build .= "\t\t\$this->actAs('" . $name . "', " . $optionsPhp . ");\n";
+        }
+        
+        return $build;
+    }
+    
+    protected function arrayToPhpArrayCode($array)
+    {
+        $build = 'array(';
+        
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $build .= $this->arrayToPhpArrayCode($value);
+            } else {
+                $build .= "'" . $key . "' => ";
+                if (is_integer($value)) {
+                    $build .= "$value";
+                } else if (is_string($value)) {
+                    $build .= "'" . $value . "'";
+                } else if (is_bool($value)) {
+                    $build .= $value ? "true":"false";
+                }
+                
+                $build .= ", ";
+            }
+        }
+        
+        $build = substr($build, 0, strlen($build) - 2);
+        
+        $build .= ')';
+        
+        return $build;
     }
     
     public function buildAttributes(array $attributes)
@@ -315,7 +357,7 @@ END;
       $build = '';
 
       foreach ($indexes as $indexName => $definitions) {
-          $build = "\n".'        $this->index(\'' . $indexName . '\', array(';
+          $build = "\n\t\t".'$this->index(\'' . $indexName . '\', array(';
 
           foreach ($definitions as $name => $value) {
 
@@ -376,7 +418,7 @@ END;
         $i = 0;
         
         if (! (isset($options['override_parent']) && $options['override_parent'] === true)) {
-            $ret[$i] = "\t\t\t\tparent::setUp();";
+            $ret[$i] = "\t\tparent::setUp();";
             $i++;
         }
         
@@ -390,9 +432,9 @@ END;
 
             if ($relation['type'] === Doctrine_Relation::ONE || 
                 $relation['type'] === Doctrine_Relation::ONE_COMPOSITE) {
-                $ret[$i] = '        $this->hasOne(\'' . $class . $alias . '\'';
+                $ret[$i] = "\t\t".'$this->hasOne(\'' . $class . $alias . '\'';
             } else {
-                $ret[$i] = '        $this->hasMany(\'' . $class . $alias . '\'';
+                $ret[$i] = "\t\t".'$this->hasMany(\'' . $class . $alias . '\'';
             }
             
             $a = array();
@@ -421,17 +463,13 @@ END;
                 $a[] = '\'onUpdate\' => ' . var_export($relation['onUpdate'], true);
             }
             
-            if (isset($relation['equal']) && $relation['equal']) {
-                $a[] = '\'equal\' => ' . var_export($relation['equal'], true);
-            }
-            
             if ( ! empty($a)) {
                 $ret[$i] .= ', ' . 'array(';
                 $length = strlen($ret[$i]);
                 $ret[$i] .= implode(',' . PHP_EOL . str_repeat(' ', $length), $a) . ')';
             }
             
-            $ret[$i] .= ');';
+            $ret[$i] .= ');'."\n";
             $i++;
         }
         
@@ -445,7 +483,7 @@ END;
         }
     }
     
-    public function buildDefinition(array $options, array $columns, array $relations = array(), array $indexes = array(), $attributes = array())
+    public function buildDefinition(array $options, array $columns, array $relations = array(), array $indexes = array(), $attributes = array(), array $templates = array(), array $actAs = array())
     {
         if ( ! isset($options['className'])) {
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
@@ -456,7 +494,7 @@ END;
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:'Doctrine_Record';
 
         if (!(isset($options['no_definition']) && $options['no_definition'] === true)) {
-            $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes, $attributes);
+            $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
             $setUp = $this->buildSetUp($options, $columns, $relations);
         } else {
             $definition = null;
@@ -475,7 +513,7 @@ END;
         return $content;
     }
 
-    public function buildRecord(array $options, array $columns, array $relations = array(), array $indexes = array(), array $attributes = array())
+    public function buildRecord(array $options, array $columns, array $relations = array(), array $indexes = array(), array $attributes = array(), array $templates = array(), array $actAs = array())
     {
         if ( !isset($options['className'])) {
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
@@ -521,17 +559,17 @@ END;
           $options['fileName']  = $generatedPath . DIRECTORY_SEPARATOR . $options['className'] . $this->suffix;
           $options['override_parent'] = true;
           
-          $this->writeDefinition($options, $columns, $relations, $indexes, $attributes);
+          $this->writeDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
         } else {
-          $this->writeDefinition($options, $columns, $relations, $indexes, $attributes);
+          $this->writeDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
         }
     }
     
-    public function writeDefinition(array $options, array $columns = array(), array $relations = array(), array $indexes = array(), array $attributes = array())
+    public function writeDefinition(array $options, array $columns = array(), array $relations = array(), array $indexes = array(), array $attributes = array(), array $templates = array(), array $actAs = array())
     {
-        $content = $this->buildDefinition($options, $columns, $relations, $indexes, $attributes);
+        $content = $this->buildDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
         $code = "<?php\n";
-
+        
         if (isset($options['requires'])) {
             if (!is_array($options['requires'])) {
                 $options['requires'] = array($options['requires']);
@@ -540,6 +578,11 @@ END;
             foreach ($options['requires'] as $require) {
                 $code .= "require_once('".$require."');\n";
             }
+        }
+        
+        if (isset($options['connection']) && $options['connection']) {
+            $code .= "// Connection Component Binding\n";
+            $code .= "Doctrine_Manager::getInstance()->bindComponent('" . $options['connectionClassName'] . "', '" . $options['connection'] . "');\n";
         }
         
         $code .= PHP_EOL . $content;
