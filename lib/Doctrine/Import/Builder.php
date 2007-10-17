@@ -278,12 +278,16 @@ END;
         $build = '';
         foreach ($templates as $name => $options) {
             
-            if (is_array($options)) {
+            if (is_array($options) && !empty($options)) {
                 $optionsPhp = $this->arrayToPhpArrayCode($options);
             
                 $build .= "\t\t\$this->loadTemplate('" . $name . "', " . $optionsPhp . ");\n";
             } else {
-                $build .= "\t\t\$this->loadTemplate('" . $options . "');\n";
+                if (isset($templates[0])) {
+                    $build .= "\t\t\$this->loadTemplate('" . $options . "');\n";
+                } else {
+                    $build .= "\t\t\$this->loadTemplate('" . $name . "');\n";
+                }
             }
         }
         
@@ -294,40 +298,30 @@ END;
     {
         $build = '';
         foreach ($actAs as $name => $options) {
-            $optionsPhp = $this->arrayToPhpArrayCode($options);
-            
-            $build .= "\t\t\$this->actAs('" . $name . "', " . $optionsPhp . ");\n";
+            if (is_array($options) && !empty($options)) {
+                $optionsPhp = $this->arrayToPhp($options);
+                
+                $build .= "\t\t\$this->actAs('" . $name . "', " . $optionsPhp . ");\n";
+            } else {
+                if (isset($actAs[0])) {
+                    $build .= "\t\t\$this->actAs('" . $options . "');\n";
+                } else {
+                    $build .= "\t\t\$this->actAs('" . $name . "');\n";
+                }
+            }
         }
         
         return $build;
     }
     
-    protected function arrayToPhpArrayCode($array)
+    protected function arrayToPhp(array $array)
     {
-        $build = 'array(';
+        ob_start();
+        var_export($array);
+        $php = ob_get_contents();
+        ob_end_clean();
         
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $build .= $this->arrayToPhpArrayCode($value);
-            } else {
-                $build .= "'" . $key . "' => ";
-                if (is_integer($value)) {
-                    $build .= "$value";
-                } else if (is_string($value)) {
-                    $build .= "'" . $value . "'";
-                } else if (is_bool($value)) {
-                    $build .= $value ? "true":"false";
-                }
-                
-                $build .= ", ";
-            }
-        }
-        
-        $build = substr($build, 0, strlen($build) - 2);
-        
-        $build .= ')';
-        
-        return $build;
+        return $php;
     }
     
     public function buildAttributes(array $attributes)

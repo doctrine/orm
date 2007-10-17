@@ -298,13 +298,23 @@ class Doctrine_Import_Schema
             $relations = $properties['relations'];
             
             foreach ($relations as $alias => $relation) {
- 
                 $class = isset($relation['class']) ? $relation['class']:$alias;
                 
-                $relation['local'] = isset($relation['local']) ? $relation['local']:Doctrine::tableize($class) . '_id';
-                $relation['foreign'] = isset($relation['foreign']) ? $relation['foreign']:'id';
+                // Attempt to guess the local and foreign
+                if (isset($relation['refClass'])) {
+                    $relation['local'] = isset($relation['local']) ? $relation['local']:Doctrine::tableize($name) . '_id';
+                    $relation['foreign'] = isset($relation['foreign']) ? $relation['foreign']:Doctrine::tableize($class) . '_id';
+                } else {
+                    $relation['local'] = isset($relation['local']) ? $relation['local']:Doctrine::tableize($class) . '_id';
+                    $relation['foreign'] = isset($relation['foreign']) ? $relation['foreign']:'id';
+                }
+            
                 $relation['alias'] = isset($relation['alias']) ? $relation['alias'] : $alias;
                 $relation['class'] = $class;
+                
+                if (isset($relation['refClass'])) {
+                    $relation['type'] = 'many';
+                }
                 
                 if (isset($relation['type']) && $relation['type']) {
                     $relation['type'] = $relation['type'] === 'one' ? Doctrine_Relation::ONE:Doctrine_Relation::MANY;
@@ -317,8 +327,26 @@ class Doctrine_Import_Schema
                 }
                 
                 if(isset($relation['refClass']) && !empty($relation['refClass'])  && (!isset($array[$relation['refClass']]['relations']) || empty($array[$relation['refClass']]['relations']))) {
-                    $array[$relation['refClass']]['relations'][$className] = array('local' => $relation['local'], 'foreign' => $relation['foreign'], 'ignore' => true);
-                    $array[$relation['refClass']]['relations'][$relation['class']] = array('local' => $relation['local'], 'foreign' => $relation['foreign'], 'ignore' => true);
+                    
+                    if (!isset($array[$relation['refClass']]['relations'][$className]['local'])) {
+                        $array[$relation['refClass']]['relations'][$className]['local'] = $relation['local'];
+                    }
+                    
+                    if (!isset($array[$relation['refClass']]['relations'][$className]['foreign'])) {
+                        $array[$relation['refClass']]['relations'][$className]['foreign'] = $relation['foreign'];
+                    }
+                    
+                    $array[$relation['refClass']]['relations'][$className]['ignore'] = true;
+                    
+                    if (!isset($array[$relation['refClass']]['relations'][$relation['class']]['local'])) {
+                        $array[$relation['refClass']]['relations'][$relation['class']]['local'] = $relation['local'];
+                    }
+                    
+                    if (!isset($array[$relation['refClass']]['relations'][$relation['class']]['foreign'])) {
+                        $array[$relation['refClass']]['relations'][$relation['class']]['foreign'] = $relation['foreign'];
+                    }
+                    
+                    $array[$relation['refClass']]['relations'][$relation['class']]['ignore'] = true;
                     
                     if(isset($relation['foreignAlias'])) {
                         $array[$relation['class']]['relations'][$relation['foreignAlias']] = array('type'=>$relation['type'],'local'=>$relation['foreign'],'foreign'=>$relation['local'],'refClass'=>$relation['refClass'],'class'=>$className);
