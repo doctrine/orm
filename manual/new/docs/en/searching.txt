@@ -58,7 +58,28 @@ The structure of the inverse index Doctrine uses is the following:
 * **position** is the position where the keyword was found
 * **[foreign_keys]** either one or multiple fields depending on the owner component (here NewsItem)
 
-In the NewsItem example the [foreign_keys] would simply contain one field newsitem_id with foreign key references to NewsItem(id) and with onDelete => CASCADE constraint.
+In the NewsItem example the [foreign_keys] would simply contain one field id with foreign key references to NewsItem(id) and with onDelete => CASCADE constraint.
 
 ++ Index building
+
+Whenever a searchable record is being inserted into database Doctrine executes the index building procedure. The phases of this operation are:
+
+1. Analyze the text using a Doctrine_Search_Analyzer based class
+2. Insert new rows into index table for all analyzed keywords      
+
+++ Text analyzers
+
+By default Doctrine uses Doctrine_Search_Analyzer_Standard for analyzing the text. This class performs the following things:
+
+1. Strips out stop-keywords (such as 'and', 'if' etc.)
+2. Makes all keywords lowercased
+3. Replaces all non alpha-numeric marks with whitespace so that 'database' matches 'database.'
+4. Replaces all quotation marks with empty strings so that "O'Connor" matches "oconnor"
+
+You can write your own analyzer class by making a class that implements Doctrine_Search_Analyzer_Interface. This analyzer can then be applied to the search object as follows:
+
+<code type="php">
+$search->setOption('analyzer', new MyAnalyzer());
+</code>
+
 ++ Query language
