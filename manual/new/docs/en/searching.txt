@@ -1,6 +1,6 @@
 ++ Introduction
 
-Searching is a huge topic, hence an entire chapter has been devoted to a plugin called Doctrine_Search. Doctrine_Search is a fulltext indexing and searching tool similar to Apache Lucene.
+Searching is a huge topic, hence an entire chapter has been devoted to a plugin called Doctrine_Search. Doctrine_Search is a fulltext indexing and searching tool. It can be used for indexing and searching both database and files.
 
 Consider we have a class called NewsItem with the following definition:
 
@@ -95,4 +95,35 @@ $search->setOption('analyzer', new MyAnalyzer());
 ++ Query language
 
 Doctrine_Search provides a query language similar to Apache Lucene. The parsed behind Doctrine_Search_Query converts human readable, easy-to-construct search queries to their complex sql equivalents.
+
+++ File searches
+
+As stated before Doctrine_Search can also be used for searching files. Lets say we have a directory which we want to be searchable. First we need to create an instance of Doctrine_Search_File which is a child of Doctrine_Search providing some extra functionality needed for the file searches.
+
+<code type="php">
+$search = new Doctrine_Search_File();
+</code>
+
+Second thing to do is to generate the index table. By default Doctrine names the database index class as FileIndex.
+
+<code type="php">
+$search->buildDefinition(); // builds to table and record class definitions
+
+$conn->export->exportClasses(array('FileIndex'));
+</code>
+
+Now we can start using the file searcher. First lets index some directory:
+
+<code type="php">
+$search->indexDirectory('myfiles');
+</code>
+
+The indexDirectory() iterates recursively through given directory and analyzes all files within it updating the index table as necessary.
+
+Finally we can start searching for pieces of text within the indexed files:
+
+<code type="php">
+$resultSet = $search->search('database orm');
+</code>
+
 
