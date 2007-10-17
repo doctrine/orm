@@ -9,7 +9,13 @@ Once you enabled validation, you'll get a bunch of validations automatically:
 
 <code type="php">
 // turning on validation
-Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_VLD, true);
+Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_ALL);
+</code>
+
+You can combine the following constants by using bitwise operations: VALIDATE_ALL, VALIDATE_TYPES, VALIDATE_LENGTHS, 
+VALIDATE_CONSTRAINTS, VALIDATE_NONE. For example to enbale all validations except length validations you would use:
+<code>
+VALIDATE_ALL & ~VALIDATE_LENGTHS
 </code>
 
 +++ More Validation
