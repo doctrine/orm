@@ -139,6 +139,7 @@ class Doctrine_Import_Schema
         $options['className'] = $properties['className'];
         $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['className'].'.class.php';
         $options['tableName'] = isset($properties['tableName']) ? $properties['tableName']:null;
+        $options['templates'] = isset($properties['templates']) ? $properties['templates']:null;
 
         if (isset($properties['inheritance'])) {
             $options['inheritance'] = $properties['inheritance'];
@@ -239,6 +240,7 @@ class Doctrine_Import_Schema
                 
                 $build[$className]['tableName'] = $tableName;
                 $build[$className]['columns'] = $columns;
+                $build[$className]['templates'] = isset($table['templates']) ? $table['templates']:array();
                 $build[$className]['relations'] = isset($table['relations']) ? $table['relations']:array();
                 $build[$className]['indexes'] = isset($table['indexes']) ? $table['indexes']:array();
                 $build[$className]['attributes'] = isset($table['attributes']) ? $table['attributes']:array();

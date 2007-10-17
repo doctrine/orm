@@ -210,6 +210,26 @@ END;
             $i++;
         }
         
+        if (isset($options['templates']) && !empty($options['templates'])) {
+            $ret[$i] = PHP_EOL .str_repeat(' ', 8) . '// Load Class Template(s)';
+            $i++;
+            
+            if (!is_array($options['templates'])) {
+              // explode to extract each template separated by commas
+              $templatesArray = explode(',', $options['templates']);
+            } else {
+              // set the existing array to templatesArray to be traversed through
+              $templatesArray = $options['templates'];
+            }
+            
+            foreach ($templatesArray as $templateName) {
+              $ret[$i] = str_repeat(' ', 8) . '$this->loadTemplate(\''. trim($templateName) .'\');';
+              $i++;
+            }
+            $ret[$i] = '';
+            $i++;
+        }
+        
         foreach ($columns as $name => $column) {
             $ret[$i] = '        $this->hasColumn(\'' . $name . '\', \'' . $column['type'] . '\'';
             
