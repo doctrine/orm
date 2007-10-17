@@ -1,9 +1,0 @@
-#!/bin/sh
-
-DIR=`dirname $0`
-
-PERL5LIB=$DIR/lib:$PERL5LIB
-export PERL5LIB
-
-$DIR/text-vimcolor "$@"
-

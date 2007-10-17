@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<article>
-  <title>Testing Syntax Highlighting</title>
-  <para>Testing syntax highlighting</para>
-<programlisting role="xml">
-&lt;para>Hello, <emphasis>&amp;who;</emphasis
- >!&lt;/para> <co id="who-entity"/>
-</programlisting>
-</article>
