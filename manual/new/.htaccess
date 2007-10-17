@@ -1,5 +1,0 @@
-# RewriteEngine on
-
-# RewriteRule ^chapter/(.*)/(.*)$  index.php [r=404]
-# RewriteRule ^chapter/(.*)$       index.php?chapter=$1
-# RewriteRule ^one-page$           index.php?one-page=1
