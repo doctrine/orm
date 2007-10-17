@@ -187,7 +187,7 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         $sql = $this->export->createTableSql($name, $fields, $options);
 
         $this->assertEqual($sql[0], 'CREATE TABLE mytable (id TINYINT(1), foreignKey INT, INDEX foreignKey_idx (foreignKey)) ENGINE = INNODB');
-        $this->assertEqual($sql[1], 'ALTER TABLE mytable ADD CONSTRAINT FOREIGN KEY (foreignKey) REFERENCES sometable(id)');
+        $this->assertEqual($sql[1], 'ALTER TABLE mytable ADD FOREIGN KEY (foreignKey) REFERENCES sometable(id)');
     }
     public function testForeignKeyIdentifierQuoting()
     {
@@ -208,7 +208,7 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
         $sql = $this->export->createTableSql($name, $fields, $options);
 
         $this->assertEqual($sql[0], 'CREATE TABLE `mytable` (`id` TINYINT(1), `foreignKey` INT, INDEX `foreignKey_idx` (`foreignKey`)) ENGINE = INNODB');
-        $this->assertEqual($sql[1], 'ALTER TABLE `mytable` ADD CONSTRAINT FOREIGN KEY (`foreignKey`) REFERENCES `sometable`(`id`)');
+        $this->assertEqual($sql[1], 'ALTER TABLE `mytable` ADD FOREIGN KEY (`foreignKey`) REFERENCES `sometable`(`id`)');
 
         $this->conn->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, false);
     }
@@ -251,7 +251,7 @@ class Doctrine_Export_Mysql_TestCase extends Doctrine_UnitTestCase
 
         $sql = $this->export->createTableSql($name, $fields, $options);
         $this->assertEqual($sql[0], 'CREATE TABLE mytable (id TINYINT(1), foreignKey INT, INDEX myindex_idx (foreignKey)) ENGINE = INNODB');
-        $this->assertEqual($sql[1], 'ALTER TABLE mytable ADD CONSTRAINT FOREIGN KEY (foreignKey) REFERENCES sometable(id)');
+        $this->assertEqual($sql[1], 'ALTER TABLE mytable ADD FOREIGN KEY (foreignKey) REFERENCES sometable(id)');
     }
     public function testCreateDatabaseExecutesSql()
     {

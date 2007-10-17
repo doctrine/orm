@@ -51,7 +51,7 @@ class Doctrine_Export_Record_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($sql[0], 'CREATE TABLE foreign_key_test (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, parent_id BIGINT, INDEX parent_id_idx (parent_id), PRIMARY KEY(id)) ENGINE = INNODB');
         if (isset($sql[1])) {
-            $this->assertEqual($sql[1], 'ALTER TABLE foreign_key_test ADD CONSTRAINT FOREIGN KEY (parent_id) REFERENCES foreign_key_test(id) ON UPDATE RESTRICT ON DELETE CASCADE');
+            $this->assertEqual($sql[1], 'ALTER TABLE foreign_key_test ADD FOREIGN KEY (parent_id) REFERENCES foreign_key_test(id) ON UPDATE RESTRICT ON DELETE CASCADE');
         } else {
             $this->fail('$sql should contain ALTER TABLE statement');
         }
@@ -77,7 +77,7 @@ class Doctrine_Export_Record_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($sql[0], 'CREATE TABLE foreign_key_test (id BIGINT AUTO_INCREMENT, name TEXT, code INT, content TEXT, parent_id BIGINT, INDEX parent_id_idx (parent_id), PRIMARY KEY(id)) ENGINE = INNODB');
         if (isset($sql[1])) {
-            $this->assertEqual($sql[1], 'ALTER TABLE foreign_key_test ADD CONSTRAINT FOREIGN KEY (parent_id) REFERENCES foreign_key_test(id) ON UPDATE RESTRICT ON DELETE CASCADE');
+            $this->assertEqual($sql[1], 'ALTER TABLE foreign_key_test ADD FOREIGN KEY (parent_id) REFERENCES foreign_key_test(id) ON UPDATE RESTRICT ON DELETE CASCADE');
         } else {
             $this->fail('$sql should contain ALTER TABLE statement');
         }
@@ -99,7 +99,7 @@ class Doctrine_Export_Record_TestCase extends Doctrine_UnitTestCase
         Doctrine::exportSchema(dirname(__FILE__) . DIRECTORY_SEPARATOR .'..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'export');
 
         $this->assertEqual($this->adapter->pop(), 'COMMIT');
-        $this->assertEqual($this->adapter->pop(), 'ALTER TABLE cms__category_languages ADD CONSTRAINT FOREIGN KEY (category_id) REFERENCES cms__category(id) ON DELETE CASCADE');
+        $this->assertEqual($this->adapter->pop(), 'ALTER TABLE cms__category_languages ADD FOREIGN KEY (category_id) REFERENCES cms__category(id) ON DELETE CASCADE');
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE cms__category_languages (id BIGINT AUTO_INCREMENT, name TEXT, category_id BIGINT, language_id BIGINT, INDEX index_category_idx (category_id), INDEX index_language_idx (language_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB');
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE cms__category (id BIGINT AUTO_INCREMENT, created DATETIME, parent BIGINT, position MEDIUMINT, active BIGINT, INDEX index_parent_idx (parent), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB');
         $this->assertEqual($this->adapter->pop(), 'BEGIN TRANSACTION');

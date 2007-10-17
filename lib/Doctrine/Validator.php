@@ -165,7 +165,7 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
     {
         if ($column['type'] == 'timestamp' || $column['type'] == 'integer') {
             return true;
-        } elseif ($column['type'] == 'array' || $column['type'] == 'object') {
+        } else if ($column['type'] == 'array' || $column['type'] == 'object') {
             $length = strlen(serialize($value));
         } else {
             $length = strlen($value);
