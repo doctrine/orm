@@ -64,7 +64,7 @@ class Doctrine_Data_Import extends Doctrine_Data
                 
                 // If they specified a specific yml file
                 if (end($e) == 'yml') {
-                    $array = array_merge($array, Doctrine_Parser::load($dir, $this->getFormat()));
+                    $array = array_merge_recursive(Doctrine_Parser::load($dir, $this->getFormat()), $array);
                 // If they specified a directory
                 } else if(is_dir($dir)) {
                     $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
@@ -73,7 +73,7 @@ class Doctrine_Data_Import extends Doctrine_Data
                     foreach ($it as $file) {
                         $e = explode('.', $file->getFileName());
                         if (in_array(end($e), $this->getFormats())) {
-                            $array = array_merge($array, Doctrine_Parser::load($file->getPathName(), $this->getFormat()));
+                            $array = array_merge_recursive(Doctrine_Parser::load($file->getPathName(), $this->getFormat()), $array);
                         }
                     }   
                 }

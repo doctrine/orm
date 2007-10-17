@@ -325,14 +325,14 @@ class Doctrine_Facade
 
         if ($delete)
         {
-          $models = Doctrine_Facade::getLoadedModels();
+            $models = Doctrine_Facade::getLoadedModels();
 
-          foreach ($models as $model)
-          {
-            $model = new $model();
+            foreach ($models as $model)
+            {
+                $model = new $model();
 
-            $model->getTable()->createQuery()->delete($model)->execute();
-          }
+                $model->getTable()->createQuery()->delete($model)->execute();
+            }
         }
 
         $data = new Doctrine_Data();
