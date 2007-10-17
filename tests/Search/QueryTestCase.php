@@ -177,7 +177,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     public function testSearchSupportsAndOperator()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $q->search('doctrine AND orm');
+        $q->query('doctrine AND orm');
 
         $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
@@ -192,7 +192,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     public function testSearchSupportsOrOperator()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $q->search('doctrine OR orm');
+        $q->query('doctrine OR orm');
 
         $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
@@ -203,10 +203,10 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     }
     
 
-    public function testQuerySupportsSingleWordSearch()
+    public function testQuerySupportsSingleWordquery()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $q->search('doctrine');
+        $q->query('doctrine');
 
         $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index WHERE keyword = ? GROUP BY id ORDER BY relevance';
@@ -218,7 +218,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     public function testSearchSupportsMixingOfOperators()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $q->search('(doctrine OR orm) AND dbal');
+        $q->query('(doctrine OR orm) AND dbal');
 
         $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
@@ -233,7 +233,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     public function testSearchSupportsSingleTermWithQuotes()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $q->search("'doctrine orm'");
+        $q->query("'doctrine orm'");
 
         $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index WHERE keyword = ? '
@@ -247,7 +247,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     public function testSearchSupportsSingleLongTermWithQuotes()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $q->search("'doctrine orm dbal'");
+        $q->query("'doctrine orm dbal'");
 
         $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index WHERE keyword = ? '
@@ -259,10 +259,10 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($q->getSql(), $sql);
     }
 
-    public function testQuerySupportsMultiWordSearch()
+    public function testQuerySupportsMultiWordquery()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $q->search('doctrine orm');
+        $q->query('doctrine orm');
 
         $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
@@ -276,7 +276,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     public function testQuerySupportsMultiWordSearchAndSingleLetterWildcards()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $q->search('doct?ine orm');
+        $q->query('doct?ine orm');
 
         $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
@@ -290,7 +290,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     public function testQuerySupportsMultiWordSearchAndMultiLetterWildcards()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $q->search('doc* orm');
+        $q->query('doc* orm');
 
         $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
@@ -304,7 +304,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     public function testSearchSupportsMultipleTermsWithQuotes()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $q->search("doctrine 'orm database'");
+        $q->query("doctrine 'orm database'");
 
         $sql = 'SELECT COUNT(keyword) AS relevance, id '
              . 'FROM search_test_index '
@@ -320,7 +320,7 @@ class Doctrine_Search_Query_TestCase extends Doctrine_UnitTestCase
     public function testSearchReturnsFalseForEmptyStrings()
     {
         $q = new Doctrine_Search_Query('SearchTestIndex');
-        $result = $q->search(' ');
+        $result = $q->query(' ');
 
         $this->assertFalse($result);
     }
