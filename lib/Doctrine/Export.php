@@ -454,7 +454,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $table = $this->conn->quoteIdentifier($table);
 
-        $query = 'ALTER TABLE ' . $table . ' ADD CONSTRAINT ' . $this->getForeignKeyDeclaration($definition);
+        $query = 'ALTER TABLE ' . $table . ' ADD ' . $this->getForeignKeyDeclaration($definition);
 
         return $query;
     }
@@ -908,7 +908,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $sql = '';
         if (isset($definition['name'])) {
-            $sql .= ' ' . $this->conn->quoteIdentifier($definition['name']) . ' ';
+            $sql .= ' CONSTRAINT ' . $this->conn->quoteIdentifier($definition['name']) . ' ';
         }
         $sql .= 'FOREIGN KEY (';
 

@@ -331,20 +331,5 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         
         return $sql;
     }
-    
-    /**
-     * createForeignKeySql
-     *
-     * @param string    $table         name of the table on which the foreign key is to be created
-     * @param array     $definition    associative array that defines properties of the foreign key to be created.
-     * @return string
-     */
-    public function createForeignKeySql($table, array $definition)
-    {
-        $table = $this->conn->quoteIdentifier($table);
 
-        $query = 'ALTER TABLE ' . $table . ' ADD ' . $this->getForeignKeyDeclaration($definition);
-
-        return $query;
-    }
 }
