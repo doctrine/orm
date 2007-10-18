@@ -93,10 +93,12 @@ class Doctrine_Search extends Doctrine_Plugin
         $conn   = $this->getOption('resource')->getConnection();
         $identifier = $this->_options['resource']->getIdentifier();
         
-        Doctrine_Query::create()->delete()
-                                ->from($class)
-                                ->where($identifier . ' = ?', array($data[$identifier]))
-                                ->execute();;
+        $q = Doctrine_Query::create()->delete()
+                                     ->from($class);
+        foreach ((array) $identifier as $id) {
+            $q->addWhere($id . ' = ?', array($data[$id]));
+        }
+        $q->execute();
 
         if ($this->_options['batchUpdates'] === true) {
             $index = new $class(); 
