@@ -145,9 +145,7 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
     public function testBatchUpdatesUpdateAllPendingEntries()
     {
         $e = new SearchTest();
-        $tpl = $e->getTable()->getTemplate('Doctrine_Template_Searchable');
-
-        $tpl->getPlugin()->processPending();
+        $e->batchUpdateIndex();
         
         $coll = Doctrine_Query::create()
                 ->from('SearchTestIndex s')

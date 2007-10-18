@@ -211,9 +211,6 @@ $record->addTestCase(new Doctrine_Record_ZeroValues_TestCase());
 //$record->addTestCase(new Doctrine_Record_SaveBlankRecord_TestCase());
 $test->addTestCase($record);
 
-
-$test->addTestCase(new Doctrine_Schema_TestCase());
-
 $test->addTestCase(new Doctrine_CustomPrimaryKey_TestCase());
 $test->addTestCase(new Doctrine_CustomResultSetOrder_TestCase());
 
@@ -240,6 +237,7 @@ $test->addTestCase(new Doctrine_NestedSet_SingleRoot_TestCase());
 $search = new GroupTest('Search tests','search');
 $search->addTestCase(new Doctrine_Search_TestCase());
 $search->addTestCase(new Doctrine_Search_Query_TestCase());
+$search->addTestCase(new Doctrine_Search_File_TestCase());
 
 $test->addTestCase($search);
 
