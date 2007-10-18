@@ -324,7 +324,7 @@ class Doctrine_Migration
             $to = $this->getLatestVersion();
         }
         
-        if ($from === $to) {
+        if ($from == $to) {
             throw new Doctrine_Migration_Exception('Already up-to-date');
         }
         
