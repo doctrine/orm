@@ -89,7 +89,9 @@ class Doctrine_AuditLog extends Doctrine_Plugin
         }
 
         // the version column should be part of the primary key definition
-        $columns[$this->_options['versionColumn']]['primary'] = true;
+        $columns[$this->_options['versionColumn']] = array('type' => 'integer',
+                                                           'length' => 8,
+                                                           'primary' => true);
 
         $id = $table->getIdentifier();
 
