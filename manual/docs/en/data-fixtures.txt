@@ -51,30 +51,86 @@ $data->importDummyData($numRecords, $models);
 
 ++ Writing
 
-You can write your fixtures files manually and load them in to your applications. Below is a sample data.yml fixtures file
+You can write your fixtures files manually and load them in to your applications. Below is a sample data.yml fixtures file. You can also split your data fixtures file up in to multiple files. Doctrine will read all fixtures files and parse them, then load all data.
+
+Please see the [doc schema-files :index :name] for the sample models/schema for these example fixtures.
 
 <code type="yml">
 ---
-Email: 
-  Email_1: 
-    address: jwage@mac.com
-Group: 
-  Group_1: 
-    name: Drama Actors
-User: 
-  User_1: 
-    Phonenumber: Phonenumber_1
+Adult:
+  Adult_1:
+    name: Parent 1
+    Contact: Contact_1
+Car:
+  Car_1:
+    name: Chevorlet Trailblazer
+  Car_2:
+    name: Chevorlet Blazer
+  Car_3:
+    name: Buick
+Child:
+  Child_1:
+    name: Child 1
+    Adult: Adult_1
+Contact:
+  Contact_1:
     name: Jonathan H. Wage
-    loginname: jwage
-    Email: Email_1
-Groupuser: 
-  Groupuser_1: 
-    Group: Group_1
+  Contact_3:
+    name: Daniel Adams
+  Contact_4:
+    name: Robert Adams
+Dog:
+  Dog_1:
+    name: Sam
     User: User_1
-Phonenumber: 
-  Phonenumber_1: 
-    phonenumber: 555-555-5555
-    Group: Group_1
+  Dog_2:
+    name: Dixie
+    User: User_2
+  Dog_3:
+    name: Chief
+    User: User_3
+SelfReference:
+  SelfReference_1:
+    User1: User_1
+    User2: User_2
+    name: Self Reference 1
+    SelfReference1: SelfReference_2
+    SelfReference2: SelfReference_3
+  SelfReference_2:
+    User1: User_2
+    User2: User_1
+    name: Self Reference 2
+    SelfReference1: SelfReference_1
+    SelfReference2: SelfReference_1
+  SelfReference_3:
+    User1: User_2
+    User2: User_1
+    name: Self Reference 3
+    SelfReference1: SelfReference_3
+    SelfReference2: SelfReference_3
+User:
+  User_1:
+    username: jwage
+    hair_color: light brown
+    Contact: Contact_1
+  User_2:
+    username: dadams
+    hair_color: dark brown
+    Contact: Contact_3
+  User_3:
+    username: radams
+    hair_color: light brown
+    Contact: Contact_4
+UserCar:
+  UserCar_1:
+    User: User_1
+    Car: Car_1
+  UserCar_2:
+    User: User_2
+    Car: Car_2
+  UserCar_3:
+    User: User_3
+    Car: Car_3
 </code>
 
 Here is how you would write code to load the data from that data.yml file

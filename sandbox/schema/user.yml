@@ -1,7 +1,17 @@
 ---
 User:
-  columns:
+  inheritance:
+    extends: Entity
+  fields:
+    id:
+      type: integer
+      size: 11
+      primary: true
+      autoincrement: true
     username:
+      type: string
+      length: 255
+    hair_color:
       type: string
       length: 255
     contact_id:
@@ -11,3 +21,18 @@ User:
     Contact:
       local: contact_id
       foreign: id
+      foreignType: one
+    Cars:
+      class: Car
+      refClass: UserCar
+    Groups:
+      class: Group
+      refClass: UserGroup
+  indexes:
+    name_x:
+      columns:
+        username:
+          sorting: ASC
+          length: 11
+          primary: true
+      type: unique
