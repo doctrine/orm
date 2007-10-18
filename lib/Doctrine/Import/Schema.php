@@ -248,7 +248,7 @@ class Doctrine_Import_Schema
                     $colDesc['type'] = isset($field['type']) ? (string) $field['type']:null;
                     $colDesc['ptype'] = isset($field['ptype']) ? (string) $field['ptype']:(string) $colDesc['type'];
                     $colDesc['length'] = isset($field['length']) ? (int) $field['length']:null;
-                    $colDesc['length'] = isset($field['size']) ? (int) $field['size']:$field['length'];
+                    $colDesc['length'] = isset($field['size']) ? (int) $field['size']:$colDesc['length'];
                     $colDesc['fixed'] = isset($field['fixed']) ? (int) $field['fixed']:null;
                     $colDesc['unsigned'] = isset($field['unsigned']) ? (bool) $field['unsigned']:null;
                     $colDesc['primary'] = isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null;
