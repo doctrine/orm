@@ -39,8 +39,6 @@ class Doctrine_AuditLog extends Doctrine_Plugin
                             'pluginTable'   => false,
                             );
 
-    protected $_auditTable;
-
     public function __construct($options)
     {
         $this->_options = array_merge($this->_options, $options);

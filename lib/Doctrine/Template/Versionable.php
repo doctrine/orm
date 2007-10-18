@@ -31,21 +31,19 @@
  */
 class Doctrine_Template_Versionable extends Doctrine_Template
 {
-    protected $_auditLog;
-
     public function __construct(array $options)
     {
-        $this->_auditLog = new Doctrine_AuditLog($options);
+        $this->_plugin = new Doctrine_AuditLog($options);
     }
     public function setUp()
     {
-        $this->_auditLog->setOption('table', $this->_table);
-        $this->_auditLog->buildDefinition($this->_table);
+        $this->_plugin->setOption('table', $this->_table);
+        $this->_plugin->buildDefinition($this->_table);
 
-        $this->addListener(new Doctrine_AuditLog_Listener($this->_auditLog));
+        $this->addListener(new Doctrine_AuditLog_Listener($this->_plugin));
     }
     public function getAuditLog()
     {
-        return $this->_auditLog;
+        return $this->_plugin;
     }
 }
