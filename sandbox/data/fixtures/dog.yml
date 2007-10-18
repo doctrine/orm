@@ -1,0 +1,11 @@
+---
+Dog:
+  Dog_1:
+    name: Sam
+    User: User_1
+  Dog_2:
+    name: Dixie
+    User: User_2
+  Dog_3:
+    name: Chief
+    User: User_3

@@ -1,0 +1,14 @@
+---
+User:
+  User_1:
+    username: jwage
+    hair_color: light brown
+    Contact: Contact_1
+  User_2:
+    username: dadams
+    hair_color: dark brown
+    Contact: Contact_3
+  User_3:
+    username: radams
+    hair_color: light brown
+    Contact: Contact_4

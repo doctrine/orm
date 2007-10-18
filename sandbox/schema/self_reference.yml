@@ -1,0 +1,40 @@
+---
+SelfReference:
+  fields:
+    id:
+      type: integer
+      size: 11
+      primary: true
+      autoincrement: true
+    name:
+      type: string
+      size: 255
+    user_id1:
+      type: integer
+      size: 11
+    user_id2:
+      type: integer
+      size: 11
+    parent_self_reference_id:
+      type: integer
+      size: 11
+    parent_self_reference_id2:
+      type: integer
+      size: 11
+  relations:
+    User1:
+      class: User
+      local: user_id1
+      foreignAlias: SelfReference1
+    User2:
+      class: User
+      local: user_id2
+      foreignAlias: SelfReference2
+    SelfReference1:
+      class: SelfReference
+      local: parent_self_reference_id
+      foreignAlias: SelfReferences1
+    SelfReference2:
+      class: SelfReference
+      local: parent_self_reference_id2
+      foreignAlias: SelfReferences2

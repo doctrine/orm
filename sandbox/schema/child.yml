@@ -1,0 +1,17 @@
+---
+Child:
+  fields:
+    id:
+      type: integer
+      size: 11
+      primary: true
+      autoincrement: true
+    name:
+      type: string
+      size: 255
+    adult_id:
+      type: integer
+      size: 11
+  relations:
+    Adult:
+      foreignAlias: Children
