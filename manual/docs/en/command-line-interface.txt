@@ -1,0 +1,171 @@
+++ Tasks
+
+<code>
+
+Available Doctrine Command Line Interface Tasks
+----------------------------------------
+
+Compile doctrine classes in to one single php file
+Syntax: ./cli compile <drivers> <compiled_path>
+
+Arguments (* = required):
+drivers - Specify list of drivers you wish to compile. Ex: mysql|mssql|sqlite
+compiled_path - The path where you want to write the compiled doctrine libs.
+
+----------------------------------------
+Create database for each of your connections
+Syntax: ./cli create-db <connection>
+
+Arguments (* = required):
+connection - Optionally specify a single connection to create the database for.
+
+----------------------------------------
+Create tables for all existing database connections
+Syntax: ./cli create-tables <models_path>
+
+Arguments (* = required):
+*models_path - Specify path to your models directory.
+
+----------------------------------------
+Drop database for all existing connections
+Syntax: ./cli drop-db <connection>
+
+Arguments (* = required):
+connection - Optionally specify a single connection to drop the database for.
+
+----------------------------------------
+Dump data to a yaml data fixture file.
+Syntax: ./cli dump-data <data_fixtures_path> <models_path> <individual_files>
+
+Arguments (* = required):
+*data_fixtures_path - Specify path to write the yaml data fixtures file to.
+*models_path - Specify path to your Doctrine_Record definitions.
+individual_files - Specify whether or not you want to dump to individual files. One file per model.
+
+----------------------------------------
+Generate new migration class definition
+Syntax: ./cli generate-migration <class_name> <migrations_path>
+
+Arguments (* = required):
+*class_name - Name of the migration class to generate
+*migrations_path - Specify the complete path to your migration classes folder.
+
+----------------------------------------
+Generates your Doctrine_Record definitions from your existing database connections.
+Syntax: ./cli generate-models-from-db <models_path> <connection>
+
+Arguments (* = required):
+*models_path - Specify path to your Doctrine_Record definitions.
+connection - Optionally specify a single connection to generate the models for.
+
+----------------------------------------
+Generates your Doctrine_Record definitions from a Yaml schema file
+Syntax: ./cli generate-models-from-yaml <yaml_schema_path> <models_path>
+
+Arguments (* = required):
+*yaml_schema_path - Specify the complete directory path to your yaml schema files.
+*models_path - Specify complete path to your Doctrine_Record definitions.
+
+----------------------------------------
+Generate sql for all existing database connections.
+Syntax: ./cli generate-sql <models_path> <sql_path>
+
+Arguments (* = required):
+*models_path - Specify complete path to your Doctrine_Record definitions.
+*sql_path - Path to write the generated sql.
+
+----------------------------------------
+Generates a Yaml schema file from an existing database
+Syntax: ./cli generate-yaml-from-db <yaml_schema_path>
+
+Arguments (* = required):
+*yaml_schema_path - Specify the path to your yaml schema files.
+
+----------------------------------------
+Generates a Yaml schema file from existing Doctrine_Record definitions
+Syntax: ./cli generate-yaml-from-models <yaml_schema_path> <models_path>
+
+Arguments (* = required):
+*yaml_schema_path - Specify the complete directory path to your yaml schema files.
+*models_path - Specify complete path to your Doctrine_Record definitions.
+
+----------------------------------------
+Load data from a yaml data fixture file.
+Syntax: ./cli load-data <data_fixtures_path> <models_path>
+
+Arguments (* = required):
+*data_fixtures_path - Specify the complete path to load the yaml data fixtures files from.
+*models_path - Specify path to your Doctrine_Record definitions.
+
+----------------------------------------
+Load data from a yaml data fixture file.
+Syntax: ./cli load-dummy-data <models_path> <append> <num>
+
+Arguments (* = required):
+*models_path - Specify path to your Doctrine_Record definitions.
+append - Whether or not to append the data or to delete all data before loading.
+num - Number of records to populate for each model.
+
+----------------------------------------
+Migrate database to latest version or the specified version
+Syntax: ./cli migrate <version>
+
+Arguments (* = required):
+version - Version to migrate to. If you do not specify, the db will be migrated from the current version to the latest.
+
+----------------------------------------
+</code>
+
+The tasks for the CLI are separate from the CLI and can be used standalone. Below is an example.
+
+<code type="php">
+$task = new Doctrine_Task_GenerateModelsFromYaml();
+
+$args = array('yaml_schema_path' => '/path/to/schema',
+              'models_path'      => '/path/to/models');
+
+$task->setArguments($args);
+
+try {
+  if ($task->validate()) {
+    $task->execute();
+  }
+} catch (Exception $e) {
+  throw new Doctrine_Cli_Exception($e->getMessage());
+}
+</code>
+
+++ Usage
+
+File named "cli" that is set to executable
+
+<code>
+#!/usr/bin/env php
+<?php
+chdir(dirname(__FILE__));
+include('cli.php');
+</code>
+
+Actual php file named "cli.php" that implements the Doctrine_Cli. 
+<code type="php">
+// Include your Doctrine configuration/setup here, your connections, models, etc.
+
+// Configure Doctrine Cli
+// Normally these are arguments to the cli tasks but if they are set here the arguments will be auto-filled and are not required for you to enter them.
+
+$config = array('data_fixtures_path'  =>  '/path/to/data/fixtures',
+                'models_path'         =>  '/path/to/models',
+                'migrations_path'     =>  '/path/to/migrations',
+                'sql_path'            =>  '/path/to/data/sql',
+                'yaml_schema_path'    =>  '/path/to/schema');
+
+$cli = new Doctrine_Cli($config);
+$cli->run($_SERVER['argv']);
+</code>
+
+Now you can begin executing commands.
+
+<code>
+./cli generate-models-from-yaml
+./cli create-tables
+</code>
