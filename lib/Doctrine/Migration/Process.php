@@ -150,4 +150,12 @@ class Doctrine_Migration_Process
             $conn->export->createForeignKey($fk['tableName'], $fk['definition']);
         }
     }
+    
+    public function processDroppedFks($foreignKeys)
+    {
+        foreach ($foreignKeys as $fk) {
+            $conn = $this->getConnection($fk['tableName']);
+            $conn->export->dropForeignKey($fk['tableName'], $fk['fkName']);
+        }
+    }
 }

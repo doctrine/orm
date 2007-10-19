@@ -127,8 +127,19 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function dropConstraint($table, $name, $primary = false)
     {
         $table = $this->conn->quoteIdentifier($table);
-        $name  = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
+        $name  = $this->conn->quoteIdentifier($name);
         return $this->conn->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
+    }
+    /**
+     * drop existing foreign key
+     *
+     * @param string    $table        name of table that should be used in method
+     * @param string    $name         name of the foreign key to be dropped
+     * @return void
+     */
+    public function dropForeignKey($table, $name)
+    {
+        return $this->dropConstraint($table, $name);
     }
     /**
      * dropSequenceSql
