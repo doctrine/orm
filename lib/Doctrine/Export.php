@@ -127,19 +127,8 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function dropConstraint($table, $name, $primary = false)
     {
         $table = $this->conn->quoteIdentifier($table);
-        $name  = $this->conn->quoteIdentifier($name);
+        $name  = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
         return $this->conn->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
-    }
-    /**
-     * drop existing foreign key
-     *
-     * @param string    $table        name of table that should be used in method
-     * @param string    $name         name of the foreign key to be dropped
-     * @return void
-     */
-    public function dropForeignKey($table, $name)
-    {
-        return $this->dropConstraint($table, $name);
     }
     /**
      * dropSequenceSql
@@ -1000,9 +989,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function exportSchema($directory = null)
     {
         if ($directory !== null) {
-            $models = Doctrine_Facade::loadModels($directory);
+            $models = Doctrine::loadModels($directory);
         } else {
-            $models = Doctrine_Facade::getLoadedModels();
+            $models = Doctrine::getLoadedModels();
         }
         
         $this->exportClasses($models);
@@ -1080,7 +1069,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function exportClassesSql(array $classes)
     {
-        $models = Doctrine_Facade::getLoadedModels($classes);
+        $models = Doctrine::getLoadedModels($classes);
         
         $sql = array();
         
@@ -1159,9 +1148,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function exportSql($directory = null)
     {
         if ($directory !== null) {
-            $models = Doctrine_Facade::loadModels($directory);
+            $models = Doctrine::loadModels($directory);
         } else {
-            $models = Doctrine_Facade::getLoadedModels();
+            $models = Doctrine::getLoadedModels();
         }
         
         return $this->exportClassesSql($models);

@@ -39,7 +39,7 @@ class Doctrine_Task_LoadDummyData extends Doctrine_Task
     
     public function execute()
     {
-        Doctrine_Facade::loadModels($this->getArgument('models_path'));
-        Doctrine_Facade::loadDummyData($this->getArgument('append') ? true:false, $this->getArgument('num') ? $this->getArgument('num'):5);
+        Doctrine::loadModels($this->getArgument('models_path'));
+        Doctrine::loadDummyData($this->getArgument('append') ? true:false, $this->getArgument('num') ? $this->getArgument('num'):5);
     }
 }
