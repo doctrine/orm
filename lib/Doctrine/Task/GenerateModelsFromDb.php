@@ -38,6 +38,6 @@ class Doctrine_Task_GenerateModelsFromDb extends Doctrine_Task
     
     public function execute()
     {
-        Doctrine_Facade::generateModelsFromDb($this->getArgument('models_path'), (array) $this->getArgument('connection'));
+        Doctrine::generateModelsFromDb($this->getArgument('models_path'), (array) $this->getArgument('connection'));
     }
 }

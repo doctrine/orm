@@ -37,6 +37,6 @@ class Doctrine_Task_CreateDb extends Doctrine_Task
     
     public function execute()
     {
-        Doctrine_Facade::createDatabases($this->getArgument('connection'));
+        Doctrine::createDatabases($this->getArgument('connection'));
     }
 }

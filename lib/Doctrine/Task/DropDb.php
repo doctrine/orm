@@ -38,6 +38,6 @@ class Doctrine_Task_DropDb extends Doctrine_Task
     
     public function execute()
     {
-        Doctrine_Facade::dropDatabases($this->getArgument('connection'));
+        Doctrine::dropDatabases($this->getArgument('connection'));
     }
 }

@@ -47,7 +47,7 @@ class Doctrine_Task_GenerateSql extends Doctrine_Task
             throw new Doctrine_Task_Exception('Invalid sql path.');
         }
         
-        $sql = Doctrine_Facade::generateSqlFromModels($this->getArgument('models_path'));
+        $sql = Doctrine::generateSqlFromModels($this->getArgument('models_path'));
         
         file_put_contents($path, $sql);
     }

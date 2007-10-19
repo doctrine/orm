@@ -38,6 +38,6 @@ class Doctrine_Task_CreateTables extends Doctrine_Task
     
     public function execute()
     {
-        Doctrine_Facade::createTablesFromModels($this->getArgument('models_path'));
+        Doctrine::createTablesFromModels($this->getArgument('models_path'));
     }
 }
