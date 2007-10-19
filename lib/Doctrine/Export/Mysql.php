@@ -471,7 +471,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     public function createIndexSql($table, $name, array $definition)
     {
         $table  = $table;
-        $name   = $this->conn->getIndexName($name);
+        $name   = $this->conn->formatter->getIndexName($name);
         $name   = $this->conn->quoteIdentifier($name);
         $type   = '';
         if (isset($definition['type'])) {
@@ -485,7 +485,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
             }
         }
         $query  = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
-        $query .= ' (' . $this->getIndexFieldDeclarationList() . ')';
+        $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
 
         return $query;
     }

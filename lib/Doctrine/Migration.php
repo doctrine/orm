@@ -39,13 +39,13 @@ class Doctrine_Migration
                                'dropped_fks'         =>  array(),
                                'created_fks'         =>  array(),
                                'dropped_constraints' =>  array(),
+                               'removed_indexes'     =>  array(),
                                'dropped_tables'      =>  array(),
                                'added_columns'       =>  array(),
                                'renamed_columns'     =>  array(),
                                'changed_columns'     =>  array(),
                                'removed_columns'     =>  array(),
                                'added_indexes'       =>  array(),
-                               'removed_indexes'     =>  array()
                                ),
               $migrationTableName = 'migration_version',
               $migrationClassesDirectory = array(),
@@ -524,7 +524,7 @@ class Doctrine_Migration
      * @param string $array 
      * @return void
      */
-    public function addIndex($tableName, $indexName, array $options = array())
+    public function addIndex($tableName, $indexName, array $definition)
     {
         $options = get_defined_vars();
         
