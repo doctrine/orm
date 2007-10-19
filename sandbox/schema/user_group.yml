@@ -3,11 +3,11 @@ UserGroup:
   columns:
     user_id:
       type: integer
-      length: 4
+      length: 11
       primary: true
     group_id:
       type: integer
-      length: 4
+      length: 11
       primary: true
   relations:
     User: -

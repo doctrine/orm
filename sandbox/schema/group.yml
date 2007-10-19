@@ -1,12 +1,13 @@
 ---
 Group: 
+  tableName: groups
   columns: 
     id: 
       notnull: true
       primary: true
       autoincrement: true
       type: integer
-      length: 4
+      length: 11
       name: id
     name: 
       type: string

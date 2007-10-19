@@ -99,7 +99,7 @@ abstract class Doctrine_Task
      */
     public function getArgument($name, $default = null)
     {
-        if (isset($this->arguments[$name]) && $this->arguments[$name]) {
+        if (isset($this->arguments[$name]) && $this->arguments[$name] !== null) {
             return $this->arguments[$name];
         } else {
             return $default;

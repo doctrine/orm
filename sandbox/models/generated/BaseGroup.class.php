@@ -8,10 +8,10 @@ abstract class BaseGroup extends Doctrine_Record
 
 	public function setTableDefinition()
 	{
-		$this->setTableName('group');
-		$this->hasColumn('id', 'integer', 4, array('notnull' => true,
-                                             'primary' => true,
-                                             'autoincrement' => true));
+		$this->setTableName('groups');
+		$this->hasColumn('id', 'integer', 11, array('notnull' => true,
+                                              'primary' => true,
+                                              'autoincrement' => true));
 		$this->hasColumn('name', 'string', 255);
 
 

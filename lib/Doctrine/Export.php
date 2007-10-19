@@ -114,6 +114,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     public function dropIndexSql($table, $name)
     {
         $name = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
+        
         return 'DROP INDEX ' . $name;
     }
     /**
@@ -128,6 +129,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $table = $this->conn->quoteIdentifier($table);
         $name  = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name));
+        
         return $this->conn->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
     }
     /**
@@ -330,7 +332,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function createConstraint($table, $name, $definition)
     {
-        return $this->conn->exec($this->createConstraintSql($table, $name, $definition));
+        $sql = $this->createConstraintSql($table, $name, $definition);
+        
+        return $this->conn->exec($sql);
     }
     /**
      * create a constraint on a table
@@ -467,7 +471,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
      */
     public function createForeignKey($table, array $definition)
     {
-        return $this->conn->execute($this->createForeignKeySql($table, $definition));
+        $sql = $this->createForeignKeySql($table, $definition);
+        
+        return $this->conn->execute($sql);
     }
     /**
      * alter an existing table

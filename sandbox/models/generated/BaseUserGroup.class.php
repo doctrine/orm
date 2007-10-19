@@ -9,8 +9,8 @@ abstract class BaseUserGroup extends Doctrine_Record
 	public function setTableDefinition()
 	{
 		$this->setTableName('user_group');
-		$this->hasColumn('user_id', 'integer', 4, array('primary' => true));
-		$this->hasColumn('group_id', 'integer', 4, array('primary' => true));
+		$this->hasColumn('user_id', 'integer', 11, array('primary' => true));
+		$this->hasColumn('group_id', 'integer', 11, array('primary' => true));
 
 
 

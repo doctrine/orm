@@ -3,24 +3,24 @@ SelfReference:
   fields:
     id:
       type: integer
-      size: 11
+      length: 11
       primary: true
       autoincrement: true
     name:
       type: string
-      size: 255
+      length: 255
     user_id1:
       type: integer
-      size: 11
+      length: 11
     user_id2:
       type: integer
-      size: 11
+      length: 11
     parent_self_reference_id:
       type: integer
-      size: 11
+      length: 11
     parent_self_reference_id2:
       type: integer
-      size: 11
+      length: 11
   relations:
     User1:
       class: User

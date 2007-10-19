@@ -158,7 +158,6 @@ class Doctrine_Import_Builder
 %s
 }
 END;
-
     }
 
     /*

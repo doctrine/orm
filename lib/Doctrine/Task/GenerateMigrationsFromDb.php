@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Migrate.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: GenerateMigrationsFromDb.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Task_Migrate
+ * Doctrine_Task_GenerateMigrationsFromDb
  *
  * @package     Doctrine
  * @subpackage  Task
@@ -30,14 +30,14 @@
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Task_Migrate extends Doctrine_Task
+class Doctrine_Task_GenerateMigrationsFromDb extends Doctrine_Task
 {
-    public $description          =   'Migrate database to latest version or the specified version',
-           $requiredArguments    =   array('migrations_path' => 'Specify path to your migrations directory.'),
-           $optionalArguments    =   array('version' => 'Version to migrate to. If you do not specify, the db will be migrated from the current version to the latest.');
+    public $description          =   'Generate migration classes for an existing database',
+           $requiredArguments    =   array('migrations_path' => 'Specify the complete path to your migration classes folder.'),
+           $optionalArguments    =   array();
     
     public function execute()
     {
-        Doctrine::migrate($this->getArgument('migrations_path'), $this->getArgument('version'));
+        Doctrine::generateMigrationsFromDb($this->getArgument('migrations_path'));
     }
 }
