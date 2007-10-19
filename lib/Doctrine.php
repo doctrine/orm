@@ -859,7 +859,7 @@ final class Doctrine
      * @param string $migrationsPath 
      * @return void
      */
-    public function generateMigrationsFromDb($migrationsPath)
+    public static function generateMigrationsFromDb($migrationsPath)
     {
         $builder = new Doctrine_Migration_Builder($migrationsPath);
         
@@ -873,7 +873,7 @@ final class Doctrine
      * @param string $modelsPath 
      * @return void
      */
-    public function generateMigrationsFromModels($migrationsPath, $modelsPath = null)
+    public static function generateMigrationsFromModels($migrationsPath, $modelsPath = null)
     {
         $builder = new Doctrine_Migration_Builder($migrationsPath);
         
@@ -886,7 +886,7 @@ final class Doctrine
      * @param string $tableName 
      * @return void
      */
-    public function getTable($tableName)
+    public static function getTable($tableName)
     {
         return Doctrine_Manager::table($tableName);
     }
@@ -898,7 +898,7 @@ final class Doctrine
      * @param string $name 
      * @return void
      */
-    public function connection($adapter, $name = null)
+    public static function connection($adapter, $name = null)
     {
         return Doctrine_Manager::connection($adapter, $name);
     }
