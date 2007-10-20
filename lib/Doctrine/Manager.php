@@ -300,6 +300,31 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         return $this->_connections[$name];
     }
+    
+    public function parsePdoDsn($dsn)
+    {
+        $parts = array();
+        
+        $names = array('dsn', 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
+
+        foreach ($names as $name) {
+            if ( ! isset($parts[$name])) {
+                $parts[$name] = null;
+            }
+        }
+        
+        $e = explode(':', $dsn);
+        $parts['scheme'] = $e[0];
+        $parts['dsn'] = $dsn;
+        
+        $e = explode(';', $e[1]);
+        foreach ($e as $string) {
+            list($key, $value) = explode('=', $string);
+            $parts[$key] = $value;
+        }
+        
+        return $parts;
+    }
     /**
      * parseDsn
      *

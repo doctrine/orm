@@ -193,6 +193,20 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
     }
     /**
+     * getOption
+     * 
+     * Retrieves option
+     *
+     * @param string $option 
+     * @return void
+     */
+    public function getOption($option)
+    {
+        if (isset($this->options[$option])) {
+            return $this->options[$option];
+        }
+    }
+    /**
      * getAttribute
      * retrieves a database connection attribute
      *

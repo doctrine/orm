@@ -40,6 +40,6 @@ class Doctrine_Task_Migrate extends Doctrine_Task
     {
         $version = Doctrine::migrate($this->getArgument('migrations_path'), $this->getArgument('version'));
         
-        $this->dispatcher->notify('migrated to version # ' . $version);
+        $this->dispatcher->notify('migrated successfully to version #' . $version);
     }
 }

@@ -40,6 +40,6 @@ class Doctrine_Task_GenerateModelsFromDb extends Doctrine_Task
     {
         Doctrine::generateModelsFromDb($this->getArgument('models_path'), (array) $this->getArgument('connection'));
         
-        $this->dispatcher->notify('successfully generated models from databases');
+        $this->dispatcher->notify('Generated models successfully from databases');
     }
 }

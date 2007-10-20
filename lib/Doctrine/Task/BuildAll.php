@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Task.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: BuildAll.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Task_BuildDb
+ * Doctrine_Task_BuildAll
  *
  * @package     Doctrine
  * @subpackage  Task
@@ -30,15 +30,36 @@
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Task_CreateDb extends Doctrine_Task
+class Doctrine_Task_BuildAll extends Doctrine_Task
 {
-    public $description          =   'Create all databases for your connections. If the database already exists, nothing happens.',
+    public $description          =   'Calls generate-models-from-yaml, create-db, and create-tables',
+           $requiredArguments    =   array(),
            $optionalArguments    =   array();
+    
+    protected $models,
+              $tables;
+    
+    public function __construct($dispatcher = null)
+    {
+        parent::__construct($dispatcher);
+        
+        $this->models = new Doctrine_Task_GenerateModelsFromYaml($this->dispatcher);
+        $this->createDb = new Doctrine_Task_CreateDb($this->dispatcher);
+        $this->tables = new Doctrine_Task_CreateTables($this->dispatcher);
+        
+        $this->requiredArguments = array_merge($this->requiredArguments, $this->models->requiredArguments, $this->createDb->requiredArguments, $this->tables->requiredArguments);
+        $this->optionalArguments = array_merge($this->optionalArguments, $this->models->optionalArguments, $this->createDb->optionalArguments, $this->tables->optionalArguments);
+    }
     
     public function execute()
     {
-        Doctrine::createDatabases();
+        $this->models->setArguments($this->getArguments());
+        $this->models->execute();
         
-        $this->notify('Created databases successfully');
+        $this->createDb->setArguments($this->getArguments());
+        $this->createDb->execute();
+        
+        $this->tables->setArguments($this->getArguments());
+        $this->tables->execute();
     }
 }

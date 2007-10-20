@@ -41,6 +41,6 @@ class Doctrine_Task_GenerateMigrationsFromModels extends Doctrine_Task
     {   
         Doctrine::generateMigrationsFromModels($this->getArgument('migrations_path'), $this->getArgument('models_path'));
         
-        $this->dispatcher->notify('successfully generated migrations from models');
+        $this->dispatcher->notify('Generated migration classes successfully from models');
     }
 }

@@ -51,6 +51,6 @@ class Doctrine_Task_GenerateSql extends Doctrine_Task
         
         file_put_contents($path, $sql);
         
-        $this->dispatcher->notify('successfully generated sql for models');
+        $this->dispatcher->notify('Generated SQL successfully for models');
     }
 }

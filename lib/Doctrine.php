@@ -734,20 +734,42 @@ final class Doctrine
      * @param string $specifiedConnections Array of connections you wish to create the database for
      * @return void
      */
-    public static function createDatabases($specifiedConnections)
+    public static function createDatabases($specifiedConnections = array())
     {
         if (!is_array($specifiedConnections)) {
             $specifiedConnections = (array) $specifiedConnections;
         }
         
-        $connections = Doctrine_Manager::getInstance()->getConnections();
+        $manager = Doctrine_Manager::getInstance();
+        $connections = $manager->getConnections();
         
         foreach ($connections as $name => $connection) {
             if (!empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
                 continue;
             }
             
-            $connection->export->createDatabase($name);
+            $info = $manager->parsePdoDsn($connection->getOption('dsn'));
+            $username = $connection->getOption('username');
+            $password = $connection->getOption('password');
+            
+            // Make connection without database specified so we can create it
+            $connect = $manager->openConnection(new PDO($info['scheme'] . ':host=' . $info['host'], $username, $password), 'tmp_connection', false);
+            
+            try {
+                // Create database
+                $connect->export->createDatabase($name);
+                
+                // Close the tmp connection with no database
+                $manager->closeConnection($connect);
+                
+                // Close original connection
+                $manager->closeConnection($connection);
+                
+                // Reopen original connection with newly created database
+                $manager->openConnection(new PDO($info['dsn'], $username, $password), $name, true);
+            } catch (Exception $e) {
+                
+            }
         }
     }
 
@@ -765,14 +787,20 @@ final class Doctrine
             $specifiedConnections = (array) $specifiedConnections;
         }
         
-        $connections = Doctrine_Manager::getInstance()->getConnections();
+        $manager = Doctrine_Manager::getInstance();
+        
+        $connections = $manager->getConnections();
         
         foreach ($connections as $name => $connection) {
             if (!empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
                 continue;
             }
             
-            $connection->export->dropDatabase($name);
+            try {
+                $connection->export->dropDatabase($name);
+            } catch (Exception $e) {
+                
+            }
         }
     }
 

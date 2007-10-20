@@ -34,7 +34,7 @@ class Doctrine_Task_DropDb extends Doctrine_Task
 {
     public $description          =   'Drop database for all existing connections',
            $requiredArguments    =   array(),
-           $optionalArguments    =   array('connection' => 'Optionally specify a single connection to drop the database for.');
+           $optionalArguments    =   array();
     
     public function execute()
     {
@@ -46,8 +46,8 @@ class Doctrine_Task_DropDb extends Doctrine_Task
             return;
         }
 
-        Doctrine::dropDatabases($this->getArgument('connection'));
+        Doctrine::dropDatabases();
         
-        $this->notify('Successfully dropped all databases');
+        $this->notify('Dropped databases successfully');
     }
 }

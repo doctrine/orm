@@ -41,6 +41,6 @@ class Doctrine_Task_GenerateModelsFromYaml extends Doctrine_Task
     {
         Doctrine::generateModelsFromYaml($this->getArgument('yaml_schema_path'), $this->getArgument('models_path'));
         
-        $this->dispatcher->notify('successfully generated models from yaml');
+        $this->notify('Generated models successfully from YAML schema');
     }
 }
