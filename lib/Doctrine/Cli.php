@@ -49,6 +49,8 @@ class Doctrine_Cli
     {
         $this->config = $config;
         $this->formatter = new Doctrine_Cli_AnsiColorFormatter();
+        
+        $this->loadTasks();
     }
     
     /**
@@ -57,9 +59,9 @@ class Doctrine_Cli
      * @param string $notification 
      * @return void
      */
-    public function notify($notification = null)
+    public function notify($notification = null, $style = 'HEADER')
     {
-        echo $this->formatter->format($this->taskInstance->getTaskName(), 'INFO') . ' - ' . $this->formatter->format($notification, 'HEADER') . "\n";
+        echo $this->formatter->format($this->taskInstance->getTaskName(), 'INFO') . ' - ' . $this->formatter->format($notification, $style) . "\n";
     }
     
     /**
@@ -137,7 +139,7 @@ class Doctrine_Cli
                 $this->taskInstance->execute();
             } else {
                 echo $this->formatter->format('Requires arguments missing!!', 'ERROR') . "\n\n";
-                echo $this->printTasks($taskName, true);
+                echo $this->printTasks($arg1, true);
             }
         } catch (Exception $e) {
             throw new Doctrine_Cli_Exception($e->getMessage());
@@ -202,7 +204,7 @@ class Doctrine_Cli
     {
         $task = Doctrine::classify(str_replace('-', '_', $task));
         
-        $tasks = $this->loadTasks();
+        $tasks = $this->getLoadedTasks();
         
         echo $this->formatter->format("Doctrine Command Line Interface", 'HEADER') . "\n\n";
         
@@ -257,7 +259,7 @@ class Doctrine_Cli
             echo "\n";
         }
     }
-
+    
     /**
      * loadTasks
      *
@@ -267,7 +269,7 @@ class Doctrine_Cli
     public function loadTasks($directory = null)
     {
         if ($directory === null) {
-            $directory = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Task';
+            $directory = Doctrine::getPath() . DIRECTORY_SEPARATOR . 'Doctrine' . DIRECTORY_SEPARATOR . 'Task';
         }
         
         $parent = new ReflectionClass('Doctrine_Task');
@@ -281,13 +283,17 @@ class Doctrine_Cli
             foreach ($it as $file) {
                 $e = explode('.', $file->getFileName());
                 if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                    require_once($file->getPathName());
                     
                     $className = 'Doctrine_Task_' . $e[0];
-                    $class = new ReflectionClass($className);
                     
-                    if ($class->isSubClassOf($parent)) {
-                        $tasks[] = $e[0];
+                    if (!class_exists($className)) {
+                        require_once($file->getPathName());
+                    
+                        $class = new ReflectionClass($className);
+                    
+                        if ($class->isSubClassOf($parent)) {
+                            $tasks[$e[0]] = $e[0];
+                        }
                     }
                 }
             }
@@ -296,5 +302,26 @@ class Doctrine_Cli
         $this->tasks = array_merge($this->tasks, $tasks);
         
         return $this->tasks;
+    }
+    
+    public function getLoadedTasks()
+    {
+        $parent = new ReflectionClass('Doctrine_Task');
+        
+        $classes = get_declared_classes();
+        
+        $tasks = array();
+        
+        foreach ($classes as $className) {
+            $class = new ReflectionClass($className);
+        
+            if ($class->isSubClassOf($parent)) {
+                $task = str_replace('Doctrine_Task_', '', $className);
+                
+                $tasks[$task] = $task;
+            }
+        }
+        
+        return array_merge($this->tasks, $tasks);
     }
 }

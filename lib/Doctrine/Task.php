@@ -56,13 +56,37 @@ abstract class Doctrine_Task
         $this->taskName = str_replace('_', '-', Doctrine::tableize(str_replace('Doctrine_Task_', '', get_class($this))));
     }
     
-    public function notify($message)
+    /**
+     * notify
+     *
+     * @param string $notification 
+     * @return void
+     */
+    public function notify()
     {
-        if (is_object($message)) {
-            return $message->notify($message);
+        if (is_object($this->dispatcher) && method_exists($this->dispatcher, 'notify')) {
+            $args = func_get_args();
+            
+            return call_user_func_array(array($this->dispatcher, 'notify'), $args);
         } else {
-            return $message;
+            return $notification;
         }
+    }
+    
+    /**
+     * ask
+     *
+     * @return void
+     */
+    public function ask()
+    {
+        $args = func_get_args();
+        
+        call_user_func_array(array($this, 'notify'), $args);
+        
+        $answer = strtolower(trim(fgets(STDIN)));
+        
+        return $answer;
     }
     
     /**

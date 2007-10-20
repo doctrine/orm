@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: DropDb.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: Dql.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Task_DropDb
+ * Doctrine_Task_Dql
  *
  * @package     Doctrine
  * @subpackage  Task
@@ -30,24 +30,44 @@
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Task_DropDb extends Doctrine_Task
+class Doctrine_Task_Dql extends Doctrine_Task
 {
-    public $description          =   'Drop database for all existing connections',
-           $requiredArguments    =   array(),
-           $optionalArguments    =   array('connection' => 'Optionally specify a single connection to drop the database for.');
+    public $description          =   'Execute dql query and display the results',
+           $requiredArguments    =   array('models_path'    =>  'Specify path to your Doctrine_Record definitions.',
+                                           'dql_query' => 'Specify the complete dql query to execute.'),
+           $optionalArguments    =   array();
     
     public function execute()
     {
-        $answer = $this->ask('Are you sure you wish to drop your databases? (y/n)');
+        Doctrine::loadModels($this->getArgument('models_path'));
         
-        if ($answer != 'y') {
-            $this->notify('Successfully cancelled');
+        $dql = $this->getArgument('dql_query');
+        
+        $query = new Doctrine_Query();
+        
+        $this->notify('executing: "' . $dql . '"');
+        
+        $results = $query->query($dql);
+        
+        $this->printResults($results);
+    }
+    
+    protected function printResults($data)
+    {
+        $array = $data->toArray(true);
+        
+        $yaml = Doctrine_Parser::dump($array, 'yml');
+        $lines = explode("\n", $yaml);
+        
+        unset($lines[0]);
+        $lines[1] = $data->getTable()->getOption('name') . ':';
+        
+        foreach ($lines as $yamlLine) {
+            $line = trim($yamlLine);
             
-            return;
+            if ($line) {
+                $this->notify($yamlLine);
+            }
         }
-
-        Doctrine::dropDatabases($this->getArgument('connection'));
-        
-        $this->notify('Successfully dropped all databases');
     }
 }
