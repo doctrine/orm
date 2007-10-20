@@ -56,7 +56,7 @@ class Doctrine_Export_TestCase extends Doctrine_UnitTestCase
     {
         $this->export->dropConstraint('sometable', 'relevancy');
 
-        $this->assertEqual($this->adapter->pop(), 'ALTER TABLE sometable DROP CONSTRAINT relevancy_idx');
+        $this->assertEqual($this->adapter->pop(), 'ALTER TABLE sometable DROP CONSTRAINT relevancy');
     }
     public function testCreateIndexExecutesSql() 
     {
