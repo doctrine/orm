@@ -104,7 +104,6 @@ class Doctrine_Cli
     protected function _run($args)
     {        
         $this->scriptName = $args[0];
-        $taskName = $args[1];
         
         $arg1 = isset($args[1]) ? $args[1]:null;
         
