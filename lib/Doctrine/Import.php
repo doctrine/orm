@@ -37,6 +37,7 @@ Doctrine::autoload('Doctrine_Connection_Module');
 class Doctrine_Import extends Doctrine_Connection_Module
 {
     protected $sql = array();
+
     /**
      * lists all databases
      *
@@ -50,6 +51,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
 
         return $this->conn->fetchColumn($this->sql['listDatabases']);
     }
+
     /**
      * lists all availible database functions
      *
@@ -63,6 +65,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
 
         return $this->conn->fetchColumn($this->sql['listFunctions']);
     }
+
     /**
      * lists all database triggers
      *
@@ -73,6 +76,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
+
     /**
      * lists all database sequences
      *
@@ -87,6 +91,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
 
         return $this->conn->fetchColumn($this->sql['listSequences']);
     }
+
     /**
      * lists table constraints
      *
@@ -97,6 +102,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
+
     /**
      * lists table constraints
      *
@@ -107,6 +113,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
+
     /**
      * lists table constraints
      *
@@ -117,6 +124,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
+
     /**
      * lists tables
      *
@@ -127,6 +135,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
+
     /**
      * lists table triggers
      *
@@ -137,6 +146,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
+
     /**
      * lists table views
      *
@@ -147,6 +157,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
     {
         throw new Doctrine_Import_Exception(__FUNCTION__ . ' not supported by this driver.');
     }
+
     /**
      * lists database users
      *
@@ -160,6 +171,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
 
         return $this->conn->fetchColumn($this->sql['listUsers']);
     }
+
     /**
      * lists database views
      *
@@ -174,6 +186,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
 
         return $this->conn->fetchColumn($this->sql['listViews']);
     }
+
     /**
      * importSchema
      *
@@ -187,7 +200,13 @@ class Doctrine_Import extends Doctrine_Connection_Module
     {
         $connections = Doctrine_Manager::getInstance()->getConnections();
         
-        foreach ($connections as $connection) {
+        foreach ($connections as $name => $connection) {
+          // Limit the databases to the ones specified by $databases.
+          // Check only happens if array is not empty
+          if (!empty($databases) && !in_array($name, $databases)) {
+            continue;
+          }
+          
           $builder = new Doctrine_Import_Builder();
           $builder->generateBaseClasses(true);
           $builder->setTargetPath($directory);

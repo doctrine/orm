@@ -41,7 +41,7 @@ class Doctrine_Migration_Builder
      * @var string
      */
     private $migrationsPath = '';
-    
+
     /**
      * suffix
      * 
@@ -50,7 +50,7 @@ class Doctrine_Migration_Builder
      * @var string $suffix
      */
     private $suffix = '.class.php';
-    
+
     /**
      * tpl
      *
@@ -73,7 +73,7 @@ class Doctrine_Migration_Builder
         
         $this->loadTemplate();
     }
-    
+
     /**
      * setMigrationsPath
      *
@@ -130,7 +130,7 @@ class %s extends %s
 }
 END;
     }
-    
+
     /**
      * generateMigrationsFromDb
      *
@@ -148,7 +148,7 @@ END;
         
         return $result;
     }
-    
+
     /**
      * generateMigrationsFromModels
      *
@@ -194,6 +194,8 @@ END;
         }
         
         $this->generateMigrationClass($className, array(), $up, $down);
+        
+        return true;
     }
     
     /**
@@ -243,7 +245,7 @@ END;
      * buildDropTable
      *
      * @param string $tableData 
-     * @return void
+     * @return string
      */
     public function buildDropTable($tableData)
     {
@@ -254,7 +256,7 @@ END;
      * dataToPhpCode
      *
      * @param string $data 
-     * @return void
+     * @return string
      */
     public function dataToPhpCode($data)
     {
@@ -269,7 +271,7 @@ END;
     /**
      * generateMigrationClass
      *
-     * @package default
+     * @return void
      */
     public function generateMigrationClass($className, $options = array(), $up = null, $down = null, $return = false)
     {
@@ -296,7 +298,7 @@ END;
     /**
      * buildMigrationClass
      *
-     * @package default
+     * @return string
      */
     public function buildMigrationClass($className, $fileName = null, $options = array(), $up = null, $down = null)
     {

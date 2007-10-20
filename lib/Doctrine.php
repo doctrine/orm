@@ -115,6 +115,7 @@ final class Doctrine
     const PARAM_NULL = 0;
     const PARAM_STMT = 4;
     const PARAM_STR = 2;
+
     /**
      * ATTRIBUTE CONSTANTS
      */
@@ -180,7 +181,6 @@ final class Doctrine
     const ATTR_RECORD_LISTENER      = 154;
     const ATTR_THROW_EXCEPTIONS     = 155;
 
-
     /**
      * LIMIT CONSTANTS
      */
@@ -189,7 +189,7 @@ final class Doctrine
      * constant for row limiting
      */
     const LIMIT_ROWS       = 1;
-    
+
     /**
      * constant for record limiting
      */
@@ -204,19 +204,19 @@ final class Doctrine
      * mode for immediate fetching
      */
     const FETCH_IMMEDIATE       = 0;
-    
+
     /**
      * BATCH FETCHING
      * mode for batch fetching
      */
     const FETCH_BATCH           = 1;
-    
+
     /**
      * LAZY FETCHING
      * mode for offset fetching
      */
     const FETCH_OFFSET          = 3;
-    
+
     /**
      * LAZY OFFSET FETCHING
      * mode for lazy offset fetching
@@ -232,7 +232,7 @@ final class Doctrine
      * FETCH VALUEHOLDER
      */
     const FETCH_VHOLDER         = 1;
-    
+
     /**
      * FETCH RECORD
      *
@@ -242,12 +242,12 @@ final class Doctrine
      * This is the default fetchmode.
      */
     const FETCH_RECORD          = 2;
-    
+
     /**
      * FETCH ARRAY
      */
     const FETCH_ARRAY           = 3;
-    
+
     /**
      * PORTABILITY CONSTANTS
      */
@@ -257,7 +257,7 @@ final class Doctrine
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_NONE          = 0;
-    
+
     /**
      * Portability: convert names of tables and fields to case defined in the
      * "field_case" option when using the query*(), fetch*() methods.
@@ -270,32 +270,32 @@ final class Doctrine
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_RTRIM         = 2;
-    
+
     /**
      * Portability: force reporting the number of rows deleted.
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_DELETE_COUNT  = 4;
-    
+
     /**
      * Portability: convert empty values to null strings in data output by
      * query*() and fetch*().
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_EMPTY_TO_NULL = 8;
-    
+
     /**
      * Portability: removes database/table qualifiers from associative indexes
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_FIX_ASSOC_FIELD_NAMES = 16;
-    
+
     /**
      * Portability: makes Doctrine_Expression throw exception for unportable RDBMS expressions
      * @see self::ATTR_PORTABILITY
      */
     const PORTABILITY_EXPR          = 32;
-    
+
     /**
      * Portability: turn on all portability features.
      * @see self::ATTR_PORTABILITY
@@ -310,46 +310,49 @@ final class Doctrine
      * mode for optimistic locking
      */
     const LOCK_OPTIMISTIC       = 0;
-    
+
     /**
      * mode for pessimistic locking
      */
     const LOCK_PESSIMISTIC      = 1;
-    
+
     /**
      * EXPORT CONSTANTS
      */
 
     /**
-     * turns of exporting
+     * EXPORT_NONE
      */
     const EXPORT_NONE               = 0;
-    
+
     /**
-     * export tables
+     * EXPORT_TABLES
      */
     const EXPORT_TABLES             = 1;
-    
+
     /**
-     * export constraints
+     * EXPORT_CONSTRAINTS
      */
     const EXPORT_CONSTRAINTS        = 2;
-    
+
     /**
-     * export plugins
+     * EXPORT_PLUGINS
      */
     const EXPORT_PLUGINS            = 4;
-    
+
     /**
-     * export all
+     * EXPORT_ALL
      */
     const EXPORT_ALL                = 7;
-    
+
     /**
      * HYDRATION CONSTANTS
      */
     const HYDRATE_RECORD            = 2;
     
+    /**
+     * HYDRATE_ARRAY
+     */
     const HYDRATE_ARRAY             = 3;
 
     /**
@@ -357,44 +360,70 @@ final class Doctrine
      */
     const VALIDATE_NONE             = 0;
 
+    /**
+     * VALIDATE_LENGTHS
+     */
     const VALIDATE_LENGTHS          = 1;
-    
+
+    /**
+     * VALIDATE_TYPES
+     */
     const VALIDATE_TYPES            = 2;
-    
+
+    /**
+     * VALIDATE_CONSTRAINTS
+     */
     const VALIDATE_CONSTRAINTS      = 4;
-    
+
+    /**
+     * VALIDATE_ALL
+     */
     const VALIDATE_ALL              = 7;
 
     /**
+     * IDENTIFIER_AUTOINC
+     *
      * constant for auto_increment identifier
      */
     const IDENTIFIER_AUTOINC        = 1;
-    
+
     /**
+     * IDENTIFIER_SEQUENCE
+     *
      * constant for sequence identifier
      */
     const IDENTIFIER_SEQUENCE       = 2;
-    
+
     /**
+     * IDENTIFIER_NATURAL
+     *
      * constant for normal identifier
      */
     const IDENTIFIER_NATURAL        = 3;
-    
+
     /**
+     * IDENTIFIER_COMPOSITE
+     *
      * constant for composite identifier
      */
     const IDENTIFIER_COMPOSITE      = 4;
-    
+
     /**
+     * Path
+     *
      * @var string $path            doctrine root directory
      */
     private static $_path;
-    
+
     /**
+     * Debug
+     *
+     * Bool true/false
+     *
      * @var boolean $_debug
      */
     private static $_debug = false;
-    
+
     /**
      * __construct
      *
@@ -405,7 +434,7 @@ final class Doctrine
     {
         throw new Doctrine_Exception('Doctrine is static class. No instances can be created.');
     }
-    
+
     /**
      * debug
      *
@@ -420,7 +449,7 @@ final class Doctrine
         
         return self::$_debug;
     }
-    
+
     /**
      * getPath
      * returns the doctrine root
@@ -435,7 +464,7 @@ final class Doctrine
         
         return self::$_path;
     }
-    
+
     /**
      * loadAll
      * loads all runtime classes
@@ -446,7 +475,7 @@ final class Doctrine
     {
         return self::loadAllRuntimeClasses();
     }
-    
+
     /**
      * importSchema
      * method for importing existing schema to Doctrine_Record classes
@@ -459,7 +488,7 @@ final class Doctrine
     {
         return self::generateModelsFromDb($directory, $databases);
     }
-    
+
     /**
      * exportSchema
      * method for exporting Doctrine_Record classes to a schema
@@ -471,7 +500,7 @@ final class Doctrine
     {
         return self::createTablesFromModels($directory);
     }
-    
+
     /**
      * exportSql
      * method for exporting Doctrine_Record classes to a schema
@@ -482,7 +511,7 @@ final class Doctrine
     {
         return self::generateSqlFromModels($directory);
     }
-    
+
     /**
      * loadAllRuntimeClasses
      *
@@ -498,14 +527,14 @@ final class Doctrine
             self::autoload($class);
         }
     }
-    
+
     /**
      * loadModels
      *
      * Recursively load all models from a directory or array of directories
      * 
      * @param string $directory Path to directory of models or array of directory paths
-     * @return void
+     * @return array $loadedModels
      */
     public static function loadModels($directory)
     {
@@ -529,14 +558,17 @@ final class Doctrine
         
         return self::getLoadedModels($declared);
     }
-    
+
     /**
      * getLoadedModels
      *
      * Get all the loaded models, you can provide an array of classes or it will use get_declared_classes()
      * 
+     * Will filter through an array of classes and return the Doctrine_Records out of them.
+     * If you do not specify $classes it will return all of the currently loaded Doctrine_Records
+     *
      * @param $classes Array of classes to filter through, otherwise uses get_declared_classes()
-     * @return void
+     * @return array $loadedModels
      */
     public static function getLoadedModels($classes = null)
     {
@@ -548,9 +580,7 @@ final class Doctrine
         
         $loadedModels = array();
         
-        // we iterate trhough the diff of previously declared classes
-        // and currently declared classes
-        foreach ($classes as $name) {
+        foreach ((array) $classes as $name) {
             $class = new ReflectionClass($name);
             
             // Skip the following classes
@@ -568,14 +598,14 @@ final class Doctrine
         
         return $loadedModels;
     }
-    
+
     /**
      * getConnectionByTableName
      *
      * Get the connection object for a table by the actual table name
      * 
      * @param string $tableName 
-     * @return void
+     * @return object Doctrine_Connection
      */
     public static function getConnectionByTableName($tableName)
     {
@@ -592,7 +622,7 @@ final class Doctrine
         
         return Doctrine_Manager::connection();
     }
-    
+
     /**
      * generateModelsFromDb
      *
@@ -601,12 +631,13 @@ final class Doctrine
      * @param string $directory Directory to write your models to
      * @param array $databases Array of databases to generate models for
      * @return boolean
+     * @throws Exception
      */
     public static function generateModelsFromDb($directory, array $databases = array())
     {
         return Doctrine_Manager::connection()->import->importSchema($directory, $databases);
     }
-    
+
     /**
      * generateYamlFromDb
      *
@@ -630,6 +661,7 @@ final class Doctrine
         
         return $result;
     }
+
     /**
      * generateModelsFromYaml
      *
@@ -646,7 +678,7 @@ final class Doctrine
         
         return $import->importSchema($yamlPath, 'yml', $directory);
     }
-    
+
     /**
      * createTablesFromModels
      *
@@ -659,12 +691,12 @@ final class Doctrine
     {
         return Doctrine_Manager::connection()->export->exportSchema($directory);
     }
-    
+
     /**
      * generateSqlFromModels
      *
      * @param string $directory 
-     * @return void
+     * @return string $build  String of sql queries. One query per line
      */
     public static function generateSqlFromModels($directory = null)
     {
@@ -693,7 +725,7 @@ final class Doctrine
         
         return $export->exportSchema($yamlPath, 'yml', $directory);
     }
-    
+
     /**
      * createDatabases
      *
@@ -718,7 +750,7 @@ final class Doctrine
             $connection->export->createDatabase($name);
         }
     }
-    
+
     /**
      * dropDatabases
      *
@@ -743,7 +775,7 @@ final class Doctrine
             $connection->export->dropDatabase($name);
         }
     }
-    
+
     /**
      * dumpData
      *
@@ -759,7 +791,7 @@ final class Doctrine
         
         return $data->exportData($yamlPath, 'yml', array(), $individualFiles);
     }
-    
+
     /**
      * loadData
      *
@@ -772,25 +804,15 @@ final class Doctrine
      */
     public static function loadData($yamlPath, $append = false)
     {
-        $delete = isset($append) ? ($append ? false : true) : true;
-
-        if ($delete)
-        {
-            $models = Doctrine::getLoadedModels();
-
-            foreach ($models as $model)
-            {
-                $model = new $model();
-
-                $model->getTable()->createQuery()->delete($model)->execute();
-            }
-        }
-
         $data = new Doctrine_Data();
+        
+        if (!$append) {
+            $data->purge();
+        }
         
         return $data->importData($yamlPath, 'yml');
     }
-    
+
     /**
      * loadDummyData
      *
@@ -802,21 +824,11 @@ final class Doctrine
      */
     public static function loadDummyData($append, $num = 5)
     {
-        $delete = isset($append) ? ($append ? false : true) : true;
-
-        if ($delete)
-        {
-          $models = Doctrine::getLoadedModels();
-
-          foreach ($models as $model)
-          {
-            $model = new $model();
-
-            $model->getTable()->createQuery()->delete($model)->execute();
-          }
-        }
-        
         $data = new Doctrine_Data();
+
+        if (!$append) {
+          $data->purge();
+        }
         
         return $data->importDummyData($num);
     }
@@ -828,7 +840,8 @@ final class Doctrine
      *
      * @param string $migrationsPath Path to migrations directory which contains your migration classes
      * @param string $to Version you wish to migrate to.
-     * @return void
+     * @return bool true
+     * @throws new Doctrine_Migration_Exception
      */
     public static function migrate($migrationsPath, $to = null)
     {
@@ -836,7 +849,7 @@ final class Doctrine
         
         return $migration->migrate($to);
     }
-    
+
     /**
      * generateMigrationClass
      *
@@ -844,7 +857,6 @@ final class Doctrine
      *
      * @param string $className Name of the Migration class to generate
      * @param string $migrationsPath Path to directory which contains your migration classes
-     * @package default
      */
     public static function generateMigrationClass($className, $migrationsPath)
     {
@@ -852,12 +864,13 @@ final class Doctrine
         
         return $builder->generateMigrationClass($className);
     }
-    
+
     /**
      * generateMigrationsFromDb
      *
      * @param string $migrationsPath 
      * @return void
+     * @throws new Doctrine_Migration_Exception
      */
     public static function generateMigrationsFromDb($migrationsPath)
     {
@@ -865,7 +878,7 @@ final class Doctrine
         
         return $builder->generateMigrationsFromDb();
     }
-    
+
     /**
      * generateMigrationsFromModels
      *
@@ -901,6 +914,17 @@ final class Doctrine
     public static function connection($adapter, $name = null)
     {
         return Doctrine_Manager::connection($adapter, $name);
+    }
+    
+    /**
+     * fileFinder
+     *
+     * @param string $type 
+     * @return void
+     */
+    public static function fileFinder($type)
+    {
+        return Doctrine_FileFinder::type($type);
     }
     
     /**

@@ -342,6 +342,8 @@ class Doctrine_Migration
         }
         
         $this->setCurrentVersion($to);
+        
+        return true;
     }
     
     /**

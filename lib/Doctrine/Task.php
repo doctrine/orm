@@ -20,7 +20,9 @@
  */
 
 /**
- * Doctrine_Cli_Task
+ * Doctrine_Task
+ * 
+ * Abstract class used for writing Doctrine Tasks
  *
  * @package     Doctrine
  * @subpackage  Task
@@ -41,6 +43,9 @@ abstract class Doctrine_Task
     /**
      * __construct
      *
+     * Since this is an abstract classes that extend this must follow a patter of Doctrine_Task_{TASK_NAME}
+     * This is what determines the task name for executing it.
+     *
      * @return void
      */
     public function __construct()
@@ -54,7 +59,7 @@ abstract class Doctrine_Task
      * Override with each task class
      *
      * @return void
-     * @author Jonathan H. Wage
+     * @abstract
      */
     abstract function execute();
     
@@ -63,7 +68,7 @@ abstract class Doctrine_Task
      *
      * Validates that all required fields are present
      *
-     * @return void
+     * @return bool true
      */
     public function validate()
     {
@@ -95,7 +100,7 @@ abstract class Doctrine_Task
      *
      * @param string $name 
      * @param string $default 
-     * @return void
+     * @return mixed
      */
     public function getArgument($name, $default = null)
     {
@@ -109,7 +114,7 @@ abstract class Doctrine_Task
     /**
      * getArguments
      *
-     * @return void
+     * @return array $this->arguments
      */
     public function getArguments()
     {
@@ -119,10 +124,10 @@ abstract class Doctrine_Task
     /**
      * setArguments
      *
-     * @param string $args 
+     * @param array $args 
      * @return void
      */
-    public function setArguments($args)
+    public function setArguments(array $args)
     {
         $this->arguments = $args;
     }
@@ -130,7 +135,7 @@ abstract class Doctrine_Task
     /**
      * getTaskName
      *
-     * @return void
+     * @return string $taskName
      */
     public function getTaskName()
     {
@@ -140,7 +145,7 @@ abstract class Doctrine_Task
     /**
      * getDescription
      *
-     * @return void
+     * @return string $description
      */
     public function getDescription()
     {
@@ -150,7 +155,7 @@ abstract class Doctrine_Task
     /**
      * getRequiredArguments
      *
-     * @return void
+     * @return array $requiredArguments
      */
     public function getRequiredArguments()
     {
@@ -160,7 +165,7 @@ abstract class Doctrine_Task
     /**
      * getOptionalArguments
      *
-     * @return void
+     * @return array $optionalArguments
      */
     public function getOptionalArguments()
     {
@@ -170,7 +175,7 @@ abstract class Doctrine_Task
     /**
      * getRequiredArgumentsDescriptions
      *
-     * @return void
+     * @return array $requiredArgumentsDescriptions
      */
     public function getRequiredArgumentsDescriptions()
     {
@@ -180,8 +185,7 @@ abstract class Doctrine_Task
     /**
      * getOptionalArgumentsDescriptions
      *
-     * @return void
-     * @author Jonathan H. Wage
+     * @return array $optionalArgumentsDescriptions
      */
     public function getOptionalArgumentsDescriptions()
     {

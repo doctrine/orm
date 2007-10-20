@@ -238,7 +238,6 @@ class Doctrine_Data
      * @param string $Doctrine_Record 
      * @param string $fieldName 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function isRelation(Doctrine_Record $record, $fieldName)
     {
@@ -254,5 +253,25 @@ class Doctrine_Data
         }
         
         return false;
+    }
+    
+    /**
+     * purge
+     * 
+     * Purge all data for loaded models or for the passed array of Doctrine_Records
+     *
+     * @param string $models 
+     * @return void
+     */
+    public function purge($models = array())
+    {
+        $models = Doctrine::getLoadedModels($models);
+
+        foreach ($models as $model)
+        {
+            $model = new $model();
+
+            $model->getTable()->createQuery()->delete($model)->execute();
+          }
     }
 }

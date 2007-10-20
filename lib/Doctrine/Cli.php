@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Task.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: Cli.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -35,7 +35,7 @@ class Doctrine_Cli
     protected $tasks = array();
     protected $scriptName = null;
     protected $config = array();
-    
+
     /**
      * __construct
      *
@@ -46,12 +46,13 @@ class Doctrine_Cli
     {
         $this->config = $config;
     }
-    
+
     /**
      * run
      *
      * @param string $args 
      * @return void
+     * @throws new Doctrine_Cli_Exception
      */
     public function run($args)
     {
@@ -82,13 +83,13 @@ class Doctrine_Cli
             throw new Doctrine_Cli_Exception('Cli task could not be found: '.$taskClass);
         }
     }
-    
+
     /**
      * prepareArgs
      *
      * @param string $taskInstance 
      * @param string $args 
-     * @return void
+     * @return array $prepared
      */
     protected function prepareArgs($taskInstance, $args)
     {
@@ -128,10 +129,12 @@ class Doctrine_Cli
         
         return $prepared;
     }
-    
+
     /**
      * printTasks
      *
+     * Prints an index of all the available tasks in the CLI instance
+     * 
      * @return void
      */
     public function printTasks()
@@ -184,12 +187,12 @@ class Doctrine_Cli
             echo "\n".str_repeat("-", 40)."\n";
         }
     }
-    
+
     /**
      * loadTasks
      *
      * @param string $directory 
-     * @return void
+     * @return array $loadedTasks
      */
     public function loadTasks($directory = null)
     {
