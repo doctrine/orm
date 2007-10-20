@@ -39,5 +39,7 @@ class Doctrine_Task_CreateTables extends Doctrine_Task
     public function execute()
     {
         Doctrine::createTablesFromModels($this->getArgument('models_path'));
+        
+        $this->dispatcher->notify('successfully created tables');
     }
 }

@@ -38,6 +38,8 @@ class Doctrine_Task_Migrate extends Doctrine_Task
     
     public function execute()
     {
-        Doctrine::migrate($this->getArgument('migrations_path'), $this->getArgument('version'));
+        $version = Doctrine::migrate($this->getArgument('migrations_path'), $this->getArgument('version'));
+        
+        $this->dispatcher->notify('migrated to version # ' . $version);
     }
 }

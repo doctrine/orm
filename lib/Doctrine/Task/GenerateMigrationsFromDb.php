@@ -39,5 +39,7 @@ class Doctrine_Task_GenerateMigrationsFromDb extends Doctrine_Task
     public function execute()
     {
         Doctrine::generateMigrationsFromDb($this->getArgument('migrations_path'));
+        
+        $this->dispatcher->notify('successfully generated migration classes from databases');
     }
 }

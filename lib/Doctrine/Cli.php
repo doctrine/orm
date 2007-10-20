@@ -32,10 +32,13 @@
  */
 class Doctrine_Cli
 {
-    protected $tasks = array();
-    protected $scriptName = null;
-    protected $config = array();
-
+    protected $tasks        = array(),
+              $taskInstance = null,
+              $formatter    = null,
+              $scriptName   = null,
+              $message      = null,
+              $config       = array();
+    
     /**
      * __construct
      *
@@ -45,6 +48,29 @@ class Doctrine_Cli
     public function __construct($config = array())
     {
         $this->config = $config;
+        $this->formatter = new Doctrine_Cli_AnsiColorFormatter();
+    }
+    
+    /**
+     * notify
+     *
+     * @param string $notification 
+     * @return void
+     */
+    public function notify($notification = null)
+    {
+        echo $this->formatter->format($this->taskInstance->getTaskName(), 'INFO') . ' - ' . $this->formatter->format($notification, 'HEADER') . "\n";
+    }
+    
+    /**
+     * notifyException
+     *
+     * @param string $exception 
+     * @return void
+     */
+    public function notifyException($exception)
+    {
+        echo $this->formatter->format($exception->getMessage(), 'ERROR') . "\n";
     }
 
     /**
@@ -56,43 +82,79 @@ class Doctrine_Cli
      */
     public function run($args)
     {
-        $this->scriptName = $args[0];
+        echo "\n";
         
-        if (!isset($args[1])) {
-            echo $this->printTasks();
+        try {
+            $this->_run($args);
+        } catch (Exception $exception) {
+            $this->notifyException($exception);
+        }
+        
+        echo "\n";
+    }
+    
+    protected function _getTaskClassFromArgs($args)
+    {
+        $taskName = str_replace('-', '_', $args[1]);
+        $taskClass = 'Doctrine_Task_' . Doctrine::classify($taskName);
+        
+        return $taskClass;
+    }
+    
+    protected function _run($args)
+    {        
+        $this->scriptName = $args[0];
+        $taskName = $args[1];
+        
+        $arg1 = isset($args[1]) ? $args[1]:null;
+        
+        if (!$arg1 || $arg1 == 'help') {
+            echo $this->printTasks(null, $arg1 == 'help' ? true:false);
             return;
         }
         
+        if (isset($args[1]) && isset($args[2]) && $args[2] == 'help') {
+            echo $this->printTasks($args[1], true);
+            return;
+        }
+        
+        $taskClass = $this->_getTaskClassFromArgs($args);
+        
+        if (!class_exists($taskClass)) {
+            throw new Doctrine_Cli_Exception('Cli task could not be found: ' . $taskClass);
+        }
+        
         unset($args[0]);
-        $taskName = str_replace('-', '_', $args[1]);
         unset($args[1]);
         
-        $taskClass = 'Doctrine_Task_' . Doctrine::classify($taskName);
+        $this->taskInstance = new $taskClass($this);
         
-        if (class_exists($taskClass)) {
-            $taskInstance = new $taskClass();
-            
-            $args = $this->prepareArgs($taskInstance, $args);
-            
-            $taskInstance->setArguments($args);
-            
-            if ($taskInstance->validate()) {
-                $taskInstance->execute();
+        $args = $this->prepareArgs($args);
+        
+        $this->taskInstance->setArguments($args);
+        
+        try {
+            if ($this->taskInstance->validate()) {
+                $this->taskInstance->execute();
+            } else {
+                echo $this->formatter->format('Requires arguments missing!!', 'ERROR') . "\n\n";
+                echo $this->printTasks($taskName, true);
             }
-        } else {
-            throw new Doctrine_Cli_Exception('Cli task could not be found: '.$taskClass);
+        } catch (Exception $e) {
+            throw new Doctrine_Cli_Exception($e->getMessage());
         }
     }
 
     /**
      * prepareArgs
      *
-     * @param string $taskInstance 
      * @param string $args 
      * @return array $prepared
      */
-    protected function prepareArgs($taskInstance, $args)
+    protected function prepareArgs($args)
     {
+        $taskInstance = $this->taskInstance;
+        
         $args = array_values($args);
         
         // First lets load populate an array with all the possible arguments. required and optional
@@ -137,54 +199,63 @@ class Doctrine_Cli
      * 
      * @return void
      */
-    public function printTasks()
+    public function printTasks($task = null, $full = false)
     {
+        $task = Doctrine::classify(str_replace('-', '_', $task));
+        
         $tasks = $this->loadTasks();
         
-        echo "\nAvailable Doctrine Command Line Interface Tasks\n";
-        echo str_repeat('-', 40)."\n\n";
+        echo $this->formatter->format("Doctrine Command Line Interface", 'HEADER') . "\n\n";
         
         foreach ($tasks as $taskName)
         {
+            if ($task != null && strtolower($task) != strtolower($taskName)) {
+                continue;
+            }
+            
             $className = 'Doctrine_Task_' . $taskName;
             $taskInstance = new $className();
-            $taskInstance->taskName = str_replace('_', '-', Doctrine::tableize($taskName));
+            $taskInstance->taskName = str_replace('_', '-', Doctrine::tableize($taskName));         
             
-            echo $taskInstance->getDescription() . "\n";            
+            $syntax = $this->scriptName . ' ' . $taskInstance->getTaskName();
             
-            $syntax  = "Syntax: ";
+            echo $this->formatter->format($syntax, 'INFO'); 
             
-            $syntax .= $this->scriptName . ' ' . $taskInstance->getTaskName();
+            if ($full) {
+                echo " - " . $taskInstance->getDescription() . "\n";  
+                
+                $args = null;
+                
+                $requiredArguments = $taskInstance->getRequiredArgumentsDescriptions();
+                
+                if (!empty($requiredArguments)) {
+                    foreach ($requiredArguments as $name => $description) {
+                        $args .= $this->formatter->format($name, "ERROR");
+                        
+                        if (isset($this->config[$name])) {
+                            $args .= " - " . $this->formatter->format($this->config[$name], 'COMMENT');
+                        } else {
+                            $args .= " - " . $description;
+                        }
+                        
+                        $args .= "\n";
+                    }
+                }
             
-            if ($required = $taskInstance->getRequiredArguments()) {
-                $syntax .= ' <' . implode('> <', $required) . '>';
-            }
-
-            if ($optional = $taskInstance->getOptionalArguments()) {
-                 $syntax .= ' <' . implode('> <', $optional) . '>';
-            }
+                $optionalArguments = $taskInstance->getOptionalArgumentsDescriptions();
+                
+                if (!empty($optionalArguments)) {
+                    foreach ($optionalArguments as $name => $description) {
+                        $args .= $name . ' - ' . $description."\n";
+                    }
+                }
             
-            echo $syntax."\n";
-            
-            $args = null;
-            if ($requiredArguments = $taskInstance->getRequiredArgumentsDescriptions()) {
-                foreach ($requiredArguments as $name => $description) {
-                    $args .= '*' . $name . ' - ' . $description."\n";
+                if ($args) {
+                    echo "\n" . $this->formatter->format('Arguments:', 'HEADER') . "\n" . $args;
                 }
             }
             
-            if ($optionalArguments = $taskInstance->getOptionalArgumentsDescriptions()) {
-                foreach ($optionalArguments as $name => $description) {
-                    $args .= $name . ' - ' . $description."\n";
-                }
-            }
-            
-            if ($args) {
-                echo "\nArguments (* = required):\n";
-                echo $args;
-            }
-            
-            echo "\n".str_repeat("-", 40)."\n";
+            echo "\n";
         }
     }
 

@@ -326,7 +326,7 @@ class Doctrine_Migration
         }
         
         if ($from == $to) {
-            throw new Doctrine_Migration_Exception('Already at version: ' . $to);
+            throw new Doctrine_Migration_Exception('Already at version # ' . $to);
         }
         
         $direction = $from > $to ? 'down':'up';
@@ -343,7 +343,7 @@ class Doctrine_Migration
         
         $this->setCurrentVersion($to);
         
-        return true;
+        return $to;
     }
     
     /**

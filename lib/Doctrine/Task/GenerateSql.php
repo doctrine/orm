@@ -50,5 +50,7 @@ class Doctrine_Task_GenerateSql extends Doctrine_Task
         $sql = Doctrine::generateSqlFromModels($this->getArgument('models_path'));
         
         file_put_contents($path, $sql);
+        
+        $this->dispatcher->notify('successfully generated sql for models');
     }
 }

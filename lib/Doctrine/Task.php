@@ -34,7 +34,8 @@
  */
 abstract class Doctrine_Task
 {
-    public $taskName             =   null,
+    public $dispatcher           =   null,
+           $taskName             =   null,
            $description          =   null,
            $arguments            =   array(),
            $requiredArguments    =   array(),
@@ -48,9 +49,20 @@ abstract class Doctrine_Task
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($dispatcher = null)
     {
+        $this->dispatcher = $dispatcher;
+        
         $this->taskName = str_replace('_', '-', Doctrine::tableize(str_replace('Doctrine_Task_', '', get_class($this))));
+    }
+    
+    public function notify($message)
+    {
+        if (is_object($message)) {
+            return $message->notify($message);
+        } else {
+            return $message;
+        }
     }
     
     /**
@@ -76,7 +88,7 @@ abstract class Doctrine_Task
         
         foreach ($requiredArguments as $arg) {
             if (!isset($this->arguments[$arg])) {
-                throw new Doctrine_Task_Exception('Required arguments missing. The follow arguments are required: ' . implode(', ', $requiredArguments));
+                return false;
             }
         }
         

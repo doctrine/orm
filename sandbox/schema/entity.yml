@@ -1,8 +1,0 @@
----
-Entity:
-  columns:
-    id:
-      type: integer
-      size: 11
-      primary: true
-      autoincrement: true

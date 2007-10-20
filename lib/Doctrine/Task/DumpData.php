@@ -54,5 +54,7 @@ class Doctrine_Task_DumpData extends Doctrine_Task
         }
         
         Doctrine::dumpData($path, $individualFiles);
+        
+        $this->dispatcher->notify(sprintf('successfully dumped data to %s', $path));
     }
 }

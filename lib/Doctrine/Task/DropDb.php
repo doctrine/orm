@@ -39,5 +39,7 @@ class Doctrine_Task_DropDb extends Doctrine_Task
     public function execute()
     {
         Doctrine::dropDatabases($this->getArgument('connection'));
+        
+        $this->dispatcher->notify('Successfully dropped all databases');
     }
 }
