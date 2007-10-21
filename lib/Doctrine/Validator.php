@@ -167,7 +167,8 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
      */
     private function validateLength($column, $key, $value)
     {
-        if ($column['type'] == 'timestamp' || $column['type'] == 'integer') {
+        if ($column['type'] == 'timestamp' || $column['type'] == 'integer' || 
+                $column['type'] == 'enum') {
             return true;
         } else if ($column['type'] == 'array' || $column['type'] == 'object') {
             $length = strlen(serialize($value));
