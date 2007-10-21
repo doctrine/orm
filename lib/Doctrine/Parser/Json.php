@@ -63,6 +63,6 @@ class Doctrine_Parser_Json extends Doctrine_Parser
         
         $json = json_decode($contents);
         
-        return $json
+        return $json;
     }
 }
