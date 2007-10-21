@@ -169,6 +169,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
         }
         return $where;
     }
+
     /**
      * parses an EXISTS expression
      *
@@ -189,6 +190,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
 
         return $operator . ' ('.$this->query->createSubquery()->parseQuery($sub, false)->getQuery() . ')';
     }
+
     /**
      * getOperator
      *
@@ -210,6 +212,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
         }
         return $operator;
     }
+
     /**
      * __toString
      * return string representation of this object

@@ -42,18 +42,22 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
      * constant for SELECT queries
      */
     const SELECT = 0;
+
     /**
      * constant for DELETE queries
      */
     const DELETE = 1;
+
     /**
      * constant for UPDATE queries
      */
     const UPDATE = 2;
+
     /**
      * constant for INSERT queries
      */
     const INSERT = 3;
+
     /**
      * constant for CREATE queries
      */
@@ -65,15 +69,18 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     protected $_params      = array('where' => array(),
                                     'set' => array(),
                                     'having' => array());
+
     /**
      * @var Doctrine_Connection $conn           Doctrine_Connection object
      */
     protected $_conn;
+
     /**
      * @var Doctrine_View $_view                Doctrine_View object, when set this object will use the
      *                                          the query given by the view object for object population
      */
     protected $_view;
+
     /**
      * @var array $_aliasMap                    two dimensional array containing the map for query aliases
      *      Main keys are component aliases
@@ -90,15 +97,18 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
      *                              component is mapped to a collection
      */
     protected $_aliasMap         = array();
+
     /**
      *
      */
     protected $pendingAggregates = array();
+
     /**
      * @var array $aggregateMap             an array containing all aggregate aliases, keys as dql aliases
      *                                      and values as sql aliases
      */
     protected $aggregateMap      = array();
+
     /**
      * @var array $_options                 an array of options
      */
@@ -107,10 +117,12 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                             'parserCache'    => false,
                             'resultSetCache' => false,
                             );
+
     /**
      * @var string $_sql            cached SQL query
      */
     protected $_sql;
+
     /**
      * @var array $parts            SQL query string parts
      */
@@ -128,20 +140,24 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         'limit'     => false,
         'offset'    => false,
         );
+
     /**
      * @var integer $type                   the query type
      *
      * @see Doctrine_Query::* constants
      */
     protected $type            = self::SELECT;
+
     /**
      * @var array
      */
     protected $_cache;
+
     /**
      * The current hydration mode.
      */
     protected $_hydrationMode = Doctrine::HYDRATE_RECORD;
+
     /**
      * @var boolean $_expireCache           a boolean value that indicates whether or not to force cache expiration
      */
@@ -150,12 +166,14 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     protected $_timeToLive;
 
     protected $_tableAliases    = array();
+
     /**
      * @var array $_tableAliasSeeds         A simple array keys representing table aliases and values
      *                                      as table alias seeds. The seeds are used for generating short table
      *                                      aliases.
      */
     protected $_tableAliasSeeds = array();
+
     /**
      * constructor
      *
@@ -168,6 +186,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         }
         $this->_conn = $connection;
     }
+
     /**
      * getRootAlias
      * returns the alias of the the root component
@@ -184,6 +203,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return key($this->_aliasMap);
     }
+
     /**
      * getRootDeclaration
      * returns the root declaration
@@ -196,6 +216,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $map;
     }
+
     /**
      * getRoot
      * returns the root component for this object
@@ -212,6 +233,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $map['table'];
     }
+
     /**
      * getSql
      * return the sql associated with this object
@@ -222,6 +244,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return $this->getQuery();
     }
+
     /**
      * useCache
      *
@@ -244,6 +267,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $this->setCacheLifeSpan($timeToLive);
     }
+
     /**
      * expireCache
      *
@@ -256,6 +280,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $this;
     }
+
     /**
      * setCacheLifeSpan
      *
@@ -271,6 +296,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $this;
     }
+
     /**
      * getCacheDriver
      * returns the cache driver associated with this object
@@ -285,6 +311,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
             return $this->_conn->getCacheDriver();
         }
     }
+
     /**
      * Sets the fetchmode.
      *
@@ -295,6 +322,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         $this->_hydrationMode = $hydrationMode;
         return $this;
     }
+
     /**
      * serialize
      * this method is automatically called when this Doctrine_Hydrate is serialized
@@ -306,6 +334,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         $vars = get_object_vars($this);
 
     }
+
     /**
      * unseralize
      * this method is automatically called everytime a Doctrine_Hydrate object is unserialized
@@ -317,6 +346,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
 
     }
+
     /**
      * generateNewTableAlias
      * generates a new alias from given table alias
@@ -342,6 +372,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $tableAlias;
     }
+
     /**
      * hasTableAlias
      * whether or not this object has given tableAlias
@@ -353,6 +384,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return (isset($this->_tableAliases[$tableAlias]));
     }
+
     /**
      * getComponentAlias
      * get component alias associated with given table alias
@@ -367,6 +399,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         }
         return $this->_tableAliases[$tableAlias];
     }
+
     /**
      * getTableAliasSeed
      * returns the alias seed for given table alias
@@ -381,6 +414,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         }
         return $this->_tableAliasSeeds[$tableAlias];
     }
+
     /**
      * generateTableAlias
      * generates a table alias from given table name and associates 
@@ -411,6 +445,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $alias;
     }
+
     /**
      * getTableAliases
      * returns all table aliases
@@ -421,6 +456,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return $this->_tableAliases;
     }
+
     /** 
      * addTableAlias
      * adds an alias for table and associates it with given component alias
@@ -435,6 +471,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $this;
     }
+
     /**
      * getTableAlias
      * some database such as Oracle need the identifier lengths to be < ~30 chars
@@ -461,6 +498,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $this->generateTableAlias($componentAlias, $tableName);
     }
+
     /**
      * addQueryPart
      * adds a query part in the query part array
@@ -482,6 +520,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         }
         return $this;
     }
+
     /**
      * setQueryPart
      * sets a query part in the query part array
@@ -499,6 +538,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $this->parts[$part];
     }
+
     /**
      * removeQueryPart
      * removes a query part from the query part array
@@ -520,6 +560,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         }
         return $this;
     }
+
     /**
      * setQueryPart
      * sets a query part in the query part array
@@ -547,6 +588,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $this;
     }
+
     /**
      * hasAliasDeclaration
      * whether or not this object has a declaration for given component alias
@@ -558,6 +600,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return isset($this->_aliasMap[$componentAlias]);
     }
+
     /**
      * getAliasDeclaration
      * get the declaration for given component alias
@@ -573,6 +616,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $this->_aliasMap[$componentAlias];
     }
+
     /**
      * copyAliases
      * copy aliases from another Hydrate object
@@ -591,6 +635,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         $this->_tableAliasSeeds = $query->_tableAliasSeeds;
         return $this;
     }
+
     /**
      * createSubquery
      * creates a subquery
@@ -610,6 +655,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $obj;
     }
+
     /**
      * limitSubqueryUsed
      * whether or not limit subquery was used
@@ -620,6 +666,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return false;
     }
+
     /**
      * clear
      * resets all the variables
@@ -644,6 +691,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                     );
         $this->inheritanceApplied = false;
     }
+
     /**
      * getConnection
      *
@@ -653,6 +701,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return $this->_conn;
     }
+
     /**
      * setView
      * sets a database view this query object uses
@@ -665,6 +714,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         $this->_view = $view;
     }
+
     /**
      * getView
      * returns the view associated with this query object (if any)
@@ -675,6 +725,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return $this->_view;
     }
+
     /**
      * getParams
      *
@@ -684,6 +735,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return array_merge($this->_params['set'], $this->_params['where'], $this->_params['having']);
     }
+
     /**
      * setParams
      *
@@ -696,6 +748,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return $params;
     }
+
     /**
      * setAliasMap
      * sets the whole component alias map
@@ -709,6 +762,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $this;
     }
+
     /**
      * getAliasMap
      * returns the component alias map
@@ -719,6 +773,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return $this->_aliasMap;
     }
+
     /**
      * getCachedForm
      * returns the cached form of this query for given resultSet
@@ -768,6 +823,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         $stmt = $this->_conn->execute($query, $params);
         return $stmt;
     }
+
     /**
      * execute
      * executes the query and populates the data set
@@ -850,6 +906,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return $this->type;
     }
+
     /**
      * applyInheritance
      * applies column aggregation inheritance to DQL / SQL query
@@ -909,6 +966,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return $str;
     }
+
     /**
      * fetchArray
      * Convenience method to execute using array fetching as hydration mode.
@@ -919,6 +977,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     public function fetchArray($params = array()) {
         return $this->execute($params, Doctrine::HYDRATE_ARRAY);
     }
+
     /**
      * fetchOne
      * Convenience method to execute the query and return the first item
@@ -949,6 +1008,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
         return false;
     }
+
     /**
      * parseData
      * parses the data returned by statement object
@@ -1138,6 +1198,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         $stmt->closeCursor();
         return $array;
     }
+
     /**
      * _setLastElement
      *
@@ -1175,6 +1236,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
             }
         }
     }
+
     /**
      * @return string                   returns a string representation of this object
      */

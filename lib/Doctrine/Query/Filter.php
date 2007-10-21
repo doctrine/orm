@@ -45,6 +45,7 @@ class Doctrine_Query_Filter implements Doctrine_Query_Filter_Interface
     {
     
     }
+
     /**
      * postQuery
      *

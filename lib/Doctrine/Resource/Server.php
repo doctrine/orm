@@ -45,7 +45,7 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     {
         static $instance;
         
-        if (!$instance) {
+        if ( ! $instance) {
             $instance = new Doctrine_Resource_Server($name, $config);
         }
         
@@ -54,7 +54,7 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     
     public function validate($errors)
     {
-        if (!empty($errors)) {
+        if ( ! empty($errors)) {
             throw new Doctrine_Resource_Exception(count($errors) . ' error(s) occurred: ' . implode('. ', $errors));
         } else {
             return true;
@@ -65,11 +65,11 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     {
         $errors = array();
         
-        if (!$request->has('model') || !$request->get('model')) {
+        if ( ! $request->has('model') || !$request->get('model')) {
             $errors[] = 'You must specify the model/class name you are deleting';
         }
         
-        if (!$request->has('identifier') || !is_array($request->get('identifier'))) {
+        if ( ! $request->has('identifier') || !is_array($request->get('identifier'))) {
             $errors[] = 'You must specify an array containing the identifiers for the model you wish to delete';
         }
         
@@ -80,7 +80,7 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     {
         $errors = $this->validateOpenRecord($request);
         
-        if (!$request->has('data') || !$request->get('data')) {
+        if ( ! $request->has('data') || !$request->get('data')) {
             $errors[] = 'You must specify an containing the changed data to save to the model';
         }
         
@@ -97,7 +97,7 @@ class Doctrine_Resource_Server extends Doctrine_Resource
         
         $existing = true;
         foreach ($identifier as $key => $value) {
-            if (!$value) {
+            if ( ! $value) {
                 $existing = false;
             }
         }
@@ -139,7 +139,7 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     {
         $errors = array();
         
-        if (!$request->has('dql') || !$request->get('dql')) {
+        if ( ! $request->has('dql') || !$request->get('dql')) {
             $errors[] = 'You must specify a dql string in order to execute a query';
         }
         
@@ -181,7 +181,7 @@ class Doctrine_Resource_Server extends Doctrine_Resource
     
     public function execute(array $r)
     {
-        if (!isset($r['request'])) {
+        if ( ! isset($r['request'])) {
             throw new Doctrine_Resource_Exception('You must specify a request '.$this->getFormat().' string in your request');
         }
         

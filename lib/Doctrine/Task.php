@@ -40,7 +40,7 @@ abstract class Doctrine_Task
            $arguments            =   array(),
            $requiredArguments    =   array(),
            $optionalArguments    =   array();
-    
+
     /**
      * __construct
      *
@@ -55,7 +55,7 @@ abstract class Doctrine_Task
         
         $this->taskName = str_replace('_', '-', Doctrine::tableize(str_replace('Doctrine_Task_', '', get_class($this))));
     }
-    
+
     /**
      * notify
      *
@@ -72,7 +72,7 @@ abstract class Doctrine_Task
             return $notification;
         }
     }
-    
+
     /**
      * ask
      *
@@ -88,7 +88,7 @@ abstract class Doctrine_Task
         
         return $answer;
     }
-    
+
     /**
      * execute
      *
@@ -98,7 +98,7 @@ abstract class Doctrine_Task
      * @abstract
      */
     abstract function execute();
-    
+
     /**
      * validate
      *
@@ -111,14 +111,14 @@ abstract class Doctrine_Task
         $requiredArguments = $this->getRequiredArguments();
         
         foreach ($requiredArguments as $arg) {
-            if (!isset($this->arguments[$arg])) {
+            if ( ! isset($this->arguments[$arg])) {
                 return false;
             }
         }
         
         return true;
     }
-    
+
     /**
      * addArgument
      *
@@ -130,7 +130,7 @@ abstract class Doctrine_Task
     {
         $this->arguments[$name] = $value;
     }
-    
+
     /**
      * getArgument
      *
@@ -146,17 +146,17 @@ abstract class Doctrine_Task
             return $default;
         }
     }
-    
+
     /**
      * getArguments
      *
-     * @return array $this->arguments
+     * @return array $arguments
      */
     public function getArguments()
     {
         return $this->arguments;
     }
-    
+
     /**
      * setArguments
      *
@@ -167,7 +167,7 @@ abstract class Doctrine_Task
     {
         $this->arguments = $args;
     }
-    
+
     /**
      * getTaskName
      *
@@ -177,7 +177,7 @@ abstract class Doctrine_Task
     {
         return $this->taskName;
     }
-    
+
     /**
      * getDescription
      *
@@ -187,7 +187,7 @@ abstract class Doctrine_Task
     {
         return $this->description;
     }
-    
+
     /**
      * getRequiredArguments
      *
@@ -197,7 +197,7 @@ abstract class Doctrine_Task
     {
         return array_keys($this->requiredArguments);
     }
-    
+
     /**
      * getOptionalArguments
      *
@@ -207,7 +207,7 @@ abstract class Doctrine_Task
     {
         return array_keys($this->optionalArguments);
     }
-    
+
     /**
      * getRequiredArgumentsDescriptions
      *
@@ -217,7 +217,7 @@ abstract class Doctrine_Task
     {
         return $this->requiredArguments;
     }
-    
+
     /**
      * getOptionalArgumentsDescriptions
      *

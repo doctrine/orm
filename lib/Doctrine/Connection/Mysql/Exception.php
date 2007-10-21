@@ -62,6 +62,7 @@ class Doctrine_Connection_Mysql_Exception extends Doctrine_Connection_Exception
                                       1216 => Doctrine::ERR_CONSTRAINT,
                                       1217 => Doctrine::ERR_CONSTRAINT,
                                       );
+
     /**
      * This method checks if native error code/message can be
      * converted into a portable code and then adds this

@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_View
  *
@@ -37,10 +38,12 @@ class Doctrine_View
      * SQL DROP constant
      */
     const DROP   = 'DROP VIEW %s';
+
     /**
      * SQL CREATE constant
      */
     const CREATE = 'CREATE VIEW %s AS %s';
+
     /**
      * SQL SELECT constant
      */
@@ -50,10 +53,12 @@ class Doctrine_View
      * @var string $name                the name of the view
      */
     protected $name;
+
     /**
      * @var Doctrine_Query $query       the DQL query object this view is hooked into
      */
     protected $query;
+
     /**
      * @var Doctrine_Connection $conn   the connection object
      */
@@ -71,6 +76,7 @@ class Doctrine_View
         $this->query->setView($this);
         $this->conn   = $query->getConnection();
     }
+
     /**
      * getQuery
      * returns the associated query object
@@ -81,6 +87,7 @@ class Doctrine_View
     {
         return $this->query;
     }
+
     /**
      * getName
      * returns the name of this view
@@ -91,6 +98,7 @@ class Doctrine_View
     {
         return $this->name;
     }
+
     /**
      * getConnection
      * returns the connection object
@@ -101,6 +109,7 @@ class Doctrine_View
     {
         return $this->conn;
     }
+
     /**
      * create
      * creates this view
@@ -117,6 +126,7 @@ class Doctrine_View
             throw new Doctrine_View_Exception($e->__toString());
         }
     }
+
     /**
      * drop
      * drops this view from the database
@@ -132,6 +142,7 @@ class Doctrine_View
             throw new Doctrine_View_Exception($e->__toString());
         }
     }
+
     /**
      * execute
      * executes the view
@@ -143,6 +154,7 @@ class Doctrine_View
     {
         return $this->query->execute();
     }
+
     /**
      * getSelectSql
      * returns the select sql for this view

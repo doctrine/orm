@@ -37,30 +37,37 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * @var array $data                     an array containing the records of this collection
      */
     protected $data = array();
+
     /**
      * @var Doctrine_Table $table           each collection has only records of specified table
      */
     protected $_table;
+
     /**
      * @var array $_snapshot                a snapshot of the fetched data
      */
     protected $_snapshot = array();
+
     /**
      * @var Doctrine_Record $reference      collection can belong to a record
      */
     protected $reference;
+
     /**
      * @var string $referenceField         the reference field of the collection
      */
     protected $referenceField;
+
     /**
      * @var Doctrine_Relation               the record this collection is related to, if any
      */
     protected $relation;
+
     /**
      * @var string $keyColumn               the name of the column that is used for collection key mapping
      */
     protected $keyColumn;
+
     /**
      * @var Doctrine_Null $null             used for extremely fast null value testing
      */
@@ -88,6 +95,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $this->keyColumn = $keyColumn;
         }
     }
+
     /**
      * initNullObject
      * initializes the null object for this collection
@@ -98,6 +106,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         self::$null = $null;
     }
+
     /**
      * getTable
      * returns the table this collection belongs to
@@ -108,6 +117,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return $this->_table;
     }
+
     /**
      * setData
      *
@@ -118,6 +128,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         $this->data = $data;
     }
+
     /**
      * this method is automatically called when this Doctrine_Collection is serialized
      *
@@ -138,6 +149,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         return serialize($vars);
     }
+
     /**
      * unseralize
      * this method is automatically called everytime a Doctrine_Collection object is unserialized
@@ -165,6 +177,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $this->keyColumn = $keyColumn;
         }
     }
+
     /**
      * setKeyColumn
      * sets the key column for this collection
@@ -178,6 +191,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         
         return $this;
     }
+
     /**
      * getKeyColumn
      * returns the name of the key column
@@ -188,6 +202,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return $this->column;
     }
+
     /**
      * getData
      * returns all the records as an array
@@ -198,6 +213,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return $this->data;
     }
+
     /**
      * getFirst
      * returns the first record in the collection
@@ -208,6 +224,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return reset($this->data);
     }
+
     /**
      * getLast
      * returns the last record in the collection
@@ -218,6 +235,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return end($this->data);
     }
+
     /**
      * setReference
      * sets a reference pointer
@@ -247,6 +265,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         }
     }
+
     /**
      * getReference
      *
@@ -256,6 +275,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return $this->reference;
     }
+
     /**
      * remove
      * removes a specified collection element
@@ -270,6 +290,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         unset($this->data[$key]);
         return $removed;
     }
+
     /**
      * contains
      * whether or not this collection contains a specified element
@@ -285,6 +306,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return array_search($record, $this->data, true);
     }
+
     /**
      * get
      * returns a record for given key
@@ -350,6 +372,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
         return $list;
     }
+
     /**
      * returns all keys
      * @return array
@@ -358,6 +381,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return array_keys($this->data);
     }
+
     /**
      * count
      * this class implements interface countable
@@ -369,6 +393,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return count($this->data);
     }
+
     /**
      * set
      * @param integer $key
@@ -383,6 +408,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         $this->data[$key] = $record;
     }
+
     /**
      * adds a record to collection
      * @param Doctrine_Record $record              record to be added
@@ -430,6 +456,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
         return true;
     }
+
     /**
      * loadRelated
      *
@@ -475,6 +502,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         $this->populateRelated($name, $coll);
     }
+
     /**
      * populateRelated
      *
@@ -533,6 +561,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             }
         }
     }
+
     /**
      * getNormalIterator
      * returns normal iterator - an iterator that will not expand this collection
@@ -543,6 +572,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return new Doctrine_Collection_Iterator_Normal($this);
     }
+
     /**
      * takeSnapshot
      * takes a snapshot from this collection
@@ -562,6 +592,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         
         return $this;
     }
+
     /**
      * getSnapshot
      * returns the data of the last snapshot
@@ -572,6 +603,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return $this->_snapshot;
     }
+
     /**
      * processDiff
      * processes the difference of the last snapshot and the current data
@@ -592,6 +624,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         return $this;
     }
+
     /**
      * toArray
      * Mimics the result of a $query->execute(array(), Doctrine::FETCH_ARRAY);
@@ -646,6 +679,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return array_udiff($this->data, $this->_snapshot, array($this, "compareRecords"));
     }
+
     /**
      * compareRecords
      * Compares two records. To be used on _snapshot diffs using array_udiff
@@ -655,6 +689,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if ($a->getOid() == $b->getOid()) return 0;
         return ($a->getOid() > $b->getOid()) ? 1 : -1;
     }
+
     /**
      * save
      * saves all records of this collection and processes the 
@@ -682,6 +717,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
 
         return $this;
     }
+
     /**
      * delete
      * single shot delete
@@ -709,6 +745,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         
         return $this;
     }
+
     /**
      * getIterator
      * @return object ArrayIterator
@@ -718,6 +755,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         $data = $this->data;
         return new ArrayIterator($data);
     }
+
     /**
      * returns a string representation of this object
      */

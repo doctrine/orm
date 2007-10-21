@@ -9,7 +9,7 @@
 ?>
 <?php
 
-    if(!defined("__PHPCOVERAGE_HOME")) {
+    if( ! defined("__PHPCOVERAGE_HOME")) {
         define("__PHPCOVERAGE_HOME", dirname(__FILE__));
     }
     require_once __PHPCOVERAGE_HOME . "/conf/phpcoverage.conf.php";
@@ -168,7 +168,7 @@
         */
         protected function removeAbsentPaths(&$dirs) {
             for($i = 0; $i < count($dirs); $i++) {
-                if(! file_exists($dirs[$i])) {
+                if( !  file_exists($dirs[$i])) {
                     // echo "Not found: " . $dirs[$i] . "\n";
                     $this->errors[] = "Not found: " . $dirs[$i] 
                     . ". Removing ...";
@@ -211,7 +211,7 @@
             $dirs[] = $dir;
             while(count($dirs) > 0) {
                 $currDir = realpath(array_pop($dirs));
-                if(!is_readable($currDir)) {
+                if( ! is_readable($currDir)) {
                     continue;
                 }
                 //echo "Current Dir: $currDir \n";
@@ -271,7 +271,7 @@
                         continue;
                     }
                 }
-                if(!array_key_exists($files[$i], $this->coverageData)) {
+                if( ! array_key_exists($files[$i], $this->coverageData)) {
                     $this->coverageData[$files[$i]] =  array();
                 }
             }

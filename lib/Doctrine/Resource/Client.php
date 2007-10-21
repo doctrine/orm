@@ -38,7 +38,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
     {
         static $instance;
         
-        if (!$instance) {
+        if ( ! $instance) {
             $instance = new Doctrine_Resource_Client($url, $config);
             
             if ($instance->loadDoctrine === true) {
@@ -80,7 +80,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
             $import = new Doctrine_Import_Schema();
             $schema = $import->buildSchema($path, Doctrine_Resource::FORMAT);
             
-            if (!file_exists($classesPath)) {
+            if ( ! file_exists($classesPath)) {
                 $build = "<?php\n";
                 foreach ($schema['schema'] as $className => $details) {
                     $build .= "class " . $className . " extends Doctrine_Resource_Record { protected \$_model = '".$className."'; public function __construct() { parent::__construct(\$this->_model); } }\n";
@@ -106,7 +106,7 @@ class Doctrine_Resource_Client extends Doctrine_Resource
     {
         static $instance;
         
-        if(!isset($instance[$table])) {
+        if( ! isset($instance[$table])) {
             $instance[$table] = new Doctrine_Resource_Table($table);
         }
         

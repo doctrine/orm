@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Exception
  *
@@ -68,6 +69,7 @@ class Doctrine_Exception extends Exception
                 Doctrine::ERR_TRUNCATED          => 'truncated',
                 Doctrine::ERR_DEADLOCK           => 'deadlock detected',
             );
+
     /**
      * Return a textual error message for a Doctrine error code
      *

@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Node_NestedSet_PreOrderIterator
  *
@@ -35,26 +36,32 @@ class Doctrine_Node_NestedSet_PreOrderIterator implements Iterator
      * @var Doctrine_Collection $collection
      */
     protected $collection;
+
     /**
      * @var array $keys
      */
     protected $keys;
+
     /**
      * @var mixed $key
      */
     protected $key;
+
     /**
      * @var integer $index
      */
     protected $index;
+
     /**
      * @var integer $index
      */
     protected $prevIndex;
+
     /**
      * @var integer $index
      */
     protected $traverseLevel;
+
     /**
      * @var integer $count
      */

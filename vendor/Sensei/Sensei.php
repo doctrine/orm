@@ -36,6 +36,7 @@ final class Sensei {
      * @var string $path            doctrine root directory
      */
     private static $path;
+
     /**
      * getPath
      * returns the doctrine root
@@ -44,11 +45,12 @@ final class Sensei {
      */
     public static function getPath()
     {
-        if (! self::$path) {
+        if ( !  self::$path) {
             self::$path = dirname(__FILE__);
         }
         return self::$path;
     }
+
     /**
      * simple autoload function
      * returns true if the class was loaded, otherwise false
@@ -91,7 +93,7 @@ final class Sensei {
         if (class_exists($className, false)) {
             return false;
         }
-        if (! self::$path) {
+        if ( !  self::$path) {
             self::$path = dirname(__FILE__);
         }
         $class = self::$path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
@@ -105,6 +107,7 @@ final class Sensei {
         throw new Sensei_Exception('Class ' . $className . ' does not exist and could not '
                                  . 'be loaded.');
     }
+
     /**
      * Create a new instance of a class.
      * 

@@ -179,6 +179,7 @@ class Doctrine_Export_Sqlite_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($this->adapter->pop(), 'CREATE TABLE sometable (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(4))');
 
     }
+
     /**
     public function testExportSupportsEmulationOfCascadingDeletes()
     {

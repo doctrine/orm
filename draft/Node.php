@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Node
  *
@@ -75,7 +76,7 @@ class Doctrine_Node implements IteratorAggregate
     {
         $class = 'Doctrine_Node_' . $implName;
 
-        if (!class_exists($class)) {
+        if ( ! class_exists($class)) {
             throw new Doctrine_Node_Exception("The class $class must exist and extend Doctrine_Node");
         }
 

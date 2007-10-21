@@ -45,7 +45,7 @@ class Doctrine_Task_DumpData extends Doctrine_Task
         
         $path = $this->getArgument('data_fixtures_path');
         
-        if (!$individualFiles) {
+        if ( ! $individualFiles) {
             $e = explode('.', $this->getArgument('data_fixtures_path'));
         
             if (end($e) !== 'yml') {

@@ -83,7 +83,7 @@ class Doctrine_Tree
     public static function factory(Doctrine_Table $table, $implName, $options = array())
     {
         $class = 'Doctrine_Tree_' . $implName;
-        if (!class_exists($class)) {
+        if ( ! class_exists($class)) {
             throw new Doctrine_Exception('The chosen class must extend Doctrine_Tree');
         }
         return new $class($table, $options);

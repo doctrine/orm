@@ -60,6 +60,7 @@ class Doctrine_Record_State_TestCase extends Doctrine_UnitTestCase
         
         $user->save();
     }
+
     /**
     public function testAssignFieldsToProxies()
     {

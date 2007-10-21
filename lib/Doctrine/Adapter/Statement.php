@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Adapter_Statement
  *
@@ -34,6 +35,7 @@ abstract class Doctrine_Adapter_Statement
     public function bindValue($no, $value)
     {
     }
+
     /**
      * fetch
      *

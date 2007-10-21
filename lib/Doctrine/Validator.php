@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Validator
  * Doctrine_Validator performs validations in record properties
@@ -36,6 +37,7 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
      * @var array $validators           an array of validator objects
      */
     private static $validators  = array();
+
     /**
      * returns a validator object
      *
@@ -55,6 +57,7 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
         }
         return self::$validators[$name];
     }
+
     /**
      * validates a given record and saves possible errors
      * in Doctrine_Validator::$stack
@@ -158,6 +161,7 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
             }
         }
     }
+
     /**
      * Validates the length of a field.
      */
@@ -176,6 +180,7 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
         }
         return true;
     }
+
     /**
      * whether or not this validator has errors
      *
@@ -185,6 +190,7 @@ class Doctrine_Validator extends Doctrine_Locator_Injectable
     {
         return (count($this->stack) > 0);
     }
+
     /**
      * phpType
      * converts a doctrine type to native php type

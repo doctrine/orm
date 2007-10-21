@@ -39,7 +39,7 @@ class Sensei_Doc_Section implements Countable
      * @var string
      */
     private $_name;
-    
+
     /**
      * The index of this section among the subsections of its parent. The index 
      * ranges from 0 to the number of subsections the parent has minus one.
@@ -47,28 +47,28 @@ class Sensei_Doc_Section implements Countable
      * @var int
      */
     private $_index;
-    
+
     /**
      * Array containing the subsections of this section.
      *
      * @var array
      */
     private $_children = array();
-    
+
     /**
      * The parent of this section.
      *
      * @var Sensei_Doc_Section
      */
     private $_parent;
-    
+
     /**
      * Level of this section in section hierarchy.
      *
      * @var int
      */
     private $_level = 0;
-    
+
     /**
      * Text contents of this section.
      *
@@ -93,7 +93,7 @@ class Sensei_Doc_Section implements Countable
             $this->_level = $this->_parent->_level + 1;
         }
     }
-    
+
     /**
      * Adds a subsection to this section.
      *
@@ -104,7 +104,7 @@ class Sensei_Doc_Section implements Countable
         $child->_index = count($this);
         $this->_children[] = $child;
     }
-    
+
     /**
      * Returns the index of this section.
      *
@@ -119,7 +119,7 @@ class Sensei_Doc_Section implements Countable
             return ($this->_index + 1);
         }
     }
-    
+
     /**
      * Returns the path of this section.
      *
@@ -134,7 +134,7 @@ class Sensei_Doc_Section implements Countable
             return self::convertNameToPath($this->_name);
         }
     }
-    
+
     /**
      * Returns the name of this section.
      *
@@ -150,7 +150,7 @@ class Sensei_Doc_Section implements Countable
             return $this->_name;
         }
     }
-    
+
     /**
      * Returns how many subsections this section has.
      *
@@ -160,7 +160,7 @@ class Sensei_Doc_Section implements Countable
     {
         return count($this->_children);
     }
-    
+
     /**
      * Returns the subsection that has the given index.
      * 
@@ -174,7 +174,7 @@ class Sensei_Doc_Section implements Countable
     {
         return $this->_children[$index];
     }
-    
+
     /**
      * Returns the parent of this section.
      *
@@ -188,7 +188,7 @@ class Sensei_Doc_Section implements Countable
             return $this->_parent;
         }
     }
-    
+
     /**
      * Returns the next section.
      * 
@@ -217,12 +217,12 @@ class Sensei_Doc_Section implements Countable
             
         } else {
             
-            if ((!$maxLevel || ($this->_level < $maxLevel))
+            if (( ! $maxLevel || ($this->_level < $maxLevel))
                 && (count($this) > 0)) {
                 return $this->getChild(0);
             }
             
-            if ((!$maxLevel || ($this->_level <= $maxLevel) )
+            if (( ! $maxLevel || ($this->_level <= $maxLevel) )
                 && ($this->_index < count($this->_parent) - 1)) {
                 return $this->_parent->getChild($this->_index + 1);
             }
@@ -231,7 +231,7 @@ class Sensei_Doc_Section implements Countable
             
         }
     }
-    
+
     /**
      * Returns the previous section.
      *
@@ -254,7 +254,7 @@ class Sensei_Doc_Section implements Countable
             return $previousSibling->findLastChild($maxLevel);
         }
     }
-    
+
     /**
      * Finds the last child or grand child of this section.
      * 
@@ -267,13 +267,13 @@ class Sensei_Doc_Section implements Countable
      */
     public function findLastChild($maxLevel = 0)
     {
-        if ((!$maxLevel || $this->_level < $maxLevel) && count($this) > 0) {
+        if (( ! $maxLevel || $this->_level < $maxLevel) && count($this) > 0) {
             return $this->getChild(count($this) - 1)->findLastChild();
         } else {
             return $this;
         }
     }
-    
+
     /**
      * Returns true, if this section is the root section.
      *
@@ -283,7 +283,7 @@ class Sensei_Doc_Section implements Countable
     {
         return $this->_parent === null;
     }
-    
+
     /**
      * Returns the level of this section in section hierarchy.
      *
@@ -293,7 +293,7 @@ class Sensei_Doc_Section implements Countable
     {
         return $this->_level;
     }
-    
+
     /**
      * Returns the text contents of this section.
      *
@@ -325,7 +325,7 @@ class Sensei_Doc_Section implements Countable
                 
 	                // The current section did not have any text in this file.
 	                // Let's assume that the text is defined in another file.
-	                if (!$current->isRoot() && $current->_text === '') {
+	                if ( ! $current->isRoot() && $current->_text === '') {
 	                    
 	                    $otherFilename = $current->getPath(false, DIRECTORY_SEPARATOR) . '.txt';
 	                    
@@ -370,7 +370,7 @@ class Sensei_Doc_Section implements Countable
         
         // The last section did not have any text in this file.
 	    // Let's assume that the text is defined in another file.
-	    if (!$current->isRoot() && $current->_text === '') {
+	    if ( ! $current->isRoot() && $current->_text === '') {
 
 	        $otherFilename = $current->getPath(false, DIRECTORY_SEPARATOR) . '.txt';
 	        	                    

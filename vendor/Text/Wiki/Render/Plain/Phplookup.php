@@ -3,7 +3,7 @@
 class Text_Wiki_Render_Plain_Phplookup extends Text_Wiki_Render {
     
     var $conf = array('target' => '_blank');
-    
+
     /**
     * 
     * Renders a token into text matching the requested format.

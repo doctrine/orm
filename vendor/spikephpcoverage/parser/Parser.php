@@ -9,7 +9,7 @@
 ?>
 <?php
 
-    if(!defined("__PHPCOVERAGE_HOME")) {
+    if( ! defined("__PHPCOVERAGE_HOME")) {
         define("__PHPCOVERAGE_HOME", dirname(dirname(__FILE__)));
     }
     require_once __PHPCOVERAGE_HOME . "/conf/phpcoverage.conf.php";
@@ -73,7 +73,7 @@
         public function parse($filename) {
             $this->filename = $filename;
             $ret = $this->openFileReadOnly();
-            if(!$ret) {
+            if( ! $ret) {
                 die("Error: Cannot open file: $this->filename \n");
             }
         }
@@ -101,7 +101,7 @@
         * @access public
         */
         public function getLine() {
-            if(!feof($this->fileRef)) {
+            if( ! feof($this->fileRef)) {
                 $this->line = fgets($this->fileRef);
                 $this->processLine($this->line);
             }

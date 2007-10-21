@@ -37,10 +37,12 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
      *                                      statement holds an instance of Doctrine_Connection
      */
     protected $_conn;
+
     /**
      * @var mixed $_stmt                    PDOStatement object, boolean false or Doctrine_Adapter_Statement object
      */
     protected $_stmt;
+
     /**
      * constructor
      *
@@ -57,6 +59,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
             throw new Doctrine_Exception('Unknown statement object given.');
         }
     }
+
     /**
      * getConnection
      * returns the connection object this statement uses
@@ -75,6 +78,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->queryString;
     }
+
     /**
      * bindColumn
      * Bind a column to a PHP variable
@@ -95,6 +99,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
             return $this->_stmt->bindColumn($column, $param, $type);
         }
     }
+
     /**
      * bindValue
      * Binds a value to a corresponding named or question mark
@@ -117,6 +122,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
             return $this->_stmt->bindValue($param, $value, $type);
         }
     }
+
     /**
      * bindParam
      * Binds a PHP variable to a corresponding named or question mark placeholder in the
@@ -152,6 +158,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
             return $this->_stmt->bindParam($column, $variable, $type, $length, $driverOptions);
         }
     }
+
     /**
      * closeCursor
      * Closes the cursor, enabling the statement to be executed again.
@@ -162,6 +169,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->closeCursor();
     }
+
     /**
      * columnCount
      * Returns the number of columns in the result set
@@ -174,6 +182,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->columnCount();
     }
+
     /**
      * errorCode
      * Fetch the SQLSTATE associated with the last operation on the statement handle
@@ -185,6 +194,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->errorCode();
     }
+
     /**
      * errorInfo
      * Fetch extended error information associated with the last operation on the statement handle
@@ -196,6 +206,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->errorInfo();
     }
+
     /**
      * execute
      * Executes a prepared statement
@@ -234,6 +245,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
 
         return false;
     }
+
     /**
      * fetch
      *
@@ -281,6 +293,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
 
         return $data;
     }
+
     /**
      * fetchAll
      * Returns an array containing all of the result set rows
@@ -317,6 +330,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
 
         return $data;
     }
+
     /**
      * fetchColumn
      * Returns a single column from the next row of a
@@ -332,6 +346,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->fetchColumn($columnIndex);
     }
+
     /**
      * fetchObject
      * Fetches the next row and returns it as an object.
@@ -349,6 +364,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->fetchObject($className, $args);
     }
+
     /**
      * getAttribute
      * Retrieve a statement attribute
@@ -361,6 +377,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->getAttribute($attribute);
     }
+
     /**
      * getColumnMeta
      * Returns metadata for a column in a result set
@@ -381,6 +398,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->getColumnMeta($column);
     }
+
     /**
      * nextRowset
      * Advances to the next rowset in a multi-rowset statement handle
@@ -396,6 +414,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->nextRowset();
     }
+
     /**
      * rowCount
      * rowCount() returns the number of rows affected by the last DELETE, INSERT, or UPDATE statement
@@ -412,6 +431,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->rowCount();
     }
+
     /**
      * setAttribute
      * Set a statement attribute
@@ -424,6 +444,7 @@ class Doctrine_Connection_Statement implements Doctrine_Adapter_Statement_Interf
     {
         return $this->_stmt->setAttribute($attribute, $value);
     }
+
     /**
      * setFetchMode
      * Set the default fetch mode for this statement

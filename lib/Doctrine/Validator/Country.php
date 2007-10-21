@@ -276,6 +276,7 @@ class Doctrine_Validator_Country
         'zm' =>    'Zambia',
         'zr' =>    'Zaire',
         'zw' =>    'Zimbabwe');
+
     /**
      * returns all available country codes
      *
@@ -285,6 +286,7 @@ class Doctrine_Validator_Country
     {
         return self::$countries;
     }
+
     /**
      * checks if given value is a valid country code
      *

@@ -58,7 +58,7 @@ class Sensei_Doc_Renderer_Pdf extends Sensei_Doc_Renderer
             throw new Sensei_Doc_Renderer_Exception($message);
         }
     }
-    
+
     /**
      * Deletes temporary files generated during LaTeX to PDF conversion.
      */

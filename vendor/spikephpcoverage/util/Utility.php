@@ -9,7 +9,7 @@
 ?>
 <?php
 
-    if(!defined("__PHPCOVERAGE_HOME")) {
+    if( ! defined("__PHPCOVERAGE_HOME")) {
         define("__PHPCOVERAGE_HOME", dirname(dirname(__FILE__)));
     }
     require_once __PHPCOVERAGE_HOME . "/conf/phpcoverage.conf.php";
@@ -171,7 +171,7 @@
             // Crawl up the directory tree
             $next_pathname = substr($dir, 0, strrpos($dir, "/"));
             if ($this->makeDirRecursive($next_pathname, $mode)) {
-                if (!file_exists($dir)) {
+                if ( ! file_exists($dir)) {
                     return mkdir($dir, $mode);
                 }
             }
@@ -210,7 +210,7 @@
 
         public function getLogger($package=false) {
             global $spc_config;
-            if(!isset($this->logger) || $this->logger == NULL) {
+            if( ! isset($this->logger) || $this->logger == NULL) {
                 $this->logger =& new CoverageLogger();
                 $this->logger->setLevel($spc_config["log_level"]);
             }

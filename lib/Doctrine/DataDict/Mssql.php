@@ -114,6 +114,7 @@ class Doctrine_DataDict_Mssql extends Doctrine_DataDict
 
         throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
+
     /**
      * Maps a native array description of a field to a MDB2 datatype and length
      *

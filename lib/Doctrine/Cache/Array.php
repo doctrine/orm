@@ -53,6 +53,7 @@ class Doctrine_Cache_Array implements Countable, Doctrine_Cache_Interface
         }
         return false;
     }
+
     /**
      * Test if a cache is available or not (for the given id)
      *
@@ -63,6 +64,7 @@ class Doctrine_Cache_Array implements Countable, Doctrine_Cache_Interface
     {
         return isset($this->data[$id]);
     }
+
     /**
      * Save some string datas into a cache record
      *
@@ -77,6 +79,7 @@ class Doctrine_Cache_Array implements Countable, Doctrine_Cache_Interface
     {
         $this->data[$id] = $data;
     }
+
     /**
      * Remove a cache record
      * 
@@ -87,6 +90,7 @@ class Doctrine_Cache_Array implements Countable, Doctrine_Cache_Interface
     {
         unset($this->data[$id]);
     }
+
     /**
      * Remove all cache record
      * 
@@ -96,6 +100,7 @@ class Doctrine_Cache_Array implements Countable, Doctrine_Cache_Interface
     {
         $this->data = array();
     }
+
     /**
      * count
      *

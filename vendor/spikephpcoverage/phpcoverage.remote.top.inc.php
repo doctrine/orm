@@ -28,7 +28,7 @@
         $this_script = basename(__FILE__);
         $called_script = basename($_SERVER["SCRIPT_FILENAME"]);
 
-        if(!empty($_REQUEST["PHPCOVERAGE_HOME"])) {
+        if( ! empty($_REQUEST["PHPCOVERAGE_HOME"])) {
             $PHPCOVERAGE_HOME = $_REQUEST["PHPCOVERAGE_HOME"];
         }
         if(empty($PHPCOVERAGE_HOME)) {
@@ -51,7 +51,7 @@
 
 
         // Fallback
-        if(!defined("PHPCOVERAGE_HOME")) {
+        if( ! defined("PHPCOVERAGE_HOME")) {
             $include_path = get_include_path();
             set_include_path($PHPCOVERAGE_HOME. ":" . $include_path);
             define('PHPCOVERAGE_HOME', $PHPCOVERAGE_HOME);
@@ -94,16 +94,16 @@
                 __FILE__, __LINE__);
         }
 
-        if(!empty($_REQUEST["phpcoverage-action"])) {
+        if( ! empty($_REQUEST["phpcoverage-action"])) {
             $logger->info("[phpcoverage.remote.top.inc.php] phpcoverage-action=" . strtolower($_REQUEST["phpcoverage-action"]),
                 __FILE__, __LINE__);
             switch(strtolower($_REQUEST["phpcoverage-action"])) {
             case "init":
-                if(!empty($_REQUEST["tmp-dir"])) {
+                if( ! empty($_REQUEST["tmp-dir"])) {
                     $cov->setTmpDir($_REQUEST["tmp-dir"]);
                 }
                 $cov->setCoverageFileName($_REQUEST["cov-file-name"]);
-                if(!$cov->cleanCoverageFile()) {
+                if( ! $cov->cleanCoverageFile()) {
                     die("Cannot delete existing coverage data.");
                 }
                 break;

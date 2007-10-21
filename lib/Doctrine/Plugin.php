@@ -37,6 +37,7 @@ class Doctrine_Plugin
      */
     protected $_options = array('generateFiles' => false,
                                 'identifier'    => false);
+
     /**
      * __get
      * an alias for getOption
@@ -50,6 +51,7 @@ class Doctrine_Plugin
         }
         return null;
     }
+
     /**
      * __isset
      *
@@ -59,6 +61,7 @@ class Doctrine_Plugin
     {
         return isset($this->_options[$option]);
     }
+
     /**
      * returns the value of an option
      *
@@ -73,6 +76,7 @@ class Doctrine_Plugin
         
         return $this->_options[$name];
     }
+
     /**
      * sets given value to an option
      *
@@ -86,6 +90,7 @@ class Doctrine_Plugin
         
         return $this;
     }
+
     /**
      * returns all options and their associated values
      *
@@ -95,6 +100,7 @@ class Doctrine_Plugin
     {
         return $this->_options;
     }
+
     /**
      * generates foreign keys for the plugin table based on the owner table
      *
@@ -122,6 +128,7 @@ class Doctrine_Plugin
         }
         return $fk;
     }
+
     /**
      * generates a relation array to given table
      *
@@ -144,6 +151,7 @@ class Doctrine_Plugin
 
         return $relation;
     }
+
     /**
      * generates the class definition for plugin class
      *

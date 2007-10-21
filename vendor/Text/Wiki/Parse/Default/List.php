@@ -186,7 +186,7 @@ class Text_Wiki_Parse_List extends Text_Wiki_Parse {
 
             // add to the item count for this list (taking into account
             // which level we are at).
-            if (! isset($itemcount[$level])) {
+            if ( !  isset($itemcount[$level])) {
                 // first count
                 $itemcount[$level] = 0;
             } else {
@@ -195,7 +195,7 @@ class Text_Wiki_Parse_List extends Text_Wiki_Parse {
             }
 
             // is this the very first item in the list?
-            if (! $pastFirst) {
+            if ( !  $pastFirst) {
                 $first = true;
                 $pastFirst = true;
             } else {

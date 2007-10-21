@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Parser_Serialize
  *
@@ -39,18 +40,14 @@ class Doctrine_Parser_Serialize extends Doctrine_Parser
      * @param string $array 
      * @param string $path 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function dumpData($array, $path = null)
     {
         $data = serialize($array);
         
-        if ($path) {
-            return file_put_contents($path, $data);
-        } else {
-            return $data;
-        }
+        return $this->doDump($data, $path);
     }
+
     /**
      * loadData
      *
@@ -58,11 +55,10 @@ class Doctrine_Parser_Serialize extends Doctrine_Parser
      * 
      * @param string $path 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function loadData($path)
     {
-        $contents = $this->getContents($path);
+        $contents = $this->doLoad($path);
         
         return unserialize($contents);
     }

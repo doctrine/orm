@@ -81,7 +81,7 @@ class Doctrine_Cli_Formatter
    */
   public function excerpt($text, $size = null)
   {
-    if (!$size)
+    if ( ! $size)
     {
       $size = $this->size;
     }

@@ -87,7 +87,7 @@ class Text_Wiki_Parse_Wikilink extends Text_Wiki_Parse {
 
         // build the regular expression for finding WikiPage names.
         $this->regex =
-            "(!?" .            // START WikiPage pattern (1)
+            "( ! ?" .            // START WikiPage pattern (1)
             "[$upper]" .       // 1 upper
             "[$either]*" .     // 0+ alpha or digit
             "[$lower]+" .      // 1+ lower or digit

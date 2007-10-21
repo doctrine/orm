@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Migration_Process
  *
@@ -31,11 +32,23 @@
  */
 class Doctrine_Migration_Process
 {
+    /**
+     * getConnection
+     *
+     * @param string $tableName 
+     * @return void
+     */
     public function getConnection($tableName)
     {
         return Doctrine::getConnectionByTableName($tableName);
     }
-    
+
+    /**
+     * processCreatedTables
+     *
+     * @param string $tables 
+     * @return void
+     */
     public function processCreatedTables($tables)
     {
         foreach ($tables as $table) {
@@ -44,7 +57,13 @@ class Doctrine_Migration_Process
             $conn->export->createTable($table['tableName'], $table['fields'], $table['options']);
         }
     }
-    
+
+    /**
+     * processDroppedTables
+     *
+     * @param string $tables 
+     * @return void
+     */
     public function processDroppedTables($tables)
     {
         foreach ($tables as $table) {
@@ -53,7 +72,13 @@ class Doctrine_Migration_Process
             $conn->export->dropTable($table['tableName']);
         }
     }
-    
+
+    /**
+     * processRenamedTables
+     *
+     * @param string $tables 
+     * @return void
+     */
     public function processRenamedTables($tables)
     {
         foreach ($tables as $table) {
@@ -62,7 +87,13 @@ class Doctrine_Migration_Process
             $conn->export->alterTable($table['oldTableName'], array('name' => $table['newTableName']));
         }
     }
-    
+
+    /**
+     * processAddedColumns
+     *
+     * @param string $columns 
+     * @return void
+     */
     public function processAddedColumns($columns)
     {
         foreach ($columns as $column) {
@@ -75,7 +106,13 @@ class Doctrine_Migration_Process
             $conn->export->alterTable($column['tableName'], array('add' => array($column['columnName'] => $options)));
         }
     }
-    
+
+    /**
+     * processRenamedColumns
+     *
+     * @param string $columns 
+     * @return void
+     */
     public function processRenamedColumns($columns)
     {
         foreach ($columns as $column) {
@@ -84,7 +121,13 @@ class Doctrine_Migration_Process
             $conn->export->alterTable($column['tableName'], array('rename' => array($column['oldColumnName'] => array('name' => $column['newColumnName']))));
         }
     }
-    
+
+    /**
+     * processChangedColumns
+     *
+     * @param string $columns 
+     * @return void
+     */
     public function processChangedColumns($columns)
     {
         foreach ($columns as $column) {
@@ -97,7 +140,13 @@ class Doctrine_Migration_Process
             $conn->export->alterTable($column['tableName'], array('change' => array($column['columnName'] => array('definition' => $options))));
         }  
     }
-    
+
+    /**
+     * processRemovedColumns
+     *
+     * @param string $columns 
+     * @return void
+     */
     public function processRemovedColumns($columns)
     {
         foreach ($columns as $column) {
@@ -106,7 +155,13 @@ class Doctrine_Migration_Process
             $conn->export->alterTable($column['tableName'], array('remove' => array($column['columnName'] => array())));
         }
     }
-    
+
+    /**
+     * processAddexIndexes
+     *
+     * @param string $indexes 
+     * @return void
+     */
     public function processAddedIndexes($indexes)
     {
         foreach ($indexes as $index) {
@@ -115,7 +170,13 @@ class Doctrine_Migration_Process
             $conn->export->createIndex($index['tableName'], $index['indexName'], $index['definition']);
         }
     }
-    
+
+    /**
+     * processRemovedIndexes
+     *
+     * @param string $indexes 
+     * @return void
+     */
     public function processRemovedIndexes($indexes)
     {
         foreach ($indexes as $index) {
@@ -124,7 +185,13 @@ class Doctrine_Migration_Process
             $conn->export->dropIndex($index['tableName'], $index['indexName']);
         } 
     }
-    
+
+    /**
+     * processCreatedConstraints
+     *
+     * @param string $constraints 
+     * @return void
+     */
     public function processCreatedConstraints($constraints)
     {
         foreach ($constraints as $constraint) {
@@ -133,7 +200,13 @@ class Doctrine_Migration_Process
                     $constraint['definition']);
         }
     }
-    
+
+    /**
+     * processDroppedConstraints
+     *
+     * @param string $constraints 
+     * @return void
+     */
     public function processDroppedConstraints($constraints)
     {
         foreach ($constraints as $constraint) {
@@ -142,7 +215,13 @@ class Doctrine_Migration_Process
                     $constraint['primary']);
         }
     }
-    
+
+    /**
+     * processCreatedFks
+     *
+     * @param string $foreignKeys 
+     * @return void
+     */
     public function processCreatedFks($foreignKeys)
     {
         foreach ($foreignKeys as $fk) {
@@ -150,7 +229,13 @@ class Doctrine_Migration_Process
             $conn->export->createForeignKey($fk['tableName'], $fk['definition']);
         }
     }
-    
+
+    /**
+     * processDroppedFks
+     *
+     * @param string $foreignKeys 
+     * @return void
+     */
     public function processDroppedFks($foreignKeys)
     {
         foreach ($foreignKeys as $fk) {

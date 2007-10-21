@@ -18,7 +18,7 @@
      *  * Originally contributed by Ed Espino <eespino@spikesource.com>
     */
 
-    if(!defined("__PHPCOVERAGE_HOME")) {
+    if( ! defined("__PHPCOVERAGE_HOME")) {
         define("__PHPCOVERAGE_HOME", dirname(dirname(__FILE__)));
     }
     require_once __PHPCOVERAGE_HOME . "/conf/phpcoverage.conf.php";
@@ -148,30 +148,30 @@
     $includePaths = array();
     $excludePaths = array();
 
-    if (!$OPTION['cov-url']){
-        if(!$OPTION['report'] && !$OPTION['cov-data-files']) {
+    if ( ! $OPTION['cov-url']){
+        if( ! $OPTION['report'] && !$OPTION['cov-data-files']) {
             echo "ERROR: No --cov-url option specified.\n";
             exit(1);
         }
     }
 
     if($OPTION['init']) {
-        if(!$OPTION['tmp-dir']) {
+        if( ! $OPTION['tmp-dir']) {
             $OPTION['tmp-dir'] = $util->getTmpDir();
         }
-        if(!$OPTION['cov-file-name']) {
+        if( ! $OPTION['cov-file-name']) {
             $OPTION['cov-file-name'] = "phpcoverage.data.xml";
         }
     }
 
     if($OPTION['report']) {
-        if (!$OPTION['report-name']){
+        if ( ! $OPTION['report-name']){
             echo "ERROR: No --report-name option specified.\n";
             exit(1);
         }
 
-        if(!$OPTION['report-dir']) {
-            if(!empty($PHPCOVERAGE_REPORT_DIR)) {
+        if( ! $OPTION['report-dir']) {
+            if( ! empty($PHPCOVERAGE_REPORT_DIR)) {
                 $OPTION["report-dir"] = $PHPCOVERAGE_REPORT_DIR;
             }
             else {
@@ -225,7 +225,7 @@
         if($OPTION['cov-data-files']) {
             $OPTION['cov-data-fileset'] = explode(",", $OPTION['cov-data-files']);
             foreach($OPTION['cov-data-fileset'] as $covDataFile) {
-                if(!is_readable($covDataFile)) {
+                if( ! is_readable($covDataFile)) {
                     echo "Error: Cannot read cov-data-file: " . $covDataFile . "\n";
                     exit(1);
                 }

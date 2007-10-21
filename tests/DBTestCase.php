@@ -365,6 +365,7 @@ class Doctrine_Db_TestCase extends Doctrine_UnitTestCase
             $this->pass();
         }
     }
+
     /**
     public function testGetConnectionPdoLikeDSN()
     {

@@ -32,7 +32,7 @@
  */
 class Doctrine_PessimisticLocking_TestCase extends Doctrine_UnitTestCase {
     private $lockingManager;
-    
+
     /**
      * Sets up everything for the lock testing
      *
@@ -47,7 +47,7 @@ class Doctrine_PessimisticLocking_TestCase extends Doctrine_UnitTestCase {
         $entry1->topic  = 'I love donuts!';
         $entry1->save();
     }
-    
+
     /**
      * Tests the basic locking mechanism
      * 
@@ -68,7 +68,7 @@ class Doctrine_PessimisticLocking_TestCase extends Doctrine_UnitTestCase {
         $released = $this->lockingManager->releaseLock($entries[0], 'romanb');
         $this->assertTrue($released);
     }
-    
+
     /**
      * Tests the release mechanism of aged locks
      * This test implicitly tests getLock().

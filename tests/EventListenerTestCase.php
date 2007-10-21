@@ -53,6 +53,7 @@ class Doctrine_EventListener_TestCase extends Doctrine_UnitTestCase {
 
         $this->assertEqual($e->getTable()->getListener(), $this->logger);
     }
+
     /**
     public function testOnLoad() {
         $this->logger->clear();

@@ -36,10 +36,12 @@ class Doctrine_Hook
      * @var Doctrine_Query $query           the base query
      */
     protected $query;
+
     /**
      * @var array $joins                    the optional joins of the base query
      */
     protected $joins;
+
     /**
      * @var array $hooks                    hooks array
      */
@@ -49,6 +51,7 @@ class Doctrine_Hook
                              'limit',
                              'offset'
                               );
+
     /**
      * @var array $fieldParsers             custom field parsers array
      *                                      keys as field names in the format componentAlias.FieldName
@@ -86,6 +89,7 @@ class Doctrine_Hook
         
         $this->query->getQuery();
     }
+
     /**
      * getQuery
      *
@@ -95,6 +99,7 @@ class Doctrine_Hook
     {
         return $this->query;
     }
+
     /**
      * setTypeParser
      *
@@ -105,6 +110,7 @@ class Doctrine_Hook
     {
         $this->typeParsers[$type] = $parser;
     }
+
     /**
      * setFieldParser
      *
@@ -115,6 +121,7 @@ class Doctrine_Hook
     {
         $this->fieldParsers[$field] = $parser;
     }
+
     /**
      * hookWhere
      * builds DQL query where part from given parameter array
@@ -161,6 +168,7 @@ class Doctrine_Hook
 
         return true;
     }
+
     /**
      * hookOrderBy
      * builds DQL query orderby part from given parameter array
@@ -198,6 +206,7 @@ class Doctrine_Hook
         }
         return true;
     }
+
     /**
      * @param integer $limit
      */
@@ -205,6 +214,7 @@ class Doctrine_Hook
     {
         $this->query->limit((int) $limit);
     }
+
     /**
      * @param integer $offset
      */

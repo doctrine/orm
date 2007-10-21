@@ -36,6 +36,7 @@ class Doctrine_Connection_Informix extends Doctrine_Connection
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName = 'Informix';
+
     /**
      * the constructor
      *

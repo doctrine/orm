@@ -44,6 +44,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
         $name  = $this->conn->quoteIdentifier($name, true);
         return 'CREATE DATABASE ' . $name;
     }
+
     /**
      * drop an existing database
      *
@@ -55,6 +56,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
         $name  = $this->conn->quoteIdentifier($name, true);
         return 'DELETE DATABASE ' . $name;    
     }
+
     /**
      * drop an existing table
      *
@@ -67,6 +69,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
         $name = $this->conn->quoteIdentifier($name, true);
         return 'DROP TABLE ' . $name . ' CASCADE';
     }
+
     /**
      * alter an existing table
      *
@@ -242,6 +245,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
         $name = $this->conn->quoteIdentifier($name, true);
         return $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
     }
+
     /**
      * create sequence
      *
@@ -281,6 +285,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
             throw new Doctrine_Export_Exception('could not create sequence table');
         }
     }
+
     /**
      * drop existing sequence
      *
@@ -293,6 +298,7 @@ class Doctrine_Export_Frontbase extends Doctrine_Export
 
         return 'DROP TABLE ' . $sequenceName . ' CASCADE';
     }
+
     /**
      * drop existing index
      *

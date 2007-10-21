@@ -10,7 +10,7 @@
 <?php
     #!/bin/php
 
-    if(!defined("__PHPCOVERAGE_HOME")) {
+    if( ! defined("__PHPCOVERAGE_HOME")) {
         define("__PHPCOVERAGE_HOME", dirname(dirname(__FILE__)));
     }
     require_once __PHPCOVERAGE_HOME . "/conf/phpcoverage.conf.php";
@@ -81,7 +81,7 @@
         }
 
         $fp = fopen($tmpfile, "w");
-        if(!$fp) {
+        if( ! $fp) {
             error("Cannot write to file: $tmpfile");
         }
         fputs($fp, $top);
@@ -93,7 +93,7 @@
             unlink($file);
         }
         $ret = rename($tmpfile, $file);
-        if(!$ret) {
+        if( ! $ret) {
             error("Cannot save file: $file");
         }
         writeMsg("Instrumented: $file.");
@@ -118,13 +118,13 @@
 
         $fr = fopen($file, "r");
         $fw = fopen($tmpfile, "w");
-        if(!$fr) {
+        if( ! $fr) {
             error("Cannot read file: $file");
         }
-        if(!$fr) {
+        if( ! $fr) {
             error("Cannot write to file: $tmpfile");
         }
-        while(!feof($fr)) {
+        while( ! feof($fr)) {
             $line = fgets($fr);
             if(strpos($line, $top) === false && strpos($line, $bottom) === false) {
                 fputs($fw, $line);
@@ -138,7 +138,7 @@
             unlink($file);
         }
         $ret = rename($tmpfile, $file);
-        if(!$ret) {
+        if( ! $ret) {
             error("Cannot save file: $file");
         }
         writeMsg("Uninstrumented: $file");
@@ -158,7 +158,7 @@
         $dirs[] = $dir;
         while(count($dirs) > 0) {
             $currDir = realpath(array_pop($dirs));
-            if(!is_readable($currDir)) {
+            if( ! is_readable($currDir)) {
                 continue;
             }
             $currFiles = scandir($currDir);
@@ -236,7 +236,7 @@
     }
 
 
-    if(!is_dir($LOCAL_PHPCOVERAGE_LOCATION)) {
+    if( ! is_dir($LOCAL_PHPCOVERAGE_LOCATION)) {
         error("LOCAL_PHPCOVERAGE_LOCATION [$LOCAL_PHPCOVERAGE_LOCATION] not found.");
     }
     if(empty($PHPCOVERAGE_HOME) || !is_dir($PHPCOVERAGE_HOME)) {
@@ -251,14 +251,14 @@
         unlink($LOCAL_PHPCOVERAGE_LOCATION . $top_file);
     }
     $ret = copy($PHPCOVERAGE_HOME . $top_file, $LOCAL_PHPCOVERAGE_LOCATION . $top_file);
-    if(!$ret) {
+    if( ! $ret) {
         error("Cannot copy to $LOCAL_PHPCOVERAGE_LOCATION");
     }
     if(file_exists($LOCAL_PHPCOVERAGE_LOCATION . $bottom_file)) {
         unlink($LOCAL_PHPCOVERAGE_LOCATION . $bottom_file);
     }
     $ret = copy($PHPCOVERAGE_HOME . $bottom_file, $LOCAL_PHPCOVERAGE_LOCATION . $bottom_file);
-    if(!$ret) {
+    if( ! $ret) {
         error("Cannot copy to $LOCAL_PHPCOVERAGE_LOCATION");
     }
     $top="<?php require_once \"" . $LOCAL_PHPCOVERAGE_LOCATION . $top_file ."\"; ?>\n";
@@ -267,12 +267,12 @@
     if(empty($paths)) {
         $paths[] = getcwd();
     }
-    if(!isset($EXCLUDE_FILES) || empty($EXCLUDE_FILES)) {
+    if( ! isset($EXCLUDE_FILES) || empty($EXCLUDE_FILES)) {
         $EXCLUDE_FILES = array();
     }
     for($i = 0; $i < count($EXCLUDE_FILES); $i++) {
         // Remove a file from the array if it does not exist
-        if(!file_exists($EXCLUDE_FILES[$i])) {
+        if( ! file_exists($EXCLUDE_FILES[$i])) {
             array_splice($EXCLUDE_FILES, $i, 1);
             $i --;
             continue;

@@ -39,14 +39,17 @@ class Doctrine_Locator implements Countable, IteratorAggregate
      * @var array $_resources       an array of bound resources
      */
     protected $_resources = array();
+
     /**
      * @var string $_classPrefix    the default class prefix
      */
     protected $_classPrefix = 'Doctrine_';
+
     /** 
      * @var array $_instances       a pool of this object's instances
      */
     protected static $_instances = array();
+
     /**
      * Constructor. Provide an array of resources to set initial contents.
      *
@@ -65,6 +68,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
         }
         self::$_instances[] = $this;
     }
+
     /** 
      * instance
      *
@@ -77,6 +81,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
         }
         return current(self::$_instances);
     }
+
     /**
      * setClassPrefix
      *
@@ -86,6 +91,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
     {
         $this->_classPrefix = $prefix;
     }
+
     /**
      * getClassPrefix
      *
@@ -95,6 +101,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
     {
         return $this->_classPrefix;
     }
+
     /**
      * contains
      * checks if a resource exists under the given name
@@ -105,6 +112,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
     {
         return isset($this->_resources[$name]);
     }
+
     /**
      * bind
      * binds a resource to a name
@@ -119,6 +127,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
         
         return $this;
     }
+
     /**
      * locate
      * locates a resource by given name and returns it
@@ -159,7 +168,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
 
         throw new Doctrine_Locator_Exception("Couldn't locate resource " . $name);
     }
-    
+
     /**
      * count
      * returns the number of bound resources associated with
@@ -172,7 +181,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
     {
         return count($this->_resources);
     }
-    
+
     /**
      * getIterator
      * returns an ArrayIterator that iterates through all 

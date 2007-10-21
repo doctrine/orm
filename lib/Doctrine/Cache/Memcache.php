@@ -36,6 +36,7 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
      * @var Memcache $_memcache     memcache object
      */
     protected $_memcache = null;
+
     /**
      * constructor
      * 
@@ -69,6 +70,7 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
             $this->_memcache->addServer($server['host'], $server['port'], $server['persistent']);
         }
     }
+
     /**
      * Test if a cache is available for the given id and (if yes) return it (false else)
      *
@@ -88,6 +90,7 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
 
         return false;
     }
+
     /**
      * Test if a cache is available or not (for the given id)
      *
@@ -98,6 +101,7 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
     {
         return (bool) $this->_memcache->get($id);
     }
+
     /**
      * Save some string datas into a cache record
      *
@@ -118,6 +122,7 @@ class Doctrine_Cache_Memcache extends Doctrine_Cache_Driver
 
         $result = $this->_memcache->set($id, $data, $flag, $lifeTime);
     }
+
     /**
      * Remove a cache record
      * 

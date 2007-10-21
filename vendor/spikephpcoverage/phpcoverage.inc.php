@@ -43,7 +43,7 @@
     }
 
     // Fallback
-    if(!defined("PHPCOVERAGE_HOME")) {
+    if( ! defined("PHPCOVERAGE_HOME")) {
         $include_path = get_include_path();
         set_include_path($PHPCOVERAGE_HOME. PATH_SEPARATOR . $include_path);
         define('PHPCOVERAGE_HOME', $PHPCOVERAGE_HOME);

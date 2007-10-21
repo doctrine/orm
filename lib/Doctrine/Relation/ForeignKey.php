@@ -79,6 +79,7 @@ class Doctrine_Relation_ForeignKey extends Doctrine_Relation
         }
         return $related;
     }
+
     /**
      * getCondition
      *

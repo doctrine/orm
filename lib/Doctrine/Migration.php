@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Migration
  *
@@ -51,7 +52,7 @@ class Doctrine_Migration
               $migrationClassesDirectory = array(),
               $migrationClasses = array(),
               $loadedMigrations = array();
-    
+
     /**
      * construct
      *
@@ -71,7 +72,7 @@ class Doctrine_Migration
             $this->createMigrationTable();
         }
     }
-    
+
     /**
      * createMigrationTable
      * 
@@ -91,7 +92,7 @@ class Doctrine_Migration
             return false;
         }
     }
-    
+
     /**
      * loadMigrationClasses
      *
@@ -115,7 +116,7 @@ class Doctrine_Migration
                 foreach ($it as $file) {
                     $e = explode('.', $file->getFileName());
                     if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                        if (!in_array($file->getFileName(), $this->loadedMigrations)) {
+                        if ( ! in_array($file->getFileName(), $this->loadedMigrations)) {
                             require_once($file->getPathName());
                             
                             $requiredClass = array_diff(get_declared_classes(), $classes);
@@ -155,19 +156,17 @@ class Doctrine_Migration
         
         return $this->migrationClasses;
     }
-    
+
     /**
      * getMigrationClasses
      *
      * @return void
-     * @author Jonathan H. Wage
      */
-    
     public function getMigrationClasses()
     {
         return $this->migrationClasses;
     }
-    
+
     /**
      * setCurrentVersion
      *
@@ -186,7 +185,7 @@ class Doctrine_Migration
             $conn->exec("INSERT INTO " . $this->migrationTableName . " (version) VALUES ($number)");
         }
     }
-    
+
     /**
      * getCurrentVersion
      *
@@ -202,7 +201,7 @@ class Doctrine_Migration
         
         return isset($result[0]) ? $result[0]:0;
     }
-    
+
     /**
      * hasMigrated
      *
@@ -218,7 +217,7 @@ class Doctrine_Migration
         
         return isset($result[0]) ? true:false; 
     }
-    
+
     /**
      * getLatestVersion
      *
@@ -239,12 +238,17 @@ class Doctrine_Migration
         
         return isset($versions[0]) ? $versions[0]:0;
     }
-    
+
+    /**
+     * getNextVersion
+     *
+     * @return integer $nextVersion
+     */
     public function getNextVersion()
     {
         return $this->getLatestVersion() + 1;
     }
-    
+
     /**
      * getMigrationClass
      *
@@ -265,7 +269,7 @@ class Doctrine_Migration
         
         throw new Doctrine_Migration_Exception('Could not find migration class for migration step: '.$num);
     }
-    
+
     /**
      * doMigrateStep
      *
@@ -281,7 +285,7 @@ class Doctrine_Migration
         
         $migrate->doMigrate($direction);
     }
-    
+
     /**
      * doMigrate
      * 
@@ -299,13 +303,13 @@ class Doctrine_Migration
                 $process = new Doctrine_Migration_Process();
                 $funcName = 'process' . Doctrine::classify($type);
 
-                if (!empty($changes)) {
+                if ( ! empty($changes)) {
                     $process->$funcName($changes); 
                 }
             }
         }
     }
-    
+
     /**
      * migrate
      *
@@ -345,7 +349,7 @@ class Doctrine_Migration
         
         return $to;
     }
-    
+
     /**
      * addChange
      *
@@ -357,7 +361,7 @@ class Doctrine_Migration
     {
         $this->changes[$type][] = $change;
     }
-    
+
     /**
      * createTable
      *
@@ -372,7 +376,7 @@ class Doctrine_Migration
         
         $this->addChange('created_tables', $options);
     }
-    
+
     /**
      * dropTable
      *
@@ -385,7 +389,7 @@ class Doctrine_Migration
         
         $this->addChange('dropped_tables', $options);
     }
-    
+
     /**
      * renameTable
      *
@@ -399,7 +403,7 @@ class Doctrine_Migration
         
         $this->addChange('renamed_tables', $options);
     }
-    
+
     /**
      * createConstraint
      *
@@ -413,7 +417,7 @@ class Doctrine_Migration
         
         $this->addChange('created_constraints', $options);
     }
-    
+
     /**
      * dropConstraint
      *
@@ -427,7 +431,7 @@ class Doctrine_Migration
         
         $this->addChange('dropped_constraints', $options);
     }
-    
+
     /**
      * createForeignKey
      *
@@ -441,7 +445,7 @@ class Doctrine_Migration
         
         $this->addChange('created_fks', $options);
     }
-    
+
     /**
      * dropForeignKey
      *
@@ -455,7 +459,7 @@ class Doctrine_Migration
         
         $this->addChange('dropped_fks', $options);
     }
-    
+
     /**
      * addColumn
      *
@@ -471,7 +475,7 @@ class Doctrine_Migration
         
         $this->addChange('added_columns', $options);
     }
-    
+
     /**
      * renameColumn
      *
@@ -486,7 +490,7 @@ class Doctrine_Migration
         
         $this->addChange('renamed_columns', $options);
     }
-    
+
     /**
      * renameColumn
      *
@@ -502,7 +506,7 @@ class Doctrine_Migration
         
         $this->addChange('changed_columns', $options);
     }
-    
+
     /**
      * removeColumn
      *
@@ -516,7 +520,7 @@ class Doctrine_Migration
         
         $this->addChange('removed_columns', $options);
     }
-    
+
     /**
      * addIndex
      *
@@ -531,7 +535,7 @@ class Doctrine_Migration
         
         $this->addChange('added_indexes', $options);
     }
-    
+
     /**
      * removeIndex
      *

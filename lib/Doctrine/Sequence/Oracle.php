@@ -61,6 +61,7 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
         }
         return $result;
     }
+
     /**
      * Returns the autoincrement ID if supported or $id or fetches the current
      * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
@@ -75,6 +76,7 @@ class Doctrine_Sequence_Oracle extends Doctrine_Sequence
 
         return $this->conn->fetchOne('SELECT ' . $sequenceName . '.currval');
     }
+
     /**
      * Returns the current id of a sequence
      *

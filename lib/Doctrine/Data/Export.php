@@ -37,17 +37,16 @@ class Doctrine_Data_Export extends Doctrine_Data
      *
      * @param string $directory 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function __construct($directory)
     {
         $this->setDirectory($directory);
     }
+
     /**
      * doExport
      *
      * @return void
-     * @author Jonathan H. Wage
      */
     public function doExport()
     {
@@ -58,15 +57,14 @@ class Doctrine_Data_Export extends Doctrine_Data
         
         $outputAll = true;
         
-		// for situation when the $models array is empty, but the $specifiedModels array isn't
-        if (empty($models))
-        {
+		    // for situation when the $models array is empty, but the $specifiedModels array isn't
+        if (empty($models)) {
           $models = $specifiedModels;
         }
         
         foreach ($models AS $name) {
             
-            if (!empty($specifiedModels) AND !in_array($name, $specifiedModels)) {
+            if ( ! empty($specifiedModels) AND !in_array($name, $specifiedModels)) {
                 continue;
             }
             
@@ -74,7 +72,7 @@ class Doctrine_Data_Export extends Doctrine_Data
             $table = $class->getTable();
             $result = $table->findAll();
             
-            if (!empty($result)) {
+            if ( ! empty($result)) {
                 $data[$name] = $result;
             }
         }
@@ -83,6 +81,7 @@ class Doctrine_Data_Export extends Doctrine_Data
         
         return $this->dumpData($data);
     }
+
     /**
      * dumpData
      *
@@ -90,7 +89,6 @@ class Doctrine_Data_Export extends Doctrine_Data
      *
      * @param string $array 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function dumpData(array $data)
     {
@@ -101,12 +99,12 @@ class Doctrine_Data_Export extends Doctrine_Data
             
             if (is_array($directory)) {
                 throw new Doctrine_Data_Exception('You must specify a single path to a folder in order to export individual files.');
-            } else if (!is_dir($directory) && is_file($directory)) {
+            } else if ( ! is_dir($directory) && is_file($directory)) {
                 $directory = dirname($directory);
             }
             
             foreach ($data as $className => $classData) {
-                if (!empty($classData)) {
+                if ( ! empty($classData)) {
                     Doctrine_Parser::dump(array($className => $classData), $format, $directory.DIRECTORY_SEPARATOR.$className.'.'.$format);
                 }
             }
@@ -115,11 +113,12 @@ class Doctrine_Data_Export extends Doctrine_Data
                 throw new Doctrine_Data_Exception('You must specify the path to a '.$format.' file to export. You specified a directory.');
             }
             
-            if (!empty($data)) {
+            if ( ! empty($data)) {
                 return Doctrine_Parser::dump($data, $format, $directory);
             }
         }
     }
+
     /**
      * prepareData
      *
@@ -127,7 +126,6 @@ class Doctrine_Data_Export extends Doctrine_Data
      *
      * @param string $data 
      * @return array
-     * @author Jonathan H. Wage
      */
     public function prepareData($data)
     {
@@ -142,14 +140,14 @@ class Doctrine_Data_Export extends Doctrine_Data
                 $recordData = $record->toArray();
                 
                 foreach ($recordData as $key => $value) {
-                    if (!$value) {
+                    if ( ! $value) {
                         continue;
                     }
                     
                     // skip single primary keys, we need to maintain composite primary keys
                     $keys = $record->getTable()->getIdentifier();
                     
-                    if (!is_array($keys)) {
+                    if ( ! is_array($keys)) {
                       $keys = array($keys);
                     }
                     

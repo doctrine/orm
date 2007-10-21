@@ -131,6 +131,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }
         return array_values($tree);
     }
+
     /**
      * saves the given record
      *
@@ -210,6 +211,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         return true;
     }
+
     /**
      * saves the given record
      *
@@ -244,6 +246,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         
         $record->postSave($event);
     }
+
     /**
      * deletes given record and all the related composites
      * this operation is isolated by a transaction
@@ -310,6 +313,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         return $this->conn->exec($query, $params);
     }
+
     /**
      * deleteMultiple
      * deletes all records from the pending delete list
@@ -362,6 +366,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
         }
     }
+
     /**
      * saveRelated
      * saves all related records to $record
@@ -401,6 +406,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         return $saveLater;
     }
+
     /**
      * saveAssociations
      *
@@ -443,6 +449,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
         }
     }
+
     /**
      * deletes all related composites
      * this method is always called internally when a record is deleted
@@ -464,6 +471,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
         }
     }
+
     /**
      * saveAll
      * persists all the pending records from all tables
@@ -494,6 +502,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             }
         }
     }
+
     /**
      * update
      * updates the given record
@@ -560,6 +569,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         return true;
     }
+
     /**
      * inserts a record into database
      *

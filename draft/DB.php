@@ -66,18 +66,22 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     const ERR_MANAGER_PARSE         = -33;
     const ERR_LOADMODULE            = -34;
     const ERR_INSUFFICIENT_DATA     = -35;
+
     /**
      * @var array $instances        all the instances of this class
      */
     protected static $instances   = array();
+
     /**
      * @var array $isConnected      whether or not a connection has been established
      */
     protected $isConnected        = false;
+
     /**
      * @var PDO $dbh                the database handler
      */
     protected $dbh;
+
     /**
      * @var array $options
      */
@@ -85,11 +89,13 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
                                           'username' => null,
                                           'password' => null,
                                           );
+
     /**
      * @var Doctrine_Db_EventListener_Interface|Doctrine_Overloadable $listener     
      *                              listener for listening events
      */
     protected $listener;
+
     /**
      * @var integer $querySequence
      */
@@ -125,12 +131,14 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     public function nextQuerySequence() {
         return ++$this->querySequence;
     }
+
     /**
      * getQuerySequence
      */
     public function getQuerySequence() {
         return $this->querySequence;
     }
+
     /**
      * getDBH
      */
@@ -143,6 +151,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
         
         return $this->options[$name];
     }
+
     /**
      * addListener
      *
@@ -157,6 +166,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
         
         return $this;
     }
+
     /**
      * getListener
      * 
@@ -165,6 +175,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     public function getListener() {
         return $this->listener;
     }
+
     /**
      * setListener
      *
@@ -209,6 +220,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     public static function getConnection($dsn = null, $username = null, $password = null) {
         return new self($dsn, $username, $password);
     }
+
     /**
      * driverName
      * converts a driver name like (oracle) to appropriate PDO 
@@ -223,6 +235,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
 
         return $name;
     }
+
     /**
      * parseDSN
      *
@@ -301,6 +314,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     public function errorCode() {
         return $this->dbh->errorCode();
     }
+
     /**
      * errorInfo
      * Fetch extended error information associated with the last operation on the database handle
@@ -310,6 +324,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     public function errorInfo() {
         return $this->dbh->errorInfo();
     }
+
     /**
      * prepare
      *
@@ -330,6 +345,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
 
         return $stmt;
     }
+
     /**
      * query
      *
@@ -355,6 +371,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
 
         return $stmt;
     }
+
     /**
      * quote
      * quotes a string for use in a query
@@ -367,6 +384,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
 
         return $this->dbh->quote($input);
     }
+
     /**
      * exec
      * executes an SQL statement and returns the number of affected rows
@@ -389,6 +407,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
 
         return $rows;
     }
+
     /**
      * fetchAll
      *
@@ -418,6 +437,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     public function fetchBoth($statement, array $params = array()) { 
         return $this->query($statement, $params)->fetchAll(PDO::FETCH_BOTH);
     }
+
     /**
      * lastInsertId
      *
@@ -428,6 +448,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
 
         return $this->dbh->lastInsertId();
     }
+
     /**
      * begins a transaction
      *
@@ -444,6 +465,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
     
         return $return;
     }
+
     /**
      * commits a transaction
      *
@@ -460,6 +482,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
 
         return $return;
     }
+
     /**
      * rollBack
      *
@@ -476,6 +499,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
         
         $this->listener->onRollback($event);
     }
+
     /**
      * getAttribute
      * retrieves a database connection attribute
@@ -488,12 +512,14 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
         
         return $this->dbh->getAttribute($attribute);
     }
+
     /**
      * returns an array of available PDO drivers
      */
     public static function getAvailableDrivers() {
         return PDO::getAvailableDrivers();
     }
+
     /**
      * setAttribute
      * sets an attribute
@@ -507,6 +533,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
         
         $this->dbh->setAttribute($attribute, $value);
     }
+
     /**
      * getIterator
      *
@@ -516,6 +543,7 @@ class Doctrine_Db2 implements Countable, IteratorAggregate, Doctrine_Adapter_Int
         if($this->listener instanceof Doctrine_Db_Profiler)
             return $this->listener;
     }
+
     /**
      * count
      * returns the number of executed queries

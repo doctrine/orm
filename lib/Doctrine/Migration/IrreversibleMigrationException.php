@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Migration_IrreversibleMigration
  *
@@ -30,5 +31,4 @@
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
 class Doctrine_Migration_IrreversibleMigrationException extends Doctrine_Migration_Exception
-{
-}
+{ }

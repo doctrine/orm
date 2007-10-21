@@ -71,6 +71,7 @@ class Doctrine_Relation_Nest extends Doctrine_Relation_Association
 
         return $dql;
     }
+
     /**
     public function fetchRelatedFor(Doctrine_Record $record)
     {

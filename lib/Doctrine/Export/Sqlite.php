@@ -94,6 +94,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
 
         return $query;
     }
+
     /**
      * getIndexFieldDeclarationList
      * Obtain DBMS specific SQL code portion needed to set an index
@@ -127,6 +128,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         }
         return implode(', ', $declFields);
     }
+
     /**
      * create a new table
      *
@@ -243,6 +245,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         }
         */
     }
+
     /**
      * getAdvancedForeignKeyOptions
      * Return the FOREIGN KEY query section dealing with non-standard options
@@ -276,6 +279,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         }
         return $query;
     }
+
     /**
      * create sequence
      *
@@ -315,6 +319,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
         }
         throw new Doctrine_Export_Exception('could not create sequence table');
     }
+
     /**
      * drop existing sequence
      *

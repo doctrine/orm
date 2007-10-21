@@ -47,6 +47,7 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression_Driver
 
         return join(' || ' , $args);
     }
+
     /**
      * return string to call a function to get a substring inside an SQL statement
      *
@@ -64,6 +65,7 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression_Driver
 
         return "SUBSTR($value, $position)";
     }
+
     /**
      * Return string to call a variable with the current timestamp inside an SQL statement
      * There are three special variables for current date and time:
@@ -83,6 +85,7 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression_Driver
                 return 'TO_CHAR(CURRENT_TIMESTAMP, \'YYYY-MM-DD HH24:MI:SS\')';
         }
     }
+
     /**
      * random
      *
@@ -92,6 +95,7 @@ class Doctrine_Expression_Oracle extends Doctrine_Expression_Driver
     {
         return 'dbms_random.value';
     }
+
     /**
      * Returns global unique identifier
      *

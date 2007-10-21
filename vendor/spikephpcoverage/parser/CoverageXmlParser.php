@@ -42,7 +42,7 @@
             case "FILE":
                 $fileAttributes = $this->handleAttrTag($name, $attrs);
                 $this->_lastFilePath = $fileAttributes["PATH"];
-                if(!isset($this->_data[$this->_lastFilePath])) {
+                if( ! isset($this->_data[$this->_lastFilePath])) {
                     $this->_data[$this->_lastFilePath] = array();
                 }
                 break;
@@ -50,7 +50,7 @@
             case "LINE":
                 $lineAttributes = $this->handleAttrTag($name, $attrs);
                 $lineNumber = (int)$lineAttributes["LINE-NUMBER"];
-                if(!isset($this->_data[$this->_lastFilePath][$lineNumber])) {
+                if( ! isset($this->_data[$this->_lastFilePath][$lineNumber])) {
                     $this->_data[$this->_lastFilePath][$lineNumber] = (int)$lineAttributes["FREQUENCY"];
                 }
                 else {

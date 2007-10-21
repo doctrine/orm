@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Parser_Json
  *
@@ -36,51 +37,32 @@ class Doctrine_Parser_Json extends Doctrine_Parser
      *
      * Dump an array of data to a specified path or return
      * 
-     * @param string $array 
-     * @param string $path 
+     * @param string $array Array of data to dump to json
+     * @param string $path  Path to dump json data to
+     * @return string $json
      * @return void
-     * @author Jonathan H. Wage
      */
     public function dumpData($array, $path = null)
     {
         $data = json_encode($array);
         
-        if ($path) {
-            return file_put_contents($path, $data);
-        } else {
-            return $data;
-        }
+        return $this->doDump($data, $path);
     }
+
     /**
      * loadData
      *
      * Load and unserialize data from a file or from passed data
      * 
-     * @param string $path 
-     * @return void
-     * @author Jonathan H. Wage
+     * @param  string $path   Path to dump data to
+     * @return array  $json   Array of json objects
      */
     public function loadData($path)
     {
-        $contents = $this->getContents($path);
+        $contents = $this->doLoad($path);
         
         $json = json_decode($contents);
         
-        return $this->prepareData($json);
-    }
-    
-    public function prepareData($json)
-    {
-        $array = array();
-        
-        foreach ($json as $key => $value) {
-            if (is_object($value) || is_array($value)) {
-                $array[$key] = $this->prepareData($value);
-            } else {
-                $array[$key] = $value;
-            }
-        }
-        
-        return $array;
+        return $json
     }
 }

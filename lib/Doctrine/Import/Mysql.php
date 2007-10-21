@@ -39,6 +39,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
                             'listUsers'       => 'SELECT DISTINCT USER FROM USER',
                             'listViews'       => "SHOW FULL TABLES %sWHERE Table_type = 'VIEW'",
                             );
+
     /**
      * lists all database sequences
      *
@@ -55,6 +56,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
 
         return array_map(array($this->conn, 'fixSequenceName'), $tableNames);
     }
+
     /**
      * lists table constraints
      *
@@ -94,6 +96,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
         }
         return $result;
     }
+
     /**
      * lists table foreign keys
      *
@@ -104,6 +107,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
     {
         $sql = 'SHOW CREATE TABLE ' . $this->conn->quoteIdentifier($table, true);    
     }
+
     /**
      * lists table constraints
      *
@@ -144,6 +148,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
 
         return $columns;
     }
+
     /**
      * lists table constraints
      *
@@ -177,6 +182,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
         }
         return $result;
     }
+
     /**
      * lists tables
      *
@@ -187,6 +193,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
     {
         return $this->conn->fetchColumn($this->sql['listTables']);
     }
+
     /**
      * lists database views
      *

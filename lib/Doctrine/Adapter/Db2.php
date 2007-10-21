@@ -268,6 +268,7 @@ class Doctrine_Adapter_Db2 extends Doctrine_Adapter
         $identQuote = $info->IDENTIFIER_QUOTE_CHAR;
         return $identQuote;
     }
+
     /**
      * Begin a transaction.
      *

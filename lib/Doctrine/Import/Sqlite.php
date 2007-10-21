@@ -40,6 +40,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
     {
 
     }
+
     /**
      * lists all availible database functions
      *
@@ -49,6 +50,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
     {
 
     }
+
     /**
      * lists all database triggers
      *
@@ -59,6 +61,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
     {
 
     }
+
     /**
      * lists all database sequences
      *
@@ -81,6 +84,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
         }
         return $result;
     }
+
     /**
      * lists table constraints
      *
@@ -116,6 +120,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
         }
         return array_keys($result);
     }
+
     /**
      * lists table constraints
      *
@@ -150,6 +155,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
         }
         return $columns;
     }
+
     /**
      * lists table constraints
      *
@@ -175,6 +181,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
 
         return $this->conn->fetchColumn($sql);
     }
+
     /**
      * lists table triggers
      *
@@ -185,6 +192,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
     {
 
     }
+
     /**
      * lists table views
      *
@@ -206,6 +214,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
         }
         return $result;
     }
+
     /**
      * lists database users
      *
@@ -215,6 +224,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
     {
 
     }
+
     /**
      * lists database views
      *

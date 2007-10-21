@@ -36,10 +36,12 @@ class Doctrine_Record_Iterator extends ArrayIterator
      * @var Doctrine_Record $record
      */
     private $record;
+
     /**
      * @var Doctrine_Null $null
      */
     private static $null;
+
     /**
      * constructor
      *
@@ -50,6 +52,7 @@ class Doctrine_Record_Iterator extends ArrayIterator
         $this->record = $record;
         parent::__construct($record->getData());
     }
+
     /**
      * initNullObject
      *
@@ -59,6 +62,7 @@ class Doctrine_Record_Iterator extends ArrayIterator
     {
         self::$null = $null;
     }
+
     /**
      * current
      *

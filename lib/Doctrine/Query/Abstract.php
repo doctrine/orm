@@ -43,6 +43,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('select', $select, true);
     }
+
     /**
      * addFrom
      * adds fields to the FROM part of the query
@@ -54,6 +55,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('from', $from, true);
     }
+
     /**
      * addWhere
      * adds conditions to the WHERE part of the query
@@ -71,6 +73,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
         }
         return $this->parseQueryPart('where', $where, true);
     }
+
     /**
      * whereIn
      * adds IN condition to the query WHERE part
@@ -99,6 +102,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
 
         return $this->parseQueryPart('where', $where, true);
     }
+
     /**
      * addGroupBy
      * adds fields to the GROUP BY part of the query
@@ -110,6 +114,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('groupby', $groupby, true);
     }
+
     /**
      * addHaving
      * adds conditions to the HAVING part of the query
@@ -127,6 +132,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
         }
         return $this->parseQueryPart('having', $having, true);
     }
+
     /**
      * addOrderBy
      * adds fields to the ORDER BY part of the query
@@ -138,6 +144,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('orderby', $orderby, true);
     }
+
     /**
      * select
      * sets the SELECT part of the query
@@ -149,6 +156,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('select', $select);
     }
+
     /**
      * distinct
      * Makes the query SELECT DISTINCT.
@@ -176,6 +184,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
 
         return $this;
     }
+
     /**
      * delete
      * sets the query type to DELETE
@@ -188,6 +197,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
 
         return $this;
     }
+
     /**
      * update
      * sets the UPDATE part of the query
@@ -201,6 +211,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
 
         return $this->parseQueryPart('from', $update);
     }
+
     /**
      * set
      * sets the SET part of the query
@@ -226,6 +237,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
             return $this->parseQueryPart('set', $key . ' = ' . $value, true);
         }
     }
+
     /**
      * from
      * sets the FROM part of the query
@@ -237,6 +249,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('from', $from);
     }
+
     /**
      * innerJoin
      * appends an INNER JOIN to the FROM part of the query
@@ -248,6 +261,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('from', 'INNER JOIN ' . $join, true);
     }
+
     /**
      * leftJoin
      * appends a LEFT JOIN to the FROM part of the query
@@ -259,6 +273,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('from', 'LEFT JOIN ' . $join, true);
     }
+
     /**
      * groupBy
      * sets the GROUP BY part of the query
@@ -270,6 +285,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('groupby', $groupby);
     }
+
     /**
      * where
      * sets the WHERE part of the query
@@ -289,6 +305,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
 
         return $this->parseQueryPart('where', $where);
     }
+
     /**
      * having
      * sets the HAVING part of the query
@@ -308,6 +325,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
         
         return $this->parseQueryPart('having', $having);
     }
+
     /**
      * orderBy
      * sets the ORDER BY part of the query
@@ -319,6 +337,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('orderby', $orderby);
     }
+
     /**
      * limit
      * sets the Query query limit
@@ -330,6 +349,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('limit', $limit);
     }
+
     /**
      * offset
      * sets the Query query offset
@@ -341,7 +361,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
     {
         return $this->parseQueryPart('offset', $offset);
     }
-    
+
     /**
      * parseQueryPart
      * parses given DQL query part

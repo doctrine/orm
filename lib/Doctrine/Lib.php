@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Lib has not commonly used static functions, mostly for debugging purposes
  *
@@ -56,6 +57,7 @@ class Doctrine_Lib
             break;
         }
     }
+
     /**
      * returns a string representation of Doctrine_Record object
      * @param Doctrine_Record $record
@@ -73,6 +75,7 @@ class Doctrine_Lib
         $r[] = '</pre>';
         return implode("\n",$r)."<br />";
     }
+
     /**
      * Return an collection of records as XML. 
      * 
@@ -82,7 +85,6 @@ class Doctrine_Lib
      * @param SimpleXMLElement $xml
      * @return string Xml as string 
      */
-
     public static function getCollectionAsXml(Doctrine_Collection $collection, SimpleXMLElement $incomming_xml = null) {
 
         $collectionName = Doctrine_Lib::plurelize($collection->getTable()->tableName);
@@ -188,6 +190,7 @@ class Doctrine_Lib
             break;
         }
     }
+
     /**
      * returns a string representation of Doctrine_Connection object
      * @param Doctrine_Connection $connection
@@ -205,6 +208,7 @@ class Doctrine_Lib
         $r[] = "</pre>";
         return implode("\n",$r)."<br>";
     }
+
     /**
      * returns a string representation of Doctrine_Table object
      * @param Doctrine_Table $table
@@ -218,6 +222,7 @@ class Doctrine_Lib
         $r[] = "</pre>";
         return implode("\n",$r)."<br>";
     }
+
     /**
      * @return string
      */
@@ -242,6 +247,7 @@ class Doctrine_Lib
 
         return $l;
     }
+
     /**
      * returns a string representation of Doctrine_Collection object
      * @param Doctrine_Collection $collection

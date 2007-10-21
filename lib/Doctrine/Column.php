@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Column
  * This class represents a database column
@@ -39,6 +40,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
                                 'type'    => null,
                                 'length'  => 0,
                                 );
+
     /**
      * @var array $definition
      */
@@ -46,6 +48,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
     {
         $this->_definition = $definition;
     }
+
     /**
      * @return array
      */
@@ -53,6 +56,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
     {
         return $this->_definition;
     }
+
     /**
      * contains
      *
@@ -62,6 +66,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
     {
         return isset($this->_definition[$name]);
     }
+
     /**
      * get
      *
@@ -76,6 +81,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
         
         return $this->_definition[$name];
     }
+
     /**
      * set
      *
@@ -86,6 +92,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
     {
         $this->_definition[$name] = $value;
     }
+
     /**
      * @param string $field
      * @return array
@@ -98,6 +105,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
             return array();
         }
     }
+
     /**
      * enumValue
      *
@@ -113,6 +121,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
 
         return isset($this->_definition['values'][$index]) ? $this->_definition['values'][$index] : $index;
     }
+
     /**
      * enumIndex
      *
@@ -126,6 +135,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
 
         return array_search($value, $values);
     }
+
     /**
      * count
      *
@@ -135,6 +145,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
     {
         return count($this->_definition);
     }
+
     /**
      * getIterator
      *

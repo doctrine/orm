@@ -37,6 +37,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName = 'Sqlite';
+
     /**
      * the constructor
      *
@@ -82,6 +83,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
             $this->dbh->sqliteCreateFunction('now', 'time', 0);
         }
     }
+
     /**
      * initializes database functions missing in sqlite
      *
@@ -101,6 +103,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
         $this->dbh->sqliteCreateFunction('md5', 'md5', 1);
         $this->dbh->sqliteCreateFunction('now', 'time', 0);
     }
+
     /**
      * getDatabaseFile
      *

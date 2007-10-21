@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Template_I18n
  *
@@ -38,6 +39,7 @@ class Doctrine_Template_I18n extends Doctrine_Template
     {
         $this->_plugin = new Doctrine_I18n($options);
     }
+
     /**
      * translation
      * sets or retrieves the current translation language

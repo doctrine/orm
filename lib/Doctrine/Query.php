@@ -42,10 +42,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
 
     protected $subqueryAliases   = array();
+
     /**
      * @param boolean $needsSubquery
      */
     protected $needsSubquery     = false;
+
     /**
      * @param boolean $isSubquery           whether or not this query object is a subquery of another 
      *                                      query object
@@ -53,23 +55,28 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     protected $isSubquery;
 
     protected $isLimitSubqueryUsed = false;
+
     /**
      * @var array $_neededTables            an array containing the needed table aliases
      */
     protected $_neededTables     = array();
+
     /**
      * @var array $pendingSubqueries        SELECT part subqueries, these are called pending subqueries since
      *                                      they cannot be parsed directly (some queries might be correlated)
      */
     protected $pendingSubqueries = array();
+
     /**
      * @var array $pendingFields
      */
     protected $pendingFields     = array();
+
     /**
      * @var array $_parsers                 an array of parser objects, each DQL query part has its own parser
      */
     protected $_parsers    = array();
+
     /**
      * @var array $_enumParams              an array containing the keys of the parameters that should be enumerated
      */
@@ -91,6 +98,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                             'limit'     => array(),
                             'offset'    => array(),
                             );
+
     /**
      * @var array $_pendingJoinConditions    an array containing pending joins
      */
@@ -122,6 +130,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $this->needsSubquery = false;
         $this->isLimitSubqueryUsed = false;
     }
+
     /**
      * setOption
      *
@@ -136,6 +145,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         $this->_options[$name] = $value;
     }
+
     /**
      * addPendingJoinCondition
      *
@@ -147,6 +157,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     {
         $this->_pendingJoins[$componentAlias] = $joinCondition;
     }
+
     /**
      * addEnumParam
      * sets input parameter as an enumerated parameter
@@ -164,6 +175,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $this->_enumParams[$key] = $array;
         }
     }
+
     /**
      * getEnumParams
      * get all enumerated parameters
@@ -174,6 +186,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     {
         return $this->_enumParams;
     }
+
     /**
      * limitSubqueryUsed
      *
@@ -183,6 +196,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     {
         return $this->isLimitSubqueryUsed;
     }
+
     /**
      * convertEnums
      * convert enum parameters to their integer equivalents
@@ -200,6 +214,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         return $params;
     }
+
     /**
      * isSubquery
      * if $bool parameter is set this method sets the value of
@@ -222,6 +237,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $this->isSubquery = (bool) $bool;
         return $this;
     }
+
     /**
      * getAggregateAlias
      *
@@ -243,6 +259,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         throw new Doctrine_Query_Exception('Unknown aggregate alias ' . $dqlAlias);
     }
+
     /**
      * getParser
      * parser lazy-loader
@@ -266,6 +283,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $this->_parsers[$name];
     }
+
     /**
      * parseQueryPart
      * parses given DQL query part
@@ -313,6 +331,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $this;
     }
+
     /**
      * getDqlPart
      * returns the given DQL query part 
@@ -328,6 +347,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $this->_dqlParts[$queryPart];
     }
+
     /**
      * getDql
      * returns the DQL query associated with this object
@@ -350,6 +370,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $q;
     }
+
     /**
      * processPendingFields
      * the fields in SELECT clause cannot be parsed until the components
@@ -392,6 +413,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             return implode(', ', $sql);
         }
     }
+
     /**
      * parseSelectField
      *
@@ -436,6 +458,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                . ' AS '
                . $this->_conn->quoteIdentifier($tableAlias . '__' . $name);
     }
+
     /**
      * getExpressionOwner
      * returns the component alias for owner of given expression
@@ -459,6 +482,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         return $this->getRootAlias();
 
     }
+
     /**
      * parseSelect
      * parses the query select part and
@@ -534,6 +558,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
         }
     }
+
     /**
      * parseClause
      * parses given DQL clause
@@ -628,6 +653,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         return $str;
     }
+
     /**
      * parseAggregateFunction
      * parses an aggregate function and returns the parsed form
@@ -686,6 +712,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $expr;
     }
+
     /**
      * processPendingSubqueries
      * processes pending subqueries
@@ -717,6 +744,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         $this->pendingSubqueries = array();
     }
+
     /**
      * processPendingAggregates
      * processes pending aggregate values for given component alias
@@ -789,6 +817,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         // reset the state
         $this->pendingAggregates = array();
     }
+
     /**
      * getQueryBase
      * returns the base of the generated sql query
@@ -813,6 +842,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         return $q;
     }
+
     /**
      * buildFromPart
      * builds the from part of the query and returns it
@@ -863,6 +893,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         return $q;
     }
+
     /**
      * preQuery
      *
@@ -876,6 +907,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     {
 
     }
+
     /**
      * postQuery
      *
@@ -889,6 +921,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     {
 
     }
+
     /**
      * processQueryPart
      * parses given query part
@@ -920,6 +953,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
         }
     }
+
     /**
      * builds the sql query from the given parameters and applies things such as
      * column aggregation inheritance and limit subqueries if needed
@@ -1058,6 +1092,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $q;
     }
+
     /**
      * getLimitSubquery
      * this is method is used by the record limit algorithm
@@ -1192,6 +1227,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $subquery = implode(' ', $parts);
         return $subquery;
     }
+
     /**
      * tokenizeQuery
      * splits the given dql query into an array where keys
@@ -1252,6 +1288,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         }
         return $parts;
     }
+
     /**
      * DQL PARSER
      * parses a DQL query
@@ -1558,6 +1595,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         return $table;
     }
+
     /**
      * count
      * fetches the count of the query

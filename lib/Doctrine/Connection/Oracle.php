@@ -70,6 +70,7 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection
         */
         parent::__construct($manager, $adapter);
     }
+
     /**
      * Sets up the date/time format
      *
@@ -78,6 +79,7 @@ class Doctrine_Connection_Oracle extends Doctrine_Connection
     {
       $this->exec('ALTER SESSION SET NLS_DATE_FORMAT = "' . $format . '"');
     }
+
     /**
      * Adds an driver-specific LIMIT clause to the query
      *

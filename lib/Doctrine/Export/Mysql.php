@@ -43,6 +43,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     {
         return 'CREATE DATABASE ' . $this->conn->quoteIdentifier($name, true);
     }
+
     /**
      * drop an existing database
      *
@@ -53,6 +54,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
     {
         return 'DROP DATABASE ' . $this->conn->quoteIdentifier($name);
     }
+
     /**
      * create a new table
      *
@@ -181,6 +183,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }   
         return $sql;
     }
+
     /**
      * alter an existing table
      *
@@ -360,6 +363,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         
         return 'ALTER TABLE ' . $name . ' ' . $query;
     }
+
     /**
      * create sequence
      *
@@ -434,6 +438,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
 
 
     }
+
     /**
      * Get the stucture of a field into an array
      *
@@ -489,6 +494,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
 
         return $query;
     }
+
     /** 
      * getDefaultDeclaration
      * Obtain DBMS specific SQL code portion needed to set a default value
@@ -516,6 +522,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
         return $default;
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to set an index 
      * declaration to be used in statements like CREATE TABLE.
@@ -552,6 +559,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         
         return $query;
     }
+
     /**
      * getIndexFieldDeclarationList
      * Obtain DBMS specific SQL code portion needed to set an index
@@ -589,6 +597,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
         return implode(', ', $declFields);
     }
+
     /**
      * getAdvancedForeignKeyOptions
      * Return the FOREIGN KEY query section dealing with non-standard options
@@ -611,6 +620,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         }
         return $query;
     }
+
     /**
      * drop existing index
      *
@@ -624,6 +634,7 @@ class Doctrine_Export_Mysql extends Doctrine_Export
         $name   = $this->conn->quoteIdentifier($this->conn->formatter->getIndexName($name), true);
         return 'DROP INDEX ' . $name . ' ON ' . $table;
     }
+
     /**
      * dropTable
      *

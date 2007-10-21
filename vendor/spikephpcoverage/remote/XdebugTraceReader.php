@@ -60,11 +60,11 @@
         * @access public
         */
         public function parseTraceFile() {
-            if(!$this->openTraceFile()) {
+            if( ! $this->openTraceFile()) {
                 error_log("[XdebugTraceReader::parseTraceFile()] Unable to read trace file.");
                 return false;
             }
-            while(!feof($this->handle)) {
+            while( ! feof($this->handle)) {
                 $line = fgets($this->handle);
                 // echo "Line: " . $line . "\n";
                 $this->processTraceLine($line);
@@ -90,7 +90,7 @@
             if($cnt < 2) {
                 return false;
             }
-            if(!file_exists($dataparts[$cnt-2])) {
+            if( ! file_exists($dataparts[$cnt-2])) {
                 // echo "No file: " . $dataparts[$cnt-2] . "\n";
                 return false;
             }
@@ -98,7 +98,7 @@
             $dataparts[$cnt-2] = trim($dataparts[$cnt-2]);
             $dataparts[$cnt-1] = trim($dataparts[$cnt-1]);
 
-            if(!isset($this->coverage[$dataparts[$cnt-2]][$dataparts[$cnt-1]])) {
+            if( ! isset($this->coverage[$dataparts[$cnt-2]][$dataparts[$cnt-1]])) {
                 $this->coverage[$dataparts[$cnt-2]][$dataparts[$cnt-1]] = 1;
             }
             else {

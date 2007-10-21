@@ -91,6 +91,7 @@ class Doctrine_Validator_Usstate
     {
         return self::$states;
     }
+
     /**
      * checks if given value is a valid US state code
      *

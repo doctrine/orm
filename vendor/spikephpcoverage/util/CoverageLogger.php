@@ -22,7 +22,7 @@
         );
 
         public function setLevel($level) {
-            if(!is_numeric($level)) {
+            if( ! is_numeric($level)) {
                 for($i = 0; $i < count($this->logLevels); $i++) {
                     if(strcasecmp($this->logLevels[$i], $level) === 0) {
                         $level = $i;

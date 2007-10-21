@@ -19,7 +19,7 @@
         $logger->info("[phpcoverage.remote.bottom.inc.php] Session id: " . $session_id,
             __FILE__, __LINE__);
 
-        if(!isset($cov)) {
+        if( ! isset($cov)) {
             if(file_exists($tmpFile)) {
                 $object = file_get_contents($tmpFile);
                 $cov = unserialize($object);
@@ -29,7 +29,7 @@
 
         if(isset($cov)) {
             // PHPCoverage bottom half
-            if(!isset($called_script)) {
+            if( ! isset($called_script)) {
                 $called_script = "";
             }
             $logger->info("[phpcoverage.remote.bottom.inc.php] END: " . $called_script,

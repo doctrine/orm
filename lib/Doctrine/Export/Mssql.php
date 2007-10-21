@@ -51,6 +51,7 @@ class Doctrine_Export_Mssql extends Doctrine_Export
         }
         return $this->conn->standaloneQuery($query, null, true);
     }
+
     /**
      * drop an existing database
      *
@@ -204,6 +205,7 @@ class Doctrine_Export_Mssql extends Doctrine_Export
         $name = $this->conn->quoteIdentifier($name, true);
         return $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
     }
+
     /**
      * create sequence
      *
@@ -239,6 +241,7 @@ class Doctrine_Export_Mssql extends Doctrine_Export
         }
         return true;
     }
+
     /**
      * This function drops an existing sequence
      *

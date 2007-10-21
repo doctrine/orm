@@ -36,6 +36,7 @@ class Doctrine_Validator_Driver
      * @var array $_args     an array of plugin specific args
      */
     protected $_args = array();
+
     /**
      * __get
      * an alias for getOption
@@ -49,6 +50,7 @@ class Doctrine_Validator_Driver
         }
         return null;
     }
+
     /**
      * __isset
      *
@@ -58,6 +60,7 @@ class Doctrine_Validator_Driver
     {
         return isset($this->_args[$arg]);
     }
+
     /**
      * sets given value to an argument
      *
@@ -71,6 +74,7 @@ class Doctrine_Validator_Driver
         
         return $this;
     }
+
     /**
      * returns the value of an argument
      *
@@ -85,6 +89,7 @@ class Doctrine_Validator_Driver
         
         return $this->_args[$arg];
     }
+
     /**
      * sets given value to an argument
      *
@@ -98,6 +103,7 @@ class Doctrine_Validator_Driver
         
         return $this;
     }
+
     /**
      * returns all args and their associated values
      *

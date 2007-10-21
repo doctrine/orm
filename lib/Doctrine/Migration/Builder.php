@@ -197,7 +197,7 @@ END;
         
         return true;
     }
-    
+
     /**
      * buildCreateForeignKey
      *
@@ -209,7 +209,7 @@ END;
     {
         return "\t\t\$this->createForeignKey('" . $tableName . "', " . $this->dataToPhpCode($definition) . ");";
     }
-    
+
     /**
      * buildDropForeignKey
      *
@@ -221,7 +221,7 @@ END;
     {
         return "\t\t\$this->dropForeignKey('" . $tableName . "', '" . $definition['name'] . "');\n";
     }
-    
+
     /**
      * buildCreateTable
      *
@@ -240,7 +240,7 @@ END;
         
         return $code;
     }
-    
+
     /**
      * buildDropTable
      *
@@ -251,7 +251,7 @@ END;
     {
         return "\t\t\$this->dropTable('" . $tableData['tableName'] . "');";
     }
-    
+
     /**
      * dataToPhpCode
      *
@@ -267,7 +267,7 @@ END;
         
         return $results;
     }
-    
+
     /**
      * generateMigrationClass
      *
@@ -278,7 +278,7 @@ END;
         if ($return || !$this->getMigrationsPath()) {
             return $this->buildMigrationClass($className, null, $options, $up, $down);
         } else {
-            if (!$this->getMigrationsPath()) {
+            if ( ! $this->getMigrationsPath()) {
                 throw new Doctrine_Migration_Exception('You must specify the path to your migrations.');
             }
             
@@ -294,7 +294,7 @@ END;
             file_put_contents($path, $class);
         }
     }
-    
+
     /**
      * buildMigrationClass
      *

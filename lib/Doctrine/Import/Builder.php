@@ -21,7 +21,8 @@
 
 /**
  * Doctrine_Import_Builder
- * Import builder is responsible of building Doctrine ActiveRecord classes
+ *
+ * Import builder is responsible of building Doctrine_Record classes
  * based on a database schema.
  *
  * @package     Doctrine
@@ -33,6 +34,7 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  * @author      Nicolas Bérard-Nault <nicobn@php.net>
+ * @author      Jonathan H. Wage <jwage@mac.com>
  */
 class Doctrine_Import_Builder
 {
@@ -53,7 +55,7 @@ class Doctrine_Import_Builder
      * @var string $suffix
      */
     private $suffix = '.class.php';
-    
+
     /**
      * generateBaseClasses
      * 
@@ -62,7 +64,7 @@ class Doctrine_Import_Builder
      * @var string $suffix
      */
     private $generateBaseClasses = false;
-    
+
     /**
      * baseClassesDirectory
      * 
@@ -71,7 +73,7 @@ class Doctrine_Import_Builder
      * @var string $suffix
      */
     private $baseClassesDirectory = 'generated';
-    
+
     /**
      * tpl
      *
@@ -80,7 +82,7 @@ class Doctrine_Import_Builder
      * @var $tpl
      */
     private static $tpl;
-    
+
     /**
      * __construct
      *
@@ -105,7 +107,7 @@ class Doctrine_Import_Builder
 
         $this->path = $path;
     }
-    
+
     /**
      * generateBaseClasses
      *
@@ -123,7 +125,7 @@ class Doctrine_Import_Builder
       
       return $this->generateBaseClasses;
     }
-    
+
     /**
      * getTargetPath
      *
@@ -267,11 +269,17 @@ END;
         
         $ret[$i] = $this->buildActAs($actAs);
         
-        if (!empty($ret)) {
+        if ( ! empty($ret)) {
           return "\n\tpublic function setTableDefinition()"."\n\t{\n".implode("\n", $ret)."\n\t}";
         }
     }
-    
+
+    /**
+     * buildTemplates
+     *
+     * @param string $array 
+     * @return void
+     */
     public function buildTemplates(array $templates)
     {
         $build = '';
@@ -292,7 +300,13 @@ END;
         
         return $build;
     }
-    
+
+    /**
+     * buildActAs
+     *
+     * @param string $array 
+     * @return void
+     */
     public function buildActAs(array $actAs)
     {
         $build = '';
@@ -312,7 +326,13 @@ END;
         
         return $build;
     }
-    
+
+    /**
+     * arrayToPhp
+     *
+     * @param string $array 
+     * @return void
+     */
     protected function arrayToPhp(array $array)
     {
         ob_start();
@@ -322,12 +342,18 @@ END;
         
         return $php;
     }
-    
+
+    /**
+     * buildAttributes
+     *
+     * @param string $array 
+     * @return void
+     */
     public function buildAttributes(array $attributes)
     {
         $build = "\n";
         foreach ($attributes as $key => $value) {
-            if (!is_array($value)) {
+            if ( ! is_array($value)) {
                 $value = array($value);
             }
             
@@ -344,7 +370,13 @@ END;
         
         return $build;
     }
-    
+
+    /**
+     * buildIndexes
+     *
+     * @param string $array 
+     * @return void
+     */
     public function buildIndexes(array $indexes)
     {
       $build = '';
@@ -394,7 +426,7 @@ END;
             }
 
             // add extra ) if type definition is not declared
-            if (!isset($definitions['type'])) {
+            if ( ! isset($definitions['type'])) {
             	$build .= ')';
             }
           }
@@ -404,13 +436,21 @@ END;
 
       return $build;
     }
-    
+
+    /**
+     * buildSetUp
+     *
+     * @param  array $options 
+     * @param  array $columns 
+     * @param  array $relations 
+     * @return string
+     */
     public function buildSetUp(array $options, array $columns, array $relations)
     {
         $ret = array();
         $i = 0;
         
-        if (! (isset($options['override_parent']) && $options['override_parent'] === true)) {
+        if ( !  (isset($options['override_parent']) && $options['override_parent'] === true)) {
             $ret[$i] = "\t\tparent::setUp();";
             $i++;
         }
@@ -475,11 +515,23 @@ END;
             $ret[$i] = "\t\t".'$this->setInheritanceMap(array(\''.$options['inheritance']['keyField'].'\' => '.$options['inheritance']['keyValue'].'));';
         }
         
-        if (!empty($ret)) {
+        if ( ! empty($ret)) {
           return "\n\tpublic function setUp()\n\t{\n".implode("\n", $ret)."\n\t}";
         }
     }
-    
+
+    /**
+     * buildDefinition
+     *
+     * @param array $options 
+     * @param array $columns 
+     * @param array $relations 
+     * @param array $indexes 
+     * @param array $attributes 
+     * @param array $templates 
+     * @param array $actAs 
+     * @return string
+     */
     public function buildDefinition(array $options, array $columns, array $relations = array(), array $indexes = array(), $attributes = array(), array $templates = array(), array $actAs = array())
     {
         if ( ! isset($options['className'])) {
@@ -490,7 +542,7 @@ END;
         $className = $options['className'];
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:'Doctrine_Record';
 
-        if (!(isset($options['no_definition']) && $options['no_definition'] === true)) {
+        if ( ! (isset($options['no_definition']) && $options['no_definition'] === true)) {
             $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
             $setUp = $this->buildSetUp($options, $columns, $relations);
         } else {
@@ -510,6 +562,18 @@ END;
         return $content;
     }
 
+    /**
+     * buildRecord
+     *
+     * @param array $options 
+     * @param array $columns 
+     * @param array $relations 
+     * @param array $indexes 
+     * @param array $attributes 
+     * @param array $templates 
+     * @param array $actAs 
+     * @return void=
+     */
     public function buildRecord(array $options, array $columns, array $relations = array(), array $indexes = array(), array $attributes = array(), array $templates = array(), array $actAs = array())
     {
         if ( !isset($options['className'])) {
@@ -532,7 +596,7 @@ END;
         if ($this->generateBaseClasses()) {
           
           // We only want to generate this one if it doesn't already exist
-          if (!file_exists($options['fileName'])) {
+          if ( ! file_exists($options['fileName'])) {
             $optionsBak = $options;
             
             unset($options['tableName']);
@@ -547,7 +611,7 @@ END;
           
           $generatedPath = $this->path . DIRECTORY_SEPARATOR . $this->baseClassesDirectory;
           
-          if (!file_exists($generatedPath)) {
+          if ( ! file_exists($generatedPath)) {
             mkdir($generatedPath);
           }
           
@@ -561,14 +625,26 @@ END;
           $this->writeDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
         }
     }
-    
+
+    /**
+     * writeDefinition
+     *
+     * @param array $options 
+     * @param array $columns 
+     * @param array $relations 
+     * @param array $indexes 
+     * @param array $attributes 
+     * @param array $templates 
+     * @param array $actAs 
+     * @return void
+     */
     public function writeDefinition(array $options, array $columns = array(), array $relations = array(), array $indexes = array(), array $attributes = array(), array $templates = array(), array $actAs = array())
     {
         $content = $this->buildDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
         $code = "<?php\n";
         
         if (isset($options['requires'])) {
-            if (!is_array($options['requires'])) {
+            if ( ! is_array($options['requires'])) {
                 $options['requires'] = array($options['requires']);
             }
 

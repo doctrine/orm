@@ -16,24 +16,27 @@
    * @package Doctrine
    * @subpackage Spyc
    */
-  class Doctrine_YAMLNode {
+  class Doctrine_YamlNode {
     /**#@+
      * @access public
      * @var string
      */
     var $parent;
     var $id;
+
     /**#@+*/
     /**
      * @access public
      * @var mixed
      */
     var $data;
+
     /**
      * @access public
      * @var int
      */
     var $indent;
+
     /**
      * @access public
      * @var bool
@@ -45,7 +48,7 @@
      * @access public
      * @return void
      */
-    function Doctrine_YAMLNode($nodeId) {
+    function Doctrine_YamlNode($nodeId) {
       $this->id = $nodeId;
     }
   }
@@ -130,14 +133,14 @@
     function load($input) {
       // See what type of input we're talking about
       // If it's not a file, assume it's a string
-      if (!empty($input) && (strpos($input, "\n") === false)
+      if ( ! empty($input) && (strpos($input, "\n") === false)
           && file_exists($input)) {
         $yaml = file($input);
       } else {
         $yaml = explode("\n",$input);
       }
       // Initiate some objects and values
-      $base              = new Doctrine_YAMLNode (1);
+      $base              = new Doctrine_YamlNode (1);
       $base->indent      = 0;
       $this->_lastIndent = 0;
       $this->_lastNode   = $base->id;
@@ -162,7 +165,7 @@
           $last->data[key($last->data)] .= "\n";
         } elseif ($ifchk{0} != '#' && substr($ifchk,0,3) != '---') {
           // Create a new node and get its indent
-          $node         = new Doctrine_YAMLNode ($this->_nodeId);
+          $node         = new Doctrine_YamlNode ($this->_nodeId);
 		  $this->_nodeId++;
 
           $node->indent = $this->_getIndent($line);
@@ -253,7 +256,7 @@
             if (
               ( (is_array($node->data)) &&
                 isset($node->data[key($node->data)]) &&
-                (!is_array($node->data[key($node->data)])) )
+                ( ! is_array($node->data[key($node->data)])) )
               &&
               ( (preg_match('/^&([^ ]+)/',$node->data[key($node->data)]))
                 ||
@@ -351,6 +354,7 @@
     var $_isInline;
     var $_dumpIndent;
     var $_dumpWordWrap;
+
     /**#@+*/
 
     /**** Public Properties ****/
@@ -360,6 +364,7 @@
      * @var mixed
      */
     var $_nodeId;
+
     /**#@+*/
 
     /**** Private Methods ****/
@@ -381,7 +386,7 @@
         $indent += $this->_dumpIndent;
         // Yamlize the array
         $string .= $this->_yamlizeArray($value,$indent);
-      } elseif (!is_array($value)) {
+      } elseif ( ! is_array($value)) {
         // It doesn't have children.  Yip.
         $string = $this->_dumpNode($key,$value,$indent);
       }
@@ -488,7 +493,7 @@
      */
     function _getIndent($line) {
       preg_match('/^\s{1,}/',$line,$match);
-      if (!empty($match[0])) {
+      if ( ! empty($match[0])) {
         $indent = substr_count($match[0],' ');
       } else {
         $indent = 0;
@@ -645,7 +650,7 @@
 
 
       // Re-add the sequences
-      if (!empty($seqs)) {
+      if ( ! empty($seqs)) {
         $i = 0;
         foreach ($explode as $key => $value) {
           if (strpos($value,'YAMLSeq') !== false) {
@@ -656,7 +661,7 @@
       }
 
       // Re-add the mappings
-      if (!empty($maps)) {
+      if ( ! empty($maps)) {
         $i = 0;
         foreach ($explode as $key => $value) {
           if (strpos($value,'YAMLMap') !== false) {
@@ -667,7 +672,7 @@
       }
 
       // Re-add the strings
-      if (!empty($saved_strings)) {
+      if ( ! empty($saved_strings)) {
         $i = 0;
         foreach ($explode as $key => $value) {
           while (strpos($value,'YAMLString') !== false) {
@@ -689,7 +694,7 @@
     function _buildArray() {
       $trunk = array();
 
-      if (!isset($this->_indentSort[0])) {
+      if ( ! isset($this->_indentSort[0])) {
         return $trunk;
       }
 
@@ -714,7 +719,7 @@
     function _linkReferences() {
       if (is_array($this->_haveRefs)) {
         foreach ($this->_haveRefs as $node) {
-          if (!empty($node->data)) {
+          if ( ! empty($node->data)) {
             $key = key($node->data);
             // If it's an array, don't check.
             if (is_array($node->data[$key])) {
@@ -744,7 +749,7 @@
           // Flag the node as having a reference
           $this->_allNodes[$n->id]->refKey =  $ref;
         }
-      } elseif (!empty($k) && !empty($v)) {
+      } elseif ( ! empty($k) && !empty($v)) {
         if (preg_match('/^&([^ ]+)/',$v,$matches)) {
           // Flag the node so we know it's a reference
           $this->_allNodes[$n->id]->ref = substr($matches[0],1);
@@ -807,7 +812,7 @@
         } else {
             $node->data[$key] = $childs;
         }
-      } elseif (!is_array($node->data) && $node->children == true) {
+      } elseif ( ! is_array($node->data) && $node->children == true) {
         // Same as above, find the children of this node
         $childs       = $this->_gatherChildren($node->id);
         $node->data   = array();
@@ -856,8 +861,8 @@
      * @return array
      */
     function _array_kmerge($arr1,$arr2) {
-      if(!is_array($arr1)) $arr1 = array();
-      if(!is_array($arr2)) $arr2 = array();
+      if( ! is_array($arr1)) $arr1 = array();
+      if( ! is_array($arr2)) $arr2 = array();
 
       $keys  = array_merge(array_keys($arr1),array_keys($arr2));
       $vals  = array_merge(array_values($arr1),array_values($arr2));

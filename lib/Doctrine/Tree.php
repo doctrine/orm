@@ -119,7 +119,7 @@ class Doctrine_Tree
     {
       $this->options[$name] = $value;
     }
-    
+
     /**
      * Returns the base tree component.
      */

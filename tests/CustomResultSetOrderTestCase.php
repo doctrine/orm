@@ -75,7 +75,7 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
         
         $this->connection->flush();
     }
-    
+
     /**
      * Prepares the tables.
      */
@@ -84,6 +84,7 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
         $this->tables[] = "BoardWithPosition";
         parent::prepareTables();
     }
+
     /**
      * Checks whether the boards are correctly assigned to the categories.
      *
@@ -96,7 +97,6 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
      *  1    | 0      | First    | 2        | 1
      *  3    | 2      | Third    | NULL
      */
-
     public function testQueryWithOrdering2() {
         $q = new Doctrine_Query($this->connection);
 
@@ -142,7 +142,6 @@ class Doctrine_CustomResultSetOrder_TestCase extends Doctrine_UnitTestCase {
      *  1    | 0      | First    | 2        | 1
      *  3    | 2      | Third    | NULL
      */
-
     public function testQueryWithOrdering() {
         $q = new Doctrine_Query($this->connection);
         $categories = $q->select('c.*, b.*')

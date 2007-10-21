@@ -36,11 +36,13 @@ class Doctrine_Query_Check
      * @var Doctrine_Table $table           Doctrine_Table object
      */
     protected $table;
+
     /**
      * @var string $sql                     database specific sql CHECK constraint definition 
      *                                      parsed from the given dql CHECK definition
      */
     protected $sql;
+
     /**
      * @param Doctrine_Table|string $table  Doctrine_Table object
      */
@@ -53,6 +55,7 @@ class Doctrine_Query_Check
         }
         $this->table = $table;
     }
+
     /**
      * getTable
      * returns the table object associated with this object
@@ -63,6 +66,7 @@ class Doctrine_Query_Check
     {
         return $this->table;
     }
+
     /**
      * parse
      *
@@ -73,6 +77,7 @@ class Doctrine_Query_Check
     {
         $this->sql = $this->parseClause($dql);
     }
+
     /**
      * parseClause
      *
@@ -144,6 +149,7 @@ class Doctrine_Query_Check
         }
         return $func;
     }
+
     /**
      * getSql
      *

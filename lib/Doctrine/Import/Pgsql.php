@@ -117,6 +117,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
                                                         AND a.atttypid = t.oid
                                                   ORDER BY a.attnum",
                         );
+
     /**
      * lists all database triggers
      *
@@ -127,6 +128,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
     {
 
     }
+
     /**
      * lists table constraints
      *
@@ -140,6 +142,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
 
         return $this->conn->fetchColumn($query);
     }
+
     /**
      * lists table constraints
      *
@@ -180,6 +183,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
         }
         return $columns;
     }
+
     /**
      * list all indexes in a table
      *
@@ -193,6 +197,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
 
         return $this->conn->fetchColumn($query);
     }
+
     /**
      * lists tables
      *
@@ -203,6 +208,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
     {
         return $this->conn->fetchColumn($this->sql['listTables']);
     }
+
     /**
      * lists table triggers
      *
@@ -221,6 +227,7 @@ class Doctrine_Import_Pgsql extends Doctrine_Import
         }
         return $this->conn->fetchColumn($query);
     }
+
     /**
      * list the views in the database that reference a given table
      *

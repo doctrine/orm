@@ -268,11 +268,11 @@ class XML_Parser extends PEAR
      */
     function _initHandlers()
     {
-        if (!is_resource($this->parser)) {
+        if ( ! is_resource($this->parser)) {
             return false;
         }
 
-        if (!is_object($this->_handlerObj)) {
+        if ( ! is_object($this->_handlerObj)) {
             $this->_handlerObj = &$this;
         }
         switch ($this->mode) {
@@ -328,7 +328,7 @@ class XML_Parser extends PEAR
         }
         if (is_resource($xp)) {
             if ($this->tgtenc !== null) {
-                if (!@xml_parser_set_option($xp, XML_OPTION_TARGET_ENCODING,
+                if ( ! @xml_parser_set_option($xp, XML_OPTION_TARGET_ENCODING,
                                             $this->tgtenc)) {
                     return $this->raiseError('invalid target encoding', XML_PARSER_ERROR_INVALID_ENCODING);
                 }
@@ -341,7 +341,7 @@ class XML_Parser extends PEAR
             xml_parser_set_option($xp, XML_OPTION_CASE_FOLDING, $this->folding);
             return true;
         }
-        if (!in_array(strtoupper($this->srcenc), $this->_validEncodings)) {
+        if ( ! in_array(strtoupper($this->srcenc), $this->_validEncodings)) {
             return $this->raiseError('invalid source encoding', XML_PARSER_ERROR_INVALID_ENCODING);
         }
         return $this->raiseError('Unable to create XML parser resource.', XML_PARSER_ERROR_NO_RESOURCE);
@@ -386,7 +386,7 @@ class XML_Parser extends PEAR
          * check, if file is a remote file
          */
         if (eregi('^(http|ftp)://', substr($file, 0, 10))) {
-            if (!ini_get('allow_url_fopen')) {
+            if ( ! ini_get('allow_url_fopen')) {
             	return $this->raiseError('Remote files cannot be parsed, as safe mode is enabled.', XML_PARSER_ERROR_REMOTE);
             }
         }
@@ -476,7 +476,7 @@ class XML_Parser extends PEAR
         if (is_resource($this->fp)) {
 
             while ($data = fread($this->fp, 4096)) {
-                if (!$this->_parseString($data, feof($this->fp))) {
+                if ( ! $this->_parseString($data, feof($this->fp))) {
                     $error = &$this->raiseError();
                     $this->free();
                     return $error;
@@ -484,7 +484,7 @@ class XML_Parser extends PEAR
             }
         // otherwise, $this->fp must be a string
         } else {
-            if (!$this->_parseString($this->fp, true)) {
+            if ( ! $this->_parseString($this->fp, true)) {
                 $error = &$this->raiseError();
                 $this->free();
                 return $error;
@@ -525,11 +525,11 @@ class XML_Parser extends PEAR
      */
     function parseString($data, $eof = false)
     {
-        if (!isset($this->parser) || !is_resource($this->parser)) {
+        if ( ! isset($this->parser) || !is_resource($this->parser)) {
             $this->reset();
         }
 
-        if (!$this->_parseString($data, $eof)) {
+        if ( ! $this->_parseString($data, $eof)) {
            $error = &$this->raiseError();
            $this->free();
            return $error;

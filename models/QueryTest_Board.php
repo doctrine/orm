@@ -15,7 +15,7 @@ class QueryTest_Board extends Doctrine_Record
         $this->hasColumn('position as position', 'integer', 4,
                 array('default' => 0, 'notnull'));
     }
-    
+
     /**
      * Initializes the relations.
      */

@@ -97,6 +97,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
         }
         return $value;
     }
+
     /**
      * Checks if there's a sequence that exists.
      *
@@ -139,6 +140,7 @@ class Doctrine_Sequence_Mssql extends Doctrine_Sequence
 
         return $this->conn->fetchOne($query);
     }
+
     /**
      * Returns the current id of a sequence
      *

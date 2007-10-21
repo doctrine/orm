@@ -69,6 +69,7 @@ class Doctrine_Expression_Driver_TestCase extends Doctrine_UnitTestCase {
             $this->pass();
         }
     }
+
     /**
      * TIME FUNCTIONS
      */
@@ -126,11 +127,10 @@ class Doctrine_Expression_Driver_TestCase extends Doctrine_UnitTestCase {
     public function testDivReturnsValidSql() {
         $this->assertEqual($this->expr->div(array(2, 3)), '(2 / 3)');
     }
-    
+
     /**
      * ASSERT OPERATORS
      */
-
     public function testEqReturnsValidSql() {
         $this->assertEqual($this->expr->eq(1, 1), '1 = 1');
     }
@@ -149,7 +149,7 @@ class Doctrine_Expression_Driver_TestCase extends Doctrine_UnitTestCase {
     public function testLteReturnsValidSql() {
         $this->assertEqual($this->expr->lte(1, 1), '1 <= 1');
     }
-    
+
     /**
      * WHERE OPERATORS
      */

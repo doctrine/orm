@@ -39,6 +39,7 @@ abstract class Doctrine_Hook_Parser
     {
         return $this->condition;
     }
+
     /**
      * getParams
      * returns the parameters associated with this parser
@@ -49,6 +50,7 @@ abstract class Doctrine_Hook_Parser
     {
         return $this->params;
     }
+
     /**
      * parse
      * Parses given field and field value to DQL condition

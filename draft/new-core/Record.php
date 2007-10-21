@@ -42,33 +42,39 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
      * a Doctrine_Record is in dirty state when its properties are changed
      */
     const STATE_DIRTY       = 1;
+
     /**
      * TDIRTY STATE
      * a Doctrine_Record is in transient dirty state when it is created and some of its fields are modified
      * but it is NOT yet persisted into database
      */
     const STATE_TDIRTY      = 2;
+
     /**
      * CLEAN STATE
      * a Doctrine_Record is in clean state when all of its properties are loaded from the database
      * and none of its properties are changed
      */
     const STATE_CLEAN       = 3;
+
     /**
      * PROXY STATE
      * a Doctrine_Record is in proxy state when its properties are not fully loaded
      */
     const STATE_PROXY       = 4;
+
     /**
      * NEW TCLEAN
      * a Doctrine_Record is in transient clean state when it is created and none of its fields are modified
      */
     const STATE_TCLEAN      = 5;
+
     /**
      * DELETED STATE
      * a Doctrine_Record turns into deleted state when it is deleted
      */
     const STATE_DELETED     = 6;
+
     /**
      * the following protected variables use '_' prefixes, the reason for this is to allow child
      * classes call for example $this->id, $this->state for getting the values of columns named 'id' and 'state'
@@ -78,48 +84,59 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
      * @var object Doctrine_Table $_table   the factory that created this data access object
      */
     protected $_table;
+
     /**
      * @var Doctrine_Node_<TreeImpl>        node object
      */
     protected $_node;
+
     /**
      * @var integer $_id                    the primary keys of this object
      */
     protected $_id           = array();
+
     /**
      * @var array $_data                    the record data
      */
     protected $_data         = array();
+
     /**
      * @var array $_values                  the values array, aggregate values and such are mapped into this array
      */
     protected $_values       = array();
+
     /**
      * @var integer $_state                 the state of this record
      * @see STATE_* constants
      */
     protected $_state;
+
     /**
      * @var array $_modified                an array containing properties that have been modified
      */
     protected $_modified     = array();
+
     /**
      * @var Doctrine_Validator_ErrorStack   error stack object
      */
     protected $_errorStack;
+
     /**
      * @var array $references               an array containing all the references
      */
     private $references     = array();
+
     /**
      * @var integer $index                  this index is used for creating object identifiers
      */
     private static $index   = 1;
+
     /**
      * @var Doctrine_Null $null             a Doctrine_Null object used for extremely fast
      *                                      null value testing
      */
     private static $null;
+
     /**
      * @var integer $oid                    object identifier, each Record object has a unique object identifier
      */
@@ -211,6 +228,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         $this->construct();
     }
+
     /**
      * initNullObject
      *
@@ -221,6 +239,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         self::$null = $null;
     }
+
     /**
      * @return Doctrine_Null
      */
@@ -228,6 +247,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return self::$null;
     }
+
     /**
      * setUp
      * this method is used for setting up relations and attributes
@@ -256,6 +276,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return $this->oid;
     }
+
     /**
      * isValid
      *
@@ -281,6 +302,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         return $this->_errorStack->count() == 0 ? true : false;
     }
+
     /**
      * Emtpy template method to provide concrete Record classes with the possibility
      * to hook into the validation procedure, doing any custom / specialized
@@ -311,6 +333,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return $this->_errorStack;
     }
+
     /**
      * errorStack
      * assigns / returns record errorStack
@@ -329,6 +352,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
             return $this->_errorStack;
         }
     }
+
     /**
      * setDefaultValues
      * sets the default values for records internal data
@@ -354,6 +378,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
             }
         }
     }
+
     /**
      * cleanData
      * this method does several things to records internal data
@@ -429,6 +454,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         return $count;
     }
+
     /**
      * hydrate
      * hydrates this object from given array
@@ -444,6 +470,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         $this->cleanData();
         $this->prepareIdentifiers();
     }
+
     /**
      * prepareIdentifiers
      * prepares identifiers for later use
@@ -488,6 +515,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
                 break;
         }
     }
+
     /**
      * serialize
      * this method is automatically called when this Doctrine_Record is serialized
@@ -525,6 +553,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         return serialize($vars);
     }
+
     /**
      * unseralize
      * this method is automatically called everytime a Doctrine_Record object is unserialized
@@ -557,6 +586,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onWakeUp($this);
     }
+
     /**
      * getState
      * returns the current state of the object
@@ -568,6 +598,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return $this->_state;
     }
+
     /**
      * state
      * returns / assigns the state of this record
@@ -611,6 +642,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
             throw new Doctrine_Record_State_Exception('Unknown record state ' . $state);
         }
     }
+
     /**
      * refresh
      * refresh internal data from the database
@@ -651,6 +683,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         return true;
     }
+
     /**
      * factoryRefresh
      * refreshes the data from outer source (Doctrine_Table)
@@ -676,6 +709,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         $this->_table->getAttribute(Doctrine::ATTR_LISTENER)->onLoad($this);
     }
+
     /**
      * getTable
      * returns the table object for this record
@@ -686,6 +720,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return $this->_table;
     }
+
     /**
      * getData
      * return all the internal data
@@ -696,6 +731,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return $this->_data;
     }
+
     /**
      * rawGet
      * returns the value of a property, if the property is not yet loaded
@@ -715,6 +751,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         return $this->_data[$name];
     }
+
     /**
      * load
      * loads all the unitialized properties from the database
@@ -733,6 +770,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         return false;
     }
+
     /**
      * get
      * returns a value of a property or a related component
@@ -793,6 +831,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         return $this->references[$name];
     }
+
     /**
      * mapValue
      * This simple method is used for mapping values to $values property.
@@ -808,6 +847,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         $name = strtolower($name);
         $this->_values[$name] = $value;
     }
+
     /**
      * set
      * method for altering properties and Doctrine_Record references
@@ -905,6 +945,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         $this->references[$name] = $value;
     }
+
     /**
      * contains
      *
@@ -926,6 +967,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         return false;
     }
+
     /**
      * @param string $name
      * @return void
@@ -937,6 +979,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         // todo: what to do with references ?
     }
+
     /**
      * applies the changes made to this object into database
      * this method is smart enough to know if any changes are made
@@ -979,6 +1022,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         $conn->commit();
     }
+
     /**
      * Tries to save the object and all its related components.
      * In contrast to Doctrine_Record::save(), this method does not
@@ -996,6 +1040,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
             return false;
         }
     }
+
     /**
      * replace
      * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
@@ -1022,6 +1067,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         return $conn->replace($this->_table->getTableName(), $this->getPrepared(), $this->id);
     }
+
     /**
      * returns an array of modified fields and associated values
      * @return array
@@ -1035,6 +1081,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         return $a;
     }
+
     /**
      * getPrepared
      *
@@ -1091,6 +1138,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         return $a;
     }
+
     /**
      * count
      * this class implements countable interface
@@ -1101,6 +1149,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return count($this->_data);
     }
+
     /**
      * alias for count()
      *
@@ -1110,6 +1159,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return $this->count();
     }
+
     /**
      * toArray
      * returns the record as an array
@@ -1129,6 +1179,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         return $a;
     }
+
     /**
      * exists
      * returns true if this record is persistent, otherwise false
@@ -1140,6 +1191,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         return ($this->_state !== Doctrine_Record::STATE_TCLEAN &&
                 $this->_state !== Doctrine_Record::STATE_TDIRTY);
     }
+
     /**
      * method for checking existence of properties and Doctrine_Record references
      * @param mixed $name               name of the property or reference
@@ -1152,6 +1204,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         return $this->_table->hasRelation($name);
     }
+
     /**
      * getIterator
      * @return Doctrine_Record_Iterator     a Doctrine_Record_Iterator that iterates through the data
@@ -1160,6 +1213,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return new Doctrine_Record_Iterator($this);
     }
+
     /**
      * deletes this data access object and all the related composites
      * this operation is isolated by a transaction
@@ -1175,6 +1229,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         return $conn->delete($this);
     }
+
     /**
      * copy
      * returns a copy of this object
@@ -1192,6 +1247,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         return $ret;
     }
+
     /**
      * copyDeep
      * returns a copy of this object and all its related objects
@@ -1212,7 +1268,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         return $copy;
     }
-    
+
     /**
      * assignIdentifier
      *
@@ -1238,6 +1294,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
             $this->_modified  = array();
         }
     }
+
     /**
      * returns the primary keys of this object
      *
@@ -1247,6 +1304,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return $this->_id;
     }
+
     /**
      * returns the value of autoincremented primary key of this object (if any)
      *
@@ -1260,6 +1318,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
 
         return $id;
     }
+
     /**
      * getLast
      * this method is used internally be Doctrine_Query
@@ -1272,6 +1331,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return $this;
     }
+
     /**
      * hasRefence
      * @param string $name
@@ -1281,6 +1341,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return isset($this->references[$name]);
     }
+
     /**
      * obtainReference
      *
@@ -1294,6 +1355,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         throw new Doctrine_Record_Exception("Unknown reference $name");
     }
+
     /**
      * initalizes a one-to-many / many-to-many relation
      *
@@ -1319,6 +1381,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         return false;
     }
+
     /**
      * getReferences
      * @return array    all references
@@ -1327,6 +1390,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return $this->references;
     }
+
     /**
      * loadReference
      * loads a related component
@@ -1348,6 +1412,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
             $this->references[$name] = $coll;
         }
     }
+
     /**
      * binds One-to-One composite relation
      *
@@ -1359,6 +1424,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_COMPOSITE, $options);
     }
+
     /**
      * binds One-to-Many composite relation
      *
@@ -1370,6 +1436,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_COMPOSITE, $options);
     }
+
     /**
      * binds One-to-One aggregate relation
      *
@@ -1381,6 +1448,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::ONE_AGGREGATE, $options);
     }
+
     /**
      * binds One-to-Many aggregate relation
      *
@@ -1392,6 +1460,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         $this->_table->bind($componentName, $foreignKey, Doctrine_Relation::MANY_AGGREGATE, $options);
     }
+
     /**
      * hasColumn
      * sets a column definition
@@ -1406,6 +1475,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         $this->_table->setColumn($name, $type, $length, $options);
     }
+
     /**
      * countRelated
      *
@@ -1422,6 +1492,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         $array = $query->execute(array($this->getIncremented()));
         return $array[0]['COUNT(1)'];
     }
+
     /**
      * merge
      * merges this record with an array of values
@@ -1457,6 +1528,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         $this->_table->setEnumValues($column, $values);
     }
+
     /**
      * attribute
      * sets or retrieves an option
@@ -1480,6 +1552,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
             $this->_table->setAttribute($attr, $value);
         }    
     }
+
     /**
      * option
      * sets or retrieves an option
@@ -1503,6 +1576,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
             $this->_table->setOption($name, $value);
         }
     }
+
     /**
      * index
      * defines or retrieves an index
@@ -1521,6 +1595,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
             return $this->_table->addIndex($name, $definition);
         }
     }
+
     /**
      * addListener
      *
@@ -1532,6 +1607,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         $this->_table->addListener($listener, $name = null);
         return $this;
     }
+
     /**
      * getListener
      *
@@ -1541,6 +1617,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     {
         return $this->_table->getListener();
     }
+
     /**
      * setListener
      *
@@ -1552,6 +1629,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         $this->_table->setListener($listener);
         return $this;
     }
+
     /**
      * call
      *
@@ -1575,6 +1653,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         }
         return $this;
     }
+
     /**
      * getter for node assciated with this record
      *
@@ -1595,6 +1674,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
         
         return $this->_node;
     }
+
     /**
      * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
      *
@@ -1602,6 +1682,7 @@ abstract class Doctrine_Record2 extends Doctrine_Access implements Countable, It
     public function deleteNode() {
         $this->getNode()->delete();
     }
+
     /**
      * returns a string representation of this object
      */

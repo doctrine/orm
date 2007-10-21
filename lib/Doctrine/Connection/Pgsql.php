@@ -37,6 +37,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName = 'Pgsql';
+
     /**
      * the constructor
      *
@@ -77,6 +78,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
                                                         'escape' => '"');
         parent::__construct($manager, $adapter);
     }
+
     /**
      * Set the charset on the current connection
      *
@@ -89,6 +91,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
         $query = 'SET NAMES '.$this->dbh->quote($charset);
         $this->exec($query);
     }
+
     /**
      * convertBoolean
      * some drivers need the boolean values to be converted into integers
@@ -114,6 +117,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
         }
         return $item;
     }
+
     /**
      * Changes a query string for various DBMS specific reasons
      *
@@ -150,6 +154,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
         }
         return $query;
     }
+
     /**
      * return version information about the server
      *

@@ -44,6 +44,7 @@ class Doctrine_Expression_Firebird extends Doctrine_Expression_Driver
     {
         return ' FROM RDB$DATABASE';
     }
+
     /**
      * build string to define escape pattern string
      *

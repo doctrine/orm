@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Tree_NestedSet
  *
@@ -33,7 +34,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
 {
     private $_baseQuery;
     private $_baseAlias = "base";
-    
+
     /**
      * constructor, creates tree with reference to table and sets default root options
      *
@@ -49,7 +50,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
   
         parent::__construct($table, $options);
     }
-    
+
     /**
      * used to define table attributes required for the NestetSet implementation
      * adds lft and rgt columns for corresponding left and right values
@@ -101,7 +102,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     {
         return $this->fetchRoot($rootId);
     }
-    
+
     /**
      * Fetches a/the root node.
      *
@@ -257,7 +258,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
 
         return $query;
     }
-    
+
     /**
      * Enter description here...
      *
@@ -271,7 +272,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         }
         return $this->_baseQuery->copy();
     }
-    
+
     /**
      * Enter description here...
      *
@@ -280,7 +281,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     {
         return $this->_baseAlias;
     }
-    
+
     /**
      * Enter description here...
      *
@@ -292,7 +293,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         $q->select($this->_baseAlias . ".*")->from($this->getBaseComponent() . " " . $this->_baseAlias);
         return $q;
     }
-    
+
     /**
      * Enter description here...
      *
@@ -307,7 +308,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
         }
         $this->_baseQuery = $query;
     }
-    
+
     /**
      * Enter description here...
      *
@@ -316,7 +317,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
     {
         $this->_baseQuery = null;
     }
-    
+
     /**
      * Enter description here...
      *

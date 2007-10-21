@@ -36,6 +36,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      * @param Doctrine_Table $_table     reference to associated Doctrine_Table instance
      */
     protected $_table;
+
     /**
      * addListener
      *
@@ -48,6 +49,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
         return $this;
     }
+
     /**
      * getListener
      *
@@ -57,6 +59,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     {
         return $this->_table->getRecordListener();
     }
+
     /**
      * setListener
      *
@@ -69,6 +72,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
         return $this;
     }
+
     /**
      * index
      * defines or retrieves an index
@@ -137,6 +141,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
             $this->_table->setAttribute($attr, $value);
         }    
     }
+
     /**
      * option
      * sets or retrieves an option
@@ -160,6 +165,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
             $this->_table->setOption($name, $value);
         }
     }
+
     /**
      * ownsOne
      * binds One-to-One composite relation
@@ -175,6 +181,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         
         return $this;
     }
+
     /**
      * ownsMany
      * binds One-to-Many / Many-to-Many composite relation
@@ -189,6 +196,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
         $this->_table->bind(func_get_args(), Doctrine_Relation::MANY_COMPOSITE);
         return $this;
     }
+
     /**
      * hasOne
      * binds One-to-One aggregate relation
@@ -204,6 +212,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
         return $this;
     }
+
     /**
      * hasMany
      * binds One-to-Many / Many-to-Many aggregate relation
@@ -219,6 +228,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
         return $this;
     }
+
     /**
      * hasColumn
      * sets a column definition
@@ -248,6 +258,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     {
         $this->actAs($template, $options);
     }
+
     /**
      * bindQueryParts
      * binds query parts to given component
@@ -261,6 +272,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
         return $this;
     }
+
     /**
      * actAs
      * loads a given plugin 
@@ -299,6 +311,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
         return $this;
     }
+
     /**
      * check
      * adds a check constraint

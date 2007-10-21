@@ -46,6 +46,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                 'PHP Interbase API does not support direct queries. You have to ' .
                 'create the db manually by using isql command or a similar program');
     }
+
     /**
      * drop an existing database
      *
@@ -58,6 +59,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
                 'PHP Interbase API does not support direct queries. You have ' .
                 'to drop the db manually by using isql command or a similar program');
     }
+
     /**
      * add an autoincrement sequence + trigger
      *
@@ -99,6 +101,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
 
         return $result;
     }
+
     /**
      * drop an existing autoincrement sequence + trigger
      *
@@ -116,6 +119,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
 
         return $this->conn->exec("DELETE FROM RDB\$TRIGGERS WHERE UPPER(RDB\$RELATION_NAME)=" . $table . " AND UPPER(RDB\$TRIGGER_NAME)=" . $triggerName);
     }
+
     /**
      * create a new table
      *
@@ -167,6 +171,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
             }
         }
     }
+
     /**
      * Check if planned changes are supported
      *
@@ -196,6 +201,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         }
         return true;
     }
+
     /**
      * drop an existing table
      *
@@ -212,6 +218,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
 
         return $result;
     }
+
     /**
      * alter an existing table
      *
@@ -372,6 +379,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         $this->_silentCommit();
         return $result;
     }
+
     /**
      * Get the stucture of a field into an array
      *
@@ -431,6 +439,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
 
         return $query;
     }
+
     /**
      * create a constraint on a table
      *
@@ -480,6 +489,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         // TODO ? $this->_silentCommit();
         return $result;
     }
+
     /**
      * A method to return the required SQL string that fits between CREATE ... TABLE
      * to create the table as a temporary table.
@@ -491,6 +501,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
     {
         return 'GLOBAL TEMPORARY';
     }
+
     /**
      * create sequence
      *
@@ -523,6 +534,7 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         }
         throw new Doctrine_Export_Exception('could not create sequence table');
     }
+
     /**
      * drop existing sequence
      *

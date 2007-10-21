@@ -68,6 +68,7 @@ class Doctrine_Query_IdentifierQuoting_TestCase extends Doctrine_UnitTestCase
     
         $q->execute();
     }
+
     /**
     public function testQuerySupportsIdentifierQuotingWorksWithinFunctions()
     {

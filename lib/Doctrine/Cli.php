@@ -38,7 +38,7 @@ class Doctrine_Cli
               $scriptName   = null,
               $message      = null,
               $config       = array();
-    
+
     /**
      * __construct
      *
@@ -52,7 +52,7 @@ class Doctrine_Cli
         
         $this->loadTasks();
     }
-    
+
     /**
      * notify
      *
@@ -63,7 +63,7 @@ class Doctrine_Cli
     {
         echo $this->formatter->format($this->taskInstance->getTaskName(), 'INFO') . ' - ' . $this->formatter->format($notification, $style) . "\n";
     }
-    
+
     /**
      * notifyException
      *
@@ -109,7 +109,7 @@ class Doctrine_Cli
         
         $arg1 = isset($args[1]) ? $args[1]:null;
         
-        if (!$arg1 || $arg1 == 'help') {
+        if ( ! $arg1 || $arg1 == 'help') {
             echo $this->printTasks(null, $arg1 == 'help' ? true:false);
             return;
         }
@@ -121,7 +121,7 @@ class Doctrine_Cli
         
         $taskClass = $this->_getTaskClassFromArgs($args);
         
-        if (!class_exists($taskClass)) {
+        if ( ! class_exists($taskClass)) {
             throw new Doctrine_Cli_Exception('Cli task could not be found: ' . $taskClass);
         }
         
@@ -183,7 +183,7 @@ class Doctrine_Cli
         // Now lets fill in the entered arguments to the prepared array
         $copy = $args;
         foreach ($prepared as $key => $value) {
-            if (!$value && !empty($copy)) {
+            if ( ! $value && !empty($copy)) {
                 $prepared[$key] = $copy[0];
                 unset($copy[0]);
                 $copy = array_values($copy);
@@ -229,7 +229,7 @@ class Doctrine_Cli
                 
                 $requiredArguments = $taskInstance->getRequiredArgumentsDescriptions();
                 
-                if (!empty($requiredArguments)) {
+                if ( ! empty($requiredArguments)) {
                     foreach ($requiredArguments as $name => $description) {
                         $args .= $this->formatter->format($name, "ERROR");
                         
@@ -245,7 +245,7 @@ class Doctrine_Cli
             
                 $optionalArguments = $taskInstance->getOptionalArgumentsDescriptions();
                 
-                if (!empty($optionalArguments)) {
+                if ( ! empty($optionalArguments)) {
                     foreach ($optionalArguments as $name => $description) {
                         $args .= $name . ' - ' . $description."\n";
                     }
@@ -259,7 +259,7 @@ class Doctrine_Cli
             echo "\n";
         }
     }
-    
+
     /**
      * loadTasks
      *
@@ -286,7 +286,7 @@ class Doctrine_Cli
                     
                     $className = 'Doctrine_Task_' . $e[0];
                     
-                    if (!class_exists($className)) {
+                    if ( ! class_exists($className)) {
                         require_once($file->getPathName());
                     
                         $class = new ReflectionClass($className);

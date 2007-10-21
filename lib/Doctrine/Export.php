@@ -58,6 +58,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $this->conn->execute($this->dropDatabaseSql($database));
     }
+
     /**
      * drop an existing database
      * (this method is implemented by the drivers)
@@ -69,6 +70,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         throw new Doctrine_Export_Exception('Drop database not supported by this driver.');
     }
+
     /**
      * dropTableSql
      * drop an existing table
@@ -80,6 +82,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         return 'DROP TABLE ' . $this->conn->quoteIdentifier($table);
     }
+
     /**
      * dropTable
      * drop an existing table
@@ -117,6 +120,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         
         return 'DROP INDEX ' . $name;
     }
+
     /**
      * drop existing constraint
      *
@@ -132,6 +136,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         
         return $this->conn->exec('ALTER TABLE ' . $table . ' DROP CONSTRAINT ' . $name);
     }
+
     /**
      * drop existing foreign key
      *
@@ -143,6 +148,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         return $this->dropConstraint($table, $name);
     }
+
     /**
      * dropSequenceSql
      * drop existing sequence
@@ -156,6 +162,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $this->conn->exec($this->dropSequenceSql($sequenceName));
     }
+
     /**
      * dropSequenceSql
      * drop existing sequence
@@ -168,6 +175,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         throw new Doctrine_Export_Exception('Drop sequence not supported by this driver.');
     }
+
     /**
      * create a new database
      * (this method is implemented by the drivers)
@@ -179,6 +187,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         $this->conn->execute($this->createDatabaseSql($database));
     }
+
     /**
      * create a new database
      * (this method is implemented by the drivers)
@@ -190,6 +199,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         throw new Doctrine_Export_Exception('Create database not supported by this driver.');
     }
+
     /**
      * create a new table
      *
@@ -265,6 +275,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         return $sql;
     }
+
     /**
      * create a new table
      *
@@ -283,6 +294,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $this->conn->execute($query);
         }
     }
+
     /**
      * create sequence
      *
@@ -301,6 +313,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         return $this->conn->execute($this->createSequenceSql($seqName, $start = 1, $options));
     }
+
     /**
      * return RDBMS specific create sequence statement
      * (this method is implemented by the drivers)
@@ -320,6 +333,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         throw new Doctrine_Export_Exception('Create sequence not supported by this driver.');
     }
+
     /**
      * create a constraint on a table
      *
@@ -347,6 +361,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         
         return $this->conn->exec($sql);
     }
+
     /**
      * create a constraint on a table
      *
@@ -388,6 +403,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         return $query;
     }
+
     /**
      * Get the stucture of a field into an array
      *
@@ -423,6 +439,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         return $this->conn->execute($this->createIndexSql($table, $name, $definition));
     }
+
     /**
      * Get the stucture of a field into an array
      *
@@ -473,6 +490,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         return $query;
     }
+
     /**
      * createForeignKey
      *
@@ -486,6 +504,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         
         return $this->conn->execute($sql);
     }
+
     /**
      * alter an existing table
      * (this method is implemented by the drivers)
@@ -583,6 +602,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $this->conn->execute($sql);
         }
     }
+
     /**
      * generates the sql for altering an existing table
      * (this method is implemented by the drivers)
@@ -599,6 +619,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         throw new Doctrine_Export_Exception('Alter table not supported by this driver.');
     }
+
     /**
      * Get declaration of a number of field in bulk
      *
@@ -637,6 +658,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         return implode(', ', $queryFields);
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to declare a generic type
      * field to be used in statements like CREATE TABLE.
@@ -697,6 +719,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         return $this->conn->quoteIdentifier($name, true) . ' ' . $dec . $charset . $default . $notnull . $unique . $check . $collation;
     }
+
     /**
      * getDefaultDeclaration
      * Obtain DBMS specific SQL code portion needed to set a default value
@@ -726,6 +749,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         return $default;
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to set a CHECK constraint
      * declaration to be used in statements like CREATE TABLE.
@@ -752,6 +776,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         return implode(', ', $constraints);
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to set an index
      * declaration to be used in statements like CREATE TABLE.
@@ -783,6 +808,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         return $query;
     }
+
     /**
      * getIndexFieldDeclarationList
      * Obtain DBMS specific SQL code portion needed to set an index
@@ -802,6 +828,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         return implode(', ', $ret);
     }
+
     /**
      * A method to return the required SQL string that fits between CREATE ... TABLE
      * to create the table as a temporary table.
@@ -820,6 +847,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         return 'TEMPORARY';
     }
+
     /**
      * getForeignKeyDeclaration
      * Obtain DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
@@ -869,6 +897,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         return $sql;
     }
+
     /**
      * getAdvancedForeignKeyOptions
      * Return the FOREIGN KEY query section dealing with non-standard options
@@ -888,6 +917,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         }
         return $query;
     }
+
     /**
      * getForeignKeyReferentialAction
      *
@@ -913,6 +943,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
                 throw new Doctrine_Export_Exception('Unknown foreign key referential action \'' . $upper . '\' given.');
         }
     }
+
     /**
      * getForeignKeyBaseDeclaration
      * Obtain DBMS specific SQL code portion needed to set the FOREIGN KEY constraint
@@ -953,6 +984,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         return $sql;
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to set the UNIQUE constraint
      * of a field declaration to be used in statements like CREATE TABLE.
@@ -964,6 +996,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         return 'UNIQUE';
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
      * of a field declaration to be used in statements like CREATE TABLE.
@@ -976,6 +1009,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         return '';
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to set the COLLATION
      * of a field declaration to be used in statements like CREATE TABLE.
@@ -988,6 +1022,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
     {
         return '';
     }
+
     /**
      * exportSchema
      * method for exporting Doctrine_Record classes to a schema
@@ -1013,6 +1048,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         
         $this->exportClasses($models);
     }
+
     /**
      * exportClasses
      * method for exporting Doctrine_Record classes to a schema
@@ -1030,7 +1066,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $connection = $record->getTable()->getConnection();
             $connectionName = Doctrine_Manager::getInstance()->getConnectionName($connection);
             
-            if (!isset($connections[$connectionName])) {
+            if ( ! isset($connections[$connectionName])) {
                 $connections[$connectionName] = array();
                 $connections[$connectionName]['creates'] = array();
                 $connections[$connectionName]['alters'] = array();
@@ -1075,6 +1111,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
             $connection->commit();
         }
     }
+
     /**
      * exportClassesSql
      * method for exporting Doctrine_Record classes to a schema
@@ -1115,6 +1152,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         return $sql;
     }
+
     /**
      * exportPluginsSql
      * exports plugin tables for given table
@@ -1147,6 +1185,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
         return $sql;
     }
+
     /**
      * exportSql
      * returns the sql for exporting Doctrine_Record classes to a schema
@@ -1172,6 +1211,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
         
         return $this->exportClassesSql($models);
     }
+
     /**
      * exportTable
      * exports given table into database based on column and option definitions

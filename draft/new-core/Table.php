@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Table   
  * 
@@ -39,39 +40,48 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      * @var array $data                                 temporary data which is then loaded into Doctrine_Record::$data
      */
     private $data             = array();
+
     /**
      * @var array $relations                            an array containing all the Doctrine_Relation objects for this table
      */
     private $relations        = array();
+
     /**
      * @var array $primaryKeys                          an array containing all primary key column names
      */
     private $primaryKeys      = array();
+
     /**
      * @var mixed $identifier
      */
     private $identifier;
+
     /**
      * @see Doctrine_Identifier constants
      * @var integer $identifierType                     the type of identifier this table uses
      */
     private $identifierType;
+
     /**
      * @var Doctrine_Connection $conn                   Doctrine_Connection object that created this table
      */
     private $conn;
+
     /**
      * @var string $name
      */
     private $name;
+
     /**
      * @var array $identityMap                          first level cache
      */
     private $identityMap        = array();
+
     /**
      * @var Doctrine_Table_Repository $repository       record repository
      */
     private $repository;
+
     /**
      * @var array $columns                  an array of column definitions,
      *                                      keys as column names and values as column definitions
@@ -89,28 +99,34 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      *                                              )
      */
     protected $columns          = array();
+
     /**
      * @var array $columnAliases            an array of column aliases
      *                                      keys as column aliases and values as column names
      */
     protected $columnAliases    = array();
+
     /**
      * @var array $bound                    bound relations
      */
     private $bound              = array();
+
     /**
      * @var array $boundAliases             bound relation aliases
      */
     private $boundAliases       = array();
+
     /**
      * @var integer $columnCount            cached column count, Doctrine_Record uses this column count in when
      *                                      determining its state
      */
     private $columnCount;
+
     /**
      * @var boolean $hasDefaultValues       whether or not this table has default values
      */
     private $hasDefaultValues;
+
     /**
      * @var array $options                  an array containing all options
      *
@@ -160,10 +176,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
                                'treeOptions'    => null,
                                'indexes'        => array(),
                                );
+
     /**
      * @var Doctrine_Tree $tree             tree object associated with this table
      */
     protected $tree;
+
     /**
      * the constructor
      * @throws Doctrine_Connection_Exception    if there are no opened connections
@@ -301,6 +319,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         $this->repository = new Doctrine_Table_Repository($this);
     }
+
     /**
      * export
      * exports this table to database based on column and option definitions
@@ -373,6 +392,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             }
         }
     }
+
     /**
      * exportConstraints
      * exports the constraints of this table into database based on option definitions
@@ -395,6 +415,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             throw $e;
         }
     }
+
     /** 
      * __get
      * an alias for getOption
@@ -408,6 +429,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return null;
     }
+
     /**
      * __isset
      *
@@ -417,6 +439,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return isset($this->options[$option]);
     }
+
     /**
      * addForeignKey
      *
@@ -428,6 +451,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         $this->options['foreignKeys'][] = $definition;
     }
+
     /**
      * addIndex
      * 
@@ -440,6 +464,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $index = $this->conn->getIndexName($index);
         $this->options['indexes'][$index] = $definition;
     }
+
     /**
      * getIndex
      *
@@ -453,6 +478,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return false;
     }
+
     /**
      * createQuery
      * creates a new Doctrine_Query object and adds the component name
@@ -464,6 +490,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return Doctrine_Query::create()->from($this->getComponentName());
     }
+
     /**
      * getRepository
      *
@@ -498,6 +525,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return null;
     }
+
     /**
      * getColumnName
      *
@@ -516,6 +544,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $alias;
     }
+
     /**
      * setColumn
      *
@@ -567,6 +596,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $this->hasDefaultValues = true;
         }
     }
+
     /**
      * hasDefaultValues
      * returns true if this table has default values, otherwise false
@@ -577,6 +607,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->hasDefaultValues;
     }
+
     /**
      * getDefaultValueOf
      * returns the default value(if any) for given column
@@ -596,6 +627,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             return null;
         }
     }
+
     /**
      * @return mixed
      */
@@ -603,6 +635,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->identifier;
     }
+
     /**
      * @return integer
      */
@@ -610,6 +643,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->identifierType;
     }
+
     /**
      * hasColumn
      * @return boolean
@@ -618,6 +652,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return isset($this->columns[$name]);
     }
+
     /**
      * @param mixed $key
      * @return void
@@ -633,6 +668,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             break;
         };
     }
+
     /**
      * returns all primary keys
      * @return array
@@ -641,6 +677,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->primaryKeys;
     }
+
     /**
      * @return boolean
      */
@@ -648,6 +685,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return in_array($key,$this->primaryKeys);
     }
+
     /**
      * returns all bound relations
      *
@@ -657,6 +695,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->bound;
     }
+
     /**
      * returns a bound relation array
      *
@@ -670,6 +709,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return $this->bound[$name];
     }
+
     /**
      * returns a bound relation array
      *
@@ -687,6 +727,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         throw new Doctrine_Table_Exception('Unknown bound ' . $name);
     }
+
     /**
      * returns the alias for given component name
      *
@@ -700,6 +741,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return $name;
     }
+
     /**
      * returns component name for given alias
      *
@@ -713,6 +755,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return $alias;
     }
+
     /**
      * unbinds all relations
      *
@@ -724,6 +767,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     $this->relations    = array();
     $this->boundAliases = array();
     }
+
     /**
      * unbinds a relation
      * returns true on success, false on failure
@@ -746,6 +790,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return true;
     }
+
     /**
      * binds a relation
      *
@@ -790,6 +835,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $this->bound[$alias] = array_merge($this->bound[$alias], $opt);
         }
     }
+
     /**
      * @return Doctrine_Connection
      */
@@ -797,6 +843,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->conn;
     }
+
     /**
      * hasRelatedComponent
      * @return boolean
@@ -805,6 +852,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return (strpos($this->bound[$name]['field'], $component . '.') !== false);
     }
+
     /**
      * @param string $name              component name of which a foreign key object is bound
      * @return boolean
@@ -821,6 +869,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return false;
     }
+
     /**
      * getRelation
      *
@@ -985,6 +1034,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
 
     }
+
     /**
      * returns an array containing all foreign key objects
      *
@@ -998,6 +1048,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $this->relations;
     }
+
     /**
      * create
      * creates a new record
@@ -1011,6 +1062,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $this->data         = array();
         return $record;
     }
+
     /**
      * finds a record by its identifier
      *
@@ -1042,6 +1094,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return false;
     }
+
     /**
      * applyInheritance
      * @param $where                    query where part to be modified
@@ -1059,6 +1112,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return $where;
     }
+
     /**
      * findAll
      * returns a collection of records
@@ -1071,6 +1125,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $users = $graph->query("FROM ".$this->options['name']);
         return $users;
     }
+
     /**
      * findByDql
      * finds records with given DQL where clause
@@ -1089,6 +1144,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function findByDql($dql, array $params = array()) {
         return $this->findBySql($dql, $params);
     }
+
     /**
      * clear
      * clears the first level cache (identityMap)
@@ -1099,6 +1155,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         $this->identityMap = array();
     }
+
     /**
      * getRecord
      * first checks if record exists in identityMap, if not
@@ -1154,7 +1211,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */ 
     public function getClassnameToReturn()
     {
-        if (!isset($this->options['subclasses'])) {
+        if ( ! isset($this->options['subclasses'])) {
             return $this->options['name'];
         }
         foreach ($this->options['subclasses'] as $subclass) {
@@ -1162,7 +1219,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             $inheritanceMap = $table->getOption('inheritanceMap');
             $nomatch = false;
             foreach ($inheritanceMap as $key => $value) {
-                if (!isset($this->data[$key]) || $this->data[$key] != $value) {
+                if ( ! isset($this->data[$key]) || $this->data[$key] != $value) {
                     $nomatch = true;
                     break;
                 }
@@ -1195,6 +1252,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return $this->getRecord();
     }
+
     /**
      * count
      *
@@ -1205,6 +1263,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $a = $this->conn->getDBH()->query("SELECT COUNT(1) FROM ".$this->options['tableName'])->fetch(PDO::FETCH_NUM);
         return current($a);
     }
+
     /**
      * @return Doctrine_Query                           a Doctrine_Query object
      */
@@ -1214,6 +1273,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $graph->load($this->getComponentName());
         return $graph;
     }
+
     /**
      * execute
      * @param string $query
@@ -1240,6 +1300,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return $coll;
     }
+
     /**
      * @param string $field
      * @return array
@@ -1252,6 +1313,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             return array();
         }
     }
+
     /**
      * enumValue
      *
@@ -1266,6 +1328,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return isset($this->columns[$field][2]['values'][$index]) ? $this->columns[$field][2]['values'][$index] : $index;
     }
+
     /**
      * enumIndex
      *
@@ -1279,6 +1342,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return array_search($value, $values);
     }
+
     /**
      * invokeSet
      *
@@ -1290,7 +1354,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             return $value;
         }
         $prefix = $this->getAttribute(Doctrine::ATTR_ACCESSOR_PREFIX_SET);
-        if (!$prefix)
+        if ( ! $prefix)
             $prefix = 'set';
 
         $method = $prefix . $name;
@@ -1301,6 +1365,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $value;
     }
+
     /**
      * invokeGet
      *
@@ -1312,7 +1377,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             return $value;
         }
         $prefix = $this->getAttribute(Doctrine::ATTR_ACCESSOR_PREFIX_GET);
-        if (!$prefix)
+        if ( ! $prefix)
             $prefix = 'get';
 
         $method = $prefix . $name;
@@ -1336,6 +1401,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return false;
     }
+
     /**
      * getColumnCount
      *
@@ -1355,6 +1421,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->columns;
     }
+
     /**
      * returns an array containing all the column names
      *
@@ -1377,6 +1444,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return false;
     }
+
     /**
      * getTypeOf
      *
@@ -1389,6 +1457,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return false;
     }
+
     /**
      * setData
      * doctrine uses this function internally
@@ -1401,6 +1470,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         $this->data = $data;
     }
+
     /**
      * returns the maximum primary key value
      *
@@ -1413,6 +1483,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $data = $stmt->fetch(PDO::FETCH_NUM);
         return isset($data[0])?$data[0]:1;
     }
+
     /**
      * returns internal data, used by Doctrine_Record instances
      * when retrieving data from database
@@ -1423,6 +1494,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         return $this->data;
     }
+
     /**
      * getter for associated tree
      *
@@ -1453,6 +1525,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         $this->options['tableName'] = $tableName;	
     }
+
     /**
      * determine if table acts as tree
      *
@@ -1461,6 +1534,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function isTree() {
         return ( ! is_null($this->options['treeImpl'])) ? true : false;
     }
+
     /**
      * returns a string representation of this object
      *

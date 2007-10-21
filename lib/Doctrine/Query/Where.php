@@ -152,6 +152,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
         }
         return $value;
     }
+
     /**
      * parses an EXISTS expression
      *

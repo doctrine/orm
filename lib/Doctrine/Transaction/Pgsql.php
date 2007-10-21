@@ -46,6 +46,7 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction
 
         return $this->conn->execute($query);
     }
+
     /**
      * releaseSavePoint
      * releases given savepoint
@@ -59,6 +60,7 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction
 
         return $this->conn->execute($query);
     }
+
     /**
      * rollbackSavePoint
      * releases given savepoint
@@ -72,6 +74,7 @@ class Doctrine_Transaction_Pgsql extends Doctrine_Transaction
 
         return $this->conn->execute($query);
     }
+
     /**
      * Set the transacton isolation level.
      *

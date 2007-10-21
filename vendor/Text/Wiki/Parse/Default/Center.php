@@ -46,7 +46,7 @@ class Text_Wiki_Parse_Center extends Text_Wiki_Parse {
     */
     
     var $regex = '/\n\= (.*?)\n/';
-    
+
     /**
     * 
     * Generates a token entry for the matched text.

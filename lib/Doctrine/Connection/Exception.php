@@ -69,12 +69,14 @@ class Doctrine_Connection_Exception extends Doctrine_Exception
                 Doctrine::ERR_TRUNCATED          => 'truncated',
                 Doctrine::ERR_DEADLOCK           => 'deadlock detected',
                 );
+
     /**
      * @see Doctrine::ERR_* constants
      * @since 1.0
      * @var integer $portableCode           portable error code
      */
     protected $portableCode;
+
     /**
      * getPortableCode
      * returns portable error code
@@ -85,6 +87,7 @@ class Doctrine_Connection_Exception extends Doctrine_Exception
     {
         return $this->portableCode;
     }
+
     /**
      * getPortableMessage
      * returns portable error message
@@ -95,6 +98,7 @@ class Doctrine_Connection_Exception extends Doctrine_Exception
     {
         return self::errorMessage($this->portableCode);
     }
+
     /**
      * Return a textual error message for a Doctrine error code
      *

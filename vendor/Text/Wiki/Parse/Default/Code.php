@@ -51,7 +51,7 @@ class Text_Wiki_Parse_Code extends Text_Wiki_Parse {
     
 /*    var $regex = '/^(\<code( .+)?\>)\n(.+)\n(\<\/code\>)(\s|$)/Umsi';*/
     var $regex = ';^<code(\s[^>]*)?>((?:(?R)|.*?)*)\n</code>(\s|$);msi';
-    
+
     /**
     * 
     * Generates a token entry for the matched text.  Token options are:
@@ -82,7 +82,7 @@ class Text_Wiki_Parse_Code extends Text_Wiki_Parse {
         	$attr = $this->getAttrs($args);
         	
         	// ... and make sure we have a 'type'
-        	if (! isset($attr['type'])) {
+        	if ( !  isset($attr['type'])) {
         		$attr['type'] = '';
         	}
         	

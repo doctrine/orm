@@ -37,20 +37,18 @@ class Doctrine_Data_Import extends Doctrine_Data
      *
      * @param string $directory 
      * @return void
-     * @author Jonathan H. Wage
      */
-    
     public function __construct($directory = null)
     {
         if ($directory !== null) {
             $this->setDirectory($directory);
         }
     }
+
     /**
      * doImport
      *
      * @return void
-     * @author Jonathan H. Wage
      */
     public function doImport()
     {
@@ -82,12 +80,12 @@ class Doctrine_Data_Import extends Doctrine_Data
         
         $this->loadData($array);
     }
+
     /**
      * loadData
      *
      * @param string $array 
      * @return void
-     * @author Jonathan H. Wage
      */
     protected function loadData(array $array)
     {
@@ -99,7 +97,7 @@ class Doctrine_Data_Import extends Doctrine_Data
         
         foreach ($array as $className => $data) {
             
-            if (!empty($specifiedModels) && !in_array($className, $specifiedModels)) {
+            if ( ! empty($specifiedModels) && !in_array($className, $specifiedModels)) {
                 continue;
             }
             
@@ -149,12 +147,12 @@ class Doctrine_Data_Import extends Doctrine_Data
             $obj->save();
         }
     }
+
     /**
      * doImportDummyData
      *
      * @param string $num 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function doImportDummyData($num = 3)
     {
@@ -163,7 +161,7 @@ class Doctrine_Data_Import extends Doctrine_Data
         $specifiedModels = $this->getModels();
         
         foreach ($models as $name) {
-            if (!empty($specifiedModels) && !in_array($name, $specifiedModels)) {
+            if ( ! empty($specifiedModels) && !in_array($name, $specifiedModels)) {
                 continue;
             }
             
@@ -181,18 +179,24 @@ class Doctrine_Data_Import extends Doctrine_Data
     
     public function populateDummyRecord(Doctrine_Record $record)
     {
-        $lorem = explode(' ', "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
+        $lorem = explode(' ', "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem 
+                               Ipsum has been the industry's standard dummy text ever since the 1500s, when an 
+                               unknown printer took a galley of type and scrambled it to make a type specimen book. 
+                               It has survived not only five centuries, but also the leap into electronic 
+                               typesetting, remaining essentially unchanged. It was popularised in the 1960s with 
+                               the release of Letraset sheets containing Lorem Ipsum passages, and more recently 
+                               with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
         
         $columns = array_keys($record->toArray());
         $pks = $record->getTable()->getIdentifier();
         
-        if (!is_array($pks)) {
+        if ( ! is_array($pks)) {
           $pks = array($pks);
         }
         
         foreach ($columns as $column) {
             
-            if (!in_array($column, $pks)) {
+            if ( ! in_array($column, $pks)) {
                 if ($relation = $this->isRelation($record, $column)) {
                     $alias = $relation['alias'];
                     $relationObj = $record->$alias;

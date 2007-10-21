@@ -114,7 +114,7 @@ class XML_Parser_Simple extends XML_Parser
         'notation_decl_handler'             => 'notationHandler',
         'external_entity_ref_handler'       => 'entityrefHandler'
     );
-    
+
     /**
      * Creates an XML parser.
      *
@@ -140,7 +140,7 @@ class XML_Parser_Simple extends XML_Parser
      */
     function _initHandlers()
     {
-        if (!is_object($this->_handlerObj)) {
+        if ( ! is_object($this->_handlerObj)) {
             $this->_handlerObj = &$this;
         }
 

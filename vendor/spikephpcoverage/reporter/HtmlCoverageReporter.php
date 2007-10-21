@@ -9,7 +9,7 @@
 ?>
 <?php
 
-    if(!defined("__PHPCOVERAGE_HOME")) {
+    if( ! defined("__PHPCOVERAGE_HOME")) {
         define("__PHPCOVERAGE_HOME", dirname(dirname(__FILE__)));
     }
     require_once __PHPCOVERAGE_HOME . "/reporter/CoverageReporter.php";
@@ -66,7 +66,7 @@
         * @access public
         */
         public function generateReport(&$data) {
-            if(!file_exists($this->outputDir)) {
+            if( ! file_exists($this->outputDir)) {
                 mkdir($this->outputDir);
             }
             $this->coverageData =& $data;
@@ -154,7 +154,7 @@
                 mkdir($imagesDir);
             }
             $imagesSpikeDir = $imagesDir . "/spikesource";
-            if(!file_exists($imagesSpikeDir)) {
+            if( ! file_exists($imagesSpikeDir)) {
                 mkdir($imagesSpikeDir);
             }
             $imagesArrowUpFile = realpath(dirname(__FILE__)) . "/images/arrow_up.gif";
@@ -341,7 +341,7 @@
             }
             $str .= $this->writeIndexFileTableHead();
             $str .= '<tbody>';
-            if(!empty($this->coverageData)) {
+            if( ! empty($this->coverageData)) {
                 foreach($this->coverageData as $filename => &$lines) {
                     $realFile = realpath($filename);
                     $fileLink = $this->outputDir . $util->unixifyPath($realFile). ".html";
@@ -439,7 +439,7 @@
             global $util;
             $fileLink = $util->replaceBackslashes($fileLink);
             $parentDir = $util->replaceBackslashes(dirname($fileLink));
-            if(!file_exists($parentDir)) {
+            if( ! file_exists($parentDir)) {
                 //echo "\nCreating dir: $parentDir\n";
                 $util->makeDirRecursive($parentDir, 0755);
             }
@@ -510,7 +510,7 @@
                 $lastLineType = $type;
                 //echo $line . "\t[" . $type . "]\n";
 
-                if(!isset($coverageLines[$lineCnt])) {
+                if( ! isset($coverageLines[$lineCnt])) {
                     $coverageLines[$lineCnt] = 0;
                 }
                 $fileLines[$lineCnt] = array("type" => $type, "lineCnt" => $lineCnt, "line" => $line, "coverageLines" => $coverageLines[$lineCnt]);

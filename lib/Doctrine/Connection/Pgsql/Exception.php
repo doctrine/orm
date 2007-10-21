@@ -80,6 +80,7 @@ class Doctrine_Connection_Pgsql_Exception extends Doctrine_Connection_Exception
                                     '/more expressions than target columns/i'
                                         => Doctrine::ERR_VALUE_COUNT_ON_ROW,
                                 );
+
     /**
      * This method checks if native error code/message can be
      * converted into a portable code and then adds this

@@ -444,7 +444,7 @@ class Text_Wiki {
     function &singleton($parser = 'Default', $rules = null)
     {
         static $only = array();
-        if (!isset($only[$parser])) {
+        if ( ! isset($only[$parser])) {
             $ret = & Text_Wiki::factory($parser, $rules);
             if (Text_Wiki::isError($ret)) {
                 return $ret;
@@ -469,9 +469,9 @@ class Text_Wiki {
     {
         $class = 'Text_Wiki_' . $parser;
         $file = str_replace('_', '/', $class).'.php';
-        if (!class_exists($class)) {
+        if ( ! class_exists($class)) {
             require_once $file;
-            if (!class_exists($class)) {
+            if ( ! class_exists($class)) {
                 return Text_Wiki::error(
                     'Class ' . $class . ' does not exist after requiring '. $file .
                         ', install package ' . $class . "\n");
@@ -503,7 +503,7 @@ class Text_Wiki {
     {
         $rule = ucwords(strtolower($rule));
 
-        if (! isset($this->parseConf[$rule])) {
+        if ( !  isset($this->parseConf[$rule])) {
             $this->parseConf[$rule] = array();
         }
 
@@ -539,7 +539,7 @@ class Text_Wiki {
         $rule = ucwords(strtolower($rule));
 
         // the rule does not exist
-        if (! isset($this->parseConf[$rule])) {
+        if ( !  isset($this->parseConf[$rule])) {
             return null;
         }
 
@@ -583,11 +583,11 @@ class Text_Wiki {
         $format = ucwords(strtolower($format));
         $rule = ucwords(strtolower($rule));
 
-        if (! isset($this->renderConf[$format])) {
+        if ( !  isset($this->renderConf[$format])) {
             $this->renderConf[$format] = array();
         }
 
-        if (! isset($this->renderConf[$format][$rule])) {
+        if ( !  isset($this->renderConf[$format][$rule])) {
             $this->renderConf[$format][$rule] = array();
         }
 
@@ -625,7 +625,7 @@ class Text_Wiki {
         $format = ucwords(strtolower($format));
         $rule = ucwords(strtolower($rule));
 
-        if (! isset($this->renderConf[$format]) ||
+        if ( !  isset($this->renderConf[$format]) ||
             ! isset($this->renderConf[$format][$rule])) {
             return null;
         }
@@ -664,7 +664,7 @@ class Text_Wiki {
 
     function setFormatConf($format, $arg1, $arg2 = null)
     {
-        if (! is_array($this->formatConf[$format])) {
+        if ( !  is_array($this->formatConf[$format])) {
             $this->formatConf[$format] = array();
         }
 
@@ -699,7 +699,7 @@ class Text_Wiki {
     function getFormatConf($format, $key = null)
     {
         // the format does not exist
-        if (! isset($this->formatConf[$format])) {
+        if ( !  isset($this->formatConf[$format])) {
             return null;
         }
 
@@ -739,7 +739,7 @@ class Text_Wiki {
     function insertRule($name, $tgt = null)
     {
         $name = ucwords(strtolower($name));
-        if (! is_null($tgt)) {
+        if ( !  is_null($tgt)) {
             $tgt = ucwords(strtolower($tgt));
         }
 
@@ -752,7 +752,7 @@ class Text_Wiki {
         // the target name is not null, and not '', but does not exist
         // in the list of rules. this means we're trying to insert after
         // a target key, but the target key isn't there.
-        if (! is_null($tgt) && $tgt != '' &&
+        if ( !  is_null($tgt) && $tgt != '' &&
             ! in_array($tgt, $this->rules)) {
             return false;
         }
@@ -946,7 +946,7 @@ class Text_Wiki {
         // text.
         foreach ($this->rules as $name) {
             // do not parse the rules listed in $disable
-            if (! in_array($name, $this->disable)) {
+            if ( !  in_array($name, $this->disable)) {
 
                 // load the parsing object
                 $this->loadParseObj($name);
@@ -1227,7 +1227,7 @@ class Text_Wiki {
         // multiple times with the same Text_Wiki object, the ID number
         // will not reset to zero.
         static $id;
-        if (! isset($id)) {
+        if ( !  isset($id)) {
             $id = 0;
         } else {
             $id ++;
@@ -1241,7 +1241,7 @@ class Text_Wiki {
             0 => $rule,
             1 => $options
         );
-        if (!isset($this->_countRulesTokens[$rule])) {
+        if ( ! isset($this->_countRulesTokens[$rule])) {
             $this->_countRulesTokens[$rule] = 1;
         } else {
             ++$this->_countRulesTokens[$rule];
@@ -1287,10 +1287,10 @@ class Text_Wiki {
             1 => $options
         );
         if ($rule != $oldRule) {
-            if (!($this->_countRulesTokens[$oldRule]--)) {
+            if ( ! ($this->_countRulesTokens[$oldRule]--)) {
                 unset($this->_countRulesTokens[$oldRule]);
             }
-            if (!isset($this->_countRulesTokens[$rule])) {
+            if ( ! isset($this->_countRulesTokens[$rule])) {
                 $this->_countRulesTokens[$rule] = 1;
             } else {
                 ++$this->_countRulesTokens[$rule];
@@ -1315,7 +1315,7 @@ class Text_Wiki {
         $file = $rule . '.php';
         $class = "Text_Wiki_Parse_$rule";
 
-        if (! class_exists($class)) {
+        if ( !  class_exists($class)) {
             $loc = $this->findFile('parse', $file);
             if ($loc) {
                 // found the class
@@ -1352,7 +1352,7 @@ class Text_Wiki {
         $file = "$format/$rule.php";
         $class = "Text_Wiki_Render_$format" . "_$rule";
 
-        if (! class_exists($class)) {
+        if ( !  class_exists($class)) {
             // load the class
             $loc = $this->findFile('render', $file);
             if ($loc) {
@@ -1386,7 +1386,7 @@ class Text_Wiki {
         $file = $format . '.php';
         $class = "Text_Wiki_Render_$format";
 
-        if (! class_exists($class)) {
+        if ( !  class_exists($class)) {
             $loc = $this->findFile('render', $file);
             if ($loc) {
                 // found the class
@@ -1420,7 +1420,7 @@ class Text_Wiki {
     function addPath($type, $dir)
     {
         $dir = $this->fixPath($dir);
-        if (! isset($this->path[$type])) {
+        if ( !  isset($this->path[$type])) {
             $this->path[$type] = array($dir);
         } else {
             array_unshift($this->path[$type], $dir);
@@ -1445,7 +1445,7 @@ class Text_Wiki {
     {
         if (is_null($type)) {
             return $this->path;
-        } elseif (! isset($this->path[$type])) {
+        } elseif ( !  isset($this->path[$type])) {
             return array();
         } else {
             return $this->path[$type];
@@ -1501,7 +1501,7 @@ class Text_Wiki {
     {
         $len = strlen($this->_dirSep);
 
-        if (! empty($path) &&
+        if ( !  empty($path) &&
             substr($path, -1 * $len, $len) != $this->_dirSep)    {
             return $path . $this->_dirSep;
         } else {
@@ -1524,7 +1524,7 @@ class Text_Wiki {
 
     function &error($message)
     {
-        if (! class_exists('PEAR_Error')) {
+        if ( !  class_exists('PEAR_Error')) {
             include_once 'PEAR.php';
         }
         return PEAR::throwError($message);

@@ -40,14 +40,17 @@
 class Doctrine_Import_Schema
 {
     public $relations = array();
-    public $indexes = array();
     public $generateBaseClasses = false;
-    
+
     /**
      * generateBaseClasses
      *
-     * @param string $bool 
-     * @return void
+     * Specify whether or not to generate base classes with the model definition in it. The base is generated everytime
+     * But another child class that extends the base is only generated once. Allowing you to customize your models
+     * Without losing the changes when you regenerate
+     *
+     * @param   string $bool 
+     * @return  bool   $generateBaseClasses
      */
     public function generateBaseClasses($bool = null)
     {
@@ -57,13 +60,15 @@ class Doctrine_Import_Schema
         
         return $this->generateBaseClasses;
     }
-    
+
     /**
      * buildSchema
      *
-     * @param string $schema 
-     * @param string $format 
-     * @return void
+     * Loop throug directories of schema files and part them all in to one complete array of schema information
+     *
+     * @param  string   $schema Array of schema files or single schema file. Array of directories with schema files or single directory
+     * @param  string   $format Format of the files we are parsing and building from
+     * @return array    $array
      */
     public function buildSchema($schema, $format)
     {
@@ -87,9 +92,9 @@ class Doctrine_Import_Schema
         
         $this->buildRelationships($array);
         
-        return array('schema' => $array, 'relations' => $this->relations, 'indexes' => $this->indexes);
+        return array('schema' => $array, 'relations' => $this->relations);
     }
-    
+
     /**
      * importSchema
      *
@@ -99,7 +104,7 @@ class Doctrine_Import_Schema
      * @param  string $directory    The directory where the Doctrine_Record class will be written
      * @param  array $models        Optional array of models to import
      *
-     * @access public
+     * @return void
      */
     public function importSchema($schema, $format = 'yml', $directory = null, $models = array())
     {
@@ -112,7 +117,7 @@ class Doctrine_Import_Schema
         $array = $schema['schema'];
         
         foreach ($array as $name => $properties) {
-            if (!empty($models) && !in_array($properties['className'], $models)) {
+            if ( ! empty($models) && !in_array($properties['className'], $models)) {
                 continue;
             }
             
@@ -127,13 +132,15 @@ class Doctrine_Import_Schema
             $builder->buildRecord($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
         }
     }
-    
+
     /**
      * getOptions
      *
-     * @param string $properties 
-     * @param string $directory 
-     * @return void
+     * FIXME: Directory argument needs to be removed
+     *
+     * @param string $properties Array of table properties
+     * @param string $directory  Directory we are writing the class to
+     * @return array $options    Array of options from a parse schemas properties
      */
     public function getOptions($properties, $directory)
     {
@@ -150,81 +157,93 @@ class Doctrine_Import_Schema
 
         return $options;
     }
-    
+
     /**
      * getColumns
      *
-     * @param string $properties 
-     * @return void
+     * Get array of columns from table properties
+     *
+     * @param  string $properties Array of table properties
+     * @return array  $columns    Array of columns
      */
     public function getColumns($properties)
     {
         return isset($properties['columns']) ? $properties['columns']:array();
     }
-    
+
     /**
      * getRelations
+     * 
+     * Get array of relations from table properties
      *
-     * @param string $properties 
-     * @return void
+     * @param  string $properties Array of tables properties
+     * @return array  $relations  Array of relations
      */
     public function getRelations($properties)
     {
         return isset($this->relations[$properties['className']]) ? $this->relations[$properties['className']]:array();
     }
-    
+
     /**
      * getIndexes
      *
-     * @param string $properties 
-     * @return void
+     * Get array of indexes from table properties
+     *
+     * @param  string $properties Array of table properties
+     * @return array  $index
      */
     public function getIndexes($properties)
     {
         return isset($properties['indexes']) ? $properties['indexes']:array();;
     }
-    
+
     /**
      * getAttributes
      *
-     * @param string $properties 
-     * @return void
+     * Get array of attributes from table properties
+     *
+     * @param  string $properties Array of tables properties 
+     * @return array  $attributes
      */
     public function getAttributes($properties)
     {
         return isset($properties['attributes']) ? $properties['attributes']:array();
     }
-    
+
     /**
      * getTemplates
      *
-     * @param string $properties 
-     * @return void
+     * Get array of templates from table properties
+     *
+     * @param  string $properties Array of table properties
+     * @return array  $templates  Array of table templates
      */
     public function getTemplates($properties)
     {
         return isset($properties['templates']) ? $properties['templates']:array();
     }
-    
+
     /**
      * getActAs
      *
-     * @param string $properties 
-     * @return void
+     * Get array of actAs definitions from table properties
+     *
+     * @param  string $properties Array of table properties
+     * @return array  $actAs      Array of actAs definitions from table properties
      */
     public function getActAs($properties)
     {
         return isset($properties['actAs']) ? $properties['actAs']:array();
     }
-    
+
     /**
      * parseSchema
      *
-     * A method to parse a Yml Schema and translate it into a property array.
+     * A method to parse a Schema and translate it into a property array.
      * The function returns that property array.
      *
-     * @param  string $schema   Path to the file containing the XML schema
-     * @return array
+     * @param  string $schema   Path to the file containing the schema
+     * @return array  $build    Built array of schema information
      */
     public function parseSchema($schema, $type)
     {
@@ -241,7 +260,7 @@ class Doctrine_Import_Schema
             $columns = isset($table['columns']) ? $table['columns']:array();
             $columns = isset($table['fields']) ? $table['fields']:$columns;
             
-            if (!empty($columns)) {
+            if ( ! empty($columns)) {
                 foreach ($columns as $columnName => $field) {
                     $colDesc = array();
                     $colDesc['name'] = isset($field['name']) ? (string) $field['name']:$columnName;
@@ -280,17 +299,20 @@ class Doctrine_Import_Schema
         
         return $build;
     }
-    
+
     /**
      * buildRelationships
      *
-     * @param string $array 
+     * Loop through an array of schema information and build all the necessary relationship information
+     * Will attempt to auto complete relationships and simplify the amount of information required for defining a relationship
+     *
+     * @param  string $array 
      * @return void
      */
-    public function buildRelationships(&$array)
+    protected function buildRelationships(&$array)
     {
         foreach ($array as $name => $properties) {
-            if (!isset($properties['relations'])) {
+            if ( ! isset($properties['relations'])) {
                 continue;
             }
             
@@ -326,23 +348,23 @@ class Doctrine_Import_Schema
                     $relation['foreignType'] = $relation['foreignType'] === 'one' ? Doctrine_Relation::ONE:Doctrine_Relation::MANY;
                 }
                 
-                if(isset($relation['refClass']) && !empty($relation['refClass'])  && (!isset($array[$relation['refClass']]['relations']) || empty($array[$relation['refClass']]['relations']))) {
+                if(isset($relation['refClass']) && !empty($relation['refClass'])  && ( ! isset($array[$relation['refClass']]['relations']) || empty($array[$relation['refClass']]['relations']))) {
                     
-                    if (!isset($array[$relation['refClass']]['relations'][$className]['local'])) {
+                    if ( ! isset($array[$relation['refClass']]['relations'][$className]['local'])) {
                         $array[$relation['refClass']]['relations'][$className]['local'] = $relation['local'];
                     }
                     
-                    if (!isset($array[$relation['refClass']]['relations'][$className]['foreign'])) {
+                    if ( ! isset($array[$relation['refClass']]['relations'][$className]['foreign'])) {
                         $array[$relation['refClass']]['relations'][$className]['foreign'] = $relation['foreign'];
                     }
                     
                     $array[$relation['refClass']]['relations'][$className]['ignore'] = true;
                     
-                    if (!isset($array[$relation['refClass']]['relations'][$relation['class']]['local'])) {
+                    if ( ! isset($array[$relation['refClass']]['relations'][$relation['class']]['local'])) {
                         $array[$relation['refClass']]['relations'][$relation['class']]['local'] = $relation['local'];
                     }
                     
-                    if (!isset($array[$relation['refClass']]['relations'][$relation['class']]['foreign'])) {
+                    if ( ! isset($array[$relation['refClass']]['relations'][$relation['class']]['foreign'])) {
                         $array[$relation['refClass']]['relations'][$relation['class']]['foreign'] = $relation['foreign'];
                     }
                     
@@ -357,17 +379,19 @@ class Doctrine_Import_Schema
             }
         }
         
+        // Now we fix all the relationships and auto-complete opposite ends of relationships
         $this->fixRelationships();
     }
-    
+
     /**
      * fixRelationships
      *
+     * Loop through all relationships building the opposite ends of each relationship
+     *
      * @return void
      */
-    public function fixRelationships()
+    protected function fixRelationships()
     {
-        // define both sides of the relationship
         foreach($this->relations as $className => $relations) {
             foreach ($relations AS $alias => $relation) {
                 if(isset($relation['ignore']) && $relation['ignore'] || isset($relation['refClass']) || isset($this->relations[$relation['class']]['relations'][$className])) {

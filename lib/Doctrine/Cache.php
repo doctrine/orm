@@ -42,22 +42,27 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
                                 'cleanPropability'      => 0.01,
                                 'statsFile'             => '../data/stats.cache',
                                 );
+
     /**
      * @var array $_queries                         query stack
      */
     protected $_queries = array();
+
     /**
      * @var Doctrine_Cache_Interface $_driver       the cache driver object
      */
     protected $_driver;
+
     /**
      * @var array $data                             current cache data array
      */
     protected $_data = array();
+
     /**
      * @var boolean $success                        the success of last operation
      */
     protected $_success = false;
+
     /**
      * constructor
      *
@@ -83,6 +88,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
             $this->_driver = new $class($options);
         }
     }
+
     /**
      * getDriver
      * returns the current cache driver
@@ -93,6 +99,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     {
         return $this->_driver;
     }
+
     /**
      * setOption
      *
@@ -113,6 +120,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
         }
         return false;
     }
+
     /**
      * getOption
      * 
@@ -127,6 +135,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
 
         return $this->_options[$option];
     }
+
     /**
      * add
      * adds a query to internal query stack
@@ -143,6 +152,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
             $this->_queries[] = $query;
         }
     }
+
     /**
      * getQueries
      *
@@ -161,6 +171,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
         
         return $this->_queries;
     }
+
     /**
      * pop
      *
@@ -171,6 +182,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     {
         return array_pop($this->_queries);
     }
+
     /**
      * reset
      *
@@ -181,6 +193,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     {
         $this->_queries = array();
     }
+
     /**
      * count
      *
@@ -190,6 +203,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     {
         return count($this->_queries);
     }
+
     /**
      * getIterator
      *
@@ -199,6 +213,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     {
         return new ArrayIterator($this->_queries);
     }
+
     /**
      * @return boolean          whether or not the last cache operation was successful
      */
@@ -206,6 +221,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     {
         return $this->_success;
     }
+
     /**
      * save
      *
@@ -241,6 +257,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
             }
         }
     }
+
     /**
      * readStats
      *
@@ -257,6 +274,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
         }
         return array();
     }
+
     /**
      * appendStats
      *
@@ -278,6 +296,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
             }
         }
     }
+
     /**
      * preQuery
      * listens on the Doctrine_Event preQuery event
@@ -322,6 +341,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
         }
         return false;
     }
+
     /**
      * preFetch
      * listens the preFetch event of Doctrine_Connection_Statement
@@ -337,6 +357,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
         next($this->_data);
         return $ret;
     }
+
     /**
      * preFetch
      * listens the preFetchAll event of Doctrine_Connection_Statement
@@ -349,6 +370,7 @@ class Doctrine_Cache extends Doctrine_EventListener implements Countable, Iterat
     {
         return $this->_data;
     }
+
     /**
      * preExecute
      * listens the preExecute event of Doctrine_Connection_Statement

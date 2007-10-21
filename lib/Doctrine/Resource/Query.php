@@ -59,7 +59,7 @@ class Doctrine_Resource_Query
         
         $response = $request->execute();
         
-        if (!empty($response)) {
+        if ( ! empty($response)) {
             
             $collection = new Doctrine_Resource_Collection($this->getModel());
             $collection->fromArray($response);
@@ -75,7 +75,7 @@ class Doctrine_Resource_Query
     
     public function getDql()
     {
-        if (!$this->_dql && !empty($this->_parts)) {
+        if ( ! $this->_dql && !empty($this->_parts)) {
             $q = '';
             $q .= ( ! empty($this->_parts['select']))?  'SELECT '    . implode(', ', $this->_parts['select']) : '';
             $q .= ( ! empty($this->_parts['from']))?    ' FROM '     . implode(' ', $this->_parts['from']) : '';
@@ -116,7 +116,7 @@ class Doctrine_Resource_Query
         
         return $e[0];
     }
-    
+
     /**
      * addSelect
      * adds fields to the SELECT part of the query
@@ -128,6 +128,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('select', $select, true);
     }
+
     /**
      * addFrom
      * adds fields to the FROM part of the query
@@ -139,6 +140,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('from', $from, true);
     }
+
     /**
      * addWhere
      * adds conditions to the WHERE part of the query
@@ -151,6 +153,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('where', $where, true);
     }
+
     /**
      * addGroupBy
      * adds fields to the GROUP BY part of the query
@@ -162,6 +165,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('groupby', $groupby, true);
     }
+
     /**
      * addHaving
      * adds conditions to the HAVING part of the query
@@ -174,6 +178,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('having', $having, true);
     }
+
     /**
      * addOrderBy
      * adds fields to the ORDER BY part of the query
@@ -185,6 +190,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('orderby', $orderby, true);
     }
+
     /**
      * select
      * sets the SELECT part of the query
@@ -196,6 +202,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('select', $select);
     }
+
     /**
      * distinct
      * Makes the query SELECT DISTINCT.
@@ -207,6 +214,7 @@ class Doctrine_Resource_Query
     {   
         $this->parseQueryPart('distinct', (bool) $flag);
     }
+
     /**
      * from
      * sets the FROM part of the query
@@ -218,6 +226,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('from', $from);
     }
+
     /**
      * innerJoin
      * appends an INNER JOIN to the FROM part of the query
@@ -229,6 +238,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('from', 'INNER JOIN ' . $join, true);
     }
+
     /**
      * leftJoin
      * appends a LEFT JOIN to the FROM part of the query
@@ -240,6 +250,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('from', 'LEFT JOIN ' . $join, true);
     }
+
     /**
      * groupBy
      * sets the GROUP BY part of the query
@@ -251,6 +262,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('groupby', $groupby);
     }
+
     /**
      * where
      * sets the WHERE part of the query
@@ -263,6 +275,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('where', $where);
     }
+
     /**
      * having
      * sets the HAVING part of the query
@@ -275,6 +288,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('having', $having);
     }
+
     /**
      * orderBy
      * sets the ORDER BY part of the query
@@ -286,6 +300,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('orderby', $orderby);
     }
+
     /**
      * limit
      * sets the Query query limit
@@ -297,6 +312,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('limit', $limit);
     }
+
     /**
      * offset
      * sets the Query query offset
@@ -308,7 +324,7 @@ class Doctrine_Resource_Query
     {
         return $this->parseQueryPart('offset', $offset);
     }
-    
+
     /**
       * parseQueryPart
       * parses given DQL query part

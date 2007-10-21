@@ -42,6 +42,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression_Driver
     {
         return md5($data);
     }
+
     /**
      * Returns the modules of the data that SQLite's mod() function receives.
      *
@@ -64,6 +65,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression_Driver
         $args = func_get_args();
         return join('', $args);
     }
+
     /**
      * locate
      * returns the position of the first occurrence of substring $substr in string $str that
@@ -93,6 +95,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression_Driver
     {
         return trim($str);
     }
+
     /**
      * returns the regular expression operator
      *
@@ -102,6 +105,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression_Driver
     {
         return 'RLIKE';
     }
+
     /**
      * soundex
      * Returns a string to call a function to compute the
@@ -116,6 +120,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression_Driver
     {
         return 'SOUNDEX(' . $value . ')';
     }
+
     /**
      * Return string to call a variable with the current timestamp inside an SQL statement
      * There are three special variables for current date and time.
@@ -134,6 +139,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression_Driver
                 return 'datetime(\'now\')';
         }
     }
+
     /**
      * return string to call a function to get random value inside an SQL statement
      *
@@ -143,6 +149,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression_Driver
     {
         return '((RANDOM() + 2147483648) / 4294967296)';
     }
+
     /**
      * return string to call a function to get a substring inside an SQL statement
      *

@@ -268,7 +268,7 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($array&nbsp;as&nbsp;$name&nbsp;=&gt;&nbsp;$properties)&nbsp;{
 </td></tr>
 <tr><td>87</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(!empty($models)&nbsp;&amp;&amp;&nbsp;!in_array($properties['className'],&nbsp;$models))&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;( ! empty($models)&nbsp;&amp;&amp;&nbsp;!in_array($properties['className'],&nbsp;$models))&nbsp;{
 </td></tr>
 <tr><td>88</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue;
@@ -568,7 +568,7 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($array&nbsp;as&nbsp;$name&nbsp;=&gt;&nbsp;$properties)&nbsp;{
 </td></tr>
 <tr><td>187</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(!isset($properties['relations']))&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;( ! isset($properties['relations']))&nbsp;{
 </td></tr>
 <tr><td>188</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue;
@@ -643,7 +643,7 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>212</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(isset($relation['refClass'])&nbsp;&amp;&amp;&nbsp;!empty($relation['refClass'])&nbsp;&nbsp;&amp;&amp;&nbsp;(!isset($array[$relation['refClass']]['relations'])&nbsp;||&nbsp;empty($array[$relation['refClass']]['relations'])))&nbsp;{
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(isset($relation['refClass'])&nbsp;&amp;&amp;&nbsp;!empty($relation['refClass'])&nbsp;&nbsp;&amp;&amp;&nbsp;( ! isset($array[$relation['refClass']]['relations'])&nbsp;||&nbsp;empty($array[$relation['refClass']]['relations'])))&nbsp;{
 </td></tr>
 <tr><td>213</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$array[$relation['refClass']]['relations'][$className]&nbsp;=&nbsp;array('local'=&gt;$relation['local'],'foreign'=&gt;$relation['foreign'],'ignore'=&gt;true);

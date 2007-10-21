@@ -181,6 +181,7 @@ class Doctrine_Adapter_Oracle extends Doctrine_Adapter
         // Oracle doesn't allow the 'AS' keyword between the table identifier/expression and alias.
         return $this->_quoteIdentifierAs($ident, $alias, ' ');
     }
+
     /**
      * Leave autocommit mode and begin a transaction.
      *
@@ -190,6 +191,7 @@ class Doctrine_Adapter_Oracle extends Doctrine_Adapter
     {
         $this->_setExecuteMode(OCI_DEFAULT);
     }
+
     /**
      * Commit a transaction and return to autocommit mode.
      *
@@ -203,6 +205,7 @@ class Doctrine_Adapter_Oracle extends Doctrine_Adapter
         }
         $this->_setExecuteMode(OCI_COMMIT_ON_SUCCESS);
     }
+
     /**
      * Roll back a transaction and return to autocommit mode.
      *
@@ -240,6 +243,7 @@ class Doctrine_Adapter_Oracle extends Doctrine_Adapter
                 break;
         }
     }
+
     /**
      * @param integer $mode
      * @throws Doctrine_Adapter_Exception
@@ -257,6 +261,7 @@ class Doctrine_Adapter_Oracle extends Doctrine_Adapter
                 break;
         }
     }
+
     /**
      * @return
      */

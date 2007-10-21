@@ -349,7 +349,7 @@ final class Doctrine
      * HYDRATION CONSTANTS
      */
     const HYDRATE_RECORD            = 2;
-    
+
     /**
      * HYDRATE_ARRAY
      */
@@ -736,7 +736,7 @@ final class Doctrine
      */
     public static function createDatabases($specifiedConnections = array())
     {
-        if (!is_array($specifiedConnections)) {
+        if ( ! is_array($specifiedConnections)) {
             $specifiedConnections = (array) $specifiedConnections;
         }
         
@@ -744,7 +744,7 @@ final class Doctrine
         $connections = $manager->getConnections();
         
         foreach ($connections as $name => $connection) {
-            if (!empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
+            if ( ! empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
                 continue;
             }
             
@@ -783,7 +783,7 @@ final class Doctrine
      */
     public static function dropDatabases($specifiedConnections = array())
     {
-        if (!is_array($specifiedConnections)) {
+        if ( ! is_array($specifiedConnections)) {
             $specifiedConnections = (array) $specifiedConnections;
         }
         
@@ -792,7 +792,7 @@ final class Doctrine
         $connections = $manager->getConnections();
         
         foreach ($connections as $name => $connection) {
-            if (!empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
+            if ( ! empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
                 continue;
             }
             
@@ -834,7 +834,7 @@ final class Doctrine
     {
         $data = new Doctrine_Data();
         
-        if (!$append) {
+        if ( ! $append) {
             $data->purge();
         }
         
@@ -854,13 +854,13 @@ final class Doctrine
     {
         $data = new Doctrine_Data();
 
-        if (!$append) {
+        if ( ! $append) {
           $data->purge();
         }
         
         return $data->importDummyData($num);
     }
-    
+
     /**
      * migrate
      * 
@@ -920,7 +920,7 @@ final class Doctrine
         
         return $builder->generateMigrationsFromModels($modelsPath);
     }
-    
+
     /**
      * getTable
      *
@@ -931,7 +931,7 @@ final class Doctrine
     {
         return Doctrine_Manager::table($tableName);
     }
-    
+
     /**
      * connection
      *
@@ -943,7 +943,7 @@ final class Doctrine
     {
         return Doctrine_Manager::connection($adapter, $name);
     }
-    
+
     /**
      * fileFinder
      *
@@ -954,7 +954,7 @@ final class Doctrine
     {
         return Doctrine_FileFinder::type($type);
     }
-    
+
     /**
      * compile
      * method for making a single file of most used doctrine runtime components
@@ -970,7 +970,7 @@ final class Doctrine
     {
         return Doctrine_Compiler::compile($target, $includedDrivers);
     }
-    
+
     /**
      * simple autoload function
      * returns true if the class was loaded, otherwise false
@@ -998,7 +998,7 @@ final class Doctrine
 
         return true;
     }
-    
+
     /**
      * dump
      *
@@ -1030,7 +1030,7 @@ final class Doctrine
         }
         return implode("\n", $ret);
     }
-    
+
     /**
      * returns table name from class name
      *
@@ -1041,7 +1041,7 @@ final class Doctrine
     {
          return strtolower(preg_replace('~(?<=\\w)([A-Z])~', '_$1', $classname));
     }
-    
+
     /**
      * returns class name from table name
      *
@@ -1052,7 +1052,7 @@ final class Doctrine
     {
         return preg_replace_callback('~(_?)(_)([\w])~', array("Doctrine", "classifyCallback"), ucfirst($tablename));
     }
-    
+
     /**
      * Callback function to classify a classname propperly. 
      *
@@ -1063,7 +1063,7 @@ final class Doctrine
     {
         return $matches[1] . strtoupper($matches[3]);
     }
-    
+
     /**
      * checks for valid class name (uses camel case and underscores)
      *

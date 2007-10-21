@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Connection_Module
  *
@@ -36,10 +37,12 @@ class Doctrine_Connection_Module
      *                                      module holds an instance of Doctrine_Connection
      */
     protected $conn;
+
     /**
      * @var string $moduleName              the name of this module
      */
     protected $moduleName;
+
     /**
      * @param Doctrine_Connection $conn     Doctrine_Connection object, every connection
      *                                      module holds an instance of Doctrine_Connection
@@ -55,6 +58,7 @@ class Doctrine_Connection_Module
 
         $this->moduleName = $e[1];
     }
+
     /**
      * getConnection
      * returns the connection object this module uses
@@ -65,6 +69,7 @@ class Doctrine_Connection_Module
     {
         return $this->conn;
     }
+
     /**
      * getModuleName
      * returns the name of this module

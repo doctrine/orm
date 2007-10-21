@@ -43,6 +43,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
 
         return $this->conn->fetchColumn($query);
     }
+
     /**
      * list all fields in a tables in the current database
      *
@@ -57,6 +58,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
 
         return $this->conn->fetchColumn($query);
     }
+
     /**
      * list all users
      *
@@ -66,6 +68,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
     {
         return $this->conn->fetchColumn('SELECT DISTINCT RDB$USER FROM RDB$USER_PRIVILEGES');
     }
+
     /**
      * list the views in the database
      *
@@ -75,6 +78,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
     {
         return $this->conn->fetchColumn('SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS');
     }
+
     /**
      * list the views in the database that reference a given table
      *
@@ -89,6 +93,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
 
         return $this->conn->fetchColumn($query);
     }
+
     /**
      * list all functions in the current database
      *
@@ -100,6 +105,7 @@ class Doctrine_Import_Firebird extends Doctrine_Import
 
         return $this->conn->fetchColumn($query);
     }
+
     /**
      * This function will be called to get all triggers of the
      * current database ($this->conn->getDatabase())

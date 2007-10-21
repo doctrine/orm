@@ -42,7 +42,7 @@ class Text_Wiki_Render_Latex_Colortext extends Text_Wiki_Render {
         $type = $options['type'];
         $color = $options['color'];
         
-        if (! in_array($color, $this->colors)) {
+        if ( !  in_array($color, $this->colors)) {
             $color = '#' . $color;
         }
         

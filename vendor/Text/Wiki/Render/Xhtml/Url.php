@@ -66,7 +66,7 @@ class Text_Wiki_Render_Xhtml_Url extends Text_Wiki_Render {
             in_array($ext, $this->getConf('img_ext', array()))) {
 
             // create alt text for the image
-            if (! isset($text) || $text == '') {
+            if ( !  isset($text) || $text == '') {
                 $text = basename($href);
                 $text = $this->textEncode($text);
             }

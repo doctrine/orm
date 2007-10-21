@@ -41,6 +41,7 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression_Driver
     {
         return 'RLIKE';
     }
+
     /**
      * return string to call a function to get random value inside an SQL statement
      *
@@ -50,6 +51,7 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression_Driver
     {
         return 'RAND()';
     }
+
     /**
      * build a pattern matching string
      *
@@ -98,6 +100,7 @@ class Doctrine_Expression_Mysql extends Doctrine_Expression_Driver
         $match.= $this->patternEscapeString();
         return $match;
     }
+
     /**
      * Returns global unique identifier
      *

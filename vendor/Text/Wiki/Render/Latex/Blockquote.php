@@ -3,7 +3,7 @@
 class Text_Wiki_Render_Latex_Blockquote extends Text_Wiki_Render {
     
     var $conf = array('css' => null);
-    
+
     /**
     * 
     * Renders a token into text matching the requested format.

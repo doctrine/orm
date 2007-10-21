@@ -422,6 +422,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
         }
         throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
+
     /**
      * Maps a native array description of a field to a portable Doctrine datatype and length
      *
@@ -553,6 +554,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
                      'unsigned' => $unsigned,
                      'fixed'    => $fixed);
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to declare an integer type
      * field to be used in statements like CREATE TABLE.
@@ -606,6 +608,7 @@ class Doctrine_DataDict_Pgsql extends Doctrine_DataDict
         $name = $this->conn->quoteIdentifier($name, true);
         return $name . ' ' . $this->getNativeDeclaration($field) . $default . $notnull;
     }
+
     /**
      * parseBoolean
      * parses a literal boolean value and returns

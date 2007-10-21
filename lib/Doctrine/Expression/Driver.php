@@ -40,6 +40,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     {
         return $columns;
     }
+
     /**
      * regexp
      * returns the regular expression operator
@@ -50,6 +51,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     {
         throw new Doctrine_Expression_Exception('Regular expression operator is not supported by this database driver.');
     }
+
     /**
      * Returns the average value of a column
      *
@@ -205,6 +207,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     {
         return 'LTRIM(' . $str . ')';
     }
+
     /**
      * upper
      * Returns the string $str with all characters changed to
@@ -217,6 +220,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     {
         return 'UPPER(' . $str . ')';
     }
+
     /**
      * lower
      * Returns the string $str with all characters changed to
@@ -229,6 +233,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     {
         return 'LOWER(' . $str . ')';
     }
+
     /**
      * locate
      * returns the position of the first occurrence of substring $substr in string $str
@@ -241,6 +246,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     {
         return 'LOCATE(' . $str . ', ' . $substr . ')';
     }
+
     /**
      * Returns the current system date.
      *
@@ -250,6 +256,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     {
         return 'NOW()';
     }
+
     /**
      * soundex
      * Returns a string to call a function to compute the
@@ -264,6 +271,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     {
         throw new Doctrine_Expression_Exception('SQL soundex function not supported by this driver.');
     }
+
     /**
      * return string to call a function to get a substring inside an SQL statement
      *
@@ -286,6 +294,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
             return 'SUBSTRING(' . $value . ' FROM ' . $from . ' FOR ' . $len . ')';
         }
     }
+
     /**
      * Returns a series of strings concatinated
      *
@@ -300,6 +309,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
 
         return 'CONCAT(' . join(', ', (array) $args) . ')';
     }
+
     /**
      * Returns the SQL for a logical not.
      *
@@ -318,6 +328,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
         $expression = $this->getIdentifier($expression);
         return 'NOT(' . $expression . ')';
     }
+
     /**
      * Returns the SQL to perform the same mathematical operation over an array
      * of values or expressions.
@@ -342,6 +353,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
             return '(' . implode(' ' . $type . ' ', $elements) . ')';
         }
     }
+
     /**
      * Returns the SQL to add values or expressions together.
      *
@@ -610,6 +622,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
         }
         return $column . ' IN (' . implode(', ', $values) . ')';
     }
+
     /**
      * Returns SQL that checks if a expression is null.
      *
@@ -629,6 +642,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
         $expression = $this->getIdentifier($expression);
         return $expression . ' IS NULL';
     }
+
     /**
      * Returns SQL that checks if a expression is not null.
      *
@@ -648,6 +662,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
         $expression = $this->getIdentifier($expression);
         return $expression . ' IS NOT NULL';
     }
+
     /**
      * Returns SQL that checks if an expression evaluates to a value between
      * two values.
@@ -678,6 +693,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
         $value2 = $this->getIdentifier($value2);
         return $expression . ' BETWEEN ' .$value1 . ' AND ' . $value2;
     }
+
     /**
      * Returns global unique identifier
      *
@@ -687,6 +703,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     {
         throw new Doctrine_Expression_Exception('method not implemented');
     }
+
     /**
      * returns arcus cosine SQL string
      *
@@ -696,6 +713,7 @@ class Doctrine_Expression_Driver extends Doctrine_Connection_Module
     {
         return 'ACOS(' . $value . ')';
     }
+
     /**
      * __call
      *

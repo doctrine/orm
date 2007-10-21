@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_DataDict
  *
@@ -73,6 +74,7 @@ class Doctrine_DataDict extends Doctrine_Connection_Module
 
         return $change;
     }
+
     /**
      * parseBoolean
      * parses a literal boolean value and returns 

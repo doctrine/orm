@@ -45,7 +45,7 @@ if (substr(PHP_OS, 0, 3) == 'WIN') {
 }
 
 // instant backwards compatibility
-if (!defined('PATH_SEPARATOR')) {
+if ( ! defined('PATH_SEPARATOR')) {
     if (OS_WINDOWS) {
         define('PATH_SEPARATOR', ';');
     } else {
@@ -164,7 +164,7 @@ class PEAR
             if (method_exists($this, $destructor)) {
                 global $_PEAR_destructor_object_list;
                 $_PEAR_destructor_object_list[] = &$this;
-                if (!isset($GLOBALS['_PEAR_SHUTDOWN_REGISTERED'])) {
+                if ( ! isset($GLOBALS['_PEAR_SHUTDOWN_REGISTERED'])) {
                     register_shutdown_function("_PEAR_call_destructors");
                     $GLOBALS['_PEAR_SHUTDOWN_REGISTERED'] = true;
                 }
@@ -439,7 +439,7 @@ class PEAR
                 }
             }
             return $deleted ? true : PEAR::raiseError("The expected error you submitted does not exist"); // IMPROVE ME
-        } elseif (!empty($error_code)) {
+        } elseif ( ! empty($error_code)) {
             // $error_code comes alone, trying to unset it
             if ($this->_checkDelExpect($error_code)) {
                 return true;
@@ -707,7 +707,7 @@ class PEAR
     */
     function loadExtension($ext)
     {
-        if (!extension_loaded($ext)) {
+        if ( ! extension_loaded($ext)) {
             // if either returns true dl() will produce a FATAL error, stop that
             if ((ini_get('enable_dl') != 1) || (ini_get('safe_mode') == 1)) {
                 return false;

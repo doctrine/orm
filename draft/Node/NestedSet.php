@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Node_NestedSet
  *
@@ -461,7 +462,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
         
         return true;
     }
-    
+
     /**
      * Accomplishes moving of nodes between different trees.
      * Used by the move* methods if the root value of the two nodes are different.
@@ -548,7 +549,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
                 throw $e;
             }
     }
-    
+
     /**
      * moves node as prev sibling of dest record
      * 
@@ -616,7 +617,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
             $this->updateNode($dest->getNode()->getRightValue(), $this->record['level'] - $oldLevel);
         }
     }
-    
+
     /**
      * Makes this node a root node. Only used in multiple-root trees.
      *
@@ -899,7 +900,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
 
         $resultRight = $qRight->execute();
     }
-    
+
     /**
      * gets record's left value
      *
@@ -947,7 +948,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
      */    
     public function getLevel()
     {
-        if (!isset($this->level)) {
+        if ( ! isset($this->level)) {
             $componentName = $this->record->getTable()->getComponentName();
             $q = $this->_tree->getBaseQuery();
             $q = $q->where('base.lft < ? AND base.rgt > ?', array($this->getLeftValue(), $this->getRightValue()));

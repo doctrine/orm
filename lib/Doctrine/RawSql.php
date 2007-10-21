@@ -36,6 +36,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
      * @var array $fields
      */
     private $fields = array();
+
     /**
      * parseQueryPart
      * parses given query part
@@ -63,6 +64,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
         }
         return $this;
     }
+
     /**
      * parseQuery
      * parses an sql query and adds the parts to internal array
@@ -121,6 +123,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
 
         return $this;
     }
+
     /**
      * getQuery
      * builds the sql query from the given query parts
@@ -206,6 +209,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
         }
         return $q;
     }
+
     /**
      * getFields
      * returns the fields associated with this parser
@@ -216,6 +220,7 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
     {
         return $this->fields;
     }
+
     /**
      * addComponent
      *

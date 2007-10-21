@@ -59,6 +59,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
         }
         return $text;
     }
+
     /**
      * convertBooleans
      * some drivers need the boolean values to be converted into integers
@@ -84,6 +85,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
         }
         return $item;
     }
+
     /**
      * Quote a string so it can be safely used as a table or column name
      *
@@ -128,6 +130,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
 
         return $tmp['start'] . $str . $tmp['end'];
     }
+
     /**
      * quote
      * quotes given input parameter
@@ -166,6 +169,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
                 return $this->conn->getDbh()->quote($input);
         }
     }
+
     /**
      * Removes any formatting in an sequence name using the 'seqname_format' option
      *
@@ -182,6 +186,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
         }
         return $sqn;
     }
+
     /**
      * Removes any formatting in an index name using the 'idxname_format' option
      *
@@ -197,6 +202,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
         }
         return $idx;
     }
+
     /**
      * adds sequence name formatting to a sequence name
      *
@@ -208,6 +214,7 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
         return sprintf($this->conn->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT),
             preg_replace('/[^a-z0-9_\$.]/i', '_', $sqn));
     }
+
     /**
      * adds index name formatting to a index name
      *

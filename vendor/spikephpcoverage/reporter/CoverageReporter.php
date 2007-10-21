@@ -9,7 +9,7 @@
 ?>
 <?php
 
-    if(!defined("__PHPCOVERAGE_HOME")) {
+    if( ! defined("__PHPCOVERAGE_HOME")) {
         define("__PHPCOVERAGE_HOME", dirname(dirname(__FILE__)));
     }
     require_once __PHPCOVERAGE_HOME . "/conf/phpcoverage.conf.php";
@@ -100,7 +100,7 @@
         */
         protected function createReportDir() {
             global $util;
-            if(!file_exists($this->outputDir)) {
+            if( ! file_exists($this->outputDir)) {
                 $util->makeDirRecursive($this->outputDir, 0755);
             }
             if(file_exists($this->outputDir)) {
@@ -200,9 +200,9 @@
             }
             else {
                 $filename = $util->replaceBackslashes($filename);
-                if(!file_exists(dirname($filename))) {
+                if( ! file_exists(dirname($filename))) {
                     $ret = $util->makeDirRecursive(dirname($filename), 0755);
-                    if(!$ret) {
+                    if( ! $ret) {
                         die ("Cannot create directory " . dirname($filename) . "\n");
                     }
                 }

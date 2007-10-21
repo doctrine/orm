@@ -36,7 +36,7 @@ abstract class Doctrine_Cache_Driver implements Doctrine_Cache_Interface
      * @var array $_options      an array of options
      */
     protected $_options = array();
-    
+
     /**
      * constructor
      *
@@ -46,6 +46,7 @@ abstract class Doctrine_Cache_Driver implements Doctrine_Cache_Interface
     {
         $this->_options = $options;
     }
+
     /**
      * setOption
      *
@@ -61,6 +62,7 @@ abstract class Doctrine_Cache_Driver implements Doctrine_Cache_Interface
         }
         return false;
     }
+
     /**
      * getOption
      * 

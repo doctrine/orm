@@ -51,6 +51,7 @@ class Doctrine_Connection_Sqlite_Exception extends Doctrine_Connection_Exception
                               '/^near ".*": syntax error$/'          => Doctrine::ERR_SYNTAX,
                               '/[0-9]+ values for [0-9]+ columns/i'  => Doctrine::ERR_VALUE_COUNT_ON_ROW,
                               );
+
     /**
      * This method checks if native error code/message can be
      * converted into a portable code and then adds this

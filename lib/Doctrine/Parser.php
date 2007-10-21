@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Parser
  *
@@ -41,6 +42,7 @@ abstract class Doctrine_Parser
      * @author Jonathan H. Wage
      */
     abstract public function loadData($array);
+
     /**
      * dumpData
      *
@@ -52,6 +54,7 @@ abstract class Doctrine_Parser
      * @author Jonathan H. Wage
      */
     abstract public function dumpData($array, $path = null);
+
     /**
      * getParser
      *
@@ -67,6 +70,7 @@ abstract class Doctrine_Parser
         
         return new $class;
     }
+
     /**
      * load
      *
@@ -83,6 +87,7 @@ abstract class Doctrine_Parser
         
         return $parser->loadData($path);
     }
+
     /**
      * dump
      *
@@ -100,21 +105,20 @@ abstract class Doctrine_Parser
         
         return $parser->dumpData($array, $path);
     }
-    
+
     /**
-     * getContents
+     * doLoad
      *
      * Get contents whether it is the path to a file file or a string of txt.
      * Either should allow php code in it.
      *
      * @param string $path 
      * @return void
-     * @author Jonathan H. Wage
      */
-    public function getContents($path)
+    public function doLoad($path)
     {
         ob_start();
-        if (!file_exists($path)) {
+        if ( ! file_exists($path)) {
             $contents = $path;
             $path = '/tmp/dparser_' . microtime();
             
@@ -125,5 +129,14 @@ abstract class Doctrine_Parser
         $contents = ob_get_clean();
         
         return $contents;
+    }
+    
+    public function doDump($data, $path)
+    {
+      if ($path) {
+            return file_put_contents($path, $data);
+        } else {
+            return $data;
+        }
     }
 }

@@ -44,6 +44,7 @@ class Doctrine_Search_Query
     
 
     protected $_condition;
+
     /**
      * @param Doctrine_Table $_table        the index table
      */

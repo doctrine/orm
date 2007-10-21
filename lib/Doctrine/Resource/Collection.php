@@ -53,7 +53,7 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
     
     public function get($key)
     {
-        if (!isset($key) || !isset($this->_data[$key])) {
+        if ( ! isset($key) || !isset($this->_data[$key])) {
             return $this->add();
         } else {
             return $this->_data[$key];
@@ -62,7 +62,7 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
 
     public function set($key, $value)
     {
-        if (!isset($key) || !isset($this->_data[$key])) {
+        if ( ! isset($key) || !isset($this->_data[$key])) {
             $this->_data[$key] = $value;
         } else {
             $val = $this->add();
@@ -73,7 +73,7 @@ class Doctrine_Resource_Collection extends Doctrine_Resource_Access implements C
     
     public function add(Doctrine_Resource_Record $value = null)
     {
-        if (!$value) {
+        if ( ! $value) {
             $value = new $this->_model;
         }
         

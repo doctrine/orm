@@ -65,7 +65,7 @@ class Doctrine_Relation_LocalKey extends Doctrine_Relation
 
         return $related;
     }
-    
+
     /**
      * getCondition
      *

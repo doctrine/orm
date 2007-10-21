@@ -38,6 +38,7 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName = 'Firebird';
+
     /**
      * the constructor
      *
@@ -77,6 +78,7 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection
         */
         parent::__construct($manager, $adapter);
     }
+
     /**
      * Set the charset on the current connection
      *
@@ -89,6 +91,7 @@ class Doctrine_Connection_Firebird extends Doctrine_Connection
         $query = 'SET NAMES '.$this->dbh->quote($charset);
         $this->exec($query);
     }
+
     /**
      * Adds an driver-specific LIMIT clause to the query
      *

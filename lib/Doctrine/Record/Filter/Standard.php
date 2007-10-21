@@ -43,6 +43,7 @@ class Doctrine_Record_Filter_Standard extends Doctrine_Record_Filter
     {
         throw new Doctrine_Record_Exception('Unknown record property / related component \'' . $name . '\'.');
     }
+
     /**
      * filterGet
      * defines an implementation for filtering the get() method of Doctrine_Record

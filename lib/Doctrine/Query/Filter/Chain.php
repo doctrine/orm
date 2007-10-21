@@ -36,6 +36,7 @@ class Doctrine_Query_Filter_Chain
      * @var array $_filters         an array of Doctrine_Query_Filter objects
      */
     protected $_filters = array();
+
     /**
      * add
      *
@@ -46,6 +47,7 @@ class Doctrine_Query_Filter_Chain
     {
         $this->_filters[] = $filter;
     }
+
     /**
      * returns a Doctrine_Query_Filter on success
      * and null on failure
@@ -60,6 +62,7 @@ class Doctrine_Query_Filter_Chain
         }
         return $this->_filters[$key];
     }
+
     /**
      * set
      *
@@ -71,6 +74,7 @@ class Doctrine_Query_Filter_Chain
     {
         $this->_filters[$key] = $listener;
     }
+
     /**
      * preQuery
      *
@@ -86,6 +90,7 @@ class Doctrine_Query_Filter_Chain
             $filter->preQuery($query);
         }
     }
+
     /**
      * postQuery
      *

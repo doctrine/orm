@@ -9,7 +9,7 @@ function __autoload($classname) {
         if (class_exists($classname)) {
             return false;
         }
-        if (! $path) {
+        if ( !  $path) {
             $path = dirname(__FILE__);
         }
         $classpath = str_replace('Doctrine_', '',$classname);

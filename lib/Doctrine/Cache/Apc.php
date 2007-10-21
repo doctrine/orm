@@ -44,6 +44,7 @@ class Doctrine_Cache_Apc extends Doctrine_Cache_Driver
         }
         parent::__construct($options);
     }
+
     /**
      * Test if a cache is available for the given id and (if yes) return it (false else)
      * 
@@ -61,6 +62,7 @@ class Doctrine_Cache_Apc extends Doctrine_Cache_Driver
         }
         return false;
     }
+
     /**
      * Test if a cache is available or not (for the given id)
      *
@@ -75,6 +77,7 @@ class Doctrine_Cache_Apc extends Doctrine_Cache_Driver
         }
         return false;
     }
+
     /**
      * Save some string datas into a cache record
      *
@@ -91,6 +94,7 @@ class Doctrine_Cache_Apc extends Doctrine_Cache_Driver
 
         return (bool) apc_store($id, array($data, time()), $lifeTime);
     }
+
     /**
      * Remove a cache record
      * 

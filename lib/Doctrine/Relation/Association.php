@@ -46,6 +46,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
     {
         return $this->definition['refTable'];
     }
+
     /**
      * getRelationDql
      *
@@ -72,6 +73,7 @@ class Doctrine_Relation_Association extends Doctrine_Relation
 
         return $dql;
     }
+
     /**
      * fetchRelatedFor
      *

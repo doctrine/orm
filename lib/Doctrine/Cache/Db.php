@@ -54,6 +54,7 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
 
         $this->_options = $options;
     }
+
     /**
      * getConnection
      * returns the connection object associated with this cache driver
@@ -64,6 +65,7 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
     {
         return $this->_options['connection'];
     }
+
     /**
      * Test if a cache is available for the given id and (if yes) return it (false else)
      *
@@ -90,6 +92,7 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
         
         return unserialize($result[0]['data']);
     }
+
     /**
      * Test if a cache is available or not (for the given id)
      *
@@ -103,6 +106,7 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
 
         return $this->getConnection()->fetchOne($sql, array($id));
     }
+
     /**
      * Save some string datas into a cache record
      *
@@ -128,6 +132,7 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
 
         return (bool) $this->getConnection()->exec($sql, $params);
     }
+
     /**
      * Remove a cache record
      * 
@@ -140,7 +145,7 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
 
         return (bool) $this->getConnection()->exec($sql, array($id));
     }
-    
+
     /**
      * Removes all cache records
      *
@@ -152,7 +157,7 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
         
         return (bool) $this->getConnection()->exec($sql);
     }
-    
+
     /**
      * count
      * returns the number of cached elements
@@ -165,7 +170,7 @@ class Doctrine_Cache_Db extends Doctrine_Cache_Driver implements Countable
         
         return (int) $this->getConnection()->fetchOne($sql);
     }
-    
+
     /**
      * Creates the cache table.
      */

@@ -44,16 +44,19 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
                                 'exec',
                                 'execute',
                                 );
+
     /**
      * @param array $events         an array containing all listened events
      */
     private $events     = array();
+
     /**
      * constructor
      */
     public function __construct() {
 
     }
+
     /**
      * setFilterQueryType
      *
@@ -105,6 +108,7 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
         */
 
     }
+
     /**
      * get
      *
@@ -118,6 +122,7 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
         }
         return null;
     }
+
     /**
      * getAll
      * returns all profiled events as an array
@@ -128,6 +133,7 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
     {
         return $this->events;
     }
+
     /**
      * getIterator
      * returns an iterator that iterates through the logged events
@@ -138,6 +144,7 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
     {
         return new ArrayIterator($this->events);
     }
+
     /**
      * count
      * 
@@ -147,6 +154,7 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
     {
         return count($this->events);
     }
+
     /**
      * pop the last event from the event stack
      *
@@ -156,6 +164,7 @@ class Doctrine_Connection_Profiler implements Doctrine_Overloadable, IteratorAgg
     {
         return array_pop($this->events);
     }
+
     /**
      * Get the Doctrine_Event object for the last query that was run, regardless if it has
      * ended or not. If the event has not ended, it's end time will be Null.

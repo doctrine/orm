@@ -63,7 +63,7 @@ class Text_Wiki_Render_Xhtml_Colortext extends Text_Wiki_Render {
         $type = $options['type'];
         $color = $options['color'];
 
-        if (! in_array($color, $this->colors) && $color{0} != '#') {
+        if ( !  in_array($color, $this->colors) && $color{0} != '#') {
             $color = '#' . $color;
         }
 

@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Repository
  * each record is added into Doctrine_Repository at the same time they are created,
@@ -37,12 +38,14 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
      * @var object Doctrine_Table $table
      */
     private $table;
+
     /**
      * @var array $registry
      * an array of all records
      * keys representing record object identifiers
      */
     private $registry = array();
+
     /**
      * constructor
      *
@@ -52,6 +55,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
     {
         $this->table = $table;
     }
+
     /**
      * getTable
      *
@@ -61,6 +65,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
     {
         return $this->table;
     }
+
     /**
      * add
      *
@@ -78,6 +83,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
 
         return true;
     }
+
     /**
      * get
      * @param integer $oid
@@ -90,6 +96,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
         }
         return $this->registry[$oid];
     }
+
     /**
      * count
      * Doctrine_Registry implements interface Countable
@@ -99,6 +106,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
     {
         return count($this->registry);
     }
+
     /**
      * @param integer $oid                  object identifier
      * @return boolean                      whether ot not the operation was successful
@@ -111,6 +119,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
         unset($this->registry[$oid]);
         return true;
     }
+
     /**
      * @return integer                      number of records evicted
      */
@@ -124,6 +133,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
         }
         return $evicted;
     }
+
     /**
      * getIterator
      * @return ArrayIterator
@@ -132,6 +142,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
     {
         return new ArrayIterator($this->registry);
     }
+
     /**
      * contains
      * @param integer $oid                  object identifier
@@ -140,6 +151,7 @@ class Doctrine_Table_Repository implements Countable, IteratorAggregate
     {
         return isset($this->registry[$oid]);
     }
+
     /**
      * loadAll
      * @return void

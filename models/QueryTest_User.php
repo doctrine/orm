@@ -8,7 +8,7 @@ class QueryTest_User extends Doctrine_Record
                 array('notnull'));
         $this->hasColumn('visibleRankId', 'integer', 4);
     }
-    
+
     /**
      * Runtime definition of the relationships to other entities.
      */

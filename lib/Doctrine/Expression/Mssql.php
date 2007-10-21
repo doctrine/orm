@@ -52,6 +52,7 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression_Driver
                 return 'GETDATE()';
         }
     }
+
     /**
      * return string to call a function to get a substring inside an SQL statement
      *
@@ -64,6 +65,7 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression_Driver
         }
         return 'SUBSTRING(' . $value . ', ' . $position . ', LEN(' . $value . ') - ' . $position . ' + 1)';
     }
+
     /**
      * Returns string to concatenate two or more string parameters
      *
@@ -77,6 +79,7 @@ class Doctrine_Expression_Mssql extends Doctrine_Expression_Driver
         $args = func_get_args();
         return '(' . implode(' + ', $args) . ')';
     }
+
     /**
      * Returns global unique identifier
      *

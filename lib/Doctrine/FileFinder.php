@@ -287,7 +287,7 @@ class Doctrine_FileFinder
       {
         throw new Doctrine_Exception(sprintf('method "%s" does not exist for object "%s".', $args[$i][1], $args[$i][0]));
       }
-      else if (!is_array($args[$i]) && !function_exists($args[$i]))
+      else if ( ! is_array($args[$i]) && !function_exists($args[$i]))
       {
         throw new Doctrine_Exception(sprintf('function "%s" does not exist.', $args[$i]));
       }
@@ -346,7 +346,7 @@ class Doctrine_FileFinder
       $real_dir = realpath($arg_list[$i]);
 
       // absolute path?
-      if (!self::isPathAbsolute($real_dir))
+      if ( ! self::isPathAbsolute($real_dir))
       {
         $dir = $here_dir.DIRECTORY_SEPARATOR.$real_dir;
       }
@@ -355,7 +355,7 @@ class Doctrine_FileFinder
         $dir = $real_dir;
       }
 
-      if (!is_dir($real_dir))
+      if ( ! is_dir($real_dir))
       {
         continue;
       }
@@ -407,7 +407,7 @@ class Doctrine_FileFinder
             $files[] = realpath($current_entry);
           }
 
-          if (!$this->is_pruned($dir, $entryname))
+          if ( ! $this->is_pruned($dir, $entryname))
           {
             $files = array_merge($files, $this->search_in($current_entry, $depth + 1));
           }
@@ -428,7 +428,7 @@ class Doctrine_FileFinder
 
   protected function match_names($dir, $entry)
   {
-    if (!count($this->names)) return true;
+    if ( ! count($this->names)) return true;
 
     // we must match one "not_name" rules to be ko
     $one_not_name_rule = false;
@@ -450,7 +450,7 @@ class Doctrine_FileFinder
     foreach ($this->names as $args)
     {
       list($not, $regex) = $args;
-      if (!$not)
+      if ( ! $not)
       {
         $one_name_rule = true;
         if (preg_match($regex, $entry))
@@ -480,14 +480,14 @@ class Doctrine_FileFinder
 
   protected function size_ok($dir, $entry)
   {
-    if (!count($this->sizes)) return true;
+    if ( ! count($this->sizes)) return true;
 
-    if (!is_file($dir.DIRECTORY_SEPARATOR.$entry)) return true;
+    if ( ! is_file($dir.DIRECTORY_SEPARATOR.$entry)) return true;
 
     $filesize = filesize($dir.DIRECTORY_SEPARATOR.$entry);
     foreach ($this->sizes as $number_compare)
     {
-      if (!$number_compare->test($filesize)) return false;
+      if ( ! $number_compare->test($filesize)) return false;
     }
 
     return true;
@@ -495,7 +495,7 @@ class Doctrine_FileFinder
 
   protected function is_pruned($dir, $entry)
   {
-    if (!count($this->prunes)) return false;
+    if ( ! count($this->prunes)) return false;
 
     foreach ($this->prunes as $args)
     {
@@ -508,7 +508,7 @@ class Doctrine_FileFinder
 
   protected function is_discarded($dir, $entry)
   {
-    if (!count($this->discards)) return false;
+    if ( ! count($this->discards)) return false;
 
     foreach ($this->discards as $args)
     {
@@ -521,11 +521,11 @@ class Doctrine_FileFinder
 
   protected function exec_ok($dir, $entry)
   {
-    if (!count($this->execs)) return true;
+    if ( ! count($this->execs)) return true;
 
     foreach ($this->execs as $exec)
     {
-      if (!call_user_func_array($exec, array($dir, $entry))) return false;
+      if ( ! call_user_func_array($exec, array($dir, $entry))) return false;
     }
 
     return true;
@@ -632,12 +632,12 @@ class Doctrine_GlobToRegex
       else if ($car == '{')
       {
         $regex .= ($escaping ? "\\{" : "(");
-        if (!$escaping) ++$in_curlies;
+        if ( ! $escaping) ++$in_curlies;
       }
       else if ($car == '}' && $in_curlies)
       {
         $regex .= ($escaping ? "}" : ")");
-        if (!$escaping) --$in_curlies;
+        if ( ! $escaping) --$in_curlies;
       }
       else if ($car == ',' && $in_curlies)
       {
@@ -705,7 +705,7 @@ class Doctrine_NumberCompare
 
   public function test($number)
   {
-    if (!preg_match('{^([<>]=?)?(.*?)([kmg]i?)?$}i', $this->test, $matches))
+    if ( ! preg_match('{^([<>]=?)?(.*?)([kmg]i?)?$}i', $this->test, $matches))
     {
       throw new Doctrine_Exception(sprintf('don\'t understand "%s" as a test.', $this->test));
     }

@@ -85,7 +85,7 @@ class Doctrine_Query_OneToOneFetching_TestCase extends Doctrine_UnitTestCase
         $author->save();
 
     }
-    
+
     /**
      * Tests that one-one relations are correctly loaded with array fetching
      * when the related records EXIST.
@@ -146,7 +146,6 @@ class Doctrine_Query_OneToOneFetching_TestCase extends Doctrine_UnitTestCase
      * Tests that one-one relations are correctly loaded with array fetching
      * when the related records DONT EXIST.
      */
-
     public function testOneToOneArrayFetchingWithEmptyRelations()
     {
         // temporarily remove the relation to fake a non-existant one

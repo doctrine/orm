@@ -42,28 +42,33 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * a Doctrine_Record is in dirty state when its properties are changed
      */
     const STATE_DIRTY       = 1;
+
     /**
      * TDIRTY STATE
      * a Doctrine_Record is in transient dirty state when it is created 
      * and some of its fields are modified but it is NOT yet persisted into database
      */
     const STATE_TDIRTY      = 2;
+
     /**
      * CLEAN STATE
      * a Doctrine_Record is in clean state when all of its properties are loaded from the database
      * and none of its properties are changed
      */
     const STATE_CLEAN       = 3;
+
     /**
      * PROXY STATE
      * a Doctrine_Record is in proxy state when its properties are not fully loaded
      */
     const STATE_PROXY       = 4;
+
     /**
      * NEW TCLEAN
      * a Doctrine_Record is in transient clean state when it is created and none of its fields are modified
      */
     const STATE_TCLEAN      = 5;
+
     /**
      * LOCKED STATE
      * a Doctrine_Record is temporarily locked during deletes and saves
@@ -77,39 +82,48 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @var Doctrine_Node_<TreeImpl>        node object
      */
     protected $_node;
+
     /**
      * @var integer $_id                    the primary keys of this object
      */
     protected $_id           = array();
+
     /**
      * @var array $_data                    the record data
      */
     protected $_data         = array();
+
     /**
      * @var array $_values                  the values array, aggregate values and such are mapped into this array
      */
     protected $_values       = array();
+
     /**
      * @var integer $_state                 the state of this record
      * @see STATE_* constants
      */
     protected $_state;
+
     /**
      * @var array $_modified                an array containing properties that have been modified
      */
     protected $_modified     = array();
+
     /**
      * @var Doctrine_Validator_ErrorStack   error stack object
      */
     protected $_errorStack;
+
     /**
      * @var array $_references              an array containing all the references
      */
     protected $_references     = array();
+
     /**
      * @var integer $index                  this index is used for creating object identifiers
      */
     private static $_index = 1;
+
     /**
      * @var integer $oid                    object identifier, each Record object has a unique object identifier
      */
@@ -186,6 +200,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         
     }
+
     /**
      * _index
      *
@@ -195,6 +210,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return self::$_index;
     }
+
     /**
      * setUp
      * this method is used for setting up relations and attributes
@@ -223,6 +239,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return $this->_oid;
     }
+
     /**
      * isValid
      *
@@ -248,6 +265,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $this->_errorStack->count() == 0 ? true : false;
     }
+
     /**
      * Empty template method to provide concrete Record classes with the possibility
      * to hook into the validation procedure, doing any custom / specialized
@@ -354,6 +372,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return $this->_errorStack;
     }
+
     /**
      * errorStack
      * assigns / returns record errorStack
@@ -372,6 +391,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             return $this->_errorStack;
         }
     }
+
     /**
      * setDefaultValues
      * sets the default values for records internal data
@@ -398,6 +418,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         }
     }
+
     /**
      * cleanData
      *
@@ -420,6 +441,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $tmp;
     }
+
     /**
      * hydrate
      * hydrates this object from given array
@@ -434,6 +456,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         $this->prepareIdentifiers(true);
     }
+
     /**
      * prepareIdentifiers
      * prepares identifiers for later use
@@ -468,6 +491,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 break;
         }
     }
+
     /**
      * serialize
      * this method is automatically called when this Doctrine_Record is serialized
@@ -518,6 +542,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $str;
     }
+
     /**
      * unseralize
      * this method is automatically called everytime a Doctrine_Record object is unserialized
@@ -571,6 +596,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         
         $this->postUnserialize($event);
     }
+
     /**
      * state
      * returns / assigns the state of this record
@@ -614,6 +640,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             throw new Doctrine_Record_State_Exception('Unknown record state ' . $state);
         }
     }
+
     /**
      * refresh
      * refresh internal data from the database
@@ -650,7 +677,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $this;
     }
-    
+
     /**
      * refresh
      * refres data of related objects from the database
@@ -682,7 +709,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         $this->_references = array();
     }
-    
+
     /**
      * getTable
      * returns the table object for this record
@@ -693,6 +720,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return $this->_table;
     }
+
     /**
      * getData
      * return all the internal data
@@ -703,6 +731,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return $this->_data;
     }
+
     /**
      * rawGet
      * returns the value of a property, if the property is not yet loaded
@@ -712,7 +741,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @throws Doctrine_Record_Exception    if trying to get an unknown property
      * @return mixed
      */
-
     public function rawGet($name)
     {
         if ( ! isset($this->_data[$name])) {
@@ -742,6 +770,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         return false;
     }
+
     /**
      * get
      * returns a value of a property or a related component
@@ -795,6 +824,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         }
     }
+
     /**
      * mapValue
      * This simple method is used for mapping values to $values property.
@@ -810,6 +840,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $name = strtolower($name);
         $this->_values[$name] = $value;
     }
+
     /**
      * set
      * method for altering properties and Doctrine_Record references
@@ -919,6 +950,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         $this->_references[$name] = $value;
     }
+
     /**
      * contains
      *
@@ -945,6 +977,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         return false;
     }
+
     /**
      * @param string $name
      * @return void
@@ -956,6 +989,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         // todo: what to do with references ?
     }
+
     /**
      * applies the changes made to this object into database
      * this method is smart enough to know if any changes are made
@@ -973,6 +1007,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         $conn->unitOfWork->saveGraph($this);
     }
+
     /**
      * Tries to save the object and all its related components.
      * In contrast to Doctrine_Record::save(), this method does not
@@ -990,6 +1025,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             return false;
         }
     }
+
     /**
      * replace
      * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
@@ -1016,6 +1052,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $conn->replace($this->_table->getTableName(), $this->getPrepared(), $this->id);
     }
+
     /**
      * returns an array of modified fields and associated values
      * @return array
@@ -1029,6 +1066,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         return $a;
     }
+
     /**
      * getPrepared
      *
@@ -1093,6 +1131,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $a;
     }
+
     /**
      * count
      * this class implements countable interface
@@ -1103,6 +1142,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return count($this->_data);
     }
+
     /**
      * alias for count()
      *
@@ -1112,6 +1152,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return $this->count();
     }
+
     /**
      * toArray
      * returns the record as an array
@@ -1135,7 +1176,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         if ($deep) {
             foreach ($this->_references as $key => $relation) {
-                if (!$relation instanceof Doctrine_Null) {
+                if ( ! $relation instanceof Doctrine_Null) {
                     $a[$key] = $relation->toArray($deep, $prefixKey);
                 }
             }
@@ -1170,6 +1211,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             return $this->fromArray(Doctrine_Parser::load($data, $type));
         }
     }
+
     /**
      * exists
      * returns true if this record is persistent, otherwise false
@@ -1181,6 +1223,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         return ($this->_state !== Doctrine_Record::STATE_TCLEAN &&
                 $this->_state !== Doctrine_Record::STATE_TDIRTY);
     }
+
     /**
      * isModified
      * returns true if this record was modified, otherwise false
@@ -1192,6 +1235,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         return ($this->_state === Doctrine_Record::STATE_DIRTY ||
                 $this->_state === Doctrine_Record::STATE_TDIRTY);
     }
+
     /**
      * method for checking existence of properties and Doctrine_Record references
      * @param mixed $name               name of the property or reference
@@ -1204,6 +1248,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         return $this->_table->hasRelation($name);
     }
+
     /**
      * getIterator
      * @return Doctrine_Record_Iterator     a Doctrine_Record_Iterator that iterates through the data
@@ -1212,6 +1257,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return new Doctrine_Record_Iterator($this);
     }
+
     /**
      * deletes this data access object and all the related composites
      * this operation is isolated by a transaction
@@ -1227,6 +1273,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         return $conn->unitOfWork->delete($this);
     }
+
     /**
      * copy
      * returns a copy of this object
@@ -1255,6 +1302,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $ret;
     }
+
     /**
      * copyDeep
      * returns a copy of this object and all its related objects
@@ -1275,7 +1323,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         return $copy;
     }
-    
+
     /**
      * assignIdentifier
      *
@@ -1301,6 +1349,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $this->_modified  = array();
         }
     }
+
     /**
      * returns the primary keys of this object
      *
@@ -1310,6 +1359,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return $this->_id;
     }
+
     /**
      * returns the value of autoincremented primary key of this object (if any)
      *
@@ -1324,6 +1374,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $id;
     }
+
     /**
      * getLast
      * this method is used internally be Doctrine_Query
@@ -1336,6 +1387,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return $this;
     }
+
     /**
      * hasRefence
      * @param string $name
@@ -1345,6 +1397,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return isset($this->_references[$name]);
     }
+
     /**
      * reference
      *
@@ -1356,6 +1409,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             return $this->_references[$name];
         }
     }
+
     /**
      * obtainReference
      *
@@ -1369,6 +1423,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         throw new Doctrine_Record_Exception("Unknown reference $name");
     }
+
     /**
      * getReferences
      * @return array    all references
@@ -1377,6 +1432,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return $this->_references;
     }
+
     /**
      * setRelated
      *
@@ -1387,6 +1443,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         $this->_references[$alias] = $coll;
     }
+
     /**
      * loadReference
      * loads a related component
@@ -1420,7 +1477,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             }
         }
     }
-    
+
     /**
      * call
      *
@@ -1444,6 +1501,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         return $this;
     }
+
     /**
      * getter for node assciated with this record
      *
@@ -1469,6 +1527,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return $this->_table->unshiftFilter($filter);
     }
+
     /**
      * revert
      * reverts this record to given version, this method only works if versioning plugin
@@ -1493,6 +1552,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $this;
     }
+
     /**
      * unlink
      * removes links from this record to given records
@@ -1543,6 +1603,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         }
         return $this;
     }
+
     /**
      * __call
      * this method is a magic method that is being used for method overloading
@@ -1574,6 +1635,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         
         throw new Doctrine_Record_Exception('Unknown method ' . $method);
     }
+
     /**
      * used to delete node from tree - MUST BE USE TO DELETE RECORD IF TABLE ACTS AS TREE
      *
@@ -1585,6 +1647,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return Doctrine::dump(get_object_vars($this));
     }
+
     /**
      * returns a string representation of this object
      */

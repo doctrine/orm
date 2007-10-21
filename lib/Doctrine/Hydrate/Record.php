@@ -63,6 +63,7 @@ class Doctrine_Hydrate_Record extends Doctrine_Locator_Injectable
     {
         $this->_collections[] = $coll;
     }
+
     /**
      * isIdentifiable
      * returns whether or not a given data row is identifiable (it contains

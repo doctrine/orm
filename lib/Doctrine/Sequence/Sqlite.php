@@ -81,6 +81,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
         }
         return $value;
     }
+
     /**
      * Returns the autoincrement ID if supported or $id or fetches the current
      * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
@@ -93,6 +94,7 @@ class Doctrine_Sequence_Sqlite extends Doctrine_Sequence
     {
         return $this->conn->getDbh()->lastInsertId();
     }
+
     /**
      * Returns the current id of a sequence
      *

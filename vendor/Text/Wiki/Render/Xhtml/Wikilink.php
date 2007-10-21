@@ -114,7 +114,7 @@ class Text_Wiki_Render_Xhtml_Wikilink extends Text_Wiki_Render {
             $href = $this->getConf('new_url', null);
 
             // set the proper HREF
-            if (! $href || trim($href) == '') {
+            if ( !  $href || trim($href) == '') {
 
                 // no useful href, return the text as it is
                 //TODO: This is no longer used, need to look closer into this branch
@@ -141,7 +141,7 @@ class Text_Wiki_Render_Xhtml_Wikilink extends Text_Wiki_Render {
 
             // what kind of linking are we doing?
             $pos = $this->getConf('new_text_pos');
-            if (! $pos || ! $new) {
+            if ( !  $pos || ! $new) {
                 // no position (or no new_text), use css only on the page name
 
                 $start = '<a'.$css.' href="'.$this->textEncode($href).'">';
@@ -156,7 +156,7 @@ class Text_Wiki_Render_Xhtml_Wikilink extends Text_Wiki_Render {
                 $end = '<a'.$css.' href="'.$this->textEncode($href).'">'.$this->textEncode($new).'</a>';
             }
         }
-        if (!strlen($text)) {
+        if ( ! strlen($text)) {
             $start .= $this->textEncode($page);
         }
         if (isset($type)) {

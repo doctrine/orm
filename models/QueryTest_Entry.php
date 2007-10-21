@@ -11,7 +11,7 @@ class QueryTest_Entry extends Doctrine_Record
         $this->hasColumn('date', 'integer', 4,
                 array('notnull'));
     }
-    
+
     /**
      * Runtime definition of the relationships to other entities.
      */

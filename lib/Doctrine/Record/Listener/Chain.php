@@ -39,6 +39,7 @@ class Doctrine_Record_Listener_Chain extends Doctrine_Access implements Doctrine
      * @var array $listeners        an array containing all listeners
      */
     protected $_listeners = array();
+
     /**
      * add
      * adds a listener to the chain of listeners
@@ -60,6 +61,7 @@ class Doctrine_Record_Listener_Chain extends Doctrine_Access implements Doctrine
             $this->_listeners[$name] = $listener;
         }
     }
+
     /**
      * returns a Doctrine_Record_Listener on success
      * and null on failure
@@ -74,6 +76,7 @@ class Doctrine_Record_Listener_Chain extends Doctrine_Access implements Doctrine
         }
         return $this->_listeners[$key];
     }
+
     /**
      * set
      *

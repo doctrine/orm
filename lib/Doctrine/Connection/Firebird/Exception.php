@@ -68,6 +68,7 @@ class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Excepti
                                     -923 => Doctrine::ERR_CONNECT_FAILED,
                                     -924 => Doctrine::ERR_CONNECT_FAILED
                                     );
+
     /**
      * @var array $errorRegexps         an array that is used for determining portable
      *                                  error code from a native database error message
@@ -96,6 +97,7 @@ class Doctrine_Connection_Firebird_Exception extends Doctrine_Connection_Excepti
                                     '/table unknown/i'
                                         => Doctrine::ERR_NOSUCHTABLE,
                                     );
+
     /**
      * This method checks if native error code/message can be
      * converted into a portable code and then adds this

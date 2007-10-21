@@ -8,7 +8,7 @@ class QueryTest_Category extends Doctrine_Record
      * @var integer
      */
     public $depth;
-    
+
     /**
      * Table definition.
      */
@@ -23,7 +23,7 @@ class QueryTest_Category extends Doctrine_Record
         $this->hasColumn('position as position', 'integer', 4,
                 array('default' => 0, 'notnull'));
     }
-    
+
     /**
      * Relations definition.
      */

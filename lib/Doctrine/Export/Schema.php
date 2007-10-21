@@ -20,14 +20,9 @@
  */
 
 /**
- * class Doctrine_Export_Schema
- *
- * Different methods to import a XML schema. The logic behind using two different
- * methods is simple. Some people will like the idea of producing Doctrine_Record
- * objects directly, which is totally fine. But in fast and growing application,
- * table definitions tend to be a little bit more volatile. importArr() can be used
- * to output a table definition in a PHP file. This file can then be stored 
- * independantly from the object itself.
+ * Doctrine_Export_Schema
+ * 
+ * Used for exporting a schema to a yaml file
  *
  * @package     Doctrine
  * @subpackage  Export
@@ -35,6 +30,7 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @version     $Revision: 1838 $
  * @author      Nicolas Bérard-Nault <nicobn@gmail.com>
+ * @author      Jonathan H. Wage <jwage@mac.com>
  */
 class Doctrine_Export_Schema
 {    
@@ -64,7 +60,7 @@ class Doctrine_Export_Schema
         // we iterate trhough the diff of previously declared classes
         // and currently declared classes
         foreach ($loadedModels as $name) {
-            if (!empty($models) && !in_array($name, $models)) {
+            if ( ! empty($models) && !in_array($name, $models)) {
                 continue;
             }
 
@@ -114,18 +110,19 @@ class Doctrine_Export_Schema
         
         return $array;
     }
-    
+
     /**
      * exportSchema
      *
-     * @param string $schema 
-     * @param string $directory 
+     * @param  string $schema 
+     * @param  string $directory 
+     * @return string $string of data in the specified format
      * @return void
      */
     public function exportSchema($schema, $format = 'yml', $directory = null, $models = array())
     {
         $array = $this->buildSchema($directory, $models);
         
-        Doctrine_Parser::dump($array, $format, $schema);
+        return Doctrine_Parser::dump($array, $format, $schema);
     }
 }

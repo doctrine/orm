@@ -26,6 +26,7 @@ Doctrine::autoload('Doctrine_Import_Builder');
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  * @version     $Id$
  */
+
 /**
  * class Doctrine_Import_Builder_BaseClass
  * Builds a Doctrine_Record base class definition based on a schema.

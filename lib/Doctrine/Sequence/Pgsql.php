@@ -60,6 +60,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
         }
         return $result;
     }
+
     /**
      * lastInsertId
      *
@@ -77,6 +78,7 @@ class Doctrine_Sequence_Pgsql extends Doctrine_Sequence
 
         return (int) $this->conn->fetchOne("SELECT CURRVAL('" . $sequenceName . "')");
     }
+
     /**
      * Returns the current id of a sequence
      *

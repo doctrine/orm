@@ -56,7 +56,7 @@ class Text_Wiki_Render_Latex_Image extends Text_Wiki_Render {
         }
         
         // always add an "alt" attribute per Stephane Solliec
-        if (! $alt) {
+        if ( !  $alt) {
             $attr .= ' alt="' . basename($options['src']) . '"';
         }
         

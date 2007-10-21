@@ -43,6 +43,7 @@ abstract class Doctrine_Record_Filter
     {
         return $this->_table;
     }
+
     /**
      * filterSet
      * defines an implementation for filtering the set() method of Doctrine_Record
@@ -50,6 +51,7 @@ abstract class Doctrine_Record_Filter
      * @param mixed $name                       name of the property or related component
      */
     abstract public function filterSet(Doctrine_Record $record, $name, $value);
+
     /**
      * filterGet
      * defines an implementation for filtering the get() method of Doctrine_Record

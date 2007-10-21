@@ -11,7 +11,7 @@
 
     require_once("XML/Parser.php");
 
-    if(!defined("ATTRIBUTES")) {
+    if( ! defined("ATTRIBUTES")) {
         define("ATTRIBUTES", "__ATTRIBUTES__");
     }
 

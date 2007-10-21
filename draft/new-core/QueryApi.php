@@ -42,6 +42,7 @@ class Doctrine_Query
     {
         return new Doctrine_Query();
     }
+
     /**
      * addSelect
      * adds fields to the SELECT part of the query
@@ -53,6 +54,7 @@ class Doctrine_Query
     {
         return $this->getParser('select')->parse($select, true);
     }
+
     /**
      * addWhere
      * adds conditions to the WHERE part of the query
@@ -70,6 +72,7 @@ class Doctrine_Query
         }
         return $this->getParser('where')->parse($where, true);
     }
+
     /**
      * addGroupBy
      * adds fields to the GROUP BY part of the query
@@ -81,6 +84,7 @@ class Doctrine_Query
     {
         return $this->getParser('groupby')->parse($groupby, true);
     }
+
     /**
      * addHaving
      * adds conditions to the HAVING part of the query
@@ -92,6 +96,7 @@ class Doctrine_Query
     {
         return $this->getParser('having')->parse($having, true);
     }
+
     /**
      * addOrderBy
      * adds fields to the ORDER BY part of the query
@@ -103,6 +108,7 @@ class Doctrine_Query
     {
         return $this->getParser('orderby')->parse($orderby, true);
     }
+
     /**
      * select
      * sets the SELECT part of the query
@@ -114,6 +120,7 @@ class Doctrine_Query
     {
         return $this->getParser('from')->parse($select);
     }
+
     /**
      * from
      * sets the FROM part of the query
@@ -125,6 +132,7 @@ class Doctrine_Query
     {
         return $this->getParser('from')->parse($from);
     }
+
     /**
      * innerJoin
      * appends an INNER JOIN to the FROM part of the query
@@ -136,6 +144,7 @@ class Doctrine_Query
     {
         return $this->getParser('from')->parse('INNER JOIN ' . $join);
     }
+
     /**
      * leftJoin
      * appends a LEFT JOIN to the FROM part of the query
@@ -147,6 +156,7 @@ class Doctrine_Query
     {
         return $this->getParser('from')->parse('LERT JOIN ' . $join);
     }
+
     /**
      * groupBy
      * sets the GROUP BY part of the query
@@ -158,6 +168,7 @@ class Doctrine_Query
     {
         return $this->getParser('groupby')->parse($groupby);
     }
+
     /**
      * where
      * sets the WHERE part of the query
@@ -175,6 +186,7 @@ class Doctrine_Query
         }
         return $this->getParser('where')->parse($where);
     }
+
     /**
      * having
      * sets the HAVING part of the query
@@ -192,6 +204,7 @@ class Doctrine_Query
         }
         return $this->getParser('having')->parse($having);
     }
+
     /**
      * orderBy
      * sets the ORDER BY part of the query
@@ -203,6 +216,7 @@ class Doctrine_Query
     {
         return $this->getParser('orderby')->parse($dql);
     }
+
     /**
      * limit
      * sets the DQL query limit
@@ -214,6 +228,7 @@ class Doctrine_Query
     {
         return $this->getParser('limit')->parse($dql);
     }
+
     /**
      * offset
      * sets the DQL query offset

@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Parser_Xml
  *
@@ -31,13 +32,38 @@
  */
 class Doctrine_Parser_Xml extends Doctrine_Parser
 {
-    public function arrayToXml($data, $rootNodeName = 'data', $xml = null)
+    /**
+     * dumpData
+     * 
+     * Convert array to xml and dump to specified path or return the xml
+     *
+     * @param  string $array Array of data to convert to xml
+     * @param  string $path  Path to write xml data to
+     * @return string $xml
+     * @return void
+     */
+    public function dumpData($array, $path = null)
+    {
+        $data = $this->arrayToXml($array);
+        
+        return $this->doDump($data, $path)
+    }
+
+    /**
+     * arrayToXml
+     *
+     * @param  string $array        Array to convert to xml    
+     * @param  string $rootNodeName Name of the root node
+     * @param  string $xml          SimpleXmlElement
+     * @return string $asXml        String of xml built from array
+     */
+    public function arrayToXml($array, $rootNodeName = 'data', $xml = null)
     {
         if ($xml === null) {
             $xml = new SimpleXmlElement("<?xml version=\"1.0\" encoding=\"utf-8\"?><$rootNodeName/>");
         }
 
-        foreach($data as $key => $value)
+        foreach($array as $key => $value)
         {
             if (is_array($value)) {
                 $node = $xml->addChild($key);
@@ -52,27 +78,32 @@ class Doctrine_Parser_Xml extends Doctrine_Parser
       
       return $xml->asXML();
     }
-    
-    public function dumpData($array, $path = null)
-    {
-        $xml = $this->arrayToXml($array);
-        
-        if ($path) {
-            return file_put_contents($path, $xml);
-        } else {
-            return $xml;
-        }
-    }
-    
+
+    /**
+     * loadData
+     *
+     * Load xml file and return array of data
+     *
+     * @param  string $path  Path to load xml data from
+     * @return array  $array Array of data converted from xml
+     */
     public function loadData($path)
     {
-        $contents = $this->getContents($path);
+        $contents = $this->doLoad($path);
         
         $simpleXml = simplexml_load_string($contents);
         
         return $this->prepareData($simpleXml);
     }
-    
+
+    /**
+     * prepareData
+     *
+     * Prepare simple xml to array for return
+     *
+     * @param  string $simpleXml 
+     * @return array  $return
+     */
     public function prepareData($simpleXml)
     {
         if ($simpleXml instanceof SimpleXMLElement) {
@@ -87,10 +118,10 @@ class Doctrine_Parser_Xml extends Doctrine_Parser
                 if (count($values) > 0) {
                     $return[$element] = $this->prepareData($value);
                 } else {
-                    if (!isset($return[$element])) {
+                    if ( ! isset($return[$element])) {
                         $return[$element] = (string) $value;
                     } else {
-                        if (!is_array($return[$element])) {
+                        if ( ! is_array($return[$element])) {
                             $return[$element] = array($return[$element], (string) $value);
                         } else {
                             $return[$element][] = (string) $value;

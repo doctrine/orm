@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  *
  * Doctrine_Manager is the base component of all doctrine based projects.
@@ -37,28 +38,34 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @var array $connections          an array containing all the opened connections
      */
     protected $_connections   = array();
+
     /**
      * @var array $bound                an array containing all components that have a bound connection
      */
     protected $_bound         = array();
+
     /**
      * @var integer $index              the incremented index
      */
     protected $_index         = 0;
+
     /**
      * @var integer $currIndex          the current connection index
      */
     protected $_currIndex     = 0;
+
     /**
      * @var string $root                root directory
      */
     protected $_root;
+
     /**
      * @var Doctrine_Query_Registry     the query registry
      */
     protected $_queryRegistry;
     
     protected static $driverMap = array('oci' => 'oracle');
+
     /**
      * constructor
      *
@@ -70,6 +77,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
         Doctrine_Locator_Injectable::initNullObject(new Doctrine_Null);
     }
+
     /**
      * setDefaultAttributes
      * sets default attributes
@@ -107,6 +115,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         return false;
     }
+
     /**
      * returns the root directory of Doctrine
      *
@@ -116,6 +125,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         return $this->_root;
     }
+
     /**
      * getInstance
      * returns an instance of this class
@@ -145,7 +155,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     	}
         return $this->_queryRegistry;
     }
-    
+
     /**
      * setQueryRegistry
      * sets the query registry
@@ -158,6 +168,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         
         return $this;
     }
+
     /**
      * fetch
      * fetches data using the provided queryKey and 
@@ -177,6 +188,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                             ->get($queryKey)
                             ->execute($params, $hydrationMode);
     }
+
     /**
      * fetchOne
      * fetches data using the provided queryKey and 
@@ -196,6 +208,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                             ->get($queryKey)
                             ->fetchOne($params, $hydrationMode);
     }
+
     /**
      * connection
      *
@@ -218,6 +231,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             return Doctrine_Manager::getInstance()->openConnection($adapter, $name);
         }
     }
+
     /**
      * openConnection
      * opens a new connection and saves it to Doctrine_Manager->connections
@@ -325,6 +339,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         
         return $parts;
     }
+
     /**
      * parseDsn
      *
@@ -419,6 +434,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
         return $parts;
     }
+
     /**
      * getConnection
      * @param integer $index
@@ -433,6 +449,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
         return $this->_connections[$name];
     }
+
     /**
      * getComponentAlias
      * retrieves the alias for given component name
@@ -450,6 +467,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
         return $componentName;
     }
+
     /**
      * sets an alias for given component name
      * very useful when building a large framework with a possibility
@@ -465,6 +483,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
         return $this;
     }
+
     /**
      * getConnectionName
      *
@@ -475,6 +494,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         return array_search($conn, $this->_connections, true);
     }
+
     /**
      * bindComponent
      * binds given component to given connection
@@ -489,6 +509,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         $this->_bound[$componentName] = $connectionName;
     }
+
     /**
      * getConnectionForComponent
      *
@@ -502,6 +523,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         return $this->getCurrentConnection();
     }
+
     /**
      * getTable
      * this is the same as Doctrine_Connection::getTable() except
@@ -515,6 +537,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         return $this->getConnectionForComponent($componentName)->getTable($componentName);
     }
+
     /**
      * table
      * this is the same as Doctrine_Connection::getTable() except
@@ -530,6 +553,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                ->getConnectionForComponent($componentName)
                ->getTable($componentName);
     }
+
     /**
      * closes the connection
      *
@@ -549,6 +573,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
         unset($connection);
     }
+
     /**
      * getConnections
      * returns all opened connections
@@ -559,6 +584,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         return $this->_connections;
     }
+
     /**
      * setCurrentConnection
      * sets the current connection to $key
@@ -575,6 +601,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         $this->_currIndex = $key;
     }
+
     /**
      * contains
      * whether or not the manager contains specified connection
@@ -586,6 +613,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         return isset($this->_connections[$key]);
     }
+
     /**
      * count
      * returns the number of opened connections
@@ -596,6 +624,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         return count($this->_connections);
     }
+
     /**
      * getIterator
      * returns an ArrayIterator that iterates through all connections
@@ -606,6 +635,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     {
         return new ArrayIterator($this->_connections);
     }
+
     /**
      * getCurrentConnection
      * returns the current connection
@@ -621,6 +651,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         }
         return $this->_connections[$i];
     }
+
     /**
      * __toString
      * returns a string representation of this object

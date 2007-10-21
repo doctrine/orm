@@ -22,7 +22,8 @@
 /**
  * Doctrine_Data
  * 
- * Base Doctrine_Data class
+ * Base Doctrine_Data class for dumping and loading data to and from fixtures files.
+ * Support formats are based on what formats are available in Doctrine_Parser such as yaml, xml, json, etc.
  *
  * @package     Doctrine
  * @subpackage  Data
@@ -42,6 +43,7 @@ class Doctrine_Data
      * @var string
      */
     public $formats = array('csv', 'yml', 'xml');
+
     /**
      * format
      * 
@@ -50,6 +52,7 @@ class Doctrine_Data
      * @var string
      */
     public $format = 'yml';
+
     /**
      * directory
      *
@@ -58,6 +61,7 @@ class Doctrine_Data
      * @var string
      */
     public $directory = null;
+
     /**
      * models
      *
@@ -66,6 +70,7 @@ class Doctrine_Data
      * @var string
      */
     public $models = array();
+
     /**
      * exportIndividualFiles
      *
@@ -74,6 +79,7 @@ class Doctrine_Data
      * @var string
      */
     public $exportIndividualFiles = false;
+
     /**
      * setFormat
      *
@@ -81,58 +87,60 @@ class Doctrine_Data
      * 
      * @param string $format 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function setFormat($format)
     {
         $this->format = $format;
     }
+
     /**
      * getFormat
      *
      * Get the current format we are working with
      * 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function getFormat()
     {
         return $this->format;
     }
+
     /**
      * getFormats 
      *
      * Get array of available formats
      * 
-     * @author Jonathan H. Wage
+     * @return void
      */
     public function getFormats()
     {
         return $this->formats;
     }
+
     /**
      * setDirectory
      *
      * Set the array/string of directories or yml file paths
      * 
-     * @author Jonathan H. Wage
+     * @return void
      */
     public function setDirectory($directory)
     {
         $this->directory = $directory;
     }
+
     /**
      * getDirectory
      *
-     * Get directory to work with
+     * Get directory for dumping/loading data from and to
      * 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function getDirectory()
     {
         return $this->directory;
     }
+
     /**
      * setModels
      *
@@ -140,30 +148,30 @@ class Doctrine_Data
      * 
      * @param string $models 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function setModels($models)
     {
         $this->models = $models;
     }
+
     /**
      * getModels
      *
      * Get the array of specified models to work with
      *
      * @return void
-     * @author Jonathan H. Wage
      */
     public function getModels()
     {
         return $this->models;
     }
+
     /**
      * exportIndividualFiles 
      *
      * Set/Get whether or not to export individual files
      * 
-     * @author Jonathan H. Wage
+     * @return bool $exportIndividualFiles
      */
     public function exportIndividualFiles($bool = null)
     {
@@ -173,6 +181,7 @@ class Doctrine_Data
         
         return $this->exportIndividualFiles;
     }
+
     /**
      * exportData
      *
@@ -183,7 +192,6 @@ class Doctrine_Data
      * @param string $models 
      * @param string $exportIndividualFiles 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function exportData($directory, $format = 'yml', $models = array(), $exportIndividualFiles = false)
     {
@@ -194,6 +202,7 @@ class Doctrine_Data
         
         return $export->doExport();
     }
+
     /**
      * importData
      *
@@ -203,7 +212,6 @@ class Doctrine_Data
      * @param string $format 
      * @param string $models 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function importData($directory, $format = 'yml', $models = array())
     {
@@ -213,6 +221,7 @@ class Doctrine_Data
         
         return $import->doImport();
     }
+
     /**
      * importDummyData
      *
@@ -221,7 +230,6 @@ class Doctrine_Data
      * @param string $num 
      * @param string $models 
      * @return void
-     * @author Jonathan H. Wage
      */
     public function importDummyData($num = 3, $models = array())
     {
@@ -230,6 +238,7 @@ class Doctrine_Data
         
         return $import->doImportDummyData($num);
     }
+
     /**
      * isRelation
      *
@@ -254,7 +263,7 @@ class Doctrine_Data
         
         return false;
     }
-    
+
     /**
      * purge
      * 
@@ -272,6 +281,6 @@ class Doctrine_Data
             $model = new $model();
 
             $model->getTable()->createQuery()->delete($model)->execute();
-          }
+        }
     }
 }

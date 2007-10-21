@@ -52,7 +52,7 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
         
         $this->_wiki->setRenderConf('xhtml', 'Doclink', 'url_callback', array(&$this, 'makeUrl'));
     }
-    
+
     /**
      * Renders table of contents as nested unordered lists.
      * 
@@ -103,7 +103,7 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
         
         return $output;
     }
-    
+
     /**
      * Renders section defined by 'section' option. If 'section' option is not
      * set, renders all sections.
@@ -138,7 +138,7 @@ class Sensei_Doc_Renderer_Xhtml extends Sensei_Doc_Renderer
         
         return $output;
     }
-    
+
     /**
      * Renders a sections and its children
      *

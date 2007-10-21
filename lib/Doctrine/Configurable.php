@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Configurable
  * the base for Doctrine_Table, Doctrine_Manager and Doctrine_Connection
@@ -37,16 +38,19 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
      * @var array $attributes               an array of containing all attributes
      */
     protected $attributes = array();
+
     /**
      * @var Doctrine_Configurable $parent   the parent of this component
      */
     protected $parent;
+
     /**
      * @var array $_impl                    an array containing concrete implementations for class templates
      *                                      keys as template names and values as names of the concrete
      *                                      implementation classes
      */
     protected $_impl = array();
+
     /**
      * setAttribute
      * sets a given attribute
@@ -137,6 +141,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
         $this->attributes[$attribute] = $value;
 
     }
+
     /**
      * setImpl
      * binds given class to given template name
@@ -153,6 +158,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
 
         return $this;
     }
+
     /**
      * getImpl
      * returns the implementation for given class
@@ -169,6 +175,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
         }
         return $this->_impl[$template];
     }
+
     /**
      * getCacheDriver
      *
@@ -182,6 +189,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
 
         return $this->attributes[Doctrine::ATTR_CACHE];
     }
+
     /**
      * @param Doctrine_EventListener $listener
      * @return void
@@ -190,6 +198,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
     {
         return $this->setListener($listener);
     }
+
     /**
      * addRecordListener
      *
@@ -207,6 +216,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
 
         return $this;
     }
+
     /**
      * getListener
      *
@@ -222,6 +232,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
         }
         return $this->attributes[Doctrine::ATTR_RECORD_LISTENER];
     }
+
     /**
      * setListener
      *
@@ -239,6 +250,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
 
         return $this;
     }
+
     /**
      * addListener
      *
@@ -256,6 +268,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
 
         return $this;
     }
+
     /**
      * getListener
      *
@@ -271,6 +284,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
         }
         return $this->attributes[Doctrine::ATTR_LISTENER];
     }
+
     /**
      * setListener
      *
@@ -288,6 +302,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
 
         return $this;
     }
+
     /**
      * returns the value of an attribute
      *
@@ -310,6 +325,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
         }
         return $this->attributes[$attribute];
     }
+
     /**
      * getAttributes
      * returns all attributes as an array
@@ -320,6 +336,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
     {
         return $this->attributes;
     }
+
     /**
      * sets a parent for this configurable component
      * the parent must be configurable component itself
@@ -331,6 +348,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
     {
         $this->parent = $component;
     }
+
     /**
      * getParent
      * returns the parent of this component

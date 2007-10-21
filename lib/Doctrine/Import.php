@@ -203,7 +203,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
         foreach ($connections as $name => $connection) {
           // Limit the databases to the ones specified by $databases.
           // Check only happens if array is not empty
-          if (!empty($databases) && !in_array($name, $databases)) {
+          if ( ! empty($databases) && !in_array($name, $databases)) {
             continue;
           }
           

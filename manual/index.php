@@ -43,7 +43,7 @@ function getSvnRevision($file)
 class Cache
 {
     protected $_cache = null;
-    
+
     /**
      * Constructs a cache object.
      * 
@@ -77,7 +77,7 @@ class Cache
             $this->_cache = null;            
         }
     }
-    
+
     /**
      * Fetches a cache record from cache.
      *
@@ -96,7 +96,7 @@ class Cache
         
         return false;
     }
-    
+
     /**
      * Saves a cache record to cache.
      *
@@ -116,7 +116,7 @@ class Cache
         
         return false;
     }
-    
+
     /**
      * Deletes all cached records from cache.
      *

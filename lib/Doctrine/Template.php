@@ -39,6 +39,7 @@ class Doctrine_Template extends Doctrine_Record_Abstract
     
     
     protected $_plugin;
+
     /**
      * setTable
      *
@@ -48,6 +49,7 @@ class Doctrine_Template extends Doctrine_Record_Abstract
     {
         $this->_table = $table;
     }
+
     /**
      * getTable
      * returns the associated table object
@@ -58,6 +60,7 @@ class Doctrine_Template extends Doctrine_Record_Abstract
     {
         return $this->_table;
     }
+
     /**
      * setInvoker
      *
@@ -70,6 +73,7 @@ class Doctrine_Template extends Doctrine_Record_Abstract
     {
         $this->_invoker = $invoker;
     }
+
     /**
      * setInvoker
      * returns the last used invoker

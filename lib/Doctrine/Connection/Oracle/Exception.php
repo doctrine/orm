@@ -57,6 +57,7 @@ class Doctrine_Connection_Oracle_Exception extends Doctrine_Connection_Exception
                                       2292 => Doctrine::ERR_CONSTRAINT,
                                       2449 => Doctrine::ERR_CONSTRAINT,
                                       );
+
     /**
      * This method checks if native error code/message can be
      * converted into a portable code and then adds this

@@ -37,6 +37,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName = 'Mssql';
+
     /**
      * the constructor
      *
@@ -66,6 +67,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
 
         parent::__construct($manager, $adapter);
     }
+
     /**
      * quoteIdentifier
      * Quote a string so it can be safely used as a table / column name
@@ -84,6 +86,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
         }
         return '[' . str_replace(']', ']]', $identifier) . ']';
     }
+
     /**
      * Adds an adapter-specific LIMIT clause to the SELECT statement.
      * [ borrowed from Zend Framework ]
@@ -129,6 +132,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
 
         return $query;
     }
+
     /**
      * return version information about the server
      *
@@ -166,6 +170,7 @@ class Doctrine_Connection_Mssql extends Doctrine_Connection
         }
         return $serverInfo;
     }
+
     /**
      * Checks if there's a sequence that exists.
      *

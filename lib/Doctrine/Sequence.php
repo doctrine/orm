@@ -45,6 +45,7 @@ class Doctrine_Sequence extends Doctrine_Connection_Module
     {
         throw new Doctrine_Sequence_Exception('method not implemented');
     }
+
     /**
      * Returns the autoincrement ID if supported or $id or fetches the current
      * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
@@ -56,6 +57,7 @@ class Doctrine_Sequence extends Doctrine_Connection_Module
     {
         throw new Doctrine_Sequence_Exception('method not implemented');
     }
+
     /**
      * Returns the current id of a sequence
      *

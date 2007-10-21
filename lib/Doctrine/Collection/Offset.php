@@ -37,6 +37,7 @@ class Doctrine_Collection_Offset extends Doctrine_Collection
      * @var integer $limit
      */
     private $limit;
+
     /**
      * @param Doctrine_Table $table
      */
@@ -45,6 +46,7 @@ class Doctrine_Collection_Offset extends Doctrine_Collection
         parent::__construct($table);
         $this->limit = $table->getAttribute(Doctrine::ATTR_COLL_LIMIT);
     }
+
     /**
      * @return integer
      */
@@ -52,6 +54,7 @@ class Doctrine_Collection_Offset extends Doctrine_Collection
     {
         return $this->limit;
     }
+
     /**
      * @return Doctrine_Collection_Iterator_Expandable
      */

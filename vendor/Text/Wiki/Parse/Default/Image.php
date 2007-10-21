@@ -121,7 +121,7 @@ class Text_Wiki_Parse_Image extends Text_Wiki_Parse {
             if (array_key_exists('link', $options['attr'])) {
                 // external url ?
                 if (($pos = strpos($options['attr']['link'], '://')) !== false) {
-                    if (!preg_match($this->url, $options['attr']['link'])) {
+                    if ( ! preg_match($this->url, $options['attr']['link'])) {
                         return $matches[0];
                     }
                 } elseif (in_array('Wikilink', $this->wiki->disable)) {

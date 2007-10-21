@@ -45,7 +45,7 @@ class Text_Wiki_Render_Latex_Font extends Text_Wiki_Render {
         'LARGE' => 19,
         'huge' => 22,
         'Huge' => 9999);
-    
+
     /**
       * Renders a token into text matching the requested format.
       * process the font size option 

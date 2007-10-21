@@ -93,6 +93,7 @@ class Doctrine_Query_ReferenceModel_TestCase extends Doctrine_UnitTestCase {
 
         $this->connection->clear();
     }
+
     /**
     public function testSelfReferencingWithDoubleNesting() {
         $query = new Doctrine_Query();

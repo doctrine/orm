@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Access
  *
@@ -49,6 +50,7 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
 
         return $this;
     }
+
     /**
      * __set        an alias of set()
      *
@@ -62,6 +64,7 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
     {
         $this->set($name,$value);
     }
+
     /**
      * __get -- an alias of get()
      *
@@ -74,6 +77,7 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
     {
         return $this->get($name);
     }
+
     /**
      * __isset()
      *
@@ -85,6 +89,7 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
     {
         return $this->contains($name);
     }
+
     /**
      * __unset()
      *
@@ -96,6 +101,7 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
     {
         return $this->remove($name);
     }
+
     /**
      * @param mixed $offset
      * @return boolean          whether or not this object contains $offset
@@ -104,6 +110,7 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
     {
         return $this->contains($offset);
     }
+
     /**
      * offsetGet    an alias of get()
      * @see get,  __get
@@ -114,6 +121,7 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
     {
         return $this->get($offset);
     }
+
     /**
      * sets $offset to $value
      * @see set,  __set
@@ -129,6 +137,7 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
             $this->set($offset, $value);
         }
     }
+
     /**
      * unset a given offset
      * @see set, offsetSet, __set

@@ -37,25 +37,30 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @var $dbh                                the database handler
      */
     protected $dbh;
+
     /**
      * @var array $tables                       an array containing all the initialized Doctrine_Table objects
      *                                          keys representing Doctrine_Table component names and values as Doctrine_Table objects
      */
     protected $tables           = array();
+
     /**
      * @var array $exported
      */
     protected $exported         = array();
+
     /**
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName;
+
     /**
      * @var array $supported                    an array containing all features this driver supports,
      *                                          keys representing feature names and values as
      *                                          one of the following (true, false, 'emulated')
      */
     protected $supported        = array();
+
     /**
      * @var array $modules                      an array containing all modules
      *              transaction                 Doctrine_Transaction driver, handles savepoint and transaction isolation abstraction
@@ -85,6 +90,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                              'sequence'    => false,
                              'unitOfWork'  => false,
                              );
+
     /**
      * @var array $properties               an array of connection properties
      */
@@ -103,10 +109,12 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                                   'wildcards'           => array('%', '_'),
                                   'varchar_max_length'  => 255,
                                   );
+
     /**
      * @var array $serverInfo
      */
     protected $serverInfo = array();
+
     /**
      * @var array $availableDrivers         an array containing all availible drivers
      */
@@ -143,6 +151,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onOpen($this);
     }
+
     /**
      * getName
      * returns the name of this driver
@@ -153,6 +162,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->driverName;
     }
+
     /**
      * __get
      * lazy loads given module and returns it
@@ -187,6 +197,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         return $this->modules[$name];
     }
+
     /**
      * Quotes pattern (% and _) characters in a string)
      *
@@ -209,6 +220,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         return $text;
     }
+
     /**
      * convertBoolean
      * some drivers need the boolean values to be converted into integers
@@ -232,6 +244,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         return $item;
     }
+
     /**
      * Quote a string so it can be safely used as a table or column name
      *
@@ -276,6 +289,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return $this->properties['identifier_quoting']['start']
                . $str . $this->properties['identifier_quoting']['end'];
     }
+
     /**
      * returns the manager that created this connection
      *
@@ -285,6 +299,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->getParent();
     }
+
     /**
      * returns the database handler of which this connection uses
      *
@@ -294,6 +309,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->dbh;
     }
+
     /**
      * converts given driver name
      *
@@ -302,6 +318,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function driverName($name)
     {
     }
+
     /**
      * supports
      *
@@ -316,6 +333,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             )
        );
     }
+
     /**
      * quote
      * quotes given input parameter
@@ -351,6 +369,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 return $this->dbh->quote($input);
         }
     }
+
     /**
      * Removes any formatting in an sequence name using the 'seqname_format' option
      *
@@ -367,6 +386,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         return $sqn;
     }
+
     /**
      * Removes any formatting in an index name using the 'idxname_format' option
      *
@@ -382,6 +402,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         return $idx;
     }
+
     /**
      * adds sequence name formatting to a sequence name
      *
@@ -393,6 +414,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         return sprintf($this->getAttribute(Doctrine::ATTR_SEQNAME_FORMAT),
             preg_replace('/[^a-z0-9_\$.]/i', '_', $sqn));
     }
+
     /**
      * adds index name formatting to a index name
      *
@@ -471,6 +493,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         return $affectedRows;
     }
+
     /**
      * Inserts a table row with specified data.
      *
@@ -495,6 +518,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         return true;
     }
+
     /**
      * Set the charset on the current connection
      *
@@ -506,6 +530,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
 
     }
+
     /**
      * Set the date/time format for the current connection
      *
@@ -516,6 +541,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     public function setDateFormat($format = null)
     {
     }
+
     /**
      * fetchAll
      *
@@ -527,6 +553,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
+
     /**
      * fetchOne
      *
@@ -539,6 +566,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->execute($statement, $params)->fetchColumn($colnum);
     }
+
     /**
      * fetchRow
      *
@@ -550,6 +578,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->execute($statement, $params)->fetch(PDO::FETCH_ASSOC);
     }
+
     /**
      * fetchArray
      *
@@ -561,6 +590,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->execute($statement, $params)->fetch(PDO::FETCH_NUM);
     }
+
     /**
      * fetchColumn
      *
@@ -573,6 +603,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->execute($statement, $params)->fetchAll(PDO::FETCH_COLUMN, $colnum);
     }
+
     /**
      * fetchAssoc
      *
@@ -584,6 +615,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->execute($statement, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
+
     /**
      * fetchBoth
      *
@@ -595,6 +627,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->execute($statement, $params)->fetchAll(PDO::FETCH_BOTH);
     }
+
     /**
      * query
      * queries the database using Doctrine Query Language
@@ -617,6 +650,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         return $parser->query($query, $params);
     }
+
     /**
      * query
      * queries the database using Doctrine Query Language and returns
@@ -646,6 +680,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         return $coll[0];
     }
+
     /**
      * queries the database with limit and offset
      * added to the query and returns a PDOStatement object
@@ -662,6 +697,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         }
         return $this->dbh->query($query);
     }
+
     /**
      * standaloneQuery
      *
@@ -674,6 +710,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->execute($query, $params);
     }
+
     /**
      * execute
      * @param string $query     sql query
@@ -696,6 +733,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->rethrowException($e);
     }
+
     /**
      * exec
      * @param string $query     sql query
@@ -717,6 +755,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->rethrowException($e);
     }
+
     /**
      * rethrowException
      *
@@ -734,6 +773,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         throw $exc;
     }
+
     /**
      * hasTable
      * whether or not this connection has table $name initialized
@@ -745,6 +785,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return isset($this->tables[$name]);
     }
+
     /**
      * returns a table object for given component name
      *
@@ -816,6 +857,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         return $table;
     }
+
     /**
      * returns an array of all initialized tables
      *
@@ -825,6 +867,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->tables;
     }
+
     /**
      * returns an iterator that iterators through all
      * initialized table objects
@@ -841,6 +884,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return new ArrayIterator($this->tables);
     }
+
     /**
      * returns the count of initialized table objects
      *
@@ -850,6 +894,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return count($this->tables);
     }
+
     /**
      * addTable
      * adds a Doctrine_Table object into connection registry
@@ -867,6 +912,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->tables[$name] = $objTable;
         return true;
     }
+
     /**
      * create
      * creates a record
@@ -879,6 +925,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->getTable($name)->create();
     }
+
     /**
      * flush
      * saves all the records from all tables
@@ -893,6 +940,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->unitOfWork->saveAll();
         $this->commit();
     }
+
     /**
      * clear
      * clears all repositories
@@ -906,6 +954,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
             $table->clear();
         }
     }
+
     /**
      * evictTables
      * evicts all tables
@@ -917,6 +966,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $this->tables = array();
         $this->exported = array();
     }
+
     /**
      * close
      * closes the connection
@@ -931,6 +981,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $this->getAttribute(Doctrine::ATTR_LISTENER)->onClose($this);
     }
+
     /**
      * get the current transaction nesting level
      *
@@ -940,6 +991,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         return $this->transaction->getTransactionLevel();
     }
+
     /**
      * beginTransaction
      * starts a new transaction
@@ -953,6 +1005,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         $this->transaction->beginTransaction();
     }
+
     /**
      * commits the current transaction
      * if lockmode is optimistic this method starts a transaction
@@ -964,6 +1017,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         $this->transaction->commit();
     }
+
     /**
      * rollback
      * rolls back all transactions
@@ -977,6 +1031,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     {
         $this->transaction->rollback();
     }
+
     /**
      * saves the given record
      *
@@ -1003,6 +1058,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         $record->getTable()->getAttribute(Doctrine::ATTR_LISTENER)->onSave($record);
     }
+
     /**
      * deletes this data access object and all the related composites
      * this operation is isolated by a transaction
@@ -1030,6 +1086,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         return true;
     }
+
     /**
      * returns a string representation of this object
      * @return string

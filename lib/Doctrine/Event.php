@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Event
  *
@@ -63,35 +64,43 @@ class Doctrine_Event
     const RECORD_INSERT      = 24;
     const RECORD_SERIALIZE   = 25;
     const RECORD_UNSERIALIZE = 26;
+
     /**
      * @var mixed $_invoker             the handler which invoked this event
      */
     protected $_invoker;
+
     /**
      * @var string $_query              the sql query associated with this event (if any)
      */
     protected $_query;
+
     /**
      * @var string $_params             the parameters associated with the query (if any)
      */
     protected $_params;
+
     /**
      * @see Doctrine_Event constants
      * @var integer $_code              the event code
      */
     protected $_code;
+
     /**
      * @var integer $_startedMicrotime  the time point in which this event was started
      */
     protected $_startedMicrotime;
+
     /**
      * @var integer $_endedMicrotime    the time point in which this event was ended
      */
     protected $_endedMicrotime;
+
     /**
      * @var array $_options             an array of options
      */
     protected $_options = array();
+
     /**
      * constructor
      *
@@ -107,6 +116,7 @@ class Doctrine_Event
         $this->_query   = $query;
         $this->_params  = $params;
     }
+
     /**
      * getQuery
      *
@@ -116,6 +126,7 @@ class Doctrine_Event
     {
         return $this->_query;
     }
+
     /**
      * getName
      * returns the name of this event
@@ -173,6 +184,7 @@ class Doctrine_Event
                 return 'unserialize record';
         }
     }
+
     /**
      * getCode
      *
@@ -182,6 +194,7 @@ class Doctrine_Event
     {
         return $this->_code;
     }
+
     /**
      * getOption
      * returns the value of an option
@@ -197,6 +210,7 @@ class Doctrine_Event
         
         return $this->_options[$option];
     }
+
     /**
      * skipOperation
      * skips the next operation
@@ -210,6 +224,7 @@ class Doctrine_Event
     
         return $this;
     }
+
     /**
      * setOption
      * sets the value of an option
@@ -224,6 +239,7 @@ class Doctrine_Event
 
         return $this;
     }
+
     /**
      * setOption
      * sets the value of an option by reference
@@ -238,6 +254,7 @@ class Doctrine_Event
 
         return $this;
     }
+
     /**
      * start
      * starts the internal timer of this event
@@ -248,6 +265,7 @@ class Doctrine_Event
     {
         $this->_startedMicrotime = microtime(true);
     }
+
     /**
      * hasEnded
      * whether or not this event has ended
@@ -258,6 +276,7 @@ class Doctrine_Event
     {
         return ($this->_endedMicrotime != null);
     }
+
     /**
      * end
      * ends the internal timer of this event
@@ -270,6 +289,7 @@ class Doctrine_Event
         
         return $this;
     }
+
     /**
      * getInvoker
      * returns the handler that invoked this event
@@ -281,6 +301,7 @@ class Doctrine_Event
     {
         return $this->_invoker;
     }
+
     /**
      * getParams
      * returns the parameters of the query
@@ -291,6 +312,7 @@ class Doctrine_Event
     {
         return $this->_params;
     }
+
     /**
      * Get the elapsed time (in microseconds) that the event ran.  If the event has
      * not yet ended, return false.

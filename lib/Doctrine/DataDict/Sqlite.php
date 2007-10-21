@@ -119,6 +119,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
         }
         throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
+
     /**
      * Maps a native array description of a field to Doctrine datatype and length
      *
@@ -240,6 +241,7 @@ class Doctrine_DataDict_Sqlite extends Doctrine_DataDict
                      'unsigned' => $unsigned,
                      'fixed'    => $fixed);
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to declare an integer type
      * field to be used in statements like CREATE TABLE.

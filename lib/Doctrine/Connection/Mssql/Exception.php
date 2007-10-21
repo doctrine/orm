@@ -52,6 +52,7 @@ class Doctrine_Connection_Mssql_Exception extends Doctrine_Connection_Exception
                                       3701  => Doctrine::ERR_NOSUCHTABLE,
                                       8134  => Doctrine::ERR_DIVZERO,
                                       );
+
     /**
      * This method checks if native error code/message can be
      * converted into a portable code and then adds this

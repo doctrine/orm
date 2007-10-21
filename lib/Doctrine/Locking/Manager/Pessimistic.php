@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Offline locking of records comes in handy where you need to make sure that
  * a time-consuming task on a record or many records, which is spread over several
@@ -41,6 +42,7 @@ class Doctrine_Locking_Manager_Pessimistic
      * @var Doctrine_Connection object
      */
     private $conn;
+
     /**
      * The database table name for the lock tracking
      */

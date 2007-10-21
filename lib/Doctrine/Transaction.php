@@ -38,26 +38,32 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
      * Doctrine_Transaction is in sleep state when it has no active transactions
      */
     const STATE_SLEEP       = 0;
+
     /**
      * Doctrine_Transaction is in active state when it has one active transaction
      */
     const STATE_ACTIVE      = 1;
+
     /**
      * Doctrine_Transaction is in busy state when it has multiple active transactions
      */
     const STATE_BUSY        = 2;
+
     /**
      * @var integer $transactionLevel      the nesting level of transactions, used by transaction methods
      */
     protected $transactionLevel  = 0;
+
     /**
      * @var array $invalid                  an array containing all invalid records within this transaction
      */
     protected $invalid          = array();
+
     /**
      * @var array $savepoints               an array containing all savepoints
      */
     protected $savePoints       = array();
+
     /**
      * @var array $_collections             an array of Doctrine_Collection objects that were affected during the Transaction
      */
@@ -80,6 +86,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
         return $this;
     }
+
     /**
      * getState
      * returns the state of this connection
@@ -128,6 +135,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
     {
         return $this->transactionLevel;
     }
+
     /**
      * getTransactionLevel
      * set the current transaction nesting level
@@ -140,6 +148,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
         return $this;
     }
+
     /**
      * beginTransaction
      * Start a transaction or set a savepoint.
@@ -192,6 +201,7 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
 
         return $level;
     }
+
     /**
      * commit
      * Commit the database changes done during a transaction that is in

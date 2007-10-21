@@ -29,6 +29,7 @@ class User extends Entity
             'refClass' => 'Groupuser',
         ));
     }
+
     /** Custom validation */
     public function validate() 
     {

@@ -55,6 +55,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
         return $result;
     }
+
     /**
      * lists all availible database functions
      *
@@ -66,6 +67,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
         return $this->conn->fetchColumn($query);
     }
+
     /**
      * lists all database triggers
      *
@@ -76,6 +78,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     {
 
     }
+
     /**
      * lists all database sequences
      *
@@ -90,6 +93,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
         return array_map(array($this->conn->formatter, 'fixSequenceName'), $tableNames);
     }
+
     /**
      * lists table constraints
      *
@@ -107,6 +111,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
         return array_map(array($this->conn->formatter, 'fixIndexName'), $constraints);
     }
+
     /**
      * lists table constraints
      *
@@ -142,6 +147,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         }
         return $result;
     }
+
     /**
      * lists table constraints
      *
@@ -159,6 +165,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
         return array_map(array($this->conn->formatter, 'fixIndexName'), $indexes);
     }
+
     /**
      * lists tables
      *
@@ -170,6 +177,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
         $query = 'SELECT table_name FROM sys.user_tables';
         return $this->conn->fetchColumn($query);
     }
+
     /**
      * lists table triggers
      *
@@ -180,6 +188,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     {
 
     }
+
     /**
      * lists table views
      *
@@ -190,6 +199,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
     {
 
     }
+
     /**
      * lists database users
      *
@@ -211,6 +221,7 @@ class Doctrine_Import_Oracle extends Doctrine_Import
 
         return $this->conn->fetchColumn($query);
     }
+
     /**
      * lists database views
      *

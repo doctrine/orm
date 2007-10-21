@@ -143,6 +143,7 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
 
         return join(' || ' , $args);
     }
+
     /**
      * Returns the SQL string to return the current system date and time.
      *
@@ -173,6 +174,7 @@ class Doctrine_Expression_Pgsql extends Doctrine_Expression_Driver
     {
         return 'RANDOM()';
     }
+
     /**
      * build a pattern matching string
      *

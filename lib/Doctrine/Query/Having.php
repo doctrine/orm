@@ -77,6 +77,7 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
             }
         }
     }
+
     /**
      * load
      * returns the parsed query part

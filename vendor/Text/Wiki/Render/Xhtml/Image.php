@@ -85,7 +85,7 @@ class Text_Wiki_Render_Xhtml_Image extends Text_Wiki_Render {
         // use CSS for all alignment
         if (isset($options['attr']['align'])) {
             // make sure we have a style attribute
-            if (!isset($options['attr']['style'])) {
+            if ( ! isset($options['attr']['style'])) {
                 // no style, set up a blank one
                 $options['attr']['style'] = '';
             } else {
@@ -109,7 +109,7 @@ class Text_Wiki_Render_Xhtml_Image extends Text_Wiki_Render {
 
         // stephane@metacites.net -- 25/07/2004
         // try to guess width and height
-        if (! isset($options['attr']['width']) &&
+        if ( !  isset($options['attr']['width']) &&
             ! isset($options['attr']['height'])) {
 
             // does the source refer to a local file or a URL?
@@ -162,7 +162,7 @@ class Text_Wiki_Render_Xhtml_Image extends Text_Wiki_Render {
         }
 
         // always add an "alt" attribute per Stephane Solliec
-        if (! $alt) {
+        if ( !  $alt) {
             $alt = $this->textEncode(basename($options['src']));
             $output .= " alt=\"$alt\"";
         }

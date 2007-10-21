@@ -36,6 +36,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate
      * @var array $fields
      */
     private $fields;
+
     /**
      * __call
      * method overloader
@@ -59,6 +60,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate
         }
         return $this;
     }
+
     /**
      * get
      */
@@ -69,6 +71,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate
         }
         return $this->parts[$name];
     }
+
     /**
      * parseQuery
      *
@@ -126,6 +129,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate
 
         return $this;
     }
+
     /**
      * getQuery
      *
@@ -191,6 +195,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate
         }
         return $q;
     }
+
     /**
      * getFields
      *
@@ -200,6 +205,7 @@ class Doctrine_RawSql extends Doctrine_Hydrate
     {
         return $this->fields;
     }
+
     /**
      * addComponent
      *

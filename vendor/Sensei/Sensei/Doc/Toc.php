@@ -52,7 +52,7 @@ class Sensei_Doc_Toc implements Countable
         $this->_toc = new Sensei_Doc_Section();
         $this->_toc->parse(dirname($filename), basename($filename));
     }
-    
+
     /**
      * Finds the section that matches the given path.
      * 
@@ -108,7 +108,7 @@ class Sensei_Doc_Toc implements Countable
         
         return $currentSection;
     }
-    
+
     /**
      * Returns a root section with the given index.
      *
@@ -119,7 +119,7 @@ class Sensei_Doc_Toc implements Countable
     {
         return $this->_toc->getChild($index);
     }
-    
+
     /**
      * Returns the number of sections (excluding their subsections).
      *

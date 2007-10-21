@@ -39,6 +39,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
      * @var array $listeners        an array containing all listeners
      */
     protected $_listeners = array();
+
     /**
      * add
      * adds a listener to the chain of listeners
@@ -60,6 +61,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $this->_listeners[$name] = $listener;
         }
     }
+
     /**
      * returns a Doctrine_EventListener on success
      * and null on failure
@@ -74,6 +76,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
         }
         return $this->_listeners[$key];
     }
+
     /**
      * set
      *
@@ -85,6 +88,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
     {
         $this->_listeners[$key] = $listener;
     }
+
     /**
      * onLoad
      * an event invoked when Doctrine_Record is being loaded from database
@@ -98,6 +102,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->onLoad($record);
         }
     }
+
     /**
      * onPreLoad
      * an event invoked when Doctrine_Record is being loaded
@@ -112,6 +117,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->onPreLoad($record);
         }
     }
+
     /**
      * onSleep
      * an event invoked when Doctrine_Record is serialized
@@ -125,6 +131,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->onSleep($record);
         }
     }
+
     /**
      * onWakeUp
      * an event invoked when Doctrine_Record is unserialized
@@ -138,6 +145,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->onWakeUp($record);
         }
     }
+
     /**
      * postClose
      * an event invoked after Doctrine_Connection is closed
@@ -151,6 +159,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->postClose($event);
         }
     }
+
     /**
      * preClose
      * an event invoked before Doctrine_Connection is closed
@@ -164,6 +173,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->preClose($event);
         }
     }
+
     /**
      * onOpen
      * an event invoked after Doctrine_Connection is opened
@@ -177,6 +187,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->onOpen($connection);
         }
     }
+
     /**
      * onTransactionCommit
      * an event invoked after a Doctrine_Connection transaction is committed
@@ -190,6 +201,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->postTransactionCommit($event);
         }
     }
+
     /**
      * onPreTransactionCommit
      * an event invoked before a Doctrine_Connection transaction is committed
@@ -203,6 +215,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->preTransactionCommit($event);
         }
     }
+
     /**
      * onTransactionRollback
      * an event invoked after a Doctrine_Connection transaction is being rolled back
@@ -216,6 +229,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->postTransactionRollback($event);
         }
     }
+
     /**
      * onPreTransactionRollback
      * an event invoked before a Doctrine_Connection transaction is being rolled back
@@ -229,6 +243,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->preTransactionRollback($event);
         }
     }
+
     /**
      * onTransactionBegin
      * an event invoked after a Doctrine_Connection transaction has been started
@@ -242,6 +257,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->postTransactionBegin($event);
         }
     }
+
     /**
      * onTransactionBegin
      * an event invoked before a Doctrine_Connection transaction is being started
@@ -255,6 +271,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->preTransactionBegin($event);
         }
     }
+
     /**
      * onCollectionDelete
      * an event invoked after a Doctrine_Collection is being deleted
@@ -268,6 +285,7 @@ class Doctrine_EventListener_Chain extends Doctrine_Access implements Doctrine_E
             $listener->onCollectionDelete($collection);
         }
     }
+
     /**
      * onCollectionDelete
      * an event invoked after a Doctrine_Collection is being deleted

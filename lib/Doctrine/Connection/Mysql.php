@@ -37,6 +37,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      * @var string $driverName                  the name of this connection driver
      */
     protected $driverName = 'Mysql';
+
     /**
      * the constructor
      *
@@ -88,6 +89,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
 
         parent::__construct($manager, $adapter);
     }
+
     /**
      * Set the charset on the current connection
      *
@@ -100,6 +102,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
         $query = 'SET NAMES '.$this->dbh->quote($charset);
         $this->exec($query);
     }
+
     /**
      * Execute a SQL REPLACE query. A REPLACE query is identical to a INSERT
      * query, except that if there is already a row in the table with the same

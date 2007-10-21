@@ -27,6 +27,7 @@ Doctrine::autoload('Doctrine_Import_Exception');
  * @author      Jukka Hassinen <Jukka.Hassinen@BrainAlliance.com>
  * @version     $Id$
  */
+
 /**
  * class Doctrine_Import_Builder_Exception
  * @package     Doctrine

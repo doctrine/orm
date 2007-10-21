@@ -277,7 +277,7 @@ class Doctrine_Validator_TestCase extends Doctrine_UnitTestCase
         
         $this->manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_NONE);
     }
-    
+
     /**
      * Tests whether the validateOnInsert() callback works correctly
      * in descendants of Doctrine_Record.

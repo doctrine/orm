@@ -9,7 +9,7 @@
 ?>
 <?php
 
-    if(!defined("__PHPCOVERAGE_HOME")) {
+    if( ! defined("__PHPCOVERAGE_HOME")) {
         define("__PHPCOVERAGE_HOME", dirname(dirname(__FILE__)));
     }
     require_once __PHPCOVERAGE_HOME . "/parser/Parser.php";
@@ -83,7 +83,7 @@
             $artificialEnd = false;
 
             // If we are not inside PHP opening tag
-            if(!$this->inPHP) {
+            if( ! $this->inPHP) {
                 $pos = -1;
 
                 // Confirm that the line does not have T_OPEN_TAG_WITH_ECHO (< ? =)

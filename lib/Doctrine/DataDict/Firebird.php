@@ -99,6 +99,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
 
         throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
+
     /**
      * Maps a native array description of a field to a Doctrine datatype and length
      *
@@ -188,6 +189,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
                      'unsigned' => $unsigned,
                      'fixed'    => $fixed);
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
      * of a field declaration to be used in statements like CREATE TABLE.
@@ -200,6 +202,7 @@ class Doctrine_DataDict_Firebird extends Doctrine_DataDict
     {
         return 'CHARACTER SET ' . $charset;
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to set the COLLATION
      * of a field declaration to be used in statements like CREATE TABLE.

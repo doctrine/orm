@@ -57,7 +57,7 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
             $columns = $schema['columns'];
         
             foreach ($columns as $column) {
-                if (!isset($this->_data[$column['name']]) || $this->_data[$column['name']]) {
+                if ( ! isset($this->_data[$column['name']]) || $this->_data[$column['name']]) {
                     $this->_data[$column['name']] = null;
                 }
             }
@@ -71,15 +71,15 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     
     public function get($key)
     {
-        if (!isset($key)) {
+        if ( ! isset($key)) {
             return;
         }
         
-        if (!isset($this->_data[$key]) && $this->getTable()->hasRelation($key)) {
+        if ( ! isset($this->_data[$key]) && $this->getTable()->hasRelation($key)) {
             $this->_data[$key] = $this->createRelation($key);
         }
         
-        if (!array_key_exists($key, $this->_data)) {
+        if ( ! array_key_exists($key, $this->_data)) {
             throw new Doctrine_Resource_Exception('Unknown property / related component: '.$key);
         }
         
@@ -88,15 +88,15 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
 
     public function set($key, $value)
     {
-        if (!isset($key)) {
+        if ( ! isset($key)) {
             return;
         }
         
-        if (!isset($this->_data[$key]) && $this->getTable()->hasRelation($key)) {
+        if ( ! isset($this->_data[$key]) && $this->getTable()->hasRelation($key)) {
             $this->_data[$key] = $this->createRelation($key);
         }
         
-        if (!array_key_exists($key, $this->_data)) {
+        if ( ! array_key_exists($key, $this->_data)) {
             throw new Doctrine_Resource_Exception('Unknown property / related component: '.$key);
         }
         
@@ -135,13 +135,13 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
     {
         global $gotten;
         
-        if (!$gotten) {
+        if ( ! $gotten) {
             $gotten = array();
         }
         
         $md5Hash = $this->getMd5Hash();
         
-        if (!in_array($md5Hash, $gotten)) {
+        if ( ! in_array($md5Hash, $gotten)) {
             $gotten[] = $md5Hash;
         }
         
@@ -240,7 +240,7 @@ class Doctrine_Resource_Record extends Doctrine_Resource_Access implements Count
         $identifier = $this->identifier();
         
         foreach ($identifier as $key => $value) {
-            if (!$value) {
+            if ( ! $value) {
                 return false;
             }
         }

@@ -97,6 +97,7 @@ class Doctrine_DataDict_Oracle extends Doctrine_DataDict
         }
         throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
+
     /**
      * Maps a native array description of a field to a doctrine datatype and length
      *

@@ -45,6 +45,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction
 
         return $this->conn->execute($query);
     }
+
     /**
      * releaseSavePoint
      * releases given savepoint
@@ -57,6 +58,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction
         // oracle doesn't support manual releasing of savepoints
         return true;
     }
+
     /**
      * rollbackSavePoint
      * releases given savepoint
@@ -70,6 +72,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction
 
         return $this->conn->execute($query);
     }
+
     /**
      * Set the transacton isolation level.
      *

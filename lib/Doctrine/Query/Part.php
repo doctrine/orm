@@ -36,6 +36,7 @@ abstract class Doctrine_Query_Part
      * @var Doctrine_Query $query           the query object associated with this parser
      */
     protected $query;
+
     /**
      * @param Doctrine_Query $query         the query object associated with this parser
      */
@@ -43,6 +44,7 @@ abstract class Doctrine_Query_Part
     {
         $this->query = $query;
     }
+
     /**
      * @return Doctrine_Query $query        the query object associated with this parser
      */

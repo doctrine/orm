@@ -39,14 +39,17 @@ class Doctrine_Locator_Injectable
      * @var Doctrine_Locator      the locator object
      */
     protected $_locator;
+
     /**
      * @var array               an array of bound resources
      */
     protected $_resources = array();
+
     /**
      * @var Doctrine_Null $null     Doctrine_Null object, used for extremely fast null value checking
      */
     protected static $_null;
+
     /**
      * setLocator
      * this method can be used for setting the locator object locally
@@ -59,6 +62,7 @@ class Doctrine_Locator_Injectable
         $this->_locator = $locator;
         return $this;
     }
+
     /**
      * getLocator
      * returns the locator associated with this object
@@ -76,6 +80,7 @@ class Doctrine_Locator_Injectable
         }
         return $this->_locator;
     }
+
     /**
      * locate
      * locates a resource by given name and returns it
@@ -103,6 +108,7 @@ class Doctrine_Locator_Injectable
             return $this->getLocator()->locate($name);
         }
     }
+
     /**
      * bind
      * binds a resource to a name
@@ -129,6 +135,7 @@ class Doctrine_Locator_Injectable
     {
         self::$_null = $null;
     }
+
     /**
      * getNullObject
      * returns the null object associated with this object

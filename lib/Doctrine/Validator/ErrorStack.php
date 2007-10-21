@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Validator_ErrorStack
  *
@@ -121,6 +122,7 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
     {
         return new ArrayIterator($this->errors);
     }
+
     /**
      * Enter description here...
      *

@@ -31,7 +31,7 @@
  * @version     1.3.0
  * @link        http://aidanlister.com/repos/v/PHP_Highlight.php
  */
-if (!defined('T_ML_COMMENT')) {
+if ( ! defined('T_ML_COMMENT')) {
    define('T_ML_COMMENT', T_COMMENT);
 } else {
    define('T_DOC_COMMENT', T_ML_COMMENT);

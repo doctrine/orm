@@ -48,6 +48,7 @@ abstract class Doctrine_Hook_Parser_Complex extends Doctrine_Hook_Parser
     {
         $this->condition = $this->parseClause($alias, $field, $value);
     }
+
     /**
      * parseClause
      *
@@ -83,6 +84,7 @@ abstract class Doctrine_Hook_Parser_Complex extends Doctrine_Hook_Parser
         }
         return '(' . $r . ')';
     }
+
     /**
      * parseSingle
      *

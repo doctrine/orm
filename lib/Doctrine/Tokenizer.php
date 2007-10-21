@@ -40,6 +40,7 @@ class Doctrine_Tokenizer
     {
 
     }
+
     /**
      * trims brackets
      *
@@ -55,6 +56,7 @@ class Doctrine_Tokenizer
             return $str;
         }
     }
+
     /**
      * bracketExplode
      *
@@ -108,6 +110,7 @@ class Doctrine_Tokenizer
         }
         return $term;
     }
+
     /**
      * quoteExplode
      *
@@ -151,6 +154,7 @@ class Doctrine_Tokenizer
         }
         return $term;
     }
+
     /**
      * sqlExplode
      *
@@ -238,6 +242,7 @@ class Doctrine_Tokenizer
         }
         return $term;
     }
+
     /**
      * clauseExplode
      *

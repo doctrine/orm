@@ -38,7 +38,7 @@ NOT, !
 
             The last example produces 1 because the
             expression evaluates the same way as
-            (!1)+1.
+            ( ! 1)+1.
           
 
 * 

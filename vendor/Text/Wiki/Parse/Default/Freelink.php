@@ -44,7 +44,7 @@ class Text_Wiki_Parse_Freelink extends Text_Wiki_Parse {
     var $conf = array (
                        'utf-8' => false
     );
-    
+
     /**
     * 
     * Constructor.  We override the Text_Wiki_Parse constructor so we can

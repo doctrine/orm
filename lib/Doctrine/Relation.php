@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Relation
  * This class represents a relation between components
@@ -40,14 +41,17 @@ abstract class Doctrine_Relation implements ArrayAccess
      * constant for ONE_TO_ONE and MANY_TO_ONE aggregate relationships
      */
     const ONE_AGGREGATE         = 0;
+
     /**
      * constant for ONE_TO_ONE and MANY_TO_ONE composite relationships
      */
     const ONE_COMPOSITE         = 1;
+
     /**
      * constant for MANY_TO_MANY and ONE_TO_MANY aggregate relationships
      */
     const MANY_AGGREGATE        = 2;
+
     /**
      * constant for MANY_TO_MANY and ONE_TO_MANY composite relationships
      */
@@ -71,6 +75,7 @@ abstract class Doctrine_Relation implements ArrayAccess
                                   'constraint'  => false,
                                   'equal'       => false,
                                   );
+
     /**
      * constructor
      *
@@ -132,6 +137,7 @@ abstract class Doctrine_Relation implements ArrayAccess
 
         $this->definition = $def;
     }
+
     /**
      * hasConstraint
      * whether or not this relation has an explicit constraint
@@ -183,6 +189,7 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         $this->definition[$offset] = false;
     }
+
     /**
      * toArray
      *
@@ -192,6 +199,7 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         return $this->definition;
     }
+
     /**
      * getAlias
      * returns the relation alias
@@ -202,6 +210,7 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         return $this->definition['alias'];
     }
+
     /**
      * getType
      * returns the relation type, either 0 or 1
@@ -213,6 +222,7 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         return $this->definition['type'];
     }
+
     /**
      * getTable
      * returns the foreign table object
@@ -225,6 +235,7 @@ abstract class Doctrine_Relation implements ArrayAccess
                ->getConnectionForComponent($this->definition['class'])
                ->getTable($this->definition['class']);
     }
+
     /**
      * getLocal
      * returns the name of the local column
@@ -235,6 +246,7 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         return $this->definition['local'];
     }
+
     /**
      * getForeign
      * returns the name of the foreignkey column where
@@ -246,6 +258,7 @@ abstract class Doctrine_Relation implements ArrayAccess
     {
         return $this->definition['foreign'];
     }
+
     /**
      * isComposite
      * returns whether or not this relation is a composite relation
@@ -257,6 +270,7 @@ abstract class Doctrine_Relation implements ArrayAccess
         return ($this->definition['type'] == Doctrine_Relation::ONE_COMPOSITE ||
                 $this->definition['type'] == Doctrine_Relation::MANY_COMPOSITE);
     }
+
     /**
      * isOneToOne
      * returns whether or not this relation is a one-to-one relation
@@ -268,6 +282,7 @@ abstract class Doctrine_Relation implements ArrayAccess
         return ($this->definition['type'] == Doctrine_Relation::ONE_AGGREGATE ||
                 $this->definition['type'] == Doctrine_Relation::ONE_COMPOSITE);
     }
+
     /**
      * getRelationDql
      *
@@ -284,6 +299,7 @@ abstract class Doctrine_Relation implements ArrayAccess
 
         return $dql;
     }
+
     /**
      * fetchRelatedFor
      *
@@ -293,6 +309,7 @@ abstract class Doctrine_Relation implements ArrayAccess
      * @return Doctrine_Record|Doctrine_Collection
      */
     abstract public function fetchRelatedFor(Doctrine_Record $record);
+
     /**
      * __toString
      *

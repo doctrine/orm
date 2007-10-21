@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Adapter_Statement_Mock
  * This class is used for special testing purposes.
@@ -40,6 +41,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         $this->mock  = $mock;
     }
+
     /**
      * bindColumn
      * Bind a column to a PHP variable
@@ -55,6 +57,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         
     }
+
     /**
      * bindValue
      * Binds a value to a corresponding named or question mark 
@@ -73,6 +76,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         
     }
+
     /**
      * bindParam
      * Binds a PHP variable to a corresponding named or question mark placeholder in the 
@@ -104,6 +108,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         
     }
+
     /**
      * closeCursor
      * Closes the cursor, enabling the statement to be executed again.
@@ -114,6 +119,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         return true;
     }
+
     /** 
      * columnCount
      * Returns the number of columns in the result set 
@@ -126,6 +132,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         return 0;        
     }
+
     /**
      * errorCode
      * Fetch the SQLSTATE associated with the last operation on the statement handle 
@@ -137,6 +144,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         return array();
     }
+
     /**
      * errorInfo
      * Fetch extended error information associated with the last operation on the statement handle
@@ -148,6 +156,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     { 
         return array();
     }
+
     /**
      * fetch
      *
@@ -181,6 +190,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         return array();
     }
+
     /**
      * fetchAll
      * Returns an array containing all of the result set rows
@@ -198,6 +208,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         return array();
     }
+
     /**
      * execute
      * Executes a prepared statement
@@ -220,6 +231,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
         }
         return true;
     }
+
     /**
      * fetchColumn
      * Returns a single column from the next row of a
@@ -235,6 +247,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         return 0;
     }
+
     /**
      * fetchObject
      * Fetches the next row and returns it as an object.
@@ -252,6 +265,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         return new $className();
     }
+
     /**
      * nextRowset
      * Advances to the next rowset in a multi-rowset statement handle
@@ -267,6 +281,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     {
         return true;
     }
+
     /**
      * rowCount
      * rowCount() returns the number of rows affected by the last DELETE, INSERT, or UPDATE statement 
@@ -283,6 +298,7 @@ class Doctrine_Adapter_Statement_Mock implements Doctrine_Adapter_Statement_Inte
     { 
         return 0;
     }
+
     /**
      * getColumnMeta
      * Returns metadata for a column in a result set

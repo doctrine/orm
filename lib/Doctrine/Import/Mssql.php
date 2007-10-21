@@ -46,6 +46,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
 
         return array_map(array($this->conn->formatter, 'fixSequenceName'), $tableNames);
     }
+
     /**
      * lists table constraints
      *
@@ -91,6 +92,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
 
         return $columns;
     }
+
     /**
      * lists table constraints
      *
@@ -101,6 +103,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     {
 
     }
+
     /**
      * lists tables
      *
@@ -113,6 +116,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
 
         return $this->conn->fetchColumn($sql);
     }
+
     /**
      * lists all triggers
      *
@@ -126,6 +130,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
 
         return $result;
     }
+
     /**
      * lists table triggers
      *
@@ -141,6 +146,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
 
         return $result;
     }
+
     /**
      * lists table views
      *
@@ -177,6 +183,7 @@ class Doctrine_Import_Mssql extends Doctrine_Import
 
         return $result;
     }
+
     /**
      * lists database views
      *

@@ -42,18 +42,22 @@ class Doctrine_Hydrate implements Serializable
      * constant for SELECT queries
      */
     const SELECT = 0;
+
     /**
      * constant for DELETE queries
      */
     const DELETE = 1;
+
     /**
      * constant for UPDATE queries
      */
     const UPDATE = 2;
+
     /**
      * constant for INSERT queries
      */
     const INSERT = 3;
+
     /**
      * constant for CREATE queries
      */
@@ -63,15 +67,18 @@ class Doctrine_Hydrate implements Serializable
      * @var array $params                       query input parameters
      */
     protected $_params      = array();
+
     /**
      * @var Doctrine_Connection $conn           Doctrine_Connection object
      */
     protected $_conn;
+
     /**
      * @var Doctrine_View $_view                Doctrine_View object, when set this object will use the
      *                                          the query given by the view object for object population
      */
     protected $_view;
+
     /**
      * @var array $_aliasMap                    two dimensional array containing the map for query aliases
      *      Main keys are component aliases
@@ -85,15 +92,18 @@ class Doctrine_Hydrate implements Serializable
      *          agg                 the aggregates of this component
      */
     protected $_aliasMap         = array();
+
     /**
      *
      */
     protected $pendingAggregates = array();
+
     /**
      * @var array $aggregateMap             an array containing all aggregate aliases, keys as dql aliases
      *                                      and values as sql aliases
      */
     protected $aggregateMap      = array();
+
     /**
      * @var array $_options                 an array of options
      */
@@ -102,6 +112,7 @@ class Doctrine_Hydrate implements Serializable
                             'parserCache'    => false,
                             'resultSetCache' => false,
                             );
+
     /**
      * @var array $parts            SQL query string parts
      */
@@ -119,6 +130,7 @@ class Doctrine_Hydrate implements Serializable
         'limit'     => false,
         'offset'    => false,
         );
+
     /**
      * @var integer $type                   the query type
      *
@@ -129,12 +141,14 @@ class Doctrine_Hydrate implements Serializable
     protected $_cache;
 
     protected $_tableAliases   = array();
+
     /**
      * @var array $_tableAliasSeeds         A simple array keys representing table aliases and values
      *                                      as table alias seeds. The seeds are used for generating short table
      *                                      aliases.
      */
     protected $_tableAliasSeeds = array();
+
     /**
      * constructor
      *
@@ -160,6 +174,7 @@ class Doctrine_Hydrate implements Serializable
     {
         return $this->_cache;
     }
+
     /**
      * serialize
      * this method is automatically called when this Doctrine_Hydrate is serialized
@@ -171,6 +186,7 @@ class Doctrine_Hydrate implements Serializable
         $vars = get_object_vars($this);
 
     }
+
     /**
      * unseralize
      * this method is automatically called everytime a Doctrine_Hydrate object is unserialized
@@ -182,6 +198,7 @@ class Doctrine_Hydrate implements Serializable
     {
 
     }
+
     /**
      * generateNewTableAlias
      * generates a new alias from given table alias
@@ -207,6 +224,7 @@ class Doctrine_Hydrate implements Serializable
 
         return $alias;
     }
+
     /**
      * hasTableAlias
      * whether or not this object has given tableAlias
@@ -218,6 +236,7 @@ class Doctrine_Hydrate implements Serializable
     {
         return (isset($this->_tableAliases[$tableAlias]));
     }
+
     /**
      * getComponentAlias
      * get component alias associated with given table alias
@@ -232,6 +251,7 @@ class Doctrine_Hydrate implements Serializable
         }
         return $this->_tableAliases[$tableAlias];
     }
+
     /**
      * getTableAliasSeed
      * returns the alias seed for given table alias
@@ -246,6 +266,7 @@ class Doctrine_Hydrate implements Serializable
         }
         return $this->_tableAliasSeeds[$tableAlias];
     }
+
     /**
      * generateTableAlias
      * generates a table alias from given table name and associates 
@@ -272,6 +293,7 @@ class Doctrine_Hydrate implements Serializable
 
         return $alias;
     }
+
     /**
      * getTableAliases
      * returns all table aliases
@@ -282,6 +304,7 @@ class Doctrine_Hydrate implements Serializable
     {
         return $this->_tableAliases;
     }
+
     /** 
      * addTableAlias
      * adds an alias for table and associates it with given component alias
@@ -296,6 +319,7 @@ class Doctrine_Hydrate implements Serializable
         
         return $this;
     }
+
     /**
      * getTableAlias
      * some database such as Oracle need the identifier lengths to be < ~30 chars
@@ -322,6 +346,7 @@ class Doctrine_Hydrate implements Serializable
 
         return $this->generateTableAlias($componentAlias, $tableName);
     }
+
     /**
      * addQueryPart
      * adds a query part in the query part array
@@ -340,6 +365,7 @@ class Doctrine_Hydrate implements Serializable
 
         return $this;
     }
+
     /**
      * setQueryPart
      * sets a query part in the query part array
@@ -357,6 +383,7 @@ class Doctrine_Hydrate implements Serializable
 
         return $this->parts[$part];
     }
+
     /**
      * removeQueryPart
      * removes a query part from the query part array
@@ -378,6 +405,7 @@ class Doctrine_Hydrate implements Serializable
         }
         return $this;
     }
+
     /**
      * setQueryPart
      * sets a query part in the query part array
@@ -401,6 +429,7 @@ class Doctrine_Hydrate implements Serializable
         
         return $this;
     }
+
     /**
      * getAliasDeclaration
      * get the declaration for given component alias
@@ -416,6 +445,7 @@ class Doctrine_Hydrate implements Serializable
 
         return $this->_aliasMap[$componentAlias];
     }
+
     /**
      * copyAliases
      * copy aliases from another Hydrate object
@@ -433,6 +463,7 @@ class Doctrine_Hydrate implements Serializable
 
         return $this;
     }
+
     /**
      * createSubquery
      * creates a subquery
@@ -452,6 +483,7 @@ class Doctrine_Hydrate implements Serializable
 
         return $obj;
     }
+
     /**
      * limitSubqueryUsed
      * whether or not limit subquery was used
@@ -462,6 +494,7 @@ class Doctrine_Hydrate implements Serializable
     {
         return false;
     }
+
     /**
      * clear
      * resets all the variables
@@ -486,6 +519,7 @@ class Doctrine_Hydrate implements Serializable
                     );
         $this->inheritanceApplied = false;
     }
+
     /**
      * getConnection
      *
@@ -495,6 +529,7 @@ class Doctrine_Hydrate implements Serializable
     {
         return $this->_conn;
     }
+
     /**
      * setView
      * sets a database view this query object uses
@@ -507,6 +542,7 @@ class Doctrine_Hydrate implements Serializable
     {
         $this->_view = $view;
     }
+
     /**
      * getView
      * returns the view associated with this query object (if any)
@@ -517,6 +553,7 @@ class Doctrine_Hydrate implements Serializable
     {
         return $this->_view;
     }
+
     /**
      * getParams
      *
@@ -526,6 +563,7 @@ class Doctrine_Hydrate implements Serializable
     {
         return $this->_params;
     }
+
     /**
      * setParams
      *
@@ -538,6 +576,7 @@ class Doctrine_Hydrate implements Serializable
     {
         return $params;
     }
+
     /**
      * setAliasMap
      * sets the whole component alias map
@@ -551,6 +590,7 @@ class Doctrine_Hydrate implements Serializable
 
         return $this;
     }
+
     /**
      * getAliasMap
      * returns the component alias map
@@ -561,6 +601,7 @@ class Doctrine_Hydrate implements Serializable
     {
         return $this->_aliasMap;
     }
+
     /**
      * mapAggregateValues
      * map the aggregate values of given dataset row to a given record
@@ -634,6 +675,7 @@ class Doctrine_Hydrate implements Serializable
         $stmt  = $this->_conn->execute($query, $params);
         return $stmt;
     }
+
     /**
      * execute
      * executes the query and populates the data set
@@ -705,6 +747,7 @@ class Doctrine_Hydrate implements Serializable
     {
         return $this->type;
     }
+
     /**
      * applyInheritance
      * applies column aggregation inheritance to DQL / SQL query
@@ -762,6 +805,7 @@ class Doctrine_Hydrate implements Serializable
 
         return $str;
     }
+
     /**
      * parseData
      * parses the data returned by statement object
@@ -999,6 +1043,7 @@ class Doctrine_Hydrate implements Serializable
         $stmt->closeCursor();
         return $array;
     }
+
     /**
      * @return string                   returns a string representation of this object
      */

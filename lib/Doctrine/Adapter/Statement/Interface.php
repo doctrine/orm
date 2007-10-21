@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Adapter_Statement
  *
@@ -43,6 +44,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return boolean              Returns TRUE on success or FALSE on failure
      */
     public function bindColumn($column, $param, $type = null);
+
     /**
      * bindValue
      * Binds a value to a corresponding named or question mark 
@@ -58,6 +60,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
     public function bindValue($param, $value, $type = null);
+
     /**
      * bindParam
      * Binds a PHP variable to a corresponding named or question mark placeholder in the 
@@ -86,6 +89,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
     public function bindParam($column, &$variable, $type = null, $length = null, $driverOptions = array());
+
     /**
      * closeCursor
      * Closes the cursor, enabling the statement to be executed again.
@@ -93,6 +97,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
     public function closeCursor();
+
     /** 
      * columnCount
      * Returns the number of columns in the result set 
@@ -102,6 +107,7 @@ interface Doctrine_Adapter_Statement_Interface
      *                              this method should return 0.
      */
     public function columnCount();
+
     /**
      * errorCode
      * Fetch the SQLSTATE associated with the last operation on the statement handle 
@@ -110,6 +116,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return string       error code string
      */
     public function errorCode();
+
     /**
      * errorInfo
      * Fetch extended error information associated with the last operation on the statement handle
@@ -118,6 +125,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return array        error info array
      */
     public function errorInfo();
+
     /**
      * execute
      * Executes a prepared statement
@@ -134,6 +142,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return boolean                  Returns TRUE on success or FALSE on failure.
      */
     public function execute($params = null);
+
     /**
      * fetch
      *
@@ -164,6 +173,7 @@ interface Doctrine_Adapter_Statement_Interface
     public function fetch($fetchStyle = Doctrine::FETCH_BOTH,
                           $cursorOrientation = Doctrine::FETCH_ORI_NEXT,
                           $cursorOffset = null);
+
     /**
      * fetchAll
      * Returns an array containing all of the result set rows
@@ -178,6 +188,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return array
      */
     public function fetchAll($fetchStyle = Doctrine::FETCH_BOTH);
+
     /**
      * fetchColumn
      * Returns a single column from the next row of a
@@ -190,6 +201,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return string                       returns a single column in the next row of a result set.
      */
     public function fetchColumn($columnIndex = 0);
+
     /**
      * fetchObject
      * Fetches the next row and returns it as an object.
@@ -204,6 +216,7 @@ interface Doctrine_Adapter_Statement_Interface
      *                                      to the column names or FALSE in case of an error.
      */
     public function fetchObject($className = 'stdClass', $args = array());
+
     /**
      * getAttribute
      * Retrieve a statement attribute 
@@ -213,6 +226,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return mixed                        the attribute value
      */
     public function getAttribute($attribute);
+
     /**
      * getColumnMeta
      * Returns metadata for a column in a result set
@@ -230,6 +244,7 @@ interface Doctrine_Adapter_Statement_Interface
      *          pdo_type                    The type of this column as represented by the PDO::PARAM_* constants.
      */
     public function getColumnMeta($column);
+
     /**
      * nextRowset
      * Advances to the next rowset in a multi-rowset statement handle
@@ -242,6 +257,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return boolean                      Returns TRUE on success or FALSE on failure.
      */
     public function nextRowset();
+
     /**
      * rowCount
      * rowCount() returns the number of rows affected by the last DELETE, INSERT, or UPDATE statement 
@@ -255,6 +271,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return integer                      Returns the number of rows.
      */
     public function rowCount();
+
     /**
      * setAttribute
      * Set a statement attribute
@@ -264,6 +281,7 @@ interface Doctrine_Adapter_Statement_Interface
      * @return boolean                      Returns TRUE on success or FALSE on failure.
      */
     public function setAttribute($attribute, $value);
+
     /**
      * setFetchMode
      * Set the default fetch mode for this statement 

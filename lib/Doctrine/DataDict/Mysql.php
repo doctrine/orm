@@ -228,6 +228,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
         }
         throw new Doctrine_DataDict_Exception('Unknown field type \'' . $field['type'] .  '\'.');
     }
+
     /**
      * Maps a native array description of a field to a MDB2 datatype and length
      *
@@ -386,6 +387,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
             return array('type' => $type, 'length' => $length, 'unsigned' => $unsigned, 'fixed' => $fixed, 'values' => $values);
         }
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to set the CHARACTER SET
      * of a field declaration to be used in statements like CREATE TABLE.
@@ -398,6 +400,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
     {
         return 'CHARACTER SET ' . $charset;
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to set the COLLATION
      * of a field declaration to be used in statements like CREATE TABLE.
@@ -410,6 +413,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
     {
         return 'COLLATE ' . $collation;
     }
+
     /**
      * Obtain DBMS specific SQL code portion needed to declare an integer type
      * field to be used in statements like CREATE TABLE.

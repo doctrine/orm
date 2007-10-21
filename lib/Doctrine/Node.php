@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Node
  *
@@ -50,7 +51,7 @@ class Doctrine_Node implements IteratorAggregate
      * @param array     $iteratorOptions
      */
     protected $iteratorOptions;
-    
+
     /**
      * The tree to which the node belongs.
      *

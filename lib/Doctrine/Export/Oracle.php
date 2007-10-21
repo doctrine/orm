@@ -64,6 +64,7 @@ class Doctrine_Export_Oracle extends Doctrine_Export
         }
         return true;
     }
+
     /**
      * drop an existing database
      *
@@ -82,6 +83,7 @@ class Doctrine_Export_Oracle extends Doctrine_Export
 
         return $this->conn->exec('DROP USER ' . $username . ' CASCADE');
     }
+
     /**
      * add an autoincrement sequence + trigger
      *
@@ -140,6 +142,7 @@ END;
 ';
         return $sql;
     }
+
     /**
      * drop an existing autoincrement sequence + trigger
      *
@@ -182,6 +185,7 @@ END;
     {
         return 'GLOBAL TEMPORARY';
     }
+
     /**
      * getAdvancedForeignKeyOptions
      * Return the FOREIGN KEY query section dealing with non-standard options
@@ -296,6 +300,7 @@ END;
 
         return $sql;
     }
+
     /**
      * drop an existing table
      *
@@ -310,6 +315,7 @@ END;
         //$this->conn->completeNestedTransaction();
         return $result;
     }
+
     /**
      * alter an existing table
      *
@@ -458,6 +464,7 @@ END;
             $result = $this->conn->exec('ALTER TABLE ' . $name . ' RENAME TO ' . $changeName);
         }
     }
+
     /**
      * create sequence
      *
@@ -478,6 +485,7 @@ END;
         $query .= ($start < 1 ? ' MINVALUE ' . $start : '');
         return $query;
     }
+
     /**
      * drop existing sequence
      *

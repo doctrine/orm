@@ -46,6 +46,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         
         return $query;
     }
+
     /**
      * drop an existing database
      *
@@ -59,6 +60,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         
         return $query;
     }
+
     /**
      * getAdvancedForeignKeyOptions
      * Return the FOREIGN KEY query section dealing with non-standard options
@@ -252,6 +254,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
             $this->conn->exec('ALTER TABLE ' . $name . ' RENAME TO ' . $changeName);
         }
     }
+
     /**
      * return RDBMS specific create sequence statement
      *
@@ -272,6 +275,7 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
         return $this->conn->exec('CREATE SEQUENCE ' . $sequenceName . ' INCREMENT 1' .
                     ($start < 1 ? ' MINVALUE ' . $start : '') . ' START ' . $start);
     }
+
     /**
      * drop existing sequence
      *

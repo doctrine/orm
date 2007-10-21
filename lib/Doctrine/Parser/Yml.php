@@ -20,6 +20,7 @@ require_once('spyc.php');
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Parser_Yml
  *
@@ -38,36 +39,31 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
      *
      * Dump an array of data to a specified path or return
      * 
-     * @param string $array 
-     * @param string $path 
+     * @param  string $array Array of data to dump to yaml
+     * @param  string $path  Path to dump the yaml to
+     * @return string $yaml
      * @return void
-     * @author Jonathan H. Wage
      */
     public function dumpData($array, $path = null)
     {
         $spyc = new Doctrine_Spyc();
         
-        $yml = $spyc->dump($array, false, false);
+        $data = $spyc->dump($array, false, false);
         
-        if ($path) {
-            return file_put_contents($path, $yml);
-        } else {
-            return $yml;
-        }
+        return $this->doDump($data, $path);
     }
-    
+
     /**
      * loadData
      *
      * Load and parse data from a yml file
      * 
-     * @param string $path 
-     * @return void
-     * @author Jonathan H. Wage
+     * @param  string  $path  Path to load yaml data from
+     * @return array   $array Array of parsed yaml data
      */
     public function loadData($path)
     {
-        $contents = $this->getContents($path);
+        $contents = $this->doLoad($path);
 
         $spyc = new Doctrine_Spyc();
         

@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Relation_Parser
  *
@@ -35,14 +36,17 @@ class Doctrine_Relation_Parser
      * @var Doctrine_Table $_table          the table object this parser belongs to
      */
     protected $_table;
+
     /**
      * @var array $_relations               an array containing all the Doctrine_Relation objects for this table
      */
     protected $_relations = array();
+
     /**
      * @var array $_pending                 relations waiting for parsing
      */
     protected $_pending   = array();
+
     /**
      * constructor
      *
@@ -52,6 +56,7 @@ class Doctrine_Relation_Parser
     {
         $this->_table = $table;
     }
+
     /**
      * getTable
      *
@@ -61,6 +66,7 @@ class Doctrine_Relation_Parser
     {
         return $this->_table;
     }
+
     /**
      * getPendingRelation
      *
@@ -83,6 +89,7 @@ class Doctrine_Relation_Parser
         
         return true;
     }
+
     /**
      * binds a relation
      *
@@ -124,6 +131,7 @@ class Doctrine_Relation_Parser
 
         return $this->_pending[$alias];
     }
+
     /**
      * getRelation
      *
@@ -195,6 +203,7 @@ class Doctrine_Relation_Parser
             throw new Doctrine_Table_Exception('Unknown relation alias ' . $alias);
         }
     }
+
     /**
      * getRelations
      * returns an array containing all relation objects
@@ -209,6 +218,7 @@ class Doctrine_Relation_Parser
 
         return $this->_relations;
     }
+
     /**
      * getImpl
      * returns the table class of the concrete implementation for given template
@@ -233,6 +243,7 @@ class Doctrine_Relation_Parser
 
         return $conn->getTable($impl);
     }
+
     /**
      * Completes the given association definition
      *
@@ -281,6 +292,7 @@ class Doctrine_Relation_Parser
         }
         return $def;
     }
+
     /** 
      * getIdentifiers
      * gives a list of identifiers from given table
@@ -305,6 +317,7 @@ class Doctrine_Relation_Parser
 
         return $columns;
     }
+
     /**
      * guessColumns
      *
@@ -342,6 +355,7 @@ class Doctrine_Relation_Parser
 
         return $columns;
     }
+
     /**
      * Completes the given definition
      *

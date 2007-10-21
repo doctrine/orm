@@ -53,7 +53,7 @@ if (substr(PHP_OS, 0, 3) == 'WIN') {
 }
 
 // instant backwards compatibility
-if (!defined('PATH_SEPARATOR')) {
+if ( ! defined('PATH_SEPARATOR')) {
     if (OS_WINDOWS) {
         define('PATH_SEPARATOR', ';');
     } else {
@@ -181,7 +181,7 @@ class PEAR
             if (method_exists($this, $destructor)) {
                 global $_PEAR_destructor_object_list;
                 $_PEAR_destructor_object_list[] = &$this;
-                if (!isset($GLOBALS['_PEAR_SHUTDOWN_REGISTERED'])) {
+                if ( ! isset($GLOBALS['_PEAR_SHUTDOWN_REGISTERED'])) {
                     register_shutdown_function("_PEAR_call_destructors");
                     $GLOBALS['_PEAR_SHUTDOWN_REGISTERED'] = true;
                 }
@@ -230,10 +230,10 @@ class PEAR
     function &getStaticProperty($class, $var)
     {
         static $properties;
-        if (!isset($properties[$class])) {
+        if ( ! isset($properties[$class])) {
             $properties[$class] = array();
         }
-        if (!array_key_exists($var, $properties[$class])) {
+        if ( ! array_key_exists($var, $properties[$class])) {
             $properties[$class][$var] = null;
         }
         return $properties[$class][$var];
@@ -255,7 +255,7 @@ class PEAR
     {
         // if we are called statically, there is a potential
         // that no shutdown func is registered.  Bug #6445
-        if (!isset($GLOBALS['_PEAR_SHUTDOWN_REGISTERED'])) {
+        if ( ! isset($GLOBALS['_PEAR_SHUTDOWN_REGISTERED'])) {
             register_shutdown_function("_PEAR_call_destructors");
             $GLOBALS['_PEAR_SHUTDOWN_REGISTERED'] = true;
         }
@@ -468,7 +468,7 @@ class PEAR
                 }
             }
             return $deleted ? true : PEAR::raiseError("The expected error you submitted does not exist"); // IMPROVE ME
-        } elseif (!empty($error_code)) {
+        } elseif ( ! empty($error_code)) {
             // $error_code comes alone, trying to unset it
             if ($this->_checkDelExpect($error_code)) {
                 return true;
@@ -740,7 +740,7 @@ class PEAR
     */
     function loadExtension($ext)
     {
-        if (!extension_loaded($ext)) {
+        if ( ! extension_loaded($ext)) {
             // if either returns true dl() will produce a FATAL error, stop that
             if ((ini_get('enable_dl') != 1) || (ini_get('safe_mode') == 1)) {
                 return false;
@@ -864,7 +864,7 @@ class PEAR_Error
         $this->code      = $code;
         $this->mode      = $mode;
         $this->userinfo  = $userinfo;
-        if (!PEAR::getStaticProperty('PEAR_Error', 'skiptrace')) {
+        if ( ! PEAR::getStaticProperty('PEAR_Error', 'skiptrace')) {
             $this->backtrace = debug_backtrace();
             if (isset($this->backtrace[0]) && isset($this->backtrace[0]['object'])) {
                 unset($this->backtrace[0]['object']);

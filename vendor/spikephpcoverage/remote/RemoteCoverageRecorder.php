@@ -9,7 +9,7 @@
 ?>
 <?php
 
-    if(!defined("__PHPCOVERAGE_HOME")) {
+    if( ! defined("__PHPCOVERAGE_HOME")) {
         define("__PHPCOVERAGE_HOME", dirname(dirname(__FILE__)));
     }
     require_once __PHPCOVERAGE_HOME . "/util/Utility.php";
@@ -124,7 +124,7 @@
             global $util;
             $xmlString = "";
             $xmlBody = "";
-            if(!empty($this->coverageData)) {
+            if( ! empty($this->coverageData)) {
                 foreach($this->coverageData as $file => &$lines) {
                     $xmlBody .= "<file path=\"". $util->replaceBackslashes($file) . "\">";
                     foreach($lines as $linenum => &$frequency) {
@@ -157,7 +157,7 @@
         */
         protected function parseCoverageXml(&$xml, $stream=false) {
             // Need to handle multiple xml files.
-            if(!is_array($xml)) {
+            if( ! is_array($xml)) {
                 $xml = array($xml);
             }
             for($i = 0; $i < count($xml); $i++) {
@@ -194,7 +194,7 @@
             if(file_exists($filepath) && is_readable($filepath)) {
                 $fp = fopen($filepath, "r");
                 if($fp) {
-                    while(!feof($fp)) {
+                    while( ! feof($fp)) {
                         $xml = fread($fp, 4096);
                         echo $xml;
                     }
@@ -225,10 +225,10 @@
          */
         protected function appendDataToFile($newXml) {
             $filepath = $this->tmpDir . "/" . $this->coverageFileName;
-            if(!file_exists($filepath)) {
+            if( ! file_exists($filepath)) {
                 // If new file, write the xml start and end tags
                 $bytes = file_put_contents($filepath, $this->xmlStart . "\n" . $this->xmlEnd);
-                if(!$bytes) {
+                if( ! $bytes) {
                     $this->logger->critical("[RemoteCoverageRecorder::appendDataToFile()] Could not create file: " . $filepath, __FILE__, __LINE__);
                     return false;
                 }
@@ -238,7 +238,7 @@
                 if($res) {
                     fseek($res, -1 * strlen($this->xmlEnd), SEEK_END);
                     $ret = fwrite($res, $newXml);
-                    if(!$ret) {
+                    if( ! $ret) {
                         $this->logger->error("[RemoteCoverageRecorder::appendDataToFile()] Could not append data to file.",
                             __FILE__, __LINE__);
                         fclose($res);
@@ -270,7 +270,7 @@
             if($this->stopInstrumentation()) {
                 $xml = $this->prepareCoverageXml();
                 $ret = $this->appendDataToFile($xml);
-                if(!$ret) {
+                if( ! $ret) {
                     $this->logger->warn("[RemoteCoverageRecorder::saveCoverageXml()] "
                     . "ERROR: Nothing was written to " . $filepath,
                     __FILE__, __LINE__);

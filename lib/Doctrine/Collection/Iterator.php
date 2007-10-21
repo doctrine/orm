@@ -18,6 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 /**
  * Doctrine_Collection_Iterator
  * iterates through Doctrine_Collection
@@ -36,18 +37,22 @@ abstract class Doctrine_Collection_Iterator implements Iterator
      * @var Doctrine_Collection $collection
      */
     protected $collection;
+
     /**
      * @var array $keys
      */
     protected $keys;
+
     /**
      * @var mixed $key
      */
     protected $key;
+
     /**
      * @var integer $index
      */
     protected $index;
+
     /**
      * @var integer $count
      */
@@ -63,6 +68,7 @@ abstract class Doctrine_Collection_Iterator implements Iterator
         $this->keys       = $this->collection->getKeys();
         $this->count      = $this->collection->count();
     }
+
     /**
      * rewinds the iterator
      *
@@ -86,6 +92,7 @@ abstract class Doctrine_Collection_Iterator implements Iterator
     {
         return $this->key;
     }
+
     /**
      * returns the current record
      *
@@ -95,6 +102,7 @@ abstract class Doctrine_Collection_Iterator implements Iterator
     {
         return $this->collection->get($this->key);
     }
+
     /**
      * advances the internal pointer
      *
