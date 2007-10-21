@@ -1412,11 +1412,14 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     }
 
     /**
+     * getTree
+     *
      * getter for associated tree
      *
      * @return mixed  if tree return instance of Doctrine_Tree, otherwise returns false
      */
-    public function getTree() {
+    public function getTree()
+    {
         if (isset($this->_options['treeImpl'])) {
             if ( ! $this->_tree) {
                 $options = isset($this->_options['treeOptions']) ? $this->_options['treeOptions'] : array();
@@ -1429,28 +1432,56 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
         return false;
     }
+
+    /**
+     * getComponentName
+     *
+     * @return void
+     */
     public function getComponentName()
     {
         return $this->_options['name'];
     }
+
+    /**
+     * getTableName
+     *
+     * @return void
+     */
     public function getTableName()
     {
         return $this->_options['tableName'];
     }
+
+    /**
+     * setTableName
+     *
+     * @param string $tableName 
+     * @return void
+     */
     public function setTableName($tableName)
     {
         $this->_options['tableName'] = $tableName;
     }
 
     /**
+     * isTree
+     *
      * determine if table acts as tree
      *
      * @return mixed  if tree return true, otherwise returns false
      */
-    public function isTree() {
+    public function isTree()
+    {
         return ( ! is_null($this->_options['treeImpl'])) ? true : false;
     }
 
+    /**
+     * getTemplate
+     *
+     * @param string $template 
+     * @return void
+     */
     public function getTemplate($template)
     {
         if ( ! isset($this->_templates[$template])) {
@@ -1500,6 +1531,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $this;
     }
+    
+    /**
+     * getBoundQueryPart
+     *
+     * @param string $queryPart 
+     * @return string $queryPart
+     */
     public function getBoundQueryPart($queryPart)
     {
         if ( ! isset($this->_options['queryParts'][$queryPart])) {
@@ -1508,6 +1546,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $this->_options['queryParts'][$queryPart];
     }
+    
+    /**
+     * unshiftFilter
+     *
+     * @param  object Doctrine_Record_Filter $filter
+     * @return object $this
+     */
     public function unshiftFilter(Doctrine_Record_Filter $filter)
     {
         $filter->setTable($this);
@@ -1518,6 +1563,12 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         return $this;
     }
+    
+    /**
+     * getFilters
+     *
+     * @return array $filters
+     */
     public function getFilters()
     {
         return $this->_filters;
@@ -1531,5 +1582,76 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     public function __toString()
     {
         return Doctrine_Lib::getTableAsString($this);
+    }
+    
+    /**
+     * findBy
+     *
+     * @param string $column 
+     * @param string $value 
+     * @param string $hydrationMode 
+     * @return void
+     */
+    protected function findBy($column, $value, $hydrationMode = null)
+    {
+        return $this->createQuery()->where($column . ' = ?')->execute(array($value), $hydrationMode);
+    }
+    
+    /**
+     * findOneBy
+     *
+     * @param string $column 
+     * @param string $value 
+     * @param string $hydrationMode 
+     * @return void
+     */
+    protected function findOneBy($column, $value, $hydrationMode = null)
+    {
+        $results = $this->createQuery()->where($column . ' = ?')->limit(1)->execute(array($value), $hydrationMode);
+        
+        return $hydrationMode === Doctrine::FETCH_ARRAY ? $results[0]:$results->getFirst();
+    }
+    
+    /**
+     * __call
+     *
+     * Adds support for magic finders.
+     * findByColumnName, findByRelationAlias
+     * findById, findByContactId, etc.
+     *
+     * @return void
+     */
+    public function __call($method, $arguments)
+    {
+        if (substr($method, 0, 6) == 'findBy') {
+            $by = substr($method, 6, strlen($method));
+            $method = 'findBy';
+        } else if (substr($method, 0, 9) == 'findOneBy') {
+            $by = substr($method, 9, strlen($method));
+            $method = 'findOneBy';
+        }
+        
+        if (isset($by)) {
+            if (!isset($arguments[0])) {
+                throw new Doctrine_Table_Exception('You must specify the value to findBy');
+            }
+            
+            $column = Doctrine::tableize($by);
+            $hydrationMode = isset($arguments[1]) ? $arguments[1]:null;
+            
+            if ($this->hasColumn($column)) {
+                return $this->$method($column, $arguments[0], $hydrationMode);
+            } else if ($this->hasRelation($by)) {
+                $relation = $this->getRelation($by);
+                
+                if ($relation['type'] === Doctrine_Relation::MANY) {
+                    throw new Doctrine_Table_Exception('Cannot findBy many relationship.');
+                }
+                
+                return $this->$method($relation['local'], $arguments[0], $hydrationMode);
+            } else {
+                throw new Doctrine_Table_Exception('Cannot find by: ' . $by . '. Invalid column or relationship alias.');
+            }
+        }
     }
 }
