@@ -46,7 +46,7 @@ class Doctrine_Parser_Xml extends Doctrine_Parser
     {
         $data = $this->arrayToXml($array);
         
-        return $this->doDump($data, $path)
+        return $this->doDump($data, $path);
     }
 
     /**
