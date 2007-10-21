@@ -143,14 +143,15 @@ class DoctrineTest_Coverage
         $it = new RecursiveDirectoryIterator(Doctrine::getPath());
         $notCoveredArray = array();
         foreach (new RecursiveIteratorIterator($it) as $file){
-            if (strpos($file->getPathname(), ".svn")){
-                continue;
-            } 
 
-            if(strpos($file->getPathname(), "cli.php")){
+            if(strpos($file->getPathname(), "config.php")){
                 continue;
             }
 
+            if (strpos($file->getPathname(), ".svn")){
+                continue;
+            } 
+            
             $class = $this->getClassNameFromFileName($file->getPathname());
 
             if (strpos($class, '_Interface')) {
@@ -177,6 +178,7 @@ class DoctrineTest_Coverage
         $this->result["data"] = $coverageInfo;
 
         file_put_contents($this->getCoverageDir() . "coverage.txt", serialize($this->result));
+        return true;
 
     }
 

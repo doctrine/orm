@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Array.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Array.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -97,7 +97,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
@@ -175,162 +175,177 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>56</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>57</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Test&nbsp;if&nbsp;a&nbsp;cache&nbsp;is&nbsp;available&nbsp;or&nbsp;not&nbsp;(for&nbsp;the&nbsp;given&nbsp;id)
-</td></tr>
-<tr><td>58</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>59</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$id&nbsp;cache&nbsp;id
-</td></tr>
-<tr><td>60</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;mixed&nbsp;false&nbsp;(a&nbsp;cache&nbsp;is&nbsp;not&nbsp;available)&nbsp;or&nbsp;&quot;last&nbsp;modified&quot;&nbsp;timestamp&nbsp;(int)&nbsp;of&nbsp;the&nbsp;available&nbsp;cache&nbsp;record
-</td></tr>
-<tr><td>61</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>62</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;contains($id)
-</td></tr>
-<tr><td>63</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>64</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;isset($this-&gt;data[$id]);
-</td></tr>
-<tr><td>65</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>66</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>67</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Save&nbsp;some&nbsp;string&nbsp;datas&nbsp;into&nbsp;a&nbsp;cache&nbsp;record
+<tr><td>58</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Test&nbsp;if&nbsp;a&nbsp;cache&nbsp;is&nbsp;available&nbsp;or&nbsp;not&nbsp;(for&nbsp;the&nbsp;given&nbsp;id)
 </td></tr>
-<tr><td>68</td>
+<tr><td>59</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
+<tr><td>60</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$id&nbsp;cache&nbsp;id
+</td></tr>
+<tr><td>61</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;mixed&nbsp;false&nbsp;(a&nbsp;cache&nbsp;is&nbsp;not&nbsp;available)&nbsp;or&nbsp;&quot;last&nbsp;modified&quot;&nbsp;timestamp&nbsp;(int)&nbsp;of&nbsp;the&nbsp;available&nbsp;cache&nbsp;record
+</td></tr>
+<tr><td>62</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>63</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;contains($id)
+</td></tr>
+<tr><td>64</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>65</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;isset($this-&gt;data[$id]);
+</td></tr>
+<tr><td>66</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>67</td>
+<td class="normal">
+</td></tr>
+<tr><td>68</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
 <tr><td>69</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Note&nbsp;:&nbsp;$data&nbsp;is&nbsp;always&nbsp;saved&nbsp;as&nbsp;a&nbsp;string
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Save&nbsp;some&nbsp;string&nbsp;datas&nbsp;into&nbsp;a&nbsp;cache&nbsp;record
 </td></tr>
 <tr><td>70</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>71</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;to&nbsp;cache
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Note&nbsp;:&nbsp;$data&nbsp;is&nbsp;always&nbsp;saved&nbsp;as&nbsp;a&nbsp;string
 </td></tr>
 <tr><td>72</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cache&nbsp;id
-</td></tr>
-<tr><td>73</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;$lifeTime&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;!=&nbsp;false,&nbsp;set&nbsp;a&nbsp;specific&nbsp;lifetime&nbsp;for&nbsp;this&nbsp;cache&nbsp;record&nbsp;(null&nbsp;=&gt;&nbsp;infinite&nbsp;lifeTime)
-</td></tr>
-<tr><td>74</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;boolean&nbsp;true&nbsp;if&nbsp;no&nbsp;problem
-</td></tr>
-<tr><td>75</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>76</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;save($id,&nbsp;$data,&nbsp;$lifeTime&nbsp;=&nbsp;false)
-</td></tr>
-<tr><td>77</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>78</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;data[$id]&nbsp;=&nbsp;$data;
-</td></tr>
-<tr><td>79</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>80</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>81</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Remove&nbsp;a&nbsp;cache&nbsp;record
-</td></tr>
-<tr><td>82</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;
-</td></tr>
-<tr><td>83</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$id&nbsp;cache&nbsp;id
-</td></tr>
-<tr><td>84</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;boolean&nbsp;true&nbsp;if&nbsp;no&nbsp;problem
-</td></tr>
-<tr><td>85</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>86</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;delete($id)
-</td></tr>
-<tr><td>87</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>88</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unset($this-&gt;data[$id]);
-</td></tr>
-<tr><td>89</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>90</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>91</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Remove&nbsp;all&nbsp;cache&nbsp;record
-</td></tr>
-<tr><td>92</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;
-</td></tr>
-<tr><td>93</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;boolean&nbsp;true&nbsp;if&nbsp;no&nbsp;problem
-</td></tr>
-<tr><td>94</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>95</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;deleteAll()
-</td></tr>
-<tr><td>96</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>97</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;data&nbsp;=&nbsp;array();
-</td></tr>
-<tr><td>98</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>99</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>100</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;count
-</td></tr>
-<tr><td>101</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>102</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;integer
+<tr><td>73</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;to&nbsp;cache
 </td></tr>
-<tr><td>103</td>
+<tr><td>74</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cache&nbsp;id
+</td></tr>
+<tr><td>75</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;$lifeTime&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;!=&nbsp;false,&nbsp;set&nbsp;a&nbsp;specific&nbsp;lifetime&nbsp;for&nbsp;this&nbsp;cache&nbsp;record&nbsp;(null&nbsp;=&gt;&nbsp;infinite&nbsp;lifeTime)
+</td></tr>
+<tr><td>76</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;boolean&nbsp;true&nbsp;if&nbsp;no&nbsp;problem
+</td></tr>
+<tr><td>77</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>104</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;count()&nbsp;
+<tr><td>78</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;save($id,&nbsp;$data,&nbsp;$lifeTime&nbsp;=&nbsp;false)
 </td></tr>
-<tr><td>105</td>
+<tr><td>79</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
+<tr><td>80</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;data[$id]&nbsp;=&nbsp;$data;
+</td></tr>
+<tr><td>81</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>82</td>
+<td class="normal">
+</td></tr>
+<tr><td>83</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>84</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Remove&nbsp;a&nbsp;cache&nbsp;record
+</td></tr>
+<tr><td>85</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;
+</td></tr>
+<tr><td>86</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$id&nbsp;cache&nbsp;id
+</td></tr>
+<tr><td>87</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;boolean&nbsp;true&nbsp;if&nbsp;no&nbsp;problem
+</td></tr>
+<tr><td>88</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>89</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;delete($id)
+</td></tr>
+<tr><td>90</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>91</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unset($this-&gt;data[$id]);
+</td></tr>
+<tr><td>92</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>93</td>
+<td class="normal">
+</td></tr>
+<tr><td>94</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>95</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Remove&nbsp;all&nbsp;cache&nbsp;record
+</td></tr>
+<tr><td>96</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;
+</td></tr>
+<tr><td>97</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;boolean&nbsp;true&nbsp;if&nbsp;no&nbsp;problem
+</td></tr>
+<tr><td>98</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>99</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;deleteAll()
+</td></tr>
+<tr><td>100</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>101</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;data&nbsp;=&nbsp;array();
+</td></tr>
+<tr><td>102</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>103</td>
+<td class="normal">
+</td></tr>
+<tr><td>104</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>105</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;count
+</td></tr>
 <tr><td>106</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;count($this-&gt;data);
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>107</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;integer
 </td></tr>
 <tr><td>108</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>109</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;count()&nbsp;
+</td></tr>
+<tr><td>110</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>111</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;count($this-&gt;data);
+</td></tr>
+<tr><td>112</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>113</td>
 <td class="normal">}
 </td></tr>
 </table></body></html>

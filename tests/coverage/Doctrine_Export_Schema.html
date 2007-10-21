@@ -76,395 +76,320 @@
 <td class="normal">/**
 </td></tr>
 <tr><td>23</td>
-<td class="normal">&nbsp;*&nbsp;class&nbsp;Doctrine_Export_Schema
+<td class="normal">&nbsp;*&nbsp;Doctrine_Export_Schema
 </td></tr>
 <tr><td>24</td>
-<td class="normal">&nbsp;*
+<td class="normal">&nbsp;*&nbsp;
 </td></tr>
 <tr><td>25</td>
-<td class="normal">&nbsp;*&nbsp;Different&nbsp;methods&nbsp;to&nbsp;import&nbsp;a&nbsp;XML&nbsp;schema.&nbsp;The&nbsp;logic&nbsp;behind&nbsp;using&nbsp;two&nbsp;different
+<td class="normal">&nbsp;*&nbsp;Used&nbsp;for&nbsp;exporting&nbsp;a&nbsp;schema&nbsp;to&nbsp;a&nbsp;yaml&nbsp;file
 </td></tr>
 <tr><td>26</td>
-<td class="normal">&nbsp;*&nbsp;methods&nbsp;is&nbsp;simple.&nbsp;Some&nbsp;people&nbsp;will&nbsp;like&nbsp;the&nbsp;idea&nbsp;of&nbsp;producing&nbsp;Doctrine_Record
-</td></tr>
-<tr><td>27</td>
-<td class="normal">&nbsp;*&nbsp;objects&nbsp;directly,&nbsp;which&nbsp;is&nbsp;totally&nbsp;fine.&nbsp;But&nbsp;in&nbsp;fast&nbsp;and&nbsp;growing&nbsp;application,
-</td></tr>
-<tr><td>28</td>
-<td class="normal">&nbsp;*&nbsp;table&nbsp;definitions&nbsp;tend&nbsp;to&nbsp;be&nbsp;a&nbsp;little&nbsp;bit&nbsp;more&nbsp;volatile.&nbsp;importArr()&nbsp;can&nbsp;be&nbsp;used
-</td></tr>
-<tr><td>29</td>
-<td class="normal">&nbsp;*&nbsp;to&nbsp;output&nbsp;a&nbsp;table&nbsp;definition&nbsp;in&nbsp;a&nbsp;PHP&nbsp;file.&nbsp;This&nbsp;file&nbsp;can&nbsp;then&nbsp;be&nbsp;stored&nbsp;
-</td></tr>
-<tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;independantly&nbsp;from&nbsp;the&nbsp;object&nbsp;itself.
-</td></tr>
-<tr><td>31</td>
 <td class="normal">&nbsp;*
 </td></tr>
-<tr><td>32</td>
+<tr><td>27</td>
 <td class="normal">&nbsp;*&nbsp;@package&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doctrine
 </td></tr>
-<tr><td>33</td>
+<tr><td>28</td>
 <td class="normal">&nbsp;*&nbsp;@subpackage&nbsp;&nbsp;Export
 </td></tr>
-<tr><td>34</td>
+<tr><td>29</td>
 <td class="normal">&nbsp;*&nbsp;@link&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;www.phpdoctrine.com
 </td></tr>
-<tr><td>35</td>
+<tr><td>30</td>
 <td class="normal">&nbsp;*&nbsp;@license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.opensource.org/licenses/lgpl-license.php&nbsp;LGPL
 </td></tr>
-<tr><td>36</td>
+<tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;1838&nbsp;$
 </td></tr>
-<tr><td>37</td>
+<tr><td>32</td>
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nicolas&nbsp;Bérard-Nault&nbsp;&lt;nicobn@gmail.com&gt;
 </td></tr>
-<tr><td>38</td>
+<tr><td>33</td>
+<td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Jonathan&nbsp;H.&nbsp;Wage&nbsp;&lt;jwage@mac.com&gt;
+</td></tr>
+<tr><td>34</td>
 <td class="normal">&nbsp;*/
 </td></tr>
-<tr><td>39</td>
+<tr><td>35</td>
 <td class="normal">class&nbsp;Doctrine_Export_Schema
 </td></tr>
-<tr><td>40</td>
+<tr><td>36</td>
 <td class="covered">{&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>41</td>
+<tr><td>37</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>42</td>
+<tr><td>38</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;buildSchema
 </td></tr>
-<tr><td>43</td>
+<tr><td>39</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;
 </td></tr>
-<tr><td>44</td>
+<tr><td>40</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Build&nbsp;schema&nbsp;array&nbsp;that&nbsp;can&nbsp;be&nbsp;dumped&nbsp;to&nbsp;file
 </td></tr>
-<tr><td>45</td>
+<tr><td>41</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>46</td>
+<tr><td>42</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$directory&nbsp;
 </td></tr>
-<tr><td>47</td>
+<tr><td>43</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void
 </td></tr>
-<tr><td>48</td>
+<tr><td>44</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>49</td>
+<tr><td>45</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;buildSchema($directory&nbsp;=&nbsp;null,&nbsp;$models&nbsp;=&nbsp;array())
 </td></tr>
-<tr><td>50</td>
+<tr><td>46</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>51</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$array&nbsp;=&nbsp;array();
-</td></tr>
-<tr><td>52</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>53</td>
+<tr><td>47</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($directory)&nbsp;{
 </td></tr>
-<tr><td>54</td>
+<tr><td>48</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$loadedModels&nbsp;=&nbsp;Doctrine::loadModels($directory);
 </td></tr>
-<tr><td>55</td>
+<tr><td>49</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
-<tr><td>56</td>
+<tr><td>50</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$loadedModels&nbsp;=&nbsp;Doctrine::getLoadedModels();
 </td></tr>
-<tr><td>57</td>
+<tr><td>51</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>58</td>
+<tr><td>52</td>
+<td class="normal">
+</td></tr>
+<tr><td>53</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$array&nbsp;=&nbsp;array();
+</td></tr>
+<tr><td>54</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>59</td>
+<tr><td>55</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parent&nbsp;=&nbsp;new&nbsp;ReflectionClass('Doctrine_Record');
 </td></tr>
-<tr><td>60</td>
+<tr><td>56</td>
 <td class="normal">
 </td></tr>
-<tr><td>61</td>
+<tr><td>57</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sql&nbsp;=&nbsp;array();
 </td></tr>
-<tr><td>62</td>
+<tr><td>58</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$fks&nbsp;=&nbsp;array();
 </td></tr>
-<tr><td>63</td>
+<tr><td>59</td>
 <td class="normal">
 </td></tr>
-<tr><td>64</td>
+<tr><td>60</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;we&nbsp;iterate&nbsp;trhough&nbsp;the&nbsp;diff&nbsp;of&nbsp;previously&nbsp;declared&nbsp;classes
 </td></tr>
-<tr><td>65</td>
+<tr><td>61</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;and&nbsp;currently&nbsp;declared&nbsp;classes
 </td></tr>
-<tr><td>66</td>
+<tr><td>62</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($loadedModels&nbsp;as&nbsp;$name)&nbsp;{
 </td></tr>
+<tr><td>63</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;empty($models)&nbsp;&amp;&amp;&nbsp;!in_array($name,&nbsp;$models))&nbsp;{
+</td></tr>
+<tr><td>64</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue;
+</td></tr>
+<tr><td>65</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>66</td>
+<td class="normal">
+</td></tr>
 <tr><td>67</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;( ! empty($models)&nbsp;&amp;&amp;&nbsp;!in_array($name,&nbsp;$models))&nbsp;{
-</td></tr>
-<tr><td>68</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue;
-</td></tr>
-<tr><td>69</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>70</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>71</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$class&nbsp;=&nbsp;new&nbsp;ReflectionClass($name);
-</td></tr>
-<tr><td>72</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>73</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;check&nbsp;if&nbsp;class&nbsp;is&nbsp;an&nbsp;instance&nbsp;of&nbsp;Doctrine_Record&nbsp;and&nbsp;not&nbsp;abstract
-</td></tr>
-<tr><td>74</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;class&nbsp;must&nbsp;have&nbsp;method&nbsp;setTableDefinition&nbsp;(to&nbsp;avoid&nbsp;non-Record&nbsp;subclasses&nbsp;like&nbsp;symfony's&nbsp;sfDoctrineRecord)
-</td></tr>
-<tr><td>75</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;we&nbsp;have&nbsp;to&nbsp;recursively&nbsp;iterate&nbsp;through&nbsp;the&nbsp;class&nbsp;parents&nbsp;just&nbsp;to&nbsp;be&nbsp;sure&nbsp;that&nbsp;the&nbsp;classes&nbsp;using&nbsp;for&nbsp;example
-</td></tr>
-<tr><td>76</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;column&nbsp;aggregation&nbsp;inheritance&nbsp;are&nbsp;properly&nbsp;exported&nbsp;to&nbsp;database
-</td></tr>
-<tr><td>77</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while&nbsp;($class-&gt;isAbstract()&nbsp;||
-</td></tr>
-<tr><td>78</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!&nbsp;$class-&gt;isSubclassOf($parent)&nbsp;||
-</td></tr>
-<tr><td>79</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!&nbsp;$class-&gt;hasMethod('setTableDefinition')&nbsp;||
-</td></tr>
-<tr><td>80</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&nbsp;$class-&gt;hasMethod('setTableDefinition')&nbsp;&amp;&amp;
-</td></tr>
-<tr><td>81</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$class-&gt;getMethod('setTableDefinition')-&gt;getDeclaringClass()-&gt;getName()&nbsp;!==&nbsp;$class-&gt;getName()))&nbsp;{
-</td></tr>
-<tr><td>82</td>
-<td class="normal">
-</td></tr>
-<tr><td>83</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$class&nbsp;=&nbsp;$class-&gt;getParentClass();
-</td></tr>
-<tr><td>84</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($class&nbsp;===&nbsp;false)&nbsp;{
-</td></tr>
-<tr><td>85</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
-</td></tr>
-<tr><td>86</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>87</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>88</td>
-<td class="normal">
-</td></tr>
-<tr><td>89</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($class&nbsp;===&nbsp;false)&nbsp;{
-</td></tr>
-<tr><td>90</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue;
-</td></tr>
-<tr><td>91</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>92</td>
-<td class="normal">
-</td></tr>
-<tr><td>93</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$record&nbsp;=&nbsp;new&nbsp;$name();
 </td></tr>
-<tr><td>94</td>
+<tr><td>68</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$recordTable&nbsp;&nbsp;=&nbsp;$record-&gt;getTable();
 </td></tr>
-<tr><td>95</td>
+<tr><td>69</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>96</td>
+<tr><td>70</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$data&nbsp;=&nbsp;$recordTable-&gt;getExportableFormat();
 </td></tr>
-<tr><td>97</td>
+<tr><td>71</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>98</td>
+<tr><td>72</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table&nbsp;=&nbsp;array();
 </td></tr>
-<tr><td>99</td>
+<tr><td>73</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['tableName']&nbsp;=&nbsp;$data['tableName'];
 </td></tr>
-<tr><td>100</td>
+<tr><td>74</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['className']&nbsp;=&nbsp;get_class($record);
 </td></tr>
-<tr><td>101</td>
+<tr><td>75</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>102</td>
+<tr><td>76</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($data['columns']&nbsp;AS&nbsp;$name&nbsp;=&gt;&nbsp;$column)&nbsp;{
 </td></tr>
-<tr><td>103</td>
+<tr><td>77</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$data['columns'][$name]['name']&nbsp;=&nbsp;$name;
 </td></tr>
-<tr><td>104</td>
+<tr><td>78</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>105</td>
+<tr><td>79</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>106</td>
+<tr><td>80</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['columns']&nbsp;=&nbsp;$data['columns'];
+</td></tr>
+<tr><td>81</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>
+<tr><td>82</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$relations&nbsp;=&nbsp;$recordTable-&gt;getRelations();
+</td></tr>
+<tr><td>83</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($relations&nbsp;as&nbsp;$key&nbsp;=&gt;&nbsp;$relation)&nbsp;{
+</td></tr>
+<tr><td>84</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$relationData&nbsp;=&nbsp;$relation-&gt;toArray();
+</td></tr>
+<tr><td>85</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>
+<tr><td>86</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$relationKey&nbsp;=&nbsp;$relationData['alias'];
+</td></tr>
+<tr><td>87</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>
+<tr><td>88</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($relationData['refTable'])&nbsp;&amp;&amp;&nbsp;$relationData['refTable'])&nbsp;{
+</td></tr>
+<tr><td>89</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['refClass']&nbsp;=&nbsp;$relationData['refTable']-&gt;getComponentName();
+</td></tr>
+<tr><td>90</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>91</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>
+<tr><td>92</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($relationData['class'])&nbsp;&amp;&amp;&nbsp;$relationData['class']&nbsp;&amp;&amp;&nbsp;$relation['class']&nbsp;!=&nbsp;$relationKey)&nbsp;{
+</td></tr>
+<tr><td>93</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['class']&nbsp;=&nbsp;$relationData['class'];
+</td></tr>
+<tr><td>94</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>95</td>
+<td class="normal">&nbsp;
+</td></tr>
+<tr><td>96</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['local']&nbsp;=&nbsp;$relationData['local'];
+</td></tr>
+<tr><td>97</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['foreign']&nbsp;=&nbsp;$relationData['foreign'];
+</td></tr>
+<tr><td>98</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>
+<tr><td>99</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($relationData['type']&nbsp;===&nbsp;Doctrine_Relation::ONE)&nbsp;{
+</td></tr>
+<tr><td>100</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['type']&nbsp;=&nbsp;'one';
+</td></tr>
+<tr><td>101</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;if($relationData['type']&nbsp;===&nbsp;Doctrine_Relation::MANY)&nbsp;{
+</td></tr>
+<tr><td>102</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['type']&nbsp;=&nbsp;'many';
+</td></tr>
+<tr><td>103</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
+</td></tr>
+<tr><td>104</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['type']&nbsp;=&nbsp;'one';
+</td></tr>
+<tr><td>105</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>106</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>107</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>108</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$relations&nbsp;=&nbsp;$recordTable-&gt;getRelations();
-</td></tr>
-<tr><td>109</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($relations&nbsp;as&nbsp;$key&nbsp;=&gt;&nbsp;$relation)&nbsp;{
-</td></tr>
-<tr><td>110</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$relationData&nbsp;=&nbsp;$relation-&gt;toArray();
-</td></tr>
-<tr><td>111</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>112</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$relationKey&nbsp;=&nbsp;$relationData['alias'];
-</td></tr>
-<tr><td>113</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>114</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($relationData['refTable'])&nbsp;&amp;&amp;&nbsp;$relationData['refTable'])&nbsp;{
-</td></tr>
-<tr><td>115</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['refClass']&nbsp;=&nbsp;$relationData['refTable']-&gt;getComponentName();
-</td></tr>
-<tr><td>116</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>117</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>118</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($relationData['class'])&nbsp;&amp;&amp;&nbsp;$relationData['class']&nbsp;&amp;&amp;&nbsp;$relation['class']&nbsp;!=&nbsp;$relationKey)&nbsp;{
-</td></tr>
-<tr><td>119</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['class']&nbsp;=&nbsp;$relationData['class'];
-</td></tr>
-<tr><td>120</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>121</td>
-<td class="normal">&nbsp;
-</td></tr>
-<tr><td>122</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['local']&nbsp;=&nbsp;$relationData['local'];
-</td></tr>
-<tr><td>123</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['foreign']&nbsp;=&nbsp;$relationData['foreign'];
-</td></tr>
-<tr><td>124</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>125</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($relationData['type']&nbsp;===&nbsp;Doctrine_Relation::ONE)&nbsp;{
-</td></tr>
-<tr><td>126</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['type']&nbsp;=&nbsp;'one';
-</td></tr>
-<tr><td>127</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;if($relationData['type']&nbsp;===&nbsp;Doctrine_Relation::MANY)&nbsp;{
-</td></tr>
-<tr><td>128</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['type']&nbsp;=&nbsp;'many';
-</td></tr>
-<tr><td>129</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
-</td></tr>
-<tr><td>130</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table['relations'][$relationKey]['type']&nbsp;=&nbsp;'one';
-</td></tr>
-<tr><td>131</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>132</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>133</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>134</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$array[$table['className']]&nbsp;=&nbsp;$table;
 </td></tr>
-<tr><td>135</td>
+<tr><td>109</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>136</td>
+<tr><td>110</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>137</td>
+<tr><td>111</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$array;
 </td></tr>
-<tr><td>138</td>
+<tr><td>112</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>139</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;
+<tr><td>113</td>
+<td class="normal">
 </td></tr>
-<tr><td>140</td>
+<tr><td>114</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>141</td>
+<tr><td>115</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;exportSchema
 </td></tr>
-<tr><td>142</td>
+<tr><td>116</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>143</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$schema&nbsp;
+<tr><td>117</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;string&nbsp;$schema&nbsp;
 </td></tr>
-<tr><td>144</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$directory&nbsp;
+<tr><td>118</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;string&nbsp;$directory&nbsp;
 </td></tr>
-<tr><td>145</td>
+<tr><td>119</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string&nbsp;$string&nbsp;of&nbsp;data&nbsp;in&nbsp;the&nbsp;specified&nbsp;format
+</td></tr>
+<tr><td>120</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void
 </td></tr>
-<tr><td>146</td>
+<tr><td>121</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>147</td>
+<tr><td>122</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;exportSchema($schema,&nbsp;$format&nbsp;=&nbsp;'yml',&nbsp;$directory&nbsp;=&nbsp;null,&nbsp;$models&nbsp;=&nbsp;array())
 </td></tr>
-<tr><td>148</td>
+<tr><td>123</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>149</td>
+<tr><td>124</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$array&nbsp;=&nbsp;$this-&gt;buildSchema($directory,&nbsp;$models);
 </td></tr>
-<tr><td>150</td>
+<tr><td>125</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>151</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doctrine_Parser::dump($array,&nbsp;$format,&nbsp;$schema);
+<tr><td>126</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;Doctrine_Parser::dump($array,&nbsp;$format,&nbsp;$schema);
 </td></tr>
-<tr><td>152</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
+<tr><td>127</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>153</td>
+<tr><td>128</td>
 <td class="covered">}</td></tr>
 </table></body></html>

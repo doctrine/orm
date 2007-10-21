@@ -151,158 +151,161 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>48</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>49</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;filterSet
-</td></tr>
-<tr><td>50</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;defines&nbsp;an&nbsp;implementation&nbsp;for&nbsp;filtering&nbsp;the&nbsp;set()&nbsp;method&nbsp;of&nbsp;Doctrine_Record
-</td></tr>
-<tr><td>51</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>52</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;property&nbsp;or&nbsp;related&nbsp;component
-</td></tr>
-<tr><td>53</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>54</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;filterSet(Doctrine_Record&nbsp;$record,&nbsp;$name,&nbsp;$value)
-</td></tr>
-<tr><td>55</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>56</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($this-&gt;_aliases&nbsp;as&nbsp;$alias)&nbsp;{
-</td></tr>
-<tr><td>57</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;$record-&gt;exists())&nbsp;{
-</td></tr>
-<tr><td>58</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($record[$alias][$name]))&nbsp;{
-</td></tr>
-<tr><td>59</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$record[$alias][$name]&nbsp;=&nbsp;$value;
-</td></tr>
-<tr><td>60</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>61</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$record;
-</td></tr>
-<tr><td>62</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>63</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
-</td></tr>
-<tr><td>64</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;we&nbsp;do&nbsp;not&nbsp;want&nbsp;to&nbsp;execute&nbsp;N&nbsp;+&nbsp;1&nbsp;queries&nbsp;here,&nbsp;hence&nbsp;we&nbsp;cannot&nbsp;use&nbsp;get()
-</td></tr>
-<tr><td>65</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(($ref&nbsp;=&nbsp;$record-&gt;reference($alias))&nbsp;!==&nbsp;null)&nbsp;{
-</td></tr>
-<tr><td>66</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($ref[$name]))&nbsp;{
-</td></tr>
-<tr><td>67</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ref[$name]&nbsp;=&nbsp;$value;
-</td></tr>
-<tr><td>68</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>69</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>70</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$record;
-</td></tr>
-<tr><td>71</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>72</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>73</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>74</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>75</td>
 <td class="normal">
 </td></tr>
-<tr><td>76</td>
+<tr><td>49</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>77</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;filterGet
+<tr><td>50</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;filterSet
 </td></tr>
-<tr><td>78</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;defines&nbsp;an&nbsp;implementation&nbsp;for&nbsp;filtering&nbsp;the&nbsp;get()&nbsp;method&nbsp;of&nbsp;Doctrine_Record
+<tr><td>51</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;defines&nbsp;an&nbsp;implementation&nbsp;for&nbsp;filtering&nbsp;the&nbsp;set()&nbsp;method&nbsp;of&nbsp;Doctrine_Record
 </td></tr>
-<tr><td>79</td>
+<tr><td>52</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>80</td>
+<tr><td>53</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;property&nbsp;or&nbsp;related&nbsp;component
 </td></tr>
-<tr><td>81</td>
+<tr><td>54</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>82</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;filterGet(Doctrine_Record&nbsp;$record,&nbsp;$name)
+<tr><td>55</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;filterSet(Doctrine_Record&nbsp;$record,&nbsp;$name,&nbsp;$value)
 </td></tr>
-<tr><td>83</td>
+<tr><td>56</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>84</td>
+<tr><td>57</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($this-&gt;_aliases&nbsp;as&nbsp;$alias)&nbsp;{
 </td></tr>
-<tr><td>85</td>
+<tr><td>58</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;$record-&gt;exists())&nbsp;{
 </td></tr>
-<tr><td>86</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($record[$alias][$name]))&nbsp;{
+<tr><td>59</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($record[$alias][$name]))&nbsp;{
 </td></tr>
-<tr><td>87</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$record[$alias][$name];
+<tr><td>60</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$record[$alias][$name]&nbsp;=&nbsp;$value;
 </td></tr>
-<tr><td>88</td>
+<tr><td>61</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>
+<tr><td>62</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$record;
+</td></tr>
+<tr><td>63</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>89</td>
+<tr><td>64</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
-<tr><td>90</td>
+<tr><td>65</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;we&nbsp;do&nbsp;not&nbsp;want&nbsp;to&nbsp;execute&nbsp;N&nbsp;+&nbsp;1&nbsp;queries&nbsp;here,&nbsp;hence&nbsp;we&nbsp;cannot&nbsp;use&nbsp;get()
 </td></tr>
-<tr><td>91</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(($ref&nbsp;=&nbsp;$record-&gt;reference($alias))&nbsp;!==&nbsp;null)&nbsp;{
+<tr><td>66</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(($ref&nbsp;=&nbsp;$record-&gt;reference($alias))&nbsp;!==&nbsp;null)&nbsp;{
 </td></tr>
-<tr><td>92</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($ref[$name]))&nbsp;{
+<tr><td>67</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($ref[$name]))&nbsp;{
 </td></tr>
-<tr><td>93</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$ref[$name];
+<tr><td>68</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ref[$name]&nbsp;=&nbsp;$value;
 </td></tr>
-<tr><td>94</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<tr><td>69</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>95</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<tr><td>70</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>96</td>
+<tr><td>71</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$record;
+</td></tr>
+<tr><td>72</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>73</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>97</td>
+<tr><td>74</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>98</td>
+<tr><td>75</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
+<tr><td>76</td>
+<td class="normal">
+</td></tr>
+<tr><td>77</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>78</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;filterGet
+</td></tr>
+<tr><td>79</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;defines&nbsp;an&nbsp;implementation&nbsp;for&nbsp;filtering&nbsp;the&nbsp;get()&nbsp;method&nbsp;of&nbsp;Doctrine_Record
+</td></tr>
+<tr><td>80</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+</td></tr>
+<tr><td>81</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;property&nbsp;or&nbsp;related&nbsp;component
+</td></tr>
+<tr><td>82</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>83</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;filterGet(Doctrine_Record&nbsp;$record,&nbsp;$name)
+</td></tr>
+<tr><td>84</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>85</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($this-&gt;_aliases&nbsp;as&nbsp;$alias)&nbsp;{
+</td></tr>
+<tr><td>86</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;$record-&gt;exists())&nbsp;{
+</td></tr>
+<tr><td>87</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($record[$alias][$name]))&nbsp;{
+</td></tr>
+<tr><td>88</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$record[$alias][$name];
+</td></tr>
+<tr><td>89</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>90</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
+</td></tr>
+<tr><td>91</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;we&nbsp;do&nbsp;not&nbsp;want&nbsp;to&nbsp;execute&nbsp;N&nbsp;+&nbsp;1&nbsp;queries&nbsp;here,&nbsp;hence&nbsp;we&nbsp;cannot&nbsp;use&nbsp;get()
+</td></tr>
+<tr><td>92</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(($ref&nbsp;=&nbsp;$record-&gt;reference($alias))&nbsp;!==&nbsp;null)&nbsp;{
+</td></tr>
+<tr><td>93</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($ref[$name]))&nbsp;{
+</td></tr>
+<tr><td>94</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$ref[$name];
+</td></tr>
+<tr><td>95</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>96</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>97</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>98</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
 <tr><td>99</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>100</td>
 <td class="covered">}</td></tr>
 </table></body></html>

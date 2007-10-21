@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Exception.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Exception.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -97,7 +97,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
@@ -223,128 +223,140 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);
 </td></tr>
 <tr><td>72</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>73</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@see&nbsp;Doctrine::ERR_*&nbsp;constants
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>74</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@since&nbsp;1.0
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@see&nbsp;Doctrine::ERR_*&nbsp;constants
 </td></tr>
 <tr><td>75</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;integer&nbsp;$portableCode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;portable&nbsp;error&nbsp;code
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@since&nbsp;1.0
 </td></tr>
 <tr><td>76</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;integer&nbsp;$portableCode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;portable&nbsp;error&nbsp;code
 </td></tr>
 <tr><td>77</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;$portableCode;
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>78</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;$portableCode;
 </td></tr>
 <tr><td>79</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getPortableCode
+<td class="normal">
 </td></tr>
 <tr><td>80</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;portable&nbsp;error&nbsp;code
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>81</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getPortableCode
 </td></tr>
 <tr><td>82</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;portable&nbsp;error&nbsp;code
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;portable&nbsp;error&nbsp;code
 </td></tr>
 <tr><td>83</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>84</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getPortableCode()
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;portable&nbsp;error&nbsp;code
 </td></tr>
 <tr><td>85</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>86</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;portableCode;
-</td></tr>
-<tr><td>87</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>88</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>89</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getPortableMessage
-</td></tr>
-<tr><td>90</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;portable&nbsp;error&nbsp;message
-</td></tr>
-<tr><td>91</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>92</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;portable&nbsp;error&nbsp;message
-</td></tr>
-<tr><td>93</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>94</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getPortableMessage()
+<tr><td>86</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getPortableCode()
 </td></tr>
-<tr><td>95</td>
+<tr><td>87</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>96</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;self::errorMessage($this-&gt;portableCode);
+<tr><td>88</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;portableCode;
 </td></tr>
-<tr><td>97</td>
+<tr><td>89</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>98</td>
+<tr><td>90</td>
+<td class="normal">
+</td></tr>
+<tr><td>91</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>99</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Return&nbsp;a&nbsp;textual&nbsp;error&nbsp;message&nbsp;for&nbsp;a&nbsp;Doctrine&nbsp;error&nbsp;code
+<tr><td>92</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getPortableMessage
 </td></tr>
-<tr><td>100</td>
+<tr><td>93</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;portable&nbsp;error&nbsp;message
+</td></tr>
+<tr><td>94</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
+<tr><td>95</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;portable&nbsp;error&nbsp;message
+</td></tr>
+<tr><td>96</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>97</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getPortableMessage()
+</td></tr>
+<tr><td>98</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>99</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;self::errorMessage($this-&gt;portableCode);
+</td></tr>
+<tr><td>100</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
 <tr><td>101</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;int|array&nbsp;&nbsp;&nbsp;integer&nbsp;error&nbsp;code,
+<td class="normal">
 </td></tr>
 <tr><td>102</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;null&nbsp;to&nbsp;get&nbsp;the&nbsp;current&nbsp;error&nbsp;code-message&nbsp;map,
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>103</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;an&nbsp;array&nbsp;with&nbsp;a&nbsp;new&nbsp;error&nbsp;code-message&nbsp;map
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Return&nbsp;a&nbsp;textual&nbsp;error&nbsp;message&nbsp;for&nbsp;a&nbsp;Doctrine&nbsp;error&nbsp;code
 </td></tr>
 <tr><td>104</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>105</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;&nbsp;string&nbsp;&nbsp;error&nbsp;message,&nbsp;or&nbsp;false&nbsp;if&nbsp;the&nbsp;error&nbsp;code&nbsp;was
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;int|array&nbsp;&nbsp;&nbsp;integer&nbsp;error&nbsp;code,
 </td></tr>
 <tr><td>106</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;recognized
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;null&nbsp;to&nbsp;get&nbsp;the&nbsp;current&nbsp;error&nbsp;code-message&nbsp;map,
 </td></tr>
 <tr><td>107</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;an&nbsp;array&nbsp;with&nbsp;a&nbsp;new&nbsp;error&nbsp;code-message&nbsp;map
 </td></tr>
 <tr><td>108</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;errorMessage($value&nbsp;=&nbsp;null)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>109</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;&nbsp;string&nbsp;&nbsp;error&nbsp;message,&nbsp;or&nbsp;false&nbsp;if&nbsp;the&nbsp;error&nbsp;code&nbsp;was
 </td></tr>
 <tr><td>110</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;isset(self::$errorMessages[$value])&nbsp;?
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;recognized
 </td></tr>
 <tr><td>111</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self::$errorMessages[$value]&nbsp;:&nbsp;self::$errorMessages[Doctrine::ERR];
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>112</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;errorMessage($value&nbsp;=&nbsp;null)
 </td></tr>
 <tr><td>113</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>114</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;isset(self::$errorMessages[$value])&nbsp;?
+</td></tr>
+<tr><td>115</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self::$errorMessages[$value]&nbsp;:&nbsp;self::$errorMessages[Doctrine::ERR];
+</td></tr>
+<tr><td>116</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>117</td>
 <td class="covered">}</td></tr>
 </table></body></html>

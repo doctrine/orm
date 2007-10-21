@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Exception.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Exception.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -100,7 +100,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>31</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>32</td>
 <td class="normal">&nbsp;*/
@@ -124,182 +124,188 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;$invalid&nbsp;=&nbsp;array();
 </td></tr>
 <tr><td>39</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>40</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Validator&nbsp;$validator
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>41</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Validator&nbsp;$validator
 </td></tr>
 <tr><td>42</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;__construct(array&nbsp;$invalid)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>43</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;__construct(array&nbsp;$invalid)
 </td></tr>
 <tr><td>44</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;invalid&nbsp;=&nbsp;$invalid;
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>45</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parent::__construct($this-&gt;generateMessage());
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;invalid&nbsp;=&nbsp;$invalid;
 </td></tr>
 <tr><td>46</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parent::__construct($this-&gt;generateMessage());
 </td></tr>
 <tr><td>47</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>48</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getInvalidRecords()
+<td class="normal">
 </td></tr>
 <tr><td>49</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getInvalidRecords()
 </td></tr>
 <tr><td>50</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;invalid;
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>51</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;invalid;
 </td></tr>
 <tr><td>52</td>
-<td class="normal">
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>53</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getIterator()
+<td class="normal">
 </td></tr>
 <tr><td>54</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getIterator()
 </td></tr>
 <tr><td>55</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;new&nbsp;ArrayIterator($this-&gt;invalid);
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>56</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;new&nbsp;ArrayIterator($this-&gt;invalid);
 </td></tr>
 <tr><td>57</td>
-<td class="normal">
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>58</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;count()
+<td class="normal">
 </td></tr>
 <tr><td>59</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;count()
 </td></tr>
 <tr><td>60</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;count($this-&gt;invalid);
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>61</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;count($this-&gt;invalid);
 </td></tr>
 <tr><td>62</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>63</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;__toString
+<td class="normal">
 </td></tr>
 <tr><td>64</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>65</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;__toString
 </td></tr>
 <tr><td>66</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>67</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;__toString()
-</td></tr>
-<tr><td>68</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>69</td>
-<td class="normal">
-</td></tr>
-<tr><td>70</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;parent::__toString();
-</td></tr>
-<tr><td>71</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>72</td>
-<td class="normal">
-</td></tr>
-<tr><td>73</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>74</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Generate&nbsp;a&nbsp;message&nbsp;with&nbsp;all&nbsp;classes&nbsp;that&nbsp;have&nbsp;exceptions
-</td></tr>
-<tr><td>75</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>76</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;function&nbsp;generateMessage()
-</td></tr>
-<tr><td>77</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>78</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$message&nbsp;=&nbsp;&quot;&quot;;
-</td></tr>
-<tr><td>79</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($this-&gt;invalid&nbsp;as&nbsp;$record)&nbsp;{
-</td></tr>
-<tr><td>80</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$message&nbsp;.=&nbsp;&quot;Validaton&nbsp;error&nbsp;in&nbsp;class&nbsp;&quot;&nbsp;.&nbsp;get_class($record)&nbsp;.&nbsp;&quot;&nbsp;&quot;;
-</td></tr>
-<tr><td>81</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>82</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$message;
-</td></tr>
-<tr><td>83</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>84</td>
-<td class="normal">
-</td></tr>
-<tr><td>85</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>86</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;method&nbsp;will&nbsp;apply&nbsp;the&nbsp;value&nbsp;of&nbsp;the&nbsp;$function&nbsp;variable&nbsp;as&nbsp;a&nbsp;user_func&nbsp;
-</td></tr>
-<tr><td>87</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;to&nbsp;tall&nbsp;errorstack&nbsp;objects&nbsp;in&nbsp;the&nbsp;exception
-</td></tr>
-<tr><td>88</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>89</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;Either&nbsp;string&nbsp;with&nbsp;function&nbsp;name&nbsp;or&nbsp;array&nbsp;with&nbsp;object,&nbsp;
+<tr><td>67</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string
 </td></tr>
-<tr><td>90</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;functionname.&nbsp;See&nbsp;call_user_func&nbsp;in&nbsp;php&nbsp;manual&nbsp;for&nbsp;more&nbsp;inforamtion
-</td></tr>
-<tr><td>91</td>
+<tr><td>68</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>92</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;inspect($function)
+<tr><td>69</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;__toString()
 </td></tr>
-<tr><td>93</td>
+<tr><td>70</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
+<tr><td>71</td>
+<td class="normal">
+</td></tr>
+<tr><td>72</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;parent::__toString();
+</td></tr>
+<tr><td>73</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>74</td>
+<td class="normal">
+</td></tr>
+<tr><td>75</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>76</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Generate&nbsp;a&nbsp;message&nbsp;with&nbsp;all&nbsp;classes&nbsp;that&nbsp;have&nbsp;exceptions
+</td></tr>
+<tr><td>77</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>78</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;function&nbsp;generateMessage()
+</td></tr>
+<tr><td>79</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>80</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$message&nbsp;=&nbsp;&quot;&quot;;
+</td></tr>
+<tr><td>81</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($this-&gt;invalid&nbsp;as&nbsp;$record)&nbsp;{
+</td></tr>
+<tr><td>82</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$message&nbsp;.=&nbsp;&quot;Validaton&nbsp;error&nbsp;in&nbsp;class&nbsp;&quot;&nbsp;.&nbsp;get_class($record)&nbsp;.&nbsp;&quot;&nbsp;&quot;;
+</td></tr>
+<tr><td>83</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>84</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$message;
+</td></tr>
+<tr><td>85</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>86</td>
+<td class="normal">
+</td></tr>
+<tr><td>87</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>88</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;method&nbsp;will&nbsp;apply&nbsp;the&nbsp;value&nbsp;of&nbsp;the&nbsp;$function&nbsp;variable&nbsp;as&nbsp;a&nbsp;user_func&nbsp;
+</td></tr>
+<tr><td>89</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;to&nbsp;tall&nbsp;errorstack&nbsp;objects&nbsp;in&nbsp;the&nbsp;exception
+</td></tr>
+<tr><td>90</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+</td></tr>
+<tr><td>91</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;Either&nbsp;string&nbsp;with&nbsp;function&nbsp;name&nbsp;or&nbsp;array&nbsp;with&nbsp;object,&nbsp;
+</td></tr>
+<tr><td>92</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;functionname.&nbsp;See&nbsp;call_user_func&nbsp;in&nbsp;php&nbsp;manual&nbsp;for&nbsp;more&nbsp;inforamtion
+</td></tr>
+<tr><td>93</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
 <tr><td>94</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($this-&gt;invalid&nbsp;as&nbsp;$record)&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;inspect($function)
 </td></tr>
 <tr><td>95</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;call_user_func($function,&nbsp;$record-&gt;getErrorStack());
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>96</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($this-&gt;invalid&nbsp;as&nbsp;$record)&nbsp;{
 </td></tr>
 <tr><td>97</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;call_user_func($function,&nbsp;$record-&gt;getErrorStack());
 </td></tr>
 <tr><td>98</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>99</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>100</td>
 <td class="covered">}</td></tr>
 </table></body></html>

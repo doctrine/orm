@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Module.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Module.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -70,176 +70,191 @@
 <td class="normal">&nbsp;*/
 </td></tr>
 <tr><td>21</td>
-<td class="normal">/**
+<td class="normal">
 </td></tr>
 <tr><td>22</td>
-<td class="normal">&nbsp;*&nbsp;Doctrine_Connection_Module
+<td class="normal">/**
 </td></tr>
 <tr><td>23</td>
-<td class="normal">&nbsp;*
+<td class="normal">&nbsp;*&nbsp;Doctrine_Connection_Module
 </td></tr>
 <tr><td>24</td>
-<td class="normal">&nbsp;*&nbsp;@package&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doctrine
+<td class="normal">&nbsp;*
 </td></tr>
 <tr><td>25</td>
-<td class="normal">&nbsp;*&nbsp;@subpackage&nbsp;&nbsp;Connection
+<td class="normal">&nbsp;*&nbsp;@package&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doctrine
 </td></tr>
 <tr><td>26</td>
-<td class="normal">&nbsp;*&nbsp;@license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.opensource.org/licenses/lgpl-license.php&nbsp;LGPL
+<td class="normal">&nbsp;*&nbsp;@subpackage&nbsp;&nbsp;Connection
 </td></tr>
 <tr><td>27</td>
-<td class="normal">&nbsp;*&nbsp;@link&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;www.phpdoctrine.com
+<td class="normal">&nbsp;*&nbsp;@license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.opensource.org/licenses/lgpl-license.php&nbsp;LGPL
 </td></tr>
 <tr><td>28</td>
-<td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
+<td class="normal">&nbsp;*&nbsp;@link&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;www.phpdoctrine.com
 </td></tr>
 <tr><td>29</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>31</td>
-<td class="normal">&nbsp;*/
+<td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
 </td></tr>
 <tr><td>32</td>
-<td class="normal">class&nbsp;Doctrine_Connection_Module
+<td class="normal">&nbsp;*/
 </td></tr>
 <tr><td>33</td>
-<td class="covered">{
+<td class="normal">class&nbsp;Doctrine_Connection_Module
 </td></tr>
 <tr><td>34</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="covered">{
 </td></tr>
 <tr><td>35</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;Doctrine_Connection&nbsp;$conn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doctrine_Connection&nbsp;object,&nbsp;every&nbsp;connection
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>36</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;module&nbsp;holds&nbsp;an&nbsp;instance&nbsp;of&nbsp;Doctrine_Connection
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;Doctrine_Connection&nbsp;$conn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doctrine_Connection&nbsp;object,&nbsp;every&nbsp;connection
 </td></tr>
 <tr><td>37</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>38</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;$conn;
-</td></tr>
-<tr><td>39</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>40</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;string&nbsp;$moduleName&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;of&nbsp;this&nbsp;module
-</td></tr>
-<tr><td>41</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>42</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;$moduleName;
-</td></tr>
-<tr><td>43</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>44</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Connection&nbsp;$conn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doctrine_Connection&nbsp;object,&nbsp;every&nbsp;connection
-</td></tr>
-<tr><td>45</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;module&nbsp;holds&nbsp;an&nbsp;instance&nbsp;of&nbsp;Doctrine_Connection
 </td></tr>
-<tr><td>46</td>
+<tr><td>38</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>39</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;$conn;
+</td></tr>
+<tr><td>40</td>
+<td class="normal">
+</td></tr>
+<tr><td>41</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>42</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;string&nbsp;$moduleName&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;of&nbsp;this&nbsp;module
+</td></tr>
+<tr><td>43</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>44</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;$moduleName;
+</td></tr>
+<tr><td>45</td>
+<td class="normal">
+</td></tr>
+<tr><td>46</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>47</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;__construct($conn&nbsp;=&nbsp;null)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Connection&nbsp;$conn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doctrine_Connection&nbsp;object,&nbsp;every&nbsp;connection
 </td></tr>
 <tr><td>48</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;module&nbsp;holds&nbsp;an&nbsp;instance&nbsp;of&nbsp;Doctrine_Connection
 </td></tr>
 <tr><td>49</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;($conn&nbsp;instanceof&nbsp;Doctrine_Connection))&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>50</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn&nbsp;=&nbsp;Doctrine_Manager::getInstance()-&gt;getCurrentConnection();
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;__construct($conn&nbsp;=&nbsp;null)
 </td></tr>
 <tr><td>51</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>52</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;conn&nbsp;=&nbsp;$conn;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;($conn&nbsp;instanceof&nbsp;Doctrine_Connection))&nbsp;{
 </td></tr>
 <tr><td>53</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn&nbsp;=&nbsp;Doctrine_Manager::getInstance()-&gt;getCurrentConnection();
 </td></tr>
 <tr><td>54</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e&nbsp;=&nbsp;explode('_',&nbsp;get_class($this));
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>55</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;conn&nbsp;=&nbsp;$conn;
 </td></tr>
 <tr><td>56</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;moduleName&nbsp;=&nbsp;$e[1];
+<td class="normal">
 </td></tr>
 <tr><td>57</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e&nbsp;=&nbsp;explode('_',&nbsp;get_class($this));
 </td></tr>
 <tr><td>58</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>59</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getConnection
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;moduleName&nbsp;=&nbsp;$e[1];
 </td></tr>
 <tr><td>60</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;the&nbsp;connection&nbsp;object&nbsp;this&nbsp;module&nbsp;uses
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>61</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="normal">
 </td></tr>
 <tr><td>62</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;Doctrine_Connection
-</td></tr>
-<tr><td>63</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>64</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getConnection()
-</td></tr>
-<tr><td>65</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>66</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn;
-</td></tr>
-<tr><td>67</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>68</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>69</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getModuleName
+<tr><td>63</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getConnection
 </td></tr>
-<tr><td>70</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;the&nbsp;name&nbsp;of&nbsp;this&nbsp;module
+<tr><td>64</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;the&nbsp;connection&nbsp;object&nbsp;this&nbsp;module&nbsp;uses
 </td></tr>
-<tr><td>71</td>
+<tr><td>65</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>72</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;of&nbsp;this&nbsp;module
+<tr><td>66</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;Doctrine_Connection
 </td></tr>
-<tr><td>73</td>
+<tr><td>67</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>74</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getModuleName()
+<tr><td>68</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getConnection()
 </td></tr>
-<tr><td>75</td>
+<tr><td>69</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>76</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;moduleName;
+<tr><td>70</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn;
 </td></tr>
-<tr><td>77</td>
+<tr><td>71</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
+<tr><td>72</td>
+<td class="normal">
+</td></tr>
+<tr><td>73</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>74</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getModuleName
+</td></tr>
+<tr><td>75</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;the&nbsp;name&nbsp;of&nbsp;this&nbsp;module
+</td></tr>
+<tr><td>76</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+</td></tr>
+<tr><td>77</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;of&nbsp;this&nbsp;module
+</td></tr>
 <tr><td>78</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>79</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getModuleName()
+</td></tr>
+<tr><td>80</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>81</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;moduleName;
+</td></tr>
+<tr><td>82</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>83</td>
 <td class="covered">}</td></tr>
 </table></body></html>

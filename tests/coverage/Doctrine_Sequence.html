@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Sequence.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Sequence.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -103,7 +103,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>32</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>33</td>
 <td class="normal">&nbsp;*/
@@ -151,77 +151,83 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>48</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>49</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;autoincrement&nbsp;ID&nbsp;if&nbsp;supported&nbsp;or&nbsp;$id&nbsp;or&nbsp;fetches&nbsp;the&nbsp;current
-</td></tr>
-<tr><td>50</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;ID&nbsp;in&nbsp;a&nbsp;sequence&nbsp;called:&nbsp;$table.(empty($field)&nbsp;?&nbsp;''&nbsp;:&nbsp;'_'.$field)
-</td></tr>
-<tr><td>51</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>52</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
-</td></tr>
-<tr><td>53</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;field&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
-</td></tr>
-<tr><td>54</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>55</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;lastInsertId($table&nbsp;=&nbsp;null,&nbsp;$field&nbsp;=&nbsp;null)
-</td></tr>
-<tr><td>56</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>57</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Sequence_Exception('method&nbsp;not&nbsp;implemented');
-</td></tr>
-<tr><td>58</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>59</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>60</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;current&nbsp;id&nbsp;of&nbsp;a&nbsp;sequence
+<tr><td>50</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;autoincrement&nbsp;ID&nbsp;if&nbsp;supported&nbsp;or&nbsp;$id&nbsp;or&nbsp;fetches&nbsp;the&nbsp;current
 </td></tr>
-<tr><td>61</td>
+<tr><td>51</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;ID&nbsp;in&nbsp;a&nbsp;sequence&nbsp;called:&nbsp;$table.(empty($field)&nbsp;?&nbsp;''&nbsp;:&nbsp;'_'.$field)
+</td></tr>
+<tr><td>52</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
+<tr><td>53</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
+</td></tr>
+<tr><td>54</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;field&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
+</td></tr>
+<tr><td>55</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>56</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;lastInsertId($table&nbsp;=&nbsp;null,&nbsp;$field&nbsp;=&nbsp;null)
+</td></tr>
+<tr><td>57</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>58</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Sequence_Exception('method&nbsp;not&nbsp;implemented');
+</td></tr>
+<tr><td>59</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>60</td>
+<td class="normal">
+</td></tr>
+<tr><td>61</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
 <tr><td>62</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$seqName&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;sequence
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;current&nbsp;id&nbsp;of&nbsp;a&nbsp;sequence
 </td></tr>
 <tr><td>63</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>64</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current&nbsp;id&nbsp;in&nbsp;the&nbsp;given&nbsp;sequence
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$seqName&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;sequence
 </td></tr>
 <tr><td>65</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>66</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;currId($seqName)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current&nbsp;id&nbsp;in&nbsp;the&nbsp;given&nbsp;sequence
 </td></tr>
 <tr><td>67</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>68</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;warnings[]&nbsp;=&nbsp;'database&nbsp;does&nbsp;not&nbsp;support&nbsp;getting&nbsp;current
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;currId($seqName)
 </td></tr>
 <tr><td>69</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sequence&nbsp;value,&nbsp;the&nbsp;sequence&nbsp;value&nbsp;was&nbsp;incremented';
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>70</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;nextId($seqName);
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;warnings[]&nbsp;=&nbsp;'database&nbsp;does&nbsp;not&nbsp;support&nbsp;getting&nbsp;current
 </td></tr>
 <tr><td>71</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sequence&nbsp;value,&nbsp;the&nbsp;sequence&nbsp;value&nbsp;was&nbsp;incremented';
 </td></tr>
 <tr><td>72</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;nextId($seqName);
+</td></tr>
+<tr><td>73</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>74</td>
 <td class="covered">}</td></tr>
 </table></body></html>

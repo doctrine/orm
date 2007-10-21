@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Exception.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Exception.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -106,7 +106,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>33</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>34</td>
 <td class="normal">&nbsp;*/
@@ -256,77 +256,80 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);
 </td></tr>
 <tr><td>83</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>84</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;method&nbsp;checks&nbsp;if&nbsp;native&nbsp;error&nbsp;code/message&nbsp;can&nbsp;be
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>85</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;converted&nbsp;into&nbsp;a&nbsp;portable&nbsp;code&nbsp;and&nbsp;then&nbsp;adds&nbsp;this
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;method&nbsp;checks&nbsp;if&nbsp;native&nbsp;error&nbsp;code/message&nbsp;can&nbsp;be
 </td></tr>
 <tr><td>86</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;portable&nbsp;error&nbsp;code&nbsp;to&nbsp;$portableCode&nbsp;field
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;converted&nbsp;into&nbsp;a&nbsp;portable&nbsp;code&nbsp;and&nbsp;then&nbsp;adds&nbsp;this
 </td></tr>
 <tr><td>87</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;portable&nbsp;error&nbsp;code&nbsp;to&nbsp;$portableCode&nbsp;field
 </td></tr>
 <tr><td>88</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;the&nbsp;portable&nbsp;error&nbsp;code&nbsp;is&nbsp;added&nbsp;at&nbsp;the&nbsp;end&nbsp;of&nbsp;array
-</td></tr>
-<tr><td>89</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
+<tr><td>89</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;the&nbsp;portable&nbsp;error&nbsp;code&nbsp;is&nbsp;added&nbsp;at&nbsp;the&nbsp;end&nbsp;of&nbsp;array
+</td></tr>
 <tr><td>90</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;array&nbsp;$errorInfo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error&nbsp;info&nbsp;array
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>91</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@since&nbsp;1.0
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;array&nbsp;$errorInfo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error&nbsp;info&nbsp;array
 </td></tr>
 <tr><td>92</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@see&nbsp;Doctrine::ERR_*&nbsp;constants
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@since&nbsp;1.0
 </td></tr>
 <tr><td>93</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@see&nbsp;Doctrine_Connection::$portableCode
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@see&nbsp;Doctrine::ERR_*&nbsp;constants
 </td></tr>
 <tr><td>94</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;boolean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;or&nbsp;not&nbsp;the&nbsp;error&nbsp;info&nbsp;processing&nbsp;was&nbsp;successfull
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@see&nbsp;Doctrine_Connection::$portableCode
 </td></tr>
 <tr><td>95</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(the&nbsp;process&nbsp;is&nbsp;successfull&nbsp;if&nbsp;portable&nbsp;error&nbsp;code&nbsp;was&nbsp;found)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;boolean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;or&nbsp;not&nbsp;the&nbsp;error&nbsp;info&nbsp;processing&nbsp;was&nbsp;successfull
 </td></tr>
 <tr><td>96</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(the&nbsp;process&nbsp;is&nbsp;successfull&nbsp;if&nbsp;portable&nbsp;error&nbsp;code&nbsp;was&nbsp;found)
 </td></tr>
 <tr><td>97</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;processErrorInfo(array&nbsp;$errorInfo)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>98</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;processErrorInfo(array&nbsp;$errorInfo)
 </td></tr>
 <tr><td>99</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;(self::$errorRegexps&nbsp;as&nbsp;$regexp&nbsp;=&gt;&nbsp;$code)&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>100</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(preg_match($regexp,&nbsp;$errorInfo[2]))&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;(self::$errorRegexps&nbsp;as&nbsp;$regexp&nbsp;=&gt;&nbsp;$code)&nbsp;{
 </td></tr>
 <tr><td>101</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;portableCode&nbsp;=&nbsp;$code;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(preg_match($regexp,&nbsp;$errorInfo[2]))&nbsp;{
 </td></tr>
 <tr><td>102</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;true;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;portableCode&nbsp;=&nbsp;$code;
 </td></tr>
 <tr><td>103</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;true;
 </td></tr>
 <tr><td>104</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>105</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;false;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>106</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;false;
 </td></tr>
 <tr><td>107</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>108</td>
 <td class="covered">}</td></tr>
 </table></body></html>

@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Oracle.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Oracle.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -100,7 +100,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>31</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>32</td>
 <td class="normal">&nbsp;*/
@@ -151,170 +151,179 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>48</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>49</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;releaseSavePoint
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>50</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;releases&nbsp;given&nbsp;savepoint
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;releaseSavePoint
 </td></tr>
 <tr><td>51</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>52</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$savepoint&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;a&nbsp;savepoint&nbsp;to&nbsp;release
-</td></tr>
-<tr><td>53</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void
-</td></tr>
-<tr><td>54</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>55</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;function&nbsp;releaseSavePoint($savepoint)
-</td></tr>
-<tr><td>56</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>57</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;oracle&nbsp;doesn't&nbsp;support&nbsp;manual&nbsp;releasing&nbsp;of&nbsp;savepoints
-</td></tr>
-<tr><td>58</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;true;
-</td></tr>
-<tr><td>59</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>60</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>61</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;rollbackSavePoint
-</td></tr>
-<tr><td>62</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;releases&nbsp;given&nbsp;savepoint
 </td></tr>
-<tr><td>63</td>
+<tr><td>52</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>64</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$savepoint&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;a&nbsp;savepoint&nbsp;to&nbsp;rollback&nbsp;to
+<tr><td>53</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$savepoint&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;a&nbsp;savepoint&nbsp;to&nbsp;release
 </td></tr>
-<tr><td>65</td>
+<tr><td>54</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void
 </td></tr>
-<tr><td>66</td>
+<tr><td>55</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>67</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;function&nbsp;rollbackSavePoint($savepoint)
+<tr><td>56</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;function&nbsp;releaseSavePoint($savepoint)
 </td></tr>
-<tr><td>68</td>
+<tr><td>57</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>69</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'ROLLBACK&nbsp;TO&nbsp;SAVEPOINT&nbsp;'&nbsp;.&nbsp;$savepoint;
+<tr><td>58</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;oracle&nbsp;doesn't&nbsp;support&nbsp;manual&nbsp;releasing&nbsp;of&nbsp;savepoints
 </td></tr>
-<tr><td>70</td>
-<td class="normal">
+<tr><td>59</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;true;
 </td></tr>
-<tr><td>71</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;execute($query);
-</td></tr>
-<tr><td>72</td>
+<tr><td>60</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>73</td>
+<tr><td>61</td>
+<td class="normal">
+</td></tr>
+<tr><td>62</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>74</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Set&nbsp;the&nbsp;transacton&nbsp;isolation&nbsp;level.
+<tr><td>63</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;rollbackSavePoint
 </td></tr>
-<tr><td>75</td>
+<tr><td>64</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;releases&nbsp;given&nbsp;savepoint
+</td></tr>
+<tr><td>65</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>76</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;standard&nbsp;isolation&nbsp;level
+<tr><td>66</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$savepoint&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;a&nbsp;savepoint&nbsp;to&nbsp;rollback&nbsp;to
 </td></tr>
-<tr><td>77</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;UNCOMMITTED&nbsp;(allows&nbsp;dirty&nbsp;reads)
-</td></tr>
-<tr><td>78</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;COMMITTED&nbsp;(prevents&nbsp;dirty&nbsp;reads)
-</td></tr>
-<tr><td>79</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REPEATABLE&nbsp;READ&nbsp;(prevents&nbsp;nonrepeatable&nbsp;reads)
-</td></tr>
-<tr><td>80</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SERIALIZABLE&nbsp;(prevents&nbsp;phantom&nbsp;reads)
-</td></tr>
-<tr><td>81</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;PDOException&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;something&nbsp;fails&nbsp;at&nbsp;the&nbsp;PDO&nbsp;level
-</td></tr>
-<tr><td>82</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;Doctrine_Transaction_Exception&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;using&nbsp;unknown&nbsp;isolation&nbsp;level
-</td></tr>
-<tr><td>83</td>
+<tr><td>67</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void
 </td></tr>
-<tr><td>84</td>
+<tr><td>68</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>85</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setIsolation($isolation)
+<tr><td>69</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;function&nbsp;rollbackSavePoint($savepoint)
 </td></tr>
-<tr><td>86</td>
+<tr><td>70</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>87</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;switch&nbsp;($isolation)&nbsp;{
+<tr><td>71</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'ROLLBACK&nbsp;TO&nbsp;SAVEPOINT&nbsp;'&nbsp;.&nbsp;$savepoint;
 </td></tr>
-<tr><td>88</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;'READ&nbsp;UNCOMMITTED':
-</td></tr>
-<tr><td>89</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$isolation&nbsp;=&nbsp;'READ&nbsp;COMMITTED';
-</td></tr>
-<tr><td>90</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
-</td></tr>
-<tr><td>91</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;'READ&nbsp;COMMITTED':
-</td></tr>
-<tr><td>92</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;'REPEATABLE&nbsp;READ':
-</td></tr>
-<tr><td>93</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;'SERIALIZABLE':
-</td></tr>
-<tr><td>94</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$isolation&nbsp;=&nbsp;'SERIALIZABLE';
-</td></tr>
-<tr><td>95</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
-</td></tr>
-<tr><td>96</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default:
-</td></tr>
-<tr><td>97</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Transaction_Exception('Isolation&nbsp;level&nbsp;'&nbsp;.&nbsp;$isolation&nbsp;.&nbsp;'&nbsp;is&nbsp;not&nbsp;supported.');
-</td></tr>
-<tr><td>98</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>99</td>
+<tr><td>72</td>
 <td class="normal">
 </td></tr>
-<tr><td>100</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'ALTER&nbsp;SESSION&nbsp;ISOLATION&nbsp;LEVEL&nbsp;'&nbsp;.&nbsp;$isolation;
-</td></tr>
-<tr><td>101</td>
+<tr><td>73</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;execute($query);
 </td></tr>
-<tr><td>102</td>
+<tr><td>74</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
+<tr><td>75</td>
+<td class="normal">
+</td></tr>
+<tr><td>76</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>77</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Set&nbsp;the&nbsp;transacton&nbsp;isolation&nbsp;level.
+</td></tr>
+<tr><td>78</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+</td></tr>
+<tr><td>79</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;standard&nbsp;isolation&nbsp;level
+</td></tr>
+<tr><td>80</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;UNCOMMITTED&nbsp;(allows&nbsp;dirty&nbsp;reads)
+</td></tr>
+<tr><td>81</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;COMMITTED&nbsp;(prevents&nbsp;dirty&nbsp;reads)
+</td></tr>
+<tr><td>82</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REPEATABLE&nbsp;READ&nbsp;(prevents&nbsp;nonrepeatable&nbsp;reads)
+</td></tr>
+<tr><td>83</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SERIALIZABLE&nbsp;(prevents&nbsp;phantom&nbsp;reads)
+</td></tr>
+<tr><td>84</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;PDOException&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;something&nbsp;fails&nbsp;at&nbsp;the&nbsp;PDO&nbsp;level
+</td></tr>
+<tr><td>85</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;Doctrine_Transaction_Exception&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;using&nbsp;unknown&nbsp;isolation&nbsp;level
+</td></tr>
+<tr><td>86</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void
+</td></tr>
+<tr><td>87</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>88</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setIsolation($isolation)
+</td></tr>
+<tr><td>89</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>90</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;switch&nbsp;($isolation)&nbsp;{
+</td></tr>
+<tr><td>91</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;'READ&nbsp;UNCOMMITTED':
+</td></tr>
+<tr><td>92</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$isolation&nbsp;=&nbsp;'READ&nbsp;COMMITTED';
+</td></tr>
+<tr><td>93</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+</td></tr>
+<tr><td>94</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;'READ&nbsp;COMMITTED':
+</td></tr>
+<tr><td>95</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;'REPEATABLE&nbsp;READ':
+</td></tr>
+<tr><td>96</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;'SERIALIZABLE':
+</td></tr>
+<tr><td>97</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$isolation&nbsp;=&nbsp;'SERIALIZABLE';
+</td></tr>
+<tr><td>98</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;
+</td></tr>
+<tr><td>99</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default:
+</td></tr>
+<tr><td>100</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Transaction_Exception('Isolation&nbsp;level&nbsp;'&nbsp;.&nbsp;$isolation&nbsp;.&nbsp;'&nbsp;is&nbsp;not&nbsp;supported.');
+</td></tr>
+<tr><td>101</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>102</td>
+<td class="normal">
+</td></tr>
 <tr><td>103</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'ALTER&nbsp;SESSION&nbsp;ISOLATION&nbsp;LEVEL&nbsp;'&nbsp;.&nbsp;$isolation;
+</td></tr>
+<tr><td>104</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;execute($query);
+</td></tr>
+<tr><td>105</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>106</td>
 <td class="covered">}</td></tr>
 </table></body></html>

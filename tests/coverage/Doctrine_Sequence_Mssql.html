@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Mssql.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Mssql.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -100,7 +100,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>31</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>32</td>
 <td class="normal">&nbsp;*/
@@ -307,170 +307,176 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>100</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>101</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Checks&nbsp;if&nbsp;there's&nbsp;a&nbsp;sequence&nbsp;that&nbsp;exists.
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>102</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Checks&nbsp;if&nbsp;there's&nbsp;a&nbsp;sequence&nbsp;that&nbsp;exists.
 </td></tr>
 <tr><td>103</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;string&nbsp;$seqName&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;sequence&nbsp;name&nbsp;to&nbsp;verify.
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>104</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;bool&nbsp;&nbsp;&nbsp;$tableExists&nbsp;The&nbsp;value&nbsp;if&nbsp;the&nbsp;table&nbsp;exists&nbsp;or&nbsp;not
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;string&nbsp;$seqName&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;sequence&nbsp;name&nbsp;to&nbsp;verify.
 </td></tr>
 <tr><td>105</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@access&nbsp;private
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;bool&nbsp;&nbsp;&nbsp;$tableExists&nbsp;The&nbsp;value&nbsp;if&nbsp;the&nbsp;table&nbsp;exists&nbsp;or&nbsp;not
 </td></tr>
 <tr><td>106</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@access&nbsp;private
 </td></tr>
 <tr><td>107</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;checkSequence($seqName)
-</td></tr>
-<tr><td>108</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>109</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;COUNT(1)&nbsp;FROM&nbsp;'&nbsp;.&nbsp;$seqName;
-</td></tr>
-<tr><td>110</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try&nbsp;{
-</td></tr>
-<tr><td>111</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;conn-&gt;execute($query);
-</td></tr>
-<tr><td>112</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;catch&nbsp;(Doctrine_Connection_Exception&nbsp;$e)&nbsp;{
-</td></tr>
-<tr><td>113</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($e-&gt;getPortableCode()&nbsp;==&nbsp;Doctrine::ERR_NOSUCHTABLE)&nbsp;{
-</td></tr>
-<tr><td>114</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;false;
-</td></tr>
-<tr><td>115</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>116</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>117</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;true;
-</td></tr>
-<tr><td>118</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>119</td>
-<td class="normal">
-</td></tr>
-<tr><td>120</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>121</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;autoincrement&nbsp;ID&nbsp;if&nbsp;supported&nbsp;or&nbsp;$id&nbsp;or&nbsp;fetches&nbsp;the&nbsp;current
-</td></tr>
-<tr><td>122</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;ID&nbsp;in&nbsp;a&nbsp;sequence&nbsp;called:&nbsp;$table.(empty($field)&nbsp;?&nbsp;''&nbsp;:&nbsp;'_'.$field)
-</td></tr>
-<tr><td>123</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>124</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
-</td></tr>
-<tr><td>125</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;field&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
-</td></tr>
-<tr><td>126</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>127</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;lastInsertId($table&nbsp;=&nbsp;null,&nbsp;$field&nbsp;=&nbsp;null)
+<tr><td>108</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;checkSequence($seqName)
 </td></tr>
-<tr><td>128</td>
+<tr><td>109</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>129</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$serverInfo&nbsp;=&nbsp;$this-&gt;conn-&gt;getServerVersion();
+<tr><td>110</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;COUNT(1)&nbsp;FROM&nbsp;'&nbsp;.&nbsp;$seqName;
 </td></tr>
-<tr><td>130</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(is_array($serverInfo)
+<tr><td>111</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try&nbsp;{
 </td></tr>
-<tr><td>131</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;!&nbsp;is_null($serverInfo['major'])
+<tr><td>112</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;conn-&gt;execute($query);
 </td></tr>
-<tr><td>132</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;$serverInfo['major']&nbsp;&gt;=&nbsp;8)&nbsp;{
+<tr><td>113</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;catch&nbsp;(Doctrine_Connection_Exception&nbsp;$e)&nbsp;{
 </td></tr>
-<tr><td>133</td>
-<td class="normal">
+<tr><td>114</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($e-&gt;getPortableCode()&nbsp;==&nbsp;Doctrine::ERR_NOSUCHTABLE)&nbsp;{
 </td></tr>
-<tr><td>134</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;SCOPE_IDENTITY()';
+<tr><td>115</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;false;
 </td></tr>
-<tr><td>135</td>
-<td class="normal">
+<tr><td>116</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>136</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
-</td></tr>
-<tr><td>137</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;@@IDENTITY';
-</td></tr>
-<tr><td>138</td>
+<tr><td>117</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>139</td>
-<td class="normal">
+<tr><td>118</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;true;
 </td></tr>
-<tr><td>140</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchOne($query);
-</td></tr>
-<tr><td>141</td>
+<tr><td>119</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>142</td>
+<tr><td>120</td>
+<td class="normal">
+</td></tr>
+<tr><td>121</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>143</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;current&nbsp;id&nbsp;of&nbsp;a&nbsp;sequence
+<tr><td>122</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;autoincrement&nbsp;ID&nbsp;if&nbsp;supported&nbsp;or&nbsp;$id&nbsp;or&nbsp;fetches&nbsp;the&nbsp;current
 </td></tr>
-<tr><td>144</td>
+<tr><td>123</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;ID&nbsp;in&nbsp;a&nbsp;sequence&nbsp;called:&nbsp;$table.(empty($field)&nbsp;?&nbsp;''&nbsp;:&nbsp;'_'.$field)
+</td></tr>
+<tr><td>124</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
+<tr><td>125</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
+</td></tr>
+<tr><td>126</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;field&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
+</td></tr>
+<tr><td>127</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>128</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;lastInsertId($table&nbsp;=&nbsp;null,&nbsp;$field&nbsp;=&nbsp;null)
+</td></tr>
+<tr><td>129</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>130</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$serverInfo&nbsp;=&nbsp;$this-&gt;conn-&gt;getServerVersion();
+</td></tr>
+<tr><td>131</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(is_array($serverInfo)
+</td></tr>
+<tr><td>132</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;!&nbsp;is_null($serverInfo['major'])
+</td></tr>
+<tr><td>133</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp;&nbsp;$serverInfo['major']&nbsp;&gt;=&nbsp;8)&nbsp;{
+</td></tr>
+<tr><td>134</td>
+<td class="normal">
+</td></tr>
+<tr><td>135</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;SCOPE_IDENTITY()';
+</td></tr>
+<tr><td>136</td>
+<td class="normal">
+</td></tr>
+<tr><td>137</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
+</td></tr>
+<tr><td>138</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;@@IDENTITY';
+</td></tr>
+<tr><td>139</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>140</td>
+<td class="normal">
+</td></tr>
+<tr><td>141</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchOne($query);
+</td></tr>
+<tr><td>142</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>143</td>
+<td class="normal">
+</td></tr>
+<tr><td>144</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
 <tr><td>145</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$seqName&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;sequence
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;current&nbsp;id&nbsp;of&nbsp;a&nbsp;sequence
 </td></tr>
 <tr><td>146</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>147</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current&nbsp;id&nbsp;in&nbsp;the&nbsp;given&nbsp;sequence
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$seqName&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;sequence
 </td></tr>
 <tr><td>148</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>149</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;currId($seqName)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current&nbsp;id&nbsp;in&nbsp;the&nbsp;given&nbsp;sequence
 </td></tr>
 <tr><td>150</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>151</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;warnings[]&nbsp;=&nbsp;'database&nbsp;does&nbsp;not&nbsp;support&nbsp;getting&nbsp;current
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;currId($seqName)
 </td></tr>
 <tr><td>152</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sequence&nbsp;value,&nbsp;the&nbsp;sequence&nbsp;value&nbsp;was&nbsp;incremented';
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>153</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;nextId($seqName);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;warnings[]&nbsp;=&nbsp;'database&nbsp;does&nbsp;not&nbsp;support&nbsp;getting&nbsp;current
 </td></tr>
 <tr><td>154</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sequence&nbsp;value,&nbsp;the&nbsp;sequence&nbsp;value&nbsp;was&nbsp;incremented';
 </td></tr>
 <tr><td>155</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;nextId($seqName);
+</td></tr>
+<tr><td>156</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>157</td>
 <td class="covered">}</td></tr>
 </table></body></html>

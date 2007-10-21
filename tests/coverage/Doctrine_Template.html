@@ -133,160 +133,160 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;$_plugin;
 </td></tr>
 <tr><td>42</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>43</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;setTable
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>44</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;setTable
 </td></tr>
 <tr><td>45</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Table&nbsp;$_table&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;table&nbsp;object&nbsp;this&nbsp;Template&nbsp;belongs&nbsp;to
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>46</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Table&nbsp;$_table&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;table&nbsp;object&nbsp;this&nbsp;Template&nbsp;belongs&nbsp;to
 </td></tr>
 <tr><td>47</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setTable(Doctrine_Table&nbsp;$table)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>48</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setTable(Doctrine_Table&nbsp;$table)
 </td></tr>
 <tr><td>49</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;_table&nbsp;=&nbsp;$table;
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>50</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;_table&nbsp;=&nbsp;$table;
 </td></tr>
 <tr><td>51</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>52</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getTable
-</td></tr>
-<tr><td>53</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;the&nbsp;associated&nbsp;table&nbsp;object
-</td></tr>
-<tr><td>54</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>55</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;Doctrine_Table&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;associated&nbsp;table&nbsp;object
-</td></tr>
-<tr><td>56</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>57</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getTable()
-</td></tr>
-<tr><td>58</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>59</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;_table;
-</td></tr>
-<tr><td>60</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>61</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>62</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;setInvoker
-</td></tr>
-<tr><td>63</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>64</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;sets&nbsp;the&nbsp;last&nbsp;used&nbsp;invoker
-</td></tr>
-<tr><td>65</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>66</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Record&nbsp;$invoker&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;record&nbsp;that&nbsp;invoked&nbsp;the&nbsp;last&nbsp;delegated&nbsp;call
-</td></tr>
-<tr><td>67</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;Doctrine_Template&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;object
-</td></tr>
-<tr><td>68</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>69</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setInvoker(Doctrine_Record&nbsp;$invoker)
-</td></tr>
-<tr><td>70</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>71</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;_invoker&nbsp;=&nbsp;$invoker;
-</td></tr>
-<tr><td>72</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>73</td>
+<tr><td>52</td>
+<td class="normal">
+</td></tr>
+<tr><td>53</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>74</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;setInvoker
+<tr><td>54</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getTable
 </td></tr>
-<tr><td>75</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;the&nbsp;last&nbsp;used&nbsp;invoker
+<tr><td>55</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;the&nbsp;associated&nbsp;table&nbsp;object
 </td></tr>
-<tr><td>76</td>
+<tr><td>56</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>77</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;Doctrine_Record&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;record&nbsp;that&nbsp;invoked&nbsp;the&nbsp;last&nbsp;delegated&nbsp;call
+<tr><td>57</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;Doctrine_Table&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;associated&nbsp;table&nbsp;object
 </td></tr>
-<tr><td>78</td>
+<tr><td>58</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
+<tr><td>59</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getTable()
+</td></tr>
+<tr><td>60</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>61</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;_table;
+</td></tr>
+<tr><td>62</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>63</td>
+<td class="normal">
+</td></tr>
+<tr><td>64</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>65</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;setInvoker
+</td></tr>
+<tr><td>66</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+</td></tr>
+<tr><td>67</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;sets&nbsp;the&nbsp;last&nbsp;used&nbsp;invoker
+</td></tr>
+<tr><td>68</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+</td></tr>
+<tr><td>69</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Record&nbsp;$invoker&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;record&nbsp;that&nbsp;invoked&nbsp;the&nbsp;last&nbsp;delegated&nbsp;call
+</td></tr>
+<tr><td>70</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;Doctrine_Template&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;object
+</td></tr>
+<tr><td>71</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>72</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setInvoker(Doctrine_Record&nbsp;$invoker)
+</td></tr>
+<tr><td>73</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>74</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;_invoker&nbsp;=&nbsp;$invoker;
+</td></tr>
+<tr><td>75</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>76</td>
+<td class="normal">
+</td></tr>
+<tr><td>77</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>78</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;setInvoker
+</td></tr>
 <tr><td>79</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getInvoker()
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;the&nbsp;last&nbsp;used&nbsp;invoker
 </td></tr>
 <tr><td>80</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>81</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;_invoker;
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;Doctrine_Record&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;record&nbsp;that&nbsp;invoked&nbsp;the&nbsp;last&nbsp;delegated&nbsp;call
 </td></tr>
 <tr><td>82</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>83</td>
-<td class="normal">
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getInvoker()
 </td></tr>
 <tr><td>84</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getPlugin()
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>85</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;_invoker;
 </td></tr>
 <tr><td>86</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;_plugin;
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>87</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>88</td>
 <td class="normal">
 </td></tr>
-<tr><td>89</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;get($name)&nbsp;
+<tr><td>88</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getPlugin()
 </td></tr>
-<tr><td>90</td>
+<tr><td>89</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>91</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Exception(&quot;Templates&nbsp;doesn't&nbsp;support&nbsp;accessors.&quot;);
+<tr><td>90</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;_plugin;
 </td></tr>
-<tr><td>92</td>
+<tr><td>91</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
+<tr><td>92</td>
+<td class="normal">
+</td></tr>
 <tr><td>93</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;set($name,&nbsp;$value)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;get($name)&nbsp;
 </td></tr>
 <tr><td>94</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
@@ -298,33 +298,45 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>97</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setUp()
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;set($name,&nbsp;$value)
 </td></tr>
 <tr><td>98</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>99</td>
-<td class="normal">
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Exception(&quot;Templates&nbsp;doesn't&nbsp;support&nbsp;accessors.&quot;);
 </td></tr>
 <tr><td>100</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>101</td>
-<td class="normal">
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setUp()
 </td></tr>
 <tr><td>102</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setTableDefinition()
-</td></tr>
-<tr><td>103</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>104</td>
+<tr><td>103</td>
 <td class="normal">
 </td></tr>
-<tr><td>105</td>
+<tr><td>104</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
+<tr><td>105</td>
+<td class="normal">
+</td></tr>
 <tr><td>106</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;setTableDefinition()
+</td></tr>
+<tr><td>107</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>108</td>
+<td class="normal">
+</td></tr>
+<tr><td>109</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>110</td>
 <td class="normal">}
 </td></tr>
 </table></body></html>

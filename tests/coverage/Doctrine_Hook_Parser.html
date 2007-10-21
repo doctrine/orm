@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Parser.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Parser.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -97,7 +97,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
@@ -133,74 +133,80 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>42</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>43</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getParams
-</td></tr>
-<tr><td>44</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;the&nbsp;parameters&nbsp;associated&nbsp;with&nbsp;this&nbsp;parser
-</td></tr>
-<tr><td>45</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>46</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array
-</td></tr>
-<tr><td>47</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>48</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getParams()
-</td></tr>
-<tr><td>49</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>50</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;params;
-</td></tr>
-<tr><td>51</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>52</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>53</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;parse
+<tr><td>44</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getParams
 </td></tr>
-<tr><td>54</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Parses&nbsp;given&nbsp;field&nbsp;and&nbsp;field&nbsp;value&nbsp;to&nbsp;DQL&nbsp;condition
+<tr><td>45</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;the&nbsp;parameters&nbsp;associated&nbsp;with&nbsp;this&nbsp;parser
 </td></tr>
-<tr><td>55</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;and&nbsp;parameters.&nbsp;This&nbsp;method&nbsp;should&nbsp;always&nbsp;return
-</td></tr>
-<tr><td>56</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;prepared&nbsp;statement&nbsp;conditions&nbsp;(conditions&nbsp;that&nbsp;use
-</td></tr>
-<tr><td>57</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;placeholders&nbsp;instead&nbsp;of&nbsp;literal&nbsp;values).
-</td></tr>
-<tr><td>58</td>
+<tr><td>46</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>59</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$alias&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;component&nbsp;alias
+<tr><td>47</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array
 </td></tr>
-<tr><td>60</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;field&nbsp;name
-</td></tr>
-<tr><td>61</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$value&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;value&nbsp;of&nbsp;the&nbsp;field
-</td></tr>
-<tr><td>62</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void
-</td></tr>
-<tr><td>63</td>
+<tr><td>48</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
+<tr><td>49</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getParams()
+</td></tr>
+<tr><td>50</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>51</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;params;
+</td></tr>
+<tr><td>52</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>53</td>
+<td class="normal">
+</td></tr>
+<tr><td>54</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>55</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;parse
+</td></tr>
+<tr><td>56</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Parses&nbsp;given&nbsp;field&nbsp;and&nbsp;field&nbsp;value&nbsp;to&nbsp;DQL&nbsp;condition
+</td></tr>
+<tr><td>57</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;and&nbsp;parameters.&nbsp;This&nbsp;method&nbsp;should&nbsp;always&nbsp;return
+</td></tr>
+<tr><td>58</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;prepared&nbsp;statement&nbsp;conditions&nbsp;(conditions&nbsp;that&nbsp;use
+</td></tr>
+<tr><td>59</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;placeholders&nbsp;instead&nbsp;of&nbsp;literal&nbsp;values).
+</td></tr>
+<tr><td>60</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+</td></tr>
+<tr><td>61</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$alias&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;component&nbsp;alias
+</td></tr>
+<tr><td>62</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;field&nbsp;name
+</td></tr>
+<tr><td>63</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$value&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;value&nbsp;of&nbsp;the&nbsp;field
+</td></tr>
 <tr><td>64</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;abstract&nbsp;public&nbsp;function&nbsp;parse($alias,&nbsp;$field,&nbsp;$value);
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void
 </td></tr>
 <tr><td>65</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>66</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;abstract&nbsp;public&nbsp;function&nbsp;parse($alias,&nbsp;$field,&nbsp;$value);
+</td></tr>
+<tr><td>67</td>
 <td class="covered">}</td></tr>
 </table></body></html>

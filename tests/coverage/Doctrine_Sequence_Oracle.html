@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Oracle.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Oracle.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -100,7 +100,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>31</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>32</td>
 <td class="normal">&nbsp;*/
@@ -199,95 +199,101 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>64</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
-</td></tr>
-<tr><td>65</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;autoincrement&nbsp;ID&nbsp;if&nbsp;supported&nbsp;or&nbsp;$id&nbsp;or&nbsp;fetches&nbsp;the&nbsp;current
-</td></tr>
-<tr><td>66</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;ID&nbsp;in&nbsp;a&nbsp;sequence&nbsp;called:&nbsp;$table.(empty($field)&nbsp;?&nbsp;''&nbsp;:&nbsp;'_'.$field)
-</td></tr>
-<tr><td>67</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>68</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
-</td></tr>
-<tr><td>69</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;field&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
-</td></tr>
-<tr><td>70</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>71</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;lastInsertID($table&nbsp;=&nbsp;null,&nbsp;$field&nbsp;=&nbsp;null)
-</td></tr>
-<tr><td>72</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>73</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$seqName&nbsp;=&nbsp;$table&nbsp;.&nbsp;(empty($field)&nbsp;?&nbsp;''&nbsp;:&nbsp;'_'.$field);
-</td></tr>
-<tr><td>74</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sequenceName&nbsp;=&nbsp;&nbsp;$this-&gt;conn-&gt;quoteIdentifier($this-&gt;conn-&gt;formatter-&gt;getSequenceName($seqName),&nbsp;true);
-</td></tr>
-<tr><td>75</td>
 <td class="normal">
 </td></tr>
-<tr><td>76</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchOne('SELECT&nbsp;'&nbsp;.&nbsp;$sequenceName&nbsp;.&nbsp;'.currval');
-</td></tr>
-<tr><td>77</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>78</td>
+<tr><td>65</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>79</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;current&nbsp;id&nbsp;of&nbsp;a&nbsp;sequence
+<tr><td>66</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;autoincrement&nbsp;ID&nbsp;if&nbsp;supported&nbsp;or&nbsp;$id&nbsp;or&nbsp;fetches&nbsp;the&nbsp;current
 </td></tr>
-<tr><td>80</td>
+<tr><td>67</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;ID&nbsp;in&nbsp;a&nbsp;sequence&nbsp;called:&nbsp;$table.(empty($field)&nbsp;?&nbsp;''&nbsp;:&nbsp;'_'.$field)
+</td></tr>
+<tr><td>68</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
+<tr><td>69</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
+</td></tr>
+<tr><td>70</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;string&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;field&nbsp;into&nbsp;which&nbsp;a&nbsp;new&nbsp;row&nbsp;was&nbsp;inserted
+</td></tr>
+<tr><td>71</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>72</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;lastInsertID($table&nbsp;=&nbsp;null,&nbsp;$field&nbsp;=&nbsp;null)
+</td></tr>
+<tr><td>73</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>74</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$seqName&nbsp;=&nbsp;$table&nbsp;.&nbsp;(empty($field)&nbsp;?&nbsp;''&nbsp;:&nbsp;'_'.$field);
+</td></tr>
+<tr><td>75</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sequenceName&nbsp;=&nbsp;&nbsp;$this-&gt;conn-&gt;quoteIdentifier($this-&gt;conn-&gt;formatter-&gt;getSequenceName($seqName),&nbsp;true);
+</td></tr>
+<tr><td>76</td>
+<td class="normal">
+</td></tr>
+<tr><td>77</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchOne('SELECT&nbsp;'&nbsp;.&nbsp;$sequenceName&nbsp;.&nbsp;'.currval');
+</td></tr>
+<tr><td>78</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>79</td>
+<td class="normal">
+</td></tr>
+<tr><td>80</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
 <tr><td>81</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$seqName&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;sequence
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;current&nbsp;id&nbsp;of&nbsp;a&nbsp;sequence
 </td></tr>
 <tr><td>82</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>83</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current&nbsp;id&nbsp;in&nbsp;the&nbsp;given&nbsp;sequence
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$seqName&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;sequence
 </td></tr>
 <tr><td>84</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>85</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;currID($seqName)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;integer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current&nbsp;id&nbsp;in&nbsp;the&nbsp;given&nbsp;sequence
 </td></tr>
 <tr><td>86</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>87</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sequenceName&nbsp;=&nbsp;$this-&gt;conn-&gt;quoteIdentifier($this-&gt;conn-&gt;formatter-&gt;getSequenceName($seqName),&nbsp;true);
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;currID($seqName)
 </td></tr>
 <tr><td>88</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;&nbsp;&nbsp;=&nbsp;'SELECT&nbsp;(last_number-1)&nbsp;FROM&nbsp;user_sequences';
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>89</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;&nbsp;.=&nbsp;'&nbsp;WHERE&nbsp;sequence_name='&nbsp;.&nbsp;$this-&gt;conn-&gt;quote($sequenceName,&nbsp;'text');
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sequenceName&nbsp;=&nbsp;$this-&gt;conn-&gt;quoteIdentifier($this-&gt;conn-&gt;formatter-&gt;getSequenceName($seqName),&nbsp;true);
 </td></tr>
 <tr><td>90</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;&nbsp;.=&nbsp;'&nbsp;OR&nbsp;sequence_name='&nbsp;.&nbsp;$this-&gt;conn-&gt;quote(strtoupper($sequenceName),&nbsp;'text');
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;&nbsp;&nbsp;=&nbsp;'SELECT&nbsp;(last_number-1)&nbsp;FROM&nbsp;user_sequences';
 </td></tr>
 <tr><td>91</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;&nbsp;.=&nbsp;'&nbsp;WHERE&nbsp;sequence_name='&nbsp;.&nbsp;$this-&gt;conn-&gt;quote($sequenceName,&nbsp;'text');
 </td></tr>
 <tr><td>92</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchOne($query);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;&nbsp;.=&nbsp;'&nbsp;OR&nbsp;sequence_name='&nbsp;.&nbsp;$this-&gt;conn-&gt;quote(strtoupper($sequenceName),&nbsp;'text');
 </td></tr>
 <tr><td>93</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">
 </td></tr>
 <tr><td>94</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchOne($query);
+</td></tr>
+<tr><td>95</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>96</td>
 <td class="covered">}</td></tr>
 </table></body></html>

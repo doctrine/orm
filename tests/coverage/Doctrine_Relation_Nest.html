@@ -229,209 +229,212 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>74</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>75</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;fetchRelatedFor(Doctrine_Record&nbsp;$record)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>76</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>77</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$id&nbsp;=&nbsp;$record-&gt;getIncremented();
-</td></tr>
-<tr><td>78</td>
-<td class="normal">
-</td></tr>
-<tr><td>79</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(empty($id)&nbsp;||&nbsp;!&nbsp;$this-&gt;definition['table']-&gt;getAttribute(Doctrine::ATTR_LOAD_REFERENCES))&nbsp;{
-</td></tr>
-<tr><td>80</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;new&nbsp;Doctrine_Collection($this-&gt;getTable());
-</td></tr>
-<tr><td>81</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
-</td></tr>
-<tr><td>82</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q&nbsp;=&nbsp;new&nbsp;Doctrine_Query();
-</td></tr>
-<tr><td>83</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td></tr>
-<tr><td>84</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$c&nbsp;&nbsp;=&nbsp;$this-&gt;getTable()-&gt;getComponentName();
-</td></tr>
-<tr><td>85</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$a&nbsp;&nbsp;=&nbsp;substr($c,&nbsp;0,&nbsp;1);
-</td></tr>
-<tr><td>86</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$c2&nbsp;=&nbsp;$this-&gt;getAssociationTable()-&gt;getComponentName();
-</td></tr>
-<tr><td>87</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$a2&nbsp;=&nbsp;substr($c2,&nbsp;0,&nbsp;1);
-</td></tr>
-<tr><td>88</td>
-<td class="normal">
-</td></tr>
-<tr><td>89</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q-&gt;from($c)
-</td></tr>
-<tr><td>90</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;innerJoin($c&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$c2)
-</td></tr>
-<tr><td>91</td>
-<td class="normal">
-</td></tr>
-<tr><td>92</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub&nbsp;=&nbsp;'SELECT&nbsp;'&nbsp;.&nbsp;$this-&gt;getForeign()&nbsp;
-</td></tr>
-<tr><td>93</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;FROM&nbsp;'&nbsp;&nbsp;.&nbsp;$c2
-</td></tr>
-<tr><td>94</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;WHERE&nbsp;'&nbsp;.&nbsp;$this-&gt;getLocal()&nbsp;
-</td></tr>
-<tr><td>95</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;=&nbsp;?';
-</td></tr>
-<tr><td>96</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>97</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>98</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>99</td>
-<td class="normal">
-</td></tr>
-<tr><td>100</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;fetchRelatedFor(Doctrine_Record&nbsp;$record)
 </td></tr>
-<tr><td>101</td>
+<tr><td>77</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
+<tr><td>78</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$id&nbsp;=&nbsp;$record-&gt;getIncremented();
+</td></tr>
+<tr><td>79</td>
+<td class="normal">
+</td></tr>
+<tr><td>80</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(empty($id)&nbsp;||&nbsp;!&nbsp;$this-&gt;definition['table']-&gt;getAttribute(Doctrine::ATTR_LOAD_REFERENCES))&nbsp;{
+</td></tr>
+<tr><td>81</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;new&nbsp;Doctrine_Collection($this-&gt;getTable());
+</td></tr>
+<tr><td>82</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
+</td></tr>
+<tr><td>83</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q&nbsp;=&nbsp;new&nbsp;Doctrine_Query();
+</td></tr>
+<tr><td>84</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>
+<tr><td>85</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$c&nbsp;&nbsp;=&nbsp;$this-&gt;getTable()-&gt;getComponentName();
+</td></tr>
+<tr><td>86</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$a&nbsp;&nbsp;=&nbsp;substr($c,&nbsp;0,&nbsp;1);
+</td></tr>
+<tr><td>87</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$c2&nbsp;=&nbsp;$this-&gt;getAssociationTable()-&gt;getComponentName();
+</td></tr>
+<tr><td>88</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$a2&nbsp;=&nbsp;substr($c2,&nbsp;0,&nbsp;1);
+</td></tr>
+<tr><td>89</td>
+<td class="normal">
+</td></tr>
+<tr><td>90</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q-&gt;from($c)
+</td></tr>
+<tr><td>91</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;innerJoin($c&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$c2)
+</td></tr>
+<tr><td>92</td>
+<td class="normal">
+</td></tr>
+<tr><td>93</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub&nbsp;=&nbsp;'SELECT&nbsp;'&nbsp;.&nbsp;$this-&gt;getForeign()&nbsp;
+</td></tr>
+<tr><td>94</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;FROM&nbsp;'&nbsp;&nbsp;.&nbsp;$c2
+</td></tr>
+<tr><td>95</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;WHERE&nbsp;'&nbsp;.&nbsp;$this-&gt;getLocal()&nbsp;
+</td></tr>
+<tr><td>96</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;=&nbsp;?';
+</td></tr>
+<tr><td>97</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>98</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>99</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>100</td>
+<td class="normal">
+</td></tr>
+<tr><td>101</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;fetchRelatedFor(Doctrine_Record&nbsp;$record)
+</td></tr>
 <tr><td>102</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$id&nbsp;=&nbsp;$record-&gt;getIncremented();
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>103</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$id&nbsp;=&nbsp;$record-&gt;getIncremented();
 </td></tr>
 <tr><td>104</td>
 <td class="normal">
 </td></tr>
 <tr><td>105</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(empty($id)&nbsp;||&nbsp;!&nbsp;$this-&gt;definition['table']-&gt;getAttribute(Doctrine::ATTR_LOAD_REFERENCES))&nbsp;{
+<td class="normal">
 </td></tr>
 <tr><td>106</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;new&nbsp;Doctrine_Collection($this-&gt;getTable());
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(empty($id)&nbsp;||&nbsp;!&nbsp;$this-&gt;definition['table']-&gt;getAttribute(Doctrine::ATTR_LOAD_REFERENCES))&nbsp;{
 </td></tr>
 <tr><td>107</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;new&nbsp;Doctrine_Collection($this-&gt;getTable());
 </td></tr>
 <tr><td>108</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q&nbsp;=&nbsp;new&nbsp;Doctrine_RawSql();
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
 <tr><td>109</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q&nbsp;=&nbsp;new&nbsp;Doctrine_RawSql();
 </td></tr>
 <tr><td>110</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$assocTable&nbsp;=&nbsp;$this-&gt;getAssociationFactory()-&gt;getTableName();
+<td class="normal">
 </td></tr>
 <tr><td>111</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$tableName&nbsp;&nbsp;=&nbsp;$record-&gt;getTable()-&gt;getTableName();
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$assocTable&nbsp;=&nbsp;$this-&gt;getAssociationFactory()-&gt;getTableName();
 </td></tr>
 <tr><td>112</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$identifier&nbsp;=&nbsp;$record-&gt;getTable()-&gt;getIdentifier();
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$tableName&nbsp;&nbsp;=&nbsp;$record-&gt;getTable()-&gt;getTableName();
 </td></tr>
 <tr><td>113</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$identifier&nbsp;=&nbsp;$record-&gt;getTable()-&gt;getIdentifier();
 </td></tr>
 <tr><td>114</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub&nbsp;=&nbsp;'SELECT&nbsp;'&nbsp;.&nbsp;$this-&gt;getForeign()
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>115</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;FROM&nbsp;'&nbsp;.&nbsp;$assocTable&nbsp;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub&nbsp;=&nbsp;'SELECT&nbsp;'&nbsp;.&nbsp;$this-&gt;getForeign()
 </td></tr>
 <tr><td>116</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;WHERE&nbsp;'&nbsp;.&nbsp;$this-&gt;getLocal()&nbsp;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;FROM&nbsp;'&nbsp;.&nbsp;$assocTable&nbsp;
 </td></tr>
 <tr><td>117</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;=&nbsp;?';
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;WHERE&nbsp;'&nbsp;.&nbsp;$this-&gt;getLocal()&nbsp;
 </td></tr>
 <tr><td>118</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;=&nbsp;?';
 </td></tr>
 <tr><td>119</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$condition[]&nbsp;=&nbsp;$tableName&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$identifier&nbsp;.&nbsp;'&nbsp;IN&nbsp;('&nbsp;.&nbsp;$sub&nbsp;.&nbsp;')';
+<td class="normal">
 </td></tr>
 <tr><td>120</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$joinCondition[]&nbsp;=&nbsp;$tableName&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$identifier&nbsp;.&nbsp;'&nbsp;=&nbsp;'&nbsp;.&nbsp;$assocTable&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$this-&gt;getForeign();
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$condition[]&nbsp;=&nbsp;$tableName&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$identifier&nbsp;.&nbsp;'&nbsp;IN&nbsp;('&nbsp;.&nbsp;$sub&nbsp;.&nbsp;')';
 </td></tr>
 <tr><td>121</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$joinCondition[]&nbsp;=&nbsp;$tableName&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$identifier&nbsp;.&nbsp;'&nbsp;=&nbsp;'&nbsp;.&nbsp;$assocTable&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$this-&gt;getForeign();
 </td></tr>
 <tr><td>122</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($this-&gt;definition['equal'])&nbsp;{
+<td class="normal">
 </td></tr>
 <tr><td>123</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub2&nbsp;&nbsp;&nbsp;=&nbsp;'SELECT&nbsp;'&nbsp;.&nbsp;$this-&gt;getLocal()
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($this-&gt;definition['equal'])&nbsp;{
 </td></tr>
 <tr><td>124</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;FROM&nbsp;'&nbsp;&nbsp;.&nbsp;$assocTable
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub2&nbsp;&nbsp;&nbsp;=&nbsp;'SELECT&nbsp;'&nbsp;.&nbsp;$this-&gt;getLocal()
 </td></tr>
 <tr><td>125</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;WHERE&nbsp;'&nbsp;.&nbsp;$this-&gt;getForeign()
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;FROM&nbsp;'&nbsp;&nbsp;.&nbsp;$assocTable
 </td></tr>
 <tr><td>126</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;=&nbsp;?';
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;WHERE&nbsp;'&nbsp;.&nbsp;$this-&gt;getForeign()
 </td></tr>
 <tr><td>127</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'&nbsp;=&nbsp;?';
 </td></tr>
 <tr><td>128</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$condition[]&nbsp;=&nbsp;$tableName&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$identifier&nbsp;.&nbsp;'&nbsp;IN&nbsp;('&nbsp;.&nbsp;$sub2&nbsp;.&nbsp;')';
+<td class="normal">
 </td></tr>
 <tr><td>129</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$joinCondition[]&nbsp;=&nbsp;$tableName&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$identifier&nbsp;.&nbsp;'&nbsp;=&nbsp;'&nbsp;.&nbsp;$assocTable&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$this-&gt;getLocal();
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$condition[]&nbsp;=&nbsp;$tableName&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$identifier&nbsp;.&nbsp;'&nbsp;IN&nbsp;('&nbsp;.&nbsp;$sub2&nbsp;.&nbsp;')';
 </td></tr>
 <tr><td>130</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$joinCondition[]&nbsp;=&nbsp;$tableName&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$identifier&nbsp;.&nbsp;'&nbsp;=&nbsp;'&nbsp;.&nbsp;$assocTable&nbsp;.&nbsp;'.'&nbsp;.&nbsp;$this-&gt;getLocal();
 </td></tr>
 <tr><td>131</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q-&gt;select('{'.$tableName.'.*},&nbsp;{'.$assocTable.'.*}')
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>132</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;from($tableName&nbsp;.&nbsp;'&nbsp;INNER&nbsp;JOIN&nbsp;'&nbsp;.&nbsp;$assocTable&nbsp;.&nbsp;'&nbsp;ON&nbsp;'&nbsp;.&nbsp;implode('&nbsp;OR&nbsp;',&nbsp;$joinCondition))
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q-&gt;select('{'.$tableName.'.*},&nbsp;{'.$assocTable.'.*}')
 </td></tr>
 <tr><td>133</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;where(implode('&nbsp;OR&nbsp;',&nbsp;$condition));
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;from($tableName&nbsp;.&nbsp;'&nbsp;INNER&nbsp;JOIN&nbsp;'&nbsp;.&nbsp;$assocTable&nbsp;.&nbsp;'&nbsp;ON&nbsp;'&nbsp;.&nbsp;implode('&nbsp;OR&nbsp;',&nbsp;$joinCondition))
 </td></tr>
 <tr><td>134</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q-&gt;addComponent($tableName,&nbsp;&nbsp;$record-&gt;getTable()-&gt;getComponentName());
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;where(implode('&nbsp;OR&nbsp;',&nbsp;$condition));
 </td></tr>
 <tr><td>135</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q-&gt;addComponent($assocTable,&nbsp;$record-&gt;getTable()-&gt;getComponentName().&nbsp;'.'&nbsp;.&nbsp;$this-&gt;getAssociationFactory()-&gt;getComponentName());
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q-&gt;addComponent($tableName,&nbsp;&nbsp;$record-&gt;getTable()-&gt;getComponentName());
 </td></tr>
 <tr><td>136</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q-&gt;addComponent($assocTable,&nbsp;$record-&gt;getTable()-&gt;getComponentName().&nbsp;'.'&nbsp;.&nbsp;$this-&gt;getAssociationFactory()-&gt;getComponentName());
 </td></tr>
 <tr><td>137</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$params&nbsp;=&nbsp;($this-&gt;definition['equal'])&nbsp;?&nbsp;array($id,&nbsp;$id)&nbsp;:&nbsp;array($id);
-</td></tr>
-<tr><td>138</td>
 <td class="normal">
 </td></tr>
+<tr><td>138</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$params&nbsp;=&nbsp;($this-&gt;definition['equal'])&nbsp;?&nbsp;array($id,&nbsp;$id)&nbsp;:&nbsp;array($id);
+</td></tr>
 <tr><td>139</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$q-&gt;execute($params);
+<td class="normal">
 </td></tr>
 <tr><td>140</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$q-&gt;execute($params);
 </td></tr>
 <tr><td>141</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>142</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>143</td>
 <td class="covered">}</td></tr>
 </table></body></html>

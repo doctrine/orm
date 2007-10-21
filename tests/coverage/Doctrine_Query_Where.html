@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Where.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Where.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -97,7 +97,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
@@ -472,68 +472,71 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>155</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>156</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;parses&nbsp;an&nbsp;EXISTS&nbsp;expression
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>157</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;parses&nbsp;an&nbsp;EXISTS&nbsp;expression
 </td></tr>
 <tr><td>158</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$where&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;query&nbsp;where&nbsp;part&nbsp;to&nbsp;be&nbsp;parsed
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>159</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;boolean&nbsp;$negation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;or&nbsp;not&nbsp;to&nbsp;use&nbsp;the&nbsp;NOT&nbsp;keyword
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$where&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;query&nbsp;where&nbsp;part&nbsp;to&nbsp;be&nbsp;parsed
 </td></tr>
 <tr><td>160</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;boolean&nbsp;$negation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;or&nbsp;not&nbsp;to&nbsp;use&nbsp;the&nbsp;NOT&nbsp;keyword
 </td></tr>
 <tr><td>161</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string
 </td></tr>
 <tr><td>162</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;parseExists($where,&nbsp;$negation)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>163</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;parseExists($where,&nbsp;$negation)
 </td></tr>
 <tr><td>164</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$operator&nbsp;=&nbsp;($negation)&nbsp;?&nbsp;'EXISTS'&nbsp;:&nbsp;'NOT&nbsp;EXISTS';
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>165</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$operator&nbsp;=&nbsp;($negation)&nbsp;?&nbsp;'EXISTS'&nbsp;:&nbsp;'NOT&nbsp;EXISTS';
 </td></tr>
 <tr><td>166</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$pos&nbsp;=&nbsp;strpos($where,&nbsp;'(');
+<td class="normal">
 </td></tr>
 <tr><td>167</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$pos&nbsp;=&nbsp;strpos($where,&nbsp;'(');
 </td></tr>
 <tr><td>168</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($pos&nbsp;==&nbsp;false)&nbsp;{
+<td class="normal">
 </td></tr>
 <tr><td>169</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Query_Exception('Unknown&nbsp;expression,&nbsp;expected&nbsp;a&nbsp;subquery&nbsp;with&nbsp;()&nbsp;-marks');
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($pos&nbsp;==&nbsp;false)&nbsp;{
 </td></tr>
 <tr><td>170</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Query_Exception('Unknown&nbsp;expression,&nbsp;expected&nbsp;a&nbsp;subquery&nbsp;with&nbsp;()&nbsp;-marks');
 </td></tr>
 <tr><td>171</td>
-<td class="normal">
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>172</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub&nbsp;=&nbsp;Doctrine_Tokenizer::bracketTrim(substr($where,&nbsp;$pos));
-</td></tr>
-<tr><td>173</td>
 <td class="normal">
 </td></tr>
+<tr><td>173</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub&nbsp;=&nbsp;Doctrine_Tokenizer::bracketTrim(substr($where,&nbsp;$pos));
+</td></tr>
 <tr><td>174</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$operator&nbsp;.&nbsp;'&nbsp;('&nbsp;.&nbsp;$this-&gt;query-&gt;createSubquery()-&gt;parseQuery($sub,&nbsp;false)-&gt;getQuery()&nbsp;.&nbsp;')';
+<td class="normal">
 </td></tr>
 <tr><td>175</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$operator&nbsp;.&nbsp;'&nbsp;('&nbsp;.&nbsp;$this-&gt;query-&gt;createSubquery()-&gt;parseQuery($sub,&nbsp;false)-&gt;getQuery()&nbsp;.&nbsp;')';
 </td></tr>
 <tr><td>176</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>177</td>
 <td class="covered">}</td></tr>
 </table></body></html>

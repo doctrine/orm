@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Firebird.php&nbsp;2702&nbsp;2007-10-03&nbsp;21:43:22Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Firebird.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -94,7 +94,7 @@
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lukas&nbsp;Smith&nbsp;&lt;smith@pooteeweet.org&gt;&nbsp;(PEAR&nbsp;MDB2&nbsp;library)
 </td></tr>
 <tr><td>29</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2702&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>30</td>
 <td class="normal">&nbsp;*&nbsp;@link&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;www.phpdoctrine.com
@@ -145,233 +145,251 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>46</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">
 </td></tr>
 <tr><td>47</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;list&nbsp;all&nbsp;fields&nbsp;in&nbsp;a&nbsp;tables&nbsp;in&nbsp;the&nbsp;current&nbsp;database
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>48</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;list&nbsp;all&nbsp;fields&nbsp;in&nbsp;a&nbsp;tables&nbsp;in&nbsp;the&nbsp;current&nbsp;database
 </td></tr>
 <tr><td>49</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$table&nbsp;name&nbsp;of&nbsp;table&nbsp;that&nbsp;should&nbsp;be&nbsp;used&nbsp;in&nbsp;method
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>50</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;mixed&nbsp;data&nbsp;array&nbsp;on&nbsp;success,&nbsp;a&nbsp;MDB2&nbsp;error&nbsp;on&nbsp;failure
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$table&nbsp;name&nbsp;of&nbsp;table&nbsp;that&nbsp;should&nbsp;be&nbsp;used&nbsp;in&nbsp;method
 </td></tr>
 <tr><td>51</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@access&nbsp;public
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;mixed&nbsp;data&nbsp;array&nbsp;on&nbsp;success,&nbsp;a&nbsp;MDB2&nbsp;error&nbsp;on&nbsp;failure
 </td></tr>
 <tr><td>52</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@access&nbsp;public
 </td></tr>
 <tr><td>53</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listTableFields($table)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>54</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listTableFields($table)
 </td></tr>
 <tr><td>55</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table&nbsp;=&nbsp;$this-&gt;conn-&gt;quote(strtoupper($table),&nbsp;'text');
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>56</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;RDB$FIELD_NAME&nbsp;FROM&nbsp;RDB$RELATION_FIELDS&nbsp;WHERE&nbsp;UPPER(RDB$RELATION_NAME)&nbsp;=&nbsp;'&nbsp;.&nbsp;$table;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table&nbsp;=&nbsp;$this-&gt;conn-&gt;quote(strtoupper($table),&nbsp;'text');
 </td></tr>
 <tr><td>57</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;RDB$FIELD_NAME&nbsp;FROM&nbsp;RDB$RELATION_FIELDS&nbsp;WHERE&nbsp;UPPER(RDB$RELATION_NAME)&nbsp;=&nbsp;'&nbsp;.&nbsp;$table;
 </td></tr>
 <tr><td>58</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn($query);
+<td class="normal">
 </td></tr>
 <tr><td>59</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn($query);
 </td></tr>
 <tr><td>60</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>61</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;list&nbsp;all&nbsp;users
+<td class="normal">
 </td></tr>
 <tr><td>62</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>63</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;array&nbsp;containing&nbsp;all&nbsp;database&nbsp;users
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;list&nbsp;all&nbsp;users
 </td></tr>
 <tr><td>64</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>65</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listUsers()
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;array&nbsp;containing&nbsp;all&nbsp;database&nbsp;users
 </td></tr>
 <tr><td>66</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>67</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn('SELECT&nbsp;DISTINCT&nbsp;RDB$USER&nbsp;FROM&nbsp;RDB$USER_PRIVILEGES');
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listUsers()
 </td></tr>
 <tr><td>68</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>69</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn('SELECT&nbsp;DISTINCT&nbsp;RDB$USER&nbsp;FROM&nbsp;RDB$USER_PRIVILEGES');
 </td></tr>
 <tr><td>70</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;list&nbsp;the&nbsp;views&nbsp;in&nbsp;the&nbsp;database
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>71</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="normal">
 </td></tr>
 <tr><td>72</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;array&nbsp;containing&nbsp;all&nbsp;database&nbsp;views
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>73</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;list&nbsp;the&nbsp;views&nbsp;in&nbsp;the&nbsp;database
 </td></tr>
 <tr><td>74</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listViews($database&nbsp;=&nbsp;null)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>75</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;array&nbsp;containing&nbsp;all&nbsp;database&nbsp;views
 </td></tr>
 <tr><td>76</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn('SELECT&nbsp;DISTINCT&nbsp;RDB$VIEW_NAME&nbsp;FROM&nbsp;RDB$VIEW_RELATIONS');
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>77</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listViews($database&nbsp;=&nbsp;null)
 </td></tr>
 <tr><td>78</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>79</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;list&nbsp;the&nbsp;views&nbsp;in&nbsp;the&nbsp;database&nbsp;that&nbsp;reference&nbsp;a&nbsp;given&nbsp;table
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn('SELECT&nbsp;DISTINCT&nbsp;RDB$VIEW_NAME&nbsp;FROM&nbsp;RDB$VIEW_RELATIONS');
 </td></tr>
 <tr><td>80</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>81</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$table&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;table&nbsp;for&nbsp;which&nbsp;all&nbsp;references&nbsp;views&nbsp;should&nbsp;be&nbsp;found
+<td class="normal">
 </td></tr>
 <tr><td>82</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;array&nbsp;containing&nbsp;all&nbsp;views&nbsp;for&nbsp;given&nbsp;table
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>83</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;list&nbsp;the&nbsp;views&nbsp;in&nbsp;the&nbsp;database&nbsp;that&nbsp;reference&nbsp;a&nbsp;given&nbsp;table
 </td></tr>
 <tr><td>84</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listTableViews($table)
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
 <tr><td>85</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$table&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;table&nbsp;for&nbsp;which&nbsp;all&nbsp;references&nbsp;views&nbsp;should&nbsp;be&nbsp;found
 </td></tr>
 <tr><td>86</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;&nbsp;=&nbsp;'SELECT&nbsp;DISTINCT&nbsp;RDB$VIEW_NAME&nbsp;FROM&nbsp;RDB$VIEW_RELATIONS';
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;array&nbsp;containing&nbsp;all&nbsp;views&nbsp;for&nbsp;given&nbsp;table
 </td></tr>
 <tr><td>87</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table&nbsp;&nbsp;=&nbsp;$this-&gt;conn-&gt;quote(strtoupper($table),&nbsp;'text');
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>88</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;.=&nbsp;'&nbsp;WHERE&nbsp;UPPER(RDB$RELATION_NAME)&nbsp;=&nbsp;'&nbsp;.&nbsp;$table;
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listTableViews($table)
 </td></tr>
 <tr><td>89</td>
-<td class="normal">
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>90</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn($query);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;&nbsp;=&nbsp;'SELECT&nbsp;DISTINCT&nbsp;RDB$VIEW_NAME&nbsp;FROM&nbsp;RDB$VIEW_RELATIONS';
 </td></tr>
 <tr><td>91</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table&nbsp;&nbsp;=&nbsp;$this-&gt;conn-&gt;quote(strtoupper($table),&nbsp;'text');
 </td></tr>
 <tr><td>92</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;.=&nbsp;'&nbsp;WHERE&nbsp;UPPER(RDB$RELATION_NAME)&nbsp;=&nbsp;'&nbsp;.&nbsp;$table;
 </td></tr>
 <tr><td>93</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;list&nbsp;all&nbsp;functions&nbsp;in&nbsp;the&nbsp;current&nbsp;database
+<td class="normal">
 </td></tr>
 <tr><td>94</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn($query);
 </td></tr>
 <tr><td>95</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;array&nbsp;containing&nbsp;all&nbsp;availible&nbsp;functions
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>96</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">
 </td></tr>
 <tr><td>97</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listFunctions()
-</td></tr>
-<tr><td>98</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>99</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;RDB$FUNCTION_NAME&nbsp;FROM&nbsp;RDB$FUNCTIONS&nbsp;WHERE&nbsp;RDB$SYSTEM_FLAG&nbsp;IS&nbsp;NULL';
-</td></tr>
-<tr><td>100</td>
-<td class="normal">
-</td></tr>
-<tr><td>101</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn($query);
-</td></tr>
-<tr><td>102</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>103</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>104</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;function&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;get&nbsp;all&nbsp;triggers&nbsp;of&nbsp;the
+<tr><td>98</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;list&nbsp;all&nbsp;functions&nbsp;in&nbsp;the&nbsp;current&nbsp;database
 </td></tr>
-<tr><td>105</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;current&nbsp;database&nbsp;($this-&gt;conn-&gt;getDatabase())
-</td></tr>
-<tr><td>106</td>
+<tr><td>99</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>107</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;string&nbsp;$table&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;from&nbsp;the
+<tr><td>100</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;array&nbsp;containing&nbsp;all&nbsp;availible&nbsp;functions
 </td></tr>
-<tr><td>108</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;previous&nbsp;database&nbsp;to&nbsp;query&nbsp;against.
-</td></tr>
-<tr><td>109</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;array&nbsp;containing&nbsp;all&nbsp;triggers&nbsp;for&nbsp;given&nbsp;table
-</td></tr>
-<tr><td>110</td>
+<tr><td>101</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>111</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listTableTriggers($table)
+<tr><td>102</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listFunctions()
 </td></tr>
-<tr><td>112</td>
+<tr><td>103</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>113</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;RDB$TRIGGER_NAME&nbsp;FROM&nbsp;RDB$TRIGGERS&nbsp;WHERE&nbsp;RDB$SYSTEM_FLAG&nbsp;IS&nbsp;NULL&nbsp;OR&nbsp;RDB$SYSTEM_FLAG&nbsp;=&nbsp;0';
+<tr><td>104</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;RDB$FUNCTION_NAME&nbsp;FROM&nbsp;RDB$FUNCTIONS&nbsp;WHERE&nbsp;RDB$SYSTEM_FLAG&nbsp;IS&nbsp;NULL';
 </td></tr>
-<tr><td>114</td>
+<tr><td>105</td>
 <td class="normal">
 </td></tr>
-<tr><td>115</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;is_null($table))&nbsp;{
-</td></tr>
-<tr><td>116</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table&nbsp;=&nbsp;$this-&gt;conn-&gt;quote(strtoupper($table),&nbsp;'text');
-</td></tr>
-<tr><td>117</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;.=&nbsp;'&nbsp;WHERE&nbsp;UPPER(RDB$RELATION_NAME)&nbsp;=&nbsp;'&nbsp;.&nbsp;$table;
-</td></tr>
-<tr><td>118</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>119</td>
-<td class="normal">
-</td></tr>
-<tr><td>120</td>
+<tr><td>106</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn($query);
 </td></tr>
-<tr><td>121</td>
+<tr><td>107</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
+<tr><td>108</td>
+<td class="normal">
+</td></tr>
+<tr><td>109</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>110</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;function&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;get&nbsp;all&nbsp;triggers&nbsp;of&nbsp;the
+</td></tr>
+<tr><td>111</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;current&nbsp;database&nbsp;($this-&gt;conn-&gt;getDatabase())
+</td></tr>
+<tr><td>112</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+</td></tr>
+<tr><td>113</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;string&nbsp;$table&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;from&nbsp;the
+</td></tr>
+<tr><td>114</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;previous&nbsp;database&nbsp;to&nbsp;query&nbsp;against.
+</td></tr>
+<tr><td>115</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;array&nbsp;containing&nbsp;all&nbsp;triggers&nbsp;for&nbsp;given&nbsp;table
+</td></tr>
+<tr><td>116</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>117</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;listTableTriggers($table)
+</td></tr>
+<tr><td>118</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>119</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;=&nbsp;'SELECT&nbsp;RDB$TRIGGER_NAME&nbsp;FROM&nbsp;RDB$TRIGGERS&nbsp;WHERE&nbsp;RDB$SYSTEM_FLAG&nbsp;IS&nbsp;NULL&nbsp;OR&nbsp;RDB$SYSTEM_FLAG&nbsp;=&nbsp;0';
+</td></tr>
+<tr><td>120</td>
+<td class="normal">
+</td></tr>
+<tr><td>121</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;is_null($table))&nbsp;{
+</td></tr>
 <tr><td>122</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$table&nbsp;=&nbsp;$this-&gt;conn-&gt;quote(strtoupper($table),&nbsp;'text');
+</td></tr>
+<tr><td>123</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query&nbsp;.=&nbsp;'&nbsp;WHERE&nbsp;UPPER(RDB$RELATION_NAME)&nbsp;=&nbsp;'&nbsp;.&nbsp;$table;
+</td></tr>
+<tr><td>124</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>125</td>
+<td class="normal">
+</td></tr>
+<tr><td>126</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$this-&gt;conn-&gt;fetchColumn($query);
+</td></tr>
+<tr><td>127</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>128</td>
 <td class="covered">}</td></tr>
 </table></body></html>
