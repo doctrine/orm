@@ -96,6 +96,92 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
     }
 
     /**
+     * generates the sql for altering an existing table on postgresql
+     *
+     * @param string $name          name of the table that is intended to be changed.
+     * @param array $changes        associative array that contains the details of each type      *
+     * @param boolean $check        indicates whether the function should just check if the DBMS driver
+     *                              can perform the requested table alterations if the value is true or
+     *                              actually perform them otherwise.
+     * @see Doctrine_Export::alterTable()
+     * @return array
+     */
+    public function alterTableSql($name, array $changes, $check = false)
+    {
+        foreach ($changes as $changeName => $change) {
+            switch ($changeName) {
+                case 'add':
+                case 'remove':
+                case 'change':
+                case 'name':
+                case 'rename':
+                    break;
+                default:
+                    throw new Doctrine_Export_Exception('change type "' . $changeName . '\" not yet supported');
+            }
+        }
+
+        if ($check) {
+            return true;
+        }
+        
+        $sql = array();
+
+        if (isset($changes['add']) && is_array($changes['add'])) {
+            foreach ($changes['add'] as $fieldName => $field) {
+                $query = 'ADD ' . $this->getDeclaration($fieldName, $field);
+                $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
+            }
+        }
+
+        if (isset($changes['remove']) && is_array($changes['remove'])) {
+            foreach ($changes['remove'] as $fieldName => $field) {
+                $fieldName = $this->conn->quoteIdentifier($fieldName, true);
+                $query = 'DROP ' . $fieldName;
+                $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
+            }
+        }
+
+        if (isset($changes['change']) && is_array($changes['change'])) {
+            foreach ($changes['change'] as $fieldName => $field) {
+                $fieldName = $this->conn->quoteIdentifier($fieldName, true);
+                if (isset($field['type'])) {
+                    $serverInfo = $this->conn->getServerVersion();
+
+                    if (is_array($serverInfo) && $serverInfo['major'] < 8) {
+                        throw new Doctrine_Export_Exception('changing column type for "'.$field['type'].'\" requires PostgreSQL 8.0 or above');
+                    }
+                    $query = 'ALTER ' . $fieldName . ' TYPE ' . $this->conn->datatype->getTypeDeclaration($field['definition']);
+                    $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
+                }
+                if (array_key_exists('default', $field)) {
+                    $query = 'ALTER ' . $fieldName . ' SET DEFAULT ' . $this->conn->quote($field['definition']['default'], $field['definition']['type']);
+                    $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
+                }
+                if ( ! empty($field['notnull'])) {
+                    $query = 'ALTER ' . $fieldName . ' ' . ($field['definition']['notnull'] ? 'SET' : 'DROP') . ' NOT NULL';
+                    $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
+                }
+            }
+        }
+
+        if (isset($changes['rename']) && is_array($changes['rename'])) {
+            foreach ($changes['rename'] as $fieldName => $field) {
+                $fieldName = $this->conn->quoteIdentifier($fieldName, true);
+                $sql[] = 'ALTER TABLE ' . $name . ' RENAME COLUMN ' . $fieldName . ' TO ' . $this->conn->quoteIdentifier($field['name'], true);
+            }
+        }
+
+        $name = $this->conn->quoteIdentifier($name, true);
+        if (isset($changes['name'])) {
+            $changeName = $this->conn->quoteIdentifier($changes['name'], true);
+            $sql[] = 'ALTER TABLE ' . $name . ' RENAME TO ' . $changeName;
+        }
+        
+        return $sql;
+    }
+    
+    /**
      * alter an existing table
      *
      * @param string $name         name of the table that is intended to be changed.
@@ -186,73 +272,11 @@ class Doctrine_Export_Pgsql extends Doctrine_Export
      */
     public function alterTable($name, array $changes, $check = false)
     {
-        foreach ($changes as $changeName => $change) {
-            switch ($changeName) {
-                case 'add':
-                case 'remove':
-                case 'change':
-                case 'name':
-                case 'rename':
-                    break;
-                default:
-                    throw new Doctrine_Export_Exception('change type "' . $changeName . '\" not yet supported');
-            }
+        $sql = $this->alterTableSql($name, $changes, $check);
+        foreach ($sql as $query) {
+            $this->conn->exec($query);
         }
-
-        if ($check) {
-            return true;
-        }
-
-        if (isset($changes['add']) && is_array($changes['add'])) {
-            foreach ($changes['add'] as $fieldName => $field) {
-                $query = 'ADD ' . $this->getDeclaration($fieldName, $field);
-                $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
-            }
-        }
-
-        if (isset($changes['remove']) && is_array($changes['remove'])) {
-            foreach ($changes['remove'] as $fieldName => $field) {
-                $fieldName = $this->conn->quoteIdentifier($fieldName, true);
-                $query = 'DROP ' . $fieldName;
-                $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
-            }
-        }
-
-        if (isset($changes['change']) && is_array($changes['change'])) {
-            foreach ($changes['change'] as $fieldName => $field) {
-                $fieldName = $this->conn->quoteIdentifier($fieldName, true);
-                if (isset($field['type'])) {
-                    $serverInfo = $this->conn->getServerVersion();
-
-                    if (is_array($serverInfo) && $serverInfo['major'] < 8) {
-                        throw new Doctrine_Export_Exception('changing column type for "'.$field['type'].'\" requires PostgreSQL 8.0 or above');
-                    }
-                    $query = 'ALTER ' . $fieldName . ' TYPE ' . $this->conn->datatype->getTypeDeclaration($field['definition']);
-                    $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);;
-                }
-                if (array_key_exists('default', $field)) {
-                    $query = 'ALTER ' . $fieldName . ' SET DEFAULT ' . $this->conn->quote($field['definition']['default'], $field['definition']['type']);
-                    $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
-                }
-                if ( ! empty($field['notnull'])) {
-                    $query = 'ALTER ' . $fieldName . ' ' . ($field['definition']['notnull'] ? 'SET' : 'DROP') . ' NOT NULL';
-                    $this->conn->exec('ALTER TABLE ' . $name . ' ' . $query);
-                }
-            }
-        }
-
-        if (isset($changes['rename']) && is_array($changes['rename'])) {
-            foreach ($changes['rename'] as $fieldName => $field) {
-                $fieldName = $this->conn->quoteIdentifier($fieldName, true);
-                $this->conn->exec('ALTER TABLE ' . $name . ' RENAME COLUMN ' . $fieldName . ' TO ' . $this->conn->quoteIdentifier($field['name'], true));
-            }
-        }
-
-        $name = $this->conn->quoteIdentifier($name, true);
-        if (isset($changes['name'])) {
-            $changeName = $this->conn->quoteIdentifier($changes['name'], true);
-            $this->conn->exec('ALTER TABLE ' . $name . ' RENAME TO ' . $changeName);
-        }
+        return true;    
     }
 
     /**
