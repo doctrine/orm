@@ -408,9 +408,9 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $default = $this->_table->getDefaultValueOf($column);
 
             if ($default === null) {
-                $default = self::$_null;
+                continue;
             }
-
+            
             if ($value === self::$_null || $overwrite) {
                 $this->_data[$column] = $default;
                 $this->_modified[]    = $column;
