@@ -1029,7 +1029,8 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         $rootMap   = reset($this->_aliasMap);
         $rootAlias = key($this->_aliasMap);
         $componentName = $rootMap['table']->getComponentName();
-
+        $isSimpleQuery = count($this->_aliasMap) <= 1;
+        
         if ($hydrationMode === null) {
             $hydrationMode = $this->_hydrationMode;
         }
@@ -1107,7 +1108,8 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
             $oneToOne = false;
 
-            $index = $driver->search($element, $array);
+            $index = $isSimpleQuery ? false : $driver->search($element, $array);
+            
             if ($index === false) {
                 $event->set('data', $element);
                 $listeners[$componentName]->postHydrate($event);
@@ -1157,7 +1159,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
                         // append element
                         if (isset($identifiable[$alias])) {
-                            $index = $driver->search($element, $prev[$parent][$componentAlias]);
+                            $index = $isSimpleQuery ? false : $driver->search($element, $prev[$parent][$componentAlias]);
 
                             if ($index === false) {
                                 $event->set('data', $element);

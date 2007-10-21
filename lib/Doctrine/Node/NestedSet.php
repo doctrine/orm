@@ -531,7 +531,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
                 // Relocate descendants of the node
                 $diff = $this->getLeftValue() - $oldLft;
                 $componentName = $this->_tree->getBaseComponent();
-                $rootColName = $this->record->getTable()->getTree()->getAttribute('rootColumnName');
+                $rootColName = $this->_tree->getAttribute('rootColumnName');
 
                 // Update lft/rgt/root/level for all descendants
                 $q = new Doctrine_Query($conn);
@@ -628,7 +628,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     public function makeRoot($newRootId)
     {
         // TODO: throw exception instead?
-        if ($this->getLeftValue() == 1 || !$this->record->getTable()->getTree()->getAttribute('hasManyRoots')) {
+        if ($this->getLeftValue() == 1 || ! $this->_tree->getAttribute('hasManyRoots')) {
             return false;
         }
         
@@ -656,7 +656,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
             $diff = 1 - $oldLft;
             $newRoot = $newRootId;
             $componentName = $this->_tree->getBaseComponent();
-            $rootColName = $this->record->getTable()->getTree()->getAttribute('rootColumnName');
+            $rootColName = $this->_tree->getAttribute('rootColumnName');
             $q = new Doctrine_Query($conn);
             $q = $q->update($componentName)
                     ->set($componentName . '.lft', 'lft + ?', $diff)
@@ -745,7 +745,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
     /**
      * determines if node is valid
      *
-     * @return bool            
+     * @return bool
      */
     public function isValidNode($record = null)
     {
@@ -773,7 +773,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
 
         $q = $q->addWhere("$baseAlias.lft >= ? AND $baseAlias.rgt <= ?", array($this->getLeftValue(), $this->getRightValue()));
 
-        $q = $this->record->getTable()->getTree()->returnQueryWithRootId($q, $oldRoot);
+        $q = $this->_tree->returnQueryWithRootId($q, $oldRoot);
         
         $coll = $q->execute();
 
@@ -859,7 +859,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
                                 ->set($componentName . '.lft', 'lft + ?')
                                 ->where($componentName . '.lft >= ?', array($delta, $first));
         
-        $qLeft = $this->record->getTable()->getTree()->returnQueryWithRootId($qLeft, $rootId);
+        $qLeft = $this->_tree->returnQueryWithRootId($qLeft, $rootId);
         
         $resultLeft = $qLeft->execute();
         
@@ -868,7 +868,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
                                 ->set($componentName . '.rgt', 'rgt + ?')
                                 ->where($componentName . '.rgt >= ?', array($delta, $first));
 
-        $qRight = $this->record->getTable()->getTree()->returnQueryWithRootId($qRight, $rootId);
+        $qRight = $this->_tree->returnQueryWithRootId($qRight, $rootId);
 
         $resultRight = $qRight->execute();
     }
@@ -892,7 +892,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
                                 ->set($componentName . '.lft', 'lft + ?')
                                 ->where($componentName . '.lft >= ? AND ' . $componentName . '.lft <= ?', array($delta, $first, $last));
         
-        $qLeft = $this->record->getTable()->getTree()->returnQueryWithRootId($qLeft, $rootId);
+        $qLeft = $this->_tree->returnQueryWithRootId($qLeft, $rootId);
 
         $resultLeft = $qLeft->execute();
         
@@ -901,7 +901,7 @@ class Doctrine_Node_NestedSet extends Doctrine_Node implements Doctrine_Node_Int
                                 ->set($componentName . '.rgt', 'rgt + ?')
                                 ->where($componentName . '.rgt >= ? AND ' . $componentName . '.rgt <= ?', array($delta, $first, $last));
 
-        $qRight = $this->record->getTable()->getTree()->returnQueryWithRootId($qRight, $rootId);
+        $qRight = $this->_tree->returnQueryWithRootId($qRight, $rootId);
 
         $resultRight = $qRight->execute();
     }
