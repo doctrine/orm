@@ -882,7 +882,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
             if (is_integer($stmt)) {
                 return $stmt;
             }
-
+            
             $array = $this->parseData2($stmt, $hydrationMode);
         }
         return $array;
@@ -1024,7 +1024,10 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
      */
     public function parseData2($stmt, $hydrationMode)
     {
-
+        if ($hydrationMode == Doctrine::HYDRATE_NONE) {
+            return $stmt->fetchAll(PDO::FETCH_NUM);
+        }
+        
         $cache = array();
         $rootMap   = reset($this->_aliasMap);
         $rootAlias = key($this->_aliasMap);

@@ -240,6 +240,7 @@ class Doctrine_Record_TestCase extends Doctrine_UnitTestCase
         $this->connection->clear();
 
         $user = $this->connection->getTable('User')->find(5);
+
         $this->assertEqual($user->name, null);
 
     }

@@ -359,6 +359,11 @@ final class Doctrine
      * HYDRATE_ARRAY
      */
     const HYDRATE_ARRAY             = 3;
+    
+    /**
+     * HYDRATE_NONE
+     */
+    const HYDRATE_NONE              = 4;
 
     /**
      * VALIDATION CONSTANTS
