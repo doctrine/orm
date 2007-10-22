@@ -527,7 +527,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
             $set = array();
             foreach ($array as $name => $value) {
                 if ($value instanceof Doctrine_Expression) {
-                    $set[] = $value->getSql();
+                    $set[] = $name . ' = ' . $value->getSql();
                     unset($array[$name]);
                 } else {
 
