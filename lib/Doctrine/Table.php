@@ -334,7 +334,13 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         }
     }
 
-    public function getMethodOwner($method) 
+    public function isIdentifier($identifier)
+    {
+        return ($identifier === $this->_identifier || 
+                in_array($identifier, (array) $this->_identifier));
+    }
+
+    public function getMethodOwner($method)
     {
         return (isset($this->_invokedMethods[$method])) ?
                       $this->_invokedMethods[$method] : false;
@@ -1372,7 +1378,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         if ($value === self::$_null) {
             return self::$_null;
-        } else if ($value === null) {
+        } elseif ($value === null) {
             return null;
         } else {
             $type = $this->getTypeOf($field);
