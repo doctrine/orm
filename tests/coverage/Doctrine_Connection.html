@@ -538,10 +538,10 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;($adapter&nbsp;instanceof&nbsp;PDO)&nbsp;&amp;&amp;&nbsp;!&nbsp;in_array('Doctrine_Adapter_Interface',&nbsp;class_implements($adapter)))&nbsp;{
 </td></tr>
 <tr><td>177</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Connection_Exception('First&nbsp;argument&nbsp;should&nbsp;be&nbsp;an&nbsp;instance&nbsp;of&nbsp;PDO&nbsp;or&nbsp;implement&nbsp;Doctrine_Adapter_Interface');
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Connection_Exception('First&nbsp;argument&nbsp;should&nbsp;be&nbsp;an&nbsp;instance&nbsp;of&nbsp;PDO&nbsp;or&nbsp;implement&nbsp;Doctrine_Adapter_Interface');
 </td></tr>
 <tr><td>178</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>179</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;dbh&nbsp;=&nbsp;$adapter;
@@ -583,10 +583,10 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($adapter['other']))&nbsp;{
 </td></tr>
 <tr><td>192</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;options['other']&nbsp;=&nbsp;array(Doctrine::ATTR_PERSISTENT&nbsp;=&gt;&nbsp;$adapter['persistent']);
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;options['other']&nbsp;=&nbsp;array(Doctrine::ATTR_PERSISTENT&nbsp;=&gt;&nbsp;$adapter['persistent']);
 </td></tr>
 <tr><td>193</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>194</td>
 <td class="normal">
