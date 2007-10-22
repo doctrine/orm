@@ -235,7 +235,24 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return end($this->data);
     }
-
+    /**
+     * returns the last record in the collection
+     *
+     * @return mixed
+     */
+    public function end()
+    {
+        return end($this->data);
+    }
+    /**
+     * returns the current key
+     *
+     * @return mixed
+     */
+    public function key()
+    {
+        return key($this->data);
+    }
     /**
      * setReference
      * sets a reference pointer

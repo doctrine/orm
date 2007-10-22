@@ -60,22 +60,12 @@ class Doctrine_Hydrate_Array
     {
         return null;    
     }
-    public function search(array $element, array $data)
+    public function getLastKey(&$data)
     {
-        foreach ($data as $key => $val) {
-            $found = true;
-            foreach ($element as $k => $e) {
-                if (isset($val[$k]) && $val[$k] !== $e) {
-                    $found = false;
-                    break;
-                }
-            }
-            if ($found) {
-                return $key;
-            }
-        }
-        return false;
+        end($data);
+        return key($data);
     }
+
     public function flush()
     {
         

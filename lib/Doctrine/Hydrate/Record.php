@@ -46,9 +46,12 @@ class Doctrine_Hydrate_Record extends Doctrine_Locator_Injectable
 
         return $coll;
     }
-    public function search(Doctrine_Record $record, Doctrine_Collection $coll)
+
+    public function getLastKey($coll) 
     {
-        return array_search($record, $coll->getData(), true);
+        $coll->end();
+        
+        return $coll->key();
     }
     public function initRelated($record, $name)
     {

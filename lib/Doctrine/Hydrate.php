@@ -1059,6 +1059,10 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
         foreach ($this->_aliasMap as $alias => $data) {
             $componentName = $data['table']->getComponentName();
             $listeners[$componentName] = $data['table']->getRecordListener();
+            $identifierMap[$alias] = array();
+            $currData[$alias] = array();
+            $prev[$alias] = array();
+            $id[$alias] = '';
         }
 
         while ($data = $stmt->fetch(Doctrine::FETCH_ASSOC)) {
@@ -1076,7 +1080,6 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                     $cache[$key]['alias'] = $this->_tableAliases[strtolower(implode('__', $e))];
                 }
 
-
                 $map   = $this->_aliasMap[$cache[$key]['alias']];
                 $table = $map['table'];
                 $alias = $cache[$key]['alias'];
@@ -1087,20 +1090,16 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                 }
 
 
-                if ( ! isset($currData[$alias])) {
-                    $currData[$alias] = array();
-                }
-
-                if ( ! isset($prev[$alias])) {
-                    $prev[$alias] = array();
+                if ($table->isIdentifier($field)) {
+                    $id[$alias] .= '|' . $value;
                 }
 
                 $currData[$alias][$field] = $table->prepareValue($field, $value);
+
                 if ($value !== null) {
                     $identifiable[$alias] = true;
                 }
             }
-
 
             // dealing with root component
             $table = $this->_aliasMap[$rootAlias]['table'];
@@ -1111,8 +1110,13 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
             $oneToOne = false;
 
-            $index = $isSimpleQuery ? false : $driver->search($element, $array);
-            
+            if ($isSimpleQuery) {
+                $index = false;
+            } else {
+                $index = isset($identifierMap[$rootAlias][$id[$rootAlias]]) ?
+                         $identifierMap[$rootAlias][$id[$rootAlias]] : false;
+            }
+
             if ($index === false) {
                 $event->set('data', $element);
                 $listeners[$componentName]->postHydrate($event);
@@ -1132,7 +1136,10 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                 } else {
                     $array[] = $element;
                 }
+
+                $identifierMap[$rootAlias][$id[$rootAlias]] = $driver->getLastKey($array);
             }
+
             $this->_setLastElement($prev, $array, $index, $rootAlias, $oneToOne);
             unset($currData[$rootAlias]);
 
@@ -1150,6 +1157,8 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                 $relation = $map['relation'];
                 $componentAlias = $map['relation']->getAlias();
 
+                $path = $parent . '.' . $alias;
+
                 if ( ! isset($prev[$parent])) {
                     break;
                 }
@@ -1162,7 +1171,12 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
 
                         // append element
                         if (isset($identifiable[$alias])) {
-                            $index = $isSimpleQuery ? false : $driver->search($element, $prev[$parent][$componentAlias]);
+                            if ($isSimpleQuery) {
+                                $index = false;
+                            } else {
+                                $index = isset($identifierMap[$path][$id[$parent]][$id[$alias]]) ?
+                                         $identifierMap[$path][$id[$parent]][$id[$alias]] : false;
+                            }
 
                             if ($index === false) {
                                 $event->set('data', $element);
@@ -1180,6 +1194,8 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                                 } else {
                                     $prev[$parent][$componentAlias][] = $element;
                                 }
+
+                                $identifierMap[$path][$id[$parent]][$id[$alias]] = $driver->getLastKey($prev[$parent][$componentAlias]);
                             }
                         }
                         // register collection for later snapshots
@@ -1195,7 +1211,9 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
                 }
                 $coll =& $prev[$parent][$componentAlias];
                 $this->_setLastElement($prev, $coll, $index, $alias, $oneToOne);
+                $id[$alias] = '';
             }
+            $id[$rootAlias] = '';
         }
 
         $driver->flush();
