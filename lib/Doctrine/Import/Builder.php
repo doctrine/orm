@@ -46,7 +46,13 @@ class Doctrine_Import_Builder
      * @var string $path
      */
     private $path = '';
-
+    
+    private $packagesPrefix = 'Package';
+    
+    private $packagesPath = '';
+    
+    private $pathAfterPackage = DIRECTORY_SEPARATOR;
+    
     /**
      * suffix
      * 
