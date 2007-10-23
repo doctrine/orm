@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: GenerateModelsFromYaml.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: GenerateModelsDb.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Task_GenerateModelsFromYaml
+ * Doctrine_Task_GenerateModelsDb
  *
  * @package     Doctrine
  * @subpackage  Task
@@ -30,17 +30,16 @@
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Task_GenerateModelsFromYaml extends Doctrine_Task
+class Doctrine_Task_GenerateModelsDb extends Doctrine_Task
 {
-    public $description          =   'Generates your Doctrine_Record definitions from a Yaml schema file',
-           $requiredArguments    =   array('yaml_schema_path'   =>  'Specify the complete directory path to your yaml schema files.',
-                                           'models_path'        =>  'Specify complete path to your Doctrine_Record definitions.'),
-           $optionalArguments    =   array();
+    public $description          =   'Generates your Doctrine_Record definitions from your existing database connections.',
+           $requiredArguments    =   array('models_path'    =>  'Specify path to your Doctrine_Record definitions.'),
+           $optionalArguments    =   array('connection'     =>  'Optionally specify a single connection to generate the models for.');
     
     public function execute()
     {
-        Doctrine::generateModelsFromYaml($this->getArgument('yaml_schema_path'), $this->getArgument('models_path'));
+        Doctrine::generateModelsFromDb($this->getArgument('models_path'), (array) $this->getArgument('connection'));
         
-        $this->notify('Generated models successfully from YAML schema');
+        $this->dispatcher->notify('Generated models successfully from databases');
     }
 }

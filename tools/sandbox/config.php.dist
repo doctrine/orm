@@ -35,7 +35,7 @@
  */
 
 define('SANDBOX_PATH', dirname(__FILE__));
-define('DOCTRINE_PATH', dirname(SANDBOX_PATH) . DIRECTORY_SEPARATOR . 'lib');
+define('DOCTRINE_PATH', dirname(dirname(SANDBOX_PATH)) . DIRECTORY_SEPARATOR . 'lib');
 define('DATA_FIXTURES_PATH', SANDBOX_PATH . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'fixtures');
 define('MODELS_PATH', SANDBOX_PATH . DIRECTORY_SEPARATOR . 'models');
 define('MIGRATIONS_PATH', SANDBOX_PATH . DIRECTORY_SEPARATOR . 'migrations');
