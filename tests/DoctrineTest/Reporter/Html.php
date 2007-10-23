@@ -34,4 +34,6 @@ class DoctrineTest_Reporter_Html extends DoctrineTest_Reporter{
             print '<strong>' . $this->_test->getFailCount() . '</strong> fails.';
             print '</div>';
         }
+
+        public function getProgressIndicator(){}
     }

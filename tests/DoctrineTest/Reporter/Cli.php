@@ -15,4 +15,9 @@ class DoctrineTest_Reporter_Cli extends DoctrineTest_Reporter{
         print "Successes: " . $this->_test->getPassCount() . " passes. \n";
         print "Failures: " . $this->_test->getFailCount() . " fails. \n";
     }
+
+
+    public function getProgressIndicator(){
+        return ".";
+    }
 }

@@ -385,11 +385,23 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>126</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;Doctrine_Parser::dump($array,&nbsp;$format,&nbsp;$schema);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(is_dir($schema))&nbsp;{
 </td></tr>
 <tr><td>127</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$schema&nbsp;=&nbsp;$schema&nbsp;.&nbsp;DIRECTORY_SEPARATOR&nbsp;.&nbsp;'schema.'&nbsp;.&nbsp;$format;
 </td></tr>
 <tr><td>128</td>
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>129</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>
+<tr><td>130</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;Doctrine_Parser::dump($array,&nbsp;$format,&nbsp;$schema);
+</td></tr>
+<tr><td>131</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>132</td>
 <td class="covered">}</td></tr>
 </table></body></html>

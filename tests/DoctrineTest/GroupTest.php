@@ -56,9 +56,7 @@ class GroupTest extends UnitTestCase
             $this->_messages = array_merge($this->_messages, $testCase->getMessages());
 
             $this->_testCases[$k] = null;
-            if(PHP_SAPI === 'cli'){
-                echo '.';
-            }
+            echo $reporter->getProgressIndicator();
             set_time_limit(900);
         }
         $reporter->setTestCase($this);

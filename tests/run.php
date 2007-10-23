@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL | E_STRICT);
 ini_set('max_execution_time', 900);
- ini_set("date.timezone", "GMT+0");
+ini_set("date.timezone", "GMT+0");
 
 require_once(dirname(__FILE__) . '/DoctrineTest.php');
 require_once dirname(__FILE__) . '/../lib/Doctrine.php';

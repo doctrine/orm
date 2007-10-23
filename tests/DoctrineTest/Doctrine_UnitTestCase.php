@@ -195,15 +195,6 @@ class Doctrine_UnitTestCase extends UnitTestCase
             }
         }
         $this->conn->export->exportClasses($this->tables);
-        /**
-        foreach($this->tables as $name) {
-            $name = ucwords($name);
-            $table = $this->connection->getTable($name);
-
-            $table->clear();
-        }
-        */
-
         $this->objTable = $this->connection->getTable('User');
     }
     public function prepareData() 

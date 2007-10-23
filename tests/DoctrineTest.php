@@ -124,7 +124,7 @@ class DoctrineTest
              * somebody could give it a try. Just replace this block of code 
              * with the one below
              *
-            define('PHPCOVERAGE_HOME', dirname(dirname(__FILE__)) . '/vendor/spikephpcoverage');
+             define('PHPCOVERAGE_HOME', dirname(dirname(__FILE__)) . '/vendor/spikephpcoverage');
             require_once PHPCOVERAGE_HOME . '/CoverageRecorder.php';
             require_once PHPCOVERAGE_HOME . '/reporter/HtmlCoverageReporter.php';
 
@@ -149,10 +149,11 @@ class DoctrineTest
             require_once dirname(__FILE__) . '/DoctrineTest/Coverage.php';
             $coverageGeneration = new DoctrineTest_Coverage();
             $coverageGeneration->generateReport();
+            return;
             // */
-        } else {
-            $testGroup->run($reporter, $filter);
+
         }
+        $testGroup->run($reporter, $filter);
     }
 
 
