@@ -84,15 +84,11 @@ class Doctrine_Cli
      */
     public function run($args)
     {
-        echo "\n";
-        
         try {
             $this->_run($args);
         } catch (Exception $exception) {
             $this->notifyException($exception);
         }
-        
-        echo "\n";
     }
     
     protected function _getTaskClassFromArgs($args)

@@ -123,6 +123,10 @@ class Doctrine_Export_Schema
     {
         $array = $this->buildSchema($directory, $models);
         
+        if (is_dir($schema)) {
+          $schema = $schema . DIRECTORY_SEPARATOR . 'schema.' . $format;
+        }
+        
         return Doctrine_Parser::dump($array, $format, $schema);
     }
 }

@@ -110,7 +110,7 @@ class Doctrine_Data_Export extends Doctrine_Data
             }
         } else {
             if (is_dir($directory)) {
-                throw new Doctrine_Data_Exception('You must specify the path to a '.$format.' file to export. You specified a directory.');
+                $directory .= DIRECTORY_SEPARATOR . 'data.' . $format;
             }
             
             if ( ! empty($data)) {
