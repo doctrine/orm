@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Task.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: CreateDb.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Task_BuildDb
+ * Doctrine_Task_CreateDb
  *
  * @package     Doctrine
  * @subpackage  Task
