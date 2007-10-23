@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: GenerateYamlFromDb.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: GenerateYamlDb.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Task_GenerateYamlFromDb
+ * Doctrine_Task_GenerateYamlDb
  *
  * @package     Doctrine
  * @subpackage  Task
@@ -30,7 +30,7 @@
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Task_GenerateYamlFromDb extends Doctrine_Task
+class Doctrine_Task_GenerateYamlDb extends Doctrine_Task
 {
     public $description          =   'Generates a Yaml schema file from an existing database',
            $requiredArguments    =   array('yaml_schema_path'   =>  'Specify the path to your yaml schema files.'),

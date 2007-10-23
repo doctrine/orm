@@ -43,7 +43,7 @@ class Doctrine_Task_BuildAll extends Doctrine_Task
     {
         parent::__construct($dispatcher);
         
-        $this->models = new Doctrine_Task_GenerateModelsFromYaml($this->dispatcher);
+        $this->models = new Doctrine_Task_GenerateModelsYaml($this->dispatcher);
         $this->createDb = new Doctrine_Task_CreateDb($this->dispatcher);
         $this->tables = new Doctrine_Task_CreateTables($this->dispatcher);
         

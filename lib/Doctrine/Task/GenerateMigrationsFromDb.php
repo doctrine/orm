@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: GenerateMigrationsFromDb.php 2761 2007-10-07 23:42:29Z zYne $
+ *  $Id: GenerateMigrationsDb.php 2761 2007-10-07 23:42:29Z zYne $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Task_GenerateMigrationsFromDb
+ * Doctrine_Task_GenerateMigrationsDb
  *
  * @package     Doctrine
  * @subpackage  Task
@@ -30,7 +30,7 @@
  * @version     $Revision: 2761 $
  * @author      Jonathan H. Wage <jwage@mac.com>
  */
-class Doctrine_Task_GenerateMigrationsFromDb extends Doctrine_Task
+class Doctrine_Task_GenerateMigrationsDb extends Doctrine_Task
 {
     public $description          =   'Generate migration classes for an existing database',
            $requiredArguments    =   array('migrations_path' => 'Specify the complete path to your migration classes folder.'),
