@@ -433,6 +433,15 @@ final class Doctrine
      * @var boolean $_debug
      */
     private static $_debug = false;
+    
+    /**
+     * _loadedModels
+     * 
+     * Array of all the loaded models and the path to each one for autoloading
+     *
+     * @var string
+     */
+    private static $_loadedModels = array();
 
     /**
      * __construct
@@ -548,9 +557,9 @@ final class Doctrine
      */
     public static function loadModels($directory)
     {
-        $declared = get_declared_classes();
-        
         if ($directory !== null) {
+            $manager = Doctrine_Manager::getInstance();
+            
             foreach ((array) $directory as $dir) {
                 $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
                                                         RecursiveIteratorIterator::LEAVES_ONLY);
@@ -558,15 +567,13 @@ final class Doctrine
                 foreach ($it as $file) {
                     $e = explode('.', $file->getFileName());
                     if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
-                        require_once $file->getPathName();
+                        self::$_loadedModels[$e[0]] = $file->getPathName();
                     }
                 }
             }
-            
-            $declared = array_diff(get_declared_classes(), $declared);
         }
-        
-        return self::getLoadedModels($declared);
+
+        return self::getLoadedModels(array_keys(self::$_loadedModels));
     }
 
     /**
@@ -967,6 +974,7 @@ final class Doctrine
 
     /**
      * compile
+     *
      * method for making a single file of most used doctrine runtime components
      * including the compiled file instead of multiple files (in worst
      * cases dozens of files) can improve performance by an order of magnitude
@@ -982,15 +990,17 @@ final class Doctrine
     }
 
     /**
+     * autoload
+     *
      * simple autoload function
      * returns true if the class was loaded, otherwise false
      *
      * @param string $classname
      * @return boolean
      */
-    public static function autoload($classname)
+    public static function autoload($className)
     {
-        if (class_exists($classname, false)) {
+        if (class_exists($className, false)) {
             return false;
         }
         
@@ -998,15 +1008,23 @@ final class Doctrine
             self::$_path = dirname(__FILE__);
         }
         
-        $class = self::$_path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $classname) . '.php';
+        $class = self::$_path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
 
-        if ( ! file_exists($class)) {
-            return false;
+        if (file_exists($class)) {
+            require_once($class);
+            
+            return true;
+        }
+        
+        $loadedModels = self::$_loadedModels;
+        
+        if (isset($loadedModels[$className]) && file_exists($loadedModels[$className])) {
+            require_once($loadedModels[$className]);
+            
+            return true;
         }
 
-        require_once($class);
-
-        return true;
+        return false;
     }
 
     /**
@@ -1042,6 +1060,8 @@ final class Doctrine
     }
 
     /**
+     * tableize
+     *
      * returns table name from class name
      *
      * @param string $classname
@@ -1053,6 +1073,8 @@ final class Doctrine
     }
 
     /**
+     * classify
+     *
      * returns class name from table name
      *
      * @param string $tablename
@@ -1064,6 +1086,8 @@ final class Doctrine
     }
 
     /**
+     * classifyCallback
+     *
      * Callback function to classify a classname propperly. 
      *
      * @param array $matches An array of matches from a pcre_replace call
@@ -1075,6 +1099,8 @@ final class Doctrine
     }
 
     /**
+     * isValidClassName
+     *
      * checks for valid class name (uses camel case and underscores)
      *
      * @param string $classname
@@ -1087,5 +1113,23 @@ final class Doctrine
         }
 
         return true;
+    }
+    
+    /**
+     * makeDirectories
+     * 
+     * Makes the directories for a path recursively
+     *
+     * @param string $path 
+     * @return void
+     */
+    public static function makeDirectories($path, $mode = 0777)
+    {
+        if (is_dir($path) || is_file($path))
+        {
+          return true;
+        }
+
+        return mkdir($path, $mode, true); 
     }
 }
