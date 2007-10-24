@@ -1050,7 +1050,7 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
             return $array;
         }
 
-        $event = new Doctrine_Event(Doctrine_Event::HYDRATE, null);
+        $event = new Doctrine_Event(null, Doctrine_Event::HYDRATE, null);
 
         // for every getRecordListener() there is a little bit 
         // logic behind it, hence calling it multiple times on
