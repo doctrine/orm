@@ -121,7 +121,7 @@ class Doctrine_Import_Schema
                 continue;
             }
             
-            $options = $this->getOptions($properties, $directory);
+            $options = $this->getOptions($properties);
             $columns = $this->getColumns($properties);
             $relations = $this->getRelations($properties);
             $indexes = $this->getIndexes($properties);
@@ -136,20 +136,18 @@ class Doctrine_Import_Schema
     /**
      * getOptions
      *
-     * FIXME: Directory argument needs to be removed
-     *
      * @param string $properties Array of table properties
      * @param string $directory  Directory we are writing the class to
      * @return array $options    Array of options from a parse schemas properties
      */
-    public function getOptions($properties, $directory)
+    public function getOptions($properties)
     {
         $options = array();
         $options['className'] = $properties['className'];
-        $options['fileName'] = $directory.DIRECTORY_SEPARATOR.$properties['className'].'.class.php';
         $options['tableName'] = isset($properties['tableName']) ? $properties['tableName']:null;
         $options['connection'] = isset($properties['connection']) ? $properties['connection']:null;
         $options['connectionClassName'] = isset($properties['connection']) ? $properties['className']:null;
+        $options['package'] = $properties['package'];
         
         if (isset($properties['inheritance'])) {
             $options['inheritance'] = $properties['inheritance'];
@@ -290,6 +288,7 @@ class Doctrine_Import_Schema
                 $build[$className]['attributes'] = isset($table['attributes']) ? $table['attributes']:array();
                 $build[$className]['templates'] = isset($table['templates']) ? $table['templates']:array();
                 $build[$className]['actAs'] = isset($table['actAs']) ? $table['actAs']:array();
+                $build[$className]['package'] = isset($table['package']) ? $table['package']:null;
             }
             
             if (isset($table['inheritance'])) {
