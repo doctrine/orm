@@ -169,14 +169,14 @@ class Doctrine_Plugin
         if ($this->_options['generateFiles']) {
             if (isset($this->_options['generatePath']) && $this->_options['generatePath']) {
                 $builder->setTargetPath($this->_options['generatePath']);
-            
+
                 $builder->buildRecord($options, $columns, $relations);
             } else {
                 throw new Doctrine_Plugin_Exception('If you wish to generate files then you must specify the path to generate the files in.');
             }
         } else {
             $def = $builder->buildDefinition($options, $columns, $relations);
-          
+
             eval($def);
         }
     }

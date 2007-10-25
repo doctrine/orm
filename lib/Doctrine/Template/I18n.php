@@ -34,7 +34,12 @@ class Doctrine_Template_I18n extends Doctrine_Template
 {
     protected $_translation;
 
-
+    /**
+     * __construct
+     *
+     * @param string $array 
+     * @return void
+     */
     public function __construct(array $options)
     {
         $this->_plugin = new Doctrine_I18n($options);
@@ -42,6 +47,7 @@ class Doctrine_Template_I18n extends Doctrine_Template
 
     /**
      * translation
+     *
      * sets or retrieves the current translation language
      *
      * @return Doctrine_Record      this object
@@ -49,7 +55,15 @@ class Doctrine_Template_I18n extends Doctrine_Template
     public function translation($language = null)
     {
         $this->_translation = $language;
+        
+        return $this->_translation;
     }
+
+    /**
+     * setUp
+     *
+     * @return void
+     */
     public function setUp()
     {
         $this->_plugin->setOption('table', $this->_table);
@@ -67,6 +81,12 @@ class Doctrine_Template_I18n extends Doctrine_Template
 
         $this->hasMany($className . ' as Translation', array('local' => $id, 'foreign' => $id));
     }
+    
+    /**
+     * getI18n
+     *
+     * @return void
+     */
     public function getI18n()
     {
         return $this->_plugin;

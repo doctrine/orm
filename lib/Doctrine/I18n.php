@@ -40,18 +40,28 @@ class Doctrine_I18n extends Doctrine_Plugin
                             'pluginTable'   => false,
                             );
 
-    protected $_auditTable;
-
+    /**
+     * __construct
+     *
+     * @param string $options 
+     * @return void
+     */
     public function __construct($options)
     {
         $this->_options = array_merge($this->_options, $options);
     }
 
+    /**
+     * buildDefinition
+     *
+     * @param object $Doctrine_Table 
+     * @return void
+     */
     public function buildDefinition(Doctrine_Table $table)
     {
-    	if (empty($this->_options['fields'])) {
-    	    throw new Doctrine_I18n_Exception('Fields not set.');
-    	}
+      	if (empty($this->_options['fields'])) {
+      	    throw new Doctrine_I18n_Exception('Fields not set.');
+      	}
 
         $this->_options['className'] = str_replace('%CLASS%',
                                                    $this->_options['table']->getComponentName(),
