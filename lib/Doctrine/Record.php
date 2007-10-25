@@ -714,7 +714,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * getTable
      * returns the table object for this record
      *
-     * @return object Doctrine_Table        a Doctrine_Table object
+     * @return Doctrine_Table        a Doctrine_Table object
      */
     public function getTable()
     {
