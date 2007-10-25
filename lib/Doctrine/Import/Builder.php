@@ -455,17 +455,23 @@ END;
     {
         $build = "\n";
         foreach ($attributes as $key => $value) {
-            if ( ! is_array($value)) {
-                $value = array($value);
-            }
+          
+            if (is_bool($value))
+            {
+              $values = $value ? 'true':'false';
+            } else {
+                if ( ! is_array($value)) {
+                    $value = array($value);
+                }
             
-            $values = '';
-            foreach ($value as $attr) {
-                $values .= "Doctrine::" . strtoupper($key) . "_" . strtoupper($attr) . ' ^ ';
+                $values = '';
+                foreach ($value as $attr) {
+                    $values .= "Doctrine::" . strtoupper($key) . "_" . strtoupper($attr) . ' ^ ';
+                }
+                
+                // Trim last ^
+                $values = substr($values, 0, strlen($values) - 3);
             }
-            
-            // Trim last ^
-            $values = substr($values, 0, strlen($values) - 3);
             
             $build .= "\t\t\$this->setAttribute(Doctrine::ATTR_" . strtoupper($key) . ", " . $values . ");\n";
         }
