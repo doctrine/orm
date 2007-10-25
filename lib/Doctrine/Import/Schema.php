@@ -137,10 +137,6 @@ class Doctrine_Import_Schema
         $array = $schema['schema'];
         
         foreach ($array as $name => $properties) {
-            if (!isset($properties['className'])) {
-                print_r($properties);
-                exit;
-            }
             if ( ! empty($models) && !in_array($properties['className'], $models)) {
                 continue;
             }
@@ -311,7 +307,7 @@ class Doctrine_Import_Schema
                     $colDesc['fixed'] = isset($field['fixed']) ? (int) $field['fixed']:null;
                     $colDesc['unsigned'] = isset($field['unsigned']) ? (bool) $field['unsigned']:null;
                     $colDesc['primary'] = isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null;
-                    $colDesc['default'] = isset($field['default']) ? (string) $field['default']:null;
+                    $colDesc['default'] = isset($field['default']) ? $field['default']:null;
                     $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
                     $colDesc['autoincrement'] = isset($field['autoincrement']) ? (bool) (isset($field['autoincrement']) && $field['autoincrement']):null;
                     $colDesc['autoincrement'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):$colDesc['autoincrement'];
