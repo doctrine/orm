@@ -484,7 +484,7 @@ END;
       $build = '';
 
       foreach ($indexes as $indexName => $definitions) {
-          $build = "\n\t\t".'$this->index(\'' . $indexName . '\', array(';
+          $build .= "\n\t\t".'$this->index(\'' . $indexName . '\', array(';
 
           foreach ($definitions as $name => $value) {
 
