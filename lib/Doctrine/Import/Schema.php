@@ -39,26 +39,40 @@
  */
 class Doctrine_Import_Schema
 {
-    public $relations = array();
-    public $generateBaseClasses = false;
-
+    protected $relations = array();
+    protected $options = array('packagesPrefix'        =>  'Package',
+                               'packagesPath'          =>  '',
+                               'generateBaseClasses'   =>  true,
+                               'generateTableClasses'  =>  true,
+                               'baseClassesDirectory'  =>  'generated',
+                               'baseClassName'         =>  'Doctrine_Record',
+                               'suffix'                =>  '.class.php');
+    
     /**
-     * generateBaseClasses
+     * getOption
      *
-     * Specify whether or not to generate base classes with the model definition in it. The base is generated everytime
-     * But another child class that extends the base is only generated once. Allowing you to customize your models
-     * Without losing the changes when you regenerate
-     *
-     * @param   string $bool 
-     * @return  bool   $generateBaseClasses
+     * @param string $name 
+     * @return void
      */
-    public function generateBaseClasses($bool = null)
+    public function getOption($name)
     {
-        if ($bool !== null) {
-            $this->generateBaseClasses = $bool;
+        if (isset($this->options[$name]))   {
+            return $this->options[$name];
         }
-        
-        return $this->generateBaseClasses;
+    }
+    
+    /**
+     * setOption
+     *
+     * @param string $name 
+     * @param string $value 
+     * @return void
+     */
+    public function setOption($name, $value)
+    {
+        if (isset($this->options[$name])) {
+            $this->options[$name] = $value;
+        }
     }
 
     /**
@@ -110,13 +124,23 @@ class Doctrine_Import_Schema
     {
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
-        $builder->generateBaseClasses($this->generateBaseClasses());
+        $builder->generateBaseClasses($this->getOption('generateBaseClasses'));
+        $builder->generateTableClasses($this->getOption('generateTableClasses'));
+        $builder->setBaseClassesDirectory($this->getOption('baseClassesDirectory'));
+        $builder->setBaseClassName($this->getOption('baseClassName'));
+        $builder->setPackagesPath($this->getOption('packagesPath'));
+        $builder->setPackagesPrefix($this->getOption('packagesPrefix'));
+        $builder->setSuffix($this->getOption('suffix'));
         
         $schema = $this->buildSchema($schema, $format);
         
         $array = $schema['schema'];
         
         foreach ($array as $name => $properties) {
+            if (!isset($properties['className'])) {
+                print_r($properties);
+                exit;
+            }
             if ( ! empty($models) && !in_array($properties['className'], $models)) {
                 continue;
             }
@@ -253,7 +277,16 @@ class Doctrine_Import_Schema
             $columns = array();
             
             $className = isset($table['className']) ? (string) $table['className']:(string) $className;
-            $tableName = isset($table['tableName']) ? (string) $table['tableName']:(string) Doctrine::tableize($className);
+            
+            if (isset($table['tableName']) && $table['tableName']) {
+                $tableName = $table['tableName'];
+            } else {
+                if (isset($table['inheritance']['extends']) && isset($table['inheritance']['extends']['keyType']) && isset($table['inheritance']['extends']['keyValue'])) {
+                    $tableName = null;
+                } else {
+                    $tableName = Doctrine::tableize($className);
+                }
+            }
             
             $columns = isset($table['columns']) ? $table['columns']:array();
             $columns = isset($table['fields']) ? $table['fields']:$columns;
@@ -262,10 +295,19 @@ class Doctrine_Import_Schema
                 foreach ($columns as $columnName => $field) {
                     $colDesc = array();
                     $colDesc['name'] = isset($field['name']) ? (string) $field['name']:$columnName;
-                    $colDesc['type'] = isset($field['type']) ? (string) $field['type']:null;
+                    
+                    $e = explode('(', $field['type']);
+                    if (isset($e[0]) && isset($e[1])) {
+                        $colDesc['type'] = $e[0];
+                        $colDesc['length'] = substr($e[1], 0, strlen($e[1]) - 1);
+                    } else {
+                        $colDesc['type'] = isset($field['type']) ? (string) $field['type']:null;
+                        $colDesc['length'] = isset($field['length']) ? (int) $field['length']:null;
+                        $colDesc['length'] = isset($field['size']) ? (int) $field['size']:$colDesc['length'];
+                    }
+                    
                     $colDesc['ptype'] = isset($field['ptype']) ? (string) $field['ptype']:(string) $colDesc['type'];
-                    $colDesc['length'] = isset($field['length']) ? (int) $field['length']:null;
-                    $colDesc['length'] = isset($field['size']) ? (int) $field['size']:$colDesc['length'];
+                    
                     $colDesc['fixed'] = isset($field['fixed']) ? (int) $field['fixed']:null;
                     $colDesc['unsigned'] = isset($field['unsigned']) ? (bool) $field['unsigned']:null;
                     $colDesc['primary'] = isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null;
@@ -278,19 +320,19 @@ class Doctrine_Import_Schema
 
                     $columns[(string) $colDesc['name']] = $colDesc;
                 }
-                
-                $build[$className]['connection'] = isset($table['connection']) ? $table['connection']:null;
-                $build[$className]['className'] = $className;
-                $build[$className]['tableName'] = $tableName;
-                $build[$className]['columns'] = $columns;
-                $build[$className]['relations'] = isset($table['relations']) ? $table['relations']:array();
-                $build[$className]['indexes'] = isset($table['indexes']) ? $table['indexes']:array();
-                $build[$className]['attributes'] = isset($table['attributes']) ? $table['attributes']:array();
-                $build[$className]['templates'] = isset($table['templates']) ? $table['templates']:array();
-                $build[$className]['actAs'] = isset($table['actAs']) ? $table['actAs']:array();
-                $build[$className]['package'] = isset($table['package']) ? $table['package']:null;
             }
             
+            $build[$className]['connection'] = isset($table['connection']) ? $table['connection']:null;
+            $build[$className]['className'] = $className;
+            $build[$className]['tableName'] = $tableName;
+            $build[$className]['columns'] = $columns;
+            $build[$className]['relations'] = isset($table['relations']) ? $table['relations']:array();
+            $build[$className]['indexes'] = isset($table['indexes']) ? $table['indexes']:array();
+            $build[$className]['attributes'] = isset($table['attributes']) ? $table['attributes']:array();
+            $build[$className]['templates'] = isset($table['templates']) ? $table['templates']:array();
+            $build[$className]['actAs'] = isset($table['actAs']) ? $table['actAs']:array();
+            $build[$className]['package'] = isset($table['package']) ? $table['package']:null;
+        
             if (isset($table['inheritance'])) {
                 $build[$className]['inheritance'] = $table['inheritance'];
             }
@@ -347,33 +389,6 @@ class Doctrine_Import_Schema
                     $relation['foreignType'] = $relation['foreignType'] === 'one' ? Doctrine_Relation::ONE:Doctrine_Relation::MANY;
                 }
                 
-                if(isset($relation['refClass']) && !empty($relation['refClass'])  && ( ! isset($array[$relation['refClass']]['relations']) || empty($array[$relation['refClass']]['relations']))) {
-                    
-                    if ( ! isset($array[$relation['refClass']]['relations'][$className]['local'])) {
-                        $array[$relation['refClass']]['relations'][$className]['local'] = $relation['local'];
-                    }
-                    
-                    if ( ! isset($array[$relation['refClass']]['relations'][$className]['foreign'])) {
-                        $array[$relation['refClass']]['relations'][$className]['foreign'] = $relation['foreign'];
-                    }
-                    
-                    $array[$relation['refClass']]['relations'][$className]['ignore'] = true;
-                    
-                    if ( ! isset($array[$relation['refClass']]['relations'][$relation['class']]['local'])) {
-                        $array[$relation['refClass']]['relations'][$relation['class']]['local'] = $relation['local'];
-                    }
-                    
-                    if ( ! isset($array[$relation['refClass']]['relations'][$relation['class']]['foreign'])) {
-                        $array[$relation['refClass']]['relations'][$relation['class']]['foreign'] = $relation['foreign'];
-                    }
-                    
-                    $array[$relation['refClass']]['relations'][$relation['class']]['ignore'] = true;
-                    
-                    if(isset($relation['foreignAlias'])) {
-                        $array[$relation['class']]['relations'][$relation['foreignAlias']] = array('type'=>$relation['type'],'local'=>$relation['foreign'],'foreign'=>$relation['local'],'refClass'=>$relation['refClass'],'class'=>$className);
-                    }
-                }
-                
                 $this->relations[$className][$alias] = $relation;
             }
         }
@@ -393,32 +408,26 @@ class Doctrine_Import_Schema
     {
         foreach($this->relations as $className => $relations) {
             foreach ($relations AS $alias => $relation) {
-                if(isset($relation['ignore']) && $relation['ignore'] || isset($relation['refClass']) || isset($this->relations[$relation['class']]['relations'][$className])) {
-                    continue;
-                }
-                    
                 $newRelation = array();
                 $newRelation['foreign'] = $relation['local'];
                 $newRelation['local'] = $relation['foreign'];
-                $newRelation['class'] = $className;
-                $newRelation['alias'] = isset($relation['foreignAlias'])?$relation['foreignAlias']:$className;
+                $newRelation['class'] = isset($relation['foreignClass']) ? $relation['foreignClass']:$className;
+                $newRelation['alias'] = isset($relation['foreignAlias']) ? $relation['foreignAlias']:$className;
                 
-                if(isset($relation['foreignType'])) {
-                    $newRelation['type'] = $relation['foreignType'];
-                } else {
-                    $newRelation['type'] = $relation['type'] === Doctrine_Relation::ONE ? Doctrine_Relation::MANY:Doctrine_Relation::ONE;
-                }
-                
-                if( isset($this->relations[$relation['class']]) && is_array($this->relations[$relation['class']]) ) {
-                    foreach($this->relations[$relation['class']] as $otherRelation) {
-                        // skip fully defined m2m relationships
-                        if(isset($otherRelation['refClass']) && $otherRelation['refClass'] == $className) {
-                            continue(2);
-                        }
+                if (isset($relation['refClass'])) {
+                    $newRelation['refClass'] = $relation['refClass'];
+                    $newRelation['type'] = isset($relation['foreignType']) ? $relation['foreignType']:$relation['type'];
+                } else {                
+                    if(isset($relation['foreignType'])) {
+                        $newRelation['type'] = $relation['foreignType'];
+                    } else {
+                        $newRelation['type'] = $relation['type'] === Doctrine_Relation::ONE ? Doctrine_Relation::MANY:Doctrine_Relation::ONE;
                     }
                 }
                 
-                $this->relations[$relation['class']][$newRelation['alias']] = $newRelation;
+                if (!isset($this->relations[$relation['class']][$newRelation['alias']])) {
+                    $this->relations[$relation['class']][$newRelation['alias']] = $newRelation;
+                }
             }
         }
     }

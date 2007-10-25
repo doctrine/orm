@@ -39,13 +39,6 @@
 class Doctrine_Import_Builder
 {
     /**
-     * written
-     *
-     * @var array
-     */
-    private $written = array();
-    
-    /**
      * Path
      * 
      * the path where imported files are being generated
@@ -59,7 +52,7 @@ class Doctrine_Import_Builder
      *
      * @var string
      */
-    private $packagePrefix = 'Package';
+    private $packagesPrefix = 'Package';
 
     /**
      * packagesPath
@@ -101,7 +94,14 @@ class Doctrine_Import_Builder
      * @var string $suffix
      */
     private $baseClassesDirectory = 'generated';
-
+    
+    /**
+     * baseClassName
+     *
+     * @var string
+     */
+    private $baseClassName = 'Doctrine_Record';
+    
     /**
      * tpl
      *
@@ -141,12 +141,12 @@ class Doctrine_Import_Builder
     /**
      * setPackagePath
      *
-     * @param string $packagePrefix 
+     * @param string $packagesPrefix 
      * @return void
      */
-    public function setPackagePrefix($packagePrefix)
+    public function setPackagesPrefix($packagesPrefix)
     {
-        $this->packagePrefix = $packagePrefix;
+        $this->packagesPrefix = $packagesPrefix;
     }
 
     /**
@@ -202,6 +202,16 @@ class Doctrine_Import_Builder
     public function setBaseClassesDirectory($baseClassesDirectory)
     {
         $this->baseClassesDirectory;
+    }
+    
+    /**
+     * setBaseClassName
+     *
+     * @package default
+     */
+    public function setBaseClassName($className)
+    {
+        $this->baseClassName = $className;
     }
     
     /**
@@ -289,7 +299,7 @@ END;
         
         $i = 0;
         
-        if (isset($options['inheritance']['extends']) && !isset($options['override_parent'])) {
+        if (isset($options['inheritance']['extends']) && !(isset($options['override_parent']) && $options['override_parent'] == false)) {
             $ret[$i] = "\t\tparent::setTableDefinition();";
             $i++;
         }
@@ -358,8 +368,11 @@ END;
         
         $ret[$i] = $this->buildActAs($actAs);
         
-        if ( ! empty($ret)) {
-          return "\n\tpublic function setTableDefinition()"."\n\t{\n".implode("\n", $ret)."\n\t}";
+        $code = implode("\n", $ret);
+        $code = trim($code);
+        
+        if ($code) {
+          return "\n\tpublic function setTableDefinition()"."\n\t{\n\t\t".$code."\n\t}";
         }
     }
 
@@ -539,7 +552,7 @@ END;
         $ret = array();
         $i = 0;
         
-        if ( !  (isset($options['override_parent']) && $options['override_parent'] === true)) {
+        if (isset($options['inheritance']['extends']) && !(isset($options['override_parent']) && $options['override_parent'] == false)) {
             $ret[$i] = "\t\tparent::setUp();";
             $i++;
         }
@@ -604,8 +617,11 @@ END;
             $ret[$i] = "\t\t".'$this->setInheritanceMap(array(\''.$options['inheritance']['keyField'].'\' => '.$options['inheritance']['keyValue'].'));';
         }
         
-        if ( ! empty($ret)) {
-          return "\n\tpublic function setUp()\n\t{\n".implode("\n", $ret)."\n\t}";
+        $code = implode("\n", $ret);
+        $code = trim($code);
+        
+        if ($code) {
+          return "\n\tpublic function setUp()\n\t{\n\t\t".$code."\n\t}";
         }
     }
 
@@ -629,7 +645,7 @@ END;
 
         $abstract = isset($options['abstract']) && $options['abstract'] === true ? 'abstract ':null;
         $className = $options['className'];
-        $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:'Doctrine_Record';
+        $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:$this->baseClassName;
 
         if ( ! (isset($options['no_definition']) && $options['no_definition'] === true)) {
             $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
@@ -686,7 +702,7 @@ END;
             
             // If we have a package then we need to make this extend the package definition and not the base definition
             // The package definition will then extends the base definition
-            $topLevel['inheritance']['extends'] = (isset($topLevel['package']) && $topLevel['package']) ? $this->packagePrefix . $topLevel['className']:'Base' . $topLevel['className'];
+            $topLevel['inheritance']['extends'] = (isset($topLevel['package']) && $topLevel['package']) ? $this->packagesPrefix . $topLevel['className']:'Base' . $topLevel['className'];
             $topLevel['no_definition'] = true;
             $topLevel['generate_once'] = true;
             $topLevel['is_main_class'] = true;
@@ -743,8 +759,6 @@ END;
         Doctrine::makeDirectories($path);
         
         $writePath = $path . DIRECTORY_SEPARATOR . $className . $this->suffix;
-        
-        $this->written[$className] = $writePath;
         
         if (!file_exists($writePath)) {
             file_put_contents($writePath, $content);
@@ -834,10 +848,7 @@ END;
         }
 
         $code .= PHP_EOL . $definition;
-        
-        $this->written[$options['className']] = $writePath;
-        
-        
+
         if (isset($options['generate_once']) && $options['generate_once'] === true) {
             if (!file_exists($writePath)) {
                 $bytes = file_put_contents($writePath, $code);
