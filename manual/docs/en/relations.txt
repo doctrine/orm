@@ -589,9 +589,9 @@ class Phonenumber extends Doctrine_Record
     {
         $this->index('product_id', array('fields' => 'user_id'));
 
-        $this->hasMany('User', array('local' => 'user_id',
-                                     'foreign' => 'id',
-                                     'onDelete' => 'CASCADE'));
+        $this->hasOne('User', array('local' => 'user_id',
+                                    'foreign' => 'id',
+                                    'onDelete' => 'CASCADE'));
     }
 }
 </code>
