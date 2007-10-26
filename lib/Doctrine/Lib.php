@@ -88,7 +88,7 @@ class Doctrine_Lib
     public static function getCollectionAsXml(Doctrine_Collection $collection, SimpleXMLElement $incomming_xml = null) {
 
         $collectionName = Doctrine_Lib::plurelize($collection->getTable()->tableName);
-        if ( $collection->count != 0) {
+        if ( $collection->count() != 0) {
             $record = $collection[0];
             $xml_options = $record->option("xml");
             if ( isset($xml_options["collection_name"])) {
@@ -135,10 +135,7 @@ class Doctrine_Lib
             $xml = new SimpleXMLElement($new_xml_string);
         } else {
             $xml = $incomming_xml->addChild($recordname);
-        }
-        foreach($record->obtainIdentifier() as $pk_field => $pk_value) {
-            $xml->addChild($pk_field,$pk_value); 
-        }
+				}
         $xml_options = $record->option("xml");
         if ( isset($xml_options["record_name"])) {
             $recordname = $xml_options["record_name"];
