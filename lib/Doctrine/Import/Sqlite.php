@@ -108,7 +108,7 @@ class Doctrine_Import_Sqlite extends Doctrine_Import
         $result = array();
         foreach ($indexes as $sql) {
             if (preg_match("/^create unique index ([^ ]+) on /i", $sql, $tmp)) {
-                $index = $this->conn->fixIndexName($tmp[1]);
+                $index = $this->conn->formatter->fixIndexName($tmp[1]);
                 if ( ! empty($index)) {
                     $result[$index] = true;
                 }

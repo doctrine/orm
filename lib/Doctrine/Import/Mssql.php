@@ -157,8 +157,8 @@ class Doctrine_Import_Mssql extends Doctrine_Import
     {
         $keyName = 'INDEX_NAME';
         $pkName = 'PK_NAME';
-        if ($this->conn->options['portability'] & Doctrine::PORTABILITY_FIX_CASE) {
-            if ($this->conn->options['field_case'] == CASE_LOWER) {
+        if ($this->conn->getAttribute(Doctrine::ATTR_PORTABILITY) & Doctrine::PORTABILITY_FIX_CASE) {
+            if ($this->conn->getAttribute(Doctrine::ATTR_FIELD_CASE) == CASE_LOWER) {
                 $keyName = strtolower($keyName);
                 $pkName  = strtolower($pkName);
             } else {
