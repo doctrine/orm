@@ -52,7 +52,7 @@ class Doctrine_Data_Import extends Doctrine_Data
      */
     public function doImport()
     {
-        $directory = $this->directory;
+        $directory = $this->getDirectory();
         
         $array = array();
         

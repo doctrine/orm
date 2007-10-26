@@ -32,12 +32,12 @@
  */
 class Doctrine_Cli
 {
-    protected $tasks        = array(),
-              $taskInstance = null,
-              $formatter    = null,
-              $scriptName   = null,
-              $message      = null,
-              $config       = array();
+    protected $_tasks        = array(),
+              $_taskInstance = null,
+              $_formatter    = null,
+              $_scriptName   = null,
+              $_message      = null,
+              $_config       = array();
 
     /**
      * __construct
@@ -47,8 +47,8 @@ class Doctrine_Cli
      */
     public function __construct($config = array())
     {
-        $this->config = $config;
-        $this->formatter = new Doctrine_Cli_AnsiColorFormatter();
+        $this->_config = $config;
+        $this->_formatter = new Doctrine_Cli_AnsiColorFormatter();
         
         $this->loadTasks();
     }
@@ -61,7 +61,7 @@ class Doctrine_Cli
      */
     public function notify($notification = null, $style = 'HEADER')
     {
-        echo $this->formatter->format($this->taskInstance->getTaskName(), 'INFO') . ' - ' . $this->formatter->format($notification, $style) . "\n";
+        echo $this->_formatter->format($this->_taskInstance->getTaskName(), 'INFO') . ' - ' . $this->_formatter->format($notification, $style) . "\n";
     }
 
     /**
@@ -72,7 +72,7 @@ class Doctrine_Cli
      */
     public function notifyException($exception)
     {
-        echo $this->formatter->format($exception->getMessage(), 'ERROR') . "\n";
+        echo $this->_formatter->format($exception->getMessage(), 'ERROR') . "\n";
     }
 
     /**
@@ -90,7 +90,15 @@ class Doctrine_Cli
             $this->notifyException($exception);
         }
     }
-    
+
+    /**
+     * _getTaskClassFromArgs
+     *
+     * Get the task class from an array of cli arguments
+     *
+     * @param string $args 
+     * @return void
+     */
     protected function _getTaskClassFromArgs($args)
     {
         $taskName = str_replace('-', '_', $args[1]);
@@ -98,10 +106,16 @@ class Doctrine_Cli
         
         return $taskClass;
     }
-    
+
+    /**
+     * _run
+     *
+     * @param string $args 
+     * @return void
+     */
     protected function _run($args)
     {        
-        $this->scriptName = $args[0];
+        $this->_scriptName = $args[0];
         
         $arg1 = isset($args[1]) ? $args[1]:null;
         
@@ -124,17 +138,17 @@ class Doctrine_Cli
         unset($args[0]);
         unset($args[1]);
         
-        $this->taskInstance = new $taskClass($this);
+        $this->_taskInstance = new $taskClass($this);
         
         $args = $this->prepareArgs($args);
         
-        $this->taskInstance->setArguments($args);
+        $this->_taskInstance->setArguments($args);
         
         try {
-            if ($this->taskInstance->validate()) {
-                $this->taskInstance->execute();
+            if ($this->_taskInstance->validate()) {
+                $this->_taskInstance->execute();
             } else {
-                echo $this->formatter->format('Requires arguments missing!!', 'ERROR') . "\n\n";
+                echo $this->_formatter->format('Requires arguments missing!!', 'ERROR') . "\n\n";
                 echo $this->printTasks($arg1, true);
             }
         } catch (Exception $e) {
@@ -150,7 +164,7 @@ class Doctrine_Cli
      */
     protected function prepareArgs($args)
     {
-        $taskInstance = $this->taskInstance;
+        $taskInstance = $this->_taskInstance;
         
         $args = array_values($args);
         
@@ -168,8 +182,8 @@ class Doctrine_Cli
         }
         
         // If we have a config array then lets try and fill some of the arguments with the config values
-        if (is_array($this->config) && !empty($this->config)) {
-            foreach ($this->config as $key => $value) {
+        if (is_array($this->_config) && !empty($this->_config)) {
+            foreach ($this->_config as $key => $value) {
                 if (array_key_exists($key, $prepared)) {
                     $prepared[$key] = $value;
                 }
@@ -202,7 +216,7 @@ class Doctrine_Cli
         
         $tasks = $this->getLoadedTasks();
         
-        echo $this->formatter->format("Doctrine Command Line Interface", 'HEADER') . "\n\n";
+        echo $this->_formatter->format("Doctrine Command Line Interface", 'HEADER') . "\n\n";
         
         foreach ($tasks as $taskName)
         {
@@ -214,9 +228,9 @@ class Doctrine_Cli
             $taskInstance = new $className();
             $taskInstance->taskName = str_replace('_', '-', Doctrine::tableize($taskName));         
             
-            $syntax = $this->scriptName . ' ' . $taskInstance->getTaskName();
+            $syntax = $this->_scriptName . ' ' . $taskInstance->getTaskName();
             
-            echo $this->formatter->format($syntax, 'INFO'); 
+            echo $this->_formatter->format($syntax, 'INFO'); 
             
             if ($full) {
                 echo " - " . $taskInstance->getDescription() . "\n";  
@@ -227,10 +241,10 @@ class Doctrine_Cli
                 
                 if ( ! empty($requiredArguments)) {
                     foreach ($requiredArguments as $name => $description) {
-                        $args .= $this->formatter->format($name, "ERROR");
+                        $args .= $this->_formatter->format($name, "ERROR");
                         
-                        if (isset($this->config[$name])) {
-                            $args .= " - " . $this->formatter->format($this->config[$name], 'COMMENT');
+                        if (isset($this->_config[$name])) {
+                            $args .= " - " . $this->_formatter->format($this->_config[$name], 'COMMENT');
                         } else {
                             $args .= " - " . $description;
                         }
@@ -248,7 +262,7 @@ class Doctrine_Cli
                 }
             
                 if ($args) {
-                    echo "\n" . $this->formatter->format('Arguments:', 'HEADER') . "\n" . $args;
+                    echo "\n" . $this->_formatter->format('Arguments:', 'HEADER') . "\n" . $args;
                 }
             }
             
@@ -295,9 +309,9 @@ class Doctrine_Cli
             }
         }
         
-        $this->tasks = array_merge($this->tasks, $tasks);
+        $this->_tasks = array_merge($this->_tasks, $tasks);
         
-        return $this->tasks;
+        return $this->_tasks;
     }
     
     public function getLoadedTasks()
@@ -318,6 +332,6 @@ class Doctrine_Cli
             }
         }
         
-        return array_merge($this->tasks, $tasks);
+        return array_merge($this->_tasks, $tasks);
     }
 }

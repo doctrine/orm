@@ -686,12 +686,13 @@ final class Doctrine
      *
      * @param string $yamlPath Path to your yaml schema files
      * @param string $directory Directory to generate your models in
+     * @param array  $options Array of options to pass to the schema importer
      * @return void
      */
-    public static function generateModelsFromYaml($yamlPath, $directory)
+    public static function generateModelsFromYaml($yamlPath, $directory, $options = array())
     {
         $import = new Doctrine_Import_Schema();
-        $import->generateBaseClasses(true);
+        $import->setOption('generateBaseClasses', true);
         
         return $import->importSchema($yamlPath, 'yml', $directory);
     }

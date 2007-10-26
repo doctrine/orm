@@ -42,7 +42,7 @@ class Doctrine_Data
      *
      * @var string
      */
-    public $formats = array('csv', 'yml', 'xml');
+    protected $_formats = array('csv', 'yml', 'xml');
 
     /**
      * format
@@ -51,7 +51,7 @@ class Doctrine_Data
      *
      * @var string
      */
-    public $format = 'yml';
+    protected $_format = 'yml';
 
     /**
      * directory
@@ -60,7 +60,7 @@ class Doctrine_Data
      *
      * @var string
      */
-    public $directory = null;
+    protected $_directory = null;
 
     /**
      * models
@@ -69,16 +69,16 @@ class Doctrine_Data
      *
      * @var string
      */
-    public $models = array();
+    protected $_models = array();
 
     /**
-     * exportIndividualFiles
+     * _exportIndividualFiles
      *
      * whether or not to export data to individual files instead of 1
      *
      * @var string
      */
-    public $exportIndividualFiles = false;
+    protected $_exportIndividualFiles = false;
 
     /**
      * setFormat
@@ -90,7 +90,7 @@ class Doctrine_Data
      */
     public function setFormat($format)
     {
-        $this->format = $format;
+        $this->_format = $format;
     }
 
     /**
@@ -102,7 +102,7 @@ class Doctrine_Data
      */
     public function getFormat()
     {
-        return $this->format;
+        return $this->_format;
     }
 
     /**
@@ -114,7 +114,7 @@ class Doctrine_Data
      */
     public function getFormats()
     {
-        return $this->formats;
+        return $this->_formats;
     }
 
     /**
@@ -126,7 +126,7 @@ class Doctrine_Data
      */
     public function setDirectory($directory)
     {
-        $this->directory = $directory;
+        $this->_directory = $directory;
     }
 
     /**
@@ -138,7 +138,7 @@ class Doctrine_Data
      */
     public function getDirectory()
     {
-        return $this->directory;
+        return $this->_directory;
     }
 
     /**
@@ -151,7 +151,7 @@ class Doctrine_Data
      */
     public function setModels($models)
     {
-        $this->models = $models;
+        $this->_models = $models;
     }
 
     /**
@@ -163,23 +163,23 @@ class Doctrine_Data
      */
     public function getModels()
     {
-        return $this->models;
+        return $this->_models;
     }
 
     /**
-     * exportIndividualFiles 
+     * _exportIndividualFiles 
      *
      * Set/Get whether or not to export individual files
      * 
-     * @return bool $exportIndividualFiles
+     * @return bool $_exportIndividualFiles
      */
     public function exportIndividualFiles($bool = null)
     {
         if ($bool !== null) {
-            $this->exportIndividualFiles = $bool;
+            $this->_exportIndividualFiles = $bool;
         }
         
-        return $this->exportIndividualFiles;
+        return $this->_exportIndividualFiles;
     }
 
     /**
@@ -190,15 +190,15 @@ class Doctrine_Data
      * @param string $directory 
      * @param string $format 
      * @param string $models 
-     * @param string $exportIndividualFiles 
+     * @param string $_exportIndividualFiles 
      * @return void
      */
-    public function exportData($directory, $format = 'yml', $models = array(), $exportIndividualFiles = false)
+    public function exportData($directory, $format = 'yml', $models = array(), $_exportIndividualFiles = false)
     {
         $export = new Doctrine_Data_Export($directory);
         $export->setFormat($format);
         $export->setModels($models);
-        $export->exportIndividualFiles($exportIndividualFiles);
+        $export->exportIndividualFiles($_exportIndividualFiles);
         
         return $export->doExport();
     }

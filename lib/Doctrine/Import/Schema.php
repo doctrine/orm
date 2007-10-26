@@ -39,14 +39,14 @@
  */
 class Doctrine_Import_Schema
 {
-    protected $relations = array();
-    protected $options = array('packagesPrefix'        =>  'Package',
-                               'packagesPath'          =>  '',
-                               'generateBaseClasses'   =>  true,
-                               'generateTableClasses'  =>  true,
-                               'baseClassesDirectory'  =>  'generated',
-                               'baseClassName'         =>  'Doctrine_Record',
-                               'suffix'                =>  '.class.php');
+    protected $_relations = array();
+    protected $_options = array('packagesPrefix'        =>  'Package',
+                                'packagesPath'          =>  '',
+                                'generateBaseClasses'   =>  true,
+                                'generateTableClasses'  =>  true,
+                                'baseClassesDirectory'  =>  'generated',
+                                'baseClassName'         =>  'Doctrine_Record',
+                                'suffix'                =>  '.class.php');
     
     /**
      * getOption
@@ -56,8 +56,8 @@ class Doctrine_Import_Schema
      */
     public function getOption($name)
     {
-        if (isset($this->options[$name]))   {
-            return $this->options[$name];
+        if (isset($this->_options[$name]))   {
+            return $this->_options[$name];
         }
     }
     
@@ -70,9 +70,20 @@ class Doctrine_Import_Schema
      */
     public function setOption($name, $value)
     {
-        if (isset($this->options[$name])) {
-            $this->options[$name] = $value;
+        if (isset($this->_options[$name])) {
+            $this->_options[$name] = $value;
         }
+    }
+    
+    /**
+     * setOptions
+     *
+     * @param string $options 
+     * @return void
+     */
+    public function setOptions($options)
+    {
+        $this->_options = $options;
     }
 
     /**
@@ -106,7 +117,7 @@ class Doctrine_Import_Schema
         
         $this->buildRelationships($array);
         
-        return array('schema' => $array, 'relations' => $this->relations);
+        return array('schema' => $array, 'relations' => $this->_relations);
     }
 
     /**
@@ -199,7 +210,7 @@ class Doctrine_Import_Schema
      */
     public function getRelations($properties)
     {
-        return isset($this->relations[$properties['className']]) ? $this->relations[$properties['className']]:array();
+        return isset($this->_relations[$properties['className']]) ? $this->_relations[$properties['className']]:array();
     }
 
     /**
@@ -385,7 +396,7 @@ class Doctrine_Import_Schema
                     $relation['foreignType'] = $relation['foreignType'] === 'one' ? Doctrine_Relation::ONE:Doctrine_Relation::MANY;
                 }
                 
-                $this->relations[$className][$alias] = $relation;
+                $this->_relations[$className][$alias] = $relation;
             }
         }
         
@@ -402,7 +413,7 @@ class Doctrine_Import_Schema
      */
     protected function fixRelationships()
     {
-        foreach($this->relations as $className => $relations) {
+        foreach($this->_relations as $className => $relations) {
             foreach ($relations AS $alias => $relation) {
                 $newRelation = array();
                 $newRelation['foreign'] = $relation['local'];
@@ -421,8 +432,8 @@ class Doctrine_Import_Schema
                     }
                 }
                 
-                if (!isset($this->relations[$relation['class']][$newRelation['alias']])) {
-                    $this->relations[$relation['class']][$newRelation['alias']] = $newRelation;
+                if (!isset($this->_relations[$relation['class']][$newRelation['alias']])) {
+                    $this->_relations[$relation['class']][$newRelation['alias']] = $newRelation;
                 }
             }
         }
