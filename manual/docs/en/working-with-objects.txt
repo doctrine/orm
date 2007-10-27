@@ -153,7 +153,7 @@ class User extends Doctrine_Record
 In the following example we fetch all the Users with the fields name and password loaded directly. Then we lazy-load a huge field called description for one user.
 
 <code type="php">
-$users = Doctrine_Query::create()->select('u.name, u.password')->from('User u');
+$users = Doctrine_Query::create()->select('u.name, u.password')->from('User u')->execute();
 
 // the following lazy-loads the description fields and executes one additional database query
 $users[0]->description;
