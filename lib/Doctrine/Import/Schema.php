@@ -210,7 +210,19 @@ class Doctrine_Import_Schema
      */
     public function getRelations($properties)
     {
-        return isset($this->_relations[$properties['className']]) ? $this->_relations[$properties['className']]:array();
+        $all_relations = isset($this->_relations[$properties['className']]) ? $this->_relations[$properties['className']]:array();
+        
+        // This is for checking for duplicates between alias-relations and a auto-generated relations to ensure the result set of unique relations
+        $exist_relations = array();
+        $unique_relations = array();
+        foreach ($all_relations as $relation) {
+          if (!in_array($relation['class'], $exist_relations)) {
+            $exist_relations[] = $relation['class'];
+            $unique_relations = array_merge($unique_relations, array($relation['alias'] => $relation));
+          }
+        }
+        
+        return $unique_relations;
     }
 
     /**
