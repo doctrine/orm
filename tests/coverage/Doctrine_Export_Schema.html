@@ -154,7 +154,7 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$loadedModels&nbsp;=&nbsp;Doctrine::loadModels($directory);
 </td></tr>
 <tr><td>49</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
 <tr><td>50</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$loadedModels&nbsp;=&nbsp;Doctrine::getLoadedModels();
@@ -166,22 +166,22 @@
 <td class="normal">
 </td></tr>
 <tr><td>53</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$array&nbsp;=&nbsp;array();
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$array&nbsp;=&nbsp;array();
 </td></tr>
 <tr><td>54</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>55</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parent&nbsp;=&nbsp;new&nbsp;ReflectionClass('Doctrine_Record');
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parent&nbsp;=&nbsp;new&nbsp;ReflectionClass('Doctrine_Record');
 </td></tr>
 <tr><td>56</td>
 <td class="normal">
 </td></tr>
 <tr><td>57</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sql&nbsp;=&nbsp;array();
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sql&nbsp;=&nbsp;array();
 </td></tr>
 <tr><td>58</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$fks&nbsp;=&nbsp;array();
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$fks&nbsp;=&nbsp;array();
 </td></tr>
 <tr><td>59</td>
 <td class="normal">
@@ -193,7 +193,7 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;and&nbsp;currently&nbsp;declared&nbsp;classes
 </td></tr>
 <tr><td>62</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($loadedModels&nbsp;as&nbsp;$name)&nbsp;{
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($loadedModels&nbsp;as&nbsp;$name)&nbsp;{
 </td></tr>
 <tr><td>63</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;empty($models)&nbsp;&amp;&amp;&nbsp;!in_array($name,&nbsp;$models))&nbsp;{
@@ -340,7 +340,7 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>111</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$array;
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$array;
 </td></tr>
 <tr><td>112</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
@@ -385,7 +385,7 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>126</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(is_dir($schema))&nbsp;{
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(is_dir($schema))&nbsp;{
 </td></tr>
 <tr><td>127</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$schema&nbsp;=&nbsp;$schema&nbsp;.&nbsp;DIRECTORY_SEPARATOR&nbsp;.&nbsp;'schema.'&nbsp;.&nbsp;$format;
@@ -397,7 +397,7 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>130</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;Doctrine_Parser::dump($array,&nbsp;$format,&nbsp;$schema);
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;Doctrine_Parser::dump($array,&nbsp;$format,&nbsp;$schema);
 </td></tr>
 <tr><td>131</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
