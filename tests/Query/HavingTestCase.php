@@ -56,4 +56,12 @@ class Doctrine_Query_Having_TestCase extends Doctrine_UnitTestCase
         $q->parseQuery("SELECT CONCAT(u.name, u.loginname) name FROM User u LEFT JOIN u.Phonenumber p HAVING name = 'xx'");
     }
 
+    public function testReturnFuncIfNumeric()
+    {
+       $having =  new Doctrine_Query_Having("test");
+       $part = $having->load("1");
+       $this->assertEqual("1",trim($part));
+
+    }
+
 }

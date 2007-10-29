@@ -70,97 +70,97 @@
 <td class="normal">&nbsp;*/
 </td></tr>
 <tr><td>21</td>
-<td class="covered">Doctrine::autoload(&quot;Doctrine_Connection_Common&quot;);
+<td class="normal">
 </td></tr>
 <tr><td>22</td>
-<td class="normal">/**
+<td class="covered">Doctrine::autoload(&quot;Doctrine_Connection_Common&quot;);
 </td></tr>
 <tr><td>23</td>
-<td class="normal">&nbsp;*&nbsp;Doctrine_Connection_Sqlite
+<td class="normal">
 </td></tr>
 <tr><td>24</td>
-<td class="normal">&nbsp;*
+<td class="normal">/**
 </td></tr>
 <tr><td>25</td>
-<td class="normal">&nbsp;*&nbsp;@package&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doctrine
+<td class="normal">&nbsp;*&nbsp;Doctrine_Connection_Sqlite
 </td></tr>
 <tr><td>26</td>
-<td class="normal">&nbsp;*&nbsp;@subpackage&nbsp;&nbsp;Connection
+<td class="normal">&nbsp;*
 </td></tr>
 <tr><td>27</td>
-<td class="normal">&nbsp;*&nbsp;@license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.opensource.org/licenses/lgpl-license.php&nbsp;LGPL
+<td class="normal">&nbsp;*&nbsp;@package&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Doctrine
 </td></tr>
 <tr><td>28</td>
-<td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
+<td class="normal">&nbsp;*&nbsp;@subpackage&nbsp;&nbsp;Connection
 </td></tr>
 <tr><td>29</td>
-<td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lukas&nbsp;Smith&nbsp;&lt;smith@pooteeweet.org&gt;&nbsp;(PEAR&nbsp;MDB2&nbsp;library)
+<td class="normal">&nbsp;*&nbsp;@license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.opensource.org/licenses/lgpl-license.php&nbsp;LGPL
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
 </td></tr>
 <tr><td>31</td>
-<td class="normal">&nbsp;*&nbsp;@link&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;www.phpdoctrine.com
+<td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lukas&nbsp;Smith&nbsp;&lt;smith@pooteeweet.org&gt;&nbsp;(PEAR&nbsp;MDB2&nbsp;library)
 </td></tr>
 <tr><td>32</td>
-<td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
 </td></tr>
 <tr><td>33</td>
-<td class="normal">&nbsp;*/
+<td class="normal">&nbsp;*&nbsp;@link&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;www.phpdoctrine.com
 </td></tr>
 <tr><td>34</td>
-<td class="covered">class&nbsp;Doctrine_Connection_Sqlite&nbsp;extends&nbsp;Doctrine_Connection_Common
+<td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>35</td>
-<td class="normal">{
+<td class="normal">&nbsp;*/
 </td></tr>
 <tr><td>36</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="covered">class&nbsp;Doctrine_Connection_Sqlite&nbsp;extends&nbsp;Doctrine_Connection_Common
 </td></tr>
 <tr><td>37</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;string&nbsp;$driverName&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;of&nbsp;this&nbsp;connection&nbsp;driver
+<td class="normal">{
 </td></tr>
 <tr><td>38</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>39</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;$driverName&nbsp;=&nbsp;'Sqlite';
-</td></tr>
-<tr><td>40</td>
-<td class="normal">
-</td></tr>
-<tr><td>41</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>42</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;the&nbsp;constructor
+<tr><td>39</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;string&nbsp;$driverName&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;of&nbsp;this&nbsp;connection&nbsp;driver
 </td></tr>
-<tr><td>43</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
-</td></tr>
-<tr><td>44</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Manager&nbsp;$manager
-</td></tr>
-<tr><td>45</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;PDO&nbsp;$pdo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;database&nbsp;handle
-</td></tr>
-<tr><td>46</td>
+<tr><td>40</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>47</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;__construct(Doctrine_Manager&nbsp;$manager,&nbsp;$adapter)
+<tr><td>41</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;$driverName&nbsp;=&nbsp;'Sqlite';
 </td></tr>
-<tr><td>48</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
-</td></tr>
-<tr><td>49</td>
+<tr><td>42</td>
 <td class="normal">
 </td></tr>
+<tr><td>43</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>44</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;the&nbsp;constructor
+</td></tr>
+<tr><td>45</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+</td></tr>
+<tr><td>46</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Doctrine_Manager&nbsp;$manager
+</td></tr>
+<tr><td>47</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;PDO&nbsp;$pdo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;database&nbsp;handle
+</td></tr>
+<tr><td>48</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>49</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;__construct(Doctrine_Manager&nbsp;$manager,&nbsp;$adapter)
+</td></tr>
 <tr><td>50</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;supported&nbsp;=&nbsp;array(
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>51</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'sequences'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt;&nbsp;'emulated',
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;supported&nbsp;=&nbsp;array('sequences'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt;&nbsp;'emulated',
 </td></tr>
 <tr><td>52</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'indexes'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt;&nbsp;true,
@@ -217,146 +217,126 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);
 </td></tr>
 <tr><td>70</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parent::__construct($manager,&nbsp;$adapter);
 </td></tr>
 <tr><td>71</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;options['base_transaction_name']&nbsp;=&nbsp;'___php_Doctrine_sqlite_auto_commit_off';
+<td class="normal">
 </td></tr>
 <tr><td>72</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;options['fixed_float']&nbsp;=&nbsp;0;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($this-&gt;isConnected)&nbsp;{
 </td></tr>
 <tr><td>73</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;options['database_path']&nbsp;=&nbsp;'';
-</td></tr>
-<tr><td>74</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;options['database_extension']&nbsp;=&nbsp;'';
-</td></tr>
-<tr><td>75</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;options['server_version']&nbsp;=&nbsp;'';
-</td></tr>
-<tr><td>76</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
-</td></tr>
-<tr><td>77</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parent::__construct($manager,&nbsp;$adapter);
-</td></tr>
-<tr><td>78</td>
-<td class="normal">
-</td></tr>
-<tr><td>79</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($this-&gt;isConnected)&nbsp;{
-</td></tr>
-<tr><td>80</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;dbh-&gt;sqliteCreateFunction('mod',&nbsp;&nbsp;&nbsp;&nbsp;array('Doctrine_Expression_Sqlite',&nbsp;'modImpl'),&nbsp;2);
 </td></tr>
-<tr><td>81</td>
+<tr><td>74</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;dbh-&gt;sqliteCreateFunction('concat',&nbsp;array('Doctrine_Expression_Sqlite',&nbsp;'concatImpl'));
 </td></tr>
-<tr><td>82</td>
+<tr><td>75</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;dbh-&gt;sqliteCreateFunction('md5',&nbsp;'md5',&nbsp;1);
 </td></tr>
-<tr><td>83</td>
+<tr><td>76</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;dbh-&gt;sqliteCreateFunction('now',&nbsp;'time',&nbsp;0);
 </td></tr>
-<tr><td>84</td>
+<tr><td>77</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>85</td>
+<tr><td>78</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>86</td>
+<tr><td>79</td>
 <td class="normal">
 </td></tr>
-<tr><td>87</td>
+<tr><td>80</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>88</td>
+<tr><td>81</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;initializes&nbsp;database&nbsp;functions&nbsp;missing&nbsp;in&nbsp;sqlite
 </td></tr>
-<tr><td>89</td>
+<tr><td>82</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>90</td>
+<tr><td>83</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@see&nbsp;Doctrine_Expression
 </td></tr>
-<tr><td>91</td>
+<tr><td>84</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void
 </td></tr>
-<tr><td>92</td>
+<tr><td>85</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>93</td>
+<tr><td>86</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;connect()&nbsp;
 </td></tr>
-<tr><td>94</td>
+<tr><td>87</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>95</td>
+<tr><td>88</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($this-&gt;isConnected)&nbsp;{
 </td></tr>
-<tr><td>96</td>
+<tr><td>89</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;false;
 </td></tr>
-<tr><td>97</td>
+<tr><td>90</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>98</td>
+<tr><td>91</td>
 <td class="normal">
 </td></tr>
-<tr><td>99</td>
+<tr><td>92</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parent::connect();
 </td></tr>
-<tr><td>100</td>
+<tr><td>93</td>
 <td class="normal">
 </td></tr>
-<tr><td>101</td>
+<tr><td>94</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;dbh-&gt;sqliteCreateFunction('mod',&nbsp;&nbsp;&nbsp;&nbsp;array('Doctrine_Expression_Sqlite',&nbsp;'modImpl'),&nbsp;2);
 </td></tr>
-<tr><td>102</td>
+<tr><td>95</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;dbh-&gt;sqliteCreateFunction('concat',&nbsp;array('Doctrine_Expression_Sqlite',&nbsp;'concatImpl'));
 </td></tr>
-<tr><td>103</td>
+<tr><td>96</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;dbh-&gt;sqliteCreateFunction('md5',&nbsp;'md5',&nbsp;1);
 </td></tr>
-<tr><td>104</td>
+<tr><td>97</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;dbh-&gt;sqliteCreateFunction('now',&nbsp;'time',&nbsp;0);
 </td></tr>
-<tr><td>105</td>
+<tr><td>98</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>106</td>
+<tr><td>99</td>
 <td class="normal">
 </td></tr>
-<tr><td>107</td>
+<tr><td>100</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>108</td>
+<tr><td>101</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;getDatabaseFile
 </td></tr>
-<tr><td>109</td>
+<tr><td>102</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>110</td>
+<tr><td>103</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;database
 </td></tr>
-<tr><td>111</td>
+<tr><td>104</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string
 </td></tr>
-<tr><td>112</td>
+<tr><td>105</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>113</td>
+<tr><td>106</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getDatabaseFile($name)
 </td></tr>
-<tr><td>114</td>
+<tr><td>107</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>115</td>
+<tr><td>108</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$name&nbsp;.&nbsp;'.db';
 </td></tr>
-<tr><td>116</td>
+<tr><td>109</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>117</td>
-<td class="covered">}</td></tr>
+<tr><td>110</td>
+<td class="normal">}
+</td></tr>
 </table></body></html>

@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Where.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Where.php&nbsp;3029&nbsp;2007-10-29&nbsp;18:04:22Z&nbsp;zYne&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -97,7 +97,7 @@
 <td class="normal">&nbsp;*&nbsp;@since&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.0
 </td></tr>
 <tr><td>30</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3029&nbsp;$
 </td></tr>
 <tr><td>31</td>
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Konsta&nbsp;Vesterinen&nbsp;&lt;kvesteri@cc.hut.fi&gt;
@@ -241,302 +241,282 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>78</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($this-&gt;query-&gt;getType()&nbsp;===&nbsp;Doctrine_Query::SELECT)&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>79</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$first&nbsp;=&nbsp;$conn-&gt;quoteIdentifier($alias)
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$first&nbsp;=&nbsp;$this-&gt;query-&gt;parseClause($first);
 </td></tr>
 <tr><td>80</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;'.'
+<td class="normal">
 </td></tr>
 <tr><td>81</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;$conn-&gt;quoteIdentifier($table-&gt;getColumnName($field));
-</td></tr>
-<tr><td>82</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
-</td></tr>
-<tr><td>83</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$first&nbsp;=&nbsp;$conn-&gt;quoteIdentifier($table-&gt;getColumnName($field));
-</td></tr>
-<tr><td>84</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>85</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
-</td></tr>
-<tr><td>86</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$first&nbsp;=&nbsp;$this-&gt;query-&gt;parseClause($first);
-</td></tr>
-<tr><td>87</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>88</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sql&nbsp;=&nbsp;$first&nbsp;.&nbsp;'&nbsp;'&nbsp;.&nbsp;$operator&nbsp;.&nbsp;'&nbsp;'&nbsp;.&nbsp;$this-&gt;parseValue($value,&nbsp;$table,&nbsp;$field);
 </td></tr>
-<tr><td>89</td>
+<tr><td>82</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
-<tr><td>90</td>
+<tr><td>83</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$sql;&nbsp;&nbsp;
 </td></tr>
-<tr><td>91</td>
+<tr><td>84</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
-<tr><td>92</td>
+<tr><td>85</td>
 <td class="normal">
 </td></tr>
-<tr><td>93</td>
+<tr><td>86</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>94</td>
+<tr><td>87</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>95</td>
+<tr><td>88</td>
 <td class="normal">
 </td></tr>
-<tr><td>96</td>
+<tr><td>89</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;parseValue($value,&nbsp;Doctrine_Table&nbsp;$table&nbsp;=&nbsp;null,&nbsp;$field&nbsp;=&nbsp;null)
 </td></tr>
-<tr><td>97</td>
+<tr><td>90</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>98</td>
+<tr><td>91</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(substr($value,&nbsp;0,&nbsp;1)&nbsp;==&nbsp;'(')&nbsp;{
 </td></tr>
-<tr><td>99</td>
+<tr><td>92</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;trim&nbsp;brackets
 </td></tr>
-<tr><td>100</td>
+<tr><td>93</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$trimmed&nbsp;&nbsp;&nbsp;=&nbsp;Doctrine_Tokenizer::bracketTrim($value);
+</td></tr>
+<tr><td>94</td>
+<td class="normal">
+</td></tr>
+<tr><td>95</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(substr($trimmed,&nbsp;0,&nbsp;4)&nbsp;==&nbsp;'FROM'&nbsp;||
+</td></tr>
+<tr><td>96</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;substr($trimmed,&nbsp;0,&nbsp;6)&nbsp;==&nbsp;'SELECT')&nbsp;{
+</td></tr>
+<tr><td>97</td>
+<td class="normal">
+</td></tr>
+<tr><td>98</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;subquery&nbsp;found
+</td></tr>
+<tr><td>99</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;new&nbsp;Doctrine_Query();
+</td></tr>
+<tr><td>100</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value&nbsp;=&nbsp;'('&nbsp;.&nbsp;$this-&gt;query-&gt;createSubquery()-&gt;parseQuery($trimmed,&nbsp;false)-&gt;getQuery()&nbsp;.&nbsp;')';
 </td></tr>
 <tr><td>101</td>
 <td class="normal">
 </td></tr>
 <tr><td>102</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(substr($trimmed,&nbsp;0,&nbsp;4)&nbsp;==&nbsp;'FROM'&nbsp;||
-</td></tr>
-<tr><td>103</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;substr($trimmed,&nbsp;0,&nbsp;6)&nbsp;==&nbsp;'SELECT')&nbsp;{
-</td></tr>
-<tr><td>104</td>
-<td class="normal">
-</td></tr>
-<tr><td>105</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;subquery&nbsp;found
-</td></tr>
-<tr><td>106</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$q&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;new&nbsp;Doctrine_Query();
-</td></tr>
-<tr><td>107</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value&nbsp;=&nbsp;'('&nbsp;.&nbsp;$q-&gt;isSubquery(true)-&gt;parseQuery($trimmed)-&gt;getQuery()&nbsp;.&nbsp;')';
-</td></tr>
-<tr><td>108</td>
-<td class="normal">
-</td></tr>
-<tr><td>109</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;elseif&nbsp;(substr($trimmed,&nbsp;0,&nbsp;4)&nbsp;==&nbsp;'SQL:')&nbsp;{
 </td></tr>
-<tr><td>110</td>
+<tr><td>103</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value&nbsp;=&nbsp;'('&nbsp;.&nbsp;substr($trimmed,&nbsp;4)&nbsp;.&nbsp;')';
 </td></tr>
-<tr><td>111</td>
+<tr><td>104</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
-<tr><td>112</td>
+<tr><td>105</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;simple&nbsp;in&nbsp;expression&nbsp;found
 </td></tr>
-<tr><td>113</td>
+<tr><td>106</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$e&nbsp;=&nbsp;Doctrine_Tokenizer::sqlExplode($trimmed,&nbsp;',');
 </td></tr>
-<tr><td>114</td>
+<tr><td>107</td>
 <td class="normal">
 </td></tr>
-<tr><td>115</td>
+<tr><td>108</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value&nbsp;=&nbsp;array();
+</td></tr>
+<tr><td>109</td>
+<td class="normal">
+</td></tr>
+<tr><td>110</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$index&nbsp;=&nbsp;false;
+</td></tr>
+<tr><td>111</td>
+<td class="normal">
+</td></tr>
+<tr><td>112</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($e&nbsp;as&nbsp;$part)&nbsp;{
+</td></tr>
+<tr><td>113</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($table)&nbsp;&amp;&amp;&nbsp;isset($field))&nbsp;{
+</td></tr>
+<tr><td>114</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$index&nbsp;=&nbsp;$table-&gt;enumIndex($field,&nbsp;trim($part,&nbsp;&quot;'&quot;));
+</td></tr>
+<tr><td>115</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>116</td>
 <td class="normal">
 </td></tr>
 <tr><td>117</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$index&nbsp;=&nbsp;false;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($index&nbsp;!==&nbsp;false)&nbsp;{
 </td></tr>
 <tr><td>118</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value[]&nbsp;=&nbsp;$index;
 </td></tr>
 <tr><td>119</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foreach&nbsp;($e&nbsp;as&nbsp;$part)&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
 <tr><td>120</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($table)&nbsp;&amp;&amp;&nbsp;isset($field))&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value[]&nbsp;=&nbsp;$this-&gt;parseLiteralValue($part);
 </td></tr>
 <tr><td>121</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$index&nbsp;=&nbsp;$table-&gt;enumIndex($field,&nbsp;trim($part,&nbsp;&quot;'&quot;));
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>122</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>123</td>
 <td class="normal">
 </td></tr>
 <tr><td>124</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($index&nbsp;!==&nbsp;false)&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value&nbsp;=&nbsp;'('&nbsp;.&nbsp;implode(',&nbsp;',&nbsp;$value)&nbsp;.&nbsp;')';
 </td></tr>
 <tr><td>125</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value[]&nbsp;=&nbsp;$index;
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>126</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;elseif&nbsp;(substr($value,&nbsp;0,&nbsp;1)&nbsp;==&nbsp;':'&nbsp;||&nbsp;$value&nbsp;===&nbsp;'?')&nbsp;{
 </td></tr>
 <tr><td>127</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value[]&nbsp;=&nbsp;$this-&gt;parseLiteralValue($part);
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;placeholder&nbsp;found
 </td></tr>
 <tr><td>128</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($table)&nbsp;&amp;&amp;&nbsp;isset($field)&nbsp;&amp;&amp;&nbsp;$table-&gt;getTypeOf($field)&nbsp;==&nbsp;'enum')&nbsp;{
 </td></tr>
 <tr><td>129</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;query-&gt;addEnumParam($value,&nbsp;$table,&nbsp;$field);
 </td></tr>
 <tr><td>130</td>
-<td class="normal">
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
 <tr><td>131</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value&nbsp;=&nbsp;'('&nbsp;.&nbsp;implode(',&nbsp;',&nbsp;$value)&nbsp;.&nbsp;')';
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;query-&gt;addEnumParam($value,&nbsp;null,&nbsp;null);
 </td></tr>
 <tr><td>132</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>133</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;elseif&nbsp;(substr($value,&nbsp;0,&nbsp;1)&nbsp;==&nbsp;':'&nbsp;||&nbsp;$value&nbsp;===&nbsp;'?')&nbsp;{
-</td></tr>
-<tr><td>134</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;placeholder&nbsp;found
-</td></tr>
-<tr><td>135</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($table)&nbsp;&amp;&amp;&nbsp;isset($field)&nbsp;&amp;&amp;&nbsp;$table-&gt;getTypeOf($field)&nbsp;==&nbsp;'enum')&nbsp;{
-</td></tr>
-<tr><td>136</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;query-&gt;addEnumParam($value,&nbsp;$table,&nbsp;$field);
-</td></tr>
-<tr><td>137</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
-</td></tr>
-<tr><td>138</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;query-&gt;addEnumParam($value,&nbsp;null,&nbsp;null);
-</td></tr>
-<tr><td>139</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-</td></tr>
-<tr><td>140</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
-<tr><td>141</td>
+<tr><td>134</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$enumIndex&nbsp;=&nbsp;false;
 </td></tr>
-<tr><td>142</td>
+<tr><td>135</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isset($table)&nbsp;&amp;&amp;&nbsp;isset($field))&nbsp;{
 </td></tr>
-<tr><td>143</td>
+<tr><td>136</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;check&nbsp;if&nbsp;value&nbsp;is&nbsp;enumerated&nbsp;value
 </td></tr>
-<tr><td>144</td>
+<tr><td>137</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$enumIndex&nbsp;=&nbsp;$table-&gt;enumIndex($field,&nbsp;trim($value,&nbsp;&quot;'&quot;));
 </td></tr>
-<tr><td>145</td>
+<tr><td>138</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>146</td>
+<tr><td>139</td>
 <td class="normal">
 </td></tr>
-<tr><td>147</td>
+<tr><td>140</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($enumIndex&nbsp;!==&nbsp;false)&nbsp;{
 </td></tr>
-<tr><td>148</td>
+<tr><td>141</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value&nbsp;=&nbsp;$enumIndex;
 </td></tr>
-<tr><td>149</td>
+<tr><td>142</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
-<tr><td>150</td>
+<tr><td>143</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$value&nbsp;=&nbsp;$this-&gt;parseLiteralValue($value);
 </td></tr>
-<tr><td>151</td>
+<tr><td>144</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>152</td>
+<tr><td>145</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>153</td>
+<tr><td>146</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$value;
 </td></tr>
-<tr><td>154</td>
+<tr><td>147</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>155</td>
+<tr><td>148</td>
 <td class="normal">
 </td></tr>
-<tr><td>156</td>
+<tr><td>149</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
-<tr><td>157</td>
+<tr><td>150</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;parses&nbsp;an&nbsp;EXISTS&nbsp;expression
 </td></tr>
-<tr><td>158</td>
+<tr><td>151</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
 </td></tr>
-<tr><td>159</td>
+<tr><td>152</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$where&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;query&nbsp;where&nbsp;part&nbsp;to&nbsp;be&nbsp;parsed
 </td></tr>
-<tr><td>160</td>
+<tr><td>153</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;boolean&nbsp;$negation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;whether&nbsp;or&nbsp;not&nbsp;to&nbsp;use&nbsp;the&nbsp;NOT&nbsp;keyword
 </td></tr>
-<tr><td>161</td>
+<tr><td>154</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string
 </td></tr>
-<tr><td>162</td>
+<tr><td>155</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
-<tr><td>163</td>
+<tr><td>156</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;parseExists($where,&nbsp;$negation)
 </td></tr>
-<tr><td>164</td>
+<tr><td>157</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
-<tr><td>165</td>
+<tr><td>158</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$operator&nbsp;=&nbsp;($negation)&nbsp;?&nbsp;'EXISTS'&nbsp;:&nbsp;'NOT&nbsp;EXISTS';
 </td></tr>
-<tr><td>166</td>
+<tr><td>159</td>
 <td class="normal">
 </td></tr>
-<tr><td>167</td>
+<tr><td>160</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$pos&nbsp;=&nbsp;strpos($where,&nbsp;'(');
 </td></tr>
-<tr><td>168</td>
+<tr><td>161</td>
 <td class="normal">
 </td></tr>
-<tr><td>169</td>
+<tr><td>162</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($pos&nbsp;==&nbsp;false)&nbsp;{
 </td></tr>
-<tr><td>170</td>
+<tr><td>163</td>
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Query_Exception('Unknown&nbsp;expression,&nbsp;expected&nbsp;a&nbsp;subquery&nbsp;with&nbsp;()&nbsp;-marks');
 </td></tr>
-<tr><td>171</td>
+<tr><td>164</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>172</td>
+<tr><td>165</td>
 <td class="normal">
 </td></tr>
-<tr><td>173</td>
+<tr><td>166</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sub&nbsp;=&nbsp;Doctrine_Tokenizer::bracketTrim(substr($where,&nbsp;$pos));
 </td></tr>
-<tr><td>174</td>
+<tr><td>167</td>
 <td class="normal">
 </td></tr>
-<tr><td>175</td>
+<tr><td>168</td>
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$operator&nbsp;.&nbsp;'&nbsp;('&nbsp;.&nbsp;$this-&gt;query-&gt;createSubquery()-&gt;parseQuery($sub,&nbsp;false)-&gt;getQuery()&nbsp;.&nbsp;')';
 </td></tr>
-<tr><td>176</td>
+<tr><td>169</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
-<tr><td>177</td>
-<td class="covered">}</td></tr>
+<tr><td>170</td>
+<td class="normal">}
+</td></tr>
 </table></body></html>

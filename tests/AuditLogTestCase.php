@@ -90,4 +90,12 @@ class Doctrine_AuditLog_TestCase extends Doctrine_UnitTestCase
             $this->pass();
         }
     }
+
+    public function testReturnFalseIfVersionTableExists()
+    {
+        $entity = new VersioningTest();
+        $entity_table = $entity->getTable();
+        $auditLog = new Doctrine_AuditLog(array("table" => $entity_table));
+        $this->assertFalse($auditLog->buildDefinition($entity_table));
+    }
 }

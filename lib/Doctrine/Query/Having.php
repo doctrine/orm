@@ -78,6 +78,7 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
         }
     }
 
+
     /**
      * load
      * returns the parsed query part
@@ -87,17 +88,11 @@ class Doctrine_Query_Having extends Doctrine_Query_Condition
      */
     final public function load($having)
     {
-        $e = Doctrine_Tokenizer::bracketExplode($having, ' ', '(', ')');
-
-        $r = array_shift($e);
-        $t = explode('(', $r);
-
-        $count = count($t);
-        $r = $this->parseAggregateFunction($r);
-        $operator  = array_shift($e);
-        $value     = implode(' ', $e);
-        $r .= ' ' . $operator . ' ' . $value;
-
-        return $r;
+        $tokens = Doctrine_Tokenizer::bracketExplode($having, ' ', '(', ')');
+        $part = $this->parseAggregateFunction(array_shift($tokens));
+        $operator  = array_shift($tokens);
+        $value     = implode(' ', $tokens);
+        $part .= ' ' . $operator . ' ' . $value;
+        return $part;
     }
 }

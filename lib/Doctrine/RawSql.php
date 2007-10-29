@@ -51,20 +51,31 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
     public function parseQueryPart($queryPartName, $queryPart, $append = false) 
     {
         if ($queryPartName == 'select') {
-            preg_match_all('/{([^}{]*)}/U', $queryPart, $m);
+            $this->parseSelectFields($queryPart);
+            return $this;
+        }
+        if( ! isset($this->parts[$queryPartName])) {
+            $this->parts[$queryPartName] = array();
+        }
 
-            $this->fields = $m[1];
-            $this->parts['select'] = array();
-        } else {
-            if ( ! $append) {
-                $this->parts[$queryPartName] = array($queryPart);
-            } else {
-                $this->parts[$queryPartName][] = $queryPart;
-            }
+        if (! $append) {
+            $this->parts[$queryPartName] = array($queryPart);
+        }else {
+            $this->parts[$queryPartName][] = $queryPart;
         }
         return $this;
     }
 
+    /**
+     * Add select parts to fields
+     *
+     * @param $queryPart sting The name of the querypart
+     */
+    private function parseSelectFields($queryPart){
+        preg_match_all('/{([^}{]*)}/U', $queryPart, $m);
+        $this->fields = $m[1];
+        $this->parts['select'] = array();
+    }
     /**
      * parseQuery
      * parses an sql query and adds the parts to internal array
@@ -74,46 +85,48 @@ class Doctrine_RawSql extends Doctrine_Query_Abstract
      */
     public function parseQuery($query)
     {
-        preg_match_all('/{([^}{]*)}/U', $query, $m);
-
-        $this->fields = $m[1];
+        $this->parseSelectFields($query);
         $this->clear();
 
-        $e = Doctrine_Tokenizer::sqlExplode($query,' ');
+        $tokens = Doctrine_Tokenizer::sqlExplode($query,' ');
 
-        foreach ($e as $k => $part) {
-            $low = strtolower($part);
-            switch (strtolower($part)) {
+        $parts = array();
+        foreach ($tokens as $key => $part) {
+            $partLowerCase = strtolower($part);
+            switch ($partLowerCase) {
                 case 'select':
                 case 'from':
                 case 'where':
                 case 'limit':
                 case 'offset':
                 case 'having':
-                    $p = $low;
-                    if ( ! isset($parts[$low])) {
-                        $parts[$low] = array();
+                    $type = $partLowerCase;
+                    if ( ! isset($parts[$partLowerCase])) {
+                        $parts[$partLowerCase] = array();
                     }
                     break;
                 case 'order':
                 case 'group':
-                    $i = ($k + 1);
-                    if (isset($e[$i]) && strtolower($e[$i]) === 'by') {
-                        $p = $low;
-                        $p .= 'by';
-                        $parts[$low . 'by'] = array();
-
+                    $i = $key + 1;
+                    if (isset($tokens[$i]) && strtolower($tokens[$i]) === 'by') {
+                        $type = $partLowerCase . 'by';
+                        $parts[$type] = array();
                     } else {
-                        $parts[$p][] = $part;
+                        //not a keyword so we add it to the previous type
+                        $parts[$type][] = $part;
                     }
                     break;
                 case 'by':
                     continue;
                 default:
-                    if ( ! isset($parts[$p][0])) {
-                        $parts[$p][0] = $part;
+                    //not a keyword so we add it to the previous type.
+                    if ( ! isset($parts[$type][0])) {
+                        $parts[$type][0] = $part;
                     } else {
-                        $parts[$p][0] .= ' '.$part;
+                        // why does this add to index 0 and not append to the 
+                        // array. If it had done that one could have used 
+                        // parseQueryPart.
+                        $parts[$type][0] .= ' '.$part;
                     }
             }
         }

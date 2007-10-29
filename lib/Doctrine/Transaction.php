@@ -125,6 +125,16 @@ class Doctrine_Transaction extends Doctrine_Connection_Module
         return true;
     }
 
+
+   /**
+    * Return the invalid records
+    *
+    * @return array An array of invalid records
+    */ 
+    public function getInvalid(){
+        return $this->invalid;
+    }
+
     /**
      * getTransactionLevel
      * get the current transaction nesting level

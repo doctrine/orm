@@ -1267,4 +1267,14 @@ class Doctrine_Hydrate extends Doctrine_Locator_Injectable implements Serializab
     {
         return Doctrine_Lib::formatSql($this->getQuery());
     }
+
+    /**
+     * Return the parts
+     *
+     * @return array The parts
+     */
+    public function getParts()
+    {
+        return $this->parts;
+    }
 }

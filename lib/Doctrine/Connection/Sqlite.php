@@ -18,7 +18,9 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.phpdoctrine.com>.
  */
+
 Doctrine::autoload("Doctrine_Connection_Common");
+
 /**
  * Doctrine_Connection_Sqlite
  *
@@ -46,9 +48,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
      */
     public function __construct(Doctrine_Manager $manager, $adapter)
     {
-
-        $this->supported = array(
-                          'sequences'            => 'emulated',
+        $this->supported = array('sequences'            => 'emulated',
                           'indexes'              => true,
                           'affected_rows'        => true,
                           'summary_functions'    => true,
@@ -67,14 +67,7 @@ class Doctrine_Connection_Sqlite extends Doctrine_Connection_Common
                           'identifier_quoting'   => true,
                           'pattern_escaping'     => false,
                           );
-        /**
-        $this->options['base_transaction_name'] = '___php_Doctrine_sqlite_auto_commit_off';
-        $this->options['fixed_float'] = 0;
-        $this->options['database_path'] = '';
-        $this->options['database_extension'] = '';
-        $this->options['server_version'] = '';
-        */
-        parent::__construct($manager, $adapter);
+         parent::__construct($manager, $adapter);
 
         if ($this->isConnected) {
             $this->dbh->sqliteCreateFunction('mod',    array('Doctrine_Expression_Sqlite', 'modImpl'), 2);
