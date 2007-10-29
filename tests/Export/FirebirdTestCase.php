@@ -58,13 +58,7 @@ class Doctrine_Export_Firebird_TestCase extends Doctrine_UnitTestCase
 
         $this->export->createTable($name, $fields);
 
-        $this->assertEqual($this->adapter->pop(), 'CREATE TRIGGER mytable_AUTOINCREMENT_PK FOR mytable
-                        ACTIVE BEFORE INSERT POSITION 0
-                        AS
-                        BEGIN
-                        IF (NEW.id IS NULL OR NEW.id = 0) THEN
-                            NEW.id = GEN_ID(mytable_seq, 1);
-                        END');
+        $this->assertEqual($this->adapter->pop(), 'CREATE TRIGGER mytable_AUTOINCREMENT_PK FOR mytable ACTIVE BEFORE INSERT POSITION 0 AS BEGIN IF (NEW.id IS NULL OR NEW.id = 0) THEN NEW.id = GEN_ID(mytable_seq, 1) END');
     }
     public function testCreateTableSupportsDefaultAttribute() 
     {
