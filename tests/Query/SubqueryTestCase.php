@@ -37,10 +37,10 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
     public function testSubqueryWithWherePartAndInExpression()
     {
         $q = new Doctrine_Query();
-        $q->from('User')->where("User.id NOT IN (SELECT User.id FROM User WHERE User.name = 'zYne')");
+        $q->from('User u')->where("u.id NOT IN (SELECT u2.id FROM User u2 WHERE u2.name = 'zYne')");
 
         $this->assertEqual($q->getQuery(),
-        "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e WHERE e.id NOT IN (SELECT e.id AS e__id FROM entity e WHERE e.name = 'zYne' AND (e.type = 0)) AND (e.type = 0)");
+        "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e WHERE e.id NOT IN (SELECT e2.id AS e2__id FROM entity e2 WHERE e2.name = 'zYne' AND (e.type = 0 AND (e2.type = 0 OR e2.type IS NULL))) AND (e.type = 0)");
 
         $users = $q->execute();
 
@@ -53,7 +53,7 @@ class Doctrine_Query_Subquery_TestCase extends Doctrine_UnitTestCase
         $q = new Doctrine_Query();
         $q->from('User u')->where('u.id NOT IN (SELECT g.user_id FROM Groupuser g)');
 
-        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e WHERE e.id NOT IN (SELECT g.user_id AS g__user_id FROM groupuser g) AND (e.type = 0)");
+        $this->assertEqual($q->getQuery(), "SELECT e.id AS e__id, e.name AS e__name, e.loginname AS e__loginname, e.password AS e__password, e.type AS e__type, e.created AS e__created, e.updated AS e__updated, e.email_id AS e__email_id FROM entity e WHERE e.id NOT IN (SELECT g.user_id AS g__user_id FROM groupuser g WHERE (e.type = 0)) AND (e.type = 0)");
     }
 
     public function testSubqueryInSelectPart()
