@@ -74,7 +74,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
     
                     $alias = $this->query->getTableAlias($reference);
                     $table = $map['table'];
-                } 
+                }
             }
             $first = $this->query->parseClause($first);
 
@@ -97,7 +97,7 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
 
                 // subquery found
                 $q     = new Doctrine_Query();
-                $value = '(' . $q->isSubquery(true)->parseQuery($trimmed)->getQuery() . ')';
+                $value = '(' . $this->query->createSubquery()->parseQuery($trimmed, false)->getQuery() . ')';
 
             } elseif (substr($trimmed, 0, 4) == 'SQL:') {
                 $value = '(' . substr($trimmed, 4) . ')';
