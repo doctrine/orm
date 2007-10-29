@@ -40,6 +40,7 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
         $this->tables = array('Entity', 'EnumTest', 'GroupUser', 'Account', 'Book');
         parent::prepareTables();
     }
+
     public function testDirectParameterSetting() 
     {
         $this->connection->clear();
@@ -306,4 +307,12 @@ class Doctrine_Query_Where_TestCase extends Doctrine_UnitTestCase
         $q->execute(array(1, 'verified'));
     }
 
+    public function testLiteralValueAsInOperatorOperandIsSupported()
+    {
+        $q = new Doctrine_Query();
+        
+        $q->select('u.id')->from('User u')->where('1 IN (1, 2)');
+        
+        $this->assertEqual($q->getSql(), 'SELECT e.id AS e__id FROM entity e WHERE 1 IN (1, 2) AND (e.type = 0)');
+    }
 }

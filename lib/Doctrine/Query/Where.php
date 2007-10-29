@@ -74,17 +74,10 @@ class Doctrine_Query_Where extends Doctrine_Query_Condition
     
                     $alias = $this->query->getTableAlias($reference);
                     $table = $map['table'];
-                }
-                if ($this->query->getType() === Doctrine_Query::SELECT) {
-                    $first = $conn->quoteIdentifier($alias)
-                           . '.'
-                           . $conn->quoteIdentifier($table->getColumnName($field));
-                } else {
-                    $first = $conn->quoteIdentifier($table->getColumnName($field));
-                }
-            } else {
-                $first = $this->query->parseClause($first);
+                } 
             }
+            $first = $this->query->parseClause($first);
+
             $sql = $first . ' ' . $operator . ' ' . $this->parseValue($value, $table, $field);
         
             return $sql;  

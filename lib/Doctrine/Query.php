@@ -65,12 +65,12 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      * @var array $pendingSubqueries        SELECT part subqueries, these are called pending subqueries since
      *                                      they cannot be parsed directly (some queries might be correlated)
      */
-    protected $pendingSubqueries = array();
+    protected $_pendingSubqueries = array();
 
     /**
-     * @var array $pendingFields
+     * @var array $_pendingFields           an array of pending fields (fields waiting to be parsed)
      */
-    protected $pendingFields     = array();
+    protected $_pendingFields     = array();
 
     /**
      * @var array $_parsers                 an array of parser objects, each DQL query part has its own parser
@@ -123,8 +123,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
     public function reset()
     {
         $this->_pendingJoinConditions = array();
-        $this->pendingSubqueries = array();
-        $this->pendingFields = array();
+        $this->_pendingSubqueries = array();
+        $this->_pendingFields = array();
         $this->_neededTables = array();
         $this->_expressionMap = array();
         $this->subqueryAliases = array();
@@ -387,8 +387,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $tableAlias = $this->getTableAlias($componentAlias);
         $table      = $this->_aliasMap[$componentAlias]['table'];
 
-        if (isset($this->pendingFields[$componentAlias])) {
-            $fields = $this->pendingFields[$componentAlias];
+        if (isset($this->_pendingFields[$componentAlias])) {
+            $fields = $this->_pendingFields[$componentAlias];
 
             // check for wildcards
             if (in_array('*', $fields)) {
@@ -555,7 +555,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                     $field = $e[0];
                 }
 
-                $this->pendingFields[$componentAlias][] = $field;
+                $this->_pendingFields[$componentAlias][] = $field;
             }
         }
     }
@@ -576,6 +576,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function parseClause($clause) 
     {
+    	if (is_numeric($clause)) {
+    	   return $clause;
+    	}
+
         $terms = Doctrine_Tokenizer::clauseExplode($clause, array(' ', '+', '-', '*', '/'));
 
         $str = '';
@@ -622,29 +626,39 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                             $e = explode('.', $term[0]);
 
                             $field = array_pop($e);
-                            $componentAlias = implode('.', $e);
 
-                            // check the existence of the component alias
-                            if ( ! isset($this->_aliasMap[$componentAlias])) {
-                                throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
+                            if ($this->getType() === Doctrine_Query::SELECT) {
+                                $componentAlias = implode('.', $e);
+    
+                                if (empty($componentAlias)) {
+                                    $componentAlias = $this->getRootAlias();
+                                }
+    
+                                // check the existence of the component alias
+                                if ( ! isset($this->_aliasMap[$componentAlias])) {
+                                    throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
+                                }
+    
+                                $table = $this->_aliasMap[$componentAlias]['table'];
+    
+                                // get the actual field name from alias
+                                $field = $table->getColumnName($field);
+    
+                                // check column existence
+                                if ( ! $table->hasColumn($field)) {
+                                    throw new Doctrine_Query_Exception('Unknown column ' . $field);
+                                }
+    
+                                $tableAlias = $this->getTableAlias($componentAlias);
+    
+                                // build sql expression
+                                $term[0] = $this->_conn->quoteIdentifier($tableAlias)
+                                         . '.'
+                                         . $this->_conn->quoteIdentifier($field);
+                            } else {
+                                // build sql expression
+                                $term[0] = $this->_conn->quoteIdentifier($field);
                             }
-
-                            $table = $this->_aliasMap[$componentAlias]['table'];
-
-                            // get the actual field name from alias
-                            $field = $table->getColumnName($field);
-
-                            // check column existence
-                            if ( ! $table->hasColumn($field)) {
-                                throw new Doctrine_Query_Exception('Unknown column ' . $field);
-                            }
-
-                            $tableAlias = $this->getTableAlias($componentAlias);
-
-                            // build sql expression
-                            $term[0] = $this->_conn->quoteIdentifier($tableAlias) 
-                                     . '.' 
-                                     . $this->_conn->quoteIdentifier($field);
                         }
                     }
                 }
@@ -725,7 +739,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function processPendingSubqueries()
     {
-        foreach ($this->pendingSubqueries as $value) {
+        foreach ($this->_pendingSubqueries as $value) {
             list($dql, $alias) = $value;
 
             $subquery = $this->createSubquery();
@@ -743,7 +757,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $this->aggregateMap[$alias] = $sqlAlias;
             $this->_aliasMap[$componentAlias]['agg'][] = $alias;
         }
-        $this->pendingSubqueries = array();
+        $this->_pendingSubqueries = array();
     }
 
     /**
@@ -869,7 +883,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 if ( ! in_array($e[3], $aliases) &&
                     ! in_array($e[2], $aliases) &&
 
-                    ! empty($this->pendingFields)) {
+                    ! empty($this->_pendingFields)) {
                     continue;
                 }
 
@@ -1019,7 +1033,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             array_unshift($this->parts['select'], implode(', ', $sql));
         }
 
-        $this->pendingFields = array();
+        $this->_pendingFields = array();
 
         // build the basic query
         $q  = $this->getQueryBase();
@@ -1536,7 +1550,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $restoreState = false;
                 // load fields if necessary
                 if ($loadFields && empty($this->_dqlParts['select'])) {
-                    $this->pendingFields[$componentAlias] = array('*');
+                    $this->_pendingFields[$componentAlias] = array('*');
                 }
             }
             $parent = $prevPath;
