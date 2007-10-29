@@ -272,16 +272,16 @@ END;
         $ret = '';
         foreach ($columns as $name => $column) {
             // getters
-            $ret .= "\n\tpublic function get".Doctrine::classify($name)."(\$load = true)\n";
-            $ret .= "\t{\n";
-            $ret .= "\t\treturn \$this->get('{$name}', \$load);\n";
-            $ret .= "\t}\n";
+            $ret .= "\n  public function get".Doctrine::classify($name)."(\$load = true)\n";
+            $ret .= "  {\n";
+            $ret .= "    return \$this->get('{$name}', \$load);\n";
+            $ret .= "  }\n";
 
             // setters
-            $ret .= "\n\tpublic function set".Doctrine::classify($name)."(\${$name}, \$load = true)\n";
-            $ret .= "\t{\n";
-            $ret .= "\t\treturn \$this->set('{$name}', \${$name}, \$load);\n";
-            $ret .= "\t}\n";
+            $ret .= "\n  public function set".Doctrine::classify($name)."(\${$name}, \$load = true)\n";
+            $ret .= "  {\n";
+            $ret .= "    return \$this->set('{$name}', \${$name}, \$load);\n";
+            $ret .= "  }\n";
         }
 
         return $ret;
@@ -300,18 +300,18 @@ END;
         $i = 0;
         
         if (isset($options['inheritance']['extends']) && !(isset($options['override_parent']) && $options['override_parent'] == false)) {
-            $ret[$i] = "\t\tparent::setTableDefinition();";
+            $ret[$i] = "    parent::setTableDefinition();";
             $i++;
         }
         
         if (isset($options['tableName']) && !empty($options['tableName'])) {
-            $ret[$i] = "\t\t".'$this->setTableName(\''. $options['tableName'].'\');';
+            $ret[$i] = "    ".'$this->setTableName(\''. $options['tableName'].'\');';
             
             $i++;
         }
         
         foreach ($columns as $name => $column) {
-            $ret[$i] = "\t\t".'$this->hasColumn(\'' . $name . '\', \'' . $column['type'] . '\'';
+            $ret[$i] = "    ".'$this->hasColumn(\'' . $name . '\', \'' . $column['type'] . '\'';
             
             if ($column['length']) {
                 $ret[$i] .= ', ' . $column['length'];
@@ -372,7 +372,7 @@ END;
         $code = trim($code);
         
         if ($code) {
-          return "\n\tpublic function setTableDefinition()"."\n\t{\n\t\t".$code."\n\t}";
+          return "\n  public function setTableDefinition()"."\n  {\n    ".$code."\n  }";
         }
     }
 
@@ -390,12 +390,12 @@ END;
             if (is_array($options) && !empty($options)) {
                 $optionsPhp = $this->arrayToPhpArrayCode($options);
             
-                $build .= "\t\t\$this->loadTemplate('" . $name . "', " . $optionsPhp . ");\n";
+                $build .= "    \$this->loadTemplate('" . $name . "', " . $optionsPhp . ");\n";
             } else {
                 if (isset($templates[0])) {
-                    $build .= "\t\t\$this->loadTemplate('" . $options . "');\n";
+                    $build .= "    \$this->loadTemplate('" . $options . "');\n";
                 } else {
-                    $build .= "\t\t\$this->loadTemplate('" . $name . "');\n";
+                    $build .= "    \$this->loadTemplate('" . $name . "');\n";
                 }
             }
         }
@@ -416,12 +416,12 @@ END;
             if (is_array($options) && !empty($options)) {
                 $optionsPhp = $this->arrayToPhp($options);
                 
-                $build .= "\t\t\$this->actAs('" . $name . "', " . $optionsPhp . ");\n";
+                $build .= "    \$this->actAs('" . $name . "', " . $optionsPhp . ");\n";
             } else {
                 if (isset($actAs[0])) {
-                    $build .= "\t\t\$this->actAs('" . $options . "');\n";
+                    $build .= "    \$this->actAs('" . $options . "');\n";
                 } else {
-                    $build .= "\t\t\$this->actAs('" . $name . "');\n";
+                    $build .= "    \$this->actAs('" . $name . "');\n";
                 }
             }
         }
@@ -473,7 +473,7 @@ END;
                 $values = substr($values, 0, strlen($values) - 3);
             }
             
-            $build .= "\t\t\$this->setAttribute(Doctrine::ATTR_" . strtoupper($key) . ", " . $values . ");\n";
+            $build .= "    \$this->setAttribute(Doctrine::ATTR_" . strtoupper($key) . ", " . $values . ");\n";
         }
         
         return $build;
@@ -490,7 +490,7 @@ END;
       $build = '';
 
       foreach ($indexes as $indexName => $definitions) {
-          $build .= "\n\t\t".'$this->index(\'' . $indexName . '\', array(';
+          $build .= "\n    ".'$this->index(\'' . $indexName . '\', array(';
 
           foreach ($definitions as $name => $value) {
 
@@ -559,7 +559,7 @@ END;
         $i = 0;
         
         if (isset($options['inheritance']['extends']) && !(isset($options['override_parent']) && $options['override_parent'] == false)) {
-            $ret[$i] = "\t\tparent::setUp();";
+            $ret[$i] = "    parent::setUp();";
             $i++;
         }
         
@@ -573,9 +573,9 @@ END;
 
             if ($relation['type'] === Doctrine_Relation::ONE || 
                 $relation['type'] === Doctrine_Relation::ONE_COMPOSITE) {
-                $ret[$i] = "\t\t".'$this->hasOne(\'' . $class . $alias . '\'';
+                $ret[$i] = "    ".'$this->hasOne(\'' . $class . $alias . '\'';
             } else {
-                $ret[$i] = "\t\t".'$this->hasMany(\'' . $class . $alias . '\'';
+                $ret[$i] = "    ".'$this->hasMany(\'' . $class . $alias . '\'';
             }
             
             $a = array();
@@ -620,14 +620,14 @@ END;
         
         if (isset($options['inheritance']['keyField']) && isset($options['inheritance']['keyValue'])) {
             $i++;
-            $ret[$i] = "\t\t".'$this->setInheritanceMap(array(\''.$options['inheritance']['keyField'].'\' => '.$options['inheritance']['keyValue'].'));';
+            $ret[$i] = "    ".'$this->setInheritanceMap(array(\''.$options['inheritance']['keyField'].'\' => '.$options['inheritance']['keyValue'].'));';
         }
         
         $code = implode("\n", $ret);
         $code = trim($code);
         
         if ($code) {
-          return "\n\tpublic function setUp()\n\t{\n\t\t".$code."\n\t}";
+          return "\n  public function setUp()\n  {\n    ".$code."\n  }";
         }
     }
 
