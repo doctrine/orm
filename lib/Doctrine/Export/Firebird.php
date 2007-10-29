@@ -88,13 +88,12 @@ class Doctrine_Export_Firebird extends Doctrine_Export
         $table = $this->conn->quoteIdentifier($table, true);
         $name  = $this->conn->quoteIdentifier($name,  true);
 
-        $triggerSql = 'CREATE TRIGGER ' . $trigger_name . ' FOR ' . $table . '
-                        ACTIVE BEFORE INSERT POSITION 0
-                        AS
-                        BEGIN
-                        IF (NEW.' . $name . ' IS NULL OR NEW.' . $name . ' = 0) THEN
-                            NEW.' . $name . ' = GEN_ID('.$sequence_name.', 1);
-                        END';
+        $triggerSql = 'CREATE TRIGGER ' . $trigger_name . ' FOR ' . $table
+                    . ' ACTIVE BEFORE INSERT POSITION 0 AS'
+                    . ' BEGIN'
+                    . ' IF (NEW.' . $name . ' IS NULL OR NEW.' . $name . ' = 0) THEN'
+                    . ' NEW.' . $name . ' = GEN_ID('.$sequence_name.', 1)'
+                    . ' END';
         $result = $this->conn->exec($triggerSql);
 
         // TODO ? $this->_silentCommit();
