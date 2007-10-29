@@ -175,7 +175,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
             $this->prepareIdentifiers($exists);
 
             if ( ! $exists) {
-                if ($count > 0) {
+                if ($count > count($this->_values)) {
                     $this->_state = Doctrine_Record::STATE_TDIRTY;
                 } else {
                     $this->_state = Doctrine_Record::STATE_TCLEAN;
