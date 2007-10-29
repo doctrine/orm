@@ -120,9 +120,6 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         return new Doctrine_Query($conn);
     }
 
-    /**
-     * Resets the query object, so that it can be used again for a fresh query
-     */
     public function reset()
     {
         $this->_pendingJoinConditions = array();
