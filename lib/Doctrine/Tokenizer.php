@@ -32,15 +32,6 @@
  */
 class Doctrine_Tokenizer 
 {
-    public function __construct() 
-    {
-        
-    }
-    public function tokenize() 
-    {
-
-    }
-
     /**
      * trims brackets
      *

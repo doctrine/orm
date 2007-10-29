@@ -178,7 +178,7 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;!&nbsp;$table&nbsp;instanceof&nbsp;Doctrine_Table)&nbsp;{
 </td></tr>
 <tr><td>57</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Search_Exception('Invalid&nbsp;argument&nbsp;type.&nbsp;Expected&nbsp;instance&nbsp;of&nbsp;Doctrine_Table.');
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;Doctrine_Search_Exception('Invalid&nbsp;argument&nbsp;type.&nbsp;Expected&nbsp;instance&nbsp;of&nbsp;Doctrine_Table.');
 </td></tr>
 <tr><td>58</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
@@ -250,16 +250,16 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;organize&nbsp;terms&nbsp;according&nbsp;weights
 </td></tr>
 <tr><td>81</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$weighted&nbsp;=&nbsp;true;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$weighted&nbsp;=&nbsp;true;
 </td></tr>
 <tr><td>82</td>
 <td class="normal">
 </td></tr>
 <tr><td>83</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$select&nbsp;=&nbsp;'SELECT&nbsp;SUM(sub_relevance)&nbsp;AS&nbsp;relevance,&nbsp;'&nbsp;.&nbsp;$foreignId;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$select&nbsp;=&nbsp;'SELECT&nbsp;SUM(sub_relevance)&nbsp;AS&nbsp;relevance,&nbsp;'&nbsp;.&nbsp;$foreignId;
 </td></tr>
 <tr><td>84</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$from&nbsp;=&nbsp;'FROM&nbsp;'&nbsp;;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$from&nbsp;=&nbsp;'FROM&nbsp;'&nbsp;;
 </td></tr>
 <tr><td>85</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}

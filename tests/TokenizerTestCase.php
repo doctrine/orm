@@ -109,4 +109,11 @@ class Doctrine_Tokenizer_TestCase extends Doctrine_UnitTestCase
 
         $this->assertEqual($a, array('rdbms (dbal OR database)'));
     }
+
+
+    public function testQuoteExplodedShouldQuoteArray()
+    {
+        $term = Doctrine_Tokenizer::quoteExplode("test", array("'test'", "test2"));
+        $this->assertEqual($term[0], "test");
+    }
 }

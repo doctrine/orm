@@ -156,4 +156,22 @@ class Doctrine_Search_TestCase extends Doctrine_UnitTestCase
         
 
     }
+
+    public function testThrowExceptionIfInvalidTable()
+    {
+       try{
+           $oQuery = new Doctrine_Search_Query(new Doctrine_Query());
+           $this->fail("Should throw exception");
+       }catch(Doctrine_Search_Exception $exception){
+           $this->assertEqual($exception->getMessage(), "Invalid argument type. Expected instance of Doctrine_Table.");
+       }
+    }
+
+
+    public function testGenerateSearchQueryForWeightedSearch()
+    {
+        $oQuery = new Doctrine_Search_Query("SearchTest");
+        $oQuery->query("^test");
+        $this->assertEqual($oQuery->getSql(), "SELECT SUM(sub_relevance) AS relevance, id FROM  WHERE keyword = ? GROUP BY id ORDER BY relevance");
+    }
 }
