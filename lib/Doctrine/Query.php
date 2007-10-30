@@ -51,7 +51,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                                          'BY', 
                                          'CHARACTER_LENGTH', 
                                          'CHAR_LENGTH', 
-                                         'CURRENT_DATE', 
+                                         'CURRENT_DATE',
                                          'CURRENT_TIME', 
                                          'CURRENT_TIMESTAMP', 
                                          'DELETE', 
@@ -688,6 +688,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                                     $componentAlias = $this->getRootAlias();
                                 }
     
+                                $this->load($componentAlias);
+
                                 // check the existence of the component alias
                                 if ( ! isset($this->_aliasMap[$componentAlias])) {
                                     throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
@@ -1463,8 +1465,11 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         return $this;
     }
 
-    public function load($path, $loadFields = true) 
+    public function load($path, $loadFields = true)
     {
+    	if (isset($this->_aliasMap[$path])) {
+    	   return $this->_aliasMap[$path];
+    	}
         $e = Doctrine_Tokenizer::quoteExplode($path, ' INDEXBY ');
 
         $mapWith = null;
