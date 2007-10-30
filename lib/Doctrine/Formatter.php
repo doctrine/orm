@@ -226,4 +226,16 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
         return sprintf($this->conn->getAttribute(Doctrine::ATTR_IDXNAME_FORMAT),
                 preg_replace('/[^a-z0-9_\$]/i', '_', $idx));
     }
+    
+    /**
+     * adds table name formatting to a table name
+     *
+     * @param string    name of the table
+     * @return string   formatted table name
+     */
+    public function getTableName($table)
+    {
+        return sprintf($this->conn->getAttribute(Doctrine::ATTR_TBLNAME_FORMAT),
+                preg_replace('/[^a-z0-9_\$]/i', '_', $table));
+    }
 }

@@ -97,7 +97,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     }
     public function setTableName($tableName)
     {
-        $this->_table->setOption('tableName', $tableName);
+        $this->_table->setTableName($tableName);
     }
     public function setInheritanceMap($map)
     {

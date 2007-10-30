@@ -1467,7 +1467,7 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function setTableName($tableName)
     {
-        $this->_options['tableName'] = $tableName;
+        $this->setOption('tableName', $this->_conn->formatter->getTableName($tableName));
     }
 
     /**
