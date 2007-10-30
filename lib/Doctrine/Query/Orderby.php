@@ -44,29 +44,8 @@ class Doctrine_Query_Orderby extends Doctrine_Query_Part
         $ret = array();
 
         foreach (explode(',', trim($str)) as $r) {
-            $r = trim($r);
-            $e = explode(' ', $r);
-            $a = explode('.', $e[0]);
+            $r = $this->query->parseClause($r);
 
-            if (count($a) > 1) {
-                $field     = array_pop($a);
-                $reference = implode('.', $a);
-                $name      = end($a);
-
-                $map = $this->query->load($reference, false);
-                $tableAlias = $this->query->getTableAlias($reference);
-
-                $r = $tableAlias . '.' . $field;
-
-
-            } else {
-                $field = $this->query->getAggregateAlias($e[0]);
-
-                $r = $field;
-            }
-            if (isset($e[1])) {
-                $r .= ' ' . $e[1];
-            }
             $ret[] = $r;
         }
         return $ret;

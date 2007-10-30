@@ -44,18 +44,21 @@ class Doctrine_Query_Groupby extends Doctrine_Query_Part
         $r = array();
         foreach (explode(',', $str) as $reference) {
             $reference = trim($reference);
-            $e     = explode('.', $reference);
             
+            /**
             if (count($e) > 1) {
                 $field = array_pop($e);
                 $ref   = implode('.', $e);
                 $this->query->load($ref);
-    
+
                 $r[] = $this->query->getTableAlias($ref) . '.' . $field;
             } else {
                 $alias = end($e);
+
                 $r[] = $this->query->getAggregateAlias($alias);
             }
+            */
+            $r[] = $this->query->parseClause($reference);
         }
         return implode(', ', $r);
     }

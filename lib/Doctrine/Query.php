@@ -40,6 +40,57 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
     const STATE_LOCKED = 4;
 
+    protected static $_keywords  = array('ALL', 
+                                         'AND', 
+                                         'ANY', 
+                                         'AS', 
+                                         'ASC', 
+                                         'AVG', 
+                                         'BETWEEN', 
+                                         'BIT_LENGTH', 
+                                         'BY', 
+                                         'CHARACTER_LENGTH', 
+                                         'CHAR_LENGTH', 
+                                         'CURRENT_DATE', 
+                                         'CURRENT_TIME', 
+                                         'CURRENT_TIMESTAMP', 
+                                         'DELETE', 
+                                         'DESC', 
+                                         'DISTINCT', 
+                                         'EMPTY', 
+                                         'EXISTS', 
+                                         'FALSE', 
+                                         'FETCH', 
+                                         'FROM', 
+                                         'GROUP', 
+                                         'HAVING', 
+                                         'IN', 
+                                         'INDEXBY', 
+                                         'INNER', 
+                                         'IS', 
+                                         'JOIN',
+                                         'LEFT', 
+                                         'LIKE', 
+                                         'LOWER',
+                                         'MEMBER',
+                                         'MOD',
+                                         'NEW', 
+                                         'NOT', 
+                                         'NULL', 
+                                         'OBJECT', 
+                                         'OF', 
+                                         'OR', 
+                                         'ORDER', 
+                                         'OUTER', 
+                                         'POSITION', 
+                                         'SELECT', 
+                                         'SOME',
+                                         'TRIM', 
+                                         'TRUE', 
+                                         'UNKNOWN', 
+                                         'UPDATE', 
+                                         'WHERE');
+
 
     protected $subqueryAliases   = array();
 
@@ -576,6 +627,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
      */
     public function parseClause($clause) 
     {
+    	$clause = trim($clause);
+
     	if (is_numeric($clause)) {
     	   return $clause;
     	}
@@ -585,7 +638,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $str = '';
         foreach ($terms as $term) {
             $pos = strpos($term[0], '(');
-
+            
             if ($pos !== false) {
                 $name = substr($term[0], 0, $pos);
                 if ($name !== '') {
@@ -621,6 +674,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 }
             } else {
                 if (substr($term[0], 0, 1) !== "'" && substr($term[0], -1) !== "'") {
+                    
                     if (strpos($term[0], '.') !== false) {
                         if ( ! is_numeric($term[0])) {
                             $e = explode('.', $term[0]);
@@ -638,7 +692,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                                 if ( ! isset($this->_aliasMap[$componentAlias])) {
                                     throw new Doctrine_Query_Exception('Unknown component alias ' . $componentAlias);
                                 }
-    
+
                                 $table = $this->_aliasMap[$componentAlias]['table'];
     
                                 // get the actual field name from alias
@@ -650,7 +704,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                                 }
     
                                 $tableAlias = $this->getTableAlias($componentAlias);
-    
+
                                 // build sql expression
                                 $term[0] = $this->_conn->quoteIdentifier($tableAlias)
                                          . '.'
@@ -658,6 +712,47 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                             } else {
                                 // build sql expression
                                 $term[0] = $this->_conn->quoteIdentifier($field);
+                            }
+                        }
+                    } else {
+
+                        if ( ! empty($term[0]) &&
+                             ! in_array(strtoupper($term[0]), self::$_keywords) &&
+                             ! is_numeric($term[0])) {
+
+                            $componentAlias = $this->getRootAlias();
+
+                            $found = false;
+
+                            if ($componentAlias !== false && 
+                                $componentAlias !== null) {
+                                $table = $this->_aliasMap[$componentAlias]['table'];
+
+                                // check column existence
+                                if ($table->hasColumn($term[0])) {
+                                    $found = true;
+    
+                                    // get the actual field name from alias
+                                    $term[0] = $table->getColumnName($term[0]);
+
+                                    $tableAlias = $this->getTableAlias($componentAlias);
+
+                                    if ($this->getType() === Doctrine_Query::SELECT) {
+                                        // build sql expression
+                                        $term[0] = $this->_conn->quoteIdentifier($tableAlias)
+                                                 . '.'
+                                                 . $this->_conn->quoteIdentifier($term[0]);
+                                    } else {
+                                        // build sql expression
+                                        $term[0] = $this->_conn->quoteIdentifier($term[0]);
+                                    }
+                                } else {
+                                    $found = false;
+                                }
+                            }
+
+                            if ( ! $found) {
+                                $term[0] = $this->getAggregateAlias($term[0]);
                             }
                         }
                     }
