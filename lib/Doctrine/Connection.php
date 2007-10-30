@@ -229,7 +229,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
         if ($attribute >= 100) {
             if ( ! isset($this->attributes[$attribute])) {
-                return $this->parent->getAttribute($attribute);
+                return parent::getAttribute($attribute);
             }
             return $this->attributes[$attribute];
         }
