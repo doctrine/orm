@@ -129,6 +129,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
                 break;
             case Doctrine::ATTR_SEQNAME_FORMAT:
             case Doctrine::ATTR_IDXNAME_FORMAT:
+            case Doctrine::ATTR_TBLNAME_FORMAT:
                 if ($this instanceof Doctrine_Table) {
                     throw new Doctrine_Exception('Sequence / index name format attributes cannot be set'
                                                . 'at table level (only at connection or global level).');
