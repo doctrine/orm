@@ -291,7 +291,7 @@ class User extends Doctrine_Record
     {
         $this->hasMany('User as Friend', array('local'    => 'user1',
                                                'foreign'  => 'user2',
-                                               'refClass' => 'UserReference'
+                                               'refClass' => 'UserReference',
                                                'equal'    => true,
                                                 );
     }
