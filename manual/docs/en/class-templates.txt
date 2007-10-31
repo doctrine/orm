@@ -198,7 +198,7 @@ $user->login($username, $password);
 You can get the record that invoked the delegate method by using the getInvoker() method of Doctrine_Template. Consider the AuthTemplate example. If we want to have access to the User object we just need to do the following:
 
 <code type="php">
-class AuthTemplate extends Doctrine_Record
+class AuthTemplate extends Doctrine_Template
 {
     public function setTableDefinition()
     {
