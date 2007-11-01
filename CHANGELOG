@@ -1,10 +1,10 @@
 Beta 2
 ------
 
-* exportSchema() replaced by createTablesFromModels()
-* exportSql() replaced by generateSqlFromModels()
-* importSchema() replaced by generateModelsFromDb()
-* loadAll() replaced by loadAllRuntimeClasses()
+* r3048: Doctrine::exportSchema() replaced by Doctrine::createTablesFromModels()
+* r3048: Doctrine::exportSql() replaced by Doctrine::generateSqlFromModels()
+* r3048: Doctrine::importSchema() replaced by Doctrine::generateModelsFromDb()
+* r3048: loadAll() loadAllRuntimeClasses() removed
 
 Beta 1
 ------
