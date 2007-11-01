@@ -39,7 +39,14 @@ class Doctrine_Template_Timestampable extends Doctrine_Template
      *
      * @var string
      */
-    protected $_options = array();
+    protected $_options = array('created' =>  array('name'    =>  'created_at',
+                                                    'type'    =>  'timestamp',
+                                                    'format'  =>  'Y-m-d H:i:s',
+                                                    'options' =>  array()),
+                                'updated' =>  array('name'    =>  'updated_at',
+                                                    'type'    =>  'timestamp',
+                                                    'format'  =>  'Y-m-d H:i:s',
+                                                    'options' =>  array()));
     
     /**
      * __construct
@@ -49,7 +56,7 @@ class Doctrine_Template_Timestampable extends Doctrine_Template
      */
     public function __construct(array $options)
     {
-        $this->_options = $options;
+        $this->_options = array_merge($options, $this->_options);
     }
     
     /**
@@ -59,35 +66,8 @@ class Doctrine_Template_Timestampable extends Doctrine_Template
      */
     public function setTableDefinition()
     {
-        $createdOptions = array();
-        $updatedOptions = array();
-        
-        if (isset($this->_options['created'])) {
-            $createdOptions = $this->_options['created'];
-            unset($createdOptions['name']);
-            unset($createdOptions['type']);
-        }
-        
-        if (isset($this->_options['updated'])) {
-            $updatedOptions = $this->_options['updated'];
-            unset($updatedOptions['name']);
-            unset($updatedOptions['type']);
-        }
-        
-        $createdName = isset($this->_options['created']['name']) ? $this->_options['created']['name']:'created_at';
-        $createdType = isset($this->_options['created']['type']) ? $this->_options['created']['type']:'timestamp';
-        
-        $updatedName = isset($this->_options['updated']['name']) ? $this->_options['updated']['name']:'updated_at';
-        $updatedType = isset($this->_options['updated']['type']) ? $this->_options['updated']['type']:'timestamp';
-        
-        $this->hasColumn($createdName, $createdType, null, $createdOptions);
-        $this->hasColumn($updatedName, $updatedType, null, $updatedOptions);
-        
-        $this->_options['created']['name'] = $createdName;
-        $this->_options['created']['type'] = $createdType;
-        
-        $this->_options['updated']['name'] = $updatedName;
-        $this->_options['updated']['type'] = $updatedType;
+        $this->hasColumn($this->_options['created']['name'], $this->_options['created']['type'], null, $this->_options['created']['name']);
+        $this->hasColumn($this->_options['updated']['name'], $this->_options['updated']['type'], null, $this->_options['updated']['name']);
         
         $this->addListener(new Doctrine_Timestampable_Listener($this->_options));
     }
