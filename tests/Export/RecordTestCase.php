@@ -96,7 +96,7 @@ class Doctrine_Export_Record_TestCase extends Doctrine_UnitTestCase
 
     public function testExportModelFromDirectory()
     {
-        Doctrine::exportSchema(dirname(__FILE__) . DIRECTORY_SEPARATOR .'..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'export');
+        Doctrine::createTablesFromModels(dirname(__FILE__) . DIRECTORY_SEPARATOR .'..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'export');
 
         $this->assertEqual($this->adapter->pop(), 'COMMIT');
         $this->assertEqual($this->adapter->pop(), 'ALTER TABLE cms__category_languages ADD FOREIGN KEY (category_id) REFERENCES cms__category(id) ON DELETE CASCADE');

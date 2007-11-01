@@ -1,6 +1,6 @@
 + Getting started
 + Sandbox
-+ Command Line Interface
++ Facade
 + Connection management
 + Basic schema mapping
 + Relations

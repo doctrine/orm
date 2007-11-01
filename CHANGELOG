@@ -1,0 +1,10 @@
+Beta 2
+------
+
+* exportSchema() replaced by createTablesFromModels()
+* exportSql() replaced by generateSqlFromModels()
+* importSchema() replaced by generateModelsFromDb()
+* loadAll() replaced by loadAllRuntimeClasses()
+
+Beta 1
+------

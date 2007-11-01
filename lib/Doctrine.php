@@ -486,69 +486,6 @@ final class Doctrine
     }
 
     /**
-     * loadAll
-     * loads all runtime classes
-     *
-     * @return void
-     */
-    public static function loadAll()
-    {
-        return self::loadAllRuntimeClasses();
-    }
-
-    /**
-     * importSchema
-     * method for importing existing schema to Doctrine_Record classes
-     *
-     * @param string $directory Directory to write your models to
-     * @param array $databases Array of databases to generate models for
-     * @return boolean
-     */
-    public static function importSchema($directory, array $databases = array())
-    {
-        return self::generateModelsFromDb($directory, $databases);
-    }
-
-    /**
-     * exportSchema
-     * method for exporting Doctrine_Record classes to a schema
-     *
-     * @param string $directory Directory containing your models
-     * @return void
-     */
-    public static function exportSchema($directory = null)
-    {
-        return self::createTablesFromModels($directory);
-    }
-
-    /**
-     * exportSql
-     * method for exporting Doctrine_Record classes to a schema
-     *
-     * @param string $directory
-     */
-    public static function exportSql($directory = null)
-    {
-        return self::generateSqlFromModels($directory);
-    }
-
-    /**
-     * loadAllRuntimeClasses
-     *
-     * loads all runtime classes
-     *
-     * @return void
-     */
-    public static function loadAllRuntimeClasses()
-    {
-        $classes = Doctrine_Compiler::getRuntimeClasses();
-
-        foreach ($classes as $class) {
-            self::autoload($class);
-        }
-    }
-
-    /**
      * loadModels
      *
      * Recursively load all models from a directory or array of directories
@@ -592,6 +529,7 @@ final class Doctrine
     {
         if ($classes === null) {
             $classes = get_declared_classes();
+            $classes = array_merge($classes, array_keys(self::$_loadedModels));
         }
         
         $parent = new ReflectionClass('Doctrine_Record');
@@ -693,7 +631,7 @@ final class Doctrine
     public static function generateModelsFromYaml($yamlPath, $directory, $options = array())
     {
         $import = new Doctrine_Import_Schema();
-        $import->setOption('generateBaseClasses', true);
+        $import->setOptions($options);
         
         return $import->importSchema($yamlPath, 'yml', $directory);
     }
@@ -861,26 +799,6 @@ final class Doctrine
     }
 
     /**
-     * loadDummyData
-     *
-     * Populdate your models with dummy data
-     *
-     * @param string $append Whether or not to append the data
-     * @param string $num Number of records to populate
-     * @return void
-     */
-    public static function loadDummyData($append, $num = 5)
-    {
-        $data = new Doctrine_Data();
-
-        if ( ! $append) {
-          $data->purge();
-        }
-        
-        return $data->importDummyData($num);
-    }
-
-    /**
      * migrate
      * 
      * Migrate database to specified $to version. Migrates from current to latest if you do not specify.
@@ -952,18 +870,6 @@ final class Doctrine
     }
 
     /**
-     * connection
-     *
-     * @param string $adapter 
-     * @param string $name 
-     * @return void
-     */
-    public static function connection($adapter, $name = null)
-    {
-        return Doctrine_Manager::connection($adapter, $name);
-    }
-
-    /**
      * fileFinder
      *
      * @param string $type 
@@ -982,7 +888,7 @@ final class Doctrine
      * cases dozens of files) can improve performance by an order of magnitude
      *
      * @param string $target
-     *
+     * @param array  $includedDrivers
      * @throws Doctrine_Exception
      * @return void
      */

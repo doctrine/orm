@@ -66,7 +66,7 @@ spl_autoload_register(array('Doctrine', 'autoload'));
 $manager = Doctrine_Manager::getInstance();
 $conn    = $manager->openConnection('pgsql://user:pass@localhost/test');
 
-Doctrine::exportSchema('models');
+Doctrine::createTablesFromModels('models');
 </code>
 
 This would execute the following queries on mysql.
@@ -94,44 +94,12 @@ spl_autoload_register(array('Doctrine', 'autoload'));
 $manager = Doctrine_Manager::getInstance();
 $conn    = $manager->openConnection('pgsql://user:pass@localhost/test');
 
-$queries = Doctrine::exportSql('models');
+$queries = Doctrine::generateSqlFromModels('models');
 
-print_r($queries);
+echo $queries;
 </code>
 
-Note that the methods Doctrine::exportSchema() and Doctrine::exportSql() are just short cuts for Doctrine_Export::exportSchema() and Doctrine_Export::exportSql(). So the following code is equivalent with the previous example:
-<code type="php">
-require_once('path-to-doctrine/lib/Doctrine.php');
-
-spl_autoload_register(array('Doctrine', 'autoload'));
-
-$manager = Doctrine_Manager::getInstance();
-$conn    = $manager->openConnection('pgsql://user:pass@localhost/test');
-
-$queries = $conn->export->exportSql('models');
-
-print_r($queries);
-</code>
-
-
-
-+++ Convenience methods
-
-In the previous example we exported all record classes within a directory. Sometimes you may want to export specific classes. It can be achieved by giving exportClasses() an array of class names:
-<code type="php">
-require_once('path-to-doctrine/lib/Doctrine.php');
-
-spl_autoload_register(array('Doctrine', 'autoload'));
-
-$manager = Doctrine_Manager::getInstance();
-$conn    = $manager->openConnection('pgsql://user:pass@localhost/test');
-
-
-$conn->export->exportClasses(array('User', 'Phonenumber'));
-</code>
-
-Consider the same situation and you want to get the array of sql queries needed to perform the exporting. It can be achieved with Doctrine_Export::exportClassesSql().
-
+Consider the same situation and you want to get the string of sql queries needed to perform the exporting. It can be achieved with Doctrine::generateSqlFromModels().
 
 +++ Export options
 
@@ -148,4 +116,6 @@ $manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_TABLES ^
 // turn off exporting
 
 $manager->setAttribute(Doctrine::ATTR_EXPORT, Doctrine::EXPORT_NONE);
+
+$sql = Doctrine::generateSqlFromModels();
 </code>

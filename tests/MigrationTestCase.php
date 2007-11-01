@@ -40,9 +40,6 @@ class Doctrine_Migration_TestCase extends Doctrine_UnitTestCase
         // migrate to version 3
         $migration->migrate(2);
 
-        // Make sure the column was added
-        $this->assertTrue(Doctrine_Manager::getInstance()->getTable('User')->hasColumn('field2'));
-        
         // now migrate back to original version
         $migration->migrate(0);
         
