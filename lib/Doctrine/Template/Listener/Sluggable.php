@@ -61,8 +61,10 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
         $name = $this->_options['name'];
 
         $record = $event->getInvoker();
-
-        $record->$name = $this->buildSlug($record);
+        
+        if (!$record->$name) {
+            $record->$name = $this->buildSlug($record);
+        }
     }
 
     protected function buildSlug($record)

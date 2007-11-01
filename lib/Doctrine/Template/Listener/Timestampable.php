@@ -20,7 +20,7 @@
  */
 
 /**
- * Doctrine_Timestampable_Listener
+ * Doctrine_Template_Listener_Timestampable
  *
  * @package     Doctrine
  * @subpackage  Template
@@ -30,7 +30,7 @@
  * @version     $Revision$
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-class Doctrine_Timestampable_Listener extends Doctrine_Record_Listener
+class Doctrine_Template_Listener_Timestampable extends Doctrine_Record_Listener
 {
     /**
      * Array of timestampable options
