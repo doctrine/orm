@@ -50,6 +50,11 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
      *                                      implementation classes
      */
     protected $_impl = array();
+    
+    /**
+     * @var array $_params                  an array of user defined parameters
+     */
+    protected $_params = array();
 
     /**
      * setAttribute
@@ -116,6 +121,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
             case Doctrine::ATTR_LOAD_REFERENCES:
             case Doctrine::ATTR_RECORD_LISTENER:
             case Doctrine::ATTR_THROW_EXCEPTIONS:
+            case Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE:
 
                 break;
             case Doctrine::ATTR_SEQCOL_NAME:
@@ -143,6 +149,31 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
 
     }
 
+    public function setParam($name, $value, $namespace = null) 
+    {
+    	if ($namespace = null) {
+    	    $namespace = $this->getAttribute(Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE);
+    	}
+    	
+    	$this->_params[$namespace][$name] = $value;
+    	
+    	return $this;
+    }
+    
+    public function getParam($name, $value, $namespace) 
+    {
+    	if ($namespace = null) {
+    	    $namespace = $this->getAttribute(Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE);
+    	}
+    	
+        if ( ! isset($this->_params[$name])) {
+            if (isset($this->parent)) {
+                return $this->parent->getParam($name);
+            }
+            return null;
+        }
+        return $this->_params[$name];
+    }
     /**
      * setImpl
      * binds given class to given template name

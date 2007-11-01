@@ -90,21 +90,22 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
         if ( ! $init) {
             $init = true;
             $attributes = array(
-                        Doctrine::ATTR_CACHE            => null,
-                        Doctrine::ATTR_LOAD_REFERENCES  => true,
-                        Doctrine::ATTR_LISTENER         => new Doctrine_EventListener(),
-                        Doctrine::ATTR_RECORD_LISTENER  => new Doctrine_Record_Listener(),
-                        Doctrine::ATTR_THROW_EXCEPTIONS => true,
-                        Doctrine::ATTR_VALIDATE         => Doctrine::VALIDATE_NONE,
-                        Doctrine::ATTR_QUERY_LIMIT      => Doctrine::LIMIT_RECORDS,
-                        Doctrine::ATTR_IDXNAME_FORMAT   => "%s_idx",
-                        Doctrine::ATTR_SEQNAME_FORMAT   => "%s_seq",
-                        Doctrine::ATTR_TBLNAME_FORMAT   => "%s",
-                        Doctrine::ATTR_QUOTE_IDENTIFIER => false,
-                        Doctrine::ATTR_SEQCOL_NAME      => 'id',
-                        Doctrine::ATTR_PORTABILITY      => Doctrine::PORTABILITY_ALL,
-                        Doctrine::ATTR_EXPORT           => Doctrine::EXPORT_ALL,
-                        Doctrine::ATTR_DECIMAL_PLACES   => 2,
+                        Doctrine::ATTR_CACHE                    => null,
+                        Doctrine::ATTR_LOAD_REFERENCES          => true,
+                        Doctrine::ATTR_LISTENER                 => new Doctrine_EventListener(),
+                        Doctrine::ATTR_RECORD_LISTENER          => new Doctrine_Record_Listener(),
+                        Doctrine::ATTR_THROW_EXCEPTIONS         => true,
+                        Doctrine::ATTR_VALIDATE                 => Doctrine::VALIDATE_NONE,
+                        Doctrine::ATTR_QUERY_LIMIT              => Doctrine::LIMIT_RECORDS,
+                        Doctrine::ATTR_IDXNAME_FORMAT           => "%s_idx",
+                        Doctrine::ATTR_SEQNAME_FORMAT           => "%s_seq",
+                        Doctrine::ATTR_TBLNAME_FORMAT           => "%s",
+                        Doctrine::ATTR_QUOTE_IDENTIFIER         => false,
+                        Doctrine::ATTR_SEQCOL_NAME              => 'id',
+                        Doctrine::ATTR_PORTABILITY              => Doctrine::PORTABILITY_ALL,
+                        Doctrine::ATTR_EXPORT                   => Doctrine::EXPORT_ALL,
+                        Doctrine::ATTR_DECIMAL_PLACES           => 2,
+                        Doctrine::ATTR_DEFAULT_PARAM_NAMESPACE  => 'doctrine',
                         );
             foreach ($attributes as $attribute => $value) {
                 $old = $this->getAttribute($attribute);

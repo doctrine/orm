@@ -176,16 +176,17 @@ final class Doctrine
     const ATTR_USE_NATIVE_ENUM      = 117;
     const ATTR_DEFAULT_SEQUENCE     = 133;
 
-    const ATTR_FETCHMODE            = 118;
-    const ATTR_NAME_PREFIX          = 121;
-    const ATTR_CREATE_TABLES        = 122;
-    const ATTR_COLL_LIMIT           = 123;
+    const ATTR_FETCHMODE                = 118;
+    const ATTR_NAME_PREFIX              = 121;
+    const ATTR_CREATE_TABLES            = 122;
+    const ATTR_COLL_LIMIT               = 123;
 
-    const ATTR_CACHE                = 150;
-    const ATTR_CACHE_LIFESPAN       = 151;
-    const ATTR_LOAD_REFERENCES      = 153;
-    const ATTR_RECORD_LISTENER      = 154;
-    const ATTR_THROW_EXCEPTIONS     = 155;
+    const ATTR_CACHE                    = 150;
+    const ATTR_CACHE_LIFESPAN           = 151;
+    const ATTR_LOAD_REFERENCES          = 153;
+    const ATTR_RECORD_LISTENER          = 154;
+    const ATTR_THROW_EXCEPTIONS         = 155;
+    const ATTR_DEFAULT_PARAM_NAMESPACE  = 156;
 
     /**
      * LIMIT CONSTANTS
