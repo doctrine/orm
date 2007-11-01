@@ -68,7 +68,7 @@ class Doctrine_Import_Builder
      *
      * @var string $suffix
      */
-    protected $_suffix = '.class.php';
+    protected $_suffix = '.php';
 
     /**
      * generateBaseClasses
@@ -233,6 +233,34 @@ class Doctrine_Import_Builder
     public function getTargetPath()
     {
         return $this->_path;
+    }
+
+    /**
+     * setOptions
+     *
+     * @param string $options 
+     * @return void
+     */
+    public function setOptions($options)
+    {
+        if (!empty($options)) {
+            foreach ($options as $key => $value) {
+                $this->setOption($key, $value);
+            }
+        }
+    }
+
+    /**
+     * setOption
+     *
+     * @param string $key 
+     * @param string $value 
+     * @return void
+     */
+    public function setOption($key, $value)
+    {
+        $name = '_'.$key;
+        $this->$name = $value;
     }
 
     /**

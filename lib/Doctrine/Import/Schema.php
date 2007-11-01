@@ -46,7 +46,7 @@ class Doctrine_Import_Schema
                                 'generateTableClasses'  =>  true,
                                 'baseClassesDirectory'  =>  'generated',
                                 'baseClassName'         =>  'Doctrine_Record',
-                                'suffix'                =>  '.class.php');
+                                'suffix'                =>  '.php');
     
     /**
      * getOption

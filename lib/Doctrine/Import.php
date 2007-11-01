@@ -196,7 +196,7 @@ class Doctrine_Import extends Doctrine_Connection_Module
      * @param array $databases
      * @return array                the names of the imported classes
      */
-    public function importSchema($directory, array $databases = array())
+    public function importSchema($directory, array $databases = array(), array $options = array())
     {
         $connections = Doctrine_Manager::getInstance()->getConnections();
         
@@ -208,8 +208,8 @@ class Doctrine_Import extends Doctrine_Connection_Module
           }
           
           $builder = new Doctrine_Import_Builder();
-          $builder->generateBaseClasses(true);
           $builder->setTargetPath($directory);
+          $builder->setOptions($options);
 
           $classes = array();
           foreach ($connection->import->listTables() as $table) {
