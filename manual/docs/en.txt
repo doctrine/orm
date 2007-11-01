@@ -5,6 +5,7 @@
 + Basic schema mapping
 + Relations
 + Working with objects
++ Component overview
 + Hierarchical data
 + Configuration
 + DQL (Doctrine Query Language)

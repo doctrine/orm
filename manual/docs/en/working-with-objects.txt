@@ -56,8 +56,6 @@ $user->save();
 
 This is due to a fact that $user->GroupUser loads all group links for given user. This can time-consuming task if user belongs to many groups. Even if the user belongs to few groups this will still execute an unnecessary SELECT statement.
 
-
-++ Component overview
 ++ Fetching objects
 
 Normally when you fetch data from database the following phases are executed:
@@ -130,7 +128,7 @@ This structure also applies to the hydration of objects(records) which is the de
 
 You should always use array hydration when you only need to data for access-only purposes, whereas you should use the record hydration when you need to change the fetched data.
 
-The constant O(n) performance of the hydration algorithm is ensured by a smart identifier caching solution. 
+The constant O(n) performance of the hydration algorithm is ensured by a smart identifier caching solution.
 
 +++ Field lazy-loading
 
