@@ -83,7 +83,9 @@ class Doctrine_Import_Schema
      */
     public function setOptions($options)
     {
-        $this->_options = $options;
+        if (!empty($options)) {
+          $this->_options = $options;
+        }
     }
 
     /**
