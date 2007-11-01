@@ -149,6 +149,11 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
 
     }
 
+    public function getParams()
+    {
+        return $his->_params;	
+    }
+
     public function setParam($name, $value, $namespace = null) 
     {
     	if ($namespace = null) {
