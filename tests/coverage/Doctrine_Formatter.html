@@ -694,5 +694,41 @@
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>229</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;
+</td></tr>
+<tr><td>230</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;/**
+</td></tr>
+<tr><td>231</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;adds&nbsp;table&nbsp;name&nbsp;formatting&nbsp;to&nbsp;a&nbsp;table&nbsp;name
+</td></tr>
+<tr><td>232</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*
+</td></tr>
+<tr><td>233</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;of&nbsp;the&nbsp;table
+</td></tr>
+<tr><td>234</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string&nbsp;&nbsp;&nbsp;formatted&nbsp;table&nbsp;name
+</td></tr>
+<tr><td>235</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+</td></tr>
+<tr><td>236</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;getTableName($table)
+</td></tr>
+<tr><td>237</td>
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
+</td></tr>
+<tr><td>238</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;sprintf($this-&gt;conn-&gt;getAttribute(Doctrine::ATTR_TBLNAME_FORMAT),
+</td></tr>
+<tr><td>239</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;preg_replace('/[^a-z0-9_\$]/i',&nbsp;'_',&nbsp;$table));
+</td></tr>
+<tr><td>240</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>241</td>
 <td class="covered">}</td></tr>
 </table></body></html>

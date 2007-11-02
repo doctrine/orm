@@ -651,6 +651,19 @@ final class Doctrine
     }
 
     /**
+     * createTablesFromArray
+     *
+     * Creates database tables for the models in the supplied array
+     *
+     * @param array $array An array of models to be exported
+     * @return void
+     */
+    public static function createTablesFromArray($array)
+    {
+        return Doctrine_Manager::connection()->export->exportClasses($array);
+    }
+
+    /**
      * generateSqlFromModels
      *
      * @param string $directory 

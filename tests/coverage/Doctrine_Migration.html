@@ -544,28 +544,28 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>179</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn&nbsp;=&nbsp;Doctrine_Manager::connection();
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn&nbsp;=&nbsp;Doctrine_Manager::connection();
 </td></tr>
 <tr><td>180</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>181</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($this-&gt;hasMigrated())&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;($this-&gt;hasMigrated())&nbsp;{
 </td></tr>
 <tr><td>182</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn-&gt;exec(&quot;UPDATE&nbsp;&quot;&nbsp;.&nbsp;$this-&gt;_migrationTableName&nbsp;.&nbsp;&quot;&nbsp;SET&nbsp;version&nbsp;=&nbsp;$number&quot;);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn-&gt;exec(&quot;UPDATE&nbsp;&quot;&nbsp;.&nbsp;$this-&gt;_migrationTableName&nbsp;.&nbsp;&quot;&nbsp;SET&nbsp;version&nbsp;=&nbsp;$number&quot;);
 </td></tr>
 <tr><td>183</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
 <tr><td>184</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn-&gt;exec(&quot;INSERT&nbsp;INTO&nbsp;&quot;&nbsp;.&nbsp;$this-&gt;_migrationTableName&nbsp;.&nbsp;&quot;&nbsp;(version)&nbsp;VALUES&nbsp;($number)&quot;);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn-&gt;exec(&quot;INSERT&nbsp;INTO&nbsp;&quot;&nbsp;.&nbsp;$this-&gt;_migrationTableName&nbsp;.&nbsp;&quot;&nbsp;(version)&nbsp;VALUES&nbsp;($number)&quot;);
 </td></tr>
 <tr><td>185</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>186</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>187</td>
 <td class="normal">
@@ -646,19 +646,19 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>213</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn&nbsp;=&nbsp;Doctrine_Manager::connection();
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$conn&nbsp;=&nbsp;Doctrine_Manager::connection();
 </td></tr>
 <tr><td>214</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>215</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$result&nbsp;=&nbsp;$conn-&gt;fetchColumn(&quot;SELECT&nbsp;version&nbsp;FROM&nbsp;&quot;&nbsp;.&nbsp;$this-&gt;_migrationTableName);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$result&nbsp;=&nbsp;$conn-&gt;fetchColumn(&quot;SELECT&nbsp;version&nbsp;FROM&nbsp;&quot;&nbsp;.&nbsp;$this-&gt;_migrationTableName);
 </td></tr>
 <tr><td>216</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>217</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;isset($result[0])&nbsp;?&nbsp;true:false;&nbsp;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;isset($result[0])&nbsp;?&nbsp;true:false;&nbsp;
 </td></tr>
 <tr><td>218</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
@@ -1030,16 +1030,16 @@
 <td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>341</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
 <tr><td>342</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;($i&nbsp;=&nbsp;$from;&nbsp;$i&nbsp;&gt;&nbsp;$to;&nbsp;$i--)&nbsp;{
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;($i&nbsp;=&nbsp;$from;&nbsp;$i&nbsp;&gt;&nbsp;$to;&nbsp;$i--)&nbsp;{
 </td></tr>
 <tr><td>343</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;doMigrateStep($direction,&nbsp;$i);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;doMigrateStep($direction,&nbsp;$i);
 </td></tr>
 <tr><td>344</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>345</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
@@ -1048,13 +1048,13 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>347</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;setCurrentVersion($to);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;setCurrentVersion($to);
 </td></tr>
 <tr><td>348</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>349</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$to;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$to;
 </td></tr>
 <tr><td>350</td>
 <td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
@@ -1168,16 +1168,16 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>387</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$options&nbsp;=&nbsp;get_defined_vars();
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$options&nbsp;=&nbsp;get_defined_vars();
 </td></tr>
 <tr><td>388</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>389</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;addChange('dropped_tables',&nbsp;$options);
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;addChange('dropped_tables',&nbsp;$options);
 </td></tr>
 <tr><td>390</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>391</td>
 <td class="normal">
@@ -1519,16 +1519,16 @@
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;{
 </td></tr>
 <tr><td>504</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$options&nbsp;=&nbsp;get_defined_vars();
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$options&nbsp;=&nbsp;get_defined_vars();
 </td></tr>
 <tr><td>505</td>
 <td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td></tr>
 <tr><td>506</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;addChange('changed_columns',&nbsp;$options);
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$this-&gt;addChange('changed_columns',&nbsp;$options);
 </td></tr>
 <tr><td>507</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>508</td>
 <td class="normal">
