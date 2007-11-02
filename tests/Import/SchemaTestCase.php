@@ -37,16 +37,16 @@ class Doctrine_Import_Schema_TestCase extends Doctrine_UnitTestCase
         $import = new Doctrine_Import_Schema();
         $import->importSchema('schema.yml', 'yml', 'classes');
         
-        if ( ! file_exists('classes/User.class.php')) {
+        if ( ! file_exists('classes/User.php')) {
             $this->fail();
         } else {
-            unlink('classes/User.class.php');
+            unlink('classes/User.php');
         }
         
-        if ( ! file_exists('classes/Group.class.php')) {
+        if ( ! file_exists('classes/Group.php')) {
             $this->fail();
         } else {
-            unlink('classes/Group.class.php');
+            unlink('classes/Group.php');
         }
     }
 }
