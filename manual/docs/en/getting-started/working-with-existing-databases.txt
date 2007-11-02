@@ -28,11 +28,11 @@ Now we would like to convert it into Doctrine record class. It can be achieved e
 require_once('lib/Doctrine.php');
 
 spl_autoload_register(array('Doctrine', 'autoload'));
-$conn = Doctrine_Manager::connection('mysql://root:dc34@localhost/test');
+Doctrine_Manager::connection('mysql://root:dc34@localhost/test');
 
 // import method takes one parameter: the import directory (the directory where
 // the generated record files will be put in
-$conn->import->importSchema('myrecords');
+Doctrine::generateModelsFromDb('myrecords');
 </code>
 
 That's it! Now there should be a file called File.php in your myrecords directory. The file should look like:

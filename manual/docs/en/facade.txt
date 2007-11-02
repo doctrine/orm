@@ -42,6 +42,9 @@ Doctrine::generateModelsFromYaml('/path/to/schema.yml', '/path/to/generate/model
 // Create all your tables from an existing set of models
 Doctrine::createTablesFromModels('/path/to/models');
 
+// Create the tables supplied in the array
+Doctrine::createTablesFromArray(array('User', 'Phoneumber'));
+
 // Generate string of sql commands from an existing set of models
 Doctrine::generateSqlFromModels('/path/to/models');
 

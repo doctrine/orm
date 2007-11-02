@@ -24,14 +24,18 @@ class User extends Doctrine_Record
 For exporting the user class into database we need a simple build script:
 
 <code type="php">
+//require the base Doctrine class
 require_once('lib/Doctrine.php');
-require_once('User.php');
 
+//register the autoloader
 spl_autoload_register(array('Doctrine', 'autoload'));
 
-$conn = Doctrine_Manager::connection('pgsql://user:pass@localhost/test');
+require_once('User.php');
 
-$conn->export->exportClasses(array('User'));
+//set up a connection
+Doctrine_Manager::connection('mysql://user:pass@localhost/test');
+
+//export the classes
+Doctrine::createTablesFromArray(array('User'));
 </code>
-
 We now have a user model that supports basic CRUD opperations! 

@@ -1,4 +1,5 @@
 ++ Introduction
+++ Compile
 ++ Fetch only what you need
 ++ Bundle your class files
 ++ Use a bytecode cache
