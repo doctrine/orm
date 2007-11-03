@@ -65,8 +65,8 @@ class Doctrine_Manager_TestCase extends Doctrine_UnitTestCase {
         // sqlite://full/unix/path/to/file.db
         // It expects only // since it thinks it is parsing a url
         // The problem after that is that the dns is not valid when being passed to PDO
-        $sqlite = 'sqlite:/full/unix/path/to/file.db';
-        $sqlitewin = 'sqlite:c:/full/windows/path/to/file.db';
+        $sqlite = 'sqlite:///full/unix/path/to/file.db';
+        $sqlitewin = 'sqlite://c:/full/windows/path/to/file.db';
         
         $manager = Doctrine_Manager::getInstance();
         
@@ -110,9 +110,9 @@ class Doctrine_Manager_TestCase extends Doctrine_UnitTestCase {
         try {
              $expectedDsn = array(
                 "scheme" => "sqlite",
+                "host" => null,
                 "path" => "c:/full/windows/path/to/file.db",
                 "dsn" => "sqlite:c:/full/windows/path/to/file.db",
-                "host" => null,
                 "port" => NULL,
                 "user" => null,
                 "pass" => null,

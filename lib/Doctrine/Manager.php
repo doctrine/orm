@@ -350,6 +350,11 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      */
     public function parseDsn($dsn)
     {
+
+
+        //fix linux sqlite dsn so that it will parse correctly
+        $dsn = str_replace("///", "/", $dsn);
+
         // silence any warnings
         $parts = @parse_url($dsn);
 
@@ -373,6 +378,11 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                     $parts['database'] = ':memory:';
                     $parts['dsn']      = 'sqlite::memory:';
                 } else {
+                    //fix windows dsn we have to add host: to path and set host to null
+                    if (isset($parts['host'])) {
+                        $parts['path'] = $parts['host'] . ":" . $parts["path"];
+                        $parts["host"] = null;
+                    }
                     $parts['database'] = $parts['path'];
                     $parts['dsn'] = $parts['scheme'] . ':' . $parts['path'];
                 }
