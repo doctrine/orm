@@ -65,27 +65,64 @@ class Doctrine_Manager_TestCase extends Doctrine_UnitTestCase {
         // sqlite://full/unix/path/to/file.db
         // It expects only // since it thinks it is parsing a url
         // The problem after that is that the dns is not valid when being passed to PDO
-        $sqlite = 'sqlite:////full/unix/path/to/file.db';
-        $sqlitewin = 'sqlite:///c:/full/windows/path/to/file.db';
+        $sqlite = 'sqlite:/full/unix/path/to/file.db';
+        $sqlitewin = 'sqlite:c:/full/windows/path/to/file.db';
         
         $manager = Doctrine_Manager::getInstance();
         
         try {
-            $manager->parseDsn($mysql);
+            $res = $manager->parseDsn($mysql);
+            $expectedMysqlDsn = array(
+                "scheme" => "mysql",
+                "host" => "localhost",
+                "user" => "user",
+                "pass" => "pass",
+                "path" => "/dbname",
+                "dsn" => "mysql:host=localhost;dbname=dbname",
+                "port" => NULL,
+                "query" => NULL, 
+                "fragment" => NULL,
+                "database" => "dbname");
+            $this->assertEqual($expectedMysqlDsn, $res);
         } catch (Exception $e) {
-            $this->fail();
+            $this->fail($e->getMessage());
         }
         
         try {
-            $manager->parseDsn($sqlite);
+            $expectedDsn = array(
+                "scheme" => "sqlite",
+                "host" => null,
+                "user" => null,
+                "pass" => null,
+                "path" => "/full/unix/path/to/file.db",
+                "dsn" => "sqlite:/full/unix/path/to/file.db",
+                "port" => NULL,
+                "query" => NULL, 
+                "fragment" => NULL,
+                "database" => "/full/unix/path/to/file.db");
+              
+            $res = $manager->parseDsn($sqlite);
+            $this->assertEqual($expectedDsn, $res);
         } catch (Exception $e) {
-            $this->fail();
+            $this->fail($e->getMessage());
         }
         
         try {
-            $manager->parseDsn($sqlitewin);
+             $expectedDsn = array(
+                "scheme" => "sqlite",
+                "path" => "c:/full/windows/path/to/file.db",
+                "dsn" => "sqlite:c:/full/windows/path/to/file.db",
+                "host" => null,
+                "port" => NULL,
+                "user" => null,
+                "pass" => null,
+                "query" => NULL, 
+                "fragment" => NULL,
+                "database" => "c:/full/windows/path/to/file.db");
+            $res = $manager->parseDsn($sqlitewin);
+            $this->assertEqual($expectedDsn, $res);
         } catch (Exception $e) {
-            $this->fail();
+            $this->fail($e->getMessage());
         }
     }
     public function prepareData() { }
