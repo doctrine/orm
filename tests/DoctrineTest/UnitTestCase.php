@@ -16,6 +16,12 @@ class UnitTestCase
             if(PHP_SAPI === "cli"){
                 $seperator = "\n";
              }
+            if(is_array($value)){
+                $value = var_export($value, true);
+             }
+            if(is_array($value2)){
+                $value2 = var_export($value2, true);
+            }
             $message = "$seperator Value1: $value $seperator != $seperator Value2: $value2 $seperator";
             $this->_fail($message);
         }
