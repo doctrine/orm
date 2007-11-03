@@ -94,12 +94,11 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      * Set the charset on the current connection
      *
      * @param string    charset
-     *
-     * @return void
      */
     public function setCharset($charset)
     {
-        $query = 'SET NAMES '.$this->dbh->quote($charset);
+        $query = 'SET NAMES ' . $this->quote($charset);
+
         $this->exec($query);
     }
 
