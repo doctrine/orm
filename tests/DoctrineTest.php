@@ -81,6 +81,12 @@ class DoctrineTest
         } else {
             require_once(dirname(__FILE__) . '/DoctrineTest/Reporter/Html.php');
             $options = $_GET;
+            if(isset($options["filter"])){
+                $options["filter"] = explode(",", $options["filter"]);
+            }
+            if(isset($options["group"])){
+                $options["group"] = explode(",", $options["group"]);
+            }
             $reporter = new DoctrineTest_Reporter_Html();
         }
 
