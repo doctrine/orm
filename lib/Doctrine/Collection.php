@@ -780,4 +780,13 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     {
         return Doctrine_Lib::getCollectionAsString($this);
     }
+    
+    /**
+     * returns the relation object
+     * @return object Doctrine_Relation
+     */
+    public function getRelation()
+    {
+        return $this->relation;
+    }
 }
