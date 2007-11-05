@@ -24,9 +24,9 @@ foreach($users as $user) {
         print $phonenumber . ' ';
     }
 }
-<code>
+</code>
 
-However you should not use it. Above is the same behaviour implemented much more efficiently:
+However you should not use it. Below is the same behaviour implemented much more efficiently:
 
 <code type="php">
 // same thing implemented much more efficiently:
