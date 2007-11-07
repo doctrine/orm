@@ -73,6 +73,27 @@ class Doctrine_Migration
     }
 
     /**
+     * getTableName
+     *
+     * @return void
+     */
+    public function getTableName()
+    {
+        return $this->_migrationTableName;
+    }
+
+    /**
+     * setTableName
+     *
+     * @param string $tableName 
+     * @return void
+     */
+    public function setTableName($tableName)
+    {
+        $this->_migrationTableName = $tableName;
+    }
+
+    /**
      * createMigrationTable
      * 
      * Creates the migration table used to store the current version
