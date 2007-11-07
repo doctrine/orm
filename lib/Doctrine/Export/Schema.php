@@ -59,22 +59,21 @@ class Doctrine_Export_Schema
 
         // we iterate trhough the diff of previously declared classes
         // and currently declared classes
-        foreach ($loadedModels as $name) {
-            if ( ! empty($models) && !in_array($name, $models)) {
+        foreach ($loadedModels as $className) {
+            if ( ! empty($models) && !in_array($className, $models)) {
                 continue;
             }
 
-            $record = new $name();
+            $record = new $className();
             $recordTable  = $record->getTable();
             
             $data = $recordTable->getExportableFormat();
             
             $table = array();
-            $table['tableName'] = $data['tableName'];
-            $table['className'] = get_class($record);
             
             foreach ($data['columns'] AS $name => $column) {
-                $data['columns'][$name]['name'] = $name;
+                $data['columns'][$name]['type'] = $column['type'] . '(' . $column['length'] . ')';
+                unset($data['columns'][$name]['length']);
             }
             
             $table['columns'] = $data['columns'];
@@ -105,7 +104,7 @@ class Doctrine_Export_Schema
                 }
             }
             
-            $array[$table['className']] = $table;
+            $array[$className] = $table;
         }
         
         return $array;
