@@ -120,6 +120,7 @@ class Doctrine_Import_Mysql extends Doctrine_Import
         $result = $this->conn->fetchAssoc($sql);
 
         $description = array();
+        $columns = array();
         foreach ($result as $key => $val) {
 
             $val = array_change_key_case($val, CASE_LOWER);
