@@ -1073,24 +1073,25 @@ class Doctrine_Export extends Doctrine_Connection_Module
             }
             
             $sql = $this->exportClassesSql(array($class));
-            // The create sql query is the first one, and everything else is the alters
-            $create = $sql[0];
+            // Build array of all the creates
+            // We need these to happen first
+            foreach ($sql as $key => $query) {
+                if (strstr($query, 'CREATE')) {
+                    $connections[$connectionName]['creates'][] = $query;
+                    // Unset the create from sql so we can have an array of everything else but creates
+                    unset($sql[$key]);
+                }
+            }
             
-            // Remove create from the main array
-            unset($sql[0]);
-            
-            // Store the creates and alters individually so we can merge them back together later
-            // We need the creates to happen first, then the alters
-            $connections[$connectionName]['creates'][] = $create;
             $connections[$connectionName]['alters'] = array_merge($connections[$connectionName]['alters'], $sql);
         }
-        
+
         // Loop over all the sql again to merge the creates and alters in to the same array, but so that the alters are at the bottom
         $build = array();
         foreach ($connections as $connectionName => $sql) {
             $build[$connectionName] = array_merge($sql['creates'], $sql['alters']);
         }
-        
+
         foreach ($build as $connectionName => $sql) {
             $connection = Doctrine_Manager::getInstance()->getConnection($connectionName);
             
