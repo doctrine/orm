@@ -290,6 +290,8 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $record->getTable()->getRecordListener()->postDelete($event);
 
         $record->postDelete($event);
+        
+        $record->getTable()->removeRecord($record);
 
         $this->conn->commit();
 

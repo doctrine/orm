@@ -1050,6 +1050,26 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     }
 
     /**
+     * removeRecord
+     * removes a record from the identity map, returning true if the record
+     * was found and removed and false if the record wasn't found.
+     *
+     * @param Doctrine_Record $record       record to be removed
+     * @return boolean
+     */
+    public function removeRecord(Doctrine_Record $record)
+    {
+        $id = implode(' ', $record->identifier());
+
+        if (isset($this->_identityMap[$id])) {
+            unset($this->_identityMap[$id]);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * getRecord
      * first checks if record exists in identityMap, if not
      * returns a new record
