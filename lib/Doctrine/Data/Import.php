@@ -32,6 +32,8 @@
  */
 class Doctrine_Data_Import extends Doctrine_Data
 {
+    private $_importedObjects = array();
+
     /**
      * constructor
      *
@@ -80,7 +82,28 @@ class Doctrine_Data_Import extends Doctrine_Data
         
         $this->loadData($array);
     }
-
+    
+    protected function buildRows($className, $data)
+    {
+        $rows = array();
+        foreach ($data as $rowKey => $row) {
+            // do the same for the row information
+            $rows[$className][$rowKey] = $row;
+            
+            foreach ($row as $key => $value) {
+                if (Doctrine::getTable($className)->hasRelation($key) && is_array($value)) {
+                    $keys = array_keys($value);
+                    
+                    // Skip associative arrays defining keys to relationships
+                    if (!isset($keys[0])) {
+                        $rows = array_merge($rows, $this->buildRows(Doctrine::getTable($className)->getRelation($key)->getTable()->getOption('name'), $value));
+                    }
+                }
+            }
+        }
+        
+        return $rows;
+    }
     /**
      * loadData
      *
@@ -90,10 +113,7 @@ class Doctrine_Data_Import extends Doctrine_Data
     protected function loadData(array $array)
     {
         $specifiedModels = $this->getModels();
-        
-        $pendingRelations = array();
-        
-        $primaryKeys = array();
+        $rows = array();
         
         foreach ($array as $className => $data) {
             
@@ -101,50 +121,96 @@ class Doctrine_Data_Import extends Doctrine_Data
                 continue;
             }
             
-            foreach ($data as $rowKey => $row) {
-                $obj = new $className();
-                
-                foreach ($row as $key => $value) {
-                    // If row key is a relation store it for later fixing once we have all primary keys
-                    if ($obj->getTable()->hasRelation($key)) {
-                        $relation = $obj->getTable()->getRelation($key);
-                        
-                        $pendingRelations[] = array('key' => $value, 'obj' => $obj, 'local' => $relation['local'], 'foreign' => $relation['foreign']);
-                    // If we have a normal column
-                    } else if ($obj->getTable()->hasColumn($key)) {
-                        $obj->$key = $value;
-                    // Otherwise lets move on
-                    } else {
-                        continue;
-                    }
-                }
-                
-                $identifier = is_array($obj->getTable()->getIdentifier()) ? $obj->getTable()->getIdentifier():array($obj->getTable()->getIdentifier());
-                
-                // We only want to save the record if it is a single primary key.
-                // We can't save the composite primary key because neither of the foreign keys have been created yet
-                // We will satisfy these relationships later and save the record.
-                if (count($identifier) === 1) {
-                    $obj->save();
-                }
-                
-                $primaryKeys[$rowKey] = $obj->identifier();
+            // This is simple here to get the templates present for this model
+            // better way?
+            $obj = new $className();
+            $templates = array_keys($obj->getTable()->getTemplates());
+            
+            if (in_array('Doctrine_Template_NestedSet', $templates)) {
+                $this->loadNestedSetData($className, $data);  
+            } else {
+                $rows = array_merge($rows, $this->buildRows($className, $data));
             }
         }
         
-        // Satisfy all relationships
-        foreach ($pendingRelations as $rowKey => $pending) {
-            $obj = $pending['obj'];
-            $key = $pending['key'];
-            $local = $pending['local'];
-            $pks = $primaryKeys[$key];
-            $obj->$local = $pks['id'];
+        $buildRows = array();
+        foreach ($rows as $className => $classRows) {
+            foreach ($classRows as $rowKey => $row) {
+                $buildRows[$rowKey] = $row;
+                $this->_importedObjects[$rowKey] = new $className();
+            }
         }
         
-        // Loop over all again to save them since we satisfied all pending relationships above
-        foreach ($pendingRelations as $rowKey => $pending) {
-            $obj = $pending['obj'];
-            $obj->save();
+        foreach($buildRows as $rowKey => $row) {
+            $obj = $this->_importedObjects[$rowKey];
+            
+            foreach ($row as $key => $value) {
+                if ($obj->getTable()->hasColumn($key)) {
+                    $obj->set($key, $value);
+                } else if ($obj->getTable()->hasRelation($key)) {
+                    if (is_array($value)) {
+                        if (isset($value[0])) {
+                            foreach ($value as $link) {
+                                
+                                if ($obj->getTable()->getRelation($key)->getType() === Doctrine_Relation::ONE) {
+                                    $obj->set($key, $this->_importedObjects[$link]);
+                                } else if ($obj->getTable()->getRelation($key)->getType() === Doctrine_Relation::MANY) {
+                                    $relation = $obj->$key;
+                                    
+                                    $relation[] = $this->_importedObjects[$link];
+                                }
+                            }
+                        } else {
+                            $obj->$key->fromArray($value);
+                        }
+                    } else if (isset($this->_importedObjects[$value])) {
+                        $obj->set($key, $this->_importedObjects[$value]);
+                    }
+                }
+            }
+        }
+
+        $manager = Doctrine_Manager::getInstance();
+        foreach ($manager as $connection) {
+            $connection->flush();
+        }
+    }
+    
+    protected function loadNestedSetData($model, $nestedSetData, $parent = null)
+    {
+        $manager = Doctrine_Manager::getInstance();
+
+        foreach($nestedSetData AS $rowKey => $nestedSet)
+        {
+            $children = array();
+            $data  = array();
+            
+            if( array_key_exists('children', $nestedSet) )
+            {
+                $children = $nestedSet['children'];
+                unset($nestedSet['children']);
+            }
+
+            $record = new $model();
+            
+            $this->_importedObjects[$rowKey] = $record;
+            
+            if( is_array($nestedSet) AND !empty($nestedSet) )
+            {
+                $record->fromArray($nestedSet);
+            }
+    
+            if( !$parent )
+            {
+                $manager->getTable($model)->getTree()->createRoot($record);
+            } else {
+                $parent->getNode()->addChild($record);
+            }
+
+            if( is_array($children) AND !empty($children) )
+            {
+                $this->loadNestedSetData($model, $children, $record);
+            }
         }
     }
 
