@@ -441,6 +441,7 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
      */
     public function getIntegerDeclaration($name, $field)
     {
+        var_dump($field);
         $default = $autoinc = '';
         if ( ! empty($field['autoincrement'])) {
             $autoinc = ' AUTO_INCREMENT';
@@ -448,7 +449,11 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
             if ($field['default'] === '') {
                 $field['default'] = empty($field['notnull']) ? null : 0;
             }
-            $default = ' DEFAULT '.$this->conn->quote($field['default']);
+            if (is_null($field['default'])) {
+                $default = ' DEFAULT NULL';
+            } else {
+                $default = ' DEFAULT '.$this->conn->quote($field['default']);
+            }
         }
         /**
         elseif (empty($field['notnull'])) {
