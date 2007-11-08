@@ -1165,7 +1165,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         $a = array();
 
         foreach ($this as $column => $value) {
-            if ($value === self::$_null) {
+            if ($value === self::$_null || is_object($value)) {
                 $value = null;
             }
             $a[$column] = $value;
@@ -1187,10 +1187,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         if (is_array($array)) {
             foreach ($array as $key => $value) {
-                if ($this->getTable()->hasRelation($key) && $value) {
+                if ($this->getTable()->hasRelation($key)) {
                     $this->$key->fromArray($value);
-                } else if($this->getTable()->hasColumn($key) && $value) {
-                    $this->$key = $value;
+                } else if($this->getTable()->hasColumn($key)) {
+                    $this->set($key, $value);
                 }
             }
         }
