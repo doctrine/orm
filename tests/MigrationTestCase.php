@@ -36,13 +36,18 @@ class Doctrine_Migration_TestCase extends Doctrine_UnitTestCase
     {
         // New migration for the 'migration_classes' directory
         $migration = new Doctrine_Migration('migration_classes');
-        
-        // migrate to version 3
-        $migration->migrate(2);
+
+        // Make sure the current version is 0
+        $this->assertEqual($migration->getCurrentVersion(), 0);
+
+        // migrate to version latest version
+        $migration->migrate($migration->getLatestVersion());
+        // Make sure the current version is latest version
+        $this->assertEqual($migration->getCurrentVersion(), $migration->getLatestVersion());
 
         // now migrate back to original version
         $migration->migrate(0);
-        
+
         // Make sure the current version is 0
         $this->assertEqual($migration->getCurrentVersion(), 0);
     }

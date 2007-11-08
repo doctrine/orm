@@ -253,8 +253,13 @@ $cache->addTestCase(new Doctrine_Cache_Apc_TestCase());
 //$cache->addTestCase(new Doctrine_Cache_TestCase());
 $test->addTestCase($cache);
 
+// Migration Tests
+$migration = new GroupTest('Migration tests','migration');
+$migration->addTestCase(new Doctrine_Migration_TestCase());
+$migration->addTestCase(new Doctrine_Migration_Mysql_TestCase());
+$test->addTestCase($migration);
+
 $test->addTestCase(new Doctrine_Query_ApplyInheritance_TestCase());
-$test->addTestCase(new Doctrine_Migration_TestCase());
 $test->addTestCase(new Doctrine_Import_Schema_TestCase());
 $test->addTestCase(new Doctrine_Export_Schema_TestCase());
 
