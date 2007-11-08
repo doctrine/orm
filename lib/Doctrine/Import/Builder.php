@@ -836,7 +836,7 @@ END;
 
         // If is the package class then we need to make the path to the complete package
         if (isset($options['is_package_class']) && $options['is_package_class']) {
-            $path = str_replace('.', DIRECTORY_SEPARATOR, $options['package']);
+            $path = str_replace('.', DIRECTORY_SEPARATOR, trim($options['package']));
             
             $writePath = $packagesPath . DIRECTORY_SEPARATOR . $path;
             
