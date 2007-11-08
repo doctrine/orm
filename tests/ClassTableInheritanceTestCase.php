@@ -53,6 +53,10 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($sql[0], 'CREATE TABLE c_t_i_test_parent4 (id INTEGER, age INTEGER, PRIMARY KEY(id))');
         $this->assertEqual($sql[1], 'CREATE TABLE c_t_i_test_parent3 (id INTEGER, added INTEGER, PRIMARY KEY(id))');
         $this->assertEqual($sql[2], 'CREATE TABLE c_t_i_test_parent2 (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(200), verified INTEGER)');
+    
+        foreach ($sql as $query) {
+            $this->conn->exec($query);
+        }
     }
 
     public function testInheritedPropertiesGetOwnerFlags()
@@ -70,19 +74,33 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
 
     public function testNewlyCreatedRecordsHaveInheritedPropertiesInitialized()
     {
+    	$profiler = new Doctrine_Connection_Profiler();
+
+    	$this->conn->addListener($profiler);
+
         $class = new CTITest();
 
-        $this->assertEqual($class->toArray(), array('id' => null, 
+        $this->assertEqual($class->toArray(), array('id' => null,
                                                     'age' => null,
                                                     'name' => null,
                                                     'verified' => null,
                                                     'added' => null));
-        
+
         $class->age = 13;
         $class->name = 'Jack Daniels';
         $class->verified = true;
         $class->added = time();
         $class->save();
+        
+        // pop the commit event
+        $profiler->pop();
+        $this->assertEqual($profiler->pop()->getQuery(), 'INSERT INTO c_t_i_test_parent4 (age, id) VALUES (?, ?)');
+        // pop the prepare event
+        $profiler->pop();
+        $this->assertEqual($profiler->pop()->getQuery(), 'INSERT INTO c_t_i_test_parent3 (added, id) VALUES (?, ?)');
+        // pop the prepare event
+        $profiler->pop();
+        $this->assertEqual($profiler->pop()->getQuery(), 'INSERT INTO c_t_i_test_parent2 (name, verified) VALUES (?, ?)');
     }
 }
 class CTITestParent1 extends Doctrine_Record
