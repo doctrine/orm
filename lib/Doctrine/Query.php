@@ -969,37 +969,42 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 $q .= $part;
                 continue;
             }
+            
             // preserve LEFT JOINs only if needed
+			// Check if it's JOIN, if not add a comma separator instead of space
+            if (!preg_match('/\bJOIN\b/i', $part) && !isset($this->_pendingJoinConditions[$k])) {
+                $q .= ', ' . $part;
+            } else {
+                if (substr($part, 0, 9) === 'LEFT JOIN') {
+                    $e = explode(' ', $part);
 
-            if (substr($part, 0, 9) === 'LEFT JOIN') {
-                $e = explode(' ', $part);
+                    $aliases = array_merge($this->subqueryAliases,
+                                array_keys($this->_neededTables));
 
-                $aliases = array_merge($this->subqueryAliases,
-                            array_keys($this->_neededTables));
+                    if ( ! in_array($e[3], $aliases) &&
+                        ! in_array($e[2], $aliases) &&
 
-                if ( ! in_array($e[3], $aliases) &&
-                    ! in_array($e[2], $aliases) &&
+                        ! empty($this->_pendingFields)) {
+                        continue;
+                    }
 
-                    ! empty($this->_pendingFields)) {
-                    continue;
                 }
 
-            }
+                if (isset($this->_pendingJoinConditions[$k])) {
+                    $parser = new Doctrine_Query_JoinCondition($this);
 
-            if (isset($this->_pendingJoinConditions[$k])) {
-                $parser = new Doctrine_Query_JoinCondition($this);
+                    if (strpos($part, ' ON ') !== false) {
+                        $part .= ' AND ';
+                    } else {
+                        $part .= ' ON ';
+                    }
+                    $part .= $parser->parse($this->_pendingJoinConditions[$k]);
 
-                if (strpos($part, ' ON ') !== false) {
-                    $part .= ' AND ';
-                } else {
-                    $part .= ' ON ';
+                    unset($this->_pendingJoinConditions[$k]);
                 }
-                $part .= $parser->parse($this->_pendingJoinConditions[$k]);
 
-                unset($this->_pendingJoinConditions[$k]);
+                $q .= ' ' . $part;
             }
-
-            $q .= ' ' . $part;
 
             $this->parts['from'][$k] = $part;
         }
