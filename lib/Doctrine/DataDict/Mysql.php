@@ -441,7 +441,6 @@ class Doctrine_DataDict_Mysql extends Doctrine_DataDict
      */
     public function getIntegerDeclaration($name, $field)
     {
-        var_dump($field);
         $default = $autoinc = '';
         if ( ! empty($field['autoincrement'])) {
             $autoinc = ' AUTO_INCREMENT';
