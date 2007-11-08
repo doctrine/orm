@@ -16,7 +16,7 @@
 <td class="normal">/*
 </td></tr>
 <tr><td>3</td>
-<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Mysql.php&nbsp;2963&nbsp;2007-10-21&nbsp;06:23:59Z&nbsp;Jonathan.Wage&nbsp;$
+<td class="normal">&nbsp;*&nbsp;&nbsp;$Id:&nbsp;Mysql.php&nbsp;3084&nbsp;2007-11-08&nbsp;14:01:03Z&nbsp;samw3&nbsp;$
 </td></tr>
 <tr><td>4</td>
 <td class="normal">&nbsp;*
@@ -91,7 +91,7 @@
 <td class="normal">&nbsp;*&nbsp;@author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lukas&nbsp;Smith&nbsp;&lt;smith@pooteeweet.org&gt;&nbsp;(PEAR&nbsp;MDB2&nbsp;library)
 </td></tr>
 <tr><td>28</td>
-<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;2963&nbsp;$
+<td class="normal">&nbsp;*&nbsp;@version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$Revision:&nbsp;3084&nbsp;$
 </td></tr>
 <tr><td>29</td>
 <td class="normal">&nbsp;*&nbsp;@link&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;www.phpdoctrine.com
@@ -1360,50 +1360,62 @@
 <td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>451</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$default&nbsp;=&nbsp;'&nbsp;DEFAULT&nbsp;'.$this-&gt;conn-&gt;quote($field['default']);
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(is_null($field['default']))&nbsp;{
 </td></tr>
 <tr><td>452</td>
-<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$default&nbsp;=&nbsp;'&nbsp;DEFAULT&nbsp;NULL';
 </td></tr>
 <tr><td>453</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/**
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{
 </td></tr>
 <tr><td>454</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;elseif&nbsp;(empty($field['notnull']))&nbsp;{
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$default&nbsp;=&nbsp;'&nbsp;DEFAULT&nbsp;'.$this-&gt;conn-&gt;quote($field['default']);
 </td></tr>
 <tr><td>455</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$default&nbsp;=&nbsp;'&nbsp;DEFAULT&nbsp;NULL';
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>456</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>457</td>
-<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/**
 </td></tr>
 <tr><td>458</td>
-<td class="normal">
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;elseif&nbsp;(empty($field['notnull']))&nbsp;{
 </td></tr>
 <tr><td>459</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$notnull&nbsp;&nbsp;=&nbsp;(isset($field['notnull'])&nbsp;&nbsp;&amp;&amp;&nbsp;$field['notnull'])&nbsp;&nbsp;?&nbsp;'&nbsp;NOT&nbsp;NULL'&nbsp;:&nbsp;'';
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$default&nbsp;=&nbsp;'&nbsp;DEFAULT&nbsp;NULL';
 </td></tr>
 <tr><td>460</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$unsigned&nbsp;=&nbsp;(isset($field['unsigned'])&nbsp;&amp;&amp;&nbsp;$field['unsigned'])&nbsp;?&nbsp;'&nbsp;UNSIGNED'&nbsp;:&nbsp;'';
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 </td></tr>
 <tr><td>461</td>
-<td class="normal">
+<td class="normal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
 </td></tr>
 <tr><td>462</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$name&nbsp;=&nbsp;$this-&gt;conn-&gt;quoteIdentifier($name,&nbsp;true);
-</td></tr>
-<tr><td>463</td>
 <td class="normal">
 </td></tr>
+<tr><td>463</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$notnull&nbsp;&nbsp;=&nbsp;(isset($field['notnull'])&nbsp;&nbsp;&amp;&amp;&nbsp;$field['notnull'])&nbsp;&nbsp;?&nbsp;'&nbsp;NOT&nbsp;NULL'&nbsp;:&nbsp;'';
+</td></tr>
 <tr><td>464</td>
-<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$name&nbsp;.&nbsp;'&nbsp;'&nbsp;.&nbsp;$this-&gt;getNativeDeclaration($field)&nbsp;.&nbsp;$unsigned&nbsp;.&nbsp;$default&nbsp;.&nbsp;$notnull&nbsp;.&nbsp;$autoinc;
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$unsigned&nbsp;=&nbsp;(isset($field['unsigned'])&nbsp;&amp;&amp;&nbsp;$field['unsigned'])&nbsp;?&nbsp;'&nbsp;UNSIGNED'&nbsp;:&nbsp;'';
 </td></tr>
 <tr><td>465</td>
-<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+<td class="normal">
 </td></tr>
 <tr><td>466</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$name&nbsp;=&nbsp;$this-&gt;conn-&gt;quoteIdentifier($name,&nbsp;true);
+</td></tr>
+<tr><td>467</td>
+<td class="normal">
+</td></tr>
+<tr><td>468</td>
+<td class="covered">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;$name&nbsp;.&nbsp;'&nbsp;'&nbsp;.&nbsp;$this-&gt;getNativeDeclaration($field)&nbsp;.&nbsp;$unsigned&nbsp;.&nbsp;$default&nbsp;.&nbsp;$notnull&nbsp;.&nbsp;$autoinc;
+</td></tr>
+<tr><td>469</td>
+<td class="orange">&nbsp;&nbsp;&nbsp;&nbsp;}
+</td></tr>
+<tr><td>470</td>
 <td class="covered">}</td></tr>
 </table></body></html>
