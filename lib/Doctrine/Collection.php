@@ -651,7 +651,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     public function toArray($deep = false, $prefixKey = false)
     {
         $data = array();
-        foreach ($this->data as $key => $record) {
+        foreach ($this as $key => $record) {
             
             $key = $prefixKey ? get_class($record) . '_' .$key:$key;
             
@@ -667,10 +667,8 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             $record = $this->_table->getRecord();
             $record->fromArray($row);
             
-            $data[] = $record;
+            $this[] = $record;
         }
-        
-        $this->data = $data;
     }
     public function exportTo($type, $deep = false)
     {
