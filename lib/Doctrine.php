@@ -1010,7 +1010,7 @@ final class Doctrine
     /**
      * classifyCallback
      *
-     * Callback function to classify a classname propperly. 
+     * Callback function to classify a classname properly. 
      *
      * @param array $matches An array of matches from a pcre_replace call
      * @return string A string with matches 1 and mathces 3 in upper case. 
@@ -1047,8 +1047,7 @@ final class Doctrine
      */
     public static function makeDirectories($path, $mode = 0777)
     {
-        if (is_dir($path) || is_file($path))
-        {
+        if (is_dir($path) || is_file($path)) {
           return true;
         }
 
