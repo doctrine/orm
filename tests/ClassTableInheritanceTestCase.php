@@ -44,12 +44,45 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $table = $class->getTable();
 
         $this->assertEqual($table->getOption('joinedParents'), array('CTITestParent2', 'CTITestParent3'));
+    }
+
+    public function testExportGeneratesAllInheritedTables()
+    {
+        $sql = $this->conn->export->exportClassesSql(array('CTITest'));
+    
+        $this->assertEqual($sql[0], 'CREATE TABLE c_t_i_test_parent4 (id INTEGER, age INTEGER, PRIMARY KEY(id))');
+        $this->assertEqual($sql[1], 'CREATE TABLE c_t_i_test_parent3 (id INTEGER, added INTEGER, PRIMARY KEY(id))');
+        $this->assertEqual($sql[2], 'CREATE TABLE c_t_i_test_parent2 (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(200), verified INTEGER)');
+    }
+
+    public function testInheritedPropertiesGetOwnerFlags()
+    {
+        $class = new CTITest();
+
+        $table = $class->getTable();
+        
+        $columns = $table->getColumns();
+
+        $this->assertEqual($columns['verified']['owner'], 'CTITestParent2');
+        $this->assertEqual($columns['name']['owner'], 'CTITestParent2');
+        $this->assertEqual($columns['added']['owner'], 'CTITestParent3');
+    }
+
+    public function testNewlyCreatedRecordsHaveInheritedPropertiesInitialized()
+    {
+        $class = new CTITest();
 
         $this->assertEqual($class->toArray(), array('id' => null, 
                                                     'age' => null,
                                                     'name' => null,
                                                     'verified' => null,
                                                     'added' => null));
+        
+        $class->age = 13;
+        $class->name = 'Jack Daniels';
+        $class->verified = true;
+        $class->added = time();
+        $class->save();
     }
 }
 class CTITestParent1 extends Doctrine_Record
@@ -72,7 +105,7 @@ class CTITestParent3 extends CTITestParent2
 {
     public function setTableDefinition()
     {
-        $this->hasColumn('added', 'timestamp');
+        $this->hasColumn('added', 'integer');
     }
 }
 class CTITestParent4 extends CTITestParent3
