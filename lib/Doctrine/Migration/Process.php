@@ -118,7 +118,12 @@ class Doctrine_Migration_Process
         foreach ($columns as $column) {
             $conn = $this->getConnection($column['tableName']);
             
-            $conn->export->alterTable($column['tableName'], array('rename' => array($column['oldColumnName'] => array('name' => $column['newColumnName']))));
+            $columnList = $conn->import->listTableColumns($column['tableName']);
+            if (isset($columnList[$column['oldColumnName']])) {
+	            $conn->export->alterTable($column['tableName'], 
+	                                      array('rename' => array($column['oldColumnName'] => array('name' => $column['newColumnName'],
+	                                      																													'definition'=>$columnList[$column['oldColumnName']]))));
+            }
         }
     }
 
