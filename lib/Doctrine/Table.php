@@ -35,7 +35,7 @@
 class Doctrine_Table extends Doctrine_Configurable implements Countable
 {
     /**
-     * @var array $data                                 temporary data which is then loaded into Doctrine_Record::$data
+     * @var array $data                                 temporary data which is then loaded into Doctrine_Record::$_data
      */
     protected $_data             = array();
 
@@ -257,6 +257,48 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         } else {
             $class = new ReflectionClass($class);
         }
+
+
+        $this->_options['joinedParents'] = array();
+
+        foreach (array_reverse($this->_options['parents']) as $parent) {
+            if ($parent === $class->getName()) {
+                continue;
+            }
+
+            $table = $this->_conn->getTable($parent);
+
+            $found = false;
+            $columns = $table->getColumns();
+
+            foreach ($columns as $column => $definition) {
+                if ( ! isset($definition['primary'])) {
+                    if (isset($this->_columns[$column])) {
+                        $found = true;
+                        break;
+                    } else {
+                        if ( ! isset($columns[$column]['owner'])) {
+                            $columns[$column]['owner'] = $table->getComponentName();
+                        }
+
+                        $this->_options['joinedParents'][] = $columns[$column]['owner'];
+                    }
+                } else {
+                    unset($columns[$column]);
+                }
+            }
+
+            if ($found) {
+                continue;
+            }
+
+            $this->_columns = array_merge($columns, $this->_columns);
+
+            break;
+        }
+        
+        $this->_options['joinedParents'] = array_values(array_unique($this->_options['joinedParents']));
+
         $this->_options['declaringClass'] = $class;
 
         // set the table definition for the given tree implementation
@@ -276,13 +318,38 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
     {
         switch (count($this->_identifier)) {
             case 0:
-                $this->_columns = array_merge(array('id' =>
-                                              array('type'          => 'integer',
-                                                    'length'        => 20,
-                                                    'autoincrement' => true,
-                                                    'primary'       => true)), $this->_columns);
-                $this->_identifier = 'id';
-                $this->_identifierType = Doctrine::IDENTIFIER_AUTOINC;
+                if ( ! empty($this->_options['joinedParents'])) {
+                    $root = current($this->_options['joinedParents']);
+                    
+                    $table = $this->_conn->getTable($root);
+                
+                    $this->_identifier = $table->getIdentifier();
+
+                    $this->_identifierType = ($table->getIdentifierType() !== Doctrine::IDENTIFIER_AUTOINC)
+                                            ? $table->getIdentifierType() : Doctrine::IDENTIFIER_NATURAL;
+
+                    // add all inherited primary keys
+                    foreach ((array) $this->_identifier as $id) {
+                        $definition = $table->getDefinitionOf($id);
+
+                        // inherited primary keys shouldn't contain autoinc
+                        // and sequence definitions
+                        unset($definition['autoincrement']);
+                        unset($definition['sequence']);
+
+                        // add the inherited primary key column
+                        $this->_columns = array_merge(array($id => $definition), $this->_columns);
+                    }
+
+                } else {
+                    $this->_columns = array_merge(array('id' =>
+                                                  array('type'          => 'integer',
+                                                        'length'        => 20,
+                                                        'autoincrement' => true,
+                                                        'primary'       => true)), $this->_columns);
+                    $this->_identifier = 'id';
+                    $this->_identifierType = Doctrine::IDENTIFIER_AUTOINC;
+                }
                 $this->columnCount++;
                 break;
             case 1:
@@ -389,6 +456,10 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
 
         foreach ($this->getColumns() as $name => $column) {
             $definition = $column;
+
+            if (isset($column['owner'])) {
+                continue;
+            }
 
             switch ($definition['type']) {
                 case 'enum':

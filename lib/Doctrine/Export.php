@@ -1131,7 +1131,17 @@ class Doctrine_Export extends Doctrine_Connection_Module
         foreach ($models as $name) {
             $record = new $name();
             $table  = $record->getTable();
-            
+
+            $parents = $table->getOption('joinedParents');
+
+            foreach ($parents as $parent) {
+                $data  = $table->getConnection()->getTable($parent)->getExportableFormat();
+
+                $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
+                
+                $sql = array_merge($sql, (array) $query);
+            }
+
             $data = $table->getExportableFormat();
 
             $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);

@@ -586,53 +586,99 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->preInsert($event);
         
-        $record->getTable()->getRecordListener()->preInsert($event);
+        $table = $record->getTable();
+
+        $table->getRecordListener()->preInsert($event);
 
         if ( ! $event->skipOperation) {
-            $array = $record->getPrepared();
-    
-            if (empty($array)) {
-                return false;
-            }
-            $table     = $record->getTable();
-            $keys      = (array) $table->getIdentifier();
-    
-            $seq       = $record->getTable()->sequenceName;
-    
-            if ( ! empty($seq)) {
-                $id             = $this->conn->sequence->nextId($seq);
-                $name           = $record->getTable()->getIdentifier();
-                $array[$name]   = $id;
-    
-                $record->assignIdentifier($id);
-            }
-    
-            $this->conn->insert($table->getTableName(), $array);
-    
-            if (empty($seq) && count($keys) == 1 && $keys[0] == $table->getIdentifier() &&
-                $table->getIdentifierType() != Doctrine::IDENTIFIER_NATURAL) {
-    
-                if (strtolower($this->conn->getName()) == 'pgsql') {
-                    $seq = $table->getTableName() . '_' . $keys[0];
+            if (count($table->getOption('joinedParents')) > 0) {
+                $dataSet = array();
+
+                $component = $table->getComponentName();
+
+                $array = $record->getPrepared();
+
+                foreach ($table->getColumns() as $column => $definition) {
+                    if (isset($definition['primary']) && $definition['primary']) {
+                        continue;
+                    }
+
+                    if (isset($definition['owner'])) {
+                        $dataSet[$definition['owner']][$column] = $array[$column];
+                    } else {
+                        $dataSet[$component][$column] = $array[$column];
+                    }
                 }
-    
-                $id = $this->conn->sequence->lastInsertId($seq);
-    
-                if ( ! $id) {
-                    throw new Doctrine_Connection_Exception("Couldn't get last insert identifier.");
+
+                $classes = $table->getOption('joinedParents');
+                $classes[] = $component;
+
+                foreach ($classes as $k => $parent) {
+                    if ($k === 0) {
+                        $rootRecord = new $parent();
+
+                        $rootRecord->merge($dataSet[$parent]);
+
+                        $this->processSingleInsert($rootRecord);
+                    } else {
+                        foreach ((array) $rootRecord->identifier() as $id => $value) {
+                            $dataSet[$parent][$id] = $value;
+                        }
+
+                        $this->conn->insert($this->conn->getTable($parent)->getTableName(), $dataSet[$parent]);
+                    }
                 }
-    
-                $record->assignIdentifier($id);
             } else {
-                $record->assignIdentifier(true);
+                $this->processSingleInsert($record);
             }
         }
-        $record->getTable()->addRecord($record);
 
-        $record->getTable()->getRecordListener()->postInsert($event);
+        $table->addRecord($record);
+
+        $table->getRecordListener()->postInsert($event);
 
         $record->postInsert($event);
 
         return true;
+    }
+    public function processSingleInsert(Doctrine_Record $record)
+    {
+        $array = $record->getPrepared();
+
+        if (empty($array)) {
+            return false;
+        }
+        $table     = $record->getTable();
+        $keys      = (array) $table->getIdentifier();
+
+        $seq       = $record->getTable()->sequenceName;
+
+        if ( ! empty($seq)) {
+            $id             = $this->conn->sequence->nextId($seq);
+            $name           = $record->getTable()->getIdentifier();
+            $array[$name]   = $id;
+
+            $record->assignIdentifier($id);
+        }
+
+        $this->conn->insert($table->getTableName(), $array);
+
+        if (empty($seq) && count($keys) == 1 && $keys[0] == $table->getIdentifier() &&
+            $table->getIdentifierType() != Doctrine::IDENTIFIER_NATURAL) {
+
+            if (strtolower($this->conn->getName()) == 'pgsql') {
+                $seq = $table->getTableName() . '_' . $keys[0];
+            }
+
+            $id = $this->conn->sequence->lastInsertId($seq);
+
+            if ( ! $id) {
+                throw new Doctrine_Connection_Exception("Couldn't get last insert identifier.");
+            }
+
+            $record->assignIdentifier($id);
+        } else {
+            $record->assignIdentifier(true);
+        }    	
     }
 }
