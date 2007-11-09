@@ -78,19 +78,19 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
 
     	$this->conn->addListener($profiler);
 
-        $class = new CTITest();
+        $record = new CTITest();
 
-        $this->assertEqual($class->toArray(), array('id' => null,
+        $this->assertEqual($record->toArray(), array('id' => null,
                                                     'age' => null,
                                                     'name' => null,
                                                     'verified' => null,
                                                     'added' => null));
 
-        $class->age = 13;
-        $class->name = 'Jack Daniels';
-        $class->verified = true;
-        $class->added = time();
-        $class->save();
+        $record->age = 13;
+        $record->name = 'Jack Daniels';
+        $record->verified = true;
+        $record->added = time();
+        $record->save();
         
         // pop the commit event
         $profiler->pop();
@@ -101,6 +101,30 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         // pop the prepare event
         $profiler->pop();
         $this->assertEqual($profiler->pop()->getQuery(), 'INSERT INTO c_t_i_test_parent2 (name, verified) VALUES (?, ?)');
+    }
+    
+    public function testParentalJoinsAreAddedAutomaticallyWithDql()
+    {
+        $q = new Doctrine_Query();
+        $q->from('CTITest c')->where('c.id = 1');
+
+        $this->assertEqual($q->getSql(), 'SELECT c.id AS c__id, c2.name AS c__name, c2.verified AS c__verified, c3.added AS c__added, c.age AS c__age FROM c_t_i_test_parent4 c LEFT JOIN c_t_i_test_parent2 c2 ON c.id = c2.id LEFT JOIN c_t_i_test_parent3 c3 ON c.id = c3.id WHERE c.id = 1');
+
+        $record = $q->fetchOne();
+        
+        $this->assertEqual($record->id, 1);
+        $this->assertEqual($record->name, 'Jack Daniels');
+        $this->assertEqual($record->verified, true);
+        $this->assertTrue(isset($record->added));
+        $this->assertEqual($record->age, 13);
+    }
+    
+    public function testFetchingCtiRecordsSupportsLimitSubqueryAlgorithm()
+    {
+        $q = new Doctrine_Query();
+        $q->from('CTITestOneToManyRelated c')->leftJoin('c.CTITest c2')->where('c.id = 1')->limit(1);
+
+        print $q->getSql();
     }
 }
 class CTITestParent1 extends Doctrine_Record
@@ -136,4 +160,18 @@ class CTITestParent4 extends CTITestParent3
 class CTITest extends CTITestParent4
 {
 
+}
+
+class CTITestOneToManyRelated extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this->hasColumn('name', 'string');
+        $this->hasColumn('cti_id', 'integer');
+    }
+    
+    public function setUp()
+    {
+        $this->hasMany('CTITest', array('local' => 'cti_id', 'foreign' => 'id'));
+    }
 }
