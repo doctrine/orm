@@ -48,7 +48,7 @@ class File extends Doctrine_Record
     {
         $this->hasColumn('id', 'integer', 4, array('notnull' => true,
                                                    'primary' => true,
-                                                   'unsigned' > true,
+                                                   'unsigned' => true,
                                                    'autoincrement' => true));
         $this->hasColumn('name', 'string', 150);
         $this->hasColumn('size', 'integer', 8);
