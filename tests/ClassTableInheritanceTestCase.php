@@ -48,7 +48,7 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
 
     public function testExportGeneratesAllInheritedTables()
     {
-        $sql = $this->conn->export->exportClassesSql(array('CTITest'));
+        $sql = $this->conn->export->exportClassesSql(array('CTITest', 'CTITestOneToManyRelated'));
     
         $this->assertEqual($sql[0], 'CREATE TABLE c_t_i_test_parent4 (id INTEGER, age INTEGER, PRIMARY KEY(id))');
         $this->assertEqual($sql[1], 'CREATE TABLE c_t_i_test_parent3 (id INTEGER, added INTEGER, PRIMARY KEY(id))');
@@ -101,6 +101,7 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         // pop the prepare event
         $profiler->pop();
         $this->assertEqual($profiler->pop()->getQuery(), 'INSERT INTO c_t_i_test_parent2 (name, verified) VALUES (?, ?)');
+        $this->conn->addListener(new Doctrine_EventListener());
     }
     
     public function testParentalJoinsAreAddedAutomaticallyWithDql()
@@ -121,10 +122,69 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
     
     public function testFetchingCtiRecordsSupportsLimitSubqueryAlgorithm()
     {
+    	$record = new CTITestOneToManyRelated;
+    	$record->name = 'Someone';
+    	$record->cti_id = 1;
+    	$record->save();
+
+        $this->conn->clear();
+
         $q = new Doctrine_Query();
         $q->from('CTITestOneToManyRelated c')->leftJoin('c.CTITest c2')->where('c.id = 1')->limit(1);
 
-        print $q->getSql();
+        $record = $q->fetchOne();
+        
+        $this->assertEqual($record->name, 'Someone');
+        $this->assertEqual($record->cti_id, 1);
+
+        $cti = $record->CTITest[0];
+
+        $this->assertEqual($cti->id, 1);
+        $this->assertEqual($cti->name, 'Jack Daniels');
+        $this->assertEqual($cti->verified, true);
+        $this->assertTrue(isset($cti->added));
+        $this->assertEqual($cti->age, 13);
+    }
+
+    public function testUpdatingCtiRecordsUpdatesAllParentTables()
+    {
+        $this->conn->clear();
+
+        $profiler = new Doctrine_Connection_Profiler();
+    	$this->conn->addListener($profiler);
+
+        $record = $this->conn->getTable('CTITest')->find(1);
+        
+        $record->age = 11;
+        $record->name = 'Jack';
+        $record->verified = false;
+        $record->added = 0;
+        
+        $record->save();
+        
+        // pop the commit event
+        $profiler->pop();
+        $this->assertEqual($profiler->pop()->getQuery(), 'UPDATE c_t_i_test_parent4 SET age = ? WHERE id = ?');
+        // pop the prepare event
+        $profiler->pop();
+        $this->assertEqual($profiler->pop()->getQuery(), 'UPDATE c_t_i_test_parent3 SET added = ? WHERE id = ?');
+        // pop the prepare event
+        $profiler->pop();
+        $this->assertEqual($profiler->pop()->getQuery(), 'UPDATE c_t_i_test_parent2 SET name = ?, verified = ? WHERE id = ?');
+        $this->conn->addListener(new Doctrine_EventListener());
+    }
+    
+    public function testUpdateOperationIsPersistent()
+    {
+        $this->conn->clear();
+        
+        $record = $this->conn->getTable('CTITest')->find(1);
+        
+        $this->assertEqual($record->id, 1);
+        $this->assertEqual($record->name, 'Jack');
+        $this->assertEqual($record->verified, false);
+        $this->assertEqual($record->added, 0);
+        $this->assertEqual($record->age, 11);
     }
 }
 class CTITestParent1 extends Doctrine_Record
