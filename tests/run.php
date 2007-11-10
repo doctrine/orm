@@ -11,7 +11,6 @@ spl_autoload_register(array('DoctrineTest','autoload'));
 $test = new DoctrineTest();
 //TICKET test cases
 $tickets = new GroupTest('Tickets tests', 'tickets');
-$tickets->addTestCase(new Doctrine_Ticket_589_TestCase());
 $tickets->addTestCase(new Doctrine_Ticket_Njero_TestCase());
 $tickets->addTestCase(new Doctrine_Ticket_428_TestCase());
 $tickets->addTestCase(new Doctrine_Ticket_587_TestCase());
