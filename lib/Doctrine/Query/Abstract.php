@@ -78,11 +78,12 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
      * whereIn
      * adds IN condition to the query WHERE part
      *
-     * @param string $expr
+     * @param string $expr          the operand of the IN
      * @param mixed $params         an array of parameters or a simple scalar
+     * @param boolean $not          whether or not to use NOT in front of IN
      * @return Doctrine_Query
      */
-    public function whereIn($expr, $params = array())
+    public function whereIn($expr, $params = array(), $not = false)
     {
         $params = (array) $params;
         $a = array();
@@ -98,7 +99,7 @@ abstract class Doctrine_Query_Abstract extends Doctrine_Hydrate
 
         $this->_params['where'] = array_merge($this->_params['where'], $params);
 
-        $where = $expr . ' IN (' . implode(', ', $a) . ')';
+        $where = $expr . ($not === true ? ' NOT ':'') . ' IN (' . implode(', ', $a) . ')';
 
         return $this->parseQueryPart('where', $where, true);
     }
