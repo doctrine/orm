@@ -502,13 +502,48 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
 
     /**
+     * Updates table row(s) with specified data
+     *
+     * @throws Doctrine_Connection_Exception    if something went wrong at the database level
+     * @param string $table     The table to insert data into
+     * @param array $values     An associateve array containing column-value pairs.
+     * @return mixed            boolean false if empty value array was given,
+     *                          otherwise returns the number of affected rows
+     */
+    public function update($table, array $values, array $identifier)
+    {
+        if (empty($values)) {
+            return false;
+        }
+
+        $set = array();
+        foreach ($values as $name => $value) {
+            if ($value instanceof Doctrine_Expression) {
+                $set[] = $name . ' = ' . $value->getSql();
+                unset($values[$name]);
+            } else {
+                $set[] = $name . ' = ?';
+            }
+        }
+
+        $params = array_merge(array_values($values), array_values($identifier));
+
+        $sql  = 'UPDATE ' . $this->quoteIdentifier($table)
+              . ' SET ' . implode(', ', $set)
+              . ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
+              . ' = ?';
+
+        return $this->exec($sql, $params);
+    }
+
+    /**
      * Inserts a table row with specified data.
      *
      * @param string $table     The table to insert data into.
      * @param array $values     An associateve array containing column-value pairs.
      * @return boolean
      */
-    public function insert($table, array $values = array()) {
+    public function insert($table, array $values) {
         if (empty($values)) {
             return false;
         }
@@ -544,8 +579,6 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * Set the charset on the current connection
      *
      * @param string    charset
-     *
-     * @return void
      */
     public function setCharset($charset)
     {
