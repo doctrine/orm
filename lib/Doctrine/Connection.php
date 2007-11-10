@@ -502,6 +502,30 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     }
 
     /**
+     * deletes table row(s) matching the specified identifier
+     *
+     * @throws Doctrine_Connection_Exception    if something went wrong at the database level
+     * @param string $table         The table to delete data from
+     * @param array $identifier     An associateve array containing identifier column-value pairs.
+     * @return integer              The number of affected rows
+     */
+    public function delete($table, array $identifier)
+    {
+        $tmp = array();
+
+        foreach (array_keys($identifier) as $id) {
+            $tmp[] = $id . ' = ? ';
+        }
+
+        $query = 'DELETE FROM '
+               . $this->conn->quoteIdentifier($table)
+               . ' WHERE ' . implode(' AND ', $tmp);
+
+
+        return $this->conn->exec($query, array_values($identifier));
+    }
+
+    /**
      * Updates table row(s) with specified data
      *
      * @throws Doctrine_Connection_Exception    if something went wrong at the database level
@@ -541,7 +565,8 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @param string $table     The table to insert data into.
      * @param array $values     An associateve array containing column-value pairs.
-     * @return boolean
+     * @return mixed            boolean false if empty value array was given,
+     *                          otherwise returns the number of affected rows
      */
     public function insert($table, array $values) {
         if (empty($values)) {
@@ -570,9 +595,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $query .= implode(', ', $a) . ')';
         // prepare and execute the statement
 
-        $this->exec($query, array_values($values));
-
-        return true;
+        return $this->exec($query, array_values($values));
     }
 
     /**
