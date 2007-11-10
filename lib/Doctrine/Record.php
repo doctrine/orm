@@ -239,6 +239,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
     {
         return $this->_oid;
     }
+    public function oid()
+    {
+        return $this->_oid;
+    }
 
     /**
      * isValid
@@ -1041,7 +1045,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param Doctrine_Connection $conn             optional connection parameter
      * @throws Doctrine_Connection_Exception        if some of the key values was null
      * @throws Doctrine_Connection_Exception        if there were no key fields
-     * @throws PDOException                         if something fails at PDO level
+     * @throws Doctrine_Connection_Exception        if something fails at database level
      * @return integer                              number of rows affected
      */
     public function replace(Doctrine_Connection $conn = null)
@@ -1058,6 +1062,16 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @return array
      */
     public function getModified()
+    {
+        $a = array();
+
+        foreach ($this->_modified as $k => $v) {
+            $a[$v] = $this->_data[$v];
+        }
+        return $a;
+    }
+    
+    public function modifiedFields()
     {
         $a = array();
 
@@ -1472,7 +1486,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 if (isset($values[$value])) {
                     $this->set($value, $values[$value]);
                 }
-            } catch(Exception $e) {
+            } catch(Doctrine_Exception $e) {
                 // silence all exceptions
             }
         }
@@ -1522,12 +1536,6 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
         
         return $this->_node;
     }
-
-    public function unshiftFilter(Doctrine_Record_Filter $filter)
-    {
-        return $this->_table->unshiftFilter($filter);
-    }
-
     /**
      * revert
      * reverts this record to given version, this method only works if versioning plugin
@@ -1552,7 +1560,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
 
         return $this;
     }
-
+    public function unshiftFilter(Doctrine_Record_Filter $filter)
+    {
+        return $this->_table->unshiftFilter($filter);
+    }
     /**
      * unlink
      * removes links from this record to given records

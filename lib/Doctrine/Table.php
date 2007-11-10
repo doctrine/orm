@@ -265,7 +265,11 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             if ($parent === $class->getName()) {
                 continue;
             }
-
+            $ref = new ReflectionClass($parent);
+            
+            if ($ref->isAbstract()) {
+                continue;
+            }
             $table = $this->_conn->getTable($parent);
 
             $found = false;
@@ -399,6 +403,20 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
             default:
                 $this->_identifierType = Doctrine::IDENTIFIER_COMPOSITE;
         }
+    }
+
+    public function getColumnOwner($column)
+    {
+        if (isset($this->_columns[$column]['owner'])) {
+            return $this->_columns[$column]['owner'];
+        } else {
+            return $this->getComponentName();
+        }
+    }
+
+    public function isInheritedColumn($column)
+    {
+        return (isset($this->_columns[$column]['owner']));
     }
 
     public function isIdentifier($identifier)

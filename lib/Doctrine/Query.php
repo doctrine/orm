@@ -453,11 +453,27 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             }
             $sql = array();
             foreach ($fields as $name) {
-                $name = $table->getColumnName($name);
+                if (($owner = $table->getColumnOwner($name)) !== null && 
+                     $owner !== $table->getComponentName()) {
 
-                $sql[] = $this->_conn->quoteIdentifier($tableAlias . '.' . $name)
-                       . ' AS '
-                       . $this->_conn->quoteIdentifier($tableAlias . '__' . $name);
+
+                    $parent = $this->_conn->getTable($owner);
+
+                    $name = $parent->getColumnName($name);
+
+                    $parentAlias = $this->getTableAlias($componentAlias . '.' . $parent->getComponentName());
+
+                    $sql[] = $this->_conn->quoteIdentifier($parentAlias . '.' . $name)
+                           . ' AS '
+                           . $this->_conn->quoteIdentifier($tableAlias . '__' . $name);
+                } else {
+
+                    $name = $table->getColumnName($name);
+    
+                    $sql[] = $this->_conn->quoteIdentifier($tableAlias . '.' . $name)
+                           . ' AS '
+                           . $this->_conn->quoteIdentifier($tableAlias . '__' . $name);
+                }
             }
 
             $this->_neededTables[] = $tableAlias;
@@ -1643,8 +1659,10 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                                    . ' = ' 
                                    . $this->_conn->quoteIdentifier($foreignAlias . '.' . $relation->getForeign());
                     }
-
                 }
+
+                $queryPart .= $this->buildInheritanceJoinSql($table->getComponentName(), $componentAlias);
+
                 $this->parts['from'][$componentAlias] = $queryPart;
                 if ( ! empty($joinCondition)) {
                     $this->_pendingJoinConditions[$componentAlias] = $joinCondition;
@@ -1708,12 +1726,53 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         if ($this->type === self::SELECT) {
             $queryPart .= ' ' . $this->_conn->quoteIdentifier($tableAlias);
         }
+        
+        $this->tableAliases[$tableAlias] = $componentAlias;
+
+        $queryPart .= $this->buildInheritanceJoinSql($name, $componentAlias);
 
         $this->parts['from'][] = $queryPart;
-        $this->tableAliases[$tableAlias]  = $componentAlias;
+
         $this->_aliasMap[$componentAlias] = array('table' => $table, 'map' => null);
 
         return $table;
+    }
+    public function buildInheritanceJoinSql($name, $componentAlias)
+    {
+        // get the connection for the component
+        $this->_conn = Doctrine_Manager::getInstance()
+                      ->getConnectionForComponent($name);
+
+        $table = $this->_conn->getTable($name);
+        $tableName = $table->getTableName();
+
+        // get the short alias for this table
+        $tableAlias = $this->getTableAlias($componentAlias, $tableName);
+        
+        $queryPart = '';
+
+        foreach ($table->getOption('joinedParents') as $parent) {
+        	$parentTable = $this->_conn->getTable($parent);
+
+            $parentAlias = $componentAlias . '.' . $parent;
+
+            // get the short alias for the parent table
+            $parentTableAlias = $this->getTableAlias($parentAlias, $parentTable->getTableName());
+
+            $queryPart .= ' LEFT JOIN ' . $this->_conn->quoteIdentifier($parentTable->getTableName())
+                        . ' ' . $this->_conn->quoteIdentifier($parentTableAlias) . ' ON ';
+            
+            foreach ((array) $table->getIdentifier() as $identifier) {
+                $column = $table->getColumnName($identifier);
+
+                $queryPart .= $this->_conn->quoteIdentifier($tableAlias) 
+                            . '.' . $this->_conn->quoteIdentifier($column)
+                            . ' = ' . $this->_conn->quoteIdentifier($parentTableAlias)
+                            . '.' . $this->_conn->quoteIdentifier($column);
+            }
+        }
+        
+        return $queryPart;
     }
 
     /**

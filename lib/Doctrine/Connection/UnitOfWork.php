@@ -267,7 +267,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->preDelete($event);
         
-        $record->getTable()->getRecordListener()->preDelete($event);
+        $table = $record->getTable();
+
+        $table->getRecordListener()->preDelete($event);
 
         $state = $record->state();
 
@@ -277,8 +279,15 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         if ( ! $event->skipOperation) {
             $record->state(Doctrine_Record::STATE_TDIRTY);
+            if (count($table->getOption('joinedParents')) > 0) {
 
-            $this->deleteRecord($record);
+                foreach ($table->getOption('joinedParents') as $parent) {
+                    $parentTable = $table->getConnection()->getTable($parent);
+                    
+                    $this->conn->delete($parentTable->getTableName(), $record->identifier());
+                }
+            }
+            $this->conn->delete($table->getTableName(), $record->identifier());
 
             $record->state(Doctrine_Record::STATE_TCLEAN);
         } else {
@@ -287,11 +296,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         }
 
 
-        $record->getTable()->getRecordListener()->postDelete($event);
+        $table->getRecordListener()->postDelete($event);
 
         $record->postDelete($event);
         
-        $record->getTable()->removeRecord($record);
+        $table->removeRecord($record);
 
         $this->conn->commit();
 
@@ -507,8 +516,7 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
     }
 
     /**
-     * update
-     * updates the given record
+     * updates given record
      *
      * @param Doctrine_Record $record   record to be updated
      * @return boolean                  whether or not the update was successful
@@ -519,60 +527,49 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         $record->preUpdate($event);
 
-        $record->getTable()->getRecordListener()->preUpdate($event);
+        $table = $record->getTable();
+
+        $table->getRecordListener()->preUpdate($event);
 
         if ( ! $event->skipOperation) {
-            $array = $record->getPrepared();
+            $identifier = $record->identifier();
 
-            if (empty($array)) {
-                return false;
-            }
-            $set = array();
-            foreach ($array as $name => $value) {
-                if ($value instanceof Doctrine_Expression) {
-                    $set[] = $name . ' = ' . $value->getSql();
-                    unset($array[$name]);
-                } else {
+            if (count($table->getOption('joinedParents')) > 0) {
+                $dataSet = $this->formatDataSet($record);
+                
+                $component = $table->getComponentName();
 
-                    $set[] = $name . ' = ?';
-    
+                $classes = $table->getOption('joinedParents');
+                $classes[] = $component;
+
+                foreach ($record as $field => $value) {
                     if ($value instanceof Doctrine_Record) {
                         if ( ! $value->exists()) {
-                            $record->save($this->conn);
+                            $value->save();
                         }
-                        $array[$name] = $value->getIncremented();
-                        $record->set($name, $value->getIncremented());
+                        $record->set($field, $value->getIncremented());
                     }
                 }
-            }
 
-            $params = array_values($array);
-            $id     = $record->identifier();
-    
-            if ( ! is_array($id)) {
-                $id = array($id);
+                foreach ($classes as $class) {
+                    $parentTable = $this->conn->getTable($class);
+
+                    $this->conn->update($this->conn->getTable($class)->getTableName(), $dataSet[$class], $identifier);
+                }
+            } else {
+                $array = $record->getPrepared();
+                
+                $this->conn->update($table->getTableName(), $array, $identifier);
             }
-            $id     = array_values($id);
-            $params = array_merge($params, $id);
-    
-            $sql  = 'UPDATE ' . $this->conn->quoteIdentifier($record->getTable()->getTableName())
-                  . ' SET ' . implode(', ', $set)
-                  . ' WHERE ' . implode(' = ? AND ', (array) $record->getTable()->getIdentifier())
-                  . ' = ?';
-    
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute($params);
-    
             $record->assignIdentifier(true);
         }
         
-        $record->getTable()->getRecordListener()->postUpdate($event);
+        $table->getRecordListener()->postUpdate($event);
 
         $record->postUpdate($event);
 
         return true;
     }
-
     /**
      * inserts a record into database
      *
@@ -592,23 +589,9 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
 
         if ( ! $event->skipOperation) {
             if (count($table->getOption('joinedParents')) > 0) {
-                $dataSet = array();
-
+                $dataSet = $this->formatDataSet($record);
+                
                 $component = $table->getComponentName();
-
-                $array = $record->getPrepared();
-
-                foreach ($table->getColumns() as $column => $definition) {
-                    if (isset($definition['primary']) && $definition['primary']) {
-                        continue;
-                    }
-
-                    if (isset($definition['owner'])) {
-                        $dataSet[$definition['owner']][$column] = $array[$column];
-                    } else {
-                        $dataSet[$component][$column] = $array[$column];
-                    }
-                }
 
                 $classes = $table->getOption('joinedParents');
                 $classes[] = $component;
@@ -640,6 +623,30 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $record->postInsert($event);
 
         return true;
+    }
+    public function formatDataSet(Doctrine_Record $record)
+    {
+    	$table = $record->getTable();
+
+        $dataSet = array();
+    
+        $component = $table->getComponentName();
+    
+        $array = $record->getPrepared();
+    
+        foreach ($table->getColumns() as $column => $definition) {
+            if (isset($definition['primary']) && $definition['primary']) {
+                continue;
+            }
+    
+            if (isset($definition['owner'])) {
+                $dataSet[$definition['owner']][$column] = $array[$column];
+            } else {
+                $dataSet[$component][$column] = $array[$column];
+            }
+        }    
+        
+        return $dataSet;
     }
     public function processSingleInsert(Doctrine_Record $record)
     {

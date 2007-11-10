@@ -514,15 +514,15 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
         $tmp = array();
 
         foreach (array_keys($identifier) as $id) {
-            $tmp[] = $id . ' = ? ';
+            $tmp[] = $id . ' = ?';
         }
 
         $query = 'DELETE FROM '
-               . $this->conn->quoteIdentifier($table)
+               . $this->quoteIdentifier($table)
                . ' WHERE ' . implode(' AND ', $tmp);
 
 
-        return $this->conn->exec($query, array_values($identifier));
+        return $this->exec($query, array_values($identifier));
     }
 
     /**
