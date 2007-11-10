@@ -121,6 +121,9 @@ class Doctrine_Data_Import extends Doctrine_Data
         foreach ($row as $key => $value) {
             if ($obj->getTable()->hasColumn($key)) {
                 $obj->set($key, $value);
+            } else if (method_exists($obj, 'set' . Doctrine::classify($key))) {
+                $func = 'set' . Doctrine::classify($key);
+                $obj->$func($value);
             } else if ($obj->getTable()->hasRelation($key)) {
                 if (is_array($value)) {
                     if (isset($value[0])) {
@@ -232,11 +235,6 @@ class Doctrine_Data_Import extends Doctrine_Data
 
             $record = $this->_importedObjects[$rowKey];
             
-            if( is_array($nestedSet) AND !empty($nestedSet) )
-            {
-                $this->_processRow($rowKey, $nestedSet);
-            }
-    
             if( !$parent )
             {
                 $manager->getTable($model)->getTree()->createRoot($record);
