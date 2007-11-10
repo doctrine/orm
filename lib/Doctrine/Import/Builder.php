@@ -131,8 +131,8 @@ class Doctrine_Import_Builder
     {
         Doctrine::makeDirectories($path);
         
-        if (!$this->_packagesPath) {
-            $this->_packagesPath = $path . DIRECTORY_SEPARATOR . 'packages';
+        if ( ! $this->_packagesPath) {
+            $this->setPackagesPath($path . DIRECTORY_SEPARATOR . 'packages');
         }
 
         $this->_path = $path;
@@ -157,6 +157,8 @@ class Doctrine_Import_Builder
      */
     public function setPackagesPath($packagesPath)
     {
+        Doctrine::makeDirectories($packagesPath);
+        
         $this->_packagesPath = $packagesPath;
     }
     
@@ -259,8 +261,14 @@ class Doctrine_Import_Builder
      */
     public function setOption($key, $value)
     {
-        $name = '_'.$key;
-        $this->$name = $value;
+        $name = 'set' . Doctrine::classify($key);
+        
+        if (method_exists($this, $name)) {
+            $this->$name($value);
+        } else {
+            $key = '_' . $key;
+            $this->$key = $value;
+        }
     }
 
     /**

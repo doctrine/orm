@@ -117,7 +117,7 @@ class Doctrine_Import_Schema
             }
         }
 
-        $this->buildRelationships($array);
+        $this->_buildRelationships($array);
 
         return array('schema' => $array, 'relations' => $this->_relations);
     }
@@ -137,13 +137,12 @@ class Doctrine_Import_Schema
     {
         $builder = new Doctrine_Import_Builder();
         $builder->setTargetPath($directory);
-        $builder->generateBaseClasses($this->getOption('generateBaseClasses'));
-        $builder->generateTableClasses($this->getOption('generateTableClasses'));
-        $builder->setBaseClassesDirectory($this->getOption('baseClassesDirectory'));
-        $builder->setBaseClassName($this->getOption('baseClassName'));
-        $builder->setPackagesPath($this->getOption('packagesPath'));
-        $builder->setPackagesPrefix($this->getOption('packagesPrefix'));
-        $builder->setSuffix($this->getOption('suffix'));
+        
+        foreach ($this->_options as $key => $value) {
+            if ($value) {
+                $builder->setOption($key, $value);
+            }
+        }
         
         $schema = $this->buildSchema($schema, $format);
         
@@ -376,7 +375,7 @@ class Doctrine_Import_Schema
      * @param  string $array 
      * @return void
      */
-    protected function buildRelationships(&$array)
+    protected function _buildRelationships(&$array)
     {
         foreach ($array as $name => $properties) {
             if ( ! isset($properties['relations'])) {
@@ -420,7 +419,7 @@ class Doctrine_Import_Schema
         }
         
         // Now we fix all the relationships and auto-complete opposite ends of relationships
-        $this->fixRelationships();
+        $this->_fixRelationships();
     }
 
     /**
@@ -430,7 +429,7 @@ class Doctrine_Import_Schema
      *
      * @return void
      */
-    protected function fixRelationships()
+    protected function _fixRelationships()
     {
         foreach($this->_relations as $className => $relations) {
             foreach ($relations AS $alias => $relation) {

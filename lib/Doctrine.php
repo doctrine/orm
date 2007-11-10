@@ -714,6 +714,8 @@ final class Doctrine
         $manager = Doctrine_Manager::getInstance();
         $connections = $manager->getConnections();
         
+        $results = array();
+        
         foreach ($connections as $name => $connection) {
             if ( ! empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
                 continue;
@@ -738,10 +740,14 @@ final class Doctrine
                 
                 // Reopen original connection with newly created database
                 $manager->openConnection(new PDO($info['dsn'], $username, $password), $name, true);
-            } catch (Exception $e) {
                 
+                $results[$name] = true;
+            } catch (Exception $e) {
+                $results[$name] = false;
             }
         }
+        
+        return $results;
     }
 
     /**
@@ -762,6 +768,8 @@ final class Doctrine
         
         $connections = $manager->getConnections();
         
+        $results = array();
+        
         foreach ($connections as $name => $connection) {
             if ( ! empty($specifiedConnections) && !in_array($name, $specifiedConnections)) {
                 continue;
@@ -769,10 +777,14 @@ final class Doctrine
             
             try {
                 $connection->export->dropDatabase($name);
-            } catch (Exception $e) {
                 
+                $results[$name] = true;
+            } catch (Exception $e) {
+                $results[$name] = false;
             }
         }
+        
+        return $results;
     }
 
     /**
@@ -1047,10 +1059,38 @@ final class Doctrine
      */
     public static function makeDirectories($path, $mode = 0777)
     {
+        if (!$path) {
+          return false;
+        }
+        
         if (is_dir($path) || is_file($path)) {
           return true;
         }
 
         return mkdir($path, $mode, true); 
+    }
+    
+    function removeDirectories($folderPath)
+    {
+        if (is_dir($folderPath))
+        {
+            foreach (scandir($folderPath) as $value)
+            {
+                if ($value != '.' && $value != '..')
+                {
+                    $value = $folderPath . "/" . $value;
+
+                    if (is_dir($value)) {
+                        self::removeDirectories($value);
+                    } else if (is_file($value)) {
+                        @unlink($value);
+                    }
+                }
+            }
+
+            return rmdir ( $folderPath );
+        } else {
+            return false;
+        }
     }
 }

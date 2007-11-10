@@ -64,7 +64,7 @@ class Doctrine_Data_Import extends Doctrine_Data
                 
                 // If they specified a specific yml file
                 if (end($e) == 'yml') {
-                    $array = array_merge(Doctrine_Parser::load($dir, $this->getFormat()), $array);
+                    $array = array_merge($array, Doctrine_Parser::load($dir, $this->getFormat()));
                 // If they specified a directory
                 } else if(is_dir($dir)) {
                     $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir),
@@ -73,17 +73,17 @@ class Doctrine_Data_Import extends Doctrine_Data
                     foreach ($it as $file) {
                         $e = explode('.', $file->getFileName());
                         if (in_array(end($e), $this->getFormats())) {
-                            $array = array_merge(Doctrine_Parser::load($file->getPathName(), $this->getFormat()), $array);
+                            $array = array_merge($array, Doctrine_Parser::load($file->getPathName(), $this->getFormat()));
                         }
                     }   
                 }
             }
         }
         
-        $this->loadData($array);
+        $this->_loadData($array);
     }
     
-    protected function buildRows($className, $data)
+    protected function _buildRows($className, $data)
     {
         $rows = array();
         foreach ($data as $rowKey => $row) {
@@ -96,7 +96,7 @@ class Doctrine_Data_Import extends Doctrine_Data
                     
                     // Skip associative arrays defining keys to relationships
                     if (!isset($keys[0])) {
-                        $rows = array_merge($rows, $this->buildRows(Doctrine::getTable($className)->getRelation($key)->getTable()->getOption('name'), $value));
+                        $rows = array_merge($rows, $this->_buildRows(Doctrine::getTable($className)->getRelation($key)->getTable()->getOption('name'), $value));
                     }
                 }
             }
@@ -110,7 +110,7 @@ class Doctrine_Data_Import extends Doctrine_Data
      * @param string $array 
      * @return void
      */
-    protected function loadData(array $array)
+    protected function _loadData(array $array)
     {
         $specifiedModels = $this->getModels();
         $rows = array();
@@ -127,9 +127,9 @@ class Doctrine_Data_Import extends Doctrine_Data
             $templates = array_keys($obj->getTable()->getTemplates());
             
             if (in_array('Doctrine_Template_NestedSet', $templates)) {
-                $this->loadNestedSetData($className, $data);  
+                $this->_loadNestedSetData($className, $data);  
             } else {
-                $rows = array_merge($rows, $this->buildRows($className, $data));
+                $rows = array_merge($rows, $this->_buildRows($className, $data));
             }
         }
         
@@ -189,7 +189,7 @@ class Doctrine_Data_Import extends Doctrine_Data
         }
     }
     
-    protected function loadNestedSetData($model, $nestedSetData, $parent = null)
+    protected function _loadNestedSetData($model, $nestedSetData, $parent = null)
     {
         $manager = Doctrine_Manager::getInstance();
 
@@ -222,7 +222,7 @@ class Doctrine_Data_Import extends Doctrine_Data
 
             if( is_array($children) AND !empty($children) )
             {
-                $this->loadNestedSetData($model, $children, $record);
+                $this->_loadNestedSetData($model, $children, $record);
             }
         }
     }
