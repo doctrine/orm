@@ -210,7 +210,9 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $this->conn->addListener(new Doctrine_EventListener());
     }
 }
-class CTITestParent1 extends Doctrine_Record
+abstract class CTIAbstractBase extends Doctrine_Record
+{ }
+class CTITestParent1 extends CTIAbstractBase
 {
     public function setTableDefinition()
     {
