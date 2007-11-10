@@ -46,8 +46,12 @@ class Doctrine_Task_DropDb extends Doctrine_Task
             return;
         }
 
-        Doctrine::dropDatabases();
+        $results = Doctrine::dropDatabases();
         
-        $this->notify('Dropped databases successfully');
+        foreach ($results as $dbName => $bool) {
+            $msg = $bool ? 'Successfully dropped database named: "' . $dbName . '"':'Could not drop database named: "' .$dbName . '"';
+            
+            $this->notify($msg);
+        }
     }
 }

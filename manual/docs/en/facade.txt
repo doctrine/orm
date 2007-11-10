@@ -1,3 +1,7 @@
+++ Creating & Dropping Databases
+
+Doctrine offers the ability to create and drop your databases from your defined Doctrine connections. The only trick to using it is that the name of your Doctrine connection must be the name of your database. This is required due to the fact that PDO does not offer a method for retrieving the name of the database you are connected to. So in order to create and drop the database Doctrine itself must be aware of the name of the database.
+
 ++ Convenience Methods
 
 Doctrine offers static convenience methods available in the main Doctrine class. These methods perform some of the most used functionality of Doctrine with one method. Most of these methods are using in the Doctrine_Task system. These tasks are also what are executed from the Doctrine_Cli.

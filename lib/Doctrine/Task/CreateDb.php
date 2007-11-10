@@ -37,8 +37,12 @@ class Doctrine_Task_CreateDb extends Doctrine_Task
     
     public function execute()
     {
-        Doctrine::createDatabases();
+        $results = Doctrine::createDatabases();
         
-        $this->notify('Created databases successfully');
+        foreach ($results as $dbName => $bool) {
+            $msg = $bool ? 'Successfully created database named: "' . $dbName . '"':'Could not create database named: "' .$dbName . '"';
+            
+            $this->notify($msg);
+        }
     }
 }
