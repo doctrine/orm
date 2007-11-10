@@ -32,8 +32,9 @@
  */
 class Doctrine_Data_Import extends Doctrine_Data
 {
-    private $_importedObjects = array();
-
+    protected $_importedObjects = array();
+    protected $_rows = array();
+    
     /**
      * constructor
      *
@@ -85,10 +86,9 @@ class Doctrine_Data_Import extends Doctrine_Data
     
     protected function _buildRows($className, $data)
     {
-        $rows = array();
         foreach ($data as $rowKey => $row) {
             // do the same for the row information
-            $rows[$className][$rowKey] = $row;
+            $this->_rows[$className][$rowKey] = $row;
             
             foreach ($row as $key => $value) {
                 if (Doctrine::getTable($className)->hasRelation($key) && is_array($value)) {
@@ -96,14 +96,54 @@ class Doctrine_Data_Import extends Doctrine_Data
                     
                     // Skip associative arrays defining keys to relationships
                     if (!isset($keys[0])) {
-                        $rows = array_merge($rows, $this->_buildRows(Doctrine::getTable($className)->getRelation($key)->getTable()->getOption('name'), $value));
+                        $this->_buildRows(Doctrine::getTable($className)->getRelation($key)->getTable()->getOption('name'), $value);
                     }
                 }
             }
         }
-        
-        return $rows;
     }
+    
+    protected function _buildNestedSetRows($className, $data)
+    {
+        foreach ($data as $rowKey => $row) {
+            $children = isset($row['children']) ? $row['children']:array();
+            unset($row['children']);
+            $this->_rows[$className][$rowKey] = $row;
+            
+            $this->_buildNestedSetRows($className, $children);
+        }
+    }
+    
+    protected function _processRow($rowKey, $row)
+    {
+        $obj = $this->_importedObjects[$rowKey];
+        
+        foreach ($row as $key => $value) {
+            if ($obj->getTable()->hasColumn($key)) {
+                $obj->set($key, $value);
+            } else if ($obj->getTable()->hasRelation($key)) {
+                if (is_array($value)) {
+                    if (isset($value[0])) {
+                        foreach ($value as $link) {
+                            
+                            if ($obj->getTable()->getRelation($key)->getType() === Doctrine_Relation::ONE) {
+                                $obj->set($key, $this->_importedObjects[$link]);
+                            } else if ($obj->getTable()->getRelation($key)->getType() === Doctrine_Relation::MANY) {
+                                $relation = $obj->$key;
+                                
+                                $relation[] = $this->_importedObjects[$link];
+                            }
+                        }
+                    } else {
+                        $obj->$key->fromArray($value);
+                    }
+                } else if (isset($this->_importedObjects[$value])) {
+                    $obj->set($key, $this->_importedObjects[$value]);
+                }
+            }
+        }
+    }
+    
     /**
      * loadData
      *
@@ -112,6 +152,8 @@ class Doctrine_Data_Import extends Doctrine_Data
      */
     protected function _loadData(array $array)
     {
+        $nestedSets = array();
+        
         $specifiedModels = $this->getModels();
         $rows = array();
         
@@ -123,51 +165,27 @@ class Doctrine_Data_Import extends Doctrine_Data
             
             // This is simple here to get the templates present for this model
             // better way?
-            $obj = new $className();
+            $obj = new $className(null, true);
             $templates = array_keys($obj->getTable()->getTemplates());
             
             if (in_array('Doctrine_Template_NestedSet', $templates)) {
-                $this->_loadNestedSetData($className, $data);  
+                $nestedSets[$className][] = $data;
+                $this->_buildNestedSetRows($className, $data);
             } else {
-                $rows = array_merge($rows, $this->_buildRows($className, $data));
+                $this->_buildRows($className, $data);
             }
         }
         
         $buildRows = array();
-        foreach ($rows as $className => $classRows) {
+        foreach ($this->_rows as $className => $classRows) {
             foreach ($classRows as $rowKey => $row) {
                 $buildRows[$rowKey] = $row;
                 $this->_importedObjects[$rowKey] = new $className();
             }
         }
-        
+
         foreach($buildRows as $rowKey => $row) {
-            $obj = $this->_importedObjects[$rowKey];
-            
-            foreach ($row as $key => $value) {
-                if ($obj->getTable()->hasColumn($key)) {
-                    $obj->set($key, $value);
-                } else if ($obj->getTable()->hasRelation($key)) {
-                    if (is_array($value)) {
-                        if (isset($value[0])) {
-                            foreach ($value as $link) {
-                                
-                                if ($obj->getTable()->getRelation($key)->getType() === Doctrine_Relation::ONE) {
-                                    $obj->set($key, $this->_importedObjects[$link]);
-                                } else if ($obj->getTable()->getRelation($key)->getType() === Doctrine_Relation::MANY) {
-                                    $relation = $obj->$key;
-                                    
-                                    $relation[] = $this->_importedObjects[$link];
-                                }
-                            }
-                        } else {
-                            $obj->$key->fromArray($value);
-                        }
-                    } else if (isset($this->_importedObjects[$value])) {
-                        $obj->set($key, $this->_importedObjects[$value]);
-                    }
-                }
-            }
+            $this->_processRow($rowKey, $row);
         }
 
         $manager = Doctrine_Manager::getInstance();
@@ -180,11 +198,19 @@ class Doctrine_Data_Import extends Doctrine_Data
             $tree = $connection->unitOfWork->buildFlushTree($objects);
             
             foreach ($tree as $model) {
-              foreach ($this->_importedObjects as $obj) {
-                if ($obj instanceof $model) {
-                  $obj->save();
+                foreach ($this->_importedObjects as $obj) {
+                    $templates = array_keys($obj->getTable()->getTemplates());
+                    
+                    if ($obj instanceof $model && !in_array('Doctrine_Template_NestedSet', $templates)) {
+                        $obj->save();
+                    }
                 }
-              }
+            }
+        }
+        
+        foreach ($nestedSets as $className => $sets) {
+            foreach ($sets as $data) {
+                $this->_loadNestedSetData($className, $data);
             }
         }
     }
@@ -204,13 +230,11 @@ class Doctrine_Data_Import extends Doctrine_Data
                 unset($nestedSet['children']);
             }
 
-            $record = new $model();
-            
-            $this->_importedObjects[$rowKey] = $record;
+            $record = $this->_importedObjects[$rowKey];
             
             if( is_array($nestedSet) AND !empty($nestedSet) )
             {
-                $record->fromArray($nestedSet);
+                $this->_processRow($rowKey, $nestedSet);
             }
     
             if( !$parent )
