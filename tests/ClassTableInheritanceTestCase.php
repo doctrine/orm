@@ -186,6 +186,29 @@ class Doctrine_ClassTableInheritance_TestCase extends Doctrine_UnitTestCase
         $this->assertEqual($record->added, 0);
         $this->assertEqual($record->age, 11);
     }
+    
+    public function testDeleteIssuesQueriesOnAllJoinedTables()
+    {
+        $this->conn->clear();
+
+        $profiler = new Doctrine_Connection_Profiler();
+    	$this->conn->addListener($profiler);
+
+        $record = $this->conn->getTable('CTITest')->find(1);
+        
+        $record->delete();
+
+        // pop the commit event
+        $profiler->pop();
+        $this->assertEqual($profiler->pop()->getQuery(), 'DELETE FROM c_t_i_test_parent4 WHERE id = ?');
+        // pop the prepare event
+        $profiler->pop();
+        $this->assertEqual($profiler->pop()->getQuery(), 'DELETE FROM c_t_i_test_parent3 WHERE id = ?');
+        // pop the prepare event
+        $profiler->pop();
+        $this->assertEqual($profiler->pop()->getQuery(), 'DELETE FROM c_t_i_test_parent2 WHERE id = ?');
+        $this->conn->addListener(new Doctrine_EventListener());
+    }
 }
 class CTITestParent1 extends Doctrine_Record
 {
