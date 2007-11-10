@@ -144,7 +144,7 @@ END;
         
         $result = $this->generateMigrationsFromModels($directory);
         
-        exec('rm -rf ' . $directory);
+        Doctrine::removeDirectories($directory);
         
         return $result;
     }
