@@ -441,9 +441,17 @@ final class Doctrine
      * 
      * Array of all the loaded models and the path to each one for autoloading
      *
-     * @var string
+     * @var array
      */
     private static $_loadedModels = array();
+    
+    /**
+     * _validators
+     *
+     * Array of all the loaded validators
+     * @var array
+     */
+    private static $_validators = array();
 
     /**
      * __construct
@@ -1070,7 +1078,13 @@ final class Doctrine
         return mkdir($path, $mode, true); 
     }
     
-    function removeDirectories($folderPath)
+    /**
+     * removeDirectories
+     *
+     * @param string $folderPath 
+     * @return void
+     */
+    public static function removeDirectories($folderPath)
     {
         if (is_dir($folderPath))
         {
@@ -1092,5 +1106,32 @@ final class Doctrine
         } else {
             return false;
         }
+    }
+    
+    /**
+     * getValidators
+     *
+     * Get available doctrine validators
+     *
+     * @return array $validators
+     */
+    public static function getValidators()
+    {
+        if (empty(self::$_validators)) {
+            $dir = Doctrine::getPath() . DIRECTORY_SEPARATOR . 'Doctrine' . DIRECTORY_SEPARATOR . 'Validator';
+        
+            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::LEAVES_ONLY);
+            foreach ($files as $file) {
+                $e = explode('.', $file->getFileName());
+                
+                if (end($e) == 'php') {
+                    $name = strtolower($e[0]);
+                    
+                    self::$_validators[$name] = $name;
+                }
+            }
+        }
+        
+        return self::$_validators;
     }
 }

@@ -160,8 +160,9 @@ class Doctrine_Import_Schema
             $attributes = $this->getAttributes($properties);
             $templates = $this->getTemplates($properties);
             $actAs = $this->getActAs($properties);
+            $tableOptions = $this->getTableOptions($properties);
             
-            $builder->buildRecord($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
+            $builder->buildRecord($options, $columns, $relations, $indexes, $attributes, $templates, $actAs, $tableOptions);
         }
     }
 
@@ -282,6 +283,17 @@ class Doctrine_Import_Schema
     {
         return isset($properties['actAs']) ? $properties['actAs']:array();
     }
+    
+    /**
+     * getTableOptions
+     *
+     * @param string $properties 
+     * @return void
+     */
+    public function getTableOptions($properties)
+    {
+        return isset($properties['options']) ? $properties['options']:array();
+    }
 
     /**
      * parseSchema
@@ -332,17 +344,21 @@ class Doctrine_Import_Schema
                     }
                     
                     $colDesc['ptype'] = isset($field['ptype']) ? (string) $field['ptype']:(string) $colDesc['type'];
-                    
                     $colDesc['fixed'] = isset($field['fixed']) ? (int) $field['fixed']:null;
-                    $colDesc['unsigned'] = isset($field['unsigned']) ? (bool) $field['unsigned']:null;
                     $colDesc['primary'] = isset($field['primary']) ? (bool) (isset($field['primary']) && $field['primary']):null;
                     $colDesc['default'] = isset($field['default']) ? $field['default']:null;
-                    $colDesc['notnull'] = isset($field['notnull']) ? (bool) (isset($field['notnull']) && $field['notnull']):null;
                     $colDesc['autoincrement'] = isset($field['autoincrement']) ? (bool) (isset($field['autoincrement']) && $field['autoincrement']):null;
                     $colDesc['autoincrement'] = isset($field['autoinc']) ? (bool) (isset($field['autoinc']) && $field['autoinc']):$colDesc['autoincrement'];
-                    $colDesc['unique'] = isset($field['unique']) ? (bool) (isset($field['unique']) && $field['unique']):null;
-                    $colDesc['values'] = isset($field['values']) ? (array) $field['values']: null;
-
+                    $colDesc['values'] = isset($field['values']) ? (array) $field['values']:null;
+                    
+                    $validators = Doctrine::getValidators();
+                    
+                    foreach ($validators as $validator) {
+                        if (isset($field[$validator])) {
+                            $colDesc[$validator] = $field[$validator];
+                        }
+                    }
+                    
                     $columns[(string) $colDesc['name']] = $colDesc;
                 }
             }
@@ -356,8 +372,9 @@ class Doctrine_Import_Schema
             $build[$className]['attributes'] = isset($table['attributes']) ? $table['attributes']:array();
             $build[$className]['templates'] = isset($table['templates']) ? $table['templates']:array();
             $build[$className]['actAs'] = isset($table['actAs']) ? $table['actAs']:array();
+            $build[$className]['options'] = isset($table['options']) ? $table['options']:array();
             $build[$className]['package'] = isset($table['package']) ? $table['package']:null;
-        
+            
             if (isset($table['inheritance'])) {
                 $build[$className]['inheritance'] = $table['inheritance'];
             }

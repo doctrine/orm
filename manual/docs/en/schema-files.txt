@@ -1,267 +1,21 @@
 ++ Introduction
 
-The purpose of schema files is to allow you to manage your model definitions directly from a yaml file rather then editing php code. The yaml schema file is parsed and used to generate all your model definitions/classes.
+The purpose of schema files is to allow you to manage your model definitions directly from a yaml file rather then editing php code. The yaml schema file is parsed and used to generate all your model definitions/classes. This makes Doctrine model definitions much more portable.
 
 Schema files support all the normal things you would write with manual php code. Component to connection binding, relationships, attributes, templates/behaviors, indexes, etc.
 
-++ Example Schema File
+++ Relationships
 
-Below is an example schema file for generating a set of models.
+++ Connection Binding
 
-You will notice in this schema file it is not always necessary to specify the local and foreign parameters on a relationship. If the foreign columns follow the naming patterns, Doctrine can successfully guess each of them.
+++ Attributes
 
-schema.yml
-<code type="yml">
----
-Group:
-# bind this model to connection1
-  connection: connection1
-  columns: 
-    id: 
-      notnull: true
-      primary: true
-      autoincrement: true
-      type: integer
-      length: 4
-      name: id
-    name: 
-      type: string
-      length: 255
-  relations:
-    Users:
-      class: User
-      refClass: UserGroup
-# set attributes on the model
-  attributes:
-    export: tables
-# you can set templates on your schema with the following syntax
-# if you do not require any options to be set for the template
-# actAs and templates are the same, actAs serves as a convenience method for the Templates/Plugins
-# that come bundled with Doctrine
-  templates: [Doctrine_Template_NestedSet, Doctrine_Template_Versionable]
-# this below syntax can be used for the templates above
-  actAs:
-    NestedSet:
-      hasManyRoots: true
-      rootColumnName: root_id
-UserGroup:
-  columns:
-    user_id:
-      type: integer
-      length: 4
-      primary: true
-    group_id:
-      type: integer
-      length: 4
-      primary: true
-  relations:
-    User: -
-    Group: -
-UserCar:
-  columns:
-    user_id:
-      type: integer
-      length: 11
-      primary: true
-    car_id:
-      type: integer
-      length: 11
-      primary: true
-  relations:
-    User: -
-    Car: -
-Adult:
-  fields:
-    id:
-      type: integer
-      size: 11
-      primary: true
-      autoincrement: true
-    name:
-      type: string
-      size: 255
-    contact_id:
-      type: integer
-      size: 11
-  relations:
-    Contact:
-      foreignType: one
-Car:
-  columns:
-    id:
-      type: integer
-      length: 11
-      primary: true
-      autoincrement: true
-    name:
-      type: string
-      length: 255
-  relations:
-    Users:
-      class: User
-      refClass: UserCar
-Child:
-  fields:
-    id:
-      type: integer
-      size: 11
-      primary: true
-      autoincrement: true
-    name:
-      type: string
-      size: 255
-    adult_id:
-      type: integer
-      size: 11
-  relations:
-    Adult:
-      foreignAlias: Children
-Contact:
-  columns:
-    id:
-      type: integer
-      length: 11
-      primary: true
-      autoincrement: true
-    name:
-      type: string
-      length: 255
-Dog:
-  columns:
-    id:
-      type: integer
-      length: 11
-      primary: true
-      autoincrement: true
-    name:
-      type: string
-      length: 255
-    user_id:
-      type: integer
-      length: 11
-  relations:
-    User:
-      foreignType: one
-SelfReference:
-  fields:
-    id:
-      type: integer
-      size: 11
-      primary: true
-      autoincrement: true
-    name:
-      type: string
-      size: 255
-    user_id1:
-      type: integer
-      size: 11
-    user_id2:
-      type: integer
-      size: 11
-    parent_self_reference_id:
-      type: integer
-      size: 11
-    parent_self_reference_id2:
-      type: integer
-      size: 11
-  relations:
-    User1:
-      class: User
-      local: user_id1
-      foreignAlias: SelfReference1
-    User2:
-      class: User
-      local: user_id2
-      foreignAlias: SelfReference2
-    SelfReference1:
-      class: SelfReference
-      local: parent_self_reference_id
-      foreignAlias: SelfReferences1
-    SelfReference2:
-      class: SelfReference
-      local: parent_self_reference_id2
-      foreignAlias: SelfReferences2
-User:
-  inheritance:
-    extends: Entity
-  fields:
-    id:
-      type: integer
-      size: 11
-      primary: true
-      autoincrement: true
-    username:
-      type: string
-      length: 255
-    hair_color:
-      type: string
-      length: 255
-    contact_id:
-      type: integer
-      length: 11
-  relations:
-    Contact:
-      local: contact_id
-      foreign: id
-      foreignType: one
-    Cars:
-      class: Car
-      refClass: UserCar
-    Groups:
-      class: Group
-      refClass: UserGroup
-  indexes:
-    name_x:
-      columns:
-        username:
-          sorting: ASC
-          length: 11
-          primary: true
-      type: unique
-Entity:
-  columns:
-    id:
-      type: integer
-      size: 11
-      primary: true
-      autoincrement: true
-</code>
 
-And now we want to use some Doctrine code to parse that schema.yml file and generate our models from it.
+++ Templates
 
-<code type="php">
-// This code will generate the models for schema.yml at /path/to/generate/models
-$import = new Doctrine_Import_Schema();
-$import->importSchema('schema.yml', 'yml', '/path/to/generate/models');
-</code>
+++ ActAs
 
-This is the directory structure that would be generated at /path/to/generate/models. The base classes contain the actual definitions for the model, and the top level models extend the base and they are only written the first time so you are able to modify them without your additions being overwritten.
-
-<code>
-- Adult.class.php
-- Car.class.php
-- Child.class.php
-- Contact.class.php
-- Dog.class.php
-- Entity.class.php
-- Group.class.php
-- SelfReference.class.php
-- User.class.php
-- UserCar.class.php
-- UserGroup.class.php
-- generated
-  - BaseAdult.class.php
-  - BaseCar.class.php
-  - BaseChild.class.php
-  - BaseContact.class.php
-  - BaseDog.class.php
-  - BaseEntity.class.php
-  - BaseGroup.class.php
-  - BaseSelfReference.class.php
-  - BaseUser.class.php
-  - BaseUserCar.class.php
-  - BaseUserGroup.class.php
-</code>
+++ Options
 
 ++ Indexes
 
@@ -296,123 +50,23 @@ UserProfile:
 
 This is the PHP line of code that is auto-generated inside setTableDefinition() inside your base model class.
 
-Note: Don't mind the extra trailing commas. This is normal and they should not affect anything negatively.
-
 <code type="php">
-<?php
-
-class BaseUserProfile extends Doctrine_Record
-{
-
-	public function setTableDefinition()
-	{
-        // code
-
-		$this->index('name_index', array('fields' => array('first_name' => array( 'sorting' => 'ASC', 'length' => '10', 'primary' => true, ), 'last_name' => array( ), ), 'type' => 'unique'));
-	}
-}
-
-?>
+$this->index('name_index', array('fields' => array('first_name' => array( 'sorting' => 'ASC', 'length' => '10', 'primary' => true ), 'last_name' => array( ) ), 'type' => 'unique'));
 </code>
 
-++ Additional Schema Options
+++ Generating Models
 
-It isn't necessary to define both sides of a relationship in the schema.yml file as doctrine will attempt to autocomplete the relationships for you. If you choose to define only one side of the relationship, there are two yaml options you can pass to help doctrine decide how to complete the opposite end of the relationship. For example.
-
-schema.yml
-<code type="yml">
----
-Table1:
-  tableName: table_1
-  relations: 
-    Table2Alias:
-      class: Table2
-      local: foreign_key
-      type: one
-      foreignAlias: Table1Alias
-      foreignType: one
-  columns:
-    column_1: { type: string, length: 128 }
-    foreign_key: { type: integer, length: 4 }
-
-Table2:
-  tableName: table_2
-  columns:
-    column_1: { type: string, length: 128 }
-    foreign_key: { type: integer, length: 4 }
-</code>
-
-This schema will define a 1-1 relationship between Table1 and Table2. You'll notice there are two new yaml entries, foreignAlias, and foreignType. ForeignAlias will define the as Alias portion of the opposite relationship, and similarily foreignType defines the reverse relationship of the opposite relationship. Defining foreignType is only necessary when you want a one-to-one relationship, but do not want to define both ends of the relationship manually. The above schema produces the following classes.
-
+Once you have defined your schema files you need some code to 
 <code type="php">
-/**
- * This class has been auto-generated by the Doctrine ORM Framework
- */
-class Table1 extends Doctrine_Record
-{
+// The options are completely optional. Only use this if you need something beyond the default configuration for model generation
+$options = array('packagesPrefix'        =>  'Package',             // What to prefix the middle package models with
+                 'packagesPath'          =>  '',                    // this defaults to the "#models_path#/packages"
+                 'generateBaseClasses'   =>  true,                  // Whether or not to generate abstract base models containing the definition and a top level class which is empty extends the base
+                 'generateTableClasses'  =>  true,                  // Whether or not to generate a table class for each model
+                 'baseClassesDirectory'  =>  'generated',           // Name of the folder to generate the base class definitions in
+                 'baseClassName'         =>  'Doctrine_Record',     // Name of the base Doctrine_Record class
+                 'suffix'                =>  '.php');               // Extension for your generated models
 
-		public function setTableDefinition()
-		{
-        $this->setTableName('table_1');
-        $this->hasColumn('column_1', 'string', 128);
-        $this->hasColumn('foreign_key', 'integer', 4);
-		}
-
-		public function setUp()
-		{
-        $this->hasOne('Table2 as Table2Alias', array('local' => 'foreign_key',
-                                                     'foreign' => 'id',
-                                                     'onDelete' => 'CASCADE'));
-		}
-}
-
-/**
- * This class has been auto-generated by the Doctrine ORM Framework
- */
-class Table2 extends Doctrine_Record
-{
-
-		public function setTableDefinition()
-		{
-        $this->setTableName('table_2');
-        $this->hasColumn('column_1', 'string', 128);
-        $this->hasColumn('foreign_key', 'integer', 4);
-		}
-
-		public function setUp()
-		{
-        $this->hasOne('Table1 as Table1Alias', array('local' => 'id',
-                                                     'foreign' => 'foreign_key'));
-		}
-}
+// This code will generate the models for schema.yml at /path/to/generate/models
+Doctrine::generateModelsFromYaml('schema.yml', '/path/to/generate/models', $options);
 </code>
-
-As you can see doctrine fully completes the relationship for both classes. You can also use this shorter format for m-to-m relationships. Using the same User and Groups models defined previously, we create a simplified schema.yml. Whereas in the one-to-many and one-to-one the foreignAlias isn't a required field. If you choose to create many-to-many relationships using the short yaml syntax, the foreignAlias is required for proper generation.
-
-<code type="yml">
----
-User:
-  columns:
-    id: { notnull: true, primary: true, autoincrement: true,  type: integer,  length: 4, name: id }
-    username: { type: string, length: 255 }
-  relations:
-    Groups:
-      class: Group
-      refClass: UserGroup
-      foreignAlias: Users
-      local: user_id
-      foreign: group_id
-      type: many
-
-UserGroup:
-  columns:
-    user_id: { type: integer, length: 4, primary: true }
-    group_id: { type: integer, length: 4, primary: true }
-
-Group:
-  columns:
-    id: { notnull: true, primary: true, autoincrement: true, type: integer, length: 4, name: id }
-    name: { type: string, length: 255 }
-</code>
-
-This schema will create identical classes as the fully defined schema.yml above.

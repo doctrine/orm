@@ -43,7 +43,7 @@ class Doctrine_Template_Sluggable extends Doctrine_Template
                                 'type'    =>  'clob',
                                 'length'  =>  null,
                                 'options' =>  array(),
-                                'columns' =>  array());
+                                'fields'  =>  array());
     
     /**
      * __construct

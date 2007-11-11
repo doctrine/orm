@@ -43,7 +43,7 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
                                 'type'    =>  'clob',
                                 'length'  =>  null,
                                 'options' =>  array(),
-                                'columns' =>  array());
+                                'fields'  =>  array());
     
     /**
      * __construct
@@ -69,12 +69,12 @@ class Doctrine_Template_Listener_Sluggable extends Doctrine_Record_Listener
 
     protected function buildSlug($record)
     {
-        if (empty($this->_columns)) {
+        if (empty($this->_options['fields'])) {
             $value = (string) $record;
         } else {
             $value = '';
-            foreach ($this->_columns as $column) {
-              $value = $record->$column . ' ';
+            foreach ($this->_options['fields'] as $field) {
+                $value = $record->$field . ' ';
             }
         }
 

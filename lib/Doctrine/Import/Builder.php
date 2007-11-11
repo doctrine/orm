@@ -329,7 +329,7 @@ END;
      * @param  string $table
      * @param  array  $tableColumns
      */
-    public function buildTableDefinition(array $options, array $columns, array $relations, array $indexes, array $attributes, array $templates, array $actAs)
+    public function buildTableDefinition(array $options, array $columns, array $relations, array $indexes, array $attributes, array $templates, array $actAs, array $tableOptions)
     {
         $ret = array();
         
@@ -355,35 +355,15 @@ END;
                 $ret[$i] .= ', null';
             }
 
-            $a = array();
-
-            if (isset($column['default'])) {
-                $a[] = '\'default\' => ' . var_export($column['default'], true);
+            $options = $column;
+            $unset = array('name', 'type', 'length', 'ptype');
+            foreach ($options as $key => $value) {
+                if (in_array($key, $unset) || $value === null) {
+                    unset($options[$key]);
+                }
             }
-            if (isset($column['notnull']) && $column['notnull']) {
-                $a[] = '\'notnull\' => true';
-            }
-            if (isset($column['primary']) && $column['primary']) {
-                $a[] = '\'primary\' => true';
-            }
-            if ((isset($column['autoinc']) && $column['autoinc']) || isset($column['autoincrement']) && $column['autoincrement']) {
-                $a[] = '\'autoincrement\' => true';
-            }
-            if (isset($column['unique']) && $column['unique']) {
-                $a[] = '\'unique\' => true';
-            }
-            if (isset($column['unsigned']) && $column['unsigned']) {
-                $a[] = '\'unsigned\' => true';
-            }
-            if ($column['type'] == 'enum' && isset($column['values']) ) {
-                $a[] = '\'values\' => array(\'' . implode('\',\'', $column['values']) . '\')';
-            }
-
-            if ( ! empty($a)) {
-                $ret[$i] .= ', ' . 'array(';
-                $length = strlen($ret[$i]);
-                $ret[$i] .= implode(',' . PHP_EOL . str_repeat(' ', $length), $a) . ')';
-            }
+            
+            $ret[$i] .= ', ' . var_export($options, true);
             
             $ret[$i] .= ');';
 
@@ -403,6 +383,9 @@ END;
         $i++;
         
         $ret[$i] = $this->buildActAs($actAs);
+        $i++;
+        
+        $ret[$i] = $this->buildTableOptions($tableOptions);
         
         $code = implode("\n", $ret);
         $code = trim($code);
@@ -424,7 +407,7 @@ END;
         foreach ($templates as $name => $options) {
             
             if (is_array($options) && !empty($options)) {
-                $optionsPhp = $this->arrayToPhpArrayCode($options);
+                $optionsPhp = var_export($options, true);
             
                 $build .= "    \$this->loadTemplate('" . $name . "', " . $optionsPhp . ");\n";
             } else {
@@ -450,7 +433,7 @@ END;
         $build = '';
         foreach ($actAs as $name => $options) {
             if (is_array($options) && !empty($options)) {
-                $optionsPhp = $this->arrayToPhp($options);
+                $optionsPhp = var_export($options, true);
                 
                 $build .= "    \$this->actAs('" . $name . "', " . $optionsPhp . ");\n";
             } else {
@@ -463,22 +446,6 @@ END;
         }
         
         return $build;
-    }
-
-    /**
-     * arrayToPhp
-     *
-     * @param string $array 
-     * @return void
-     */
-    protected function arrayToPhp(array $array)
-    {
-        ob_start();
-        var_export($array);
-        $php = ob_get_contents();
-        ob_end_clean();
-        
-        return $php;
     }
 
     /**
@@ -514,6 +481,22 @@ END;
         
         return $build;
     }
+    
+    /**
+     * buildTableOptions
+     *
+     * @param string $array 
+     * @return void
+     */
+    public function buildTableOptions(array $options)
+    {
+        $build = '';
+        foreach ($options as $name => $value) {
+            $build .= "    \$this->option('$name', " . var_export($value, true) . ");\n";
+        }
+        
+        return $build;
+    }
 
     /**
      * buildIndexes
@@ -526,56 +509,9 @@ END;
       $build = '';
 
       foreach ($indexes as $indexName => $definitions) {
-          $build .= "\n    ".'$this->index(\'' . $indexName . '\', array(';
-
-          foreach ($definitions as $name => $value) {
-
-            // parse fields
-            if ($name === 'fields' || $name === 'columns') {
-              $build .= '\'fields\' => array(';
-
-              foreach ($value as $fieldName => $fieldValue) {
-                $build .= '\'' . $fieldName . '\' => array( ';
-
-                // parse options { sorting, length, primary }
-                if (isset($fieldValue) && $fieldValue) {
-                  foreach ($fieldValue as $optionName => $optionValue) {
-
-                    $build .= '\'' . $optionName . '\' => ';
-
-                    // check primary option, mark either as true or false
-                    if ($optionName === 'primary') {
-                    	$build .= (($optionValue == 'true') ? 'true' : 'false') . ', ';
-                    	continue;
-                    }
-
-                    // convert sorting option to uppercase, for instance, asc -> ASC
-                    if ($optionName === 'sorting') {
-                    	$build .= '\'' . strtoupper($optionValue) . '\', ';
-                    	continue;
-                    }
-
-                    // check the rest of the options
-                    $build .= '\'' . $optionValue . '\', ';
-                  }
-                }
-
-                $build .= '), ';
-              }
-            }
-
-            // parse index type option, 4 choices { unique, fulltext, gist, gin }
-            if ($name === 'type') {
-            	$build .= '), \'type\' => \'' . $value . '\'';
-            }
-
-            // add extra ) if type definition is not declared
-            if ( ! isset($definitions['type'])) {
-            	$build .= ')';
-            }
-          }
-
-          $build .= '));';
+          $build .= "\n    \$this->index('" . $indexName . "'";
+          $build .= ', ' . var_export($definitions, true);
+          $build .= ');';
       }
 
       return $build;
@@ -679,7 +615,7 @@ END;
      * @param array $actAs 
      * @return string
      */
-    public function buildDefinition(array $options, array $columns, array $relations = array(), array $indexes = array(), $attributes = array(), array $templates = array(), array $actAs = array())
+    public function buildDefinition(array $options, array $columns, array $relations = array(), array $indexes = array(), $attributes = array(), array $templates = array(), array $actAs = array(), array $tableOptions = array())
     {
         if ( ! isset($options['className'])) {
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
@@ -690,7 +626,7 @@ END;
         $extends = isset($options['inheritance']['extends']) ? $options['inheritance']['extends']:$this->_baseClassName;
 
         if ( ! (isset($options['no_definition']) && $options['no_definition'] === true)) {
-            $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
+            $definition = $this->buildTableDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs, $tableOptions);
             $setUp = $this->buildSetUp($options, $columns, $relations);
         } else {
             $definition = null;
@@ -721,7 +657,7 @@ END;
      * @param array $actAs 
      * @return void=
      */
-    public function buildRecord(array $options, array $columns, array $relations = array(), array $indexes = array(), array $attributes = array(), array $templates = array(), array $actAs = array())
+    public function buildRecord(array $options, array $columns, array $relations = array(), array $indexes = array(), array $attributes = array(), array $templates = array(), array $actAs = array(), array $tableOptions = array())
     {
         if ( !isset($options['className'])) {
             throw new Doctrine_Import_Builder_Exception('Missing class name.');
@@ -768,7 +704,7 @@ END;
             $baseClass['override_parent'] = true;
             $baseClass['is_base_class'] = true;
 
-            $this->writeDefinition($baseClass, $columns, $relations, $indexes, $attributes, $templates, $actAs);
+            $this->writeDefinition($baseClass, $columns, $relations, $indexes, $attributes, $templates, $actAs, $tableOptions);
             
             if (!empty($packageLevel)) {
                 $this->writeDefinition($packageLevel);
@@ -776,7 +712,7 @@ END;
             
             $this->writeDefinition($topLevel);
         } else {
-            $this->writeDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
+            $this->writeDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs, $tableOptions);
         }
     }
     
@@ -819,9 +755,9 @@ END;
      * @param array $actAs 
      * @return void
      */
-    public function writeDefinition(array $options, array $columns = array(), array $relations = array(), array $indexes = array(), array $attributes = array(), array $templates = array(), array $actAs = array())
+    public function writeDefinition(array $options, array $columns = array(), array $relations = array(), array $indexes = array(), array $attributes = array(), array $templates = array(), array $actAs = array(), array $tableOptions = array())
     {
-        $definition = $this->buildDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs);
+        $definition = $this->buildDefinition($options, $columns, $relations, $indexes, $attributes, $templates, $actAs, $tableOptions);
 
         $fileName = $options['className'] . $this->_suffix;
 
