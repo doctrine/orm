@@ -164,7 +164,7 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
     
     public function getParamNamespaces()
     {
-        return array_keys($this->_params);	
+        return array_keys($this->_params);
     }
 
     public function setParam($name, $value, $namespace = null) 
@@ -224,6 +224,18 @@ abstract class Doctrine_Configurable extends Doctrine_Locator_Injectable
             return null;
         }
         return $this->_impl[$template];
+    }
+    
+    
+    public function hasImpl($template)
+    {
+        if ( ! isset($this->_impl[$template])) {
+            if (isset($this->parent)) {
+                return $this->parent->hasImpl($template);
+            }
+            return false;
+        }
+        return true;
     }
 
     /**
