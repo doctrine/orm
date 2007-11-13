@@ -62,7 +62,7 @@ class Doctrine_Template_I18n extends Doctrine_Template
         
         $id = $this->_table->getIdentifier();
 
-        $this->hasMany($className . ' as Translation', array('local' => $id[0], 'foreign' => $id[0]));
+        $this->hasMany($className . ' as Translation', array('local' => $id, 'foreign' => $id));
     }
     
     /**
