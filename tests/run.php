@@ -144,6 +144,7 @@ $test->addTestCase($data_types);
 // Utility components
 $plugins = new GroupTest('Plugin tests: View, Validator, Hook','plugins');
 //$utility->addTestCase(new Doctrine_PessimisticLocking_TestCase());
+$plugins->addTestCase(new Doctrine_Plugin_TestCase());
 $plugins->addTestCase(new Doctrine_View_TestCase());
 $plugins->addTestCase(new Doctrine_AuditLog_TestCase());
 $plugins->addTestCase(new Doctrine_Validator_TestCase());
@@ -218,7 +219,7 @@ $test->addTestCase(new Doctrine_CustomResultSetOrder_TestCase());
 
 
 $test->addTestCase(new Doctrine_ColumnAggregationInheritance_TestCase());
-
+$test->addTestCase(new Doctrine_ClassTableInheritance_TestCase());
 $test->addTestCase(new Doctrine_ColumnAlias_TestCase());
 
 
