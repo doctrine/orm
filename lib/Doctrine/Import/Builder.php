@@ -592,7 +592,7 @@ END;
         
         if (isset($options['inheritance']['keyField']) && isset($options['inheritance']['keyValue'])) {
             $i++;
-            $ret[$i] = "    ".'$this->setInheritanceMap(array(\''.$options['inheritance']['keyField'].'\' => '.$options['inheritance']['keyValue'].'));';
+            $ret[$i] = "    ".'$this->setInheritanceMap(array(\''.$options['inheritance']['keyField'].'\' => \''.$options['inheritance']['keyValue'].'\'));';
         }
         
         $code = implode("\n", $ret);
