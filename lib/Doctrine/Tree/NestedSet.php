@@ -316,7 +316,7 @@ class Doctrine_Tree_NestedSet extends Doctrine_Tree implements Doctrine_Tree_Int
      */
     public function resetBaseQuery()
     {
-        $this->_baseQuery = null;
+        $this->_baseQuery = $this->_createBaseQuery();
     }
 
     /**
