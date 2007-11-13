@@ -1169,7 +1169,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
      *
      * @param Doctrine_Table $table     table object to retrieve the plugins from
      * @return array                    an array of Doctrine_Plugin objects
-     */  
+     */
     public function getAllPlugins(Doctrine_Table $table)
     {
         $plugins = array();
@@ -1183,7 +1183,11 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
             $plugins[] = $plugin;
 
-            $plugins = array_merge($plugins, $this->getAllPlugins($plugin->getOption('pluginTable')));
+            $pluginTable = $plugin->getOption('pluginTable');
+            
+            if ($pluginTable instanceof Doctrine_Table) {
+                $plugins = array_merge($plugins, $this->getAllPlugins($pluginTable));
+            }
         }
 
         return $plugins;

@@ -38,6 +38,7 @@ class Doctrine_I18n extends Doctrine_Plugin
                             'generateFiles' => false,
                             'table'         => false,
                             'pluginTable'   => false,
+                            'children'      => array(),
                             );
 
     /**
@@ -122,6 +123,8 @@ class Doctrine_I18n extends Doctrine_Plugin
         $this->_options['pluginTable'] = $table->getConnection()->getTable($this->_options['className']);
         
         $this->_options['pluginTable']->bindQueryPart('indexBy', 'lang');
+
+        $this->generateChildDefinitions();
 
         return true;
     }

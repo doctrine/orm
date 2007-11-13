@@ -47,4 +47,5 @@ class Doctrine_Template_Versionable extends Doctrine_Template
     {
         return $this->_plugin;
     }
+
 }

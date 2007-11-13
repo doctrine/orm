@@ -91,6 +91,11 @@ class Doctrine_Plugin
         return $this;
     }
 
+    public function addChild(Doctrine_Template $template)
+    {
+        $this->_options['children'][] = $template;    	
+    }
+
     /**
      * returns all options and their associated values
      *
@@ -99,6 +104,17 @@ class Doctrine_Plugin
     public function getOptions()
     {
         return $this->_options;
+    }
+
+    public function generateChildDefinitions()
+    {
+        foreach ($this->_options['children'] as $child) {
+            $this->_options['pluginTable']->addTemplate(get_class($child), $child);
+
+            $child->setTable($this->_options['pluginTable']);
+            
+            $child->setUp();
+        }
     }
 
     /**

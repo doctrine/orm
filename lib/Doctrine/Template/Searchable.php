@@ -34,9 +34,7 @@ class Doctrine_Template_Searchable extends Doctrine_Template
 {     
     public function __construct(array $options)
     {
-        $this->_plugin = new Doctrine_Search($options);
-        
-
+        $this->_plugin = new Doctrine_Search($options); 
     }
     
     public function getPlugin()

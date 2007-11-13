@@ -85,6 +85,14 @@ class Doctrine_Template extends Doctrine_Record_Abstract
         return $this->_invoker;
     }
 
+    public function addChild(Doctrine_Template $template)
+    {
+        $this->_plugin->addChild($template);
+        
+        return $this;
+    }
+
+
     public function getPlugin()
     {
         return $this->_plugin;
