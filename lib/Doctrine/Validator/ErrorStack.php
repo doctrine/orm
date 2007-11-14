@@ -40,6 +40,7 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      * @var array
      */
     protected $errors = array();
+
     protected $classname = "";
 
     /**
@@ -121,6 +122,11 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
     public function getIterator()
     {
         return new ArrayIterator($this->errors);
+    }
+
+    public function toArray()
+    {
+        return $this->errors;	
     }
 
     /**
