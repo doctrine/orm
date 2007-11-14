@@ -976,18 +976,22 @@ final class Doctrine
      *
      * @param mixed $var        a variable of any type
      * @param boolean $output   whether to output the content
+     * @param string $indent    indention string
      * @return void|string
      */
-    public static function dump($var, $output = true)
+    public static function dump($var, $output = true, $indent = "")
     {
         $ret = array();
         switch (gettype($var)) {
             case 'array':
                 $ret[] = 'Array(';
+                $indent .= "    ";
                 foreach ($var as $k => $v) {
-                    $ret[] = $k . ' : ' . self::dump($v, false);
+                    
+                    $ret[] = $indent . $k . ' : ' . self::dump($v, false, $indent);
                 }
-                $ret[] = ")";
+                $indent = substr($indent,0, -4);
+                $ret[] = $indent . ")";
                 break;
             case 'object':
                 $ret[] = 'Object(' . get_class($var) . ')';
