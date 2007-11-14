@@ -258,6 +258,29 @@ This is the PHP line of code that is auto-generated inside setTableDefinition() 
 $this->index('name_index', array('fields' => array('first_name' => array( 'sorting' => 'ASC', 'length' => '10', 'primary' => true ), 'last_name' => array( ) ), 'type' => 'unique'));
 </code>
 
+++ Inheritance
+
+<code type="yaml">
+---
+Entity:
+  actAs: [Timestampable]
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      autoincrement: true
+    username:
+      type: string(255)
+    password:
+      type: string(255)
+User:
+  inheritance:
+    extends: Entity
+Group:
+  inheritance:
+    extends: Entity
+</code>
+
 ++ Generating Models
 
 Once you have defined your schema files you need some code to 
