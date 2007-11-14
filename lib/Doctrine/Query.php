@@ -1838,6 +1838,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         // append parameters
         $params = array_merge($this->_params['where'], $this->_params['having'], $params);
 
+        $params = $this->convertEnums($params);
+
         $results = $this->getConnection()->fetchAll($q, $params);
 
         if (count($results) > 1) {
