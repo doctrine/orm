@@ -67,7 +67,7 @@ abstract class Doctrine_Parser
     static public function getParser($type)
     {
         $class = 'Doctrine_Parser_'.ucfirst($type);
-        
+
         return new $class;
     }
 
@@ -84,7 +84,7 @@ abstract class Doctrine_Parser
     static public function load($path, $type = 'xml')
     {
         $parser = self::getParser($type);
-        
+
         return $parser->loadData($path);
     }
 
@@ -102,7 +102,7 @@ abstract class Doctrine_Parser
     static public function dump($array, $type = 'xml', $path = null)
     {
         $parser = self::getParser($type);
-        
+
         return $parser->dumpData($array, $path);
     }
 
@@ -120,17 +120,17 @@ abstract class Doctrine_Parser
         ob_start();
         if ( ! file_exists($path)) {
             $contents = $path;
-            $path = '/tmp/dparser_' . microtime();
-            
+            $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'dparser_' . microtime();
+
             file_put_contents($path, $contents);
         }
-        
+
         include($path);
         $contents = ob_get_clean();
-        
+
         return $contents;
     }
-    
+
     public function doDump($data, $path)
     {
       if ($path) {

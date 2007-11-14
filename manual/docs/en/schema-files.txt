@@ -248,7 +248,7 @@ UserProfile:
           sorting: ASC
           length: 10
           primary: true
-        last_name: ~
+        last_name: []
       type: unique
 </code>
 
