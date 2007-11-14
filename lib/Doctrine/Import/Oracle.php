@@ -145,7 +145,8 @@ class Doctrine_Import_Oracle extends Doctrine_Import
                'scale'      => $val['scale'],
             );
         }
-        return $result;
+
+        return $descr;
     }
 
     /**
