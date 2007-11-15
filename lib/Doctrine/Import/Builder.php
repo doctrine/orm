@@ -684,6 +684,7 @@ END;
             $topLevel['no_definition'] = true;
             $topLevel['generate_once'] = true;
             $topLevel['is_main_class'] = true;
+            unset($topLevel['connection']);
 
             // Package level definition that extends from the base definition
             if (isset($options['package'])) {
@@ -696,6 +697,7 @@ END;
                 $packageLevel['override_parent'] = true;
                 $packageLevel['generate_once'] = true;
                 $packageLevel['is_package_class'] = true;
+                unset($packageLevel['connection']);
             }
 
             $baseClass = $options;
@@ -807,19 +809,9 @@ END;
             
             $writePath = $this->_path . DIRECTORY_SEPARATOR . $fileName;
         }
-        
+
         $code = "<?php" . PHP_EOL;
-        
-        if (isset($options['requires'])) {
-            if ( ! is_array($options['requires'])) {
-                $options['requires'] = array($options['requires']);
-            }
-            
-            foreach ($options['requires'] as $require) {
-                $code .= "require_once('".$require."');\n";
-            }
-        }
-        
+
         if (isset($options['connection']) && $options['connection']) {
             $code .= "// Connection Component Binding\n";
             $code .= "Doctrine_Manager::getInstance()->bindComponent('" . $options['connectionClassName'] . "', '" . $options['connection'] . "');\n";
