@@ -102,7 +102,7 @@ class Doctrine_Import_Schema
         $array = array();
 
         foreach ((array) $schema AS $s) {
-            if (is_file($s) || is_string($s)) {
+            if (is_file($s)) {
                 $array = array_merge($array, $this->parseSchema($s, $format));
             } else if (is_dir($s)) {
                 $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($s),
@@ -114,6 +114,8 @@ class Doctrine_Import_Schema
                         $array = array_merge($array, $this->parseSchema($file->getPathName(), $format));
                     }
                 }
+            } else {
+              $array = array_merge($array, $this->parseSchema($s, $format));
             }
         }
 
