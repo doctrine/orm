@@ -661,16 +661,33 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         
         return $data;
     }
+
+    /**
+     * fromArray
+     *
+     * Populate a Doctrine_Collection from an array of data
+     *
+     * @param string $array 
+     * @return void
+     */
+    
     public function fromArray($array)
     {
         $data = array();
-        foreach ($array as $row) {
-            $record = $this->_table->getRecord();
-            $record->fromArray($row);
-            
-            $this[] = $record;
+        foreach ($array as $rowKey => $row) {
+            $this[$rowKey]->fromArray($row);
         }
     }
+
+    /**
+     * exportTo
+     *
+     * Export a Doctrine_Collection to one of the supported Doctrine_Parser formats
+     *
+     * @param string $type 
+     * @param string $deep 
+     * @return void
+     */
     public function exportTo($type, $deep = false)
     {
         if ($type == 'array') {
@@ -679,6 +696,16 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             return Doctrine_Parser::dump($this->toArray($deep, true), $type);
         }
     }
+
+    /**
+     * importFrom
+     *
+     * Import data to a Doctrine_Collection from one of the supported Doctrine_Parser formats
+     *
+     * @param string $type 
+     * @param string $data 
+     * @return void
+     */
     public function importFrom($type, $data)
     {
         if ($type == 'array') {
@@ -687,10 +714,22 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
             return $this->fromArray(Doctrine_Parser::load($data, $type));
         }
     }
+
+    /**
+     * getDeleteDiff
+     *
+     * @return void
+     */
     public function getDeleteDiff()
     {
         return array_udiff($this->_snapshot, $this->data, array($this, "compareRecords"));
     }
+
+    /**
+     * getInsertDiff
+     *
+     * @return void
+     */
     public function getInsertDiff()
     {
         return array_udiff($this->data, $this->_snapshot, array($this, "compareRecords"));
@@ -702,7 +741,10 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      */
     protected function compareRecords($a, $b)
     {
-        if ($a->getOid() == $b->getOid()) return 0;
+        if ($a->getOid() == $b->getOid()) {
+            return 0;
+        }
+        
         return ($a->getOid() > $b->getOid()) ? 1 : -1;
     }
 
@@ -719,6 +761,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         if ($conn == null) {
             $conn = $this->_table->getConnection();
         }
+        
         $conn->beginTransaction();
 
         $conn->transaction->addCollection($this);
