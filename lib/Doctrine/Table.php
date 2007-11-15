@@ -1008,9 +1008,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
      */
     public function create(array $array = array()) 
     {
-        $this->_data = $array;
-        $record      = new $this->_options['name']($this, true);
-        $this->_data = array();
+        $record = new $this->_options['name']($this, true);
+        $record->fromArray($array);
 
         return $record;
     }
