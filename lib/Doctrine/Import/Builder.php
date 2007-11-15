@@ -129,8 +129,6 @@ class Doctrine_Import_Builder
      */
     public function setTargetPath($path)
     {
-        Doctrine::makeDirectories($path);
-        
         if ( ! $this->_packagesPath) {
             $this->setPackagesPath($path . DIRECTORY_SEPARATOR . 'packages');
         }
@@ -157,8 +155,6 @@ class Doctrine_Import_Builder
      */
     public function setPackagesPath($packagesPath)
     {
-        Doctrine::makeDirectories($packagesPath);
-        
         $this->_packagesPath = $packagesPath;
     }
     
@@ -799,7 +795,7 @@ END;
                 $writePath = $this->_path . DIRECTORY_SEPARATOR . $this->_baseClassesDirectory;
             }
         }
-        
+
         if (isset($writePath)) {
             Doctrine::makeDirectories($writePath);
             
